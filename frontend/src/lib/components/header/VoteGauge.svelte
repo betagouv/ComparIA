@@ -23,7 +23,7 @@
       style:--gauge-ratio={votes?.ratio}
     >
       <div class="linear-gauge-fill rounded-sm">
-        <span class="vote-count ms-2 whitespace-nowrap align-middle font-bold">
+        <span class="vote-count ms-2 align-middle font-bold whitespace-nowrap">
           {m['header.votes.count']({ count: votes.count })}
         </span>
       </div>

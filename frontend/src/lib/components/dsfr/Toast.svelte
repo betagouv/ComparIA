@@ -25,7 +25,7 @@
 <div
   class="cl-toast {variant === 'error'
     ? 'border-error'
-    : 'border-primary'} text-dark-grey flex border-2 bg-white"
+    : 'border-primary'} flex border-2 bg-white text-dark-grey"
 >
   <div class="{variant === 'error' ? 'bg-error' : 'bg-primary'} flex flex-col justify-center p-2">
     <Icon

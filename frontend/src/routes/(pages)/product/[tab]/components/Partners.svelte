@@ -11,7 +11,7 @@
 <div class="grid gap-8 lg:grid-cols-2">
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
-      <Icon icon="government-line" size="lg" class="text-primary me-1" />
+      <Icon icon="government-line" size="lg" class="me-1 text-primary" />
       {m['product.partners.institution.title']()}
     </h2>
 
@@ -31,16 +31,27 @@
           width="240px"
         />
       </div>
+    {:else if locale === 'da'}
+      <img
+        src="/orgs/countries/da-light.png"
+        alt={m['header.logoAlt']()}
+        class="max-h-[75px] dark:hidden"
+      />
+      <img
+        src="/orgs/countries/da-dark.png"
+        alt={m['header.logoAlt']()}
+        class="hidden max-h-[75px] dark:block"
+      />
     {/if}
   </section>
 
-  <section class="cg-border cl-card">
-    <h2 class="fr-h6">
-      <Icon icon="presentation" size="lg" class="text-yellow me-1" />
-      {m['product.partners.diffusion.title']()}
-    </h2>
+  {#if locale === 'fr' || locale === 'en'}
+    <section class="cg-border cl-card">
+      <h2 class="fr-h6">
+        <Icon icon="presentation" size="lg" class="me-1 text-yellow" />
+        {m['product.partners.diffusion.title']()}
+      </h2>
 
-    {#if locale === 'fr' || locale === 'en'}
       <div class="cl-logos">
         <img src="/orgs/cafe-ia.png" alt="Cafés de l'IA" title="Cafés IA" width="104px" />
         <img
@@ -69,16 +80,14 @@
         text={m['product.partners.diffusion.cta']()}
         class="w-full! sm:w-auto!"
       />
-    {/if}
-  </section>
+    </section>
 
-  <section class="cg-border cl-card">
-    <h2 class="fr-h6">
-      <Icon icon="chat-search" size="lg" class="text-orange me-1" />
-      {m['product.partners.academy.title']()}
-    </h2>
+    <section class="cg-border cl-card">
+      <h2 class="fr-h6">
+        <Icon icon="chat-search" size="lg" class="me-1 text-orange" />
+        {m['product.partners.academy.title']()}
+      </h2>
 
-    {#if locale === 'fr' || locale === 'en'}
       <div class="cl-logos">
         <img src="/orgs/inria.png" alt="Inria" title="Inria" width="139px" />
       </div>
@@ -92,12 +101,12 @@
         text={m['actions.contactUs']()}
         class="w-full! sm:w-auto!"
       />
-    {/if}
-  </section>
+    </section>
+  {/if}
 
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
-      <Icon icon="presentation" size="lg" class="text-green me-1" />
+      <Icon icon="presentation" size="lg" class="me-1 text-green" />
       {m['product.partners.services.title']()}
     </h2>
 

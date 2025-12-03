@@ -1,3 +1,4 @@
+export { default as Community } from './Community.svelte'
 export { default as Comparator } from './Comparator.svelte'
 export { default as FAQ } from './FAQ.svelte'
 export { default as History } from './History.svelte'

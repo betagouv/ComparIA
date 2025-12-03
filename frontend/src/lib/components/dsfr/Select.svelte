@@ -24,13 +24,13 @@
   }: SelectProps = $props()
 </script>
 
-<div class={["fr-select-group", groupClass]}>
+<div class={['fr-select-group', groupClass]}>
   <label class={['fr-label', { 'fr-sr-only': hideLabel }]} for={id}>
     {label}
   </label>
 
-  <select {...props} {id} bind:value={selected} class={["fr-select", props.class]}>
-    {#each options as option}
+  <select {...props} {id} bind:value={selected} class={['fr-select', props.class]}>
+    {#each options as option (option.value)}
       <option value={option.value}>{option.label}</option>
     {/each}
   </select>

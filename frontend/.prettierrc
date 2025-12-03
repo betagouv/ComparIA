@@ -10,6 +10,13 @@
       "options": {
         "parser": "svelte"
       }
+    },
+    {
+      "files": "locales/messages/*.json",
+      "options": {
+        "tabWidth": 4
+      }
     }
-  ]
+  ],
+  "tailwindStylesheet": "./src/css/app.css"
 }

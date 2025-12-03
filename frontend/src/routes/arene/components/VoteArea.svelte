@@ -20,7 +20,7 @@
 <div id="vote-area" class="fr-container py-7 md:py-20" {@attach scrollTo}>
   <div class="text-center">
     <h4 class="fr-h6 mb-2!">{m['vote.title']()}</h4>
-    <p class="text-grey fr-text--sm">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
+    <p class="fr-text--sm text-grey">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
   </div>
 
   <VoteRadioGroup bind:value={form.selected} {disabled} />
@@ -29,29 +29,31 @@
     <div class="mt-11 flex flex-col gap-6 md:flex-row">
       {#each ['a', 'b'] as const as model (model)}
         <div
-          class="cg-border rounded-lg! flex w-full flex-col gap-4 bg-white p-4 md:rounded-lg md:px-6 md:py-8"
+          class="cg-border flex w-full flex-col gap-4 rounded-lg! bg-white p-4 md:rounded-lg md:px-6 md:py-8"
         >
           <div class="flex items-center">
             <div class="c-bot-disk-{model}"></div>
-            <p class="mb-0! ms-1! font-bold">{m[`models.names.${model}`]()}</p>
+            <p class="ms-1! mb-0! font-bold">{m[`models.names.${model}`]()}</p>
           </div>
 
           <p class="mb-0! font-bold">{m['vote.qualify.question']()}</p>
 
           <LikePanel
+            id="model-{model}"
             show={true}
             kind="like"
             mode="vote"
             model={model.toUpperCase()}
-            selection={form[model].like}
+            bind:selection={form[model].like}
             {disabled}
           />
           <LikePanel
+            id="model-{model}"
             show={true}
             kind="dislike"
             mode="vote"
             model={model.toUpperCase()}
-            selection={form[model].dislike}
+            bind:selection={form[model].dislike}
             {disabled}
           />
 

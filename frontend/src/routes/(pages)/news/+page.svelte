@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Badge, Button, CheckboxGroup, Icon } from '$components/dsfr'
+  import { Badge, Button, CheckboxGroup, Icon, Link } from '$components/dsfr'
+  import type { BadgeProps } from '$components/dsfr/Badge.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import data from '$lib/generated/news.json'
   import { m } from '$lib/i18n/messages'
@@ -11,13 +12,20 @@
     title: string
     desc: string
     imgSrc: string
-    date: string
-    href: string
+    date?: number
+    linkLabel?: string
+    href?: string
     pinned?: boolean
+  }
+  type Sub = {
+    title: string
+    variant: BadgeProps['variant']
+    icon: string
+    subKinds: { id: string; label: string; linkLabel?: string }[]
   }
 
   const NEWS_KINDS = ['resource', 'talk', 'media'] as const
-  const SUBKINDS = {
+  const SUBKINDS: Record<NewsKind, Sub> = {
     resource: {
       title: 'Ressources',
       variant: 'light-info',
@@ -33,8 +41,8 @@
       variant: 'purple',
       icon: 'speak-ai-fill',
       subKinds: [
-        { id: 'podcast', label: 'Podcast' },
-        { id: 'webinar', label: 'Webinaire' },
+        { id: 'podcast', label: 'Podcast', linkLabel: 'Écouter le podcast' },
+        { id: 'webinar', label: 'Webinaire', linkLabel: 'Revoir le webinaire' },
         { id: 'event', label: 'Participation évènement' },
         { id: 'workshop', label: 'Atelier' },
         { id: 'panel', label: 'Table ronde' }
@@ -46,23 +54,33 @@
       icon: 'megaphone-fill',
       subKinds: [
         { id: 'analyze', label: 'Analyse' },
-        { id: 'press', label: 'Presse écrite' },
-        { id: 'video', label: 'Vidéo' }
+        { id: 'press', label: 'Presse écrite', linkLabel: "Lire l'article" },
+        { id: 'video', label: 'Vidéo', linkLabel: 'Voir la vidéo' }
       ]
     }
-  } as const
+  }
 
-  const news = data as News[]
+  const news = (data as News[]).map((n) => ({
+    ...n,
+    href: n.href ?? '#',
+    linkLabel:
+      n.linkLabel ??
+      SUBKINDS[n.kind].subKinds.find((sk) => sk.id === n.subKind)?.linkLabel ??
+      'Découvrir',
+    date: n.date ? new Date(n.date * 1000) : null
+  }))
 
   const filters = NEWS_KINDS.map((k) => ({
     id: k,
     ...SUBKINDS[k],
     legend: SUBKINDS[k].title,
-    options: SUBKINDS[k].subKinds.map((k) => ({
-      value: k.id,
-      label: k.label,
-      count: news.filter((n) => n.subKind === k.id).length
-    }))
+    options: SUBKINDS[k].subKinds
+      .map((k) => ({
+        value: k.id,
+        label: k.label,
+        count: news.filter((n) => n.subKind === k.id).length
+      }))
+      .filter((opt) => opt.count > 0)
   }))
 
   const sortingOptions = [
@@ -79,11 +97,29 @@
   const allFilters = $derived(Object.values(kinds).flat())
   const filterCount = $derived(allFilters.reduce((acc, f) => acc + (f.length ? 1 : 0), 0))
   const filteredNews = $derived.by(() => {
-    return news.filter((n) => {
-      if (allFilters.length === 0) return true
+    return news
+      .filter((n) => {
+        if (allFilters.length === 0) return true
 
-      return allFilters.some((k) => n.subKind === k)
-    })
+        return allFilters.some((k) => n.subKind === k)
+      })
+      .sort((a, b) => {
+        switch (sortingMethod) {
+          case 'kind-asc':
+            return SUBKINDS[a.kind].title.localeCompare(SUBKINDS[b.kind].title)
+          default:
+            if (!a.date) return -1
+            if (!b.date) return 1
+            // @ts-expect-error date works
+            return b.date - a.date
+        }
+      })
+      .sort((a, b) => {
+        if (a.pinned && b.pinned) return 0
+        if (a.pinned) return -1
+        if (b.pinned) return 1
+        return 0
+      })
   })
 
   function resetFilters(e: MouseEvent) {
@@ -114,7 +150,7 @@
           >
             Afficher les filtres
             {#if filterCount}
-              <span class="fr-badge bg-primary! fr-badge--sm rounded-full! text-white! ms-2">
+              <span class="fr-badge fr-badge--sm ms-2 rounded-full! bg-primary! text-white!">
                 {filterCount}
               </span>
             {/if}
@@ -122,7 +158,7 @@
 
           <div class="fr-collapse" id="fr-modal-filters-section">
             <form class="mt-8 md:mt-0">
-              {#each filters as filter}
+              {#each filters as filter (filter.id)}
                 <CheckboxGroup
                   {...filter}
                   bind:value={kinds[filter.id]}
@@ -136,7 +172,7 @@
                       variant={filter.variant}
                       size="md"
                       noTooltip
-                      class="w-full! block"
+                      class="block w-full!"
                     >
                       <Icon icon={filter.icon} size="xs" class="me-1" />
                       {legend}
@@ -144,7 +180,7 @@
                   {/snippet}
                   {#snippet labelSlot({ option })}
                     <div class="me-2">{option.label}</div>
-                    <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                    <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
                   {/snippet}
                 </CheckboxGroup>
               {/each}
@@ -176,7 +212,7 @@
             name="news-order"
             class="fr-select w-auto! max-w-full"
           >
-            {#each sortingOptions as option}
+            {#each sortingOptions as option (option.value)}
               <option value={option.value}>{option.label}</option>
             {/each}
           </select>
@@ -184,14 +220,21 @@
 
         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {#each filteredNews as news (news.title)}
-            <div class="fr-card fr-enlarge-link fr-card--no-border cg-border bg-none! rounded-xl">
+            <div class="fr-card fr-enlarge-link fr-card--no-border cg-border rounded-xl bg-none!">
               <div class="fr-card__body">
-                <div class="fr-card__content px-5! md:px-4! md:pt-4!">
-                  <h6 class="fr-card__title text-lg! mb-0!">
-                    <a href={news.href} class="text-(--grey-50-1000)!">{news.title}</a>
+                <div class="fr-card__content px-5! pb-18! md:px-4! md:pt-4!">
+                  <h6 class="fr-card__title mb-0! text-lg!">
+                    <Link
+                      href={news.href}
+                      text={news.title}
+                      class="after:content-none!"
+                      onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
+                    >
+                      <span class="text-(--grey-50-1000)!">{news.title}</span>
+                    </Link>
                   </h6>
 
-                  <div class="fr-card__desc text-grey text-[14px]">
+                  <div class="fr-card__desc text-[14px] text-grey">
                     {news.desc}
                   </div>
 
@@ -217,12 +260,32 @@
                         <Badge
                           id="card-badge-kind"
                           size="xs"
-                          text={news.date === 'year' ? "Toute l'année" : news.date}
+                          text={!news.date ? "Toute l'année" : news.date.toLocaleDateString()}
                           noTooltip
                           class="me-0!"
                         />
                       </li>
                     </ul>
+                  </div>
+
+                  <div class="fr-card__end pe-1!" aria-hidden="true">
+                    <p class="fr-card__detail flex justify-end">
+                      <Link
+                        href={news.href}
+                        text=""
+                        class={[
+                          'text-[14px]!',
+                          news.href !== '#' ? 'border-b-1 text-primary!' : 'text-grey!'
+                        ]}
+                        tabindex={-1}
+                        onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
+                      >
+                        {news.linkLabel}
+                        {#if news.href.startsWith('/')}
+                          <Icon icon="arrow-right-line" size="xs" />
+                        {/if}
+                      </Link>
+                    </p>
                   </div>
                 </div>
               </div>

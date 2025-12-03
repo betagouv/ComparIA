@@ -23,6 +23,7 @@
     iconPos = 'left',
     cornered = false,
     native = !button,
+    children,
     ...props
   }: LinkProps = $props()
 
@@ -77,7 +78,7 @@
 </script>
 
 <a {...externalProps} {...props} {href} class={classes}>
-  {text}
+  {#if children}{@render children()}{:else}{text}{/if}
 </a>
 
 <style lang="postcss">

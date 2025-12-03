@@ -11,7 +11,7 @@
       const response = await fetch(form.action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        // @ts-ignore (legit)
+        // @ts-expect-error (legit)
         body: new URLSearchParams(formData).toString()
       })
 
@@ -37,15 +37,15 @@
 </script>
 
 <div class="mt-3 text-center">
-  <div class="bg-light-info inline-block p-3">
+  <div class="inline-block bg-light-info p-3">
     <Link href="#" text="Haut de page" icon="arrow-up-line" class="pb-1!" />
   </div>
 </div>
 <section class="fr-container--fluid bg-light-info">
-  <div class="fr-container pb-10 pt-8 lg:grid lg:grid-cols-2 lg:gap-6">
+  <div class="fr-container pt-8 pb-10 lg:grid lg:grid-cols-2 lg:gap-6">
     <div>
       <h5 class="mb-2! flex items-center">
-        <Icon icon="mail-line" size="lg" block class="text-primary me-2" />
+        <Icon icon="mail-line" size="lg" block class="me-2 text-primary" />
         Abonnez-vous à notre lettre d’information
       </h5>
       <p class="text-sm! lg:mb-0!">
@@ -70,7 +70,7 @@
           value=""
           data-value="**MBV_EMAIL**"
           placeholder="Votre adresse électronique"
-          class="fr-input bg-white! rounded-tl-sm"
+          class="fr-input rounded-tl-sm bg-white!"
         />
         <input type="hidden" name="required-formItem-mbtext-email" value="true" />
         <Button

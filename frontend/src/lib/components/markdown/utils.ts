@@ -1,15 +1,22 @@
-import { type Renderer, Marked } from 'marked'
-import { markedHighlight } from 'marked-highlight'
-import { gfmHeadingId } from 'marked-gfm-heading-id'
-import * as Prism from 'prismjs'
-import 'prismjs/components/prism-python'
-import 'prismjs/components/prism-latex'
-import 'prismjs/components/prism-bash'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import GithubSlugger from 'github-slugger'
-
-// import loadLanguages from "prismjs/components/";
-
-// loadLanguages(["python", "latex"]);
+import { type Renderer, Marked } from 'marked'
+import { gfmHeadingId } from 'marked-gfm-heading-id'
+import { markedHighlight } from 'marked-highlight'
+import * as Prism from 'prismjs'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-c'
+import 'prismjs/components/prism-cpp'
+import 'prismjs/components/prism-go'
+import 'prismjs/components/prism-java'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-latex'
+import 'prismjs/components/prism-markup-templating'
+import 'prismjs/components/prism-php'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-rust'
+import 'prismjs/components/prism-sql'
+import 'prismjs/components/prism-yaml'
 
 const LINK_ICON_CODE = `<svg class="md-link-icon" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg>`
 
@@ -70,8 +77,8 @@ function createLatexTokenizer(
   delimiters: { left: string; right: string; display: boolean }[]
 ): Tokenizer {
   const delimiterPatterns = delimiters.map((delimiter) => ({
-    start: new RegExp(delimiter.left.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')),
-    end: new RegExp(delimiter.right.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'))
+    start: new RegExp(delimiter.left.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')),
+    end: new RegExp(delimiter.right.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'))
   }))
 
   return {
@@ -86,7 +93,7 @@ function createLatexTokenizer(
       }
       return -1
     },
-    tokenizer(src: string, tokens: any) {
+    tokenizer(src: string, _tokens: any) {
       for (const pattern of delimiterPatterns) {
         const match = new RegExp(`${pattern.start.source}([\\s\\S]+?)${pattern.end.source}`).exec(
           src
@@ -172,7 +179,6 @@ export function create_marked({
   latex_delimiters: { left: string; right: string; display: boolean }[]
 }): typeof marked {
   const marked = new Marked()
-
   marked.use(
     {
       gfm: true,
@@ -201,7 +207,7 @@ export function create_marked({
             const raw = token.raw
               .toLowerCase()
               .trim()
-              .replace(/<[!\/a-z].*?>/gi, '')
+              .replace(/<[!/a-z].*?>/gi, '')
             const id = 'h' + slugger.slug(raw)
             const level = token.depth
             const text = this.parser.parseInline(token.tokens!)
@@ -223,7 +229,7 @@ export function create_marked({
   return marked
 }
 
-export function copy(node: HTMLDivElement): any {
+export function copy(node: HTMLElement) {
   node.addEventListener('click', handle_copy)
 
   async function handle_copy(event: MouseEvent): Promise<void> {
@@ -237,25 +243,29 @@ export function copy(node: HTMLDivElement): any {
       event.stopImmediatePropagation()
 
       const copy_text = copy_button.parentElement!.innerText.trim()
-      const copy_sucess_button = Array.from(copy_button.children)[1] as HTMLDivElement
+      const copy_button_icon = Array.from(copy_button.children)[0] as HTMLSpanElement
+      const copy_sucess_button = Array.from(copy_button.children)[1] as HTMLSpanElement
 
       const copied = await copy_to_clipboard(copy_text)
 
-      if (copied) copy_feedback(copy_sucess_button)
+      if (copied) copy_feedback(copy_button_icon, copy_sucess_button)
 
-      function copy_feedback(_copy_sucess_button: HTMLDivElement): void {
+      function copy_feedback(
+        _copy_button_icon: HTMLSpanElement,
+        _copy_sucess_button: HTMLSpanElement
+      ): void {
+        _copy_button_icon.style.opacity = '0'
         _copy_sucess_button.style.opacity = '1'
         setTimeout(() => {
+          _copy_button_icon.style.opacity = '1'
           _copy_sucess_button.style.opacity = '0'
         }, 2000)
       }
     }
   }
 
-  return {
-    destroy(): void {
-      node.removeEventListener('click', handle_copy)
-    }
+  return () => {
+    node.removeEventListener('click', handle_copy)
   }
 }
 

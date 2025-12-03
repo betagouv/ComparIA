@@ -24,13 +24,14 @@ services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: ../docker/Dockerfile-sveltekit
+      dockerfile: ../docker/Dockerfile.front
     # For runtime access in +page.server.ts via same hostname
     network_mode: host
     depends_on:
       - backend
     environment:
       PUBLIC_API_URL: "http://127.0.0.1:8001"
+      PUBLIC_API_LOCAL_URL: "http://comparia:80"
     # ports:
     # - 3000:3000
     # Dev config

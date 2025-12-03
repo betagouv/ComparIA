@@ -1,12 +1,11 @@
 <script lang="ts">
   import { Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
-  import { APINegativeReactions, APIPositiveReactions } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsWithDataContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
-  import { Energy, Methodology, Preferences, RankingTable } from './components'
+  import { Energy, Methodology, RankingTable } from './components'
 
   const tabs = (
     [
@@ -46,7 +45,7 @@
       cols.map((col) => col.label).join(','),
       ...modelsData
         .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
-        .map((m, i) => {
+        .map((m) => {
           return cols
             .map((col) => {
               if (
@@ -74,54 +73,54 @@
     downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
   }
 
-  function onDownloadPrefsData() {
-    const csvCols = [
-      { key: 'id' as const, label: 'id' },
-      { key: 'positive_prefs_ratio' as const, label: 'positive ratio' },
-      { key: 'total_prefs' as const, label: 'total prefs' },
-      { key: 'total_positive_prefs' as const, label: 'total positive' },
-      { key: 'total_negative_prefs' as const, label: 'total negative' },
-      ...[...APIPositiveReactions, ...APINegativeReactions].map((reaction) => ({
-        key: reaction,
-        label: reaction.replaceAll('_', ' ')
-      }))
-    ]
+  // function onDownloadPrefsData() {
+  //   const csvCols = [
+  //     { key: 'id' as const, label: 'id' },
+  //     { key: 'positive_prefs_ratio' as const, label: 'positive ratio' },
+  //     { key: 'total_prefs' as const, label: 'total prefs' },
+  //     { key: 'total_positive_prefs' as const, label: 'total positive' },
+  //     { key: 'total_negative_prefs' as const, label: 'total negative' },
+  //     ...[...APIPositiveReactions, ...APINegativeReactions].map((reaction) => ({
+  //       key: reaction,
+  //       label: reaction.replaceAll('_', ' ')
+  //     }))
+  //   ]
 
-    const data = [
-      csvCols.map((col) => col.label).join(','),
-      ...modelsData
-        .sort((a, b) => sortIfDefined(a.prefs, b.prefs, 'positive_prefs_ratio'))
-        .map((m) => {
-          return csvCols
-            .map((col) => {
-              if (col.key === 'id') {
-                return m[col.key]
-              } else if (col.key === 'total_positive_prefs') {
-                return APIPositiveReactions.reduce((acc, v) => acc + m.prefs[v], 0)
-              } else if (col.key === 'total_negative_prefs') {
-                return APINegativeReactions.reduce((acc, v) => acc + m.prefs[v], 0)
-              } else {
-                return m.prefs[col.key]
-              }
-            })
-            .join(',')
-        })
-    ].join('\n')
+  //   const data = [
+  //     csvCols.map((col) => col.label).join(','),
+  //     ...modelsData
+  //       .sort((a, b) => sortIfDefined(a.prefs, b.prefs, 'positive_prefs_ratio'))
+  //       .map((m) => {
+  //         return csvCols
+  //           .map((col) => {
+  //             if (col.key === 'id') {
+  //               return m[col.key]
+  //             } else if (col.key === 'total_positive_prefs') {
+  //               return APIPositiveReactions.reduce((acc, v) => acc + m.prefs[v], 0)
+  //             } else if (col.key === 'total_negative_prefs') {
+  //               return APINegativeReactions.reduce((acc, v) => acc + m.prefs[v], 0)
+  //             } else {
+  //               return m.prefs[col.key]
+  //             }
+  //           })
+  //           .join(',')
+  //       })
+  //   ].join('\n')
 
-    downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}-license_Etalab_2_0`)
-  }
+  //   downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}-license_Etalab_2_0`)
+  // }
 </script>
 
 <SeoHead title={m['seo.titles.ranking']()} />
 
-<main class="pb-30 bg-light-grey pt-12">
+<main class="bg-light-grey pt-12 pb-30">
   <div class="fr-container">
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
     <Tabs {tabs} noBorders kind="nav">
       {#snippet tab({ id })}
         {#if id === 'ranking'}
-          <p class="text-[14px]! text-dark-grey mb-12!">
+          <p class="mb-12! text-[14px]! text-dark-grey">
             {@html sanitize(
               m['ranking.ranking.desc']({
                 linkProps: externalLinkProps('https://www.peren.gouv.fr/')

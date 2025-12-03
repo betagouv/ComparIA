@@ -53,12 +53,12 @@
                 </p>
               {:else if locale === 'da'}
                 <img
-                  src={`/orgs/countries/da-light.png`}
+                  src="/orgs/countries/da-light.png"
                   alt={m['header.logoAlt']()}
                   class="max-h-[55px] dark:hidden"
                 />
                 <img
-                  src={`/orgs/countries/da-dark.png`}
+                  src="/orgs/countries/da-dark.png"
                   alt={m['header.logoAlt']()}
                   class="hidden max-h-[55px] dark:block"
                 />
@@ -72,7 +72,7 @@
             </div>
           </div>
           <div
-            class="fr-header__service before:content-none! md:px-3! mx-1! sm:mx-3! flex w-1/2 grow items-center sm:w-auto"
+            class="fr-header__service mx-1! flex w-1/2 grow items-center before:content-none! sm:mx-3! sm:w-auto md:px-3!"
           >
             <img
               src="/orgs/comparia.png"
@@ -93,15 +93,15 @@
               </p>
 
               <p
-                class="fr-header__service-tagline text-dark-grey text-[10px]! md:text-[14px]! leading-normal! mb-0!"
+                class="fr-header__service-tagline mb-0! text-[10px]! leading-normal! text-dark-grey md:text-[14px]!"
               >
                 {m['header.subtitle']()}
               </p>
             </div>
           </div>
-          <div class="fr-header__navbar self-auto! mt-0!">
+          <div class="fr-header__navbar mt-0! self-auto!">
             <button
-              class="fr-btn fr-btn--menu me-3! -ms-1!"
+              class="fr-btn fr-btn--menu -ms-1! me-3!"
               data-fr-opened="false"
               aria-controls="fr-modal-menu"
               aria-haspopup="menu"

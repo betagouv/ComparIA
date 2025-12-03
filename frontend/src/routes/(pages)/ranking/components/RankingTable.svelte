@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { getVotesContext } from '$lib/global.svelte'
@@ -93,7 +94,7 @@
     const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
     const highestConso = models.reduce((a, m) => (m.consumption_wh > a ? m.consumption_wh : a), 0)
 
-    return models.map((model, i) => {
+    return models.map((model) => {
       const [month, year] = model.release_date.split('/')
 
       return {
@@ -101,10 +102,7 @@
         arch: (model.license === 'proprietary' ? 'na' : model.arch) as Archs,
         release_date: new Date([month, '01', year].join('/')),
         eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
-        consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100),
-        search: (['id', 'simple_name', 'organisation'] as const)
-          .map((key) => model[key].toLowerCase())
-          .join(' ')
+        consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100)
       }
     })
   })
@@ -123,18 +121,20 @@
           case 'elo':
           case 'n_match':
             return sortIfDefined(a.data, b.data, orderingCol)
-          case 'consumption_wh':
+          case 'consumption_wh': {
             const aProprietary = a.license === 'proprietary'
             const bProprietary = b.license === 'proprietary'
             if (aProprietary && bProprietary) return a.id.localeCompare(b.id)
             if (aProprietary) return orderingMethod === 'ascending' ? -1 : 1
             if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
             return b.consumption_wh - a.consumption_wh
-          case 'trust_range':
+          }
+          case 'trust_range': {
             const aCount = a.data.trust_range[0] + a.data.trust_range[1]
             const bCount = b.data.trust_range[0] + b.data.trust_range[1]
             if (aCount === bCount) return a.data.rank - b.data.rank
             return aCount - bCount
+          }
           case 'size':
             return b.params - a.params
           case 'release':
@@ -157,7 +157,7 @@
   bind:orderingCol
   bind:orderingMethod
   bind:search
-  searchLabel={m['ranking.table.search']()}
+  searchLabel={m['actions.searchModel']()}
   caption={m['ranking.title']()}
   hideCaption
 >
@@ -201,12 +201,7 @@
       <div
         class="max-w-[205px] overflow-hidden overflow-ellipsis sm:max-w-none sm:overflow-visible"
       >
-        <img
-          src="/orgs/ai/{model.icon_path}"
-          alt={model.organisation}
-          width="20"
-          class=" inline-block"
-        />
+        <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
         <a
           href="#{model.id}"
           data-fr-opened="false"
@@ -235,23 +230,23 @@
         {model.data.elo}
       {:else}
         <div
-          class="cg-border text-info rounded-sm! relative max-w-[100px]"
+          class="cg-border relative max-w-[100px] rounded-sm! text-info"
           style="--range-width: {model.eloRangeWidth}%"
         >
-          <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
-          <span class="z-1 relative p-1 text-xs font-bold">{model.data.elo}</span>
+          <div class="absolute z-0 h-full w-(--range-width) rounded-sm bg-light-info"></div>
+          <span class="relative z-1 p-1 text-xs font-bold">{model.data.elo}</span>
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
       {#if model.license === 'proprietary'}
-        <span class="text-(--grey-625-425) text-xs">{m['words.NA']()}</span>
+        <span class="text-xs text-(--grey-625-425)">{m['words.NA']()}</span>
       {:else}
         {model.consumption_wh} Wh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+            <div class="h-[4px] w-(--range-width) rounded-xs bg-info"></div>
           </div>
         {/if}
       {/if}

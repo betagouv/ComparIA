@@ -19,6 +19,7 @@
         "returnHome": "Tilbage til startsiden",
         "scrollLeft": "Rul til venstre",
         "scrollRight": "Rul til højre",
+        "searchModel": "Søg efter en model",
         "seeMore": "Se mere",
         "selectLanguage": "Vælg sprog",
         "vote": "Giv feedback"
@@ -202,7 +203,7 @@
                     "title": "Hvordan vælger I de modeller, der er i sammenligningsværktøjet?"
                 },
                 "2": {
-                    "desc": "<p>Inferens, det vil sige muligheden for at sende forespørgsler til modellerne, er muliggjort takket være donationer fra cloud-udbydere, der støtter projektet: Google Cloud Platform, Hugging Face, Microsoft Azure, OVH, Scaleway.</p>",
+                    "desc": "<p>Inferens, det vil sige muligheden for at forespørge modellerne, understøttes af projektet. For de fleste modeller går vi gennem Open Router og Hugging Face's API'er, og vi betaler for brugen efter tokens.</p>",
                     "title": "Hvordan er det muligt at gøre denne tjeneste gratis?"
                 },
                 "3": {
@@ -253,6 +254,7 @@
     },
     "footer": {
         "backHome": "TIlbage til hjem - AI Arenaen",
+        "dpg": "<p>Tjenesten er anerkendt som et digitalt fællesgode af Digital Public Goods Alliance</p>",
         "helpUs": "Hjælp os med at forbedre produktet!",
         "license": {
             "linkTitle": "Etalab-licens - nyt vindue",
@@ -265,7 +267,7 @@
             "sources": "Kildekode",
             "tos": "Brugsbetingelser"
         },
-        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os på contact@aiarenaen.dk."
+        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os på <a {contactLinkProps}>kontakt@ai-arenaen.dk</a>."
     },
     "general": {
         "a11y": {
@@ -360,11 +362,11 @@
             "evoDesc": "Brugsvilkårene kan til enhver tid ændres eller suppleres uden forudgående varsel, afhængigt af ændringer i tjenesterne, ændringer i lovgivningen eller af andre årsager, der anses for nødvendige.",
             "evoDescMore": "Disse ændringer og opdateringer er bindende for brugeren, som derfor bør regelmæssigt henvise til dette afsnit for at kontrollere de aktuelle generelle vilkår.",
             "evoTitle": "8. Ændringer af brugsbetingelserne",
-            "featuresDatasets": "Tjenesten indsamler data om brugerdialog og præferencer. De delte datasæt vil omfatte brugerens spørgsmål, svar fra de to modeller, afstemningen og brugerens præferencer.",
+            "featuresDatasets": "Tjenesten indsamler dialogdata (spørgsmål, svar fra begge modeller) og brugerpræferencer (stemmer, tilhørende metadata). Disse data bruges både til at udgøre åbne datasæt og til at etablere en rangliste over AI-modeller, der vises på platformen, baseret på de afgivne stemmer. Ranglisten vises først når der er nok stemmer.",
             "featuresDatasetsMore": "Udgiveren forbeholder sig ret til at distribuere brugerens dialog- og præferencedata under en etalab 2.0-licens. Datasættet distribueres på Data.gouv og Hugging Face-platformen via det franske kulturministeriums konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
             "featuresDesc": "For at opfylde det dobbelte mål om at øge borgernes bevidsthed om store sprogmodeller og indsamle brugerpræferencer tilbyder platformen følgende tjenester uden adgangsbegrænsninger:",
             "featuresDescMore": "En menneske-maskine-grænseflade, der giver brugerne mulighed for at føre en dialog med to samtalemodeller samtidigt og stemme på det foretrukne svar.",
-            "featuresModels": "De modeller, der er integreret i platformen, implementeres på forskellige partneres inferensservere (Scaleway, OVH, Hugging Face, Google Cloud, Mistral AI). Betingelserne for standardiseret inferens er specificeret på platformen for at sikre gennemsigtighed i brugen af modellerne.",
+            "featuresModels": "Modellerne, der er integreret i platformen, er sat op på inferensserverne hos de forskellige hosting-udbydere og modeludgivere. Forespørgslerne håndteres blandt andet af tjenesten Open Router. Betingelserne for inferensstandardisering er oplyst på platformen for at garantere gennemsigtighed i brugen af modellerne.",
             "featuresModelsMore": "Modelsammenligningsgrænsefladen.",
             "featuresTitle": "4. Funktioner",
             "featuresVote": "Når afstemningen er afsluttet, kan brugeren se listen over modeller, der er integreret i AI Arenaen, og få adgang til en liste med oplysninger om disse modeller. Oplysningerne om modellerne er hentet fra forskellige kilder.",
@@ -381,7 +383,7 @@
             "respLegal": "Platformen er ikke beregnet til at blive brugt til at generere ulovligt indhold eller indhold, der strider mod den offentlige orden, og mere generelt til generering, der overtræder den gældende lovgivning.",
             "respLegalMore": "I denne henseende må brugeren ikke indtaste indhold eller oplysninger i prompten, der er i strid med gældende lovgivningsmæssige og reguleringsmæssige bestemmelser.",
             "respPrivacy": "Da de data, som brugeren indtaster på platformen, er beregnet til at blive gjort tilgængelige, forpligter brugeren sig til ikke at overføre oplysninger, der kan identificere brugeren eller en tredjepart.",
-            "respPrivacyMore": "Under alle omstændigheder forpligter udgiveren sig til at implementere midler til at sikre anonymiseringen af dialogdata, inden disse gøres tilgængelige.",
+            "respPrivacyMore": "Under alle omstændigheder forpligter udgiveren sig til at implementere midler til at sikre anonymiseringen af dialogdata, inden disse gøres tilgængelige. Hvis der på trods af udgiverens indsats skulle blive offentliggjort følsomme data i datasættene, kan du straks rapportere det via denne formular: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
             "respTitle": "5. Ansvar",
             "respUser": "Brugeren er ansvarlig for de data eller det indhold, som vedkommende indtaster i den prompt, som platformen stiller til rådighed.",
             "scopeDesc": "Adgang til platformen er gratis, kræver ikke registrering og indebærer anvendelse af specifikke betingelser, der er angivet i disse brugsbetingelser.",
@@ -617,6 +619,11 @@
                 "fyi": "<p>Systemet bruger en ny sikkerhedstilgang kaldet \"safe-completions\" til at forhindre uautoriseret indhold på tidspunktet for svaret snarere end på tidspunktet for forespørgslen.</p>",
                 "size_desc": "<p>Nano-modellen er den mest kompakte i GPT-5-familien (formodet lille størrelse). Den vælges af routingsystemet til forespørgsler, der kræver ultralav latens og øjeblikkelige svar. Dens arkitektur er sandsynligvis baseret på \"Mixture of Experts\" (MoE), hvilket muliggør bedre energieffektivitet og høj performance, selv på forespørgsler, der kræver et hurtigt svar.</p>"
             },
+            "GPT 5.1": {
+                "desc": "<p>Anden iteration af GPT 5, med en stil, der vurderes (af udgiveren) som mere naturlig, med bedre resultater i kode og agentopgaver. Modellen har den særlige egenskab at justere sin ræsonneringstid efter sværhedsgraden.</p>",
+                "fyi": "<p>Ankomsten af denne nye iteration bringer skifter automatisk (\"routing\") mellem to tilstande. For simple forespørgsler vælger modellen et hurtigt svar. For mere komplekse opgaver skifter den til en tilstand med ræsonnering, før den svarer. Denne logik undgår at spilde tid på ræsonnering på lette forespørgsler.</p>\n<p>Den første udgivelse af GPT 5-familien havde udløst mange negative reaktioner i forhold til dens skrivestil. Mange brugere fandt modellen mindre varm end GPT 4o. Denne iteration sigter mod at vende tilbage til en varmere stil.</p>\n<p>Denne nye version markerer også fremskridt inden for kode og matematik, som bekræftes af benchmarks som SWE Bench for kode og AIME for matematiske kompetencer.</p>",
+                "size_desc": "<p>Størrelserne på modellerne bag GPT-5.1-systemet er ikke kendte. Arkitekturen er sandsynligvis baseret på en \"Mixture of Experts\" (MoE), hvilket betyder, at kun en del af parametrene aktiveres for hver forespørgsel. Dette muliggør bedre energieffektivitet og høj ydeevne. De tilgængelige estimater om modellernes størrelse bygger på offentlige oplysninger og indirekte indikationer såsom inferensomkostninger og svartid.</p>"
+            },
             "GPT OSS-120B": {
                 "desc": "<p>Den største af de to første semi-åbne modeller fra OpenAI siden GPT-2. Designet som svar på fremgangen for open source-aktører som Meta (LLaMA) og Mistral, er det en performant ræsonneringsmodel, især til komplekse opgaver og i \"agentiske\" miljøer.</p>",
                 "fyi": "<p>Denne model kan køre på en enkelt GPU på 80 GB (såsom NVIDIA H100). Den har et kontekstvindue på 131.000 tokens, hvilket gør den ideel til analyse af store dokumenter.</p>\n<p>I modellens konfigurationer er det muligt at vælge mellem tre ræsonneringsniveauer (<em>low</em>, <em>medium</em> og <em>high</em>), som bestemmer modellens verbositet.</p>",
@@ -661,6 +668,11 @@
                 "desc": "<p>Stor multimodal og flersproget model med to svarmuligheder: brugeren kan vælge mellem en ræsonneringstilstand for mere dybdegående svar eller en hurtig tilstand til at generere det endelige svar direkte.</p>",
                 "fyi": "<p>Denne model bygger på en Mixture of Experts-arkitektur (MoE) og er blevet destilleret ved kun at bevare en approximation af forudsigelserne fra lærermodellen - Gemini 2.5 Pro. Den er blevet trænet på en TPUv5p-arkitektur, der integrerer fremskridt som muligheden for at fortsætte træningen automatisk selv i tilfælde af træningsfejl, datakorruption eller hukommelsesproblemer.</p>\n<p>Gemini 2.5 Flash håndterer kontekster op til 1 million tokens og tre timers videoindhold. Optimeringen af visuel behandling gør det muligt at behandle videoer, der er omkring tre gange længere i det samme kontekstvindue: der er kun brug for 66 visuelle tokens til at generere et billede mod 258 tidligere. Denne model muliggør også native audiogenerering til dialoger og talesyntese.</p>",
                 "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indikationer tyder på, at det er en stor model, der kræver flere kraftige grafikkort til at fungere. Ikke desto mindre aktiverer Mixture of Experts-arkitekturen (MoE) kun en del af parametrene ved hvert token, hvilket begrænser dens energiforbrug. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlantens. Dens kontekstvindue går op til 1 million tokens, hvilket gør det muligt at behandle meget store dokumentkorpusser.</p>"
+            },
+            "Gemini 3 Pro": {
+                "desc": "<p>Stor multimodal og flersproget model. Den integrerer en avanceret ræsonneringskapacitet (\"Deep Think\"), der kan aktiveres efter behov til komplekse opgaver (matematik, logik, kodning), som er adskilt fra dens hurtigere standard genereringskapacitet. Modellen understøtter tekst, kode, lyd, billede, video og 3D.</p>",
+                "fyi": "<p>Modellen er blevet trænet på en infrastruktur udelukkende bestående af TPU'er (Tensor Processing Units). På tidspunktet for dens udgivelse markerer modellen et meget stort fremskridt i forhold til evalueringerne - for eksempel på Humanity's Last Exam, ARC-AGI-2 og MathArena Apex. Modellen er optimeret til \"agentisk\" brug: den er blevet trænet til at simulere trin af planlægning, værktøjsbrug, kodeudførelse og selvkorrigering inden for kodemiljøer. Dens multimodale forståelse er blevet finjusteret for at reducere antallet af tokens, der er nødvendige til video- og lydkodning.</p>",
+                "size_desc": "<p>Den nøjagtige størrelse af modellen er ikke offentliggjort, men den er baseret på en Mixture of Experts (MoE)-arkitektur. Denne arkitektur aktiverer kun en delmængde af parametre for hvert input-token, hvilket kræver mindre regnekraft til at generere. Dens kontekstvindue strækker sig op til 1 million tokens, velegnet til analyse af store dokumentsamlinger, herunder hele kode-repositories og videofiler.</p>"
             },
             "Gemma 2 27B": {
                 "desc": "<p>Performant model med en passende størrelse, dens relativt høje omkostninger gør den egnet til specifikke anvendelser, der kræver høj præcision.</p>",
@@ -707,6 +719,11 @@
                 "fyi": "<p>Modellens nøjagtige størrelse er ikke kendt. På trods af sit navn er Grok 4 Fast uden tvivl en meget stor model, der kræver flere kraftige grafikkort for at fungere. Derudover indeholder den en valgfri ræsonneringsfase, som indebærer en længere generering og dermed et højere energiforbrug. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlantens.</p>\n<p>Trænet gennem forstærkning opnår Grok 4 Fast scorer tæt på den meget store model - Grok 4, samtidig med at den forbliver mere økonomisk. Den er blevet trænet til at være performant på webnavigation og specifikt på X-platformen samt kapaciteter til værktøjskald og kodeudførelse.</p>",
                 "size_desc": "<p>Udstyret med et kontekstvindue på 2 millioner tokens kombinerer Grok 4 Fast en ræsonneringstilstand og en direkte svartilstand i samme model. Den bruger cirka 40 % færre ræsonneringstokens end Grok 4, hvilket muliggør en betydelig reduktion i udførelsesomkostninger og latens.</p>"
             },
+            "Grok 4.1 Fast": {
+                "desc": "<p>Grok 4.1 Fast er den fjerde generation af Grok. Baseret på den samme grundmodel nyder den ifølge udgiveren godt af en forbedret post-træningsproces, som giver den en bedre stil, bedre agentisk adfærd og mere konsistens i svarene, især under lange samtaler.</p>",
+                "fyi": "<p>De tilgængelige evalueringer har en tendens til at indikere en lavere hallucinationsrate for denne version af modellen. Træningen af Grok 4.1 skulle have integreret en udvidet \"reward modeling\", der ikke kun omfatter menneskelige evalueringer, men også feedback fra modeller.</p>",
+                "size_desc": "<p>Grok 4 Fast integrerer en ræsonneringstilstand og en direkte svartilstand. Brugeren eller udvikleren kan kontrollere valget af, om ræsonnering skal aktiveres eller ej. Modellen har et kontekstvindue på 2 millioner tokens, hvilket gør det muligt at analysere meget store dokumentsamlinger.</p>"
+            },
             "Hermes 3 405B": {
                 "desc": "<p>Meget stor model gentrænet ud fra Llama 3.1 405B, justeret til bedre at imødekomme brugernes forespørgsler og lette brugen af eksterne værktøjer.</p>",
                 "fyi": "<p>Denne model er resultatet af en gentræning af alle parametre i Llama 3.1 405B for at gøre dens adfærd mindre begrænset og bedre tage højde for nuancerne i bruger- og systemprompts - brugeren har dermed større kontrol over modellens \"personlighed\" og adfærd. Specifikke ræsonneringsfunktioner som <strong><code>&lt;SCRATCHPAD&gt;</code></strong>, <strong><code>&lt;REASONING&gt;</code></strong>, <strong><code>&lt;THINKING&gt;</code></strong> er blevet tilføjet for at simulere ræsonnering på komplekse opgaver. Træningen har brugt et værktøj kaldet AdamW (læringshastighed på 3,5×10⁻⁶), som hjælper modellen med at lære effektivt ved gradvist at justere sine parametre. Derefter er den blevet finjusteret med en metode kaldet DPO (direct preference optimisation), som muliggør forbedring af dens svar baseret på specifikke præferencer. For at gøre denne træning lettere og hurtigere er der blevet brugt LoRA-adaptere; det er mindre moduler, der kun modificerer en del af modellen, hvilket undgår at skulle genbearbejde alle parametre på samme tid.</p>",
@@ -726,6 +743,16 @@
                 "desc": "<p>Udviklet af Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), en virksomhed baseret i Beijing, er Kimi K2 en meget stor model orienteret mod kode og agentiske anvendelser. Den er anerkendt for udviklingsopgaver i agentiske kontekster (f.eks. i Cursor eller Windsurf), især for sin rolle som orkestrator. Den eksponerer ikke en eksplicit \"ræsonneringstilstand\", men til store opgaver underopdeler den sit svar i trin og veksler mellem handlinger (værktøjskald) og tekstudarbejdelse.</p>",
                 "fyi": "<p>For at stabilisere træningen i meget stor skala har Moonshot AI introduceret MuonClip, en \"hastighedsbegrænser\" til træning, som gør det muligt at træne en model af denne størrelse og på et korpus på 15,5 billioner tokens uden at afspore i læringen.</p>\n<p>Med hensyn til data har K2 trænet meget i \"simulator\" med rigtige værktøjer (browser, terminal, kodeudførere, API'er...). Ligesom en pilot på simulator lærer den at planlægge, prøve, fejle og derefter prøve igen samt kæde flere handlinger sammen for at nå et mål. Resultat: den er særligt god til at orkestrere værktøjer og gennemføre opgaver i flere trin.</p>",
                 "size_desc": "<p>Med 1 billion parametre er denne model en af de største modeller, der findes. Takket være en Mixture of Experts-arkitektur (MoE) er den mere effektiv end visse andre modeller af lignende størrelse, men den kræver stadig en server med flere meget kraftige grafikkort for at blive hostet. Dens kontekstvindue går op til 128.000 tokens, hvilket gør det muligt at behandle ret lange dokumenter.</p>"
+            },
+            "Kimi K2 Thinking": {
+                "desc": "<p>Denne version af Kimi K2 integrerer en mere avanceret ræsonneringsfase, hvilket forbedrer dens præstationer sammenlignet med den oprindelige iteration. Den er blevet udviklet af Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), et selskab baseret i Beijing.</p>",
+                "fyi": "<p>Modellen synes at demonstrere øgede præstationer ved lange ræsonnementer og opgaver, der kræver trin med værktøjsbrug. Disse karakteristika formodes at fremme en forlænget \"autonomi\" i udførelsen af opgaver.</p>",
+                "size_desc": "<p>Med 1 billion parametre (hvoraf 32 milliarder er aktive per token) er denne model blandt de allerstørste modeller. Dens Mixture of Experts (MoE)-arkitektur giver dog en bedre effektivitet sammenlignet med visse modeller af tilsvarende størrelse. Desuden er den blevet kvantificeret native på INT4-niveau. Denne kvantificering, som består i at \"afrunde\" modellens vægte til færre cifre for at forenkle beregningerne, præsenteres af Moonshot AI som værende i stand til at reducere inferenstiden med en faktor 2. Kontekstvinduet når op på 256.000 tokens, hvilket giver mulighed for at behandle meget lange dokumenter eller store kodebase.</p>"
+            },
+            "LFM 2 8B A1B": {
+                "desc": "<p>En model specifikt designet til effektiv inferens på lokale enheder (on-device deployment). Dens arkitektur sigter mod at tilbyde en outputkvalitet, der er konkurrencedygtig med større dense modeller, samtidig med at latency og krav til computeressourcer minimeres.</p>",
+                "fyi": "<p>LFM2-8B-A1B er baseret på en hybrid arkitektur, der integrerer convolutionsblokke samt Grouped Query Attention (GQA)-mekanismer. Mixture of Experts (MoE)-implementeringen består af 32 eksperter per transformerblok. \"Routeren\" udvælger og aktiverer de 4 bedste eksperter (top-4 gating) til behandling af hvert token. Dette design sigter mod at etablere en reference for Mixture of Experts-modeller, der er optimeret til lokal inferens.</p>",
+                "size_desc": "<p>Modellen har i alt 8,3 milliarder parametre. Takket være en Mixture of Experts (MoE)-arkitektur er aktiveringen begrænset til omkring 1,5 milliard parametre per token under inferens. Denne konfiguration gør det muligt at opnå en præstation, der generelt er forbundet med dense modeller i klassen på 3 til 4 milliarder parametre, med en eksekveringshastighed, der kan sammenlignes med modeller på 1,5 milliard parametre. Den tilbydes i kvantificerede varianter, der er optimeret til lokale miljøer (som f.eks. til en smartphone). Kontekstvinduet er begrænset til 32.000 tokens.</p>"
             },
             "LFM 40B": {
                 "desc": "<p>Lanceret i september 2024 er denne model fra den amerikanske virksomhed Liquid en Mixture of Experts-type model, hvis arkitektur søger at få mest muligt ud af antallet af parametre.</p>",
@@ -781,6 +808,11 @@
                 "desc": "<p>Mellemstor ræsonneringsmodel, multimodal og flersproget. Egnet til opgaver, der kræver dybdegående analyse, forståelse af logiske systemer eller planlægning - for eksempel til agentiske anvendelsestilfælde eller udarbejdelse af langt komplekst indhold.</p>",
                 "fyi": "<p>Denne model er en del af den første generation af ræsonneringsmodeller fra Mistral AI (sommer 2025). I modsætning til de fleste andre ræsonneringsmodeller kan denne model ræsonnere på flere sprog, herunder engelsk, fransk, spansk, tysk, italiensk, arabisk, russisk og forenklet kinesisk.</p>\n<p>Træningen er foregået i to faser. Den første, kaldet <em>cold-start</em>-ræsonnering ved destillation (fra Mistral Medium 3 og OpenThoughts/OpenR1), gør det muligt for modellen at erhverve grundlæggende ræsonneringskapaciteter ud fra generelle instruktionsdata (10%). Den anden er en høj-entropi forstærkningslæringsfase (RL, <em>reinforcement learning</em>), hvor modellen opmuntres til at udforske forskellige og varierede løsninger frem for at konvergere mod et enkelt svar og til at generere lange completions (op til 32.000 tokens), hvilket gør det muligt at udvikle ræsonneringskapaciteter, der overgår lærermodellens.</p>",
                 "size_desc": "<p>Med 24 milliarder parametre klassificeres denne model blandt de mellemstore modeller. Den kræver et enkelt kraftigt grafikkort for at fungere. Ræsonneringsmodeller kører også længere for at producere et svar, hvilket øger deres energiforbrug.</p>\n<p>Den har et kontekstvindue på op til 40.000 tokens, hvilket er nyttigt til analyse af korte dokumenter, men utilstrækkeligt til at analysere store dokumentkorpusser.</p>"
+            },
+            "MiniMax M2": {
+                "desc": "<p>Model specialiseret i kode med et meget konkurrencedygtigt forhold mellem kvalitet/hastighed/pris. Den er blevet designet af MiniMax, et selskab baseret i Shanghai i Kina.</p>",
+                "fyi": "<p>Model designet specifikt til agentiske opgaver (især kode), med træning til at respektere strenge protokoller for agentkontrol (planlægning, værktøjskald, verifikation).</p>",
+                "size_desc": "<p>Mixture of Experts-arkitekturmodel med 230 milliarder parametre (hvoraf 10 milliarder er aktive per token-generering). Kontekstvinduet er på 200.000 tokens, hvilket gør det muligt at behandle hele kodebase og lange dokumenter.</p>"
             },
             "Ministral": {
                 "desc": "<p>Lille flersproget model designet til at køre på en bærbar computer uden forbindelse til en server, samtidig med at den tilbyder gode kapaciteter til tekstsyntese, besvarelse af simple spørgsmål og brug af værktøjer.</p>",
@@ -851,6 +883,11 @@
                 "desc": "<p>OLMo 2 32B er en fuldt open source-model (inklusive korpus og træningskode) skabt af Allen AI Institute (Ai2), udgivet i marts 2025.</p>",
                 "fyi": "<p>OLMo 2 32B er en fuldt open source-model: korpusset og træningskoden er fuldstændig tilgængelige. Denne OLMo-modelfamilie er blevet designet af Allen Institute for AI (Ai2).</p>",
                 "size_desc": "<p>De mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og performance: de forbruger langt færre ressourcer end de store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnering.</p>"
+            },
+            "Olmo 3 32B Think": {
+                "desc": "<p>Ræsonneringsmodel, hvis kode og data er fuldstændig åbne. Den er blevet trænet af AI2, et nonprofit-forskningsinstitut.</p>",
+                "fyi": "<p>Denne model er et sjældent eksempel på total gennemsigtighed. Koden, dataene (6 billioner tokens), trænings-\"checkpoints\" og evalueringsopskrifterne er alle offentlige. Selvom den fuldstændige reproduktion af træningen er dyr i infrastruktur og sandsynligvis sjælden, gør denne gennemsigtighed det muligt for udviklere bedre at genoptræne (fine-tune) modellen til specifikke opgaver, især ved at blande data med den ønskede adfærd med det eksisterende datasæt, hvilket sikrer mere stabil træning.</p>",
+                "size_desc": "<p>Med 32 milliarder parametre er den klassificeret i kategorien af mellemstore modeller. Den kan deployes på en server udstyret med et enkelt grafikkort (GPU). Dens kontekstvindue når op på 65.000 tokens, hvilket gør den egnet til analyse af ret lange dokumenter.</p>"
             },
             "Phi-3-Mini": {
                 "desc": "<p>Performant til opgaver med kodegenerering og resumering, understøtter denne kompakte model en begrænset kontekst på 4.000 tokens.</p>",
@@ -1008,17 +1045,17 @@
             "steps": {
                 "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
                 "one": {
-                    "desc": "Chat så længe du ønsker",
-                    "title": "Jeg chatter med to ukendte chatbots"
+                    "desc": "Chat så længe du har lyst",
+                    "title": "Chat med to ukendte chatbotter"
                 },
                 "three": {
-                    "desc": "Lær mere om AI-modeller og deres karakteristika",
-                    "title": "Modellerne er afsløret!"
+                    "desc": "Lær mere om AI-modeller, chatbotter og deres karakteristika",
+                    "title": "Se hvilke chatbotter du har chattet med!"
                 },
                 "title": "Sådan fungerer det",
                 "two": {
-                    "desc": "Du bidrager dermed til forbedringen af AI-modeller",
-                    "title": "Jeg giver min feedback"
+                    "desc": "Du bidrager dermed til at forbedre chatbotterne",
+                    "title": "Giv din feedback"
                 }
             },
             "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
@@ -1078,7 +1115,7 @@
             "desc": "Udviklere, forskere, modeludgivere – få adgang til AI-Arenas datasæt for at forbedre modeller til sprog med begrænsede ressourcer.",
             "steps": {
                 "datasets": {
-                    "desc": "Alle spørgsmål og afstemninger samles i datasæt og offentliggøres efter anonymisering.",
+                    "desc": "Alle spørgsmål og stemmer samles i datasæt og offentliggøres efter anonymisering.",
                     "title": "Datasæt efter sprog"
                 },
                 "finetune": {
@@ -1134,7 +1171,7 @@
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Ophavsretligt beskyttet",
-                "semiOpen": "Halvåben"
+                "semiOpen": "Open-weight"
             }
         },
         "list": {
@@ -1193,7 +1230,7 @@
                 "ram": "RAM (random access memory) gemmer data, der behandles af en LLM i realtid. Jo større modellen er, jo mere RAM kræver den for at køre."
             }
         },
-        "parameters": "{number} parametre",
+        "parameters": "{number} mia. parametre",
         "ram": "{min} til {max} GB",
         "release": "Udgivet {date}",
         "size": {
@@ -1241,6 +1278,49 @@
         }
     },
     "product": {
+        "community": {
+            "countries": {
+                "da": "Danmark",
+                "fr": "Frankrig"
+            },
+            "tabLabel": "Fællesskab",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Siden juni 2024",
+                            "job": "Produktdesigner UX/UI"
+                        },
+                        "elie": {
+                            "date": "Siden november 2025",
+                            "job": "Fullstack-udvikler"
+                        },
+                        "hadrien": {
+                            "date": "Juni 2024 - november 2025",
+                            "job": "Fullstack-udvikler"
+                        },
+                        "lucie": {
+                            "date": "Januar 2024 - December 2025",
+                            "job": "Grundlægger - produktchef"
+                        },
+                        "mathilde": {
+                            "date": "Siden september 2024",
+                            "job": "Ansvarlig for Digital Atelier / Product Ops"
+                        },
+                        "nicolas": {
+                            "date": "Siden juni 2025",
+                            "job": "Fullstack udvikler"
+                        },
+                        "simonas": {
+                            "date": "Siden december 2024",
+                            "job": "Produktchef - tidligere deployment-ansvarlig"
+                        }
+                    },
+                    "title": "Compar:IA-teamet - Frankrig"
+                }
+            },
+            "title": "Partnerne"
+        },
         "comparator": {
             "challenges": {
                 "bias": {
@@ -1275,6 +1355,44 @@
             "tabLabel": "FAQ"
         },
         "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "marts 2025",
+                            "desc": "Oprettelse og tilgængeliggørelse af det første compar:IA-datasæt på fransk, der samler spørgsmål og præferencer fra platformens brugere."
+                        },
+                        "2": {
+                            "date": "maj 2025",
+                            "desc": "Og første genanvendelse af datasættet med Bunka.ai, som har gennemført en <a {linkProps}>dybdegående undersøgelse</a> af interaktionerne mellem platformens brugere."
+                        },
+                        "3": {
+                            "date": "Juni 2025",
+                            "desc": "Tilgængeliggørelse af disse tre datasæt, samtaler, reaktioner, stemmer, på <a {hgLinkProps}>HuggingFace</a> og <a {dataLinkProps}>Data.gouv.fr</a>.",
+                            "title": "Offentliggørelse af de tre compar:IA-datasæt"
+                        }
+                    },
+                    "tag": "Hastighed"
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "juni-sep 2024",
+                            "desc": "Udvikling af sammenlignerens første funktionaliteter og integration af feedback fra de første betatestere.",
+                            "title": "Design af minimum viable product"
+                        },
+                        "2": {
+                            "date": "Oktober 2024",
+                            "desc": "Officiel præsentation og første implementeringer af værktøjet.",
+                            "title": "Officiel lancering under Frankofoniens topmøde i Villers-Cotterêts!"
+                        },
+                        "3": {
+                            "date": "Januar 2025",
+                            "desc": "Lancering af den nye funktionalitet til valg af modelvalgstilstand."
+                        }
+                    }
+                }
+            },
             "tabLabel": "Historieprojekt"
         },
         "partners": {
@@ -1349,7 +1467,7 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Udforsk grafen, der sætter en models tilfredshedsscore (y-aksen) i perspektiv med dens energiforbrug (x-aksen).",
+            "desc": "Denne graf viser for hver model sammenhængen mellem tilfredshedsscore (Bradley Terry-score) og det estimerede gennemsnitlige energiforbrug pr. 1000 tokens. Energiforbruget estimeres ved hjælp af <a {linkProps}>Ecologits</a>-metodologien, som tager højde for to faktorer: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. Da <strong>proprietære modeller</strong> ikke offentliggør disse oplysninger - eller kun gør det delvist - er de ikke medtaget i grafen nedenfor.",
             "tabLabel": "Energi fokus",
             "title": "Er de mest populære modeller energieffektive?",
             "views": {
@@ -1372,6 +1490,33 @@
                     "xLabel": "Forbrug pr. 1000 tokens (Wh)",
                     "yLabel": "Bradley-Terry Score (BT)"
                 },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Jo højere oppe i grafen en model er placeret</strong>, desto højere er dens Bradley-Terry-tilfredshedsscore. <strong>Jo længere til venstre i grafen en model er placeret</strong>, desto mindre energi forbruger den i forhold til de andre modeller.",
+                            "2": "<strong>Øverst til venstre</strong> finder man de modeller, som er populære og forbruger relativt lidt energi sammenlignet med de andre modeller.",
+                            "3": "Ud over størrelsen har <strong>arkitekturen</strong> også indflydelse på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (tæt arkitektur, 405 milliarder parametre) i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre), selv om de har en lignende størrelse."
+                        },
+                        "subTitle": "Eksempler på læsning af grafen",
+                        "title": "Hvordan finder man den rette balance mellem opfattet performance og energieffektivitet?"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "Estimeringen af energiforbruget ved inferens af modellerne bygger på Ecologits metode, som tager højde for modellernes størrelse og arkitektur. Disse oplysninger offentliggøres imidlertid ikke af modeludviklerne for såkaldte \"proprietære\" modeller.",
+                            "2": "Vi har derfor valgt ikke at medtage de proprietære modeller i grafen, så længe oplysningerne om energiforbrugsberegningen ikke er gennemsigtige."
+                        },
+                        "title": "Hvorfor vises de proprietære modeller ikke i grafen?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "compar:IA bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
+                            "2": "Ecologits anvender principperne for livscyklusanalyse (LCA) i overensstemmelse med ISO 14044-standarden ved i første omgang at fokusere på påvirkningen fra inferens (dvs. brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, produktion og transport).",
+                            "3": "Modellens elektricitetsforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen og arkitekturen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, samt antallet af output-tokens. Beregningen af indikatoren for global opvarmningspotentiale udtrykt i CO2-ækvivalenter udledes af målingen af modellens elektricitetsforbrug.",
+                            "4": "Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling."
+                        },
+                        "title": "Hvordan beregnes modellernes energipåvirkning?"
+                    }
+                },
                 "table": {
                     "title": "Grafdata i tabelform"
                 }
@@ -1380,7 +1525,7 @@
         "methodo": {
             "desc": {
                 "1": "Siden 2024 har tusindvis af brugere brugt compar:IA til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
-                "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (PEReN)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {linkProps}>metodologiske notesbog</a>."
+                "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {notebookLinkProps}>metodologiske notesbog</a>."
             },
             "impacts": {
                 "elo": {
@@ -1483,7 +1628,6 @@
                 }
             },
             "lastUpdate": "Updateret {date}",
-            "search": "Søg efter en model",
             "totalModels": "Total antal modeller:",
             "totalVotes": "Total antal stemmer:"
         },
@@ -1564,6 +1708,7 @@
                 "question": "Hvorfor kunne du ikke lide svaret?",
                 "superficial": "Overfladisk"
             },
+            "other": "Andet…",
             "positive": {
                 "clear-formatting": "Klar formattering",
                 "complete": "Fuldstændigt",

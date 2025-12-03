@@ -64,7 +64,7 @@ make dev
 
 This will start:
 
-- Backend (FastAPI + Gradio) on http://localhost:8000
+- Backend (FastAPI + Gradio) on http://localhost:8001
 - Frontend (SvelteKit) on http://localhost:5173
 
 ### Manual Setup
@@ -73,7 +73,7 @@ This will start:
 
 1. Install `uv`: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 2. Install dependencies: `uv sync`
-3. Run the server: `uv run uvicorn main:app --reload --timeout-graceful-shutdown 1`
+3. Run the server: `uv run uvicorn main:app --reload --timeout-graceful-shutdown 1 --port 8001`
 
 **Frontend:**
 
@@ -178,8 +178,7 @@ For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_meth
 - `main.py`: the Python file for the main FastAPI app
 - `languia`: backend code.
   Most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py` with `languia/config.py` for config.
-  It runs on port 8000 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
-- `demo.py`: the Python file for Gradio's `gr.Blocks` configuration
+  It runs on port 8001 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
 
 - `docker/`: Docker config
 - `utils/`: utilities for models generation and maintenance, ranking methods (Elo, maximum likelihood), database schemas, and dataset export to HuggingFace
@@ -194,3 +193,10 @@ For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_meth
 ### Evolution
 
 We want to get rid of that Gradio code by transforming it into async FastAPI code and Redis session handling.
+
+<div align="center">
+
+<br />
+<a href="https://digitalpublicgoods.net/r/comparia" target="_blank" rel="noopener noreferrer"><img src="https://github.com/DPGAlliance/dpg-resources/blob/main/docs/assets/dpg-badge.png?raw=true" width="100" alt="Digital Public Goods Badge"></a>
+
+</div>

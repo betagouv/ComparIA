@@ -21,14 +21,14 @@
 </script>
 
 <div
-  class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16"
+  class="grouped-messages px-4 not-last:mb-15 md:px-8 xl:px-16"
   style="--message-size: {userMessageSize}px;"
   {@attach scrollTo}
 >
   <MessageUser bind:size={userMessageSize} message={user} />
 
   <div class="grid gap-10 md:grid-cols-2 md:gap-6">
-    {#each bots as botMessage, j}
+    {#each bots as botMessage, j (j)}
       <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
     {/each}
   </div>

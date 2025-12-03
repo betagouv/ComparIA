@@ -38,12 +38,16 @@
         button
         href="/arene"
         text={m['product.comparator.cta']()}
-        class="lg:mt-13 w-full! sm:w-auto!"
+        class="w-full! sm:w-auto! lg:mt-13"
       />
     </div>
 
     <div class="rounded-[28px] bg-[#686868] p-4">
-      <img src={chatbotScreenshotSrc} class="w-full max-w-[622px] rounded-2xl" />
+      <img
+        src={chatbotScreenshotSrc}
+        alt={m['product.comparator.screenshotAlt']()}
+        class="w-full max-w-[622px] rounded-2xl"
+      />
     </div>
   </div>
 
@@ -51,7 +55,7 @@
     <h3 class="fr-h4 md:text-center">{m['product.comparator.challenges.title']()}</h3>
 
     <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {#each challengesCards as card}
+      {#each challengesCards as card, i (i)}
         <div class="cg-border px-4 py-5 md:px-8 md:py-6">
           <Icon icon={card.icon} block class={card.class + ' mb-5'} />
           <h4 class="fr-h6 mb-3!">{card.title}</h4>
@@ -61,7 +65,7 @@
     </div>
   </div>
 
-  <div class="cg-border bg-light-grey grid gap-10 px-4 py-10 md:grid-cols-2">
+  <div class="cg-border grid gap-10 bg-light-grey px-4 py-10 md:grid-cols-2">
     <div class="flex">
       <img
         src="/product/comparia-europe.png"

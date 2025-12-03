@@ -17,7 +17,7 @@
 {/if}
 
 <div
-  class="fr-container--fluid bg-light-grey drop-shadow-(--raised-shadow) flex h-[48px] items-center justify-center lg:hidden"
+  class="fr-container--fluid flex h-[48px] items-center justify-center bg-light-grey drop-shadow-(--raised-shadow) lg:hidden"
 >
   <VoteGauge id="mobile-vote-gauge" />
 </div>

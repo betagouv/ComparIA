@@ -33,7 +33,7 @@
 </script>
 
 <div {...props} {id} class={['grid gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-4', props.class]}>
-  {#each options as option}
+  {#each options as option (option.value)}
     <input
       id="{id}-{option.value}"
       name={id}
@@ -50,7 +50,7 @@
     <label
       for="{id}-{option.value}"
       class={[
-        'cg-border text-dark-grey! px-4! py-3! md:py-5! flex items-center bg-white text-sm font-medium md:flex-col md:items-start',
+        'cg-border flex items-center bg-white px-4! py-3! text-sm font-medium text-dark-grey! md:flex-col md:items-start md:py-5!',
         option.class
       ]}
     >

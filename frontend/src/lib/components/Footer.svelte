@@ -1,10 +1,12 @@
 <script lang="ts">
   import ThemeSelector from '$components/ThemeSelector.svelte'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const locale = getLocale()
+  const i18nData = getI18nContext()
 
   const links = (
     [
@@ -24,41 +26,57 @@
   })
 </script>
 
-<footer class="fr-footer fr-pb-2w" role="contentinfo" id="main-footer">
+<footer class="fr-footer fr-pb-2w" id="main-footer">
   <div class="fr-container">
     <div class="fr-footer__body">
-      <div class="fr-footer__brand fr-enlarge-link">
-        <a href="/" title={m['footer.backHome']()}>
-          {#if locale === 'fr' || locale === 'en'}
-            <p class="fr-logo">
-              Ministère<br />de la culture
-            </p>
-          {:else if locale === 'da'}
-            <img
-              src={`/orgs/countries/da-light.png`}
-              alt={m['header.logoAlt']()}
-              class="max-h-[80px] dark:hidden"
-            />
-            <img
-              src={`/orgs/countries/da-dark.png`}
-              alt={m['header.logoAlt']()}
-              class="hidden max-h-[80px] dark:block"
-            />
-          {:else}
-            <img
-              src={`/orgs/countries/${locale}.png`}
-              alt={m['header.logoAlt']()}
-              class="max-h-[100px]"
-            />
-          {/if}
-        </a>
+      <div class="flex flex-wrap gap-8 lg:basis-1/2">
+        <div class="fr-footer__brand fr-enlarge-link">
+          <div class="">
+            <a href="/" title={m['footer.backHome']()}>
+              {#if locale === 'fr' || locale === 'en'}
+                <p class="fr-logo">
+                  Ministère<br />de la culture
+                </p>
+              {:else if locale === 'da'}
+                <img
+                  src="/orgs/countries/da-light.png"
+                  alt={m['header.logoAlt']()}
+                  class="max-h-[70px] dark:hidden"
+                />
+                <img
+                  src="/orgs/countries/da-dark.png"
+                  alt={m['header.logoAlt']()}
+                  class="hidden max-h-[70px] dark:block"
+                />
+              {:else}
+                <img
+                  src={`/orgs/countries/${locale}.png`}
+                  alt={m['header.logoAlt']()}
+                  class="max-h-[100px]"
+                />
+              {/if}
+            </a>
+          </div>
+        </div>
+
+        <div class="fr-footer__brand fr-enlarge-link max-w-[165px] flex-col! items-start! gap-3">
+          <a
+            href="https://www.digitalpublicgoods.net/r/comparia"
+            target="_blank"
+            class="after:content-none!"
+          >
+            <img src="/orgs/dpg.png" alt="DPG" class="max-h-[47px]" />
+          </a>
+          <p class="mb-0! text-[11px]! leading-normal!">{m['footer.dpg']()}</p>
+        </div>
       </div>
       <div class="fr-footer__content">
         <p class="fr-footer__content-desc">
           <strong>{m['footer.helpUs']()}</strong><br />
           {@html sanitize(
             m['footer.writeUs']({
-              linkProps: externalLinkProps('https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX')
+              formLinkProps: externalLinkProps('https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX'),
+              contactLinkProps: externalLinkProps(`mailto:${i18nData.contact}`)
             })
           )}
         </p>
@@ -66,7 +84,7 @@
     </div>
     <div class="fr-footer__bottom">
       <ul class="fr-footer__bottom-list">
-        {#each links as { label, ...props }}
+        {#each links as { label, ...props } (props.href)}
           <li class="fr-footer__bottom-item">
             <a class="fr-footer__bottom-link" {...props}>{label}</a>
           </li>

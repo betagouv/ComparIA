@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit'
 
 export function load({ params }) {
-  const TABS = ['comparator', 'problem', 'history', 'faq', 'partners'] as const
+  const TABS = ['community', 'comparator', 'problem', 'history', 'faq', 'partners'] as const
   type TabsId = (typeof TABS)[number]
 
   if (!TABS.includes(params.tab as TabsId)) {

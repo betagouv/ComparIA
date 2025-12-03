@@ -15,7 +15,6 @@
     border?: boolean
     disabled?: boolean
     hasPopup?: boolean
-    color?: string
     transparent?: boolean
   }
   let {
@@ -29,7 +28,6 @@
     border = false,
     disabled = false,
     hasPopup = false,
-    color = 'var(--block-label-text-color)',
     transparent = false,
     ...props
   }: IconButtonProps = $props()

@@ -19,6 +19,7 @@
         "returnHome": "Tillbaka till startsida",
         "scrollLeft": "Scrolla till vänster",
         "scrollRight": "Scrolla till höger",
+        "searchModel": "Sök modell",
         "seeMore": "Visa mer",
         "selectLanguage": "Välj språk",
         "vote": "Skicka åsikt"
@@ -265,7 +266,7 @@
             "sources": "Källkod",
             "tos": "Användarvillkor"
         },
-        "writeUs": "Om du stöter på problem eller har kommentarer om jämförelseverktyget är du välkommen att skriva till oss med hjälp av <a {linkProps}>det här formuläret</a>. Vi läser alla meddelanden.<br />Tack!"
+        "writeUs": "Om du stöter på problem eller har kommentarer om jämförelseverktyget är du välkommen att skriva till oss med hjälp av <a {formLinkProps}>det här formuläret</a>. Vi läser alla meddelanden.<br />Tack!"
     },
     "general": {
         "a11y": {
@@ -1398,7 +1399,6 @@
                 }
             },
             "lastUpdate": "Uppdaterat {date}",
-            "search": "Sök modell",
             "totalModels": "Totalt antal modeller:",
             "totalVotes": "Totalt antal röster:"
         },

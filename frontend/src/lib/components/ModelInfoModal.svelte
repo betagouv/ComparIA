@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
@@ -24,7 +25,7 @@
             }
           : {
               title: m['models.conditions.commercialUse.title'](),
-              badge: !!model.licenseInfos.commercialUseSpecificities
+              badge: model.licenseInfos.commercialUseSpecificities
                 ? {
                     variant: 'purple' as const,
                     text: m['models.conditions.types.conditions']()
@@ -40,7 +41,7 @@
           }
         : {
             title: m['models.conditions.reuse.title'](),
-            badge: !!model.licenseInfos.reuseSpecificities
+            badge: model.licenseInfos.reuseSpecificities
               ? {
                   variant: 'purple' as const,
                   text: m['models.conditions.types.conditions']()
@@ -55,13 +56,13 @@
 <dialog
   aria-labelledby="{modalId}-title"
   id={modalId}
-  class="fr-modal before:h-[5vh]! after:h-[5vh]! before:basis-[5vh]! after:basis-[5vh]!"
+  class="fr-modal before:h-[5vh]! before:basis-[5vh]! after:h-[5vh]! after:basis-[5vh]!"
 >
   <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div
-          class="fr-modal__body bg-light-grey! dark:border! dark:border-grey! lg:max-h-[90vh]! rounded-xl"
+          class="fr-modal__body rounded-xl bg-light-grey! lg:max-h-[90vh]! dark:border! dark:border-grey!"
         >
           <div class="fr-modal__header pb-0!">
             <Button
@@ -77,20 +78,16 @@
             <div class="fr-modal__content">
               <h5
                 id="{modalId}-title"
-                class="text-dark-grey font-normal! text-lg! mb-3! flex items-center gap-2"
+                class="mb-3! flex items-center gap-2 text-lg! font-normal! text-dark-grey"
               >
-                <img
-                  class="h-[34px] object-contain"
-                  src="/orgs/ai/{model.icon_path}"
-                  alt="{model.organisation} logo"
-                />
+                <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
                 <div>
                   {model.organisation}/<span class="font-extrabold">{model.simple_name}</span>
                 </div>
               </h5>
 
               <ul class="fr-badges-group mb-4!">
-                {#each badges as badge, i}
+                {#each badges as badge, i (i)}
                   <li><Badge id="general-badge-{i}" {...badge} /></li>
                 {/each}
               </ul>
@@ -100,11 +97,11 @@
               <div class="grid gap-5 lg:grid-cols-8">
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
-                    <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="ruler" block class="text-info me-2" />
+                    <h6 class="mb-0! flex text-lg!">
+                      <Icon icon="ruler" block class="me-2 text-info" />
                       {m['models.size.title']()}
                     </h6>
-                    <Badge {...model.badges.size} size="sm" class="self-center! ms-auto" />
+                    <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
                   </div>
 
                   <div class="fr-message block!">
@@ -117,15 +114,15 @@
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
-                    <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />
+                    <h6 class="mb-0! flex text-lg!">
+                      <Icon icon="lightbulb-line" block class="me-2 text-yellow" />
                       {m['models.arch.title']()}
                     </h6>
                     <Badge
                       {...model.badges.arch}
                       id={modalId + '-arch'}
                       size="sm"
-                      class="self-center! ms-auto"
+                      class="ms-auto self-center!"
                     />
                   </div>
 
@@ -145,11 +142,11 @@
                 >
                   <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>
                     <div class="mb-2 flex flex-wrap gap-2">
-                      <h6 class="mb-0! text-sm! flex">
+                      <h6 class="mb-0! flex text-sm!">
                         <Icon icon="copyright-line" block class="me-2" />
                         {m['models.conditions.title']()}
                       </h6>
-                      <Badge {...model.badges.licenseName} size="sm" class="self-center! ms-auto" />
+                      <Badge {...model.badges.licenseName} size="sm" class="ms-auto self-center!" />
                     </div>
 
                     <div class="fr-message block!">
@@ -162,22 +159,22 @@
 
                   <div
                     class={[
-                      'text-xs! grid gap-4',
+                      'grid gap-4 text-xs!',
                       licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
                     ]}
                   >
-                    {#each licenseCards as card}
+                    {#each licenseCards as card, i (i)}
                       <div
                         class={[
                           'cg-border flex w-full flex-col items-center p-3 text-center',
                           { 'justify-between': !!card.subtitle }
                         ]}
                       >
-                        <p class="text-xs! mb-3! font-bold">{card.title}</p>
+                        <p class="mb-3! text-xs! font-bold">{card.title}</p>
 
                         <Badge {...card.badge} size="sm" />
                         {#if !!card.subtitle}
-                          <p class="text-xs! mb-0! mt-3!">{card.subtitle}</p>
+                          <p class="mt-3! mb-0! text-xs!">{card.subtitle}</p>
                         {/if}
                       </div>
                     {/each}
@@ -185,12 +182,12 @@
                 </div>
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
-                  <h6 class="text-sm! mb-2! flex">
+                  <h6 class="mb-2! flex text-sm!">
                     <Icon icon="link" block class="me-2" />
                     {m['models.extra.title']()}
                   </h6>
 
-                  <p class="text-grey text-xs! mb-3!">
+                  <p class="mb-3! text-xs! text-grey">
                     {@html sanitize(
                       m[
                         `models.extra.experts.${model.distribution === 'api-only' ? 'api-only' : 'open-weights'}`
@@ -199,7 +196,7 @@
                       })
                     )}
                   </p>
-                  <p class="text-grey text-xs! mb-0!">
+                  <p class="mb-0! text-xs! text-grey">
                     {@html sanitize(
                       m['models.extra.impacts']({
                         linkProps1: externalLinkProps(

@@ -1,10 +1,10 @@
-.PHONY: help install install-backend install-frontend dev dev-backend dev-frontend dev-controller build-frontend clean
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis
 
 # Variables
 PYTHON := python3
 UV := uv
 NPM := yarn
-BACKEND_PORT := 8000
+BACKEND_PORT := 8001
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
 
@@ -25,9 +25,21 @@ install-backend: ## Install Python backend dependencies with uv
 
 install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
-	cd frontend && $(NPM) install
+	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
-dev: ## Launch backend and frontend in parallel (Ctrl+C to stop)
+redis: ## Launch Redis using docker compose
+	@echo "Starting Redis..."
+	cd docker && docker compose up redis -d
+
+dev-redis: ## Launch backend and frontend with Redis (Ctrl+C to stop)
+	@echo "Launching compar:IA with Redis..."
+	@echo "Starting Redis..."
+	@cd docker && docker compose up redis -d || echo "Redis already running or failed to start"
+	@echo "Backend: http://localhost:$(BACKEND_PORT)"
+	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
+	@COMPARIA_REDIS_HOST=localhost $(MAKE) -j 2 dev-backend dev-frontend
+
+dev: ## Launch backend and frontend without Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA..."
 	@echo "Backend: http://localhost:$(BACKEND_PORT)"
 	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
@@ -49,10 +61,6 @@ build-frontend: ## Build the frontend for production
 	@echo "Building frontend..."
 	cd frontend && $(NPM) run build
 
-preview-frontend: build-frontend ## Preview the frontend build
-	@echo "Previewing frontend..."
-	cd frontend && $(NPM) run preview
-
 lint-frontend: ## Check frontend code
 	@echo "Checking frontend code..."
 	cd frontend && $(NPM) run lint
@@ -69,6 +77,10 @@ i18n-clean-locales: ## Remove locales keys not present in fr
 i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
 	@echo "Generating frontend prompt suggestions..."
 	$(UV) run python -m utils.suggestions.build_suggestions
+
+i18n-build-news: ## generate news files
+	@echo "Generating news files..."
+	$(UV) run python -m utils.news.build_news
 
 # Database utilities
 db-schema-init: ## Initialize database schema

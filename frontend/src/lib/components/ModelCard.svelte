@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
@@ -20,21 +21,16 @@
 
 <div
   class={[
-    'fr-card fr-enlarge-link cg-border bg-none! rounded-xl',
+    'fr-card fr-enlarge-link cg-border rounded-xl bg-none!',
     { 'border-primary!': model.new }
   ]}
 >
   <div class="fr-card__body">
     <div class="fr-card__content px-5! md:px-4! md:pt-4!">
       <h6
-        class="fr-card__title text-dark-grey font-normal! text-[14px]! leading-normal! mb-3! flex items-center gap-3"
+        class="fr-card__title mb-3! flex items-center gap-3 text-[14px]! leading-normal! font-normal! text-dark-grey"
       >
-        <img
-          class="object-contain"
-          src="/orgs/ai/{model.icon_path}"
-          width="20"
-          alt="{model.organisation} logo"
-        />
+        <AILogo iconPath={model.icon_path} alt={model.organisation} />
         <div>
           {model.organisation}/<a
             class="text-black! after:text-primary"
@@ -56,14 +52,14 @@
           {#if model.status === 'archived' || model.new}
             <li
               class={[
-                'px-4! py-1! absolute bottom-[1.75rem] rounded-[3.75rem] text-[14px] font-bold',
+                'absolute bottom-[1.75rem] rounded-[3.75rem] px-4! py-1! text-[14px] font-bold',
                 model.new ? 'bg-primary text-white' : 'bg-(--grey-900-175) text-dark-grey'
               ]}
             >
               {m[model.new ? 'words.new' : 'words.archived']()}
             </li>
           {/if}
-          {#each badges as badge, i}
+          {#each badges as badge, i (i)}
             <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
           {/each}
         </ul>

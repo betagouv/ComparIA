@@ -1,3 +1,24 @@
+"""
+Data validation models using Pydantic.
+
+Defines all data structures for:
+- Model metadata (licenses, architectures, model definitions)
+- Ranking/preference data (Elo scores, preference statistics)
+- Conversation data (messages, participant info, metadata)
+
+Uses Pydantic validators to ensure data integrity:
+- Architecture validation (must exist in archs.json)
+- License validation (must be defined in licenses.json)
+- Model status consistency
+- Required fields for enabled models
+
+The models are organized in hierarchy:
+- RawModel/Model: Individual model definitions
+- RawOrganisation/Organisation: Organization containing multiple models
+- Conversation/ConversationMessage: Chat history with metadata
+- DatasetData/PreferencesData: Rankings and user preferences
+"""
+
 import datetime
 from pathlib import Path
 from pydantic import (
@@ -18,13 +39,29 @@ from languia.reveal import get_llm_impact, convert_range_to_value
 ROOT_PATH = Path(__file__).parent.parent
 FRONTEND_PATH = ROOT_PATH / "frontend"
 
-FriendlySize = Literal["XS", "S", "M", "L", "XL"]
-Distribution = Literal["api-only", "open-weights", "fully-open-source"]
+# Type definitions for model categorization
+FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
+Distribution = Literal["api-only", "open-weights", "fully-open-source"]  # License/access types
 FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
-# Used to validate 'utils/models/licenses.json'
+# License definitions for models
 class License(BaseModel):
+    """
+    License metadata for a model.
+
+    Defines licensing terms, distribution restrictions, and permitted uses.
+    Used to validate 'utils/models/licenses.json'.
+
+    Attributes:
+        license: License identifier (e.g., "apache-2.0", "mit", "proprietary")
+        license_desc: Human-readable description of the license
+        distribution: How model is distributed (api-only, open-weights, fully-open-source)
+        reuse: Whether model can be reused/redistributed
+        commercial_use: Whether commercial use is permitted (None = unknown)
+        reuse_specificities: Additional reuse restrictions/notes
+        commercial_use_specificities: Additional commercial use restrictions/notes
+    """
     license: str
     license_desc: str
     distribution: Distribution
@@ -34,8 +71,20 @@ class License(BaseModel):
     commercial_use_specificities: str | None = None
 
 
-# Used to validate 'utils/models/archs.json'
+# Model architecture definitions
 class Arch(BaseModel):
+    """
+    Model architecture information.
+
+    Defines neural network architecture and properties.
+    Used to validate 'utils/models/archs.json'.
+
+    Attributes:
+        id: Architecture identifier (e.g., "transformer", "moe")
+        name: Short name
+        title: Display title
+        desc: Detailed description of the architecture
+    """
     id: str
     name: str
     title: str
@@ -43,15 +92,41 @@ class Arch(BaseModel):
 
 
 class Endpoint(BaseModel):
+    """
+    API endpoint configuration for model access.
+
+    Specifies how to reach a model's API (OpenAI-compatible, custom, etc).
+
+    Attributes:
+        api_type: API format (default "openai" for OpenAI-compatible APIs)
+        api_base: Base URL for the API endpoint
+        api_model_id: Model identifier used in API calls
+    """
     api_type: str | None = "openai"
     api_base: str | None = None
     api_model_id: str
 
 
+# Type alias: rounds floats to nearest integer
 RoundInt = Annotated[int | float, AfterValidator(lambda n: round(n))]
 
 
 class DatasetData(BaseModel):
+    """
+    Ranking/evaluation data from benchmark datasets.
+
+    Contains Elo ratings and confidence intervals from model comparison datasets
+    (e.g., LMSYS arena, ComparIA own data).
+
+    Attributes:
+        elo: Estimated Elo rating (median/central estimate)
+        score_p2_5/p97_5: Confidence interval bounds (2.5th and 97.5th percentile)
+        rank/rank_p2_5/rank_p97_5: Model ranking with confidence bounds
+        n_match: Number of comparisons in dataset
+        mean_win_prob: Probability model wins in random matchup
+        win_rate: Percentage of matches won
+        trust_range: Computed confidence interval for ranking
+    """
     elo: RoundInt = Field(validation_alias="median")
     score_p2_5: RoundInt = Field(validation_alias="p2.5")
     score_p97_5: RoundInt = Field(validation_alias="p97.5")
@@ -65,6 +140,7 @@ class DatasetData(BaseModel):
     @computed_field
     @property
     def trust_range(self) -> list[int, int]:
+        """Confidence interval: [lower bound, upper bound] for ranking."""
         return [
             self.rank - self.rank_p2_5,
             self.rank_p97_5 - self.rank,
@@ -72,21 +148,59 @@ class DatasetData(BaseModel):
 
 
 class PreferencesData(BaseModel):
+    """
+    User preference statistics from ComparIA voting.
+
+    Aggregated counts of user ratings for specific quality attributes.
+
+    Attributes:
+        positive_prefs_ratio: Percentage of positive preferences (useful, complete, etc.)
+        total_prefs: Total number of preference votes received
+        useful/complete/creative/clear_formatting: Count of positive preferences
+        incorrect/superficial/instructions_not_followed: Count of negative preferences
+    """
     positive_prefs_ratio: float
     total_prefs: int
-    # Positive count
+    # Positive quality indicators
     useful: int
     clear_formatting: int
     complete: int
     creative: int
-    # Negative count
+    # Negative quality indicators
     incorrect: int
     instructions_not_followed: int
     superficial: int
 
 
-# RawModels are manually defined models in 'utils/models/models.json'
+# Raw model definitions from 'utils/models/models.json'
 class RawModel(BaseModel):
+    """
+    Individual LLM model definition (before enrichment).
+
+    Raw model data loaded from 'utils/models/models.json'.
+    Contains basic model information (name, params, licensing).
+    Gets enriched with license data, architecture info, and rankings to become Model class.
+
+    Attributes:
+        new: Whether this is a newly added model
+        status: Model status (archived, missing_data, disabled, enabled)
+        id: Unique model identifier (e.g., "openai/gpt-4")
+        simple_name: Human-readable model name
+        license: License identifier (maps to License class)
+        fully_open_source: Whether model weights are fully open/public
+        release_date: Model release date in MM/YYYY format
+        arch: Model architecture (transformer, moe, etc. - maps to Arch class)
+        params: Total parameters in billions
+        active_params: Active parameters (only for MoE models)
+        reasoning: Extended thinking capability (False, True, or "hybrid")
+        quantization: Quantization scheme applied (q4, q8, or None for full precision)
+        url: Model homepage or documentation URL
+        endpoint: API access configuration (None for unavailable models)
+        desc: Detailed model description
+        size_desc: Human-readable size category (e.g., "Small but Mighty")
+        fyi: Additional notes for users
+        pricey: Whether model has high API costs (triggers stricter rate limits)
+    """
     new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
@@ -95,18 +209,18 @@ class RawModel(BaseModel):
     simple_name: str
     license: str
     fully_open_source: bool = False
-    release_date: str = Field(pattern=r"^[0-9]{2}/[0-9]{4}$")
+    release_date: str = Field(pattern=r"^[0-9]{02}/[0-9]{4}$")
     arch: str
     params: int | float
     active_params: int | float | None = Field(default=None, validate_default=True)
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
-    url: str | None = None  # FIXME required?
+    url: str | None = None
     endpoint: Endpoint | None = None
     desc: str
     size_desc: str
     fyi: str
-    pricey: bool = False  # FIXME move to endpoint?
+    pricey: bool = False
 
     @field_validator("arch", mode="after")
     @classmethod
@@ -146,9 +260,26 @@ class RawModel(BaseModel):
         return self
 
 
-# Models are models definition generated with 'utils/models/build_models.py'
-# as 'utils/models/generated-models.json'
+# Enriched model definition generated from RawModel + licenses + rankings + preferences
 class Model(RawModel):
+    """
+    Complete model definition with enriched metadata.
+
+    Inherits from RawModel and adds:
+    - License data (distribution, reuse rights)
+    - Organisation/vendor information
+    - Ranking data (Elo, confidence intervals)
+    - User preference statistics
+    - Computed fields (friendly size, RAM requirements, energy impact)
+
+    Generated by build_models.py from 'utils/models/models.json' and saved as
+    'utils/models/generated-models.json'.
+
+    Computed Properties:
+        friendly_size: Human-readable category (XS, S, M, L, XL) based on params
+        required_ram: Estimated RAM needed to run model (depends on quantization)
+        wh_per_million_token: Energy consumption per million tokens
+    """
     status: Literal["archived", "enabled", "disabled"] = "enabled"
     # Merged from License
     distribution: Distribution
@@ -298,11 +429,22 @@ def filter_enabled_models(models: dict[str, Model]):
 
 
 class ConversationMessage(BaseModel):
+    """
+    Single message in a conversation.
+
+    Represents one user or assistant message with content and metadata.
+    Assistant messages MUST include output_tokens for tracking.
+
+    Attributes:
+        role: "user", "assistant", or "system"
+        content: Message text content
+        metadata: Additional data (output_tokens for assistant messages, etc.)
+    """
     role: str
     content: str
     metadata: dict[str, Any] | None = None
 
-    # Custom validation to ensure 'output_tokens' is present for 'assistant' roles
+    # Validate that assistant messages include token counts
     @model_validator(mode="after")
     def check_assistant_metadata(self) -> "ConversationMessage":
         if self.role == "assistant":
@@ -313,12 +455,42 @@ class ConversationMessage(BaseModel):
         return self
 
 
+# Type alias for list of messages
 ConversationMessages = RootModel[list[ConversationMessage]]
 
 
 class Conversation(BaseModel):
+    """
+    Complete conversation record with both models' responses and metadata.
+
+    Stores a paired comparison between two models on the same prompts.
+    Used to persist conversation data to database and JSON logs.
+
+    Attributes:
+        id: Internal database ID
+        timestamp: When conversation was created
+        model_a_name/model_b_name: Model identifiers
+        conversation_a/conversation_b: Message histories for each model
+        conv_turns: Number of user-model exchange rounds
+        system_prompt_a/b: System prompts used (if any)
+        conversation_pair_id: Unique ID combining both conv IDs
+        conv_a_id/conv_b_id: Individual conversation IDs
+        session_hash: User session identifier
+        visitor_id: Matomo visitor tracking ID (if enabled)
+        ip: User's IP address (PII)
+        model_pair_name: Sorted model pair for analysis
+        opening_msg: Initial user prompt
+        archived: Whether conversation is archived
+        mode: Model selection mode (random, big-vs-small, etc.)
+        custom_models_selection: Custom model selection if mode=custom
+        short_summary: Auto-generated summary (added during post-processing)
+        keywords/categories/languages: Extracted metadata (post-processing)
+        pii_analyzed/contains_pii: PII detection results
+        total_conv_a_output_tokens/total_conv_b_output_tokens: Token usage
+        ip_map: Geographic region derived from IP
+        postprocess_failed: Whether post-processing failed
+    """
     id: int
-    # TODO: fuseau horaire
     timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
     model_a_name: str
     model_b_name: str
@@ -332,9 +504,8 @@ class Conversation(BaseModel):
     conv_b_id: str
     session_hash: str
     visitor_id: str | None = None
-    ip: str | None = None
+    ip: str | None = None  # Warning: PII
     model_pair_name: str
-    # TODO: computed / added at dataset
     opening_msg: str
     archived: bool = False
     mode: str | None = None

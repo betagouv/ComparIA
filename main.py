@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,13 +12,13 @@ from languia import config
 
 app = FastAPI()
 
-origins = zip([
+origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:8000"],
-    config.ADDITIONAL_CORS_ORIGINS
-)
+    "http://localhost:8000",
+    "http://localhost:8001",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -48,13 +48,12 @@ app = gr.mount_gradio_app(
     show_error=config.debug,
 )
 
-from languia.utils import get_gauge_count
-
-objective = config.OBJECTIVE
+from languia.utils import get_country_portal_count
 
 
 @app.get("/", response_class=JSONResponse)
 @app.get("/available_models", response_class=JSONResponse)
+@app.get("/models", response_class=JSONResponse)
 async def available_models():
     return JSONResponse(
         {
@@ -72,10 +71,39 @@ async def available_models():
 # async def enabled_models():
 #     return JSONResponse(dict(config.models))
 
+from fastapi import Query
+from typing import Annotated, Optional
+
 
 @app.get("/counter", response_class=JSONResponse)
-async def counter():
-    return JSONResponse({"count": get_gauge_count(), "objective": config.OBJECTIVE})
+async def counter(
+    request: Request,
+    c: str | None = None,
+):
+    # don't get it from host
+    # hostname = request.headers.get("Host")
+    # Always check the query parameter 'c' for locale
+    country_portal = request.query_params.get(
+        "c", "fr"
+    )  # Default to "fr" if not provided
+
+    # Only allow "da" or "fr" as valid locales
+    if country_portal not in ("da", "fr"):
+        country_portal = "fr"  # Default to "fr" for invalid values
+
+    if country_portal == "da":
+        count = get_country_portal_count("da")
+        objective = config.OBJECTIVES.get("da")
+    else:  # country_portal == "fr"
+        count = get_country_portal_count("fr")
+        objective = config.OBJECTIVES.get("fr")
+
+    return JSONResponse(
+        {
+            "count": count,
+            "objective": objective,
+        }
+    )
 
 
 app = SentryAsgiMiddleware(app)

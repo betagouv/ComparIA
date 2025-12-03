@@ -6,7 +6,7 @@
 
 <SeoHead title={m['seo.titles.donnees-personnelles']()} />
 
-<main class="lg:py-15 py-10">
+<main class="py-10 lg:py-15">
   <div class="fr-container">
     <h1 id="politique-de-confidentialite">{m['general.privacy.title']()}</h1>
     <p>{m['general.privacy.desc']()}</p>

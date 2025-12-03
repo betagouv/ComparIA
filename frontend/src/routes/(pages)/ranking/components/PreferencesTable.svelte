@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Link, Table, Toggle } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import {
@@ -43,12 +44,12 @@
       },
       { id: 'total_positive_prefs' },
       { id: 'total_negative_prefs' },
-      ...APIPositiveReactions.map((reaction, i) => ({
+      ...APIPositiveReactions.map((reaction) => ({
         id: reaction,
         colHeaderClass: 'bg-(--green-emeraude-975-75)!',
         orderable: true
       })),
-      ...APINegativeReactions.map((reaction, i) => ({
+      ...APINegativeReactions.map((reaction) => ({
         id: reaction,
         colHeaderClass: 'bg-(--warning-950-100)!',
         orderable: true
@@ -80,9 +81,7 @@
       ...model.prefs,
       total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs[v], 0),
       total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs[v], 0),
-      search: (['id', 'simple_name', 'organisation'] as const)
-        .map((key) => model[key].toLowerCase())
-        .join(' ')
+      search: model.search
     }))
   })
 
@@ -105,7 +104,7 @@
   bind:orderingCol
   bind:orderingMethod
   bind:search
-  searchLabel={m['ranking.table.search']()}
+  searchLabel={m['actions.searchModel']()}
   caption={m['ranking.title']()}
   hideCaption
 >
@@ -134,18 +133,13 @@
       label={m['ranking.preferences.table.percentLabel']()}
       hideCheckLabel
       variant="primary"
-      class="text-[14px]! me-14"
+      class="me-14 text-[14px]!"
     />
   {/snippet}
 
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
-      <img
-        src="/orgs/ai/{model.icon_path}"
-        alt={model.organisation}
-        width="20"
-        class="me-1 inline-block"
-      />
+      <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
       <a
         href="#{model.id}"
         data-fr-opened="false"
@@ -159,12 +153,12 @@
       {@const size = Math.round(model[col.id] * 100)}
       <div class="flex h-[25px] w-full rounded-sm border border-[#cecece] text-[12px] font-bold">
         <div
-          class="w-(--width) bg-(--green-emeraude-975-75) text-(--green-emeraude-sun-425-moon-753) rounded-s-sm ps-1"
+          class="w-(--width) rounded-s-sm bg-(--green-emeraude-975-75) ps-1 text-(--green-emeraude-sun-425-moon-753)"
           style="width: {size}%"
         >
           {size}%
         </div>
-        <div class="bg-(--warning-950-100) text-(--warning-425-625) grow rounded-e-sm ps-1">
+        <div class="grow rounded-e-sm bg-(--warning-950-100) ps-1 text-(--warning-425-625)">
           {Math.round((1 - model[col.id]) * 100)}%
         </div>
       </div>

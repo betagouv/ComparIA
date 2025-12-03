@@ -20,7 +20,7 @@
   <legend class="sr-only" id="vote-cards-legend">{m['vote.title']()}</legend>
 
   <div class="grid auto-rows-max grid-cols-3 gap-5 md:flex md:justify-center">
-    {#each choices as { value, label }, i (value)}
+    {#each choices as { value, label } (value)}
       <div class="h-full">
         <input
           type="radio"
@@ -32,7 +32,7 @@
           class="sr-only"
         />
         <label
-          class="cg-border md:rounded-[56px]! flex h-full flex-col items-center justify-center px-3 py-4 text-center md:flex-row md:justify-center font-medium"
+          class="cg-border flex h-full flex-col items-center justify-center px-3 py-4 text-center font-medium md:flex-row md:justify-center md:rounded-[56px]!"
           for="radio-{value}"
         >
           {#if value === 'both-equal'}

@@ -24,8 +24,8 @@
   } & SvelteHTMLElements['div'] = $props()
 </script>
 
-<div {...props} class={['cg-border rounded-sm! relative p-3', props.class]}>
-  <Tooltip id="mini-card-tooltip-{id}" size="sm" class="absolute right-1.5 top-1">
+<div {...props} class={['cg-border relative rounded-sm! p-3', props.class]}>
+  <Tooltip id="mini-card-tooltip-{id}" size="sm" class="absolute top-1 right-1.5">
     {@html sanitize(tooltip)}
   </Tooltip>
 
@@ -44,7 +44,7 @@
           {/if}
         </span>
       </strong>
-      <p class="text-sm! mb-0! -mt-1! leading-normal">{@html sanitize(desc)}</p>
+      <p class="-mt-1! mb-0! text-sm! leading-normal">{@html sanitize(desc)}</p>
     </div>
   </div>
 </div>

@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private'
+import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import type { Handle } from '@sveltejs/kit'
@@ -9,10 +10,14 @@ const MATOMO_URL = env.MATOMO_URL || ''
 defineCustomServerStrategy('custom-url', {
   getLocale: (request) => {
     if (!request) return
+    const url = new URL(request.url)
+    const locale = url.searchParams.get('locale')
 
-    return {
-      'ai-arenaen.dk': 'da'
-    }[new URL(request.url).hostname]
+    if (url.host in HOST_TO_LOCALE) {
+      return HOST_TO_LOCALE[url.host as keyof typeof HOST_TO_LOCALE]
+    } else if (locale) {
+      return locale
+    }
   }
 })
 

@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS conversations (
     pii_analyzed BOOLEAN DEFAULT FALSE,
     contains_pii BOOLEAN,
     conversation_a_pii_removed JSONB,
-    conversation_b_pii_removed JSONB,
+    conversation_b_pii_removed JSONB
 );
 
 -- GRANT USAGE,

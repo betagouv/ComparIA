@@ -1,4 +1,18 @@
+"""
+Gradio event listeners for the ComparIA arena.
+
+This module registers all UI event handlers (button clicks, text changes, etc.)
+and orchestrates the flow of conversation, voting, and data persistence.
+
+Key flows:
+1. User enters arena → models loaded
+2. User enters prompt → models selected and called
+3. User votes → data persisted
+4. User reacts → reactions stored
+"""
+
 from languia.block_arena import (
+    # UI state components
     app_state,
     buttons_footer,
     chat_area,
@@ -6,7 +20,6 @@ from languia.block_arena import (
     chatbot,
     comments_a,
     comments_b,
-    comments_link,
     conclude_btn,
     conv_a,
     conv_b,
@@ -18,7 +31,6 @@ from languia.block_arena import (
     positive_b,
     send_area,
     send_btn,
-    supervote_area,
     supervote_send_btn,
     # first_textbox,
     textbox,
@@ -75,14 +87,33 @@ from languia.custom_components.customchatbot import (
 )
 
 
-# Register listeners
 def register_listeners():
+    """
+    Register all Gradio event listeners for the ComparIA arena.
 
-    # Step 0
+    This function binds UI events to handler functions that orchestrate:
+    - User input processing
+    - Model selection and API calls
+    - Vote and reaction recording
+    - Conversation persistence
+    """
+
+    # ==================== STEP 0: Arena Entry ====================
+    # When page loads, display available models
 
     def enter_arena(request: gr.Request):
+        """
+        Entry point when user visits the arena.
 
-        # TODO: actually check for it
+        Logs session initialization and returns available models list.
+
+        Args:
+            request: Gradio request with session info
+
+        Returns:
+            dict: Available models from config
+        """
+        # TODO: actually check for Terms of Service acceptance
         # tos_accepted = request...
         # if tos_accepted:
         logger.info(
@@ -92,7 +123,7 @@ def register_listeners():
         return config.models
 
     gr.on(
-        triggers=[demo.load],
+        triggers=[demo.load],  # Triggered when page loads
         fn=enter_arena,
         inputs=None,
         outputs=available_models,
@@ -100,7 +131,8 @@ def register_listeners():
         show_progress="hidden",
     )
 
-    # Step 1
+    # ==================== STEP 1: User Input ====================
+    # Handle text input changes and model selection
 
     @textbox.change(
         inputs=[app_state, textbox],
@@ -109,6 +141,17 @@ def register_listeners():
         show_progress="hidden",
     )
     def change_send_btn_state(app_state_scoped, textbox):
+        """
+        Enable/disable send button based on input state.
+
+        Args:
+            app_state_scoped: Current app state
+            textbox: User's text input
+
+        Returns:
+            gr.update: Updated button state (interactive=True/False)
+        """
+        # Disable if no text or waiting for responses
         if textbox == "" or (
             hasattr(app_state_scoped, "awaiting_responses")
             and app_state_scoped.awaiting_responses
@@ -124,8 +167,29 @@ def register_listeners():
         request: gr.Request,
         # event: gr.EventData,
     ):
+        """
+        Process user's first message and initiate model comparison.
 
+        This is the main handler for the send button click. It:
+        1. Extracts user input and mode selection
+        2. Selects two models to compare
+        3. Calls both models in parallel
+        4. Handles rate limiting and validation
+
+        Args:
+            app_state_scoped: Current app state
+            model_dropdown_scoped: User's model selection (mode + custom choices)
+            locale: Country portal (FR, DA, etc.)
+            request: Gradio request for logging
+
+        Returns:
+            tuple: Updated UI components (conversations, chatbot, app_state, etc.)
+
+        Raises:
+            gr.Error: If input validation fails or rate limiting triggered
+        """
         didnt_reset_prompt = True
+        # Extract user input and model selection preferences
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
         app_state_scoped.mode = mode
@@ -133,8 +197,7 @@ def register_listeners():
             "custom_models_selection", []
         )
         logger.info(
-            # f"({request.session_hash}) locale: {locale}", extra={"request": request}
-            f"(locale: {locale}",
+            f"locale: {locale}",
             extra={"request": request},
         )
 
@@ -143,10 +206,11 @@ def register_listeners():
             "custom_models_selection: " + str(custom_models_selection),
             extra={"request": request},
         )
-        # Check if "Enter" pressed and no text or still awaiting response and return early
+        # Validate user entered text
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
+        # Select two models based on mode (random, big-vs-small, reasoning, etc.)
         first_model_name, second_model_name = pick_models(
             mode, custom_models_selection, unavailable_models=config.unavailable_models
         )
@@ -761,7 +825,6 @@ def register_listeners():
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [reaction_json],
         outputs=[app_state],
         api_name="chatbot_react",
-        show_progress="hidden",
     )
     def record_like_json(
         app_state_scoped,
@@ -794,82 +857,6 @@ def register_listeners():
             request=request,
         )
         return app_state_scoped
-
-    @chatbot.like(
-        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
-        outputs=[app_state],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def record_like(
-        app_state_scoped,
-        conv_a_scoped,
-        conv_b_scoped,
-        chatbot,
-        event: gr.EventData,
-        request: gr.Request,
-    ):
-        # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
-        # TODO: or just create another event type like "Event.react"
-        if "comment" in event._data:
-            app_state_scoped.reactions[event._data["index"]]["comment"] = event._data[
-                "comment"
-            ]
-        else:
-            while len(app_state_scoped.reactions) <= event._data["index"]:
-                app_state_scoped.reactions.extend([None])
-
-            # re-add comment if select a pref after commenting
-
-            if (
-                app_state_scoped.reactions[event._data["index"]]
-                and "comment" in app_state_scoped.reactions[event._data["index"]]
-            ):
-                event._data["comment"] = app_state_scoped.reactions[
-                    event._data["index"]
-                ]["comment"]
-
-            app_state_scoped.reactions[event._data["index"]] = event._data
-
-        sync_reactions(
-            conv_a_scoped,
-            conv_b_scoped,
-            chatbot,
-            app_state_scoped.reactions,
-            request=request,
-        )
-        return app_state_scoped
-
-    @which_model_radio.select(
-        inputs=[which_model_radio],
-        outputs=[supervote_area, supervote_send_btn],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def build_supervote_area(vote_radio, request: gr.Request):
-        logger.info(
-            "vote_selection_temp:" + str(vote_radio),
-            extra={"request": request},
-        )
-
-        # outputs=[supervote_area, supervote_send_btn, why_vote] +
-        # relevance_slider: gr.update(interactive=False),
-        # form_slider: gr.update(interactive=False),
-        # style_slider: gr.update(interactive=False),
-        # comments_text: gr.update(interactive=False),
-        return [
-            gr.update(visible=True),
-            gr.update(interactive=True),
-        ]
-
-    # Step 3
-    @comments_link.click(
-        outputs=[comments_a, comments_b, comments_link],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def show_comments():
-        return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
         app_state_scoped,

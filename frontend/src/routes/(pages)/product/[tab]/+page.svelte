@@ -2,15 +2,19 @@
   import SeoHead from '$components/SEOHead.svelte'
   import { Tabs } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { Comparator, FAQ, History, Partners, Problem } from './components'
+  import { getLocale } from '$lib/i18n/runtime'
+  import { Community, Comparator, FAQ, History, Partners, Problem } from './components'
 
   const { data } = $props()
+  const locale = getLocale()
+  const isFr = $derived(['fr', 'en'].includes(locale))
 
   const tabs = (
     [
       { id: 'comparator' },
       { id: 'problem' },
-      // { id: 'history' },
+      { id: 'community' },
+      { id: 'history' },
       { id: 'faq' },
       { id: 'partners' }
     ] as const
@@ -23,7 +27,7 @@
 
 <SeoHead title={m[`seo.titles.${data.tab}`]()} />
 
-<main class="pb-30 bg-light-grey pt-12">
+<main class={['bg-light-grey pt-12 pb-30', isFr ? 'next' : 'prev']}>
   <div class="fr-container">
     <h1 class="fr-h3 mb-10!">{m['product.title']()}</h1>
 
@@ -38,8 +42,10 @@
           <Comparator />
         {:else if id === 'problem'}
           <Problem />
-          <!-- {:else if id === 'history'}
-          <History /> -->
+        {:else if id === 'community'}
+          <Community />
+        {:else if id === 'history'}
+          <History />
         {:else if id === 'faq'}
           <FAQ />
         {:else if id === 'partners'}
@@ -49,3 +55,14 @@
     </Tabs>
   </div>
 </main>
+
+<style>
+  /* FIXME remove when avaible */
+  :global(main.prev #tab-community, main.prev #tab-history) {
+    display: none;
+  }
+
+  :global(main.next #tab-partners) {
+    display: none;
+  }
+</style>

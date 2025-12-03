@@ -48,7 +48,7 @@
   aria-live="polite"
   class="flex grow flex-col pb-7"
 >
-  {#each groupedMessages as { user, bots }, i}
+  {#each groupedMessages as { user, bots }, i (i)}
     <GroupedMessages {user} {bots} {generating} {disabled} {onReactionChange} />
   {/each}
 
@@ -58,7 +58,7 @@
 
   {#if errorString}
     <div class="fr-container">
-      <div class="cg-border lg:max-w-1/2 pe-13 m-auto flex gap-4 bg-white p-4 pb-7">
+      <div class="cg-border m-auto flex gap-4 bg-white p-4 pe-13 pb-7 lg:max-w-1/2">
         <Icon icon="warning-fill" class="text-error" />
         <div>
           {#if errorString === 'Context too long.'}

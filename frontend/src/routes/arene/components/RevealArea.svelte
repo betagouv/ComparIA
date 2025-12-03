@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Link, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealData } from '$lib/chatService.svelte'
@@ -34,19 +35,19 @@
 
       <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
         <div>
-          <h5 class="fr-h6 text-dark-grey! mb-4! flex items-center gap-2">
-            <img src="/orgs/ai/{model.icon_path}" width="34" aria-hidden="true" alt="" />
+          <h5 class="fr-h6 mb-4! flex items-center gap-2 text-dark-grey!">
+            <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
             {#if selected === side}
               <div
-                class="bg-(--blue-france-975-75) text-primary border-primary ms-auto rounded-[3.75rem] border px-3 text-[14px] font-bold"
+                class="ms-auto rounded-[3.75rem] border border-primary bg-(--blue-france-975-75) px-3 text-[14px] font-bold text-primary"
               >
                 {m['vote.yours']()}
               </div>
             {/if}
           </h5>
           <ul class="fr-badges-group mb-4!">
-            {#each modelBadges as badge, i}
+            {#each modelBadges as badge, i (i)}
               <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
             {/each}
           </ul>
@@ -54,7 +55,10 @@
           {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
         </div>
 
-        <h6 class="mt-auto! mb-5! text-base!">{m['reveal.impacts.title']()}</h6>
+        <h6 class="mt-auto! mb-5! text-base!">
+          {m['reveal.impacts.title']()}
+          <Tooltip id="impact-{side}" text={m['reveal.impacts.tooltip']()} />
+        </h6>
         <div class="flex">
           <div class="flex basis-1/2 flex-col md:basis-2/3 md:flex-row">
             <div class="relative md:w-full">
@@ -74,7 +78,7 @@
                 {/if}
               </MiniCard>
               <div
-                class="cg-border rounded-sm! bg-(--beige-gris-galet-950-100) absolute z-0 flex w-full p-1 ps-3 pt-2 text-[11px] leading-normal"
+                class="cg-border absolute z-0 flex w-full rounded-sm! bg-(--beige-gris-galet-950-100) p-1 ps-3 pt-2 text-[11px] leading-normal"
               >
                 <span class="text-(--beige-gris-galet-sun-407-moon-821)">
                   {model.badges.arch.text}
@@ -101,7 +105,7 @@
           </div>
 
           <div class="flex basis-1/2 items-center md:basis-1/3">
-            <strong class="m-auto">=</strong>
+            <strong class="m-auto">≈</strong>
 
             <MiniCard
               id="energy-{side}"
@@ -116,7 +120,7 @@
           </div>
         </div>
 
-        <h6 class="mt-9! md:mt-14! mb-5! text-base!">{m['reveal.equivalent.title']()}</h6>
+        <h6 class="mt-9! mb-5! text-base! md:mt-14!">{m['reveal.equivalent.title']()}</h6>
         <div class="grid grid-cols-3 gap-2">
           <MiniCard
             id="co2-{side}"
@@ -168,7 +172,7 @@
   </div>
 
   <div class="feedback py-7">
-    <div class="fr-container md:max-w-[280px]! flex flex-col items-center gap-4">
+    <div class="fr-container flex flex-col items-center gap-4 md:max-w-[280px]!">
       <Link
         button
         icon="edit-line"
@@ -207,7 +211,7 @@
                   {m['reveal.feedback.shareResult']()}
                 </h6>
 
-                <p class="text-sm! mb-0!">
+                <p class="mb-0! text-sm!">
                   {m['reveal.feedback.description']()}
                 </p>
                 <div class="flex flex-wrap gap-3 py-8">
@@ -242,7 +246,7 @@
 {#if ['fr', 'en'].includes(locale)}
   <section class="fr-container--fluid bg-light-info">
     <div class="fr-container">
-      <div class="lg:px-15 gap-x-15 lg:gap-x-30 flex flex-col gap-y-10 py-8 md:flex-row">
+      <div class="flex flex-col gap-x-15 gap-y-10 py-8 md:flex-row lg:gap-x-30 lg:px-15">
         <div class="flex max-w-[350px] flex-col">
           <h5 class="font mb-3!">{m['reveal.thanks.title']()}</h5>
           <p class="mb-8!">{m['reveal.thanks.desc']()}</p>
@@ -261,10 +265,12 @@
           <img
             src="/arena/ranking-table.png"
             class="-me-[30%] w-full max-w-[400px] rounded-xl shadow-md md:-me-[10%]"
+            alt={m['reveal.thanks.rankingAlt']()}
           />
           <img
             src="/arena/ranking-graph.png"
             class="mt-[30px] w-full max-w-[300px] rounded-xl shadow-md"
+            alt={m['reveal.thanks.graphAlt']()}
           />
         </div>
       </div>

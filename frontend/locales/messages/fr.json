@@ -19,6 +19,7 @@
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
         "scrollRight": "Défiler vers la droite",
+        "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue",
         "vote": "Donner mon avis"
@@ -202,7 +203,7 @@
                     "title": "Comment choisissez-vous les modèles présents dans le comparateur ?"
                 },
                 "2": {
-                    "desc": "<p>L’inférence, c’est-à-dire le fait de pouvoir interroger les modèles, est rendue possible grâce à des dons des entreprises fournisseuses de cloud qui soutiennent le projet : Google Cloud Platform, Hugging Face, Microsoft Azure, OVH, Scaleway.</p>",
+                    "desc": "<p>L’inférence, c’est-à-dire le fait de pouvoir interroger les modèles, est prise en charge par le projet. Pour la plupart des modèles, nous passons par les API d’Open Router et de Hugging Face et nous réglons les coûts à l’usage, au jeton.</p>",
                     "title": "Comment parvenez-vous à rendre ce service gratuit ?"
                 },
                 "3": {
@@ -253,6 +254,7 @@
     },
     "footer": {
         "backHome": "Retour à l'accueil du site - compar:IA",
+        "dpg": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods",
         "helpUs": "Aidez-nous à améliorer ce service !",
         "license": {
             "linkTitle": "Licence etalab - nouvelle fenêtre",
@@ -265,7 +267,7 @@
             "sources": "Code source",
             "tos": "Modalités d'utilisation"
         },
-        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {linkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !"
+        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {formLinkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !"
     },
     "general": {
         "a11y": {
@@ -343,7 +345,7 @@
             "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>{contactLink}</a>.",
             "contactTitle": "9. Contact",
             "defsEditor": "« Éditeur » désigne le Service du numérique du Ministère de la Culture.",
-            "defsModels": "« Modèles » désigne les grands modèles de langages (LLM) réutilisés dans le cadre de leur licence d’utilisation par la plateforme pour répondre à ses finalités.",
+            "defsModels": "« Modèles » désigne les grands modèles de langage (LLM) réutilisés dans le cadre de leur licence d’utilisation par la plateforme pour répondre à ses finalités.",
             "defsPlatform": "« Plateforme » désigne le site web qui rend les services accessibles.",
             "defsServices": "« Services » désigne les fonctionnalités offertes par la plateforme pour répondre à ses finalités.",
             "defsTitle": "2. Définitions",
@@ -353,22 +355,22 @@
             "descTitle": "3. Description de la plateforme",
             "descUse": "L’utilisateur ou l’utilisatrice pose une question en français et obtient des réponses de deux grands modèles de langages (LLM) anonymes. Il ou elle vote pour le modèle qui fournit la réponse qu’il préfère et se voit alors révélée l’identité des modèles. Ce dispositif de production participative inspiré de la plateforme <a {linkProps}>« chatbot arena » (LMSYS)</a> permet de constituer des jeux de données de préférences humaines sur des tâches réelles, en français, utilisables pour l’alignement des modèles.",
             "dispoDesc": "La plateforme est accessible, sauf cas de force majeure ou d’évènement hors de contrôle de son éditeur.",
-            "dispoResp": "A ce titre, l’éditeur ne saurait être tenu responsable des pertes ou préjudices, de quelque nature qu’ils soient, qui pourraient être causés à la suite d’un dysfonctionnement ou une indisponibilité du service. De telles situations n&#39;ouvriront droit à aucune compensation financière.",
-            "dispoRight": "L’éditeur se réserve le droit de suspendre, d&#39;interrompre ou de limiter, sans avis préalable, l&#39;accès à tout ou partie des services, notamment pour des opérations de maintenance et de mises à jour nécessaires au bon fonctionnement du service et des matériels afférents, ou pour toute autre raison, notamment technique.",
+            "dispoResp": "A ce titre, l’éditeur ne saurait être tenu responsable des pertes ou préjudices, de quelque nature qu’ils soient, qui pourraient être causés à la suite d’un dysfonctionnement ou une indisponibilité du service. De telles situations n'ouvriront droit à aucune compensation financière.",
+            "dispoRight": "L’éditeur se réserve le droit de suspendre, d'interrompre ou de limiter, sans avis préalable, l'accès à tout ou partie des services, notamment pour des opérations de maintenance et de mises à jour nécessaires au bon fonctionnement du service et des matériels afférents, ou pour toute autre raison, notamment technique.",
             "dispoTitle": "7. Disponibilité des services",
-            "dispoWarranty": "Il n’est pas garanti que le service soit exempt d’anomalies ou erreurs. Le service est donc mis à disposition sans garantie sur sa disponibilité et ses performances.",
+            "dispoWarranty": "Il n’est pas garanti que le service soit exempt d’anomalies ou d'erreurs. Le service est donc mis à disposition sans garantie sur sa disponibilité et ses performances.",
             "evoDesc": "Les modalités d’utilisation peuvent être modifiées ou complétées à tout moment, sans préavis, en fonction des modifications apportées aux services, de l’évolution de la législation ou pour tout autre motif jugé nécessaire.",
             "evoDescMore": "Ces modifications et mises à jour s’imposent à l’utilisateur ou l’utilisatrice qui doit, en conséquence, se référer régulièrement à cette rubrique pour vérifier les modalités générales en vigueur.",
             "evoTitle": "8. Évolution des modalités d'utilisation",
-            "featuresDatasets": "Le service recueille les données de dialogue et de préférence des utilisateurs. Les jeux de données partagés comprendront les questions de l’utilisateur, les réponses des deux modèles, le vote et les préférences de l’utilisateur.",
+            "featuresDatasets": "Le service collecte les données de dialogue (questions, réponses des deux modèles) et les préférences des utilisateurs (vote, métadonnées associées). Ces données servent à la fois à constituer des jeux de données partagés et à établir un classement des modèles d'IA affiché sur la plateforme, basé sur les votes exprimés.",
             "featuresDatasetsMore": "L’éditeur se réserve le droit de distribuer sous licence ouverte 2.0 les données de dialogue et de préférence de l’utilisateur. Le jeu de données est diffusé sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
             "featuresDesc": "Afin de répondre au double objectif de sensibiliser les citoyens aux grands modèles de langage et collecter les préférences des utilisateurs et utilisatrices, les services rendus par la plateforme sans restriction d’accès sont les suivants :",
             "featuresDescMore": "Une interface humain-machine permettant de dialoguer simultanément avec deux modèles conversationnels et de voter pour la réponse préférée.",
-            "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
+            "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents hébergeurs et éditeurs de modèles. Les requêtes sont gérées notamment par le service Open Router. Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
             "featuresModelsMore": "Une interface de comparaison des modèles.",
             "featuresTitle": "4. Fonctionnalités",
-            "featuresVote": "À l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
-            "featuresVoteMore": "Partage et mise à disposition des jeux de données issus de la collecte des préférences des utilisateurs.",
+            "featuresVote": "L’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles.",
+            "featuresVoteMore": "Partage, mise à disposition et valorisation des jeux de données issus de la collecte des préférences des utilisateurs.",
             "licenceCode": "Le code source de la plateforme est libre et disponible ici : <a {linkProps}>https://github.com/betagouv/languia</a>",
             "licenceLLM": "Les LLM utilisés pour alimenter les services sont régis par les licences suivantes :",
             "licenceLLMEvolution": "La liste des modèles de langage intégrés à la plateforme est susceptible d’évoluer au cours du temps et est mise à jour à chaque modification.",
@@ -378,10 +380,10 @@
             "licenceLLMUnavailable": "Non disponible",
             "licenceTitle": "6. Code et licences",
             "respEditor": "De manière générale, l’éditeur se dégage de toute responsabilité en cas d’utilisationnon-conforme aux modalités d’utilisation.",
-            "respLegal": "La plateforme n’a pas vocation à être utilisée pour générer des contenus illicites ou contraires à l’ordre public et plus généralement toute génération contrevenant au cadre juridique en vigueur.",
+            "respLegal": "La plateforme n’a pas vocation à être utilisée pour générer des contenus illicites ou contraires à l’ordre public et plus généralement toute génération de contenu contrevenant au cadre juridique en vigueur.",
             "respLegalMore": "A cet égard, l’utilisateur ne saisit pas dans l’invite des contenus ou informations contraires aux dispositions légales et réglementaires en vigueur.",
-            "respPrivacy": "Les données saisies par l’utilisateur sur la plateforme ayant vocation à être mis à disposition, il ou elle s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
-            "respPrivacyMore": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurerde l’anonymisation les données de dialogue avant leur mise à disposition.",
+            "respPrivacy": "Les données saisies par l’utilisateur sur la plateforme ayant vocation à être mises à disposition, il ou elle s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
+            "respPrivacyMore": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s'assurer de l'anonymisation des données de dialogue avant leur mise à disposition. Si, malgré les efforts de l'éditeur, des données sensibles venaient à être publiées dans les jeux de données, vous pouvez le signaler immédiatement via ce formulaire : [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
             "respTitle": "5. Responsabilités",
             "respUser": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme.",
             "scopeDesc": "L’accès à la plateforme est gratuit, sans inscription et entraîne l’application de conditions spécifiques, listées dans les présentes modalités d’utilisation.",
@@ -432,6 +434,11 @@
                 "Jamba Open Model": {
                     "commercial_use_specificities": "en dessous des 50 millions de dollars de revenus annuels",
                     "license_desc": "<p>Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels.</p>",
+                    "reuse_specificities": ""
+                },
+                "LFM 1.0": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>Cette licence mondiale, gratuite et non-exclusive autorise l’usage, la modification et la redistribution du modèle et de ses dérivés, y compris la réutilisation des sorties pour entraîner d’autres modèles. Elle reste permissive, mais limite tout usage commercial aux organisations dont les revenus annuels sont inférieurs à 10 millions de dollars, au-delà desquels l’usage n’est plus couvert.</p>",
                     "reuse_specificities": ""
                 },
                 "Llama 3 Community": {
@@ -527,6 +534,11 @@
                     "reuse_specificities": ""
                 },
                 "Microsoft": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "MiniMax": {
                     "commercial_use_specificities": "",
                     "license_desc": "",
                     "reuse_specificities": ""
@@ -679,6 +691,11 @@
                 "fyi": "<p>Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs.</p>",
                 "size_desc": "<p>DeepSeek V3.1 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.</p>\n<p>La fenêtre de contexte atteint désormais 163 000 jetons, contre 128 000 dans la version précédente, ce qui améliore l’analyse de très longs documents.</p>"
             },
+            "DeepSeek V3.2": {
+                "desc": "<p>Très grand modèle conçu pour des tâches complexes : orchestration agentique, génération de code, analyse de documents longs. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.</p>",
+                "fyi": "<p>Pour cette version, le coût de l’API et les besoins en calcul sont réduits d’environ 50 % ou plus pour les contextes longs. Cette amélioration repose sur le \"DeepSeek Sparse Attention (DSA)\", un mécanisme d’attention clairsemée à granularité fine qui calcule l’attention de façon sélective afin de diminuer la complexité sur les longues séquences tout en préservant l’essentiel du contexte.</p>\n<p>Le modèle a été entraîné en donnant la priorité aux capacités de raisonnement et aux usages agentiques.</p>",
+                "size_desc": "<p>DeepSeek V3.2 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte atteint 163 000 jetons, ce qui est utile pour l’analyse de très longs documents ou des bases de code.</p>"
+            },
             "Gemini 1.5 Pro": {
                 "desc": "<p>Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.</p>",
                 "fyi": "<p>Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google.</p>",
@@ -693,6 +710,11 @@
                 "desc": "<p>Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.</p>",
                 "fyi": "<p>Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.</p>\n<p>Gemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale.</p>",
                 "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.</p>"
+            },
+            "Gemini 3 Pro": {
+                "desc": "<p>Grand modèle multimodal natif et multilingue. Il intègre une capacité de raisonnement avancée (\"Deep Think\") activable à la demande pour les tâches complexes (mathématiques, logique, codage), distincte de sa capacité de génération standard plus rapide. Le modèle prend en charge nativement le texte, le code, l'audio, l'image, la vidéo et la 3D.</p>",
+                "fyi": "<p>Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio.</p>",
+                "size_desc": "<p>La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE). Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton d'entrée, ce qui nécessite moins de puissance de calcul pour générer. Sa fenêtre de contexte s'étend jusqu'à 1 million de jetons, adaptée à l'analyse de vastes ensembles de documents, y compris des dépôts de code entiers et des fichiers vidéo.</p>"
             },
             "Gemma 2 27B": {
                 "desc": "<p>Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.</p>",
@@ -759,6 +781,11 @@
                 "fyi": "<p>Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.</p>",
                 "size_desc": "<p>Le modèle Nano est le plus compact de la famille GPT-5 (taille petite supposée). Il est sélectionné par le système de routage pour les requêtes nécessitant une latence ultra-faible et des réponses instantanées. Son architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui permet une meilleure efficacité énergétique et des performances élevées, même sur des requêtes nécessitant une réponse rapide.</p>"
             },
+            "GPT 5.1": {
+                "desc": "<p>Deuxième itération de GPT 5, avec un style jugé (par l'éditeur) plus naturel, avec de meilleurs résultats en code et en tâches d’agents. Le modèle a la spécificité d'ajuster son temps de raisonnement selon la difficulté.</p>",
+                "fyi": "<p>L’arrivée de cette nouvelle itération apporte un routage automatique entre deux modes. Pour les demandes simples, le modèle choisit une réponse rapide. Pour les tâches plus complexes, il bascule vers un mode avec raisonnement avant de répondre. Cette logique évite de perdre du temps sur les requêtes faciles tout en gardant une vraie profondeur quand il le faut.</p>\n<p>La première sortie de la famille GPT 5 avait provoqué beaucoup de réactions négatives vis-à-vis de son style d'écriture. Beaucoup d’utilisateurs trouvaient le modèle moins chaleureux que GPT 4o. Cette itération vise à revenir vers un style plus chaleureux.</p>\n<p>Cette nouvelle version marque aussi des progrès en code et en mathématiques qui sont confirmés par des benchmarks comme SWE Bench pour le code et AIME pour les compétences mathématiques.</p>",
+                "size_desc": "<p>Les tailles des modèles derrière le système GPT-5.1 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.</p>"
+            },
             "GPT OSS-120B": {
                 "desc": "<p>Le plus grand des deux premiers modèles semi-ouverts d'OpenAI depuis GPT-2. Conçu en réponse à la montée en puissance des acteurs open source comme Meta (LLaMA) et Mistral, il s'agit d'un modèle de raisonnement performant, notamment sur des tâches complexes et dans des environnements « agentiques ».</p>",
                 "fyi": "<p>Ce modèle peut fonctionner sur une seule GPU de 80 Go (comme la NVIDIA H100). Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux. </p>\n<p>Dans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (<em>low</em>, <em>medium</em>, et <em>high</em>) qui déterminent la verbosité du modèle.</p>",
@@ -799,6 +826,11 @@
                 "fyi": "<p>La taille exacte du modèle n’est pas connue. Malgré son nom, Grok 4 Fast est sans doute un très grand modèle, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. De plus, il contient une phase de raisonnement facultative qui implique une génération plus longue et donc une consommation énergétique plus élevée. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>\n<p>Entraîné par renforcement, Grok 4 Fast atteint des scores proches du très grand modèle - Grok 4 tout en restant plus économe. Il a été entraîné pour être performant sur la navigation web et spécifiquement de la plateforme X, ainsi que des capacités d’appel d’outils et de l’exécution de code.</p>",
                 "size_desc": "<p>Doté d’une fenêtre de contexte de 2 millions de jetons, Grok 4 Fast combine un mode raisonnement et un mode réponse directe dans un même modèle. Il utilise environ 40 % de jetons de raisonnement en moins que Grok 4, permettant une réduction sensible du coût d’exécution et de latence.</p>"
             },
+            "Grok 4.1 Fast": {
+                "desc": "<p>Grok 4.1 Fast est une nouvelle itération de la quatrième génération de Grok. Basé sur le même modèle de base, selon l’éditeur il bénéficie d'un processus de post-entraînement amélioré qui lui confère un meilleur style, un comportement agentique supérieur et une meilleure cohérence des réponses, en particulier lors de discussions prolongées.</p>",
+                "fyi": "<p>Les évaluations disponibles tendent à indiquer un taux d'hallucinations plus faible pour cette version du modèle. L'entraînement du Grok 4.1 aurait intégré une modélisation des récompenses (reward modeling) élargie, incluant non seulement des évaluations humaines, mais aussi des retours des modèles agissant comme des évaluateurs IA.</p>",
+                "size_desc": "<p>Grok 4 Fast intègre un mode de raisonnement et un mode de réponse directe. L'utilisateur ou le développeur peut contrôler le choix d'activer ou non le raisonnement. Le modèle est doté d'une fenêtre de contexte de 2 millions de jetons, ce qui lui permet d'analyser des corpus de documents très volumineux ou des bases de code massives.</p>"
+            },
             "Hermes 3 405B": {
                 "desc": "<p>Très grand modèle réentraîné à partir du Llama 3.1 405B, ajusté pour mieux répondre aux demandes des utilisateurs et faciliter l’utilisation d’outils externes.</p>",
                 "fyi": "<p>Ce modèle est le résultat d’un réentraînement de l’ensemble des paramètres de Llama 3.1 405B pour rendre son comportement moins restreint et mieux prendre en compte les nuances du prompt utilisateur et système - l’utilisateur dispose ainsi d’un plus grand contrôle sur la “personnalité” et comportement du modèle. Des fonctions de raisonnement spécifiques telles que <strong><code>&lt;SCRATCHPAD&gt;</code></strong>, <strong><code>&lt;REASONING&gt;</code></strong>, <strong><code>&lt;THINKING&gt;</code></strong> ont été ajoutées pour simuler un raisonnement sur les tâches complexes. L'entraînement a utilisé un outil appelé AdamW (vitesse d'apprentissage de 3.5×10⁻⁶), qui aide le modèle à apprendre de manière efficace en ajustant progressivement ses paramètres. Ensuite, il a été affiné avec une méthode appelée DPO (direct preference optimisation), qui permet d'améliorer ses réponses en se basant sur des préférences spécifiques. Pour rendre cet entraînement plus léger et rapide, des adaptateurs LoRA ont été utilisés ; ce sont des modules plus petits qui modifient seulement une partie du modèle, ce qui évite de devoir retravailler tous les paramètres en même temps.</p>",
@@ -807,7 +839,7 @@
             "Hermes 4 70B": {
                 "desc": "<p>Grand modèle réentraîné à partir du Llama 3.1 70B, ajusté pour mieux répondre aux demandes et instructions stylistiques des utilisateurs.</p>",
                 "fyi": "<p>Hermes 4-70B a été entraîné sur 56 milliards de tokens en combinant Fully Sharded Data Parallel (FSDP) et Tensor Parallelism pour gérer sa taille. Le modèle repose sur la base de Llama 3.1 70B, adaptée avec TorchTitan et enrichie par environ 19 milliards de tokens synthétiques centrés sur le raisonnement. Son entraînement suit une approche multi-phase, avec un supervised fine-tuning sur des chaînes de raisonnement pouvant dépasser les 30 000 jetons. Il exploite également l’environnement Atropos, utilisé pour générer et vérifier des trajectoires complexes (code, JSON, tâches agentiques), grâce à un rejection sampling massif qui garantit la qualité des données).</p>",
-                "size_desc": "<p>Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.</p>\n<p>La fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons. </p>"
+                "size_desc": "<p>Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.</p>\n<p>La fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons.</p>"
             },
             "Jamba 1.5 Large": {
                 "desc": "<p>Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.</p>",
@@ -818,6 +850,16 @@
                 "desc": "<p>Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.</p>",
                 "fyi": "<p>Pour stabiliser l’entraînement à très grande échelle, Moonshot AI a introduit MuonClip, un “limiteur de vitesse” pour l’entraînement qui permet d’entraîner un modèle de cette taille et sur un corpus de 15,5 trillions de jetons sans dérailler dans l’apprentissage.</p>\n<p>Côté données, K2 a beaucoup pratiqué en “simulateur” avec de vrais outils (navigateur, terminal, exécuteurs de code, API…). Comme un pilote sur simulateur, il apprend à planifier, essayer, rater puis réessayer, et à enchaîner plusieurs actions pour atteindre un objectif. Résultat: il est particulièrement bon pour orchestrer des outils et réussir des tâches en plusieurs étapes.</p>",
                 "size_desc": "<p>Avec 1 billion de paramètres, ce modèle est un des plus grands modèles qui existe. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.</p>"
+            },
+            "Kimi K2 Thinking": {
+                "desc": "<p>Cette version de Kimi K2 intègre une phase de raisonnement plus avancée, améliorant ses performances par rapport à l'itération originale. Il a été développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin.</p>",
+                "fyi": "<p>Le modèle semble démontrer des performances accrues sur les raisonnements longs et les tâches nécessitant des étapes d'utilisation d'outils. Ces caractéristiques sont supposées favoriser une « autonomie » prolongée dans l'exécution des tâches.</p>",
+                "size_desc": "<p>Avec 1 billion de paramètres (dont 32 milliards actifs par jeton), ce modèle figure parmi les modèles de très grande taille. Son architecture de Mélange d'Experts (MoE) permet néanmoins une meilleure efficacité par rapport à certains modèles de taille comparable. De plus, il a été quantifié nativement au niveau INT4. Cette quantification, qui consiste à « arrondir » les poids du modèle à moins de chiffres pour simplifier les calculs, est présentée par Moonshot AI comme permettant de réduire le temps d'inférence d'un facteur 2. La fenêtre de contexte atteint 256 000 jetons, offrant la capacité de traiter des documents très longs ou des bases de code importantes.</p>"
+            },
+            "LFM 2 8B A1B": {
+                "desc": "<p>Un modèle spécifiquement conçu pour l'inférence efficace sur appareils locaux (on-device deployment). Son architecture vise à offrir une qualité de sortie compétitive avec celle de modèles denses de plus grande taille, tout en minimisant la latence et les exigences en ressources de calcul.</p>",
+                "fyi": "<p>LFM2-8B-A1B est basé sur une architecture hybride intégrant des blocs de convolution ainsi que des mécanismes d'Attention à Requêtes Groupées (GQA). L'implémentation de mélange d'experts (MoE) est composée de 32 experts par bloc de transformation. Le \"routeur\" sélectionne et active les 4 meilleurs experts (top-4 gating) pour le traitement de chaque jeton. Cette conception vise à établir une référence pour les modèles de mélange d'experts optimisés pour l'inférence locale.</p>",
+                "size_desc": "<p>Le modèle possède un total de 8,3 milliards de paramètres. Grâce à une architecture de mélange d'experts (Mixture of Experts, MoE), l'activation est limitée à environ 1,5 milliard de paramètres par jeton lors de l'inférence. Cette configuration lui permet d'atteindre une performance généralement associée aux modèles denses de la classe des 3 à 4 milliards de paramètres, avec une vitesse d'exécution comparable à celle des modèles de 1,5 milliard de paramètres. Il est proposé dans des variantes quantifiées optimisées pour les environnements locaux (comme par exemple pour un smartphone). La fenêtre de contexte est limitée à 32 000 jetons.</p>"
             },
             "LFM 40B": {
                 "desc": "<p>Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.</p>",
@@ -874,10 +916,20 @@
                 "fyi": "<p>Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. </p>\n<p>L'entraînement s'est fait en deux phases. La première, dite de raisonnement <em>cold-start</em> par distillation (de Mistral Medium 3 et OpenThoughts/OpenR1) permet au modèle d'acquérir des capacités de base en raisonnement à partir de données d'instruction générale (10%). La seconde est une phase d'apprentissage par renforcement (RL, <em>renforcement learning</em>) à haute entropie, où le modèle est encouragé à explorer des solutions diverses et variées plutôt que de converger vers une seule réponse, et à générer des complétions longues (jusqu'à 32 000 jetons), ce qui permet de développer des capacités de raisonnement qui dépassent celles du modèle enseignant.</p>",
                 "size_desc": "<p>Avec 24 milliards de paramètres, ce modèle est classé parmi les modèles de taille moyenne. Il nécessite une seule carte graphiques puissante pour fonctionner. Les modèles de raisonnement fonctionnent également plus longtemps pour produire une réponse, ce qui augmente leur consommation énergétique.</p>\n<p>Il dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.</p>"
             },
+            "MiniMax M2": {
+                "desc": "<p>Modèle spécialisé dans le code avec un rapport qualité/rapidité/prix très compétitif. Il a été conçu par MiniMax, entreprise basée à Shanghai en Chine.</p>",
+                "fyi": "<p>Modèle conçu spécifiquement pour des tâches agentiques (notamment du code), avec un entraînement pour respecter des protocoles stricts de contrôle d'agent (planification, appels d'outils, vérification).</p>",
+                "size_desc": "<p>Modèle d'architecture mélange d'experts avec 230 milliards de paramètres (dont 10 milliards actifs par génération de jeton). La fenêtre de contexte s'élève à 200 000 jetons, permettant de traîter des bases de code entières et des documents longs.</p>"
+            },
             "Ministral": {
                 "desc": "<p>Petit modèle multilingue conçu pour fonctionner sur un ordinateur portable sans connexion à un serveur, tout en offrant de bonnes capacités en synthèse de texte, réponses à des questions simples et utilisation d’outils.</p>",
                 "fyi": "<p>Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues.</p>",
                 "size_desc": "<p>Avec ses 8 milliards de paramètres, ce modèle appartient à la catégorie des petits modèles (entre 7 et 20 milliards de paramètres). Il peut être déployé localement sur un ordinateur assez puissant, garantissant la confidentialité des données ou hébergé sur un serveur avec une seule carte graphique pour limiter les coûts d’infrastructure.</p>"
+            },
+            "Mistral 3 Large": {
+                "desc": "<p>Très grand modèle multimodal semi-ouvert performant en code et contextes multilingues.</p>",
+                "fyi": "<p>Ce modèle a été entraîné sur 3 000 GPU Nvidia H200. Il se positionne en concurrence directe avec les modèles semi-ouverts chinois. À sa sortie, il est compétitif avec DeepSeek V3.1, Kimi K2, GLM 4.6 et d’autres références en termes de code et cas d'usages généralistes.</p>",
+                "size_desc": "<p>Avec 675 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que des modèles denses de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Ce modèle active 41 milliards de paramètres par génération de jeton. Sa fenêtre de contexte va jusqu’à 256 000 jetons, ce qui permet de traiter de très longs documents.</p>"
             },
             "Mistral Large 2": {
                 "desc": "<p>Grand modèle prévu pour traiter des questions et tâches complexes : par exemple génération de code, utilisation d’outils, analyse de documents longs ou compréhension précise du langage.</p>",
@@ -948,6 +1000,11 @@
                 "desc": "<p>Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.</p>",
                 "fyi": "<p>Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents.</p>",
                 "size_desc": "<p>Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>"
+            },
+            "Olmo 3 32B Think": {
+                "desc": "<p>Modèle de raisonnement dont le code et les données sont complètement ouverts. Il a été entraîné par AI2, un institut de recherche à but non lucratif.</p>",
+                "fyi": "<p>Ce modèle est un exemple rare de transparence totale. Le code, les données (6 billions de jetons), les “checkpoints” d'entraînement et les recettes d'évaluation sont tous publics. Bien que la reproduction complète de l'entraînement soit coûteuse en infrastructure et probablement rare, cette transparence permet aux développeurs de mieux réentrainer (fine-tune) le modèle pour des tâches spécifiques, notamment en mélangeant les données de comportement souhaitées avec le jeu de données existant, garantissant ainsi un entraînement plus stable.</p>",
+                "size_desc": "<p>Avec 32 milliards de paramètres, il est classé dans la catégorie des modèles de taille moyenne. Il peut être déployé sur un serveur équipé d'une seule carte graphique (GPU). Sa fenêtre de contexte atteint 65 000 jetons, ce qui le rend adapté à l'analyse d'assez longs documents.</p>"
             },
             "OLMo-2 32B": {
                 "desc": "<p>OLMo 2 32B est un modèle entièrement open source (corpus et code d'entraînement inclus) créé par l'Allen AI Institute (Ai2), publié en mars 2025. </p>",
@@ -1030,7 +1087,7 @@
                 "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
             },
             "Qwen3 Coder 480B A35B": {
-                "desc": "<p>Très grand modèle spécialisé dans la génération de code, analyse de dépôts entiers et résolution de problèmes multi-étapes. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale. </p>",
+                "desc": "<p>Très grand modèle spécialisé dans la génération de code, analyse de dépôts entiers et résolution de problèmes multi-étapes. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.</p>",
                 "fyi": "<p>Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud).</p>",
                 "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une fraction des paramètres (35 B sur 480 B), ce qui réduit considérablement l'impact environnemental et le coût par rapport à un modèle dense équivalent.\nLa fenêtre de contexte atteint nativement 256 000 jetons et peut être étendue jusqu’à 1 million grâce à des techniques d’extrapolation (YaRN), ce qui est idéal pour l’analyse de bases de code volumineuses.</p>"
             },
@@ -1333,6 +1390,49 @@
         }
     },
     "product": {
+        "community": {
+            "countries": {
+                "da": "Danemark",
+                "fr": "France"
+            },
+            "tabLabel": "Communauté",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Depuis Juin 2024",
+                            "job": "Designer produit UX/UI"
+                        },
+                        "elie": {
+                            "date": "Depuis Novembre 2025",
+                            "job": "Développeur Full stack"
+                        },
+                        "hadrien": {
+                            "date": "Juin 2024 - Novembre 2025",
+                            "job": "Développeur Full stack"
+                        },
+                        "lucie": {
+                            "date": "Janvier 2024 - Décembre 2025",
+                            "job": "Fondatrice - cheffe de produit"
+                        },
+                        "mathilde": {
+                            "date": "Depuis Septembre 2024",
+                            "job": "Responsable de l'Atelier numérique / Product Ops"
+                        },
+                        "nicolas": {
+                            "date": "Depuis Juin 2025",
+                            "job": "Développeur Full stack"
+                        },
+                        "simonas": {
+                            "date": "Depuis Décembre 2024",
+                            "job": "Chef de produit - ex chargé de déploiement"
+                        }
+                    },
+                    "title": "L’équipe compar:IA - France"
+                }
+            },
+            "title": "Les partenaires"
+        },
         "comparator": {
             "challenges": {
                 "bias": {
@@ -1360,6 +1460,7 @@
                 "desc": "Le comparateur sera mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
                 "title": "Le comparateur <span {props}>devient européen</span> !"
             },
+            "screenshotAlt": "Capture d'écran de l'arène compar:ia, avec la question initiale, les deux réponses des modèles et les boutons de vote.",
             "tabLabel": "Le comparateur",
             "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
         },
@@ -1367,7 +1468,97 @@
             "tabLabel": "FAQ"
         },
         "history": {
-            "tabLabel": "Historique du projet"
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "Mars 2025",
+                            "desc": "Création et mise à disposition du premier jeu de données compar:IA en français regroupant les questions et préférences des utilisateurs de la plateforme.",
+                            "title": "50 000 votes sur le comparateur !"
+                        },
+                        "2": {
+                            "date": "Mai 2025",
+                            "desc": "Et première réutilisation du jeu de données avec Bunka.ai qui a mené une <a {linkProps}>étude approfondie</a> sur les interactions entre les utilisateurs de la plateforme.",
+                            "title": "Objectif des 100 000 votes atteint !"
+                        },
+                        "3": {
+                            "date": "Juin 2025",
+                            "desc": "Mise à disposition de ces trois jeux de données, conversations, réactions, votes, sur <a {hgLinkProps}>HuggingFace</a> et <a {dataLinkProps}>Data.gouv.fr</a>.",
+                            "title": "Publication des trois jeux de données compar:IA"
+                        }
+                    },
+                    "tag": "Accélération"
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "Juin-Sept 2024",
+                            "desc": "Développement des premières fonctionnalités du comparateur et intégrations des retours des premiers bêta-testeurs.",
+                            "title": "Conception du produit minimum viable"
+                        },
+                        "2": {
+                            "date": "Octobre 2024",
+                            "desc": "Présentation officielle et premiers déploiements de l’outil.",
+                            "title": "Lancement officiel lors du Sommet de la francophonie à Villers Cotterêts !"
+                        },
+                        "3": {
+                            "date": "Janvier 2025",
+                            "desc": "Lancement de la nouvelle fonctionnalité de choix du mode de sélection des modèles.",
+                            "title": "compar:IA v2"
+                        },
+                        "4": {
+                            "date": "Février 2025",
+                            "desc": "Plus de 300 personnes dans le cadre de conférences et d’ateliers dédiés aux enjeux éthiques, culturels et environnementaux des systèmes d'IA conversationnelle.",
+                            "title": "<a {linkProps}>Journée comparIA à la BnF</a> pendant le sommet pour l’action sur l’IA"
+                        }
+                    },
+                    "tag": "Construction"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Été 2025",
+                            "desc": "Partenariat avec le Danemark, la Suède et la Lituanie pour ouvrir le service dans leur langue.",
+                            "title": "Extension à l’échelle européenne"
+                        },
+                        "2": {
+                            "date": "Septembre 2025",
+                            "desc": "Création de ce nouveau format d’atelier ouvert à tout public, pour découvrir les coulisses des IA génératives et réfléchir à leur impact environnemental, et publication du kit de facilitation associé à l’extension « Duels de l’IA ».",
+                            "title": "Lancement des <a {linkProps}>« Duels de l’IA »</a>"
+                        },
+                        "3": {
+                            "desc": "Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement compar:IA repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.",
+                            "title": "Publication du <a {linkProps}>classement compar:IA</a>"
+                        },
+                        "4": {
+                            "desc": "Le Danemark rejoint l’aventure en proposant le comparateur dans sa langue national avec un nom de domaine dédié.",
+                            "title": "Ouverture de compar:IA <a {linkProps}>en danois</a>"
+                        },
+                        "5": {
+                            "desc": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods.",
+                            "title": "compar:IA reconnu comme <a {linkProps}>Bien Commun numérique</a>"
+                        },
+                        "6": {
+                            "date": "Novembre 2025",
+                            "desc": "Avec plus de 500 000 conversations uniques depuis le lancement de compar:IA.",
+                            "title": "Objectif des 200 000 votes atteint !"
+                        }
+                    },
+                    "tag": "Internationalisation"
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "Janv-Mars 2024",
+                            "desc": "Entretiens avec des acteurs de l’écosystème et premières hypothèses de solution sur la problématique : « Comment faciliter l’accès à des données en français pour l’entrainement des modèles de langue ? ».",
+                            "title": "Phase d’investigation"
+                        }
+                    },
+                    "tag": "Investigation"
+                }
+            },
+            "tabLabel": "Dates clés",
+            "title": "compar:IA en quelques dates"
         },
         "partners": {
             "academy": {
@@ -1574,7 +1765,7 @@
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
-            "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
+            "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions issus de la <strong>comparaison à l'aveugle </strong> des modèles et collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
             "tabLabel": "Classement"
         },
         "table": {
@@ -1604,7 +1795,6 @@
                 }
             },
             "lastUpdate": "Mise à jour le {date}",
-            "search": "Rechercher un modèle",
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
@@ -1643,16 +1833,19 @@
                 "label": "taille du modèle",
                 "quantized": "(quantisé)"
             },
-            "title": "Impact énergétique de la discussion",
+            "title": "Impact énergétique estimé de la discussion",
             "tokens": {
                 "label": "taille du texte",
                 "tokens": "jetons",
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
-            }
+            },
+            "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée."
         },
         "thanks": {
             "cta": "Accéder au classement",
             "desc": "Découvrez comment votre préférence se situe par rapport au classement général des modèles dans compar:IA.",
+            "graphAlt": "Aperçu du graphique représentant le score et la consommation d'électricité des modèles",
+            "rankingAlt": "Aperçu du classement sous forme de tableau",
             "title": "Merci pour votre contribution !"
         }
     },
@@ -1662,17 +1855,18 @@
         "titles": {
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
+            "community": "Communauté",
             "comparator": "Le comparateur",
             "datasets": "Jeux de données",
             "donnees-personnelles": "Politique de confidentialité",
             "duel": "Atelier Duel de l’IA",
             "faq": "FAQ",
-            "history": "Historique du projet",
+            "history": "Dates clés",
             "home": "Accueil",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
-            "news": "Nouveautés",
+            "news": "Actualités et ressources",
             "partners": "Partenaires",
             "problem": "Le problème initial",
             "product": "À propos",

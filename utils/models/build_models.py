@@ -1,12 +1,22 @@
 import logging
 import markdown
 import os
+import requests
+import sys
 from pathlib import Path
 from pydantic import ValidationError
 from rich.logging import RichHandler
 from typing import Any
 
-from languia.models import ROOT_PATH, Archs, Licenses, Orgas, RawOrgas
+from languia.models import (
+    ROOT_PATH,
+    Archs,
+    DatasetData,
+    Licenses,
+    Orgas,
+    PreferencesData,
+    RawOrgas,
+)
 from utils.models.utils import Obj, read_json, write_json, sort_dict
 
 logging.basicConfig(
@@ -20,11 +30,11 @@ LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 ARCHS_PATH = CURRENT_FOLDER / "archs.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
+MODELS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
 I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
 TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated" / "models.ts"
-
 I18N_OS_LICENSE_KEYS = [
     "license_desc",
     "reuse_specificities",
@@ -162,6 +172,12 @@ def fetch_distinct_model_ids(engine, models_data):
 
 
 def main() -> None:
+    # Fetch the latest dataset results from ranking pipelinerepo
+    new_extra_data = fetch_ranking_results(MODELS_EXTRA_DATA_URL)
+
+    if new_extra_data.get("models") and len(new_extra_data.get("models")) > 0:
+        write_json(MODELS_EXTRA_DATA_PATH, new_extra_data)
+
     raw_licenses = read_json(LICENSES_PATH)
     raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
@@ -173,7 +189,7 @@ def main() -> None:
         dumped_archs = validate_archs(raw_archs)
     except Exception as err:
         log.error(str(err))
-        return
+        sys.exit(1)
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
@@ -198,7 +214,7 @@ def main() -> None:
         dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
     except Exception as err:
         log.error(str(err))
-        return
+        sys.exit(1)
 
     # Then use the full Orgas builder
     # Any errors comming from here are code generation errors, not errors in 'models.json'
@@ -244,13 +260,86 @@ def main() -> None:
                 for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
             }
 
-            if model.data is None or model.prefs is None:
-                log.warning(
-                    f"Missing data for model '{model.id}' (status: {model.status})"
-                )
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
+
+    # Check for missing data/prefs and log warnings
+    missing_info_events = []
+    for model in orgas.root:
+        for m in model.models:
+            missing_data_fields = []
+            missing_prefs_fields = []
+            reason_parts = []
+            
+            # Check if model exists in raw source data
+            model_in_source = m.id in raw_models_data
+            
+            # Check if data is completely missing
+            if m.data is None:
+                if not model_in_source:
+                    reason_parts.append(f"model '{m.id}' not found in ml_final_data.json")
+                else:
+                    # Model exists but data couldn't be built - check what's in source
+                    source_data = raw_models_data[m.id]
+                    missing_dataset_fields = []
+                    for field_name in DatasetData.model_fields.keys():
+                        if field_name not in source_data or source_data.get(field_name) is None:
+                            missing_dataset_fields.append(field_name)
+                    if missing_dataset_fields:
+                        reason_parts.append(f"missing data fields in source: {', '.join(missing_dataset_fields)}")
+                    else:
+                        reason_parts.append("data validation failed (check field types)")
+            else:
+                # Check for missing fields within data
+                data_dict = m.data.model_dump() if hasattr(m.data, 'model_dump') else {}
+                for field_name in DatasetData.model_fields.keys():
+                    if field_name not in data_dict or data_dict.get(field_name) is None:
+                        missing_data_fields.append(field_name)
+                if missing_data_fields:
+                    reason_parts.append(f"incomplete data fields: {', '.join(missing_data_fields)}")
+            
+            # Check if prefs is completely missing
+            if m.prefs is None:
+                if not model_in_source:
+                    # Already reported model not in source
+                    pass
+                else:
+                    # Model exists but prefs couldn't be built - check what's in source
+                    source_data = raw_models_data[m.id]
+                    missing_prefs_source_fields = []
+                    for field_name in PreferencesData.model_fields.keys():
+                        if field_name not in source_data or source_data.get(field_name) is None:
+                            missing_prefs_source_fields.append(field_name)
+                    if missing_prefs_source_fields:
+                        reason_parts.append(f"missing prefs fields in source: {', '.join(missing_prefs_source_fields)}")
+                    else:
+                        reason_parts.append("prefs validation failed (check field types)")
+            else:
+                # Check for missing fields within prefs
+                prefs_dict = m.prefs.model_dump() if hasattr(m.prefs, 'model_dump') else {}
+                for field_name in PreferencesData.model_fields.keys():
+                    if field_name not in prefs_dict or prefs_dict.get(field_name) is None:
+                        missing_prefs_fields.append(field_name)
+                if missing_prefs_fields:
+                    reason_parts.append(f"incomplete prefs fields: {', '.join(missing_prefs_fields)}")
+
+            if reason_parts:
+                missing_info_events.append(
+                    {
+                        "id": m.id,
+                        "status": m.status,
+                        "reason": " | ".join(reason_parts),
+                    }
+                )
+
+    # Sort: Enabled models first (False < True), then alphabetical by ID
+    missing_info_events.sort(key=lambda x: (x["status"] != "enabled", x["id"]))
+
+    for event in missing_info_events:
+        log.warning(
+            f"Model '{event['id']}' (status: {event['status']}): {event['reason']}"
+        )
     # Integrate translatable content to frontend locales
     log.info(f"Saving '{I18N_PATH.relative_to(ROOT_PATH)}'...")
     frontend_i18n = read_json(I18N_PATH)
@@ -278,6 +367,19 @@ export const MODELS = {[model["simple_name"] for model in generated_models.value
     )
 
     log.info("Generation is successfull!")
+
+
+def fetch_ranking_results(url) -> dict:
+    """Fetch the latest dataset ranking results from GitHub Actions pipeline."""
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        log.error(f"Failed to fetch ranking results from repo: {e}")
+        # Return empty data structure if fetch fails
+        return {"models": [], "timestamp": None}
 
 
 if __name__ == "__main__":
