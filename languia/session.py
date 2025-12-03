@@ -7,6 +7,7 @@ and provides session state management.
 
 import redis
 import os
+import logging
 
 # Redis connection configuration
 redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
@@ -59,42 +60,84 @@ def is_ratelimited(ip: str):
         return False
 
 
-class Session:
+def set_do_not_track(session_hash: str, cohorts: str = "do-not-track"):
     """
-    Represents a user session with conversation history and metadata.
-
-    Attributes:
-        session_hash: Unique identifier for the session (from Gradio)
-        conversations: Tuple of two conversation dicts (model A and B)
-        ip: User's IP address
-        total_input_chars: Total character count for rate limiting
-    """
-    session_hash: str | None
-    conversations: tuple[dict, dict]
-    # Future fields for votes and reactions
-    # vote: Vote | None
-    # reactions: dict = []
-    ip: str | None
-    total_input_chars: int = 0
-
-
-def save_session(session: Session):
-    """
-    Save session state to Redis for later retrieval.
+    Stocke dans Redis une indication de ne pas suivre pour une session donnée.
 
     Args:
-        session: Session object to save
+        session_hash: Identifiant unique de la session
+        cohorts: Nom de la cohorte (par défaut "do-not-track")
+
+    Returns:
+        bool: True si l'opération a réussi, False sinon
     """
-    # Store session as Redis hash with conversations and IP
-    r.hset(
-        f"session:{session.session_hash}",
-        mapping={
-            "conversations": session.conversations,
-            "ip": session.ip,
-        },
-    )
-    # Verify the save by retrieving the data
-    r.hgetall(f"session:{session.session_hash}")
+    if not redis_host:
+        return False
+
+    try:
+        # Stocke la clé avec une expiration de 24 heures
+        r.setex(f"do_no_track:{session_hash}", 86400, cohorts)
+        return True
+    except Exception as e:
+        logger = logging.getLogger("languia")
+        logger.error(f"Error setting do_not_track in Redis: {e}")
+        return False
+
+
+def get_do_not_track(session_hash: str):
+    """
+    Vérifie si une session a une indication de ne pas suivre.
+
+    Args:
+        session_hash: Identifiant unique de la session
+
+    Returns:
+        dict: Dictionnaire avec les clés:
+            - 'do_not_track': bool (True si trouvé, False sinon)
+            - 'cohorts': str|None (Nom de la cohorte si trouvée, None sinon)
+            - 'status': str (description claire du statut)
+    """
+    if not redis_host:
+        return {"do_not_track": False, "cohorts": None, "status": "redis not available"}
+
+    try:
+        cohorts = r.get(f"do_no_track:{session_hash}")
+        if cohorts:
+            return {
+                "do_not_track": True,
+                "cohorts": cohorts,
+                "status": f"found and cohorts={cohorts}",
+            }
+    except Exception as e:
+        logger = logging.getLogger("languia")
+        logger.error(f"Error getting do_not_track from Redis: {e}")
+        return {
+            "do_not_track": False,
+            "cohorts": None,
+            "status": "false, cohorts not found in do not track so you can track (Redis error)",
+        }
+
+
+# Draft session class and methods
+
+# class Session:
+#     session_hash: str | None
+#     conversations: tuple[dict, dict]
+#     # vote: Vote | None
+#     # reactions: dict = []
+#     ip: str | None
+#     total_input_chars: int = 0
+
+
+# def save_session(session: Session):
+#     r.hset(
+#         f"session:{session.session_hash}",
+#         mapping={
+#             "conversations": session.conversations,
+#             "ip": session.ip,
+#         },
+#     )
+#     r.hgetall(f"session:{session.session_hash}")
 
 
 #     r.hset(f'session:{session.session_hash}', mapping={

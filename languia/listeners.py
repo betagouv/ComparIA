@@ -60,7 +60,7 @@ from languia.utils import (
     to_threeway_chatbot,
 )
 
-from languia.session import increment_input_chars, redis_host, is_ratelimited
+from languia.session import increment_input_chars, redis_host, is_ratelimited, r
 
 from languia.reveal import (
     build_reveal_dict,
@@ -265,8 +265,24 @@ def register_listeners():
         )
 
         # record for questions only dataset and stats on ppl abandoning before generation completion + add locale info
+        # Check if session has do-not-track flag using direct Redis get, default to "pix" cohort
+
+        cohorts = None
+        if redis_host:
+            try:
+                cohorts = r.get(f"do_no_track:{request.session_hash}")
+            except Exception as e:
+                logger.warning(
+                    f"Failed to get cohort from Redis: {e}",
+                    extra={"request": request},
+                )
+
         record_conversations(
-            app_state_scoped, [conv_a_scoped, conv_b_scoped], request, locale
+            app_state_scoped,
+            [conv_a_scoped, conv_b_scoped],
+            request,
+            locale,
+            cohorts=cohorts,
         )
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
 
