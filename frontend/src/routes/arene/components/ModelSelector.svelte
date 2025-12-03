@@ -1,12 +1,12 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Button, Icon, Search } from '$components/dsfr'
+  import { Badge, Button, Icon, Search } from '$components/dsfr'
+  import Selector from '$components/Selector.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { modeInfos as modeChoices } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
-  import { Dropdown, ModelsSelection } from '.'
 
   let {
     models,
@@ -26,7 +26,13 @@
 
   const filteredModels = $derived.by(() => {
     const _search = search.toLowerCase()
-    return models.filter((m) => !_search || m.search.includes(_search))
+    return models
+      .filter((m) => !_search || m.search.includes(_search))
+      .map((m) => ({
+        ...m,
+        label: m.simple_name,
+        value: m.id
+      }))
   })
 
   const choice = $derived(modeChoices.find((c) => c.value === mode) || modeChoices[0])
@@ -42,15 +48,7 @@
     }
   })
 
-  function toggleModelSelection(id: string): void {
-    if (!modelsSelection.includes(id)) {
-      if (modelsSelection.length < 2) {
-        modelsSelection.push(id)
-      }
-    } else {
-      modelsSelection = modelsSelection.filter((item) => item !== id)
-    }
-
+  function toggleModelSelection(): void {
     // If clicked on second model, close model selection modal
     if (modelsSelection.length === 2) {
       const modeSelectionModal = document.getElementById('modal-mode-selection')
@@ -159,22 +157,68 @@
           </div>
           <div class="fr-modal__content m-0! pb-12!">
             {#if showModelsSelection == false}
-              <Dropdown
-                bind:mode
+              <Selector
+                id="mode-selector"
+                bind:value={mode}
                 choices={modeChoices}
-                onOptionSelected={(mode) => (showModelsSelection = mode === 'custom')}
-              />
+                containerClass="flex flex-col gap-3 md:gap-4"
+                choiceClass="flex items-center p-4 text-sm text-dark-grey!"
+                onChange={(mode) => (showModelsSelection = mode === 'custom')}
+              >
+                {#snippet option(opt, labelProps, input)}
+                  <label {...labelProps}>
+                    {@render input(opt, {
+                      'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : ''
+                    })}
+                    <Icon icon={opt.icon} class="me-3 text-primary" />
+                    {#if opt.value != 'custom'}
+                      <div>
+                        <strong>{opt.label}</strong>&nbsp;: {opt.description}
+                      </div>
+                    {:else}
+                      <strong>{opt.label}</strong>
+                      <Icon icon="arrow-right-s-line" size="sm" class="ms-auto" />
+                    {/if}
+                  </label>
+                {/snippet}
+              </Selector>
             {:else}
               <div in:fade class="my-4">
                 {#if filteredModels.length === 0}
                   <p>{m['models.list.noresults']()}</p>
                 {/if}
 
-                <ModelsSelection
-                  models={filteredModels}
-                  bind:selection={modelsSelection}
-                  {toggleModelSelection}
-                />
+                <Selector
+                  id="models-selector"
+                  kind="checkbox"
+                  bind:value={modelsSelection}
+                  choices={filteredModels}
+                  multiple
+                  max={2}
+                  containerClass="grid grid-cols-2 gap-3 md:grid-cols-3"
+                  choiceClass="text-sm p-2 md:px-4 md:py-3"
+                  onChange={toggleModelSelection}
+                >
+                  {#snippet option(opt, labelProps, input)}
+                    {@const modelBadges = (['license', 'releaseDate', 'size'] as const)
+                      .map((k) => opt.badges[k])
+                      .filter((b) => !!b)}
+
+                    <label {...labelProps}>
+                      {@render input(opt)}
+                      <div class="flex text-dark-grey">
+                        <AILogo iconPath={opt.icon_path} alt={opt.organisation} class="me-2" />
+                        <span class="organisation hidden md:inline">{opt.organisation}/</span
+                        ><strong>{opt.simple_name}</strong>
+                      </div>
+                      <ul class="fr-badges-group mt-3! hidden! md:flex!">
+                        {#each modelBadges as badge, i (i)}
+                          <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
+                        {/each}
+                      </ul>
+                    </label>
+                  {/snippet}
+                </Selector>
               </div>
             {/if}
           </div>
