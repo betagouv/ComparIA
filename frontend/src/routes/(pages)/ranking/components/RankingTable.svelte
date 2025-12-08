@@ -201,7 +201,11 @@
       <div
         class="sm:max-w-none sm:overflow-visible max-w-[205px] overflow-hidden overflow-ellipsis"
       >
-        <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
+        <AILogo
+          iconPath={model.icon_path}
+          alt={model.organisation}
+          class="me-1 inline-block align-middle"
+        />
         <a
           href="#{model.id}"
           data-fr-opened="false"

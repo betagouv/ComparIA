@@ -139,7 +139,11 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
-      <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
+      <AILogo
+        iconPath={model.icon_path}
+        alt={model.organisation}
+        class="me-1 inline-block align-middle align-middle"
+      />
       <a
         href="#{model.id}"
         data-fr-opened="false"

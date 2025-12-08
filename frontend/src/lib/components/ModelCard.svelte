@@ -28,7 +28,7 @@
   <div class="fr-card__body">
     <div class="fr-card__content px-5! md:px-4! md:pt-4!">
       <h6
-        class="fr-card__title mb-3! leading-normal! font-normal! text-dark-grey gap-3 flex items-center text-[14px]!"
+        class="fr-card__title mb-3! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
       >
         <AILogo iconPath={model.icon_path} alt={model.organisation} />
         <div>
