@@ -363,6 +363,7 @@ export const ARCHS = {[a for a in context["archs"]]} as const
 export const MAYBE_ARCHS = {[f"maybe-{a}" for a in context["archs"] if a != 'na']} as const
 export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
 export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
+export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in orga["icon_path"]]}
 """
     )
 
