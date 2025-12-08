@@ -267,7 +267,7 @@
             </div>
 
             <div class="mt-1 text-[12px]">
-              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item (item.key)}
+              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'i-ri-flashlight-line' }] as const as item (item.key)}
                 <div class="gap-1 leading-relaxed flex">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
                   <p class="mb-0! leading-relaxed! text-grey text-[12px]!">
@@ -311,7 +311,7 @@
       </div>
 
       <div class="text-center">
-        <Icon icon="flashlight-line" class="text-primary" />
+        <Icon icon="i-ri-flashlight-line" class="text-primary" />
         <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
       </div>
     </div>

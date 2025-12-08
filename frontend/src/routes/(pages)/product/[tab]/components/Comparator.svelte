@@ -10,10 +10,10 @@
 
   const challengesCards = (
     [
-      { i18nKey: 'bias', icon: 'old-globe', class: 'text-yellow' },
-      { i18nKey: 'impacts', icon: 'leaf-line', class: 'text-green' },
-      { i18nKey: 'pluralism', icon: 'plural', class: 'text-primary' },
-      { i18nKey: 'thinking', icon: 'chat-charts', class: 'text-red' }
+      { i18nKey: 'bias', icon: 'i-ri-globe-line', class: 'text-yellow' },
+      { i18nKey: 'impacts', icon: 'i-ri-leaf-line', class: 'text-green' },
+      { i18nKey: 'pluralism', icon: 'i-ri-color-filter-ai-line', class: 'text-primary' },
+      { i18nKey: 'thinking', icon: 'i-ri-chat-poll-line', class: 'text-red' }
     ] as const
   ).map(({ i18nKey, ...card }) => ({
     ...card,

@@ -52,7 +52,7 @@
     class="message-bot cg-border rounded-lg! bg-white px-5 relative flex h-full flex-col overflow-scroll"
   >
     <div>
-      <div class="top-0 bg-white pt-7 pb-5 sticky z-2 flex items-center">
+      <div class="top-0 bg-white pb-5 pt-7 sticky z-2 flex items-center">
         <div class="c-bot-disk-{bot}"></div>
         <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
@@ -67,7 +67,7 @@
                 aria-expanded="true"
                 aria-controls="reasoning-{message.metadata.bot}"
               >
-                <Icon icon="brain" class="me-1 text-primary" />
+                <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
                 {#if message.content === '' && generating}
                   {m['chatbot.reasoning.inProgress']()}
                 {:else}
@@ -108,7 +108,7 @@
   </div>
 
   {#if reaction.liked !== null}
-    <div class="cg-border mt-3 rounded-lg! bg-white p-5 border-dashed!">
+    <div class="cg-border rounded-lg! mt-3 bg-white p-5 border-dashed!">
       <LikePanel
         id={message.metadata.generation_id}
         kind={reaction.liked ? 'like' : 'dislike'}

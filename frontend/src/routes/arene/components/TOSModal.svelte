@@ -20,9 +20,9 @@
   }
 
   const pratices = [
-    { label: 'welcome.errors', icon: 'success-line' },
-    { label: 'welcome.privacy', icon: 'pass-expired-line' },
-    { label: 'welcome.use', icon: 'chat-delete-line' }
+    { label: 'welcome.errors', icon: 'i-ri-checkbox-circle-line' },
+    { label: 'welcome.privacy', icon: 'i-ri-pass-expired-line' },
+    { label: 'welcome.use', icon: 'i-ri-chat-delete-line' }
   ] as const
 </script>
 
@@ -39,7 +39,7 @@
         <div class="fr-modal__body rounded-xl">
           <div class="fr-modal__content mb-0! px-0!">
             <div class="md:grid grid-cols-2">
-              <div class="px-7 pt-10 pb-7">
+              <div class="px-7 pb-7 pt-10">
                 <h2 id="fr-modal-title-modal-welcome" class="fr-modal__title mb-0! text-primary!">
                   {m['welcome.title']()}
                 </h2>
@@ -51,7 +51,7 @@
               <div class="px-7">
                 {#each pratices as { label, icon } (label)}
                   <div class="mb-7 md:last-of-type:mb-0">
-                    <Icon {icon} block size="lg" class="me-2 text-primary" />
+                    <Icon {icon} block size="lg" class="text-primary me-2" />
                     <p class="mb-0! text-[14px]!">{m[label]()}</p>
                   </div>
                 {/each}

@@ -123,7 +123,7 @@
             alt={title}
           />
         {:else}
-          <Icon {icon} aria-label={title} class="me-2 text-primary md:mb-4 md:block" />
+          <Icon {icon} aria-label={title} block class="text-primary me-2 md:mb-4 md:block" />
         {/if}
         <span>
           {label}

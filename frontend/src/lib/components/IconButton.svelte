@@ -51,7 +51,7 @@
     class:large={size === 'large'}
     class:medium={size === 'medium'}
   >
-    <Icon {icon} size="sm" class="text-primary" />
+    <Icon {icon} block size="sm" class="text-primary" />
   </div>
 </button>
 
