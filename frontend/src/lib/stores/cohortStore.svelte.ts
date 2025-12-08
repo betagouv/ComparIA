@@ -1,22 +1,27 @@
 /**
- * Simple cohort detection using Svelte 5 state management.
+ * Simple cohort detection.
  */
 
 import { browser } from '$app/environment'
-import { writable } from 'svelte/store'
+import { getContext, setContext } from 'svelte'
 
-export type CohortType = 'do-not-track' | null
+const COHORT_TYPES = ['do-not-track'] as const
+export type CohortType = (typeof COHORT_TYPES)[number] | null
 
 const COHORT_STORAGE_KEY = 'comparia-cohort'
 
-export const cohortStore = writable<CohortType>(null)
-
-// Detect cohort from referrer or URL parameters
+// Detect cohort from sessionStorage, referrer or URL parameters
 function detectCohort(): CohortType {
   if (!browser) return null
 
+  const sessionValue = sessionStorage.getItem(COHORT_STORAGE_KEY)
+  if (sessionValue && COHORT_TYPES.includes(sessionValue as any)) {
+    return sessionValue as CohortType
+  }
+
   // Detect from referrer (pix.com)
   if (document.referrer && document.referrer.includes('pix.com')) {
+    sessionStorage.setItem(COHORT_STORAGE_KEY, 'do-not-track')
     return 'do-not-track'
   }
 
@@ -25,6 +30,7 @@ function detectCohort(): CohortType {
   const cohortParam = urlParams.get('c')
 
   if (cohortParam && (cohortParam === 'pix' || cohortParam === 'do-not-track')) {
+    sessionStorage.setItem(COHORT_STORAGE_KEY, 'do-not-track')
     return cohortParam === 'pix' ? 'do-not-track' : cohortParam
   }
 
@@ -32,17 +38,24 @@ function detectCohort(): CohortType {
 }
 
 /**
- * Initialize cohort detection - should be called once on app startup
+ * Set cohort detection (client-side only)
  */
-export function initializeCohortDetection(): CohortType {
-  const detected = detectCohort()
-  cohortStore.set(detected)
-  return detected
+export function setCohortContext() {
+  setContext<CohortType>(COHORT_STORAGE_KEY, detectCohort())
 }
 
 /**
- * Set cohort context - used to programmatically set the cohort
+ * Get cohort context
  */
-export function setCohortContext(cohort: CohortType): void {
-  cohortStore.set(cohort)
+export function getCohortContext() {
+  return getContext<CohortType>(COHORT_STORAGE_KEY)
+}
+
+/**
+ * Get current cohorts.
+ * Returns array of cohort identifiers, primarily for backend communication.
+ */
+export function getCurrentCohorts(): string[] {
+  const cohort = getCohortContext()
+  return cohort ? [cohort] : []
 }

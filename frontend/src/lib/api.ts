@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
-import { getCurrentCohorts } from '$lib/utils/cohortsDetection'
+import { getCurrentCohorts } from '$lib/stores/cohortStore.svelte'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
@@ -20,7 +20,6 @@ function getBackendUrl(): string {
     return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   }
 }
-let cohortsSent = false // Track if cohort has been sent for this session
 
 export interface GradioPayload<T> extends Payload {
   type: 'data'
@@ -86,6 +85,7 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 export const api = {
   url: getBackendUrl(),
   client: undefined as Client | undefined,
+  cohortsSent: false, // Track if cohort has been sent for this session
 
   _getLoadBalancedEndpoint(): string {
     const replicas = parseInt(publicEnv.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10)
@@ -275,7 +275,7 @@ export const api = {
    */
   async sendCohortsToBackend() {
     // Only send once per session
-    if (cohortsSent || !this.client?.session_hash) {
+    if (this.cohortsSent || !this.client?.session_hash) {
       return
     }
 
@@ -300,7 +300,7 @@ export const api = {
         })
 
         if (response.ok) {
-          cohortsSent = true
+          this.cohortsSent = true
           console.debug('Cohort information sent to backend successfully')
         } else {
           console.error('Failed to send cohort to backend:', response.statusText)
