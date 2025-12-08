@@ -283,7 +283,7 @@ export const api = {
     const cohorts = getCurrentCohorts()
 
     // Only send if we have a cohort (do-not-track)
-    if (cohorts.includes("do-not-track")) {
+    if (cohorts.includes('do-not-track')) {
       try {
         // Backend now expects JSON with Pydantic model
         const requestBody = {
@@ -294,7 +294,7 @@ export const api = {
         const response = await fetch(`${this.url}/cohorts`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(requestBody)
         })

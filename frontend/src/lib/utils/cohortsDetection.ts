@@ -10,7 +10,7 @@ import { cohortStore } from '$lib/stores/cohortStore.svelte'
  * Returns array of cohort identifiers, primarily for backend communication.
  */
 export function getCurrentCohorts(): string[] {
-    if (!browser) return []
-    const cohort = get(cohortStore)
-    return cohort ? [cohort] : []
+  if (!browser) return []
+  const cohort = get(cohortStore)
+  return cohort ? [cohort] : []
 }
