@@ -2,7 +2,7 @@
   {
     "title": "Administratif",
     "description": "Rédiger un document administratif",
-    "icon": "draft-line",
+    "icon": "i-ri-draft-line",
     "suggestions": [
       "Écris un court e-mail pour demander un devis à un [électricien] près de chez moi pour un problème de panne. Je dois obtenir une intervention dans la semaine.",
       "Rédige un courrier pour résilier le bail de mon appartement",
@@ -22,7 +22,7 @@
   {
     "title": "Conseils",
     "description": "Obtenir des conseils sur l’alimentation et le sport",
-    "icon": "clipboard-line",
+    "icon": "i-ri-clipboard-line",
     "suggestions": [
       "Comment compenser les apports nutritifs de la viande dans un régime d’alimentation végétarien ?",
       "Propose moi un plan de repas équilibré pour la semaine pour un foyer de deux personnes habitant en ville et n’ayant pas toujours beaucoup de temps pour cuisiner.",
@@ -47,7 +47,7 @@
   {
     "title": "Explications",
     "description": "Expliquer simplement un concept",
-    "icon": "chat-3-line",
+    "icon": "i-ri-chat-3-line",
     "suggestions": [
       "Décris le [processus de fermentation] en utilisant des exemples liés à la cuisine traditionnelle française.",
       "Tu es professeur d'économie. Explique-moi la théorie des jeux de façon simple. Donne-moi des exemples d'application dans le monde réel. À la fin, fournis un glossaire des notions et termes à connaître sur le sujet.",
@@ -195,7 +195,7 @@
   {
     "title": "Idées",
     "description": "Générer de nouvelles idées",
-    "icon": "lightbulb-line",
+    "icon": "i-ri-lightbulb-line",
     "suggestions": [
       "Je prépare une session de brainstorming sur [sujet] avec 15 personnes. Propose moi tes 3 meilleures idées pour lancer des discussions créatives.",
       "En tant que rédacteur publicitaire très reconnu dans ton domaine, propose 5 noms pour le nouveau produit [X] qui a pour objectif [Y]. Donne-moi les noms sous forme de tableau et réalise une évaluation pour savoir quel nom fonctionne le mieux en affichant tes critères (score maximum: 5 points)",
@@ -211,7 +211,7 @@
   {
     "title": "Traduction",
     "description": "M’exprimer dans une autre langue",
-    "icon": "translate-2",
+    "icon": "i-ri-translate-2",
     "suggestions": [
       "Quel est le nom du film \"Les dents de la mer\" de Spielberg, en [québecois] ?",
       "Comment traduit-on l'expression 'faire d'une pierre deux coups' en [occitan] ?",
@@ -235,7 +235,7 @@
   {
     "title": "Recettes",
     "description": "Découvrir une nouvelle recette de cuisine",
-    "icon": "bowl",
+    "icon": "i-ri-bowl-line",
     "suggestions": [
       "Peux-tu m’aider à faire un plat avec ce que j’ai dans mon frigo : [ingrédient 1], [ingrédient 2], et [ingrédient 3] ?",
       "Je voudrais découvrir une recette facile et rapide à base de [ingrédient]. Peux-tu m'en proposer une ?",
@@ -265,7 +265,7 @@
   {
     "title": "Recommandations",
     "description": "Proposer des idées de films, livres, musiques",
-    "icon": "music-2-line",
+    "icon": "i-ri-music-2-line",
     "suggestions": [
       "Peux-tu me recommander des films sur le thème de [thème], avec un ton plutôt dramatique ?",
       "Quelles sont les meilleures suggestions de films de science-fiction à regarder si j'aime les intrigues complexes ?",
@@ -302,7 +302,7 @@
   {
     "title": "Histoires",
     "description": "Raconter une histoire",
-    "icon": "book-open",
+    "icon": "i-ri-book-open-line",
     "suggestions": [
       "Écris une histoire en 100 mots, sans utiliser la lettre \"e\", où un enfant découvre un objet mystérieux dans le grenier de ses grands-parents.",
       "Raconte une légende urbaine contemporaine dans un quartier connu pour son histoire mystique (précise le quartier et la ville)",
