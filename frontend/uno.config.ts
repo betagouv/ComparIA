@@ -62,5 +62,24 @@ export default defineConfig({
       'c-bot-disk-b': 'w-[26px] h-[26px] rounded-full bg-orange'
     }
   ],
-  safelist: ['text-primary', 'text-orange', 'c-bot-disk-a', 'c-bot-disk-b']
+  safelist: [
+    'text-primary',
+    'text-orange',
+    'c-bot-disk-a',
+    'c-bot-disk-b',
+    'i-ri-dice-line',
+    'i-ri-search-line',
+    'i-ri-leaf-line',
+    'i-ri-ruler-line',
+    'i-ri-brain-2-line',
+    // suggestions
+    'i-ri-draft-line',
+    'i-ri-clipboard-line',
+    'i-ri-chat-3-line',
+    'i-ri-lightbulb-line',
+    'i-ri-translate-2',
+    'i-ri-bowl-line',
+    'i-ri-music-2-line',
+    'i-ri-book-open-line'
+  ]
 })
