@@ -1,5 +1,11 @@
 import extractorSvelte from '@unocss/extractor-svelte'
-import { defineConfig, presetTypography, presetWind4, transformerDirectives } from 'unocss'
+import {
+  defineConfig,
+  presetIcons,
+  presetTypography,
+  presetWind4,
+  transformerDirectives
+} from 'unocss'
 
 export default defineConfig({
   extractors: [extractorSvelte()],
@@ -10,7 +16,13 @@ export default defineConfig({
         light: '[data-fr-theme="light"]'
       }
     }),
-    presetTypography()
+    presetTypography(),
+    presetIcons({
+      // https://unocss.dev/presets/icons
+      collections: {
+        ri: () => import('@iconify-json/ri/icons.json').then((i) => i.default),
+      }
+    })
   ],
   transformers: [transformerDirectives()],
   theme: {
