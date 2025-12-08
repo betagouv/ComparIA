@@ -36,7 +36,7 @@
         src={`/flags/${currentLocale}.png`}
         aria-hidden="true"
         alt=""
-        class="me-2 max-w-[30px] rounded-md"
+        class="me-2 rounded-md max-w-[30px]"
       />
       {LOCALES.find((locale) => locale.code === currentLocale)!.short}
     </Button>

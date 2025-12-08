@@ -25,9 +25,9 @@
 <div
   class="cl-toast {variant === 'error'
     ? 'border-error'
-    : 'border-primary'} flex border-2 bg-white text-dark-grey"
+    : 'border-primary'} bg-white text-dark-grey flex border-2"
 >
-  <div class="{variant === 'error' ? 'bg-error' : 'bg-primary'} flex flex-col justify-center p-2">
+  <div class="{variant === 'error' ? 'bg-error' : 'bg-primary'} p-2 flex flex-col justify-center">
     <Icon
       block
       icon={variant === 'error' ? 'error-fill' : 'checkbox-circle-fill'}
@@ -36,7 +36,7 @@
     />
   </div>
   <div class="px-2 py-1">{text}</div>
-  <button onclick={onClose} class="ms-auto! self-start p-2">
+  <button onclick={onClose} class="p-2 ms-auto! self-start">
     <Icon icon="close-line" block size="xs" />
   </button>
 </div>

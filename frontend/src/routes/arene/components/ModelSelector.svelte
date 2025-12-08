@@ -62,14 +62,14 @@
   }
 </script>
 
-<div class="flex flex-col gap-3 md:col-span-5 md:flex-row">
+<div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
   <Button
     variant="secondary"
     native
     aria-controls="modal-mode-selection"
     {disabled}
     data-fr-opened="false"
-    class="w-full! items-center justify-start bg-white! px-3! text-sm! text-dark-grey! md:w-auto!"
+    class="bg-white! px-3! text-sm! text-dark-grey! md:w-auto! w-full! items-center justify-start"
     style="--border-action-high-blue-france: var(--grey-925-125)"
     onclick={() => {
       neverClicked = false
@@ -78,7 +78,7 @@
   >
     <Icon icon="equalizer-fill" size="sm" class="me-2 text-primary" />
     <span class="label">{altLabel}</span>
-    <Icon icon="arrow-down-s-line" size="sm" class="ms-auto md:ms-2" />
+    <Icon icon="arrow-down-s-line" size="sm" class="md:ms-2 ms-auto" />
   </Button>
 
   {#if mode == 'custom' && modelA}
@@ -88,7 +88,7 @@
       aria-controls="modal-mode-selection"
       {disabled}
       data-fr-opened="false"
-      class="w-full! justify-start bg-white! px-3! text-sm! text-dark-grey! md:w-auto!"
+      class="bg-white! px-3! text-sm! text-dark-grey! md:w-auto! w-full! justify-start"
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
@@ -116,8 +116,8 @@
         <div class="fr-modal__body rounded-xl">
           <div
             class={[
-              'fr-modal__header flex-col! bg-white',
-              { 'top-0 z-1 md:sticky': showModelsSelection }
+              'fr-modal__header bg-white flex-col!',
+              { 'top-0 md:sticky z-1': showModelsSelection }
             ]}
           >
             <Button
@@ -135,7 +135,7 @@
                 </h6>
                 <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
               {:else}
-                <div class="flex w-full flex-col gap-3 md:flex-row">
+                <div class="gap-3 md:flex-row flex w-full flex-col">
                   <div>
                     <h6 id="modal-mode-selection" class="mb-3!">
                       {m['arenaHome.compareModels.question']()}
@@ -149,7 +149,7 @@
                     id="model-list-search"
                     bind:value={search}
                     label={m['actions.searchModel']()}
-                    class="w-full self-end md:ms-auto md:w-auto"
+                    class="md:ms-auto md:w-auto w-full self-end"
                   />
                 </div>
               {/if}
@@ -206,12 +206,12 @@
 
                     <label {...labelProps}>
                       {@render input(opt)}
-                      <div class="flex text-dark-grey">
+                      <div class="text-dark-grey flex">
                         <AILogo iconPath={opt.icon_path} alt={opt.organisation} class="me-2" />
-                        <span class="organisation hidden md:inline">{opt.organisation}/</span
+                        <span class="organisation md:inline hidden">{opt.organisation}/</span
                         ><strong>{opt.simple_name}</strong>
                       </div>
-                      <ul class="fr-badges-group mt-3! hidden! md:flex!">
+                      <ul class="fr-badges-group mt-3! md:flex! hidden!">
                         {#each modelBadges as badge, i (i)}
                           <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
                         {/each}
@@ -224,16 +224,16 @@
           </div>
           {#if showModelsSelection == true}
             <div class="fr-modal__footer p-4! md:px-5!">
-              <div class="flex w-full flex-col-reverse gap-4 md:flex-row">
+              <div class="gap-4 md:flex-row flex w-full flex-col-reverse">
                 <Button
                   text={m['words.back']()}
                   variant="tertiary"
-                  class="w-full! md:me-auto! md:w-auto!"
+                  class="md:me-auto! md:w-auto! w-full!"
                   icon="arrow-left-line"
                   onclick={() => (showModelsSelection = false)}
                 />
 
-                <div class="flex flex-col gap-4 md:flex-row">
+                <div class="gap-4 md:flex-row flex flex-col">
                   <p class="mb-0! font-bold text-primary md:self-center">
                     {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
                   </p>
@@ -242,7 +242,7 @@
                     aria-controls="modal-mode-selection"
                     text={m['words.validate']()}
                     disabled={!modelsSelection.length}
-                    class="w-full! md:w-auto!"
+                    class="md:w-auto! w-full!"
                   />
                 </div>
               </div>

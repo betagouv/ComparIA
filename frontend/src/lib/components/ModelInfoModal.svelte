@@ -62,7 +62,7 @@
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div
-          class="fr-modal__body rounded-xl bg-light-grey! lg:max-h-[90vh]! dark:border! dark:border-grey!"
+          class="fr-modal__body rounded-xl bg-light-grey! lg:max-h-[90vh]! dark:border-grey! dark:border!"
         >
           <div class="fr-modal__header pb-0!">
             <Button
@@ -78,7 +78,7 @@
             <div class="fr-modal__content">
               <h5
                 id="{modalId}-title"
-                class="mb-3! flex items-center gap-2 text-lg! font-normal! text-dark-grey"
+                class="mb-3! gap-2 text-lg! font-normal! text-dark-grey flex items-center"
               >
                 <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
                 <div>
@@ -94,10 +94,10 @@
 
               {@html sanitize(model.desc).replaceAll('<p>', '<p class="last:mb-5!">')}
 
-              <div class="grid gap-5 lg:grid-cols-8">
+              <div class="gap-5 lg:grid-cols-8 grid">
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
-                    <h6 class="mb-0! flex text-lg!">
+                    <h6 class="mb-0! text-lg! flex">
                       <Icon icon="ruler" block class="me-2 text-info" />
                       {m['models.size.title']()}
                     </h6>
@@ -114,7 +114,7 @@
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
-                    <h6 class="mb-0! flex text-lg!">
+                    <h6 class="mb-0! text-lg! flex">
                       <Icon icon="lightbulb-line" block class="me-2 text-yellow" />
                       {m['models.arch.title']()}
                     </h6>
@@ -136,13 +136,13 @@
 
                 <div
                   class={[
-                    'cg-border grid gap-4 bg-white p-4 pb-6 lg:col-span-6',
+                    'cg-border gap-4 bg-white p-4 pb-6 lg:col-span-6 grid',
                     licenseCards.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-3'
                   ]}
                 >
                   <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>
-                    <div class="mb-2 flex flex-wrap gap-2">
-                      <h6 class="mb-0! flex text-sm!">
+                    <div class="mb-2 gap-2 flex flex-wrap">
+                      <h6 class="mb-0! text-sm! flex">
                         <Icon icon="copyright-line" block class="me-2" />
                         {m['models.conditions.title']()}
                       </h6>
@@ -159,14 +159,14 @@
 
                   <div
                     class={[
-                      'grid gap-4 text-xs!',
+                      'gap-4 text-xs! grid',
                       licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
                     ]}
                   >
                     {#each licenseCards as card, i (i)}
                       <div
                         class={[
-                          'cg-border flex w-full flex-col items-center p-3 text-center',
+                          'cg-border p-3 flex w-full flex-col items-center text-center',
                           { 'justify-between': !!card.subtitle }
                         ]}
                       >
@@ -182,7 +182,7 @@
                 </div>
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
-                  <h6 class="mb-2! flex text-sm!">
+                  <h6 class="mb-2! text-sm! flex">
                     <Icon icon="link" block class="me-2" />
                     {m['models.extra.title']()}
                   </h6>

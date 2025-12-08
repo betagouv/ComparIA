@@ -49,10 +49,10 @@
 
 <div class="flex flex-col">
   <div
-    class="message-bot cg-border relative flex h-full flex-col overflow-scroll rounded-lg! bg-white px-5"
+    class="message-bot cg-border rounded-lg! bg-white px-5 relative flex h-full flex-col overflow-scroll"
   >
     <div>
-      <div class="sticky top-0 z-2 flex items-center bg-white pt-7 pb-5">
+      <div class="top-0 bg-white pt-7 pb-5 sticky z-2 flex items-center">
         <div class="c-bot-disk-{bot}"></div>
         <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
@@ -63,7 +63,7 @@
             <h3 class="fr-accordion__title ms-1!">
               <button
                 type="button"
-                class="fr-accordion__btn bg-transparent! text-primary!"
+                class="fr-accordion__btn text-primary! bg-transparent!"
                 aria-expanded="true"
                 aria-controls="reasoning-{message.metadata.bot}"
               >
@@ -94,10 +94,10 @@
       {/if}
     </div>
 
-    <div class="sticky bottom-0 mt-auto flex bg-white py-3">
+    <div class="bottom-0 bg-white py-3 sticky mt-auto flex">
       <Copy value={message.content} />
 
-      <div class="ms-auto flex gap-2">
+      <div class="gap-2 ms-auto flex">
         <LikeDislike
           bind:liked={reaction.liked}
           disabled={generating || disabled}
@@ -108,7 +108,7 @@
   </div>
 
   {#if reaction.liked !== null}
-    <div class="cg-border mt-3 rounded-lg! border-dashed! bg-white p-5">
+    <div class="cg-border mt-3 rounded-lg! bg-white p-5 border-dashed!">
       <LikePanel
         id={message.metadata.generation_id}
         kind={reaction.liked ? 'like' : 'dislike'}
