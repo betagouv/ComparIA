@@ -1,3 +1,4 @@
+import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import extractorSvelte from '@unocss/extractor-svelte'
 import {
   defineConfig,
@@ -21,6 +22,7 @@ export default defineConfig({
       // https://unocss.dev/presets/icons
       collections: {
         ri: () => import('@iconify-json/ri/icons.json').then((i) => i.default),
+        ai: FileSystemIconLoader('./node_modules/@lobehub/icons-static-svg/icons')
       }
     })
   ],
