@@ -7,6 +7,7 @@ import {
   presetWind4,
   transformerDirectives
 } from 'unocss'
+import { ICONS } from './src/lib/generated/models'
 
 export default defineConfig({
   extractors: [extractorSvelte()],
@@ -82,6 +83,7 @@ export default defineConfig({
     'i-ri-translate-2',
     'i-ri-bowl-line',
     'i-ri-music-2-line',
-    'i-ri-book-open-line'
+    'i-ri-book-open-line',
+    ...ICONS.map((icon) => 'i-ai-' + icon)
   ]
 })
