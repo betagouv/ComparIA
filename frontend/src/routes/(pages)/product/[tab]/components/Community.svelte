@@ -26,7 +26,7 @@
   <div class="gap-4 lg:grid-cols-2 grid">
     <section class="cg-border cl-card">
       <h3 class="fr-h5 mb-7!">
-        <Icon icon="flag-2-line" class="text-[#000091]" />
+        <Icon icon="i-ri-flag-2-line" class="text-[#000091]" />
         {m['product.community.countries.fr']()}
       </h3>
 
@@ -78,7 +78,7 @@
 
     <section class="cg-border cl-card">
       <h3 class="fr-h5">
-        <Icon icon="flag-2-line" class="text-[--red-marianne-main-472]" />
+        <Icon icon="i-ri-flag-2-line" class="text-[--red-marianne-main-472]" />
         {m['product.community.countries.da']()}
       </h3>
 

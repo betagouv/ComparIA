@@ -29,8 +29,8 @@
 
     <div class="gap-8 md:flex-row flex flex-col">
       <section class="cg-border bg-white p-4 md:p-10 basis-1/2">
-        <h3 class="gap-3 text-lg! flex items-center">
-          <Icon icon="search-eye" size="lg" block class="text-yellow" />
+        <h3 class="text-lg! gap-3 flex items-center">
+          <Icon icon="i-ri-search-eye-line" size="lg" block class="text-yellow" />
           <span>
             {m['ranking.energy.views.methodo.1.title']()}
             <span class="font-normal!">{m['ranking.energy.views.methodo.1.subTitle']()}</span>
@@ -45,8 +45,8 @@
       </section>
 
       <section class="cg-border bg-white p-4 md:p-10 basis-1/2">
-        <h3 class="gap-3 text-lg! flex items-center">
-          <Icon icon="database" size="lg" block class="text-primary" />
+        <h3 class="text-lg! gap-3 flex items-center">
+          <Icon icon="i-ri-database-2-line" size="lg" block class="text-primary" />
           {m['ranking.energy.views.methodo.2.title']()}
         </h3>
 
@@ -56,8 +56,8 @@
     </div>
 
     <section class="cg-border bg-white p-4 md:p-10">
-      <h3 class="gap-3 text-lg! flex items-center">
-        <Icon icon="leaf-line" size="lg" block class="text-green" />
+      <h3 class="text-lg! gap-3 flex items-center">
+        <Icon icon="i-ri-leaf-line" size="lg" block class="text-green" />
         {m['ranking.energy.views.methodo.3.title']()}
       </h3>
 

@@ -112,7 +112,7 @@
               value={wh.toFixed(wh < 2 ? 2 : 0)}
               units="Wh"
               desc={m['reveal.impacts.energy.label']()}
-              icon="flashlight-fill"
+              icon="i-ri-flashlight-fill"
               iconClass="text-info"
               tooltip={m['reveal.impacts.energy.tooltip']()}
               class="h-fit"
@@ -127,7 +127,7 @@
             value={co2.toFixed(co2 < 2 ? 2 : 0)}
             units="g"
             desc={m['reveal.equivalent.co2.label']()}
-            icon="cloudy-2-fill"
+            icon="i-ri-cloudy-2-fill"
             iconClass="text-[--grey-975-75-active]"
             tooltip={m['reveal.equivalent.co2.tooltip']()}
           />
@@ -137,7 +137,7 @@
             value={lightbulb}
             units={lightbulbUnit}
             desc={m['reveal.equivalent.lightbulb.label']()}
-            icon="lightbulb-fill"
+            icon="i-ri-lightbulb-fill"
             iconClass="text-yellow"
             tooltip={m['reveal.equivalent.lightbulb.tooltip']()}
           />
@@ -147,7 +147,7 @@
             value={streaming}
             units={streamingUnit}
             desc={m['reveal.equivalent.streaming.label']()}
-            icon="youtube-fill"
+            icon="i-ri-youtube-fill"
             iconClass="text-error"
             tooltip={m['reveal.equivalent.streaming.tooltip']({
               linkProps: externalLinkProps(

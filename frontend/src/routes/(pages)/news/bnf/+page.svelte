@@ -251,7 +251,7 @@
 <SeoHead title={m['seo.titles.news']()} />
 
 <main>
-  <section class="fr-container--fluid bg-very-light-grey pt-8 pb-16 md:pt-16">
+  <section class="fr-container--fluid bg-very-light-grey pb-16 pt-8 md:pt-16">
     <div class="fr-container gap-16 md:grid-cols-2 grid items-center">
       <div class="mx-auto max-w-[470px]">
         <img
@@ -319,7 +319,7 @@
           <div class="cg-border bg-white p-6">
             <div class="mb-4 flex items-center">
               <p class="mb-0! text-sm! text-grey inline-flex">
-                <Icon icon="time-line" size="sm" class="me-1" />
+                <Icon icon="i-ri-time-line" size="sm" block class="me-1" />
                 {workshop.time}
               </p>
               <Badge variant="yellow" text="Atelier" size="sm" class="ms-auto" />

@@ -76,9 +76,9 @@
       showModelsSelection = false
     }}
   >
-    <Icon icon="equalizer-fill" size="sm" class="me-2 text-primary" />
+    <Icon icon="i-ri-equalizer-fill" block size="sm" class="text-primary me-2" />
     <span class="label">{altLabel}</span>
-    <Icon icon="arrow-down-s-line" size="sm" class="md:ms-2 ms-auto" />
+    <Icon icon="i-ri-arrow-down-s-line" block size="sm" class="md:ms-2 ms-auto" />
   </Button>
 
   {#if mode == 'custom' && modelA}
@@ -170,14 +170,14 @@
                     {@render input(opt, {
                       'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : ''
                     })}
-                    <Icon icon={opt.icon} class="me-3 text-primary" />
+                    <Icon icon={opt.icon} block class="text-primary me-3" />
                     {#if opt.value != 'custom'}
                       <div>
                         <strong>{opt.label}</strong>&nbsp;: {opt.description}
                       </div>
                     {:else}
                       <strong>{opt.label}</strong>
-                      <Icon icon="arrow-right-s-line" size="sm" class="ms-auto" />
+                      <Icon icon="i-ri-arrow-right-s-line" block size="sm" class="ms-auto" />
                     {/if}
                   </label>
                 {/snippet}
@@ -234,7 +234,7 @@
                 />
 
                 <div class="gap-4 md:flex-row flex flex-col">
-                  <p class="mb-0! font-bold text-primary md:self-center">
+                  <p class="mb-0! text-primary font-bold md:self-center">
                     {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
                   </p>
 

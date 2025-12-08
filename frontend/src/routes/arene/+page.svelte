@@ -109,7 +109,11 @@
                 aria-controls="accordion-header"
                 onclick={() => (toggled = !toggled)}
               >
-                <Icon icon={toggled ? 'arrow-up-s-line' : 'arrow-down-s-line'} size="sm" block />
+                <Icon
+                  icon={toggled ? 'i-ri-arrow-up-s-line' : 'i-ri-arrow-down-s-line'}
+                  size="sm"
+                  block
+                />
                 <span class="sr-only">{m['actions.seeMore']()}</span>
               </button>
             </div>

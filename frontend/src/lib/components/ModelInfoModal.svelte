@@ -62,7 +62,7 @@
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div
-          class="fr-modal__body rounded-xl bg-light-grey! lg:max-h-[90vh]! dark:border-grey! dark:border!"
+          class="fr-modal__body bg-light-grey! lg:max-h-[90vh]! dark:border-grey! rounded-xl dark:border!"
         >
           <div class="fr-modal__header pb-0!">
             <Button
@@ -78,7 +78,7 @@
             <div class="fr-modal__content">
               <h5
                 id="{modalId}-title"
-                class="mb-3! gap-2 text-lg! font-normal! text-dark-grey flex items-center"
+                class="mb-3! text-lg! font-normal! text-dark-grey gap-2 flex items-center"
               >
                 <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
                 <div>
@@ -98,7 +98,7 @@
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
                     <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="ruler" block class="me-2 text-info" />
+                      <Icon icon="i-ri-ruler-line" block class="text-info me-2" />
                       {m['models.size.title']()}
                     </h6>
                     <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
@@ -115,7 +115,7 @@
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
                     <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="lightbulb-line" block class="me-2 text-yellow" />
+                      <Icon icon="i-ri-lightbulb-line" block class="text-yellow me-2" />
                       {m['models.arch.title']()}
                     </h6>
                     <Badge
@@ -143,7 +143,7 @@
                   <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>
                     <div class="mb-2 gap-2 flex flex-wrap">
                       <h6 class="mb-0! text-sm! flex">
-                        <Icon icon="copyright-line" block class="me-2" />
+                        <Icon icon="i-ri-copyright-line" block class="me-2" />
                         {m['models.conditions.title']()}
                       </h6>
                       <Badge {...model.badges.licenseName} size="sm" class="ms-auto self-center!" />
@@ -159,7 +159,7 @@
 
                   <div
                     class={[
-                      'gap-4 text-xs! grid',
+                      'text-xs! gap-4 grid',
                       licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
                     ]}
                   >
@@ -183,7 +183,7 @@
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
                   <h6 class="mb-2! text-sm! flex">
-                    <Icon icon="link" block class="me-2" />
+                    <Icon icon="i-ri-link" block class="me-2" />
                     {m['models.extra.title']()}
                   </h6>
 

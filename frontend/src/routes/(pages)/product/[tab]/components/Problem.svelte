@@ -10,25 +10,25 @@
 
   const alignmentCards = [
     {
-      icon: 'alignment-star',
+      icon: 'i-ri-chat-voice-ai-line',
       class: 'text-green',
       title: m['product.problem.alignment.alignment.title'](),
       ps: (['a', 'b', 'c'] as const).map((p) => m[`product.problem.alignment.alignment.${p}`]())
     },
     {
-      icon: 'database-line',
+      icon: 'i-ri-database-line',
       class: 'text-primary',
       title: m['product.problem.alignment.datasets.title'](),
       ps: (['a', 'b', 'c'] as const).map((p) => m[`product.problem.alignment.datasets.${p}`]())
     },
     {
-      icon: 'translate-2',
+      icon: 'i-ri-translate-2',
       class: 'text-orange',
       title: m['product.problem.alignment.english.title'](),
       ps: (['a', 'b', 'c'] as const).map((p) => m[`product.problem.alignment.english.${p}`]())
     },
     {
-      icon: 'question-answer-line',
+      icon: 'i-ri-question-answer-line',
       class: 'text-yellow',
       title: m['product.problem.alignment.diversity.title'](),
       ps: (['a', 'b', 'c', 'd'] as const).map((p) =>

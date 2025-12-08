@@ -6,25 +6,25 @@
     {
       desc: 'Pour découvrir concrètement les coulisses de l’IA.',
       title: 'Collèges et Lycées',
-      icon: 'school-line',
+      icon: 'i-ri-school-line',
       variant: 'text-yellow'
     },
     {
       desc: 'Pour enrichir les discussions sur l’innovation et le développement durable.',
       title: 'Universités',
-      icon: 'university',
+      icon: 'i-ri-graduation-cap-fill',
       variant: 'text-red'
     },
     {
       desc: 'Pour débattre d’un sujet de société en s’appuyant sur un exemple vécu.',
       title: 'Associations, Médiation numérique',
-      icon: 'association',
+      icon: 'i-ri-home-smile-2-line',
       variant: 'text-green'
     },
     {
       desc: 'Pour réfléchir à un usage plus responsable des outils numériques.',
       title: 'Entreprises',
-      icon: 'building-4-line',
+      icon: 'i-ri-building-4-line',
       variant: 'text-primary'
     }
   ]
@@ -126,7 +126,7 @@
         <ul class="m-0! p-0! md:ms-auto! my-auto">
           {#each ['Durée : 45min à 1h30', 'Format présentiel ou en ligne', 'Accès à compar:IA et des supports fournis', 'Atelier clé en main, accessible et interactif'] as text, i (i)}
             <li class="p-0! not-last:mb-4 md:text-lg list-none">
-              <Icon icon="checkbox-line" class="text-primary" />
+              <Icon icon="i-ri-checkbox-circle-line" class="text-primary" />
               {text}
             </li>
           {/each}
@@ -171,7 +171,7 @@
             <div class="gap-2 flex items-start">
               <div class="mt-1 gap-1 flex items-end">
                 <div class="bg-primary h-[11px] w-[11px] rounded-full"></div>
-                <span class="font-bold text-primary text-[40px]">{i + 1}</span>
+                <span class="text-primary font-bold text-[40px]">{i + 1}</span>
               </div>
               <div>
                 <h3 class="fr-h6 mb-1!">{step.title}</h3>
@@ -194,7 +194,7 @@
           <ul class="m-0! mb-13! p-0!">
             {#each ['Guide détaillé avec tout le déroulé expliqué', 'Diapositives prêtes à projeter', 'FAQ et glossaire pour répondre facilement aux questions', 'Exension Chrome pour avoir toutes ces informations à portée de main'] as text, i (i)}
               <li class="p-0! not-last:mb-3 md:text-lg list-none">
-                <Icon icon="checkbox-line" class="text-primary" />
+                <Icon icon="i-ri-checkbox-circle-line" class="text-primary" />
                 {text}
               </li>
             {/each}
@@ -219,7 +219,7 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid bg-white py-15">
+  <section class="fr-container--fluid py-15 bg-white">
     <div class="fr-container">
       <div class="lg:px-24">
         <h2 class="fr-h3 mb-8! lg:mb-10! text-center">Foire aux questions</h2>

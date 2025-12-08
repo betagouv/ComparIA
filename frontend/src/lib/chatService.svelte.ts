@@ -148,11 +148,11 @@ export interface RevealData {
 
 export const modeInfos: ModeInfos[] = (
   [
-    { value: 'random', icon: 'dice' },
-    { value: 'custom', icon: 'glass' },
-    { value: 'small-models', icon: 'leaf-line' },
-    { value: 'big-vs-small', icon: 'ruler' },
-    { value: 'reasoning', icon: 'brain' }
+    { value: 'random', icon: 'i-ri-dice-line' },
+    { value: 'custom', icon: 'i-ri-search-line' },
+    { value: 'small-models', icon: 'i-ri-leaf-line' },
+    { value: 'big-vs-small', icon: 'i-ri-ruler-line' },
+    { value: 'reasoning', icon: 'i-ri-brain-2-line' }
   ] as const
 ).map((item) => ({
   ...item,

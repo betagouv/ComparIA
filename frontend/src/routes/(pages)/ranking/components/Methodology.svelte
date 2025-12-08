@@ -91,7 +91,10 @@
               {#each ['1', '2', '3'] as const as i (i)}
                 <li class="p-0! not-last:mb-5 flex">
                   <Icon
-                    icon={card.k === 'pros' ? 'checkbox-circle-fill' : 'close-circle-fill'}
+                    icon={card.k === 'pros'
+                      ? 'i-ri-checkbox-circle-line'
+                      : 'i-ri-close-circle-fill'}
+                    block
                     class={['me-1', card.k === 'pros' ? 'text-[#58B77D]' : 'text-[#FF9575]']}
                   />
                   <span>{@html sanitize(m[`ranking.methodo.methods.${card.id}.list.${i}`]())}</span>
@@ -117,7 +120,7 @@
           <div class="rounded-sm bg-white h-[400px]">
             <WinHistogram data={modelsData['win_rate']} {minMaxY} />
           </div>
-          <div class="mt-2 mb-5 gap-5 flex">
+          <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
@@ -151,7 +154,7 @@
           <div class="rounded-sm bg-white h-[400px]">
             <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
           </div>
-          <div class="mt-2 mb-5 gap-5 flex">
+          <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}

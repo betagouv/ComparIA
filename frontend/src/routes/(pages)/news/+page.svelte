@@ -29,7 +29,7 @@
     resource: {
       title: 'Ressources',
       variant: 'light-info',
-      icon: 'book-ai-fill',
+      icon: 'i-ri-book-ai-fill',
       subKinds: [
         { id: 'comparia', label: 'Organisé par compar:IA' },
         { id: 'blog', label: 'Billet de blog' },
@@ -39,7 +39,7 @@
     talk: {
       title: 'Prises de parole',
       variant: 'purple',
-      icon: 'speak-ai-fill',
+      icon: 'i-ri-speak-ai-fill',
       subKinds: [
         { id: 'podcast', label: 'Podcast', linkLabel: 'Écouter le podcast' },
         { id: 'webinar', label: 'Webinaire', linkLabel: 'Revoir le webinaire' },
@@ -51,7 +51,7 @@
     media: {
       title: 'Médias',
       variant: 'green-tilleul',
-      icon: 'megaphone-fill',
+      icon: 'i-ri-megaphone-fill',
       subKinds: [
         { id: 'analyze', label: 'Analyse' },
         { id: 'press', label: 'Presse écrite', linkLabel: "Lire l'article" },
@@ -243,7 +243,7 @@
                       {#if news.pinned}
                         <li class="m-0!">
                           <Badge id="card-badge-kind" variant="red" size="xs" noTooltip>
-                            <Icon icon="pushpin-fill" size="xxs" />
+                            <Icon icon="i-ri-pushpin-fill" size="xxs" />
                           </Badge>
                         </li>
                       {/if}
@@ -282,7 +282,7 @@
                       >
                         {news.linkLabel}
                         {#if news.href.startsWith('/')}
-                          <Icon icon="arrow-right-line" size="xs" />
+                          <Icon icon="i-ri-arrow-right-line" size="xs" />
                         {/if}
                       </Link>
                     </p>
