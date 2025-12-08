@@ -252,7 +252,7 @@
 
 <main>
   <section class="fr-container--fluid bg-very-light-grey pt-8 pb-16 md:pt-16">
-    <div class="fr-container grid items-center gap-16 md:grid-cols-2">
+    <div class="fr-container gap-16 md:grid-cols-2 grid items-center">
       <div class="mx-auto max-w-[470px]">
         <img
           class="mb-4"
@@ -290,7 +290,7 @@
     <div class="fr-container">
       <h3 class="text-center">Les conférences</h3>
 
-      <div class="grid gap-8 md:grid-cols-2">
+      <div class="gap-8 md:grid-cols-2 grid">
         {#each talks as talk, i (i)}
           <div class="cg-border bg-white p-6">
             <iframe
@@ -314,11 +314,11 @@
     <div class="fr-container pt-15">
       <h3 class="my-12! text-center">Les ateliers</h3>
 
-      <div class="grid grid-cols-3 gap-6">
+      <div class="gap-6 grid grid-cols-3">
         {#each workshops as workshop, i (i)}
           <div class="cg-border bg-white p-6">
             <div class="mb-4 flex items-center">
-              <p class="mb-0! inline-flex text-sm! text-grey">
+              <p class="mb-0! text-sm! text-grey inline-flex">
                 <Icon icon="time-line" size="sm" class="me-1" />
                 {workshop.time}
               </p>
@@ -335,14 +335,14 @@
 
   <section class="py-15">
     <h3 class="text-center">Les intervenant·es</h3>
-    <div class="fr-container grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div class="fr-container gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid">
       {#each speakers as speaker (speaker.name)}
-        <div class="cg-border flex flex-col bg-light-grey p-7">
-          <img class="w-full rounded-lg" src={speaker.img} alt="" />
+        <div class="cg-border bg-light-grey p-7 flex flex-col">
+          <img class="rounded-lg w-full" src={speaker.img} alt="" />
           <h6 class="my-2!">{speaker.name}</h6>
           <p class="text-sm! text-grey">{speaker.desc}</p>
 
-          <div class="mt-auto flex flex-wrap gap-2">
+          <div class="gap-2 mt-auto flex flex-wrap">
             {#each speaker.logos as logo, i (`${speaker.name}-${i}`)}
               <img
                 src={logo.src}
@@ -358,7 +358,7 @@
     </div>
   </section>
 
-  <section class="flex flex-col items-center bg-light-grey">
+  <section class="bg-light-grey flex flex-col items-center">
     <div class="fr-container md:w-1/2!">
       <h4 class="mt-12! text-center">À propos de la journée compar:IA</h4>
       <p class="text-center">
@@ -376,7 +376,7 @@
     </div>
 
     <div
-      class="fr-container mb-12! flex max-w-full flex-wrap justify-center gap-6 *:max-h-[100px] *:object-contain"
+      class="fr-container mb-12! gap-6 flex max-w-full flex-wrap justify-center *:max-h-[100px] *:object-contain"
     >
       <img src="/orgs/minicult.svg" alt="Ministère de la Culture" title="Ministère de la Culture" />
       <img

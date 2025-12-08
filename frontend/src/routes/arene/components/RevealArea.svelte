@@ -26,21 +26,21 @@
 </script>
 
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
-  <div class="grid gap-5 lg:grid-cols-2 lg:gap-6">
+  <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid">
     {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
       {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
       {@const wh = kwh * 1000}
 
-      <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
+      <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex flex-col">
         <div>
-          <h5 class="fr-h6 mb-4! flex items-center gap-2 text-dark-grey!">
+          <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
             <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
             {#if selected === side}
               <div
-                class="ms-auto rounded-[3.75rem] border border-primary bg-(--blue-france-975-75) px-3 text-[14px] font-bold text-primary"
+                class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px]"
               >
                 {m['vote.yours']()}
               </div>
@@ -55,19 +55,19 @@
           {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
         </div>
 
-        <h6 class="mt-auto! mb-5! text-base!">
+        <h6 class="mb-5! text-base! mt-auto!">
           {m['reveal.impacts.title']()}
           <Tooltip id="impact-{side}" text={m['reveal.impacts.tooltip']()} />
         </h6>
         <div class="flex">
-          <div class="flex basis-1/2 flex-col md:basis-2/3 md:flex-row">
-            <div class="relative md:w-full">
+          <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
+            <div class="md:w-full relative">
               <MiniCard
                 id="params-{side}"
                 value={model.params}
                 desc={m['reveal.impacts.size.label']()}
                 tooltip={m['models.openWeight.tooltips.params']()}
-                class="z-1 -mb-2 h-full bg-white "
+                class="-mb-2 bg-white z-1 h-full "
               >
                 {m['reveal.impacts.size.count']()}
                 {#if model.distribution === 'api-only'}
@@ -78,9 +78,9 @@
                 {/if}
               </MiniCard>
               <div
-                class="cg-border absolute z-0 flex w-full rounded-sm! bg-(--beige-gris-galet-950-100) p-1 ps-3 pt-2 text-[11px] leading-normal"
+                class="cg-border rounded-sm! p-1 ps-3 pt-2 leading-normal absolute z-0 flex w-full bg-[--beige-gris-galet-950-100] text-[11px]"
               >
-                <span class="text-(--beige-gris-galet-sun-407-moon-821)">
+                <span class="text-[--beige-gris-galet-sun-407-moon-821]">
                   {model.badges.arch.text}
                 </span>
                 <Tooltip
@@ -92,7 +92,7 @@
               </div>
             </div>
 
-            <strong class="m-auto mb-1 text-[20px] md:mx-1 md:my-auto">×</strong>
+            <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
 
             <MiniCard
               id="tokens-{side}"
@@ -104,7 +104,7 @@
             />
           </div>
 
-          <div class="flex basis-1/2 items-center md:basis-1/3">
+          <div class="md:basis-1/3 flex basis-1/2 items-center">
             <strong class="m-auto">≈</strong>
 
             <MiniCard
@@ -121,14 +121,14 @@
         </div>
 
         <h6 class="mt-9! mb-5! text-base! md:mt-14!">{m['reveal.equivalent.title']()}</h6>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="gap-2 grid grid-cols-3">
           <MiniCard
             id="co2-{side}"
             value={co2.toFixed(co2 < 2 ? 2 : 0)}
             units="g"
             desc={m['reveal.equivalent.co2.label']()}
             icon="cloudy-2-fill"
-            iconClass="text-(--grey-975-75-active)"
+            iconClass="text-[--grey-975-75-active]"
             tooltip={m['reveal.equivalent.co2.tooltip']()}
           />
 
@@ -172,13 +172,13 @@
   </div>
 
   <div class="feedback py-7">
-    <div class="fr-container flex flex-col items-center gap-4 md:max-w-[280px]!">
+    <div class="fr-container md:max-w-[280px]! gap-4 flex flex-col items-center">
       <Link
         button
         icon="edit-line"
         href="../arene/?cgu_acceptees"
         text={m['header.chatbot.newDiscussion']()}
-        class="w-full! md:hidden!"
+        class="md:hidden! w-full!"
       />
 
       <!-- TODO missing share page, hide btn for now -->
@@ -214,7 +214,7 @@
                 <p class="mb-0! text-sm!">
                   {m['reveal.feedback.description']()}
                 </p>
-                <div class="flex flex-wrap gap-3 py-8">
+                <div class="gap-3 py-8 flex flex-wrap">
                   <input
                     bind:this={shareInput}
                     type="text"
@@ -246,7 +246,7 @@
 {#if ['fr', 'en'].includes(locale)}
   <section class="fr-container--fluid bg-light-info">
     <div class="fr-container">
-      <div class="flex flex-col gap-x-15 gap-y-10 py-8 md:flex-row lg:gap-x-30 lg:px-15">
+      <div class="gap-x-15 lg:gap-x-30 lg:px-15 gap-y-10 py-8 md:flex-row flex flex-col">
         <div class="flex max-w-[350px] flex-col">
           <h5 class="font mb-3!">{m['reveal.thanks.title']()}</h5>
           <p class="mb-8!">{m['reveal.thanks.desc']()}</p>
@@ -257,19 +257,19 @@
             href="/ranking"
             icon="trophy-line"
             text={m['reveal.thanks.cta']()}
-            class="w-full! sm:w-auto!"
+            class="sm:w-auto! w-full!"
           />
         </div>
 
         <div class="relative flex max-w-[640px] items-start">
           <img
             src="/arena/ranking-table.png"
-            class="-me-[30%] w-full max-w-[400px] rounded-xl shadow-md md:-me-[10%]"
+            class="rounded-xl shadow-md md:-me-[10%] -me-[30%] w-full max-w-[400px]"
             alt={m['reveal.thanks.rankingAlt']()}
           />
           <img
             src="/arena/ranking-graph.png"
-            class="mt-[30px] w-full max-w-[300px] rounded-xl shadow-md"
+            class="rounded-xl shadow-md mt-[30px] w-full max-w-[300px]"
             alt={m['reveal.thanks.graphAlt']()}
           />
         </div>

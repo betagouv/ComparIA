@@ -56,7 +56,7 @@
     <div
       aria-hidden="true"
       class={[
-        'w-full text-end text-sm text-[#3A3A3A]',
+        'text-sm w-full text-end text-[#3A3A3A]',
         { 'ms-2 w-auto! text-start leading-[1.5rem]': !inline },
         checkLabelClass
       ]}

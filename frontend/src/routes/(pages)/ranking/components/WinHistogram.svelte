@@ -72,7 +72,7 @@
     text {
       font-size: 12px;
       text-anchor: end;
-      fill: var(--color-black);
+      fill: var(--grey-0-1000);
 
       &.rotated {
         transform: rotate(-65deg) translate(-20px, 30px);
@@ -80,7 +80,7 @@
     }
 
     line {
-      stroke: var(--color-black);
+      stroke: var(--grey-0-1000);
     }
   }
 </style>

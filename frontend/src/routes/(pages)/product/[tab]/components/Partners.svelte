@@ -8,7 +8,7 @@
   const i18nData = getI18nContext()
 </script>
 
-<div class="grid gap-8 lg:grid-cols-2">
+<div class="gap-8 lg:grid-cols-2 grid">
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
       <Icon icon="government-line" size="lg" class="me-1 text-primary" />
@@ -78,7 +78,7 @@
         button
         href="mailto:{i18nData.contact}"
         text={m['product.partners.diffusion.cta']()}
-        class="w-full! sm:w-auto!"
+        class="sm:w-auto! w-full!"
       />
     </section>
 
@@ -99,7 +99,7 @@
         button
         href="mailto:{i18nData.contact}"
         text={m['actions.contactUs']()}
-        class="w-full! sm:w-auto!"
+        class="sm:w-auto! w-full!"
       />
     </section>
   {/if}
@@ -126,6 +126,6 @@
     @apply bg-very-light-info p-4 md:p-8;
   }
   .cl-logos {
-    @apply my-4 flex flex-wrap gap-8 *:object-contain;
+    @apply my-4 gap-8 flex flex-wrap *:object-contain;
   }
 </style>

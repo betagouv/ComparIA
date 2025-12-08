@@ -39,7 +39,7 @@
 </script>
 
 <div class="py-10">
-  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+  <div class="gap-6 md:grid-cols-2 xl:grid-cols-4 grid">
     <h2 class="fr-h3 mb-3! leading-11!">
       {@html sanitize(m['product.problem.title']({ props: 'class="text-orange"' }))}
     </h2>
@@ -47,24 +47,24 @@
     {#each diversityCards as card, i (i)}
       <section class="cg-border p-5">
         <h3 class="mb-3! text-base!">{card.title}</h3>
-        <p class="text-start! text-sm!">{card.desc}</p>
+        <p class="text-sm! text-start!">{card.desc}</p>
       </section>
     {/each}
   </div>
 
   <div class="mt-17">
-    <h3 class="fr-h5 text-center text-primary!">{m['product.problem.alignment.title']()}</h3>
+    <h3 class="fr-h5 text-primary! text-center">{m['product.problem.alignment.title']()}</h3>
     <p class="fr-h5 text-center!">{m['product.problem.alignment.desc']()}</p>
   </div>
 
-  <div class="mt-12 grid gap-6 md:grid-cols-2">
+  <div class="mt-12 gap-6 md:grid-cols-2 grid">
     {#each alignmentCards as card, i (i)}
       <section class="cg-border bg-very-light-grey px-5 py-6">
         <Icon icon={card.icon} block class={card.class + ' mb-3'} />
         <h4 class="fr-h6 mb-3!">{card.title}</h4>
 
         {#each card.ps as p, j (j)}
-          <p class="mb-3! text-[12px]! leading-normal!">{@html sanitize(p)}</p>
+          <p class="mb-3! leading-normal! text-[12px]!">{@html sanitize(p)}</p>
         {/each}
       </section>
     {/each}

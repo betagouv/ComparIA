@@ -23,14 +23,14 @@
   <h2 class="fr-h4">
     {m['product.community.title']()}
   </h2>
-  <div class="grid gap-4 lg:grid-cols-2">
+  <div class="gap-4 lg:grid-cols-2 grid">
     <section class="cg-border cl-card">
       <h3 class="fr-h5 mb-7!">
         <Icon icon="flag-2-line" class="text-[#000091]" />
         {m['product.community.countries.fr']()}
       </h3>
 
-      <div class="my-6 flex flex-col gap-8">
+      <div class="my-6 gap-8 flex flex-col">
         <div class="cl-logos gap-2">
           <img src="/orgs/etalab.svg" alt="Etalab" title="Etalab" width="235px" />
           <img
@@ -78,11 +78,11 @@
 
     <section class="cg-border cl-card">
       <h3 class="fr-h5">
-        <Icon icon="flag-2-line" class="text-(--red-marianne-main-472)" />
+        <Icon icon="flag-2-line" class="text-[--red-marianne-main-472]" />
         {m['product.community.countries.da']()}
       </h3>
 
-      <div class="my-6 flex flex-col gap-8">
+      <div class="my-6 gap-8 flex flex-col">
         <div class="cl-logos">
           <img
             src="/orgs/countries/da-light.png"
@@ -105,11 +105,11 @@
     {m['product.community.teams.fr.title']()}
   </h2>
 
-  <div class="grid gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
+  <div class="gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3 grid">
     {#each frTeam as person (person.key)}
-      <div class="cg-border cl-card flex gap-5 p-4!">
+      <div class="cg-border cl-card p-4! gap-5 flex">
         <div
-          class="relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:bg-primary after:opacity-10 after:content-['']"
+          class="after:bg-primary after:inset-0 relative h-[100px] min-w-[100px] after:absolute after:rounded-full after:opacity-10 after:content-['']"
         >
           <img
             src={'/product/community/' + person.imgSrc}
@@ -120,8 +120,8 @@
         </div>
         <div class="flex flex-col">
           <p class="mb-2! font-bold">{person.name}</p>
-          <p class="mb-0! text-[12px]! leading-normal! text-grey">{person.job}</p>
-          <p class="mt-auto! mb-0! text-[10px]! leading-normal!">{person.date}</p>
+          <p class="mb-0! leading-normal! text-grey text-[12px]!">{person.job}</p>
+          <p class="mb-0! leading-normal! mt-auto! text-[10px]!">{person.date}</p>
         </div>
       </div>
     {/each}

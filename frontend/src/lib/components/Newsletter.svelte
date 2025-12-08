@@ -37,7 +37,7 @@
 </script>
 
 <div class="mt-3 text-center">
-  <div class="inline-block bg-light-info p-3">
+  <div class="bg-light-info p-3 inline-block">
     <Link href="#" text="Haut de page" icon="arrow-up-line" class="pb-1!" />
   </div>
 </div>

@@ -28,7 +28,7 @@
 </script>
 
 <div class="pb-4">
-  <div class="flex flex-col items-center gap-10 lg:flex-row lg:gap-20">
+  <div class="gap-10 lg:flex-row lg:gap-20 flex flex-col items-center">
     <div class="md:basis-1/3">
       <h2 class="fr-h3 leading-11!">
         {@html sanitize(m['product.comparator.title']({ props: 'class="text-primary"' }))}
@@ -38,15 +38,15 @@
         button
         href="/arene"
         text={m['product.comparator.cta']()}
-        class="w-full! sm:w-auto! lg:mt-13"
+        class="sm:w-auto! lg:mt-13 w-full!"
       />
     </div>
 
-    <div class="rounded-[28px] bg-[#686868] p-4">
+    <div class="p-4 rounded-[28px] bg-[#686868]">
       <img
         src={chatbotScreenshotSrc}
         alt={m['product.comparator.screenshotAlt']()}
-        class="w-full max-w-[622px] rounded-2xl"
+        class="rounded-2xl w-full max-w-[622px]"
       />
     </div>
   </div>
@@ -54,7 +54,7 @@
   <div class="py-15 lg:py-20">
     <h3 class="fr-h4 md:text-center">{m['product.comparator.challenges.title']()}</h3>
 
-    <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <div class="mt-10 gap-6 md:grid-cols-2 xl:grid-cols-4 grid">
       {#each challengesCards as card, i (i)}
         <div class="cg-border px-4 py-5 md:px-8 md:py-6">
           <Icon icon={card.icon} block class={card.class + ' mb-5'} />
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <div class="cg-border grid gap-10 bg-light-grey px-4 py-10 md:grid-cols-2">
+  <div class="cg-border bg-light-grey gap-10 px-4 py-10 md:grid-cols-2 grid">
     <div class="flex">
       <img
         src="/product/comparia-europe.png"
@@ -90,7 +90,7 @@
         button
         href="mailto:{i18nData.contact}"
         text={m['actions.contactUs']()}
-        class="w-full! sm:w-auto!"
+        class="sm:w-auto! w-full!"
       />
     </div>
   </div>

@@ -38,16 +38,16 @@
       <div class="fr-col-12 fr-col-md-8 fr-col-lg-9">
         <div class="fr-modal__body rounded-xl">
           <div class="fr-modal__content mb-0! px-0!">
-            <div class="grid-cols-2 md:grid">
+            <div class="md:grid grid-cols-2">
               <div class="px-7 pt-10 pb-7">
                 <h2 id="fr-modal-title-modal-welcome" class="fr-modal__title mb-0! text-primary!">
                   {m['welcome.title']()}
                 </h2>
               </div>
-              <div class="hidden bg-light-grey md:block"></div>
+              <div class="bg-light-grey md:block hidden"></div>
             </div>
 
-            <div class="grid-cols-2 md:grid">
+            <div class="md:grid grid-cols-2">
               <div class="px-7">
                 {#each pratices as { label, icon } (label)}
                   <div class="mb-7 md:last-of-type:mb-0">
@@ -75,9 +75,9 @@
               </div>
             </div>
 
-            <div class="grid-cols-2 md:grid">
-              <div class="hidden md:block"></div>
-              <div class="flex justify-end bg-light-grey px-7 py-7">
+            <div class="md:grid grid-cols-2">
+              <div class="md:block hidden"></div>
+              <div class="bg-light-grey px-7 py-7 flex justify-end">
                 <Button
                   text={m['welcome.go']()}
                   aria-controls="fr-modal-welcome"
