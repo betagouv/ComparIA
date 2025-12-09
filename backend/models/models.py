@@ -36,10 +36,8 @@ from pydantic import (
 )
 from pydantic_core import PydanticCustomError
 
+from backend.config import FRONTEND_PATH, ROOT_PATH
 from backend.models.utils import convert_range_to_value, get_llm_impact
-
-ROOT_PATH = Path(__file__).parent.parent
-FRONTEND_PATH = ROOT_PATH / "frontend"
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories

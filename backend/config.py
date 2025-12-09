@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from httpx import Timeout
 from pydantic_settings import BaseSettings
 
@@ -26,6 +28,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+BACKEND_PATH = Path(__file__).parent
+ROOT_PATH = BACKEND_PATH.parent
+FRONTEND_PATH = ROOT_PATH / "frontend"
+
+MODELS_DATA_PATH = ROOT_PATH / "utils" / "models" / "generated-models.json"
 
 # HTTP timeout for API calls to LLM providers
 # Structure: total timeout, read, write, connect (all in seconds)
