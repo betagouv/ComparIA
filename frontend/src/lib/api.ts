@@ -2,7 +2,7 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
-import { getCurrentCohorts } from '$lib/stores/cohortStore.svelte'
+import { getCohortContext } from '$lib/stores/cohortStore.svelte'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
@@ -144,7 +144,7 @@ export const api = {
       )
 
       // Send cohort information to backend if not already sent
-      this.sendCohortsToBackend()
+      this.sendCurrentCohortsToBackend()
 
       return this.client
     } catch (error) {
@@ -273,22 +273,22 @@ export const api = {
    * Send cohort information to backend via /cohorts endpoint.
    * This should be called when session hash is available.
    */
-  async sendCohortsToBackend() {
+  async sendCurrentCohortsToBackend() {
     // Only send once per session
     if (this.cohortsSent || !this.client?.session_hash) {
       return
     }
 
     // Get cohort from sessionStorage (set by client-side detection)
-    const cohorts = getCurrentCohorts()
+    const cohortsCommaSepareted: string = getCohortContext()
 
-    // Only send if we have a cohort (do-not-track)
-    if (cohorts.includes('do-not-track')) {
+    // Only send if we have a cohort (not '')
+    if (cohortsCommaSepareted) {
       try {
         // Backend now expects JSON with Pydantic model
         const requestBody = {
           session_hash: this.client.session_hash,
-          cohorts: cohorts // Send as array, backend will handle it
+          cohorts: cohortsCommaSepareted
         }
 
         const response = await fetch(`${this.url}/cohorts`, {
@@ -312,4 +312,7 @@ export const api = {
       }
     }
   }
+
+
+
 }

@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from languia.session import store_cohorts_redis
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from languia.block_arena import demo
@@ -108,19 +109,18 @@ async def counter(
 
 
 @app.post("/cohorts", response_class=JSONResponse)
-async def set_cohorts(request: CohortRequest):
+async def define_current_cohorts(request: CohortRequest):
     """
-    Route pour définir la cohorte de ne pas suivre pour une session.
+    Route pour définir les cohortes pour une session.
 
     Args:
         request: La requête FastAPI
         session_hash: Identifiant unique de la session
-        cohort: Nom de la cohorte (par défaut "do-not-track")
+        cohorts: liste de noms de cohorte comma separated
 
     Returns:
         JSONResponse: Statut du suivi de cohorte
     """
-    from languia.session import set_do_not_track
 
     if not request.session_hash:
         return JSONResponse(
@@ -131,18 +131,16 @@ async def set_cohorts(request: CohortRequest):
             },
             status_code=400,
         )
-
-    # Définir le suivi de cohorte
-    success = set_do_not_track(request.session_hash, ",".join(request.cohorts))
-
-    # Vérifier le statut actuel
-    # tracking_info = get_do_not_track(session_hash)
+    
+    if request.cohorts:
+        cohorts_comma_separated: str = request.cohorts
+        success = store_cohorts_redis(request.session_hash, cohorts_comma_separated)
 
     return JSONResponse(
         {
             "success": success,
             "session_hash": request.session_hash,
-            "tracking_info": ",".join(request.cohorts),
+            "tracking_info": cohorts_comma_separated,
         }
     )
 

@@ -8,6 +8,7 @@ and provides session state management.
 import redis
 import os
 import logging
+from typing import List
 
 # Redis connection configuration
 redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
@@ -60,13 +61,13 @@ def is_ratelimited(ip: str):
         return False
 
 
-def set_do_not_track(session_hash: str, cohorts: str = "do-not-track"):
+def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
     """
     Stocke dans Redis une indication de ne pas suivre pour une session donnée.
 
     Args:
         session_hash: Identifiant unique de la session
-        cohorts: Nom de la cohorte (par défaut "do-not-track")
+        cohorts_comma_separated: Liste des cohortes à stocker sous forme d'une chaine comma separated
 
     Returns:
         bool: True si l'opération a réussi, False sinon
@@ -76,15 +77,15 @@ def set_do_not_track(session_hash: str, cohorts: str = "do-not-track"):
 
     try:
         # Stocke la clé avec une expiration de 24 heures
-        r.setex(f"do_no_track:{session_hash}", 86400, cohorts)
+        r.setex(f"cohorts:{session_hash}", 86400, cohorts_comma_separated)
         return True
     except Exception as e:
         logger = logging.getLogger("languia")
-        logger.error(f"Error setting do_not_track in Redis: {e}")
+        logger.error(f"Error storing cohorts in Redis: {e}")
         return False
 
 
-def get_do_not_track(session_hash: str):
+def retrieve_cohorts_redis(session_hash: str):
     """
     Vérifie si une session a une indication de ne pas suivre.
 
@@ -92,30 +93,23 @@ def get_do_not_track(session_hash: str):
         session_hash: Identifiant unique de la session
 
     Returns:
-        dict: Dictionnaire avec les clés:
-            - 'do_not_track': bool (True si trouvé, False sinon)
-            - 'cohorts': str|None (Nom de la cohorte si trouvée, None sinon)
-            - 'status': str (description claire du statut)
+        - 'cohorts_comma_separated': str|None - Optionnel, Nom des cohortes comma separated ou None
     """
     if not redis_host:
-        return {"do_not_track": False, "cohorts": None, "status": "redis not available"}
+        return None
 
     try:
-        cohorts = r.get(f"do_no_track:{session_hash}")
-        if cohorts:
-            return {
-                "do_not_track": True,
-                "cohorts": cohorts,
-                "status": f"found and cohorts={cohorts}",
-            }
+        cohorts_comma_separated = r.get(f"cohorts:{session_hash}")
+        
+        if cohorts_comma_separated:
+            return cohorts_comma_separated
+        else:
+            return None
+        
     except Exception as e:
         logger = logging.getLogger("languia")
-        logger.error(f"Error getting do_not_track from Redis: {e}")
-        return {
-            "do_not_track": False,
-            "cohorts": None,
-            "status": "false, cohorts not found in do not track so you can track (Redis error)",
-        }
+        logger.error(f"Error getting cohort list from Redis: {e}")
+        return None
 
 
 # Draft session class and methods

@@ -18,7 +18,10 @@ import logging
 
 import datetime
 
+from typing import List
 
+
+from languia.models import Conversation
 from languia.utils import (
     get_chosen_model_name,
     messages_to_dict_list,
@@ -996,7 +999,11 @@ def upsert_conv_to_db(data):
 
 
 def record_conversations(
-    app_state_scoped, conversations, request: gr.Request, locale=None, cohorts=None
+    app_state_scoped,
+    conversations: List[Conversation],
+    request: gr.Request,
+    locale:str|None=None,
+    cohorts_comma_separated:str|None=None
 ):
     """
     Record complete conversation pair to database and JSON log files.
@@ -1013,6 +1020,7 @@ def record_conversations(
         conversations: List of 2 Conversation objects
         request: Gradio request object with session_hash, IP, cookies
         locale: Country portal code (e.g., "fr", "en") - optional
+        cohorts_comma_separated: Liste de nom de cohorts sous for de str comma separated ou None
 
     Returns:
         dict: Conversation record saved, including:
@@ -1093,7 +1101,7 @@ def record_conversations(
         "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
         "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
         "country_portal": locale,
-        "cohorts": cohorts,
+        "cohorts": cohorts_comma_separated,
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
