@@ -24,28 +24,9 @@ import sentry_sdk
 from languia.logs import JSONFormatter, PostgresHandler
 from languia.models import filter_enabled_models
 
-# Debug mode flag from environment variable
-env_debug = os.getenv("LANGUIA_DEBUG")
-
-
 # Models that should not be sampled/selected (can be populated from config)
 unavailable_models = []
 
-# Parse debug flag from environment
-if env_debug:
-    debug = env_debug.lower() == "true"
-else:
-    debug = False
-
-
-# Directory for local JSON log files (fallback storage)
-LOGDIR = os.getenv("LOGDIR", "./data")
-
-# PostgreSQL connection string for database persistence
-db = os.getenv("COMPARIA_DB_URI", None)
-
-# Enable PostgreSQL logging handler (can be disabled for testing)
-enable_postgres_handler = True
 
 if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
