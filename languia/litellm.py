@@ -91,7 +91,7 @@ def litellm_stream_iter(
     mock_response = os.getenv("MOCK_RESPONSE")
     if mock_response:
         logger = logging.getLogger("languia")
-        logger.warning(f"MOCK_RESPONSE enabled with value: {mock_response}")
+        logger.warning(f"MOCK_RESPONSE enabled")
 
     # Build parameters for LiteLLM API call
     kwargs = {
@@ -112,7 +112,9 @@ def litellm_stream_iter(
 
     # Use mock response for testing if enabled
     if mock_response:
-        kwargs["mock_response"] = mock_response
+        kwargs["mock_response"] = (
+            "This is a fake response that didn't contact the LLM api."
+        )
 
     # Request token usage reporting (except for Aya which doesn't support it)
     if "c4ai-aya-expanse-32b" not in model_name:
