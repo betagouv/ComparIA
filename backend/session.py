@@ -5,12 +5,11 @@ This module handles per-IP rate limiting to prevent abuse of expensive model API
 and provides session state management.
 """
 
-import redis
-import os
 import logging
+import os
 from typing import List
 
-try: 
+try:
     # Redis connection configuration
     redis_host = os.getenv("COMPARIA_REDIS_HOST", "localhost")
     # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
@@ -74,14 +73,38 @@ def is_ratelimited(ip: str):
 
 def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
     """
-    Stocke dans Redis une indication de ne pas suivre pour une session donnée.
+    <<<<<<< HEAD:languia/session.py
+        Stocke dans Redis une indication de ne pas suivre pour une session donnée.
+    =======
+        Represents a user session with conversation history and metadata.
 
-    Args:
-        session_hash: Identifiant unique de la session
-        cohorts_comma_separated: Liste des cohortes à stocker sous forme d'une chaine comma separated
+        Attributes:
+            session_hash: Unique identifier for the session (from Gradio)
+            conversations: Tuple of two conversation dicts (model A and B)
+            ip: User's IP address
+            total_input_chars: Total character count for rate limiting
+    """
 
-    Returns:
-        bool: True si l'opération a réussi, False sinon
+    session_hash: str | None
+    conversations: tuple[dict, dict]
+    # Future fields for votes and reactions
+    # vote: Vote | None
+    # reactions: dict = []
+    ip: str | None
+    total_input_chars: int = 0
+
+
+def save_session(session: Session):
+    """
+        Save session state to Redis for later retrieval.
+    >>>>>>> 934fa8b0 (refactor(back): move session file):backend/session.py
+
+        Args:
+            session_hash: Identifiant unique de la session
+            cohorts_comma_separated: Liste des cohortes à stocker sous forme d'une chaine comma separated
+
+        Returns:
+            bool: True si l'opération a réussi, False sinon
     """
     if not redis_host:
         logger = logging.getLogger("languia")
@@ -91,7 +114,9 @@ def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
     try:
         # Stocke la clé avec une expiration de 24 heures
         expire_time = 86400
-        logger.info(f"[COHORT] Storing in Redis: cohorts:{session_hash} = {cohorts_comma_separated} (expire={expire_time}s)")
+        logger.info(
+            f"[COHORT] Storing in Redis: cohorts:{session_hash} = {cohorts_comma_separated} (expire={expire_time}s)"
+        )
         r.setex(f"cohorts:{session_hash}", expire_time, cohorts_comma_separated)
         logger.info(f"[COHORT] Successfully stored in Redis")
         return True
@@ -115,7 +140,9 @@ def retrieve_cohorts_redis(session_hash: str):
     logger = logging.getLogger("languia")
     try:
         cohorts_comma_separated = r.get(f"cohorts:{session_hash}")
-        logger.info(f"[COHORT] Retrieved from Redis for {session_hash}: {cohorts_comma_separated}")
+        logger.info(
+            f"[COHORT] Retrieved from Redis for {session_hash}: {cohorts_comma_separated}"
+        )
 
         if cohorts_comma_separated:
             return cohorts_comma_separated
