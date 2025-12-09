@@ -68,7 +68,7 @@ class CustomDropdown(FormComponent):
         elem_classes: list[str] | str | None = None,
         render: bool = True,
         key: int | str | None = None,
-        models: list[dict] | None,
+        # models: list[dict] | None,
     ):
         """
         Parameters:
@@ -114,7 +114,7 @@ class CustomDropdown(FormComponent):
                 "mode": "random",
                 "custom_models_selection": [],
             }
-        self.models = models
+        # self.models = models
         self.max_choices = max_choices
         self.filterable = filterable
         super().__init__(
