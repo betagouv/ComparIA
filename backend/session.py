@@ -9,14 +9,14 @@ import os
 
 import redis
 
+from backend.config import RATELIMIT_PRICEY_MODELS_INPUT, settings
+
 # Redis connection configuration
-redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
+redis_host = settings.COMPARIA_REDIS_HOST
 # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
 
 # Initialize Redis client (decode_responses=True returns strings instead of bytes)
 r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
-
-from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
 
 
 def increment_input_chars(ip: str, input_chars: int):
