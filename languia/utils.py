@@ -9,13 +9,13 @@ This module provides helper functions for:
 - Data transformation for API calls and storage
 """
 
-import numpy as np
-import os
-
-from gradio import Request
-from typing import TYPE_CHECKING
-import gradio as gr
 import logging
+import os
+from typing import TYPE_CHECKING
+
+import gradio as gr
+import numpy as np
+from gradio import Request
 
 if TYPE_CHECKING:
     from backend.models import Endpoint
@@ -369,8 +369,9 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     Returns:
         list: [model_left, model_right] - pair of model names, randomly swapped
     """
-    from languia.config import big_models, small_models, random_pool
     import random
+
+    from backend.models.data import big_models, random_pool, small_models
 
     if mode == "big-vs-small":
         # Compare large models against small models
