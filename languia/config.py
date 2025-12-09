@@ -11,18 +11,12 @@ Handles:
 - Rate limiting thresholds
 """
 
-import datetime
-import logging
 import os
 import sys
-from logging.handlers import WatchedFileHandler
-from pathlib import Path
 
-import json5
 import sentry_sdk
 
-from languia.logs import JSONFormatter, PostgresHandler
-from languia.models import filter_enabled_models
+from backend import logger
 
 # Models that should not be sampled/selected (can be populated from config)
 unavailable_models = []
@@ -33,13 +27,6 @@ if os.getenv("GIT_COMMIT"):
 else:
     git_commit = None
 
-if not debug:
-    assets_absolute_path = "/app/assets"
-else:
-    assets_absolute_path = os.path.abspath(
-        os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
-    )
-    # print("assets_absolute_path: "+assets_absolute_path)
 if os.getenv("SENTRY_SAMPLE_RATE"):
     traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
 else:

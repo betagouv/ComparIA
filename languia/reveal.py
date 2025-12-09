@@ -15,10 +15,6 @@ Functions:
 
 import logging
 
-from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
-
-from languia.utils import get_active_params, get_total_params, sum_tokens
-
 
 def calculate_lightbulb_consumption(impact_energy_value):
     """
@@ -160,8 +156,8 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
     data = {
         "a": conv_a.model_name,  # Model A identifier
         "b": conv_b.model_name,  # Model B identifier
-        "ta": model_a_tokens,    # Model A token count
-        "tb": model_b_tokens,    # Model B token count
+        "ta": model_a_tokens,  # Model A token count
+        "tb": model_b_tokens,  # Model B token count
     }
 
     # Add user's choice to summary (for verification/tracking)

@@ -16,11 +16,11 @@ from typing import List
 
 import gradio as gr
 
-from languia.models import Conversation
+from backend.models.models import Conversation
+from backend.utils.user import get_ip
 from languia.utils import (
     count_turns,
     get_chosen_model_name,
-    get_ip,
     get_matomo_tracker_from_cookies,
     is_unedited_prompt,
     messages_to_dict_list,

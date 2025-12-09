@@ -11,12 +11,32 @@ Key flows:
 4. User reacts → reactions stored
 """
 
-from languia.block_arena import (
-    # UI state components
+import copy
+import os
+import traceback
+from typing import List
+
+import gradio as gr
+import requests
+import sentry_sdk
+
+from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT
+from backend.models.data import pricey_models
+from backend.session import (
+    increment_input_chars,
+    is_ratelimited,
+    r,
+    redis_host,
+    retrieve_cohorts_redis,
+)
+from backend.utils.user import get_ip
+from languia import config
+from languia.block_arena import (  # UI state components; first_textbox,
+    CustomDropdown,
     app_state,
+    available_models,
     buttons_footer,
     chat_area,
-    CustomDropdown,
     chatbot,
     comments_a,
     comments_b,
@@ -25,67 +45,32 @@ from languia.block_arena import (
     conv_b,
     demo,
     header,
+    locale,
+    model_dropdown,
     negative_a,
     negative_b,
     positive_a,
     positive_b,
+    reaction_json,
+    reveal_data,
     send_area,
     send_btn,
     supervote_send_btn,
-    # first_textbox,
     textbox,
     vote_area,
     which_model_radio,
-    model_dropdown,
-    available_models,
-    reveal_data,
-    reaction_json,
-    locale,
 )
-import traceback
-import os
-import sentry_sdk
-
-import copy
-
-import requests
-
-from typing import List
-
-
+from languia.config import logger
+from languia.conversation import Conversation, bot_response
+from languia.custom_components.customchatbot import ChatMessage
+from languia.logs import record_conversations, sync_reactions, vote_last_response
+from languia.reveal import build_reveal_dict, determine_choice_badge
 from languia.utils import (
     AppState,
     get_chosen_model,
-    get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
     to_threeway_chatbot,
-)
-
-from languia.session import increment_input_chars, redis_host, is_ratelimited, r, retrieve_cohorts_redis
-
-from languia.reveal import (
-    build_reveal_dict,
-    determine_choice_badge,
-)
-
-from languia.logs import vote_last_response, sync_reactions, record_conversations
-
-from languia.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, pricey_models
-
-from languia.conversation import bot_response, Conversation
-
-
-import gradio as gr
-
-
-from languia.config import logger
-
-
-from languia import config
-
-from languia.custom_components.customchatbot import (
-    ChatMessage,
 )
 
 
@@ -271,7 +256,10 @@ def register_listeners():
 
         cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
 
-        logger.info(f"cohorts_comma_separated: {cohorts_comma_separated}", extra={"request": request})
+        logger.info(
+            f"cohorts_comma_separated: {cohorts_comma_separated}",
+            extra={"request": request},
+        )
 
         record_conversations(
             app_state_scoped,
@@ -438,10 +426,15 @@ def register_listeners():
             # Got answer at this point (or error?)
             app_state_scoped.awaiting_responses = False
 
-            logger.debug(f"{app_state_scoped}, [{conv_a_scoped}, {conv_b_scoped}], {request}, {cohorts_comma_separated}")
+            logger.debug(
+                f"{app_state_scoped}, [{conv_a_scoped}, {conv_b_scoped}], {request}, {cohorts_comma_separated}"
+            )
 
             record_conversations(
-                app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated
+                app_state_scoped,
+                [conv_a_scoped, conv_b_scoped],
+                request,
+                cohorts_comma_separated=cohorts_comma_separated,
             )
 
             if conv_a_scoped.messages[-1].role != "user":
@@ -534,7 +527,12 @@ def register_listeners():
         app_state_scoped.awaiting_responses = True
 
         cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated)
+        record_conversations(
+            app_state_scoped,
+            [conv_a_scoped, conv_b_scoped],
+            request,
+            cohorts_comma_separated=cohorts_comma_separated,
+        )
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
@@ -614,9 +612,13 @@ def register_listeners():
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
 
-
         cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated)
+        record_conversations(
+            app_state_scoped,
+            [conv_a_scoped, conv_b_scoped],
+            request,
+            cohorts_comma_separated=cohorts_comma_separated,
+        )
 
         chatbot = to_threeway_chatbot(conversations)
 
@@ -707,7 +709,10 @@ def register_listeners():
 
             cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
             record_conversations(
-                app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated
+                app_state_scoped,
+                [conv_a_scoped, conv_b_scoped],
+                request,
+                cohorts_comma_separated=cohorts_comma_separated,
             )
 
             if conv_a_scoped.messages[-1].role != "user":
