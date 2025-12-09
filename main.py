@@ -85,6 +85,8 @@ async def counter(
     request: Request,
     c: str | None = None,
 ):
+    from backend.config import OBJECTIVES
+
     # don't get it from host
     # hostname = request.headers.get("Host")
     # Always check the query parameter 'c' for locale
@@ -98,10 +100,10 @@ async def counter(
 
     if country_portal == "da":
         count = get_country_portal_count("da")
-        objective = config.OBJECTIVES.get("da")
+        objective = OBJECTIVES.get("da")
     else:  # country_portal == "fr"
         count = get_country_portal_count("fr")
-        objective = config.OBJECTIVES.get("fr")
+        objective = OBJECTIVES.get("fr")
 
     return JSONResponse(
         {

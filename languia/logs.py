@@ -63,7 +63,9 @@ def save_vote_to_db(data):
     Returns:
         None. Vote data is persisted to database.
     """
-    from languia.config import db as dsn
+    from backend.config import settings
+
+    dsn = settings.COMPARIA_DB_URI
 
     logger = logging.getLogger("languia")
     if not dsn:
@@ -322,7 +324,9 @@ def upsert_reaction_to_db(data, request):
         - Updates all fields except timestamps on conflict
     """
     logger = logging.getLogger("languia")
-    from languia.config import db as dsn
+    from backend.config import settings
+
+    dsn = settings.COMPARIA_DB_URI
 
     # Ensure database configuration exists
     if not dsn:
@@ -498,7 +502,9 @@ def delete_reaction_in_db(msg_index, refers_to_conv_id):
         - Safely handles missing records (no error if not found)
     """
     logger = logging.getLogger("languia")
-    from languia.config import db as dsn
+    from backend.config import settings
+
+    dsn = settings.COMPARIA_DB_URI
 
     # Ensure database configuration exists
     if not dsn:
@@ -773,7 +779,9 @@ def upsert_conv_to_db(data):
         - Preserves initial timestamps on updates
     """
 
-    from languia.config import db as dsn
+    from backend.config import settings
+
+    dsn = settings.COMPARIA_DB_URI
 
     logger = logging.getLogger("languia")
     if not dsn:
