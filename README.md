@@ -34,13 +34,12 @@ We rely heavily on OpenRouter, so if you want to test with real providers, in yo
 
 #### Mock Response Mode
 
-For testing purposes, you can enable mock responses by setting the `MOCK_RESPONSE` environment variable in your `.env` file:
+For testing purposes, you can enable mock responses by setting the `MOCK_RESPONSE` environment variable to `true` in your `.env` file:
 
 ```bash
-MOCK_RESPONSE="Here's a sample test response for debugging"
+MOCK_RESPONSE=True
 ```
 
-When `MOCK_RESPONSE` is enabled, a warning will be logged indicating that mock responses are being used instead of real API calls.
 
 ### Development and Testing
 
@@ -147,7 +146,7 @@ uv run python utils/models/maintenance.py
 #### Mock responses
 
 If you don't have access to an API, you can enable mock responses by uncommenting in `.env` file:
-`MOCK_RESPONSE="Here's a sample test response for debugging"`
+`MOCK_RESPONSE=True`
 
 ### Datasets
 

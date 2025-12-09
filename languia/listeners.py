@@ -79,8 +79,7 @@ from languia.conversation import bot_response, Conversation
 import gradio as gr
 
 
-from languia.config import logger
-
+from backend.logger import logger
 
 from languia import config
 
