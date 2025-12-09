@@ -20,28 +20,11 @@ from pathlib import Path
 import logging
 from logging.handlers import WatchedFileHandler
 from languia.logs import JSONFormatter, PostgresHandler
-from httpx import Timeout
 from languia.models import filter_enabled_models
-
-# HTTP timeout for API calls to LLM providers
-# Structure: total timeout, read, write, connect (all in seconds)
-GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
-
-# Per-country objectives for data collection (rows to collect)
-OBJECTIVES = {"fr": 250_000, "da": 10_000}
-
-# Model parameter thresholds for categorization
-SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
-BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 
 # Debug mode flag from environment variable
 env_debug = os.getenv("LANGUIA_DEBUG")
 
-# Rate limiting specifically for expensive models (openai models, etc.)
-RATELIMIT_PRICEY_MODELS_INPUT = 50_000
-
-# Character limit for blind mode (comparison without model names)
-BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
 
 # Models that should not be sampled/selected (can be populated from config)
 unavailable_models = []
