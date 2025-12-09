@@ -15,6 +15,9 @@ Functions:
 
 import logging
 
+from languia.utils import sum_tokens
+from backend.models.utils import get_llm_impact, convert_range_to_value
+
 
 def calculate_lightbulb_consumption(impact_energy_value):
     """
@@ -111,7 +114,7 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         5. Encode summary to base64 for efficient storage
         6. Return comprehensive metrics for reveal screen display
     """
-    from languia.config import all_models_data
+    from backend.models.data import all_models_data
 
     logger = logging.getLogger("languia")
 
