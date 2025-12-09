@@ -20,11 +20,19 @@ function detectCohort(): CohortType {
   }
 
   // Detect from referrer (pix.com)
-  if (document.referrer && document.referrer.includes('pix.com')) {
-    sessionStorage.setItem(COHORT_STORAGE_KEY, 'do-not-track')
-    return 'do-not-track'
+  if (document.referrer) {
+    try {
+      const referrerUrl = new URL(document.referrer);
+      // Strictly check the hostname
+      if (referrerUrl.hostname === 'pix.com' || referrerUrl.hostname.endsWith('.pix.com')) {
+          sessionStorage.setItem(COHORT_STORAGE_KEY, 'do-not-track')
+        return 'do-not-track'
+      }
+    } catch (_e) {
+      // Handle invalid URLs if necessary
+      console.error('Invalid referrer URL');
+    }
   }
-
   // Detect from GET parameter
   const urlParams = new URLSearchParams(window.location.search)
   const cohortParam = urlParams.get('c')
