@@ -5,8 +5,9 @@ This module handles per-IP rate limiting to prevent abuse of expensive model API
 and provides session state management.
 """
 
-import redis
 import os
+
+import redis
 
 # Redis connection configuration
 redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
@@ -69,6 +70,7 @@ class Session:
         ip: User's IP address
         total_input_chars: Total character count for rate limiting
     """
+
     session_hash: str | None
     conversations: tuple[dict, dict]
     # Future fields for votes and reactions
