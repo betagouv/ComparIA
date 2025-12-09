@@ -23,55 +23,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger("languia")
 
 
-def get_total_params(model_extra_info):
-    """
-    Get the total number of parameters for a model.
-
-    Accounts for q8 quantization which reduces effective parameters by half.
-
-    Args:
-        model_extra_info: Dict containing model metadata with 'params' and optional 'quantization'
-
-    Returns:
-        int: Total parameters, or None if params not available
-    """
-    if model_extra_info.get("params"):
-        # Q8 quantization reduces parameter count (2x compression)
-        if model_extra_info.get("quantization", None) == "q8":
-            return int(model_extra_info["params"]) // 2
-        else:
-            return int(model_extra_info["params"])
-    else:
-        logger.error(
-            f"Couldn't get total params for {model_extra_info.get('id')}, missing params"
-        )
-        return None
-
-
-def get_active_params(model_extra_info):
-    """
-    Get the number of active parameters for a model.
-
-    For Mixture of Experts (MoE) models, this is different from total parameters.
-    Active params represent how many parameters are used for each token.
-
-    Args:
-        model_extra_info: Dict containing model metadata
-
-    Returns:
-        int: Active parameters, or total params if not available
-    """
-    if model_extra_info.get("active_params"):
-        # Account for Q8 quantization if present
-        if model_extra_info.get("quantization", None) == "q8":
-            return int(model_extra_info["active_params"]) // 2
-        else:
-            return int(model_extra_info["active_params"])
-    else:
-        # Fallback to total params if active_params is not available (non-MoE models)
-        return get_total_params(model_extra_info)
-
-
 class ContextTooLongError(ValueError):
     """Raised when the context window of a model is exceeded."""
 

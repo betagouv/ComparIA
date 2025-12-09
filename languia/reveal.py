@@ -14,29 +14,10 @@ Functions:
 """
 
 import logging
-from languia.utils import sum_tokens, get_active_params, get_total_params
 
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
-
-def convert_range_to_value(value_or_range):
-    """
-    Convert impact range to a single representative value.
-
-    Some impacts are returned as ranges [min, max]; this takes the average.
-    Single values are returned as-is.
-
-    Args:
-        value_or_range: Either a range object with min/max attributes or a scalar value
-
-    Returns:
-        float: Average of range, or the value itself if scalar
-    """
-
-    if hasattr(value_or_range, "min"):
-        return (value_or_range.min + value_or_range.max) / 2
-    else:
-        return value_or_range
+from languia.utils import get_active_params, get_total_params, sum_tokens
 
 
 def calculate_lightbulb_consumption(impact_energy_value):
@@ -256,71 +237,3 @@ def determine_choice_badge(reactions):
             )
 
     return your_choice_badge
-
-
-def get_llm_impact(
-    model_extra_info, model_name: str, token_count: int, request_latency: float
-) -> dict:
-    """
-    Calculate environmental impact (energy, CO2) for LLM inference.
-
-    Uses the ecologits library to compute impact based on model parameters and token usage.
-    Currently not all models are in ecologits' database, so this uses estimated parameters instead.
-
-    Args:
-        model_extra_info: Model metadata dict with 'params' and optional 'active_params' (MoE)
-        model_name: Model identifier for logging
-        token_count: Total output tokens generated
-        request_latency: Time taken for inference (optional, for more accurate calculations)
-
-    Returns:
-        Impact object with .energy.value and .gwp.value (CO2) attributes
-        Returns None if model parameters are missing
-
-    Impact Metrics:
-        - energy: Electricity consumption in kWh
-        - gwp: Global Warming Potential (CO2 equivalent in kg)
-        - pe: Primary Energy (in kWh)
-        - adpe: Abiotic Depletion Potential
-
-    Note:
-        - Uses World (WOR) electricity mix as baseline
-        - Could be moved to config.py for different regional electricity mixes
-        - MoE models use active_params for more accurate inference cost
-        - Standard models use total params
-    """
-    logger = logging.getLogger("languia")
-
-    # Extract model parameters
-    # Note: Most custom models won't appear in ecologits' database
-    # TODO: Contribute custom model data back to ecologits project
-    # Alternative approach: could use llm_impacts("huggingface_hub", model_name, token_count, request_latency)
-    model_active_parameter_count = get_active_params(model_extra_info)
-    model_total_parameter_count = get_total_params(model_extra_info)
-
-    # Validate that we have necessary parameters
-    if not model_active_parameter_count or not model_total_parameter_count:
-        logger.error("Couldn't calculate impact for" + model_name + ", missing params")
-        return None
-
-    # TODO: Move electricity mix zone to config.py for regional customization
-    # Currently uses World (WOR) average; could use specific countries (FR, DE, US, etc.)
-    electricity_mix_zone = "WOR"
-    electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
-
-    # Extract electricity mix components for impact calculation
-    if_electricity_mix_adpe = electricity_mix.adpe    # Abiotic Depletion Potential
-    if_electricity_mix_pe = electricity_mix.pe        # Primary Energy
-    if_electricity_mix_gwp = electricity_mix.gwp      # Global Warming Potential (CO2)
-
-    # Calculate impact using ecologits library
-    impact = compute_llm_impacts(
-        model_active_parameter_count=model_active_parameter_count,
-        model_total_parameter_count=model_total_parameter_count,
-        output_token_count=token_count,
-        if_electricity_mix_adpe=if_electricity_mix_adpe,
-        if_electricity_mix_pe=if_electricity_mix_pe,
-        if_electricity_mix_gwp=if_electricity_mix_gwp,
-        request_latency=request_latency,
-    )
-    return impact
