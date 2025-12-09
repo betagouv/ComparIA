@@ -8,7 +8,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 import os
 import logging
 
-from languia.config import GLOBAL_TIMEOUT
+from backend.config import GLOBAL_TIMEOUT
 import litellm
 import json
 

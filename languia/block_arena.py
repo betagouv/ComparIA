@@ -72,7 +72,7 @@ with gr.Blocks(
     # Provides 4 modes: random, big-vs-small, small-models, custom
     # The CustomDropdown component handles rendering and manages selected models
     model_dropdown = CustomDropdown(
-        models=config.models,
+        # models=config.models,
         # Note: choices parameter is ignored, hardcoded in custom component
         choices=["random", "big-vs-small", "small-models", "custom"],
         interactive=True,
