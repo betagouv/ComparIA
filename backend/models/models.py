@@ -21,6 +21,8 @@ The models are organized in hierarchy:
 
 import datetime
 from pathlib import Path
+from typing import Annotated, Any, Literal, get_args
+
 from pydantic import (
     AfterValidator,
     BaseModel,
@@ -28,20 +30,22 @@ from pydantic import (
     RootModel,
     ValidationError,
     ValidationInfo,
-    model_validator,
     computed_field,
     field_validator,
+    model_validator,
 )
 from pydantic_core import PydanticCustomError
-from typing import Annotated, Any, Literal, get_args
-from languia.reveal import get_llm_impact, convert_range_to_value
+
+from backend.models.utils import convert_range_to_value, get_llm_impact
 
 ROOT_PATH = Path(__file__).parent.parent
 FRONTEND_PATH = ROOT_PATH / "frontend"
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
-Distribution = Literal["api-only", "open-weights", "fully-open-source"]  # License/access types
+Distribution = Literal[
+    "api-only", "open-weights", "fully-open-source"
+]  # License/access types
 FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
@@ -62,6 +66,7 @@ class License(BaseModel):
         reuse_specificities: Additional reuse restrictions/notes
         commercial_use_specificities: Additional commercial use restrictions/notes
     """
+
     license: str
     license_desc: str
     distribution: Distribution
@@ -85,6 +90,7 @@ class Arch(BaseModel):
         title: Display title
         desc: Detailed description of the architecture
     """
+
     id: str
     name: str
     title: str
@@ -102,6 +108,7 @@ class Endpoint(BaseModel):
         api_base: Base URL for the API endpoint
         api_model_id: Model identifier used in API calls
     """
+
     api_type: str | None = "openai"
     api_base: str | None = None
     api_model_id: str
@@ -127,6 +134,7 @@ class DatasetData(BaseModel):
         win_rate: Percentage of matches won
         trust_range: Computed confidence interval for ranking
     """
+
     elo: RoundInt = Field(validation_alias="median")
     score_p2_5: RoundInt = Field(validation_alias="p2.5")
     score_p97_5: RoundInt = Field(validation_alias="p97.5")
@@ -159,6 +167,7 @@ class PreferencesData(BaseModel):
         useful/complete/creative/clear_formatting: Count of positive preferences
         incorrect/superficial/instructions_not_followed: Count of negative preferences
     """
+
     positive_prefs_ratio: float
     total_prefs: int
     # Positive quality indicators
@@ -176,6 +185,7 @@ class PreferencesData(BaseModel):
     def handle_nan_ratio(cls, value: Any) -> float:
         """Replace NaN values with -1 to prevent JSON serialization errors."""
         import math
+
         if isinstance(value, float) and math.isnan(value):
             return -1
         return value
@@ -210,6 +220,7 @@ class RawModel(BaseModel):
         fyi: Additional notes for users
         pricey: Whether model has high API costs (triggers stricter rate limits)
     """
+
     new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
@@ -289,6 +300,7 @@ class Model(RawModel):
         required_ram: Estimated RAM needed to run model (depends on quantization)
         wh_per_million_token: Energy consumption per million tokens
     """
+
     status: Literal["archived", "enabled", "disabled"] = "enabled"
     # Merged from License
     distribution: Distribution
@@ -424,19 +436,6 @@ RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]
 
 
-def filter_enabled_models(models: dict[str, Model]):
-    enabled_models = {}
-    for model_id, model_dict in models.items():
-        if model_dict.get("status") == "enabled":
-            try:
-                if Endpoint.model_validate(model_dict.get("endpoint")):
-                    enabled_models[model_id] = model_dict
-            except:
-                continue
-
-    return enabled_models
-
-
 class ConversationMessage(BaseModel):
     """
     Single message in a conversation.
@@ -449,6 +448,7 @@ class ConversationMessage(BaseModel):
         content: Message text content
         metadata: Additional data (output_tokens for assistant messages, etc.)
     """
+
     role: str
     content: str
     metadata: dict[str, Any] | None = None
@@ -499,6 +499,7 @@ class Conversation(BaseModel):
         ip_map: Geographic region derived from IP
         postprocess_failed: Whether post-processing failed
     """
+
     id: int
     timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
     model_a_name: str
