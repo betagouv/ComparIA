@@ -8,27 +8,22 @@ This module handles:
 - User preferences tracking
 """
 
-import gradio as gr
-
-import os
-
-
+import datetime
 import json
 import logging
-
-import datetime
-
+import os
 from typing import List
 
+import gradio as gr
 
 from languia.models import Conversation
 from languia.utils import (
-    get_chosen_model_name,
-    messages_to_dict_list,
-    is_unedited_prompt,
     count_turns,
+    get_chosen_model_name,
     get_ip,
     get_matomo_tracker_from_cookies,
+    is_unedited_prompt,
+    messages_to_dict_list,
     sum_tokens,
 )
 
@@ -38,130 +33,6 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 
 import psycopg2
 from psycopg2 import sql
-
-
-class JSONFormatter(logging.Formatter):
-    """
-    Custom logging formatter that outputs structured JSON.
-
-    Converts log records to JSON with context information (IP, session, query params).
-    Used for both file and database logging.
-    """
-
-    def format(self, record):
-        """
-        Format a log record as JSON with request context.
-
-        Args:
-            record: LogRecord from Python logging
-
-        Returns:
-            str: JSON-formatted log entry
-        """
-        msg = super().format(record)
-
-        log_data = {"message": msg}
-
-        # Extract request context if available
-        if hasattr(record, "request"):
-            try:
-                log_data["query_params"] = dict(record.request.query_params)
-                log_data["path_params"] = dict(record.request.path_params)
-                # TODO: remove IP? (privacy concern)
-                log_data["ip"] = get_ip(record.request)
-                log_data["session_hash"] = record.request.session_hash
-
-            except:
-                pass
-        # Include extra metadata if provided
-        if hasattr(record, "extra"):
-            log_data["extra"] = record.extra
-
-        return json.dumps(log_data)
-
-
-class PostgresHandler(logging.Handler):
-    """
-    Custom logging handler that writes logs to PostgreSQL.
-
-    Connects to database and stores log entries for centralized logging.
-    Maintains persistent connection with auto-reconnection.
-    """
-
-    def __init__(self, dsn):
-        """
-        Initialize PostgreSQL logging handler.
-
-        Args:
-            dsn: Database connection string (postgres://user:pass@host/db)
-        """
-        super().__init__()
-        self.dsn = dsn
-        self.connection = None
-
-    def connect(self):
-        """Connect to PostgreSQL database, reconnecting if connection is closed."""
-        if not self.connection or self.connection.closed:
-            try:
-                self.connection = psycopg2.connect(self.dsn)
-            except psycopg2.Error as e:
-                print(f"Error connecting to database: {e}")
-
-    def emit(self, record):
-        """
-        Emit a log record by writing it to PostgreSQL.
-
-        Args:
-            record: LogRecord from Python logging
-        """
-        assert isinstance(record, logging.LogRecord)
-        # print((record.__dict__))
-        # print("LoggingHandler received LogRecord: {}".format(record))
-
-        # record = super().format(record)
-        self.format(record)
-
-        try:
-            self.connect()
-            if self.connection:
-                with self.connection.cursor() as cursor:
-                    # del(record.__dict__["request"])
-
-                    insert_statement = sql.SQL(
-                        """
-                        INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
-                        VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
-                    """
-                    )
-                    values = {
-                        "time": record.asctime,
-                        "level": record.levelname,
-                        "message": record.message,
-                    }
-                    if hasattr(record, "extra"):
-                        values["extra"] = json.dumps(record.__dict__.get("extra"))
-                    else:
-                        values["extra"] = "{}"
-                    if hasattr(record, "request"):
-                        query_params = dict(record.request.query_params)
-                        path_params = dict(record.request.path_params)
-                        # ip = get_ip(record.request)
-                        session_hash = record.request.session_hash
-                        values["query_params"] = json.dumps(query_params)
-                        values["path_params"] = json.dumps(path_params)
-                        values["session_hash"] = str(session_hash)
-                    else:
-                        values["query_params"] = "{}"
-                        values["path_params"] = "{}"
-                        values["session_hash"] = ""
-
-                    cursor.execute(insert_statement, values)
-                    self.connection.commit()
-        except psycopg2.Error as e:
-            # Don't use logger on purpose to avoid endless loops
-            print(f"Error logging to Postgres: {e}")
-            # Could do:
-            # self.handleError(record)
 
 
 def save_vote_to_db(data):
@@ -1101,7 +972,9 @@ def record_conversations(
     }
 
     logger = logging.getLogger("languia")
-    logger.debug(f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}")
+    logger.debug(
+        f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}"
+    )
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
     conv_log_path = os.path.join(LOGDIR, conv_log_filename)
