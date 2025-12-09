@@ -8,6 +8,9 @@ from logging.handlers import WatchedFileHandler
 import psycopg2
 from psycopg2 import sql
 
+from backend.config import settings
+from backend.utils.user import get_ip
+
 
 class JSONFormatter(logging.Formatter):
     """
@@ -17,7 +20,7 @@ class JSONFormatter(logging.Formatter):
     Used for both file and database logging.
     """
 
-    def format(self, record):
+    def format(self, record) -> str:
         """
         Format a log record as JSON with request context.
 
@@ -57,7 +60,7 @@ class PostgresHandler(logging.Handler):
     Maintains persistent connection with auto-reconnection.
     """
 
-    def __init__(self, dsn):
+    def __init__(self, dsn: str) -> None:
         """
         Initialize PostgreSQL logging handler.
 
@@ -68,7 +71,7 @@ class PostgresHandler(logging.Handler):
         self.dsn = dsn
         self.connection = None
 
-    def connect(self):
+    def connect(self) -> None:
         """Connect to PostgreSQL database, reconnecting if connection is closed."""
         if not self.connection or self.connection.closed:
             try:
@@ -76,7 +79,7 @@ class PostgresHandler(logging.Handler):
             except psycopg2.Error as e:
                 print(f"Error connecting to database: {e}")
 
-    def emit(self, record):
+    def emit(self, record) -> None:
         """
         Emit a log record by writing it to PostgreSQL.
 
@@ -134,7 +137,7 @@ class PostgresHandler(logging.Handler):
             # self.handleError(record)
 
 
-def build_logger(logger_filename):
+def build_logger(logger_filename) -> logging.Logger:
     """
     Configure and initialize application logger with multiple handlers.
 
@@ -160,7 +163,7 @@ def build_logger(logger_filename):
     """
     # TODO: log "funcName"
     logger = logging.getLogger("languia")
-    if debug:
+    if settings.LANGUIA_DEBUG:
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
@@ -180,15 +183,15 @@ def build_logger(logger_filename):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    if LOGDIR:
-        os.makedirs(LOGDIR, exist_ok=True)
-        filename = os.path.join(LOGDIR, logger_filename)
+    if settings.LOGDIR:
+        os.makedirs(settings.LOGDIR, exist_ok=True)
+        filename = os.path.join(settings.LOGDIR, logger_filename)
         file_handler = WatchedFileHandler(filename, encoding="utf-8")
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 
-    if db and enable_postgres_handler:
-        postgres_handler = PostgresHandler(db)
+    if settings.COMPARIA_DB_URI and settings.enable_postgres_handler:
+        postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
         logger.addHandler(postgres_handler)
 
     return logger
