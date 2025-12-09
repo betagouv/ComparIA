@@ -545,7 +545,10 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     """
     import psycopg2
     from psycopg2 import sql
-    from languia.config import db as dsn
+
+    from backend.config import settings
+
+    dsn = settings.COMPARIA_DB_URI
     from backend.session import r
 
     logger = logging.getLogger("languia")
