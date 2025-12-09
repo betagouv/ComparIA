@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from backend.models.router import router as models_router
+
 app = FastAPI()
 
 origins = [
@@ -19,5 +21,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(models_router)
 
 app = SentryAsgiMiddleware(app)
