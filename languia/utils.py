@@ -18,7 +18,9 @@ import gradio as gr
 import logging
 
 if TYPE_CHECKING:
-    from languia.models import Endpoint
+    from backend.models import Endpoint
+
+from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
 
@@ -544,7 +546,7 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as dsn
-    from languia.session import r
+    from backend.session import r
 
     logger = logging.getLogger("languia")
 
