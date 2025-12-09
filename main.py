@@ -8,7 +8,7 @@ from languia.block_arena import demo
 
 import gradio as gr
 
-from languia import config
+from backend.models.data import all_models_data
 
 app = FastAPI()
 
@@ -45,7 +45,7 @@ app = gr.mount_gradio_app(
     path="/api",
     root_path="/api",
     # allowed_paths=[config.assets_absolute_path],
-    show_error=config.debug,
+    # show_error=config.debug,
 )
 
 from languia.utils import get_country_portal_count
@@ -59,10 +59,10 @@ async def available_models():
         {
             "models": [
                 model
-                for model in config.all_models_data["models"].values()
+                for model in all_models_data["models"].values()
                 if model["status"] in ("enabled", "archived")
             ],
-            "data_timestamp": config.all_models_data["timestamp"],
+            "data_timestamp": all_models_data["timestamp"],
         }
     )
 

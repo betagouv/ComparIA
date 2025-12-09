@@ -54,13 +54,14 @@ import requests
 from languia.utils import (
     AppState,
     get_chosen_model,
-    get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
     to_threeway_chatbot,
 )
 
-from languia.session import increment_input_chars, redis_host, is_ratelimited
+from backend.utils.user import get_ip
+
+from backend.session import increment_input_chars, redis_host, is_ratelimited
 
 from languia.reveal import (
     build_reveal_dict,
@@ -69,7 +70,8 @@ from languia.reveal import (
 
 from languia.logs import vote_last_response, sync_reactions, record_conversations
 
-from languia.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, pricey_models
+from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT
+from backend.models.data import pricey_models
 
 from languia.conversation import bot_response, Conversation
 

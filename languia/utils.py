@@ -18,19 +18,23 @@ import gradio as gr
 import logging
 
 if TYPE_CHECKING:
-    from languia.models import Endpoint
+    from backend.models import Endpoint
+
+from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
 
 
 class ContextTooLongError(ValueError):
     """Raised when the context window of a model is exceeded."""
+
     def __str__(self):
         return "Context too long."
 
 
 class EmptyResponseError(RuntimeError):
     """Raised when a model API returns an empty response."""
+
     def __init__(self, response=None, *args: object) -> None:
         super().__init__(*args)
         self.response = response
@@ -185,10 +189,7 @@ def strip_metadata(messages: list[dict]) -> list[dict]:
             )
         else:
             # Handle missing content gracefully
-            stripped_messages.append({
-                "role": message["role"],
-                "content": ""
-            })
+            stripped_messages.append({"role": message["role"], "content": ""})
     return stripped_messages
 
 
@@ -268,6 +269,7 @@ class AppState:
 
     Tracks the current comparison mode, model selections, user preferences, and reactions.
     """
+
     def __init__(
         self,
         awaiting_responses=False,
@@ -552,7 +554,7 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as dsn
-    from languia.session import r
+    from backend.session import r
 
     logger = logging.getLogger("languia")
 

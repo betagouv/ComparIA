@@ -22,7 +22,7 @@ import logging
 
 from uuid import uuid4
 
-from languia.config import models
+from backend.models.data import models
 
 
 class Conversation:
@@ -32,6 +32,7 @@ class Conversation:
     Stores messages, model information, and metadata about the conversation.
     Each conversation has a unique ID and tracks the model's endpoint for API calls.
     """
+
     def __init__(
         self,
         messages=[],

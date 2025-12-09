@@ -24,10 +24,11 @@ from languia.utils import (
     messages_to_dict_list,
     is_unedited_prompt,
     count_turns,
-    get_ip,
     get_matomo_tracker_from_cookies,
     sum_tokens,
 )
+
+from backend.utils.user import get_ip
 
 # Directory for local log files (fallback if DB unavailable)
 LOGDIR = os.getenv("LOGDIR", "./data")

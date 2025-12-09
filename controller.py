@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 
 import time
 
-from languia.config import models
+from backend.models.data import models
 
 templates = Jinja2Templates(directory="templates")
 
