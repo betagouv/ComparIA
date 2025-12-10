@@ -1,7 +1,18 @@
 import logging
+from typing import cast
+
+from backend.config import COUNTRY_CODES, DEFAULT_COUNTRY_CODE, CountryCode, settings
+
+logger = logging.getLogger("languia")
 
 
-def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
+def get_country_code(code: str | None = DEFAULT_COUNTRY_CODE) -> CountryCode:
+    return (
+        DEFAULT_COUNTRY_CODE if code not in COUNTRY_CODES else cast(CountryCode, code)
+    )
+
+
+def get_country_portal_count(country_code: CountryCode, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
 
@@ -15,12 +26,7 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     import psycopg2
     from psycopg2 import sql
 
-    from backend.config import settings
-
-    dsn = settings.COMPARIA_DB_URI
     from backend.session import r
-
-    logger = logging.getLogger("languia")
 
     cache_key = f"{country_code}_count"
     # Try Redis first
@@ -33,7 +39,7 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
             logger.debug(f"cache miss for {country_code} count from Redis: {e}")
 
     # Fallback to Postgres
-    if not dsn:
+    if not settings.COMPARIA_DB_URI:
         logger.warning("Cannot log to db: no db configured")
         return 0
 
@@ -41,7 +47,7 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     cursor = None
     result = 0
     try:
-        conn = psycopg2.connect(dsn)
+        conn = psycopg2.connect(settings.COMPARIA_DB_URI)
         cursor = conn.cursor()
         # Count votes and reactions linked to conversations with country_portal
         query = sql.SQL(

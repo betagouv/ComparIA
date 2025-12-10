@@ -4,8 +4,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from backend.config import OBJECTIVES, settings
 from backend.logger import configure_logger
 from backend.models.router import router as models_router
+from backend.utils.countries import get_country_code, get_country_portal_count
 
 app = FastAPI()
 
@@ -29,5 +31,16 @@ app.add_middleware(
 )
 
 app.include_router(models_router)
+
+
+@app.get("/counter")
+async def get_counter(c: str | None = None):
+    country_code = get_country_code(c)
+
+    return {
+        "count": get_country_portal_count(country_code),
+        "objective": OBJECTIVES[country_code],
+    }
+
 
 app = SentryAsgiMiddleware(app)

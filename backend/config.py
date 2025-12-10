@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal, cast, get_args
 
 from httpx import Timeout
 from pydantic_settings import BaseSettings
@@ -39,8 +40,13 @@ MODELS_DATA_PATH = ROOT_PATH / "utils" / "models" / "generated-models.json"
 # Structure: total timeout, read, write, connect (all in seconds)
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
+# Available country codes
+CountryCode = Literal["fr", "da"]
+COUNTRY_CODES: tuple[CountryCode, ...] = get_args(CountryCode)
+DEFAULT_COUNTRY_CODE = cast(CountryCode, "fr")
+
 # Per-country objectives for data collection (rows to collect)
-OBJECTIVES = {"fr": 250_000, "da": 10_000}
+OBJECTIVES: dict[CountryCode, int] = {"fr": 250_000, "da": 10_000}
 
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
