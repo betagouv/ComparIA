@@ -12,53 +12,11 @@ Handles:
 """
 
 import os
-import sys
-
-import sentry_sdk
 
 from backend import logger
 
 # Models that should not be sampled/selected (can be populated from config)
 unavailable_models = []
-
-
-if os.getenv("GIT_COMMIT"):
-    git_commit = os.getenv("GIT_COMMIT")
-else:
-    git_commit = None
-
-if os.getenv("SENTRY_SAMPLE_RATE"):
-    traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
-else:
-    traces_sample_rate = 0.2
-
-profiles_sample_rate = traces_sample_rate
-
-if os.getenv("SENTRY_DSN"):
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    if os.getenv("SENTRY_ENV"):
-        sentry_env = os.getenv("SENTRY_ENV")
-    else:
-        sentry_env = "development"
-    sentry_sdk.init(
-        release=git_commit,
-        attach_stacktrace=True,
-        dsn=os.getenv("SENTRY_DSN"),
-        environment=sentry_env,
-        traces_sample_rate=traces_sample_rate,
-        profiles_sample_rate=profiles_sample_rate,
-        project_root=os.getcwd(),
-    )
-    logger.debug(
-        "Sentry loaded with traces_sample_rate="
-        + str(traces_sample_rate)
-        + " and profiles_sample_rate="
-        + str(profiles_sample_rate)
-        + " for release "
-        + str(git_commit)
-    )
 
 
 # HTTP headers for API requests (identifies as FastChat client)
