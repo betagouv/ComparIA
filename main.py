@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from languia.session import store_cohorts_redis
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from languia.block_arena import demo
@@ -74,6 +75,7 @@ async def available_models():
 from fastapi import Query
 from typing import Annotated, Optional
 
+from languia.models import CohortRequest
 
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
@@ -102,6 +104,43 @@ async def counter(
         {
             "count": count,
             "objective": objective,
+        }
+    )
+
+
+@app.post("/cohorts", response_class=JSONResponse)
+async def define_current_cohorts(request: CohortRequest):
+    """
+    Route pour définir les cohortes pour une session.
+
+    Args:
+        request: La requête FastAPI
+        session_hash: Identifiant unique de la session
+        cohorts: liste de noms de cohorte comma separated
+
+    Returns:
+        JSONResponse: Statut du suivi de cohorte
+    """
+
+    if not request.session_hash:
+        return JSONResponse(
+            {
+                "success": False,
+                "error": "session_hash is required",
+                "tracking_info": None,
+            },
+            status_code=400,
+        )
+    
+    if request.cohorts:
+        cohorts_comma_separated: str = request.cohorts
+        success = store_cohorts_redis(request.session_hash, cohorts_comma_separated)
+
+    return JSONResponse(
+        {
+            "success": success,
+            "session_hash": request.session_hash,
+            "tracking_info": cohorts_comma_separated,
         }
     )
 

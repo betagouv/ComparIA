@@ -2,6 +2,7 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
+import { getCohortContext } from '$lib/stores/cohortStore.svelte'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
@@ -16,7 +17,7 @@ function getBackendUrl(): string {
     return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else {
     // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL
+    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   }
 }
 
@@ -84,6 +85,7 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 export const api = {
   url: getBackendUrl(),
   client: undefined as Client | undefined,
+  cohortsSent: false, // Track if cohort has been sent for this session
 
   _getLoadBalancedEndpoint(): string {
     const replicas = parseInt(publicEnv.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10)
@@ -140,6 +142,10 @@ export const api = {
       console.debug(
         `Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`
       )
+
+      // Send cohort information to backend if not already sent
+      this.sendCurrentCohortsToBackend()
+
       return this.client
     } catch (error) {
       console.error('Failed to connect to Gradio:', error)
@@ -261,5 +267,52 @@ export const api = {
       console.error(message)
       throw new Error(message)
     })
+  },
+
+  /**
+   * Send cohort information to backend via /cohorts endpoint.
+   * This should be called when session hash is available.
+   */
+  async sendCurrentCohortsToBackend() {
+    // Only send once per session
+    if (this.cohortsSent || !this.client?.session_hash) {
+      return
+    }
+
+    // Get cohort from sessionStorage (set by client-side detection)
+    const cohortsCommaSepareted: string = getCohortContext()
+
+    // Only send if we have a cohort (not '')
+    if (cohortsCommaSepareted) {
+      try {
+        // Backend now expects JSON with Pydantic model
+        const requestBody = {
+          session_hash: this.client.session_hash,
+          cohorts: cohortsCommaSepareted
+        }
+
+        const response = await fetch(`${this.url}/cohorts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+
+        if (response.ok) {
+          this.cohortsSent = true
+          console.debug('Cohort information sent to backend successfully')
+        } else {
+          console.error('Failed to send cohort to backend:', response.statusText)
+          const errorText = await response.text()
+          console.error('Error details:', errorText)
+        }
+      } catch (error) {
+        console.error('Error sending cohort to backend:', error)
+      }
+    }
   }
+
+
+
 }
