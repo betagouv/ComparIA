@@ -17,23 +17,23 @@ Usage:
 Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
-import pandas as pd
+import argparse
+import hashlib
+import json
 import logging
-import sys
 import os
 import subprocess
-import os
-import json
-import hashlib
-import argparse
+import sys
 from datetime import datetime
+
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
+from backend.models.utils import get_active_params, get_total_params
+
 # Add the parent directory to the Python path to resolve the 'languia' module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from languia.utils import get_total_params, get_active_params
 
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
@@ -189,7 +189,9 @@ def calculate_kwh(model_name, tokens):
     """
     if tokens is None:
         return None
-    wh_per_million = MODELS_DATA.get(model_name.lower(), {}).get("wh_per_million_token", 0)
+    wh_per_million = MODELS_DATA.get(model_name.lower(), {}).get(
+        "wh_per_million_token", 0
+    )
     return (wh_per_million / 1_000_000) * tokens / 1_000
 
 
@@ -255,16 +257,32 @@ def fetch_and_transform_data(conn, table_name, query=None):
             logger.info("Adding model infos...")
             # Add parameter counts (total and active) - only for models that exist in MODELS_DATA
             dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
-                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
+                lambda x: (
+                    get_total_params(MODELS_DATA.get(x.lower(), {}))
+                    if x.lower() in MODELS_DATA
+                    else None
+                )
             )
             dataframe["model_b_total_params"] = dataframe["model_b_name"].apply(
-                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
+                lambda x: (
+                    get_total_params(MODELS_DATA.get(x.lower(), {}))
+                    if x.lower() in MODELS_DATA
+                    else None
+                )
             )
             dataframe["model_a_active_params"] = dataframe["model_a_name"].apply(
-                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
+                lambda x: (
+                    get_active_params(MODELS_DATA.get(x.lower(), {}))
+                    if x.lower() in MODELS_DATA
+                    else None
+                )
             )
             dataframe["model_b_active_params"] = dataframe["model_b_name"].apply(
-                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
+                lambda x: (
+                    get_active_params(MODELS_DATA.get(x.lower(), {}))
+                    if x.lower() in MODELS_DATA
+                    else None
+                )
             )
 
             # Calculate energy consumption with vectorized operations
@@ -272,8 +290,12 @@ def fetch_and_transform_data(conn, table_name, query=None):
             dataframe["total_conv_b_kwh"] = None
 
             for idx, row in dataframe.iterrows():
-                dataframe.at[idx, "total_conv_a_kwh"] = calculate_kwh(row["model_a_name"], row["total_conv_a_output_tokens"])
-                dataframe.at[idx, "total_conv_b_kwh"] = calculate_kwh(row["model_b_name"], row["total_conv_b_output_tokens"])
+                dataframe.at[idx, "total_conv_a_kwh"] = calculate_kwh(
+                    row["model_a_name"], row["total_conv_a_output_tokens"]
+                )
+                dataframe.at[idx, "total_conv_b_kwh"] = calculate_kwh(
+                    row["model_b_name"], row["total_conv_b_output_tokens"]
+                )
 
         # Il faudrait supprimer du dataset ces infos un peu legacy
         # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
@@ -282,7 +304,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
         # Drop sensitive columns before export
         # List of sensitive columns :
-               
+
         columns_to_drop = [
             "archived",
             "pii_analyzed",
@@ -300,7 +322,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
             errors="ignore",
         )
         return dataframe
-    
+
     except Exception as e:
         logger.error(f"Failed to fetch data from {table_name}: {e}")
         # Return None instead of empty DataFrame to indicate failure
@@ -321,7 +343,9 @@ def export_data(dataframe, table_name, export_dir):
     try:
         # Full dataset exports
         dataframe.to_parquet(f"{export_dir}/{table_name}.parquet")
-        dataframe.to_json(f"{export_dir}/{table_name}.jsonl", orient="records", lines=True)
+        dataframe.to_json(
+            f"{export_dir}/{table_name}.jsonl", orient="records", lines=True
+        )
 
         # Sample dataset exports (max 1000 rows)
         sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
@@ -392,12 +416,14 @@ def count_dataset_rows():
                     continue
 
                 # Remove trailing semicolon and wrap the original query with COUNT(*)
-                clean_query = query.rstrip().rstrip(';')
-                count_query = f"SELECT COUNT(*) as count FROM ({clean_query}) AS subquery"
+                clean_query = query.rstrip().rstrip(";")
+                count_query = (
+                    f"SELECT COUNT(*) as count FROM ({clean_query}) AS subquery"
+                )
 
                 try:
                     result = pd.read_sql_query(count_query, conn)
-                    count = result['count'].iloc[0]
+                    count = result["count"].iloc[0]
                     print(f"{dataset_name:30} {count:>10,} rows")
                 except Exception as e:
                     logger.error(f"Failed to count rows for {dataset_name}: {e}")
@@ -448,7 +474,9 @@ def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
     engine = None
     conn = None
     try:
-        engine = create_engine(COMPARIA_DB_URI, execution_options={"stream_results": True})
+        engine = create_engine(
+            COMPARIA_DB_URI, execution_options={"stream_results": True}
+        )
         with engine.connect() as conn:
             logger.info(f"Database connection established for dataset: {dataset_name}")
 
@@ -507,24 +535,24 @@ def main():
         nargs="?",
         type=str,
         default=".",
-        help="Directory for local export (default: current directory)"
+        help="Directory for local export (default: current directory)",
     )
     parser.add_argument(
         "dataset",
         nargs="?",
         type=str,
         default=None,
-        help="Specific dataset to export (conversations, votes, reactions, conversations_raw). Default: all"
+        help="Specific dataset to export (conversations, votes, reactions, conversations_raw). Default: all",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Skip HuggingFace upload (only export locally)"
+        help="Skip HuggingFace upload (only export locally)",
     )
     parser.add_argument(
         "--count",
         action="store_true",
-        help="Display row counts for each dataset without exporting"
+        help="Display row counts for each dataset without exporting",
     )
 
     args = parser.parse_args()
@@ -566,7 +594,9 @@ def main():
     # Process each dataset (or just the specified one)
     for dataset_name, config in DATASET_CONFIG.items():
         if not args.dataset or args.dataset == dataset_name:
-            process_dataset(dataset_name, config, args.repo_prefix, dry_run=args.dry_run)
+            process_dataset(
+                dataset_name, config, args.repo_prefix, dry_run=args.dry_run
+            )
 
     logger.info("Finished processing all datasets.")
 
