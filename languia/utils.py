@@ -9,16 +9,16 @@ This module provides helper functions for:
 - Data transformation for API calls and storage
 """
 
-import numpy as np
-import os
-
-from gradio import Request
-from typing import TYPE_CHECKING
-import gradio as gr
 import logging
+import os
+from typing import TYPE_CHECKING
+
+import gradio as gr
+import numpy as np
+from gradio import Request
 
 if TYPE_CHECKING:
-    from backend.models import Endpoint
+    from backend.models.models import Endpoint
 
 from backend.utils.user import get_ip
 
@@ -369,13 +369,14 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     Returns:
         list: [model_left, model_right] - pair of model names, randomly swapped
     """
+    import random
+
     from backend.models.data import (
         big_models,
-        small_models,
-        reasoning_models,
         random_pool,
+        reasoning_models,
+        small_models,
     )
-    import random
 
     if mode == "big-vs-small":
         # Compare large models against small models
@@ -543,79 +544,3 @@ def to_threeway_chatbot(conversations):
                     }
                 )
     return threeway_chatbot
-
-
-def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
-    """
-    Get the count of votes and reactions for conversations with a specific country portal.
-
-    Args:
-        country_code: The country code to filter by (e.g., 'da' for Danish)
-        ttl: Time-to-live for Redis cache in seconds (default: 120 seconds = 2 minutes)
-
-    Returns:
-        The count of votes and reactions for the specified country portal
-    """
-    import psycopg2
-    from psycopg2 import sql
-
-    from backend.config import settings
-
-    dsn = settings.COMPARIA_DB_URI
-    from backend.session import r
-
-    logger = logging.getLogger("languia")
-
-    cache_key = f"{country_code}_count"
-    # Try Redis first
-    if r:
-        try:
-            count = r.get(cache_key)
-            if count is not None:
-                return int(count)
-        except Exception as e:
-            logger.debug(f"cache miss for {country_code} count from Redis: {e}")
-
-    # Fallback to Postgres
-    if not dsn:
-        logger.warning("Cannot log to db: no db configured")
-        return 0
-
-    conn = None
-    cursor = None
-    result = 0
-    try:
-        conn = psycopg2.connect(dsn)
-        cursor = conn.cursor()
-        # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL(
-            """
-            SELECT
-                (SELECT COUNT(*) FROM votes v
-                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s) +
-                (SELECT COUNT(*) FROM reactions r
-                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s)
-            as total;
-        """
-        )
-        cursor.execute(query, (country_code, country_code))
-        res = cursor.fetchone()
-        result = res[0] if res and res[0] is not None else 0
-
-        if r:
-            try:
-                r.setex(cache_key, ttl, result)
-            except Exception as e:
-                logger.error(f"Error setting {country_code} count in Redis: {e}")
-
-        return result
-    except Exception as e:
-        logger.error(f"Error getting {country_code} count from db: {e}")
-        return 0
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()

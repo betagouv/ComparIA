@@ -1,14 +1,14 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-
-from languia.block_arena import demo
+from typing import Annotated, Optional
 
 import gradio as gr
+from fastapi import FastAPI, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from backend.models.data import all_models_data
+from backend.utils.countries import get_country_portal_count
+from languia.block_arena import demo
 
 app = FastAPI()
 
@@ -48,8 +48,6 @@ app = gr.mount_gradio_app(
     # show_error=config.debug,
 )
 
-from languia.utils import get_country_portal_count
-
 
 @app.get("/", response_class=JSONResponse)
 @app.get("/available_models", response_class=JSONResponse)
@@ -70,9 +68,6 @@ async def available_models():
 # @app.get("/enabled_models", response_class=JSONResponse)
 # async def enabled_models():
 #     return JSONResponse(dict(config.models))
-
-from fastapi import Query
-from typing import Annotated, Optional
 
 
 @app.get("/counter", response_class=JSONResponse)
