@@ -11,6 +11,7 @@ from backend.logger import (
     configure_uvicorn_logging,
 )
 from backend.models.router import router as models_router
+from backend.sentry import init_sentry
 from backend.utils.countries import get_country_code, get_country_portal_count
 
 app = FastAPI()
@@ -20,6 +21,8 @@ configure_uvicorn_logging()
 configure_frontend_logger()
 # Log séparateur au démarrage pour marquer les redémarrages
 logger.info("=" * 80)
+
+init_sentry()
 
 origins = [
     "http://localhost",
@@ -50,4 +53,5 @@ async def get_counter(c: str | None = None):
     }
 
 
+# FIXME remove? https://github.com/getsentry/sentry-python/issues/4003
 app = SentryAsgiMiddleware(app)
