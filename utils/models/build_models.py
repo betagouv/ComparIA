@@ -1,15 +1,15 @@
 import logging
-import markdown
 import os
-import requests
 import sys
 from pathlib import Path
-from pydantic import ValidationError
-from rich.logging import RichHandler
 from typing import Any
 
-from languia.models import (
-    ROOT_PATH,
+import markdown
+import requests
+from pydantic import ValidationError
+from rich.logging import RichHandler
+
+from backend.models.models import (
     Archs,
     DatasetData,
     Licenses,
@@ -17,7 +17,7 @@ from languia.models import (
     PreferencesData,
     RawOrgas,
 )
-from utils.models.utils import Obj, read_json, write_json, sort_dict
+from utils.models.utils import Obj, read_json, sort_dict, write_json
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
@@ -25,7 +25,8 @@ logging.basicConfig(
 log = logging.getLogger("models")
 
 CURRENT_FOLDER = Path(__file__).parent
-FRONTEND_FOLDER = CURRENT_FOLDER.parent.parent / "frontend"
+ROOT_PATH = CURRENT_FOLDER.parent.parent
+FRONTEND_FOLDER = ROOT_PATH / "frontend"
 LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 ARCHS_PATH = CURRENT_FOLDER / "archs.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
@@ -260,9 +261,7 @@ def main() -> None:
                 for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
             }
 
-
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
-
 
     # Check for missing data/prefs and log warnings
     missing_info_events = []
@@ -271,34 +270,45 @@ def main() -> None:
             missing_data_fields = []
             missing_prefs_fields = []
             reason_parts = []
-            
+
             # Check if model exists in raw source data
             model_in_source = m.id in raw_models_data
-            
+
             # Check if data is completely missing
             if m.data is None:
                 if not model_in_source:
-                    reason_parts.append(f"model '{m.id}' not found in ml_final_data.json")
+                    reason_parts.append(
+                        f"model '{m.id}' not found in ml_final_data.json"
+                    )
                 else:
                     # Model exists but data couldn't be built - check what's in source
                     source_data = raw_models_data[m.id]
                     missing_dataset_fields = []
                     for field_name in DatasetData.model_fields.keys():
-                        if field_name not in source_data or source_data.get(field_name) is None:
+                        if (
+                            field_name not in source_data
+                            or source_data.get(field_name) is None
+                        ):
                             missing_dataset_fields.append(field_name)
                     if missing_dataset_fields:
-                        reason_parts.append(f"missing data fields in source: {', '.join(missing_dataset_fields)}")
+                        reason_parts.append(
+                            f"missing data fields in source: {', '.join(missing_dataset_fields)}"
+                        )
                     else:
-                        reason_parts.append("data validation failed (check field types)")
+                        reason_parts.append(
+                            "data validation failed (check field types)"
+                        )
             else:
                 # Check for missing fields within data
-                data_dict = m.data.model_dump() if hasattr(m.data, 'model_dump') else {}
+                data_dict = m.data.model_dump() if hasattr(m.data, "model_dump") else {}
                 for field_name in DatasetData.model_fields.keys():
                     if field_name not in data_dict or data_dict.get(field_name) is None:
                         missing_data_fields.append(field_name)
                 if missing_data_fields:
-                    reason_parts.append(f"incomplete data fields: {', '.join(missing_data_fields)}")
-            
+                    reason_parts.append(
+                        f"incomplete data fields: {', '.join(missing_data_fields)}"
+                    )
+
             # Check if prefs is completely missing
             if m.prefs is None:
                 if not model_in_source:
@@ -309,20 +319,34 @@ def main() -> None:
                     source_data = raw_models_data[m.id]
                     missing_prefs_source_fields = []
                     for field_name in PreferencesData.model_fields.keys():
-                        if field_name not in source_data or source_data.get(field_name) is None:
+                        if (
+                            field_name not in source_data
+                            or source_data.get(field_name) is None
+                        ):
                             missing_prefs_source_fields.append(field_name)
                     if missing_prefs_source_fields:
-                        reason_parts.append(f"missing prefs fields in source: {', '.join(missing_prefs_source_fields)}")
+                        reason_parts.append(
+                            f"missing prefs fields in source: {', '.join(missing_prefs_source_fields)}"
+                        )
                     else:
-                        reason_parts.append("prefs validation failed (check field types)")
+                        reason_parts.append(
+                            "prefs validation failed (check field types)"
+                        )
             else:
                 # Check for missing fields within prefs
-                prefs_dict = m.prefs.model_dump() if hasattr(m.prefs, 'model_dump') else {}
+                prefs_dict = (
+                    m.prefs.model_dump() if hasattr(m.prefs, "model_dump") else {}
+                )
                 for field_name in PreferencesData.model_fields.keys():
-                    if field_name not in prefs_dict or prefs_dict.get(field_name) is None:
+                    if (
+                        field_name not in prefs_dict
+                        or prefs_dict.get(field_name) is None
+                    ):
                         missing_prefs_fields.append(field_name)
                 if missing_prefs_fields:
-                    reason_parts.append(f"incomplete prefs fields: {', '.join(missing_prefs_fields)}")
+                    reason_parts.append(
+                        f"incomplete prefs fields: {', '.join(missing_prefs_fields)}"
+                    )
 
             if reason_parts:
                 missing_info_events.append(
