@@ -5,7 +5,7 @@ import os
 import sys
 from logging.handlers import WatchedFileHandler
 
-import psycopg2
+import psycopg2  # type: ignore
 from psycopg2 import sql
 
 from backend.config import settings
@@ -136,7 +136,7 @@ class PostgresHandler(logging.Handler):
             # self.handleError(record)
 
 
-def build_logger(logger_filename) -> logging.Logger:
+def configure_logger() -> logging.Logger:
     """
     Configure and initialize application logger with multiple handlers.
 
@@ -150,7 +150,7 @@ def build_logger(logger_filename) -> logging.Logger:
     - File: Structured JSON with request context
 
     Args:
-        logger_filename: Filename for JSONL log output (relative to LOGDIR)
+        logger: Logger to configure
 
     Returns:
         Logger: Configured logger instance for "languia"
@@ -162,6 +162,12 @@ def build_logger(logger_filename) -> logging.Logger:
     """
     # TODO: log "funcName"
     logger = logging.getLogger("languia")
+
+    # Log file naming with hostname and timestamp
+    t = datetime.datetime.now()
+    hostname = os.uname().nodename
+    logger_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
+
     if settings.LANGUIA_DEBUG:
         logger.setLevel(logging.DEBUG)
     else:
@@ -274,20 +280,9 @@ def configure_uvicorn_logging():
             uvicorn_logger.addHandler(postgres_handler)
 
 
-# Log file naming with hostname and timestamp
-t = datetime.datetime.now()
-hostname = os.uname().nodename
-log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
-
-
-logger = build_logger(log_filename)
-configure_uvicorn_logging()
-
-# Configurer le logger frontend pour utiliser les mêmes handlers
-frontend_logger = logging.getLogger("frontend")
-frontend_logger.setLevel(logging.DEBUG if debug else logging.INFO)
-for handler in logger.handlers:
-    frontend_logger.addHandler(handler)
-
-# Log séparateur au démarrage pour marquer les redémarrages
-logger.info("=" * 80)
+def configure_frontend_logger():
+    # Configurer le logger frontend pour utiliser les mêmes handlers
+    frontend_logger = logging.getLogger("frontend")
+    frontend_logger.setLevel(logging.DEBUG if debug else logging.INFO)
+    for handler in logger.handlers:
+        frontend_logger.addHandler(handler)
