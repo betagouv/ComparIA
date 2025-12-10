@@ -1,20 +1,19 @@
-import pandas as pd
+import hashlib
+import json
 import logging
-import sys
 import os
 import subprocess
-import os
-import json
-import hashlib
+import sys
 from datetime import datetime
+
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 # Add the parent directory to the Python path to resolve the 'languia' module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from languia.utils import get_total_params, get_active_params
-
+from backend.models.utils import get_active_params, get_total_params
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
