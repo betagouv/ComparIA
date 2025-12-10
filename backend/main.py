@@ -1,10 +1,23 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from backend.logger import (
+    configure_frontend_logger,
+    configure_logger,
+    configure_uvicorn_logging,
+)
 from backend.models.router import router as models_router
 
 app = FastAPI()
+
+logger = configure_logger()
+configure_uvicorn_logging()
+configure_frontend_logger()
+# Log séparateur au démarrage pour marquer les redémarrages
+logger.info("=" * 80)
 
 origins = [
     "http://localhost",
