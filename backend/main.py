@@ -7,11 +7,14 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from backend.config import OBJECTIVES, settings
 from backend.logger import configure_logger
 from backend.models.router import router as models_router
+from backend.sentry import init_sentry
 from backend.utils.countries import get_country_code, get_country_portal_count
 
-app = FastAPI()
-
 configure_logger(logging.getLogger("languia"))
+
+init_sentry()
+
+app = FastAPI()
 
 
 origins = [
@@ -43,4 +46,5 @@ async def get_counter(c: str | None = None):
     }
 
 
+# FIXME remove? https://github.com/getsentry/sentry-python/issues/4003
 app = SentryAsgiMiddleware(app)

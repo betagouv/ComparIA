@@ -14,9 +14,9 @@ class Settings(BaseSettings):
     LOGDIR: str = "./data"
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None
-    SENTRY_SAMPLE_RATE: float = 0.2
     SENTRY_DSN: str | None = None
-    SENTRY_ENV: str | None = None
+    SENTRY_ENV: str = "development"
+    SENTRY_SAMPLE_RATE: float = 0.2
     OPENROUTER_API_KEY: str | None = None
     GOOGLE_APPLICATION_CREDENTIALS: str | None = None
     VERTEXAI_LOCATION: str | None = None
