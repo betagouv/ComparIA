@@ -1,12 +1,12 @@
 from datetime import date
 
-from languia.models import Archs, Licenses, RawOrgas
+from backend.models.models import Archs, Licenses, RawOrgas
 from utils.models.build_models import (
     ARCHS_PATH,
     LICENSES_PATH,
     MODELS_PATH,
-    validate_orgas_and_models,
     log,
+    validate_orgas_and_models,
 )
 from utils.models.utils import read_json, write_json
 
