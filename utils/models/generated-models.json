@@ -73,7 +73,7 @@
           25,
           13
         ],
-        "win_rate": 0.46869047619047627
+        "win_rate": 0.46869047619047616
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -151,7 +151,7 @@
           2,
           5
         ],
-        "win_rate": 0.4625171132407587
+        "win_rate": 0.46251711324075884
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -281,8 +281,8 @@
         "score_p2_5": 923,
         "score_p97_5": 940,
         "trust_range": [
-          2,
-          4
+          4,
+          2
         ],
         "win_rate": 0.42968786709179396
       },
@@ -360,7 +360,7 @@
         "score_p97_5": 792,
         "trust_range": [
           1,
-          2
+          1
         ],
         "win_rate": 0.2402265372168285
       },
@@ -438,7 +438,7 @@
         "score_p97_5": 837,
         "trust_range": [
           0,
-          2
+          1
         ],
         "win_rate": 0.3317316258351893
       },
@@ -491,7 +491,7 @@
           5,
           4
         ],
-        "win_rate": 0.4921080415273624
+        "win_rate": 0.4921080415273623
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -539,8 +539,8 @@
         "score_p2_5": 1042,
         "score_p97_5": 1062,
         "trust_range": [
-          4,
-          5
+          6,
+          3
         ],
         "win_rate": 0.524225748656258
       },
@@ -590,8 +590,8 @@
         "score_p2_5": 1057,
         "score_p97_5": 1076,
         "trust_range": [
-          5,
-          6
+          2,
+          8
         ],
         "win_rate": 0.5309093484419264
       },
@@ -782,8 +782,8 @@
         "score_p2_5": 1060,
         "score_p97_5": 1093,
         "trust_range": [
-          8,
-          7
+          7,
+          8
         ],
         "win_rate": 0.5132988721804511
       },
@@ -948,7 +948,7 @@
         "score_p97_5": 959,
         "trust_range": [
           6,
-          1
+          2
         ],
         "win_rate": 0.4396947333109695
       },
@@ -1002,7 +1002,7 @@
         "score_p2_5": 1086,
         "score_p97_5": 1104,
         "trust_range": [
-          1,
+          2,
           5
         ],
         "win_rate": 0.5851128848346637
@@ -1094,61 +1094,6 @@
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
       "wh_per_million_token": 47025.74
     },
-    "DeepSeek-V3.2": {
-      "active_params": 37,
-      "arch": "moe",
-      "commercial_use": true,
-      "data": {
-        "elo": 1053,
-        "mean_win_prob": 0.5716076526447723,
-        "n_match": 176,
-        "rank": 27,
-        "rank_p2_5": 7,
-        "rank_p97_5": 44,
-        "score_p2_5": 1012,
-        "score_p97_5": 1099,
-        "trust_range": [
-          20,
-          17
-        ],
-        "win_rate": 0.535909090909091
-      },
-      "distribution": "open-weights",
-      "endpoint": {
-        "api_base": null,
-        "api_model_id": "deepseek/deepseek-v3.2",
-        "api_type": "openrouter"
-      },
-      "friendly_size": "XL",
-      "fully_open_source": false,
-      "icon_path": "deepseek.png",
-      "id": "DeepSeek-V3.2",
-      "license": "Apache 2.0",
-      "new": true,
-      "organisation": "DeepSeek",
-      "params": 685,
-      "prefs": {
-        "clear_formatting": 28,
-        "complete": 37,
-        "creative": 13,
-        "incorrect": 18,
-        "instructions_not_followed": 3,
-        "positive_prefs_ratio": 0.7928571428571428,
-        "superficial": 8,
-        "total_prefs": 140,
-        "useful": 33
-      },
-      "pricey": false,
-      "quantization": null,
-      "reasoning": false,
-      "release_date": "12/2025",
-      "required_ram": 685,
-      "reuse": true,
-      "simple_name": "DeepSeek V3.2",
-      "status": "enabled",
-      "url": "https://huggingface.co/deepseek/deepseek-v3.2",
-      "wh_per_million_token": 47025.74
-    },
     "gemini-1.5-pro": {
       "active_params": 220,
       "arch": "moe",
@@ -1163,7 +1108,7 @@
         "score_p2_5": 1025,
         "score_p97_5": 1042,
         "trust_range": [
-          5,
+          4,
           4
         ],
         "win_rate": 0.5830743197509137
@@ -1214,7 +1159,7 @@
         "score_p2_5": 1096,
         "score_p97_5": 1110,
         "trust_range": [
-          2,
+          1,
           3
         ],
         "win_rate": 0.6317699216950714
@@ -1402,7 +1347,7 @@
         "score_p2_5": 980,
         "score_p97_5": 1026,
         "trust_range": [
-          10,
+          11,
           10
         ],
         "win_rate": 0.5826115485564304
@@ -1946,7 +1891,7 @@
           3,
           5
         ],
-        "win_rate": 0.4674846947699842
+        "win_rate": 0.4674846947699843
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2101,7 +2046,7 @@
         "score_p97_5": 1013,
         "trust_range": [
           4,
-          5
+          4
         ],
         "win_rate": 0.45610721302273366
       },
@@ -2320,8 +2265,8 @@
         "score_p2_5": 1069,
         "score_p97_5": 1105,
         "trust_range": [
-          3,
-          9
+          5,
+          8
         ],
         "win_rate": 0.5667617107942973
       },
@@ -2595,10 +2540,10 @@
         "score_p2_5": 936,
         "score_p97_5": 952,
         "trust_range": [
-          4,
+          5,
           1
         ],
-        "win_rate": 0.466347438752784
+        "win_rate": 0.46634743875278395
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2646,8 +2591,8 @@
         "score_p2_5": 919,
         "score_p97_5": 949,
         "trust_range": [
-          5,
-          3
+          4,
+          4
         ],
         "win_rate": 0.37784324324324325
       },
@@ -2704,7 +2649,7 @@
           20,
           19
         ],
-        "win_rate": 0.5449418604651162
+        "win_rate": 0.5449418604651163
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2865,7 +2810,7 @@
           1,
           0
         ],
-        "win_rate": 0.41629681386249306
+        "win_rate": 0.416296813862493
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -3023,8 +2968,8 @@
         "score_p2_5": 965,
         "score_p97_5": 983,
         "trust_range": [
-          5,
-          4
+          4,
+          5
         ],
         "win_rate": 0.530445996775927
       },
@@ -3075,7 +3020,7 @@
         "score_p97_5": 941,
         "trust_range": [
           3,
-          3
+          2
         ],
         "win_rate": 0.4425648302182209
       },
@@ -3185,7 +3130,7 @@
         "score_p97_5": 994,
         "trust_range": [
           3,
-          6
+          5
         ],
         "win_rate": 0.4753419262441819
       },
@@ -3619,8 +3564,8 @@
         "score_p2_5": 1014,
         "score_p97_5": 1028,
         "trust_range": [
-          4,
-          2
+          3,
+          3
         ],
         "win_rate": 0.527441386340469
       },
@@ -3655,61 +3600,6 @@
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
       "wh_per_million_token": 19906.576666666668
-    },
-    "mistral-large-2512": {
-      "active_params": 41,
-      "arch": "moe",
-      "commercial_use": true,
-      "data": {
-        "elo": 1123,
-        "mean_win_prob": 0.66325470289597,
-        "n_match": 284,
-        "rank": 2,
-        "rank_p2_5": 1,
-        "rank_p97_5": 9,
-        "score_p2_5": 1088,
-        "score_p97_5": 1159,
-        "trust_range": [
-          1,
-          7
-        ],
-        "win_rate": 0.6028268551236748
-      },
-      "distribution": "open-weights",
-      "endpoint": {
-        "api_base": null,
-        "api_model_id": "mistralai/mistral-large-2512",
-        "api_type": "openrouter"
-      },
-      "friendly_size": "XL",
-      "fully_open_source": false,
-      "icon_path": "mistral.png",
-      "id": "mistral-large-2512",
-      "license": "Apache 2.0",
-      "new": true,
-      "organisation": "Mistral AI",
-      "params": 675,
-      "prefs": {
-        "clear_formatting": 72,
-        "complete": 91,
-        "creative": 23,
-        "incorrect": 21,
-        "instructions_not_followed": 7,
-        "positive_prefs_ratio": 0.8629629629629629,
-        "superficial": 9,
-        "total_prefs": 270,
-        "useful": 47
-      },
-      "pricey": false,
-      "quantization": null,
-      "reasoning": false,
-      "release_date": "12/2025",
-      "required_ram": 675,
-      "reuse": true,
-      "simple_name": "Mistral 3 Large",
-      "status": "enabled",
-      "url": "https://mistral.ai/news/mistral-3",
-      "wh_per_million_token": 50393.81999999999
     },
     "mistral-medium-2508": {
       "active_params": null,
@@ -3889,7 +3779,7 @@
           2,
           5
         ],
-        "win_rate": 0.4829677680924386
+        "win_rate": 0.4829677680924387
       },
       "distribution": "api-only",
       "endpoint": {
@@ -4047,8 +3937,8 @@
         "score_p2_5": 999,
         "score_p97_5": 1016,
         "trust_range": [
-          4,
-          4
+          3,
+          5
         ],
         "win_rate": 0.4945107304587517
       },
@@ -4177,7 +4067,7 @@
         "score_p97_5": 899,
         "trust_range": [
           1,
-          2
+          1
         ],
         "win_rate": 0.43488671874999996
       },
@@ -4227,8 +4117,8 @@
         "score_p2_5": 968,
         "score_p97_5": 999,
         "trust_range": [
-          7,
-          8
+          6,
+          9
         ],
         "win_rate": 0.51142063001853
       },
@@ -4278,7 +4168,7 @@
         "score_p2_5": 995,
         "score_p97_5": 1017,
         "trust_range": [
-          6,
+          5,
           4
         ],
         "win_rate": 0.47113978494623654
@@ -4298,15 +4188,15 @@
       "organisation": "OpenAI",
       "params": 18,
       "prefs": {
-        "clear_formatting": 283,
-        "complete": 369,
+        "clear_formatting": 285,
+        "complete": 371,
         "creative": 111,
-        "incorrect": 131,
+        "incorrect": 132,
         "instructions_not_followed": 45,
-        "positive_prefs_ratio": 0.7697368421052632,
-        "superficial": 209,
-        "total_prefs": 1672,
-        "useful": 524
+        "positive_prefs_ratio": 0.7696428571428572,
+        "superficial": 210,
+        "total_prefs": 1680,
+        "useful": 526
       },
       "pricey": false,
       "quantization": null,
@@ -4470,7 +4360,7 @@
         "score_p97_5": 878,
         "trust_range": [
           1,
-          2
+          1
         ],
         "win_rate": 0.4021104536489152
       },
@@ -4711,7 +4601,7 @@
         "score_p2_5": 637,
         "score_p97_5": 810,
         "trust_range": [
-          3,
+          2,
           0
         ],
         "win_rate": 0.2525
@@ -4867,7 +4757,7 @@
           4,
           0
         ],
-        "win_rate": 0.4378942320865872
+        "win_rate": 0.43789423208658723
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -5136,7 +5026,7 @@
         "score_p97_5": 967,
         "trust_range": [
           7,
-          2
+          4
         ],
         "win_rate": 0.4485997442455243
       },
