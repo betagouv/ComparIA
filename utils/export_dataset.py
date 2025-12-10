@@ -137,7 +137,11 @@ def load_models_data():
     try:
         with open(MODELS_JSON_PATH, "r") as f:
             models_data = json.load(f)
-            MODELS_DATA = {k.lower(): v for k, v in models_data.items()}
+            # Access the nested "models" key in the JSON structure
+            if "models" in models_data:
+                MODELS_DATA = {k.lower(): v for k, v in models_data["models"].items()}
+            else:
+                MODELS_DATA = {k.lower(): v for k, v in models_data.items()}
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")
     except json.JSONDecodeError:

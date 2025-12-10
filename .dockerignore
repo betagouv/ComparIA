@@ -1,1 +1,65 @@
-.gitignore
+# Python
+__pycache__
+*.pyc
+*.pyi
+*.egg-info
+# dist
+.venv
+venv
+
+# JS
+node_modules
+
+# Log
+*.log
+*.log.*
+data/
+
+# Vite
+.vite
+
+!playground/deepspeed_config_s2.json
+!playground/deepspeed_config_s3.json
+
+# Editor
+.idea
+*.swp
+
+# Other
+.DS_Store
+wandb
+output
+checkpoints_flant5_3b
+
+# Data
+*.pkl
+# *.csv
+tests/state_of_the_union.txt
+
+# Build
+build
+
+# Image data
+serve_images
+val2014
+vqa_examples
+docker/.env
+
+# Secrets
+model-info-file.json
+register-api-endpoint-file*.json
+docker/.env
+.env
+languia-*.json
+utils/results/
+utils/results-output/
+/datasets/
+litellm_config.yml
+results-output/
+venv.bak
+cache/
+
+# Claude Code
+CLAUDE.md
+.claude
+ignored_files
