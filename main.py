@@ -1,16 +1,18 @@
 import logging
 
 import gradio as gr
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
-from backend.logger import logger
 from backend.models.data import all_models_data
-from backend.models.models import FrontendLogEntry, FrontendLogRequest
+from backend.models.models import CohortRequest, FrontendLogEntry, FrontendLogRequest
 from backend.session import store_cohorts_redis
+from backend.utils.countries import get_country_portal_count
 from languia.block_arena import demo
+
+logger = logging.getLogger("languia")
 
 app = FastAPI()
 
@@ -50,8 +52,6 @@ app = gr.mount_gradio_app(
     # show_error=config.debug,
 )
 
-from languia.utils import get_country_portal_count
-
 
 @app.get("/", response_class=JSONResponse)
 @app.get("/available_models", response_class=JSONResponse)
@@ -72,12 +72,6 @@ async def available_models():
 # @app.get("/enabled_models", response_class=JSONResponse)
 # async def enabled_models():
 #     return JSONResponse(dict(config.models))
-
-from typing import Annotated, Optional
-
-from fastapi import Query
-
-from backend.models.models import CohortRequest
 
 
 @app.get("/counter", response_class=JSONResponse)
