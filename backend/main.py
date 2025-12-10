@@ -1,10 +1,16 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from backend.logger import configure_logger
 from backend.models.router import router as models_router
 
 app = FastAPI()
+
+configure_logger(logging.getLogger("languia"))
+
 
 origins = [
     "http://localhost",
