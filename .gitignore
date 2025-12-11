@@ -9,6 +9,7 @@ venv
 
 # JS
 node_modules
+package-lock.json # using yarn.lock instead
 
 # Log
 *.log
