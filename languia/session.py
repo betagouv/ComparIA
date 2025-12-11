@@ -14,6 +14,7 @@ try:
     # Redis connection configuration
     redis_host = os.getenv("COMPARIA_REDIS_HOST", "localhost")
     # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
+
     # Initialize Redis client (decode_responses=True returns strings instead of bytes)
     r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
@@ -26,7 +27,6 @@ try:
 except Exception as e:
     raise Exception(f"Redis Connection Error {e}")
 
-r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
 from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
 
