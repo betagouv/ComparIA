@@ -107,16 +107,29 @@ def build_logger(logger_filename):
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
 
-    file_formatter = JSONFormatter(
-        '{"time":"%(asctime)s", "name": "%(name)s", \
-        "level": "%(levelname)s", "message": "%(message)s"}',
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    # Récupérer le format de logs depuis la variable d'environnement
+    log_format = os.getenv("LOG_FORMAT", "JSON").upper()
 
     if LOGDIR:
         os.makedirs(LOGDIR, exist_ok=True)
         filename = os.path.join(LOGDIR, logger_filename)
         file_handler = WatchedFileHandler(filename, encoding="utf-8")
+        
+        # Choisir le formatter en fonction de LOG_FORMAT
+        if log_format == "RAW":
+            # Format identique à la console pour une meilleure lisibilité en dev
+            file_formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        else:
+            # Format JSON par défaut pour l'analyse automatisée
+            file_formatter = JSONFormatter(
+                '{"time":"%(asctime)s", "name": "%(name)s", \
+                "level": "%(levelname)s", "message": "%(message)s"}',
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 
