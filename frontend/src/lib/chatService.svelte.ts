@@ -6,7 +6,7 @@ import { parseModel } from '$lib/models'
 import type { LoadingStatus } from '@gradio/statustracker'
 
 // PROMPT
-export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models' | 'reasoning'
+export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
 
 export interface APIModeAndPromptData {
   prompt_value: string
@@ -151,8 +151,7 @@ export const modeInfos: ModeInfos[] = (
     { value: 'random', icon: 'dice' },
     { value: 'custom', icon: 'glass' },
     { value: 'small-models', icon: 'leaf-line' },
-    { value: 'big-vs-small', icon: 'ruler' },
-    { value: 'reasoning', icon: 'brain' }
+    { value: 'big-vs-small', icon: 'ruler' }
   ] as const
 ).map((item) => ({
   ...item,
