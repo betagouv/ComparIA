@@ -10,11 +10,22 @@ import os
 import logging
 from typing import List
 
-# Redis connection configuration
-redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
-# Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
+try: 
+    # Redis connection configuration
+    redis_host = os.getenv("COMPARIA_REDIS_HOST", "localhost")
+    # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
+    # Initialize Redis client (decode_responses=True returns strings instead of bytes)
+    r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
-# Initialize Redis client (decode_responses=True returns strings instead of bytes)
+    # Fail if we don't have a working redis
+    response = r.ping()
+    if not r.ping():
+        logger = logging.getLogger("languia")
+        logger.error(f"Erreur de connection au redis - {response}")
+
+except Exception as e:
+    raise Exception(f"Redis Connection Error {e}")
+
 r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
 from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
