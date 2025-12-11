@@ -1,7 +1,7 @@
 [
   {
     "name": "Meta",
-    "icon_path": "meta.svg",
+    "icon_path": "meta-color",
     "models": [
       {
         "id": "llama-4-scout",
@@ -127,7 +127,7 @@
   },
   {
     "name": "DeepSeek",
-    "icon_path": "deepseek.png",
+    "icon_path": "deepseek-color",
     "models": [
       {
         "simple_name": "DeepSeek v3.1",
@@ -256,7 +256,7 @@
   },
   {
     "name": "Cohere",
-    "icon_path": "cohere.png",
+    "icon_path": "cohere-color",
     "models": [
       {
         "id": "command-a",
@@ -356,7 +356,7 @@
   },
   {
     "name": "xAI",
-    "icon_path": "xai.svg",
+    "icon_path": "xai",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -417,7 +417,7 @@
   },
   {
     "name": "Microsoft",
-    "icon_path": "microsoft.png",
+    "icon_path": "microsoft-color",
     "models": [
       {
         "id": "phi-4",
@@ -478,7 +478,7 @@
   },
   {
     "name": "Google",
-    "icon_path": "google.png",
+    "icon_path": "google-color",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
@@ -665,7 +665,7 @@
   },
   {
     "name": "Alibaba",
-    "icon_path": "qwen.png",
+    "icon_path": "qwen-color",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -877,7 +877,7 @@
   },
   {
     "name": "Moonshot AI",
-    "icon_path": "moonshot-ai.webp",
+    "icon_path": "moonshot",
     "models": [
       {
         "simple_name": "Kimi K2",
@@ -920,7 +920,7 @@
   },
   {
     "name": "Nvidia",
-    "icon_path": "nvidia.svg",
+    "icon_path": "nvidia-color",
     "models": [
       {
         "status": "archived",
@@ -943,7 +943,7 @@
   },
   {
     "name": "OpenAI",
-    "icon_path": "openai.svg",
+    "icon_path": "openai",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -1156,7 +1156,7 @@
   },
   {
     "name": "Mistral AI",
-    "icon_path": "mistral.png",
+    "icon_path": "mistral-color",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -1365,6 +1365,7 @@
   },
   {
     "name": "Amazon",
+    "icon_path": "aws-color",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via Amazon Bedrock, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "proprietary_reuse_specificities": "sauf pour distiller ou entraîner d’autres modèles sur les plateformes d’Amazon.",
     "models": [
@@ -1382,7 +1383,7 @@
   },
   {
     "name": "Anthropic",
-    "icon_path": "anthropic.png",
+    "icon_path": "anthropic",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -1451,7 +1452,7 @@
   },
   {
     "name": "Zhipu",
-    "icon_path": "zhipu.svg",
+    "icon_path": "zhipu-color",
     "models": [
       {
         "simple_name": "GLM 4.6",
@@ -1489,7 +1490,7 @@
   },
   {
     "name": "Nous",
-    "icon_path": "nous.webp",
+    "icon_path": "nousresearch",
     "models": [
       {
         "simple_name": "Hermes 4 70B",
@@ -1523,7 +1524,7 @@
   },
   {
     "name": "jpacifico",
-    "icon_path": "huggingface.svg",
+    "icon_path": "huggingface-color",
     "models": [
       {
         "status": "archived",
@@ -1621,7 +1622,7 @@
   },
   {
     "name": "AI21",
-    "icon_path": "ai21.webp",
+    "icon_path": "ai21",
     "models": [
       {
         "status": "archived",
@@ -1641,7 +1642,7 @@
   },
   {
     "name": "Liquid",
-    "icon_path": "liquid.svg",
+    "icon_path": "liquid",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
     "models": [
       {
@@ -1680,7 +1681,7 @@
   },
   {
     "name": "01-ai",
-    "icon_path": "yi.svg",
+    "icon_path": "yi-color",
     "models": [
       {
         "status": "archived",
@@ -1735,7 +1736,7 @@
   },
   {
     "name": "MiniMax",
-    "icon_path": "minimax.png",
+    "icon_path": "minimax-color",
     "models": [
       {
         "simple_name": "MiniMax M2",

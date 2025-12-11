@@ -29,8 +29,8 @@
     class="fill-primary"
   />
   <foreignObject x="40" y="-5" width="300" height="200">
-    <p class="text-[14px]! text-(--grey-425-625)">
-      <strong class="block text-lg text-(--grey-50-1000)"
+    <p class="text-[14px]! text-[--grey-425-625]">
+      <strong class="text-lg block text-[--grey-50-1000]"
         >{m['home.intro.steps.one.title']()}</strong
       >
       <span class="inline-block max-w-[230px]">{m['home.intro.steps.one.desc']()}</span>
@@ -43,8 +43,8 @@
     class="fill-primary"
   />
   <foreignObject x="148" y="210" width="300" height="200">
-    <p class="text-[14px]! text-(--grey-425-625)">
-      <strong class="block text-lg text-(--grey-50-1000)"
+    <p class="text-[14px]! text-[--grey-425-625]">
+      <strong class="text-lg block text-[--grey-50-1000]"
         >{m['home.intro.steps.three.title']()}</strong
       >
       <span class="inline-block max-w-[250px]">{m['home.intro.steps.three.desc']()}</span>
@@ -57,8 +57,8 @@
     class="fill-primary"
   />
   <foreignObject x="300" y="88" width="220" height="200">
-    <p class="text-[14px]! text-(--grey-425-625)">
-      <strong class="block text-lg text-(--grey-50-1000)"
+    <p class="text-[14px]! text-[--grey-425-625]">
+      <strong class="text-lg block text-[--grey-50-1000]"
         >{m['home.intro.steps.two.title']()}</strong
       >
       {m['home.intro.steps.two.desc']()}

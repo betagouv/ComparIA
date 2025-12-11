@@ -369,7 +369,7 @@ class RawOrganisation(BaseModel):
     @classmethod
     def check_icon_exists(cls, value: str) -> str:
         file_path = FRONTEND_PATH / "static" / "orgs" / "ai" / value
-        if not file_path.exists():
+        if "." in value and not file_path.exists():
             raise PydanticCustomError(
                 "file_missing",
                 f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_PATH)}' doesn't exists.",

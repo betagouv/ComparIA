@@ -29,7 +29,7 @@
     resource: {
       title: 'Ressources',
       variant: 'light-info',
-      icon: 'book-ai-fill',
+      icon: 'i-ri-book-ai-fill',
       subKinds: [
         { id: 'comparia', label: 'Organisé par compar:IA' },
         { id: 'blog', label: 'Billet de blog' },
@@ -39,7 +39,7 @@
     talk: {
       title: 'Prises de parole',
       variant: 'purple',
-      icon: 'speak-ai-fill',
+      icon: 'i-ri-speak-ai-fill',
       subKinds: [
         { id: 'podcast', label: 'Podcast', linkLabel: 'Écouter le podcast' },
         { id: 'webinar', label: 'Webinaire', linkLabel: 'Revoir le webinaire' },
@@ -51,7 +51,7 @@
     media: {
       title: 'Médias',
       variant: 'green-tilleul',
-      icon: 'megaphone-fill',
+      icon: 'i-ri-megaphone-fill',
       subKinds: [
         { id: 'analyze', label: 'Analyse' },
         { id: 'press', label: 'Presse écrite', linkLabel: "Lire l'article" },
@@ -150,7 +150,7 @@
           >
             Afficher les filtres
             {#if filterCount}
-              <span class="fr-badge fr-badge--sm ms-2 rounded-full! bg-primary! text-white!">
+              <span class="fr-badge fr-badge--sm bg-primary! text-white! ms-2 rounded-full!">
                 {filterCount}
               </span>
             {/if}
@@ -180,7 +180,7 @@
                   {/snippet}
                   {#snippet labelSlot({ option })}
                     <div class="me-2">{option.label}</div>
-                    <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
+                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                   {/snippet}
                 </CheckboxGroup>
               {/each}
@@ -218,7 +218,7 @@
           </select>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
           {#each filteredNews as news (news.title)}
             <div class="fr-card fr-enlarge-link fr-card--no-border cg-border rounded-xl bg-none!">
               <div class="fr-card__body">
@@ -230,11 +230,11 @@
                       class="after:content-none!"
                       onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
                     >
-                      <span class="text-(--grey-50-1000)!">{news.title}</span>
+                      <span class="text-[--grey-50-1000]!">{news.title}</span>
                     </Link>
                   </h6>
 
-                  <div class="fr-card__desc text-[14px] text-grey">
+                  <div class="fr-card__desc text-grey text-[14px]">
                     {news.desc}
                   </div>
 
@@ -243,7 +243,7 @@
                       {#if news.pinned}
                         <li class="m-0!">
                           <Badge id="card-badge-kind" variant="red" size="xs" noTooltip>
-                            <Icon icon="pushpin-fill" size="xxs" />
+                            <Icon icon="i-ri-pushpin-fill" size="xxs" />
                           </Badge>
                         </li>
                       {/if}
@@ -275,14 +275,14 @@
                         text=""
                         class={[
                           'text-[14px]!',
-                          news.href !== '#' ? 'border-b-1 text-primary!' : 'text-grey!'
+                          news.href !== '#' ? 'text-primary! border-b-1' : 'text-grey!'
                         ]}
                         tabindex={-1}
                         onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
                       >
                         {news.linkLabel}
                         {#if news.href.startsWith('/')}
-                          <Icon icon="arrow-right-line" size="xs" />
+                          <Icon icon="i-ri-arrow-right-line" size="xs" />
                         {/if}
                       </Link>
                     </p>

@@ -120,7 +120,7 @@
     <Tabs {tabs} noBorders kind="nav">
       {#snippet tab({ id })}
         {#if id === 'ranking'}
-          <p class="mb-12! text-[14px]! text-dark-grey">
+          <p class="mb-12! text-dark-grey text-[14px]!">
             {@html sanitize(
               m['ranking.ranking.desc']({
                 linkProps: externalLinkProps('https://www.peren.gouv.fr/')

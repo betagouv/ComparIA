@@ -126,13 +126,13 @@
         >
           {m['models.list.filters.display']()}
           {#if filterCount}
-            <span class="fr-badge fr-badge--sm ms-2 rounded-full! bg-primary! text-white!">
+            <span class="fr-badge fr-badge--sm bg-primary! text-white! ms-2 rounded-full!">
               {filterCount}
             </span>
           {/if}
         </button>
         <div class="fr-collapse" id="fr-modal-filters-section">
-          <p class="fr-h5 -mt-4! mb-5! hidden md:block">
+          <p class="fr-h5 -mt-4! mb-5! md:block hidden">
             {filteredModels.length}
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
@@ -141,7 +141,7 @@
               id="model-list-search"
               bind:value={search}
               label={m['actions.searchModel']()}
-              class="mb-7 hidden! md:flex!"
+              class="md:flex! mb-7 hidden!"
             />
 
             <Toggle
@@ -154,7 +154,7 @@
               groupClass="mx-4 md:mx-0"
             />
 
-            <AccordionGroup class="mt-6 mb-6">
+            <AccordionGroup class="mb-6 mt-6">
               <Accordion id="field-editors" label={editorFilter.legend}>
                 <div class="p-4">
                   <CheckboxGroup
@@ -166,7 +166,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2">{option.value}</div>
-                      <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -183,7 +183,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
-                      <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -200,7 +200,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2">{option.label}</div>
-                      <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -234,7 +234,7 @@
         id="model-list-search"
         bind:value={search}
         label={m['actions.searchModel']()}
-        class="mb-4 md:hidden!"
+        class="md:hidden! mb-4"
       />
 
       <div class="fr-select-group">
@@ -251,7 +251,7 @@
         </select>
       </div>
 
-      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
         {#each filteredModels as model (model.id)}
           <ModelCard
             {model}

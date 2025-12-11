@@ -95,7 +95,7 @@
     a {
       &[aria-selected='true'] {
         --border-active-blue-france: var(--blue-france-main-525);
-        @apply text-primary;
+        color: var(--blue-france-main-525);
       }
     }
   }
