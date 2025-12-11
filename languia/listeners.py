@@ -267,11 +267,18 @@ def register_listeners():
         )
 
         # record for questions only dataset and stats on ppl abandoning before generation completion + add locale info
-        # Check if session has pix-do-not-track flag using direct Redis get, default to "pix" cohort
-
-        cohorts : List[str] | None
+        # Check if session has cohorts using direct Redis get
         if redis_host:
             cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
+        else:
+            cohorts_comma_separated = None
+            logger.warning("can't load cohorts from redis")
+
+
+        logger.info(
+            f"cohorts_comma_separated: {cohorts_comma_separated}",
+            extra={"request": request},
+        )
 
         record_conversations(
             app_state_scoped,

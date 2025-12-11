@@ -85,13 +85,14 @@ def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
     """
     if not redis_host:
         return False
-
+    logger = logging.getLogger("languia")
     try:
         # Stocke la clé avec une expiration de 24 heures
-        r.setex(f"cohorts:{session_hash}", 86400, cohorts_comma_separated)
+        expire_time = 86400
+        r.setex(f"cohorts:{session_hash}", expire_time, cohorts_comma_separated)
+        logger.debug(f"stored cohorts:{session_hash} - {expire_time} - {cohorts_comma_separated}")
         return True
     except Exception as e:
-        logger = logging.getLogger("languia")
         logger.error(f"Error storing cohorts in Redis: {e}")
         return False
 
@@ -108,9 +109,10 @@ def retrieve_cohorts_redis(session_hash: str):
     """
     if not redis_host:
         return None
-
+    logger = logging.getLogger("languia")
     try:
         cohorts_comma_separated = r.get(f"cohorts:{session_hash}")
+        logger.debug(cohorts_comma_separated)
         
         if cohorts_comma_separated:
             return cohorts_comma_separated
@@ -118,7 +120,6 @@ def retrieve_cohorts_redis(session_hash: str):
             return None
         
     except Exception as e:
-        logger = logging.getLogger("languia")
         logger.error(f"Error getting cohort list from Redis: {e}")
         return None
 
