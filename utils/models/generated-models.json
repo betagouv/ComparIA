@@ -3386,7 +3386,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Magistral Medium",
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 19906.576666666668
     },
@@ -3441,7 +3441,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Magistral Small",
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 6013.246666666666
     },
@@ -3733,7 +3733,7 @@
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
-        "api_model_id": "mistralai/mistral-medium-3",
+        "api_model_id": "mistralai/mistral-medium-3.1",
         "api_type": "openrouter"
       },
       "friendly_size": "L",
@@ -3761,64 +3761,9 @@
       "release_date": "08/2025",
       "required_ram": 123,
       "reuse": false,
-      "simple_name": "Mistral Medium 2508",
-      "status": "enabled",
-      "url": "https://mistral.ai/news/mistral-medium-3",
-      "wh_per_million_token": 19906.576666666668
-    },
-    "mistral-medium-3.1": {
-      "active_params": null,
-      "arch": "maybe-dense",
-      "commercial_use": null,
-      "data": {
-        "elo": 1137,
-        "mean_win_prob": 0.6812404469964893,
-        "n_match": 2491,
-        "rank": 1,
-        "rank_p2_5": 1,
-        "rank_p97_5": 2,
-        "score_p2_5": 1126,
-        "score_p97_5": 1151,
-        "trust_range": [
-          0,
-          1
-        ],
-        "win_rate": 0.6043953394937726
-      },
-      "distribution": "api-only",
-      "endpoint": {
-        "api_base": null,
-        "api_model_id": "mistralai/mistral-medium-3.1",
-        "api_type": "openrouter"
-      },
-      "friendly_size": "L",
-      "fully_open_source": false,
-      "icon_path": "mistral.png",
-      "id": "mistral-medium-3.1",
-      "license": "proprietary",
-      "new": false,
-      "organisation": "Mistral AI",
-      "params": 123,
-      "prefs": {
-        "clear_formatting": 186,
-        "complete": 269,
-        "creative": 78,
-        "incorrect": 59,
-        "instructions_not_followed": 25,
-        "positive_prefs_ratio": 0.8654761904761905,
-        "superficial": 29,
-        "total_prefs": 840,
-        "useful": 194
-      },
-      "pricey": false,
-      "quantization": null,
-      "reasoning": false,
-      "release_date": "08/2025",
-      "required_ram": 123,
-      "reuse": false,
       "simple_name": "Mistral Medium 3.1",
       "status": "enabled",
-      "url": null,
+      "url": "https://mistral.ai/news/mistral-medium-3.1",
       "wh_per_million_token": 19906.576666666668
     },
     "mistral-nemo-2407": {

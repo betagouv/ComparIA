@@ -1191,6 +1191,7 @@
         }
       },
       {
+        "status": "archived",
         "simple_name": "Magistral Medium",
         "license": "proprietary",
         "id": "magistral-medium",
@@ -1206,6 +1207,7 @@
         }
       },
       {
+        "status": "archived",
         "simple_name": "Magistral Small",
         "license": "Apache 2.0",
         "id": "magistral-small-2506",
