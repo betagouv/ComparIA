@@ -70,6 +70,7 @@
         "fyi": "Le modèle a été entraîné sur un corpus de 15 billions de jetons avec 16 000 cartes graphiques H100 (une des cartes graphiques les plus puissantes sur le marché en 2025). L'entraînement a combiné génération de données synthétiques et optimisation par préférences directes (DPO). Ce modèle est lui-même souvent utilisé pour générer des données synthétiques pour entraîner de plus petits modèles. Le modèle utilise par défaut une compression 8-bit pour réduire les besoins en mémoire et permettre l'exécution sur un seul serveur très puissant."
       },
       {
+        "status": "archived",
         "id": "llama-3.1-8b",
         "simple_name": "Llama 3.1 8B",
         "license": "Llama 3.1",
@@ -360,6 +361,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "status": "archived",
         "simple_name": "Grok 4 Fast",
         "license": "proprietary",
         "id": "grok-4-fast",
@@ -981,6 +983,7 @@
         }
       },
       {
+        "status": "archived",
         "simple_name": "GPT 5",
         "license": "proprietary",
         "id": "gpt-5",
@@ -1146,10 +1149,27 @@
         "desc": "Deuxième itération de GPT 5, avec un style jugé (par l'éditeur) plus naturel, avec de meilleurs résultats en code et en tâches d’agents. Le modèle a la spécificité d'ajuster son temps de raisonnement selon la difficulté.",
         "size_desc": "Les tailles des modèles derrière le système GPT-5.1 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.",
         "fyi": "L’arrivée de cette nouvelle itération apporte un routage automatique entre deux modes. Pour les demandes simples, le modèle choisit une réponse rapide. Pour les tâches plus complexes, il bascule vers un mode avec raisonnement avant de répondre. Cette logique évite de perdre du temps sur les requêtes faciles tout en gardant une vraie profondeur quand il le faut.\n\nLa première sortie de la famille GPT 5 avait provoqué beaucoup de réactions négatives vis-à-vis de son style d'écriture. Beaucoup d’utilisateurs trouvaient le modèle moins chaleureux que GPT 4o. Cette itération vise à revenir vers un style plus chaleureux.\n\nCette nouvelle version marque aussi des progrès en code et en mathématiques qui sont confirmés par des benchmarks comme SWE Bench pour le code et AIME pour les compétences mathématiques.",
-        "new": true,
+        "new": false,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-5.1"
+        }
+      },
+      {
+        "simple_name": "GPT 5.2",
+        "license": "proprietary",
+        "id": "gpt-5.2",
+        "release_date": "12/2025",
+        "params": 300,
+        "active_params": 94,
+        "arch": "maybe-moe",
+        "desc": "Troisième itération de GPT 5, avec une attention spéciale portée à son utilité sur des tâches professionelles.",
+        "size_desc": "Les tailles des modèles derrière le système GPT-5.2 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse. GPT 5.2 prend en charge une fenêtre de contexte allant jusqu’à 400 000 jetons, ce qui le rend adapté à l’analyse de corpus volumineux ou de bases de code étendues.",
+        "fyi": "Le modèle a été présenté comme atteignant, voire dépassant, le niveau de performance d’experts humains sur le benchmark GDPval, qui évalue des tâches professionnelles numériques bien définies. Il propose différents niveaux d’effort de raisonnement configurables par l’utilisateur ou le développeur, permettant d’arbitrer entre coût, latence et qualité des réponses selon la complexité de la tâche. GPT 5.2 se distingue également par sa capacité à retrouver des informations précises au sein de contextes très volumineux, y compris lorsque celles-ci sont rares et dispersées dans de longs corpus ("needle in the haystack).",
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.2"
         }
       }
     ]
