@@ -264,6 +264,7 @@
             "accessibility": "Accessibilité : non conforme",
             "legal": "Mentions légales",
             "privacy": "Politique de confidentialité",
+            "rgesn": "Déclaration d’écoconception",
             "sources": "Code source",
             "tos": "Modalités d'utilisation"
         },
@@ -340,6 +341,96 @@
             "privacyResp": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme. En acceptant les <a {linkProps}>modalités d’utilisation</a>, l’utilisateur ou l’utilisatrice s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
             "privacyTitle": "Traitons-nous des données à caractère personnel ?",
             "title": "Politique de confidentialité"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Le site compar:IA permet de donner accès simplement et gratuitement à une très grande diversité de modèles d'IA conversationnelle et ainsi de sensibiliser les citoyens aux divers enjeux des IA génératives : diversité, biais, impact environnemental. Par ailleurs, les jeux de données de questions et de préférences constitués sont partagés en open source sous licence MIT/Etalab 2.0.",
+                "2": "Les cibles utilisatrices du service Compar:IA ont été identifiées en procédant à des entretiens utilisateurs et une phase préalable d'investigation des besoins.",
+                "3": "Ainsi, tous les citoyens sont concernés comme utilisateurs potentiels, mais particulièrement les professeurs, élèves, étudiants, médiateurs numériques, formateurs IA, ainsi que chercheurs (computer sciences, IA, SHS) et entreprises intéressées par l'analyse ou l’utilisation des jeux de données partagés en open source.<br> En cohérence, le service numérique répond à leurs besoins grâce aux fonctionnalités suivantes : tester et comparer gratuitement les modèles, utiliser les données partagées en open source.",
+                "4": "Le service compar:IA s’inscrit dans une démarche d’écoconception visant à réduire les impacts environnementaux. À cette fin, la déclaration a été rédigée dans le cadre de la mise en œuvre du référentiel général de l’écoconception des services numériques (RGESN, version 2024).<br> Le RGESN, réalisé par l’Arcep et l’Arcom, en collaboration avec l’ADEME, la DINUM, la CNIL et l’Inria, est disponible sur le <a {linkProps}>site web de l’Arcep</a>.",
+                "title": "Raison d’être de ce service"
+            },
+            "2": {
+                "1": "L'écoconception de services numériques est une démarche visant à réduire et limiter les impacts environnementaux d’un service dès sa phase de conception et tout au long de son cycle de vie.",
+                "2": {
+                    "1": "Concevoir des services numériques plus durables permettant d’allonger la durée de vie des terminaux ;",
+                    "2": "Promouvoir une démarche de sobriété environnementale face aux stratégies de captation de l’attention de l’utilisateur pour des usages en ligne avec les objectifs environnementaux internationaux ;",
+                    "3": "Diminuer les ressources informatiques mobilisées, optimiser le trafic de données et la sollicitation des infrastructures numériques ;",
+                    "4": "Accroître le niveau de transparence sur l’empreinte environnementale du service numérique.",
+                    "title": "Sa mise en œuvre poursuit quatre objectifs principaux :"
+                },
+                "3": {
+                    "1": "Limiter le poids d’une page",
+                    "2": "Limiter la complexité d’une page",
+                    "3": "Limiter le nombre de requêtes serveurs",
+                    "4": "Limiter la consommation d’énergie permettant d’héberger le service",
+                    "title": "Concrètement, l’écoconception se traduit par un ensemble de bonnes pratiques à respecter avant, pendant et après la création ou l’amélioration d’un service, permettant notamment de :"
+                },
+                "4": "Il s’agit d’une démarche d'amélioration continue et collective.",
+                "title": "Qu’est ce que l’écoconception ?"
+            },
+            "3": {
+                "1": {
+                    "1": "Simplification de l’expérience utilisateur : les parcours de navigation sont optimisés et centrés autour des fonctionnalités essentielles du service Compar:IA (arène de modèles à tester, jeux de données, classement) avec des tests utilisateurs réguliers.",
+                    "2": "Sensibilisation auprès des utilisateurs sur l’empreinte écologique du service : mise en avant d’indicateurs d’impact énergétique sur les questions posées aux IA ; valorisation des usages « frugaux », avec un mode dédié à l’interrogation de « petits » modèles d’IA conversationnelles dont l’impact environnemental est moindre.",
+                    "3": "Utilisation des composants d’interfaces du Système de Design de l’État (DSFR) : ils sont accessibles et leur empreinte est minimale.",
+                    "4": "Navigation la plus intuitive possible pour réduire le temps passé à trouver une information.",
+                    "5": "Conception « mobile first » : tous les contenus sont consultables a minima sur mobile. Le site s’adapte à toutes les tailles d’écran.",
+                    "6": "Exclusion de l’intégration des vidéos sur le site.",
+                    "title": "L’enjeu principal consiste à ce que le service compar:IA fonctionne sur les terminaux utilisateurs les plus anciens possibles, dans des conditions de connectivité variées. Plusieurs mesures ont été mise en œuvre lors de la conception, parmi lesquelles :"
+                },
+                "title": "Stratégie mise en œuvre et objectifs en matière de réduction ou de limitation des impacts environnementaux"
+            },
+            "4": {
+                "1": "L’auto-diagnostic, mené en octobre 2025 par l’équipe produit, a porté sur l’ensemble des pages du site. Les outils utilisés pour évaluer certains indicateurs techniques sont l’inspecteur « réseau » des outils de développement du navigateur, l’extension <a {greenitLinkProps}>Green IT Analysis</a> et l’outil <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "Diagnostic RGESN"
+            },
+            "5": {
+                "1": {
+                    "1": "Score d’avancement dans la mise en œuvre du RGESN, le 10/12/2025 : 89%",
+                    "title": "L’auto-diagnostic donne un taux de conformité au <a {linkProps}>RGESN</a> (référentiel général d’écoconception) de 89%."
+                },
+                "2": "Le service numérique compar:IA vise une amélioration de ce score d’avancement pour atteindre 95% en 2027.",
+                "3": {
+                    "1": "Stratégie : 100 %",
+                    "2": "Spécifications : 78 %",
+                    "3": "Architecture : 100 %",
+                    "4": "Expérience et interface utilisateur (UX/UI) : 100 %",
+                    "5": "Contenus : 67 %",
+                    "6": "Frontend : 82 %",
+                    "7": "Backend : 64 %",
+                    "8": "Hébergement : 90 %",
+                    "9": "Algorithmie : 100 %",
+                    "title": "Score par thématique :"
+                },
+                "4": {
+                    "date": "10 décembre 2025",
+                    "title": "Voir le détail du diagnostic"
+                },
+                "title": "Score dans la mise en oeuvre du référentiel"
+            },
+            "6": {
+                "1": "Le site est conçu pour être accessible pour tout équipement mobile datant de 2017 minimum.",
+                "2": "Connexion minimum pour un accès et une utilisation confortable du service : 3G en mobile et 512 Kbs en connexion fixe.",
+                "3": "Le site est conçu pour les différentes tailles d’écran (minimum 320 pixels de large).",
+                "4": "Le site n’est pas accessible via le navigateur Internet Explorer. ",
+                "title": "Configuration minimale pour accéder au site"
+            },
+            "7": {
+                "1": "Concevoir le service avec une revue de conception et une revue de code, dont l’un des objectifs de réduire les impacts environnementaux de chaque fonctionnalité (critère 2.1)",
+                "2": "Mettre en place des durées de conservation sur les données en vue de leur suppression ou archivage : suppression des logs régulières dans le serveur de fichiers « S3 » et la base de données (Postgres) notamment.",
+                "3": {
+                    "1": "Nombre de requêtes serveurs maximum astreinte par écran : 30",
+                    "2": "Poids des ressources maximum astreint par écran : 600 Ko",
+                    "title": "S’astreindre à un poids maximum et une limite de requêtes par écran (critère 6.1) :"
+                },
+                "4": "Convertir les illustrations en WebP, AVIF, JPEG XL ou un format d’image plus performant pour les images matricielles (critère 5.1).",
+                "5": "Laisser la possibilité d'interrompre l'inférence (chargement des réponses) lors de la comparaison des modèles.",
+                "desc": "Plusieurs améliorations ont été ou sont toujours en cours d’identification, parmi lesquelles :",
+                "title": "Améliorations identifiées"
+            },
+            "desc": "publiée le 11 décembre 2025",
+            "title": "Déclaration d’écoconception"
         },
         "tos": {
             "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>{contactLink}</a>.",
@@ -1866,6 +1957,7 @@
             "problem": "Le problème initial",
             "product": "À propos",
             "ranking": "Classement",
+            "rgesn": "Déclaration d’écoconception",
             "share": "Mon bilan"
         }
     },
