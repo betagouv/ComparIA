@@ -534,3 +534,35 @@ class Conversation(BaseModel):
 class CohortRequest(BaseModel):
     session_hash: str
     cohorts: list[str]
+
+
+class FrontendLogEntry(BaseModel):
+    """
+    Single log entry from frontend.
+
+    Fields:
+        timestamp: ISO timestamp from frontend
+        level: Log level (info, warn, error, debug)
+        message: Log message text
+        context: Optional additional context data
+        service: Optional service identifier
+    """
+    timestamp: str
+    level: str
+    message: str
+    context: dict[str, Any] | None = None
+    service: str | None = None
+
+
+class FrontendLogRequest(BaseModel):
+    """
+    Batch of frontend logs sent to backend.
+
+    Fields:
+        logs: List of log entries
+        session_hash: User session identifier
+        user_agent: Browser user agent string
+    """
+    logs: list[FrontendLogEntry]
+    session_hash: str | None = None
+    user_agent: str | None = None

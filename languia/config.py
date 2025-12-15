@@ -206,6 +206,12 @@ def configure_uvicorn_logging():
 logger = build_logger(log_filename)
 configure_uvicorn_logging()
 
+# Configurer le logger frontend pour utiliser les mêmes handlers
+frontend_logger = logging.getLogger("frontend")
+frontend_logger.setLevel(logging.DEBUG if debug else logging.INFO)
+for handler in logger.handlers:
+    frontend_logger.addHandler(handler)
+
 # Log séparateur au démarrage pour marquer les redémarrages
 logger.info("=" * 80)
 

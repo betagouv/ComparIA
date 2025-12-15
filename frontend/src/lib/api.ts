@@ -5,6 +5,7 @@ import { m } from '$lib/i18n/messages'
 import { getCohortContext } from '$lib/stores/cohortStore.svelte'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
+import { logger } from '$lib/logger'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -135,20 +136,21 @@ export const api = {
     const endpoint = this._getLoadBalancedEndpoint()
     const fullUrl = this.url + endpoint
 
-    console.debug('Connecting to Gradio at:', fullUrl)
+    logger.debug('Connecting to Gradio', { url: fullUrl })
     try {
       // Connect to Gradio with event subscriptions for real-time updates
       this.client = await Client.connect(fullUrl, { events: ['data', 'status'] })
-      console.debug(
-        `Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`
-      )
+      logger.debug('Connected to Gradio successfully', { 
+        sessionHash: this.client.session_hash, 
+        endpoint 
+      })
 
       // Send cohort information to backend if not already sent
       this.sendCurrentCohortsToBackend()
 
       return this.client
     } catch (error) {
-      console.error('Failed to connect to Gradio:', error)
+      logger.apiError('CONNECT', '/api', error as Error, { url: fullUrl })
       throw error
     }
   },
@@ -184,18 +186,18 @@ export const api = {
    * 5. If backend returns error → throw Error + show toast notification
    */
   async submit<T>(uri: string, params: Record<string, unknown> = {}): Promise<AsyncIterable<T>> {
-    console.debug(`Submitting Gradio job '${uri}' with params:`, params)
+    logger.debug(`Submitting Gradio job`, { uri, params })
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Submit request and get streaming response iterable
       const result = await client.submit(uri, params)
-      console.debug('Gradio job submitted successfully')
+      logger.debug('Gradio job submitted successfully', { uri })
       // Filter and parse the streaming response data
       return iterGradioResponses(result as GradioSubmitIterable<T>)
     } catch (error) {
-      console.error('Failed to submit Gradio job:', error)
+      logger.apiError('SUBMIT', uri, error as Error, { params })
       throw error
     }
   },
@@ -232,18 +234,18 @@ export const api = {
    * - submit(): Streams multiple responses, returns Promise<AsyncIterable<T>>
    */
   async predict<T>(uri: string, params: Record<string, unknown> = {}): Promise<T> {
-    console.debug(`Predicting Gradio job '${uri}' with params:`, params)
+    logger.debug(`Predicting Gradio job`, { uri, params })
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Call Gradio function and wait for response
       const result = await client.predict(uri, params)
-      console.debug('Gradio job predicted successfully')
+      logger.debug('Gradio job predicted successfully', { uri })
       // Parse and return the response data
       return parseGradioResponse(result as GradioResponse<T>)
     } catch (error) {
-      console.error('Failed to predict Gradio job:', error)
+      logger.apiError('PREDICT', uri, error as Error, { params })
       throw error
     }
   },
@@ -263,8 +265,13 @@ export const api = {
       // Return parsed JSON if response is successful
       if (response.ok) return response.json()
       // Format error message with HTTP status and response body
-      const message = `Error ${response.status} [GET](${url}): "${await response.text()}"`
-      console.error(message)
+      const errorText = await response.text()
+      const message = `Error ${response.status} [GET](${url}): "${errorText}"`
+      logger.error('HTTP GET request failed', { 
+        status: response.status, 
+        url, 
+        errorText 
+      })
       throw new Error(message)
     })
   },
@@ -301,14 +308,25 @@ export const api = {
 
         if (response.ok) {
           this.cohortsSent = true
-          console.debug('Cohort information sent to backend successfully')
+          logger.debug('Cohort information sent to backend successfully', { 
+            sessionHash: this.client.session_hash,
+            cohorts: cohortsCommaSepareted
+          })
         } else {
-          console.error('Failed to send cohort to backend:', response.statusText)
           const errorText = await response.text()
-          console.error('Error details:', errorText)
+          logger.error('Failed to send cohort to backend', { 
+            status: response.statusText,
+            errorText,
+            sessionHash: this.client.session_hash,
+            cohorts: cohortsCommaSepareted
+          })
         }
       } catch (error) {
-        console.error('Error sending cohort to backend:', error)
+        logger.error('Error sending cohort to backend', { 
+          error: (error as Error).message,
+          sessionHash: this.client?.session_hash,
+          cohorts: cohortsCommaSepareted
+        })
       }
     }
   }
