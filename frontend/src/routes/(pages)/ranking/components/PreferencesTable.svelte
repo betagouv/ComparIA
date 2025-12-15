@@ -46,12 +46,12 @@
       { id: 'total_negative_prefs' },
       ...APIPositiveReactions.map((reaction) => ({
         id: reaction,
-        colHeaderClass: 'bg-(--green-emeraude-975-75)!',
+        colHeaderClass: 'bg-[--green-emeraude-975-75]!',
         orderable: true
       })),
       ...APINegativeReactions.map((reaction) => ({
         id: reaction,
-        colHeaderClass: 'bg-(--warning-950-100)!',
+        colHeaderClass: 'bg-[--warning-950-100]!',
         orderable: true
       }))
     ] as const
@@ -109,7 +109,7 @@
   hideCaption
 >
   {#snippet headerLeft()}
-    <div class="fr-table__detail mb-0! flex gap-5">
+    <div class="fr-table__detail mb-0! gap-5 flex">
       <p class="mb-0! text-[14px]!">
         {m['ranking.table.lastUpdate']({ date: lastUpdateDate })}
       </p>
@@ -120,7 +120,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class="text-[14px]! text-grey!"
+        class="text-grey! text-[14px]!"
         onclick={() => onDownloadData()}
       />
     </div>
@@ -139,7 +139,11 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
-      <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
+      <AILogo
+        iconPath={model.icon_path}
+        alt={model.organisation}
+        class="me-1 inline-block align-middle align-middle"
+      />
       <a
         href="#{model.id}"
         data-fr-opened="false"
@@ -151,14 +155,14 @@
       <strong>{model[col.id]}</strong>
     {:else if col.id === 'positive_prefs_ratio'}
       {@const size = Math.round(model[col.id] * 100)}
-      <div class="flex h-[25px] w-full rounded-sm border border-[#cecece] text-[12px] font-bold">
+      <div class="rounded-sm font-bold flex h-[25px] w-full border border-[#cecece] text-[12px]">
         <div
-          class="w-(--width) rounded-s-sm bg-(--green-emeraude-975-75) ps-1 text-(--green-emeraude-sun-425-moon-753)"
+          class="rounded-s-sm ps-1 w-[--width] bg-[--green-emeraude-975-75] text-[--green-emeraude-sun-425-moon-753]"
           style="width: {size}%"
         >
           {size}%
         </div>
-        <div class="grow rounded-e-sm bg-(--warning-950-100) ps-1 text-(--warning-425-625)">
+        <div class="rounded-e-sm ps-1 grow bg-[--warning-950-100] text-[--warning-425-625]">
           {Math.round((1 - model[col.id]) * 100)}%
         </div>
       </div>

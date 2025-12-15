@@ -61,7 +61,7 @@
     bind:value
     bind:this={el}
     {rows}
-    class="fr-input cg-border rounded-t-md! rounded-b-none! bg-white! md:min-h-10!"
+    class="fr-input cg-border rounded-t-md! bg-white! md:min-h-10! rounded-b-none! border-solid!"
     {...nativeTextAreaProps}
     {onkeypress}
     {@attach updateAuto}

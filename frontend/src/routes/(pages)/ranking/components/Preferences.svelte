@@ -8,7 +8,7 @@
 
 <div id="ranking-preferences">
   <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.preferences.title']()}</h2>
-  <p class="mb-4! text-[14px]! text-dark-grey">{m['ranking.preferences.desc']()}</p>
+  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.preferences.desc']()}</p>
   <p class="mb-4!">
     <Link
       href="#"

@@ -125,8 +125,8 @@
 
     &:has(input:checked),
     &:has(input:active) {
-      border: 2px solid var(--color-primary);
-      color: var(--color-primary);
+      border: 2px solid var(--blue-france-main-525);
+      color: var(--blue-france-main-525);
       margin: 0;
     }
 

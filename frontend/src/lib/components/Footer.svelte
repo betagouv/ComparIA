@@ -30,7 +30,7 @@
 <footer class="fr-footer fr-pb-2w" id="main-footer">
   <div class="fr-container">
     <div class="fr-footer__body">
-      <div class="flex flex-wrap gap-8 lg:basis-1/2">
+      <div class="gap-8 lg:basis-1/2 flex flex-wrap">
         <div class="fr-footer__brand fr-enlarge-link">
           <div class="">
             <a href="/" title={m['footer.backHome']()}>
@@ -60,7 +60,7 @@
           </div>
         </div>
 
-        <div class="fr-footer__brand fr-enlarge-link max-w-[165px] flex-col! items-start! gap-3">
+        <div class="fr-footer__brand fr-enlarge-link gap-3 max-w-[165px] flex-col! items-start!">
           <a
             href="https://www.digitalpublicgoods.net/r/comparia"
             target="_blank"
@@ -68,7 +68,7 @@
           >
             <img src="/orgs/dpg.png" alt="DPG" class="max-h-[47px]" />
           </a>
-          <p class="mb-0! text-[11px]! leading-normal!">{m['footer.dpg']()}</p>
+          <p class="mb-0! leading-normal! text-[11px]!">{m['footer.dpg']()}</p>
         </div>
       </div>
       <div class="fr-footer__content">

@@ -54,8 +54,8 @@
 
 <div id="ranking-methodo">
   <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.methodo.title']()}</h2>
-  <p class="mb-4! text-[14px]! text-dark-grey">{m['ranking.methodo.desc.1']()}</p>
-  <p class="text-[14px]! text-dark-grey">
+  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.methodo.desc.1']()}</p>
+  <p class="text-dark-grey text-[14px]!">
     {@html sanitize(
       m['ranking.methodo.desc.2']({
         notebookLinkProps: externalLinkProps({
@@ -70,7 +70,7 @@
   <section class="mt-10">
     <h3 class="fr-h6 mb-5!">{m['ranking.methodo.methods.title']()}</h3>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="gap-6 lg:grid-cols-2 grid">
       {#each [{ id: 'winrate', k: 'cons' }, { id: 'elo', k: 'pros' }] as const as card (card.id)}
         <div
           class={[
@@ -87,11 +87,14 @@
             </div>
 
             <h4 class="mb-5! text-lg!">{m[`ranking.methodo.methods.${card.k}`]()}</h4>
-            <ul class="m-0! list-none! p-0!">
+            <ul class="m-0! p-0! list-none!">
               {#each ['1', '2', '3'] as const as i (i)}
-                <li class="flex p-0! not-last:mb-5">
+                <li class="p-0! not-last:mb-5 flex">
                   <Icon
-                    icon={card.k === 'pros' ? 'checkbox-circle-fill' : 'close-circle-fill'}
+                    icon={card.k === 'pros'
+                      ? 'i-ri-checkbox-circle-line'
+                      : 'i-ri-close-circle-fill'}
+                    block
                     class={['me-1', card.k === 'pros' ? 'text-[#58B77D]' : 'text-[#FF9575]']}
                   />
                   <span>{@html sanitize(m[`ranking.methodo.methods.${card.id}.list.${i}`]())}</span>
@@ -107,17 +110,17 @@
   <section class="mt-16">
     <h3 class="fr-h6 mb-4!">{m['ranking.methodo.impacts.title']()}</h3>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="gap-6 lg:grid-cols-2 grid">
       <div class="max-w-[528px]">
-        <h4 class="mb-5! text-[14px]! leading-normal! lg:mb-10!">
+        <h4 class="mb-5! leading-normal! lg:mb-10! text-[14px]!">
           {m['ranking.methodo.impacts.winrate.title']()}
         </h4>
 
         <div>
-          <div class="h-[400px] rounded-sm bg-white">
+          <div class="rounded-sm bg-white h-[400px]">
             <WinHistogram data={modelsData['win_rate']} {minMaxY} />
           </div>
-          <div class="mt-2 mb-5 flex gap-5">
+          <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
@@ -130,7 +133,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-[14px]! text-dark-grey!"
+              class="text-dark-grey! text-[14px]!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -143,15 +146,15 @@
       </div>
 
       <div class="max-w-[528px]">
-        <h4 class="mb-5! text-[14px]! leading-normal!">
+        <h4 class="mb-5! leading-normal! text-[14px]!">
           {m['ranking.methodo.impacts.elo.title']()}
         </h4>
 
         <div>
-          <div class="h-[400px] rounded-sm bg-white">
+          <div class="rounded-sm bg-white h-[400px]">
             <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
           </div>
-          <div class="mt-2 mb-5 flex gap-5">
+          <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
@@ -164,7 +167,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-[14px]! text-dark-grey!"
+              class="text-dark-grey! text-[14px]!"
               onclick={() => onDownloadData()}
             />
           </div>

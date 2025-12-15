@@ -105,10 +105,10 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="sticky bottom-0 z-2 mt-auto flex flex-col items-center gap-3 bg-very-light-grey px-4 py-3 md:px-[20%]"
+      class="bottom-0 gap-3 bg-very-light-grey px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
     >
       {#if step === 'chat'}
-        <div class="flex w-full flex-col gap-3 md:flex-row">
+        <div class="gap-3 md:flex-row flex w-full flex-col">
           <TextPrompt
             id="chatbot-prompt"
             bind:value={prompt}
@@ -125,7 +125,7 @@
             id="send-btn"
             text={m['words.send']()}
             disabled={arena.chat.status !== 'complete' || prompt === ''}
-            class="w-full! md:w-auto! md:self-end!"
+            class="md:w-auto! md:self-end! w-full!"
             onclick={onPromptSubmit}
           />
         </div>
@@ -134,7 +134,7 @@
       <Button
         text={m['chatbot.revealButton']()}
         disabled={revealDisabled}
-        class="w-full! md:w-fit!"
+        class="md:w-fit! w-full!"
         onclick={onRevealModels}
       />
     </div>

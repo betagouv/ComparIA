@@ -19,7 +19,7 @@
 <fieldset id="vote-cards" aria-labelledby="vote-cards-legend">
   <legend class="sr-only" id="vote-cards-legend">{m['vote.title']()}</legend>
 
-  <div class="grid auto-rows-max grid-cols-3 gap-5 md:flex md:justify-center">
+  <div class="gap-5 md:flex md:justify-center grid auto-rows-max grid-cols-3">
     {#each choices as { value, label } (value)}
       <div class="h-full">
         <input
@@ -32,7 +32,7 @@
           class="sr-only"
         />
         <label
-          class="cg-border flex h-full flex-col items-center justify-center px-3 py-4 text-center font-medium md:flex-row md:justify-center md:rounded-[56px]!"
+          class="cg-border px-3 py-4 font-medium md:flex-row md:justify-center md:rounded-[56px]! flex h-full flex-col items-center justify-center text-center"
           for="radio-{value}"
         >
           {#if value === 'both-equal'}

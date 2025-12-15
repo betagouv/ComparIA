@@ -69,7 +69,7 @@
       ...col,
       label: m[`ranking.table.data.cols.${col.id}`](),
       orderable: true,
-      colHeaderClass: raw ? 'bg-white! border-b-1 border-(--border-contrast-grey)' : ''
+      colHeaderClass: raw ? 'bg-white! border-b-1 border-[--border-contrast-grey]' : ''
     }))
 
   let orderingCol = $state(initialOrderCol)
@@ -163,7 +163,7 @@
 >
   {#snippet headerLeft()}
     {#if !hideTotal}
-      <div class="flex gap-5">
+      <div class="gap-5 flex">
         <div class="cg-border rounded-sm! bg-white px-4 py-2">
           <strong>{m['ranking.table.totalModels']()}</strong>
           <span class="text-grey">{rows.length}</span>
@@ -176,7 +176,7 @@
       </div>
     {/if}
 
-    <div class="fr-table__detail mb-0! flex flex-col gap-3 md:flex-row md:gap-5">
+    <div class="fr-table__detail mb-0! gap-3 md:flex-row md:gap-5 flex flex-col">
       <p class="mb-0! text-[14px]!">
         {m['ranking.table.lastUpdate']({ date: lastUpdateDate })}
       </p>
@@ -199,9 +199,13 @@
       <span class="font-medium">{model.data.rank}</span>
     {:else if col.id === 'name'}
       <div
-        class="max-w-[205px] overflow-hidden overflow-ellipsis sm:max-w-none sm:overflow-visible"
+        class="sm:max-w-none sm:overflow-visible max-w-[205px] overflow-hidden overflow-ellipsis"
       >
-        <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
+        <AILogo
+          iconPath={model.icon_path}
+          alt={model.organisation}
+          class="me-1 inline-block align-middle"
+        />
         <a
           href="#{model.id}"
           data-fr-opened="false"
@@ -230,23 +234,23 @@
         {model.data.elo}
       {:else}
         <div
-          class="cg-border relative max-w-[100px] rounded-sm! text-info"
+          class="cg-border rounded-sm! text-info relative max-w-[100px]"
           style="--range-width: {model.eloRangeWidth}%"
         >
-          <div class="absolute z-0 h-full w-(--range-width) rounded-sm bg-light-info"></div>
-          <span class="relative z-1 p-1 text-xs font-bold">{model.data.elo}</span>
+          <div class="bg-light-info rounded-sm absolute z-0 h-full w-[--range-width]"></div>
+          <span class="p-1 text-xs font-bold relative z-1">{model.data.elo}</span>
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
       {#if model.license === 'proprietary'}
-        <span class="text-xs text-(--grey-625-425)">{m['words.NA']()}</span>
+        <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
       {:else}
         {model.consumption_wh} Wh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="h-[4px] w-(--range-width) rounded-xs bg-info"></div>
+            <div class="rounded-xs bg-info h-[4px] w-[--range-width]"></div>
           </div>
         {/if}
       {/if}
