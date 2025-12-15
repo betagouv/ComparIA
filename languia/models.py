@@ -533,7 +533,7 @@ class Conversation(BaseModel):
 
 class CohortRequest(BaseModel):
     session_hash: str
-    cohorts: list[str]
+    cohorts: str
 
 
 class FrontendLogEntry(BaseModel):
