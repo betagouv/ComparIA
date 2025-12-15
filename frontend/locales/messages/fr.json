@@ -382,7 +382,7 @@
                 "title": "Stratégie mise en œuvre et objectifs en matière de réduction ou de limitation des impacts environnementaux"
             },
             "4": {
-                "1": "L’auto-diagnostic, mené en octobre 2025 par l’équipe produit, a porté sur l’ensemble des pages du site. Les outils utilisés pour évaluer certains indicateurs techniques sont l’inspecteur « réseau » des outils de développement du navigateur, l’extension <a {greenitLinkProps}>Green IT Analysis</a> et l’outil <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "1": "L’auto-diagnostic, mené entre mai et octobre 2025 par l’équipe produit (deux personnes ont été en charge de la relecture et la validation de toutes les réponses), a porté sur l’ensemble des pages du site. Les outils utilisés pour évaluer certains indicateurs techniques sont l’inspecteur « réseau » des outils de développement du navigateur, l’extension <a {greenitLinkProps}>Green IT Analysis</a> et l’outil <a {ecoindexLinkProps}>EcoIndex</a>.",
                 "title": "Diagnostic RGESN"
             },
             "5": {
@@ -405,7 +405,7 @@
                 },
                 "4": {
                     "date": "10 décembre 2025",
-                    "title": "Voir le détail du diagnostic"
+                    "title": "Tableau d’audit RGESN"
                 },
                 "title": "Score dans la mise en oeuvre du référentiel"
             },
@@ -426,6 +426,7 @@
                 },
                 "4": "Convertir les illustrations en WebP, AVIF, JPEG XL ou un format d’image plus performant pour les images matricielles (critère 5.1).",
                 "5": "Laisser la possibilité d'interrompre l'inférence (chargement des réponses) lors de la comparaison des modèles.",
+                "6": "Les scores d’analyses EcoIndex démontrent un décalage important dans les mesures d’impact avec des notes allant jusqu’à E ou F pour certaines pages (poids, complexité et nombre de requêtes des pages relativement importants) ; il s’agit désormais de comprendre plus finement ces résultats au cas par cas, malgré les bonnes pratiques mises en œuvre, pour identifier de nouvelles améliorations.",
                 "desc": "Plusieurs améliorations ont été ou sont toujours en cours d’identification, parmi lesquelles :",
                 "title": "Améliorations identifiées"
             },

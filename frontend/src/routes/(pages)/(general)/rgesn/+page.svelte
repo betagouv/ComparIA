@@ -108,7 +108,7 @@
     <h2 id="improvments" class="mt-10!">{m['general.rgesn.7.title']()}</h2>
     <p>{m['general.rgesn.7.desc']()}</p>
     <ul class="mb-6!">
-      {#each ['1', '2', '3', '4', '5'] as const as n (n)}
+      {#each ['1', '2', '3', '4', '5', '6'] as const as n (n)}
         <li>
           {#if n === '3'}
             {m['general.rgesn.7.3.title']()}
