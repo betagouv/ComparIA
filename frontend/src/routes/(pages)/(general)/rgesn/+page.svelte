@@ -88,7 +88,7 @@
       <div class="fr-tile__body">
         <div class="fr-tile__content">
           <h3 class="fr-tile__title">
-            <a hreflang="fr" data-fr-assess-file download href="/general/rgesn_2025.ods">
+            <a hreflang="fr" data-fr-assess-file download href="/general/rgesn_2025_comparIA.ods">
               {m['general.rgesn.5.4.title']()}
             </a>
           </h3>
