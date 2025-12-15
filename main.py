@@ -123,8 +123,10 @@ async def define_current_cohorts(request: CohortRequest):
     Returns:
         JSONResponse: Statut du suivi de cohorte
     """
+    config.logger.info(f"[COHORT] Received cohort request: session_hash={request.session_hash}, cohorts={request.cohorts}")
 
     if not request.session_hash:
+        config.logger.warning("[COHORT] Missing session_hash in request")
         return JSONResponse(
             {
                 "success": False,
@@ -133,10 +135,15 @@ async def define_current_cohorts(request: CohortRequest):
             },
             status_code=400,
         )
-    
+
     if request.cohorts:
         cohorts_comma_separated: str = request.cohorts
         success = store_cohorts_redis(request.session_hash, cohorts_comma_separated)
+        config.logger.info(f"[COHORT] Stored in Redis: success={success}, session_hash={request.session_hash}, cohorts={cohorts_comma_separated}")
+    else:
+        config.logger.warning(f"[COHORT] Empty cohorts received for session_hash={request.session_hash}")
+        success = False
+        cohorts_comma_separated = ""
 
     return JSONResponse(
         {

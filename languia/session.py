@@ -84,16 +84,19 @@ def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
         bool: True si l'opération a réussi, False sinon
     """
     if not redis_host:
+        logger = logging.getLogger("languia")
+        logger.warning("[COHORT] Redis not configured (COMPARIA_REDIS_HOST not set)")
         return False
     logger = logging.getLogger("languia")
     try:
         # Stocke la clé avec une expiration de 24 heures
         expire_time = 86400
+        logger.info(f"[COHORT] Storing in Redis: cohorts:{session_hash} = {cohorts_comma_separated} (expire={expire_time}s)")
         r.setex(f"cohorts:{session_hash}", expire_time, cohorts_comma_separated)
-        logger.debug(f"stored cohorts:{session_hash} - {expire_time} - {cohorts_comma_separated}")
+        logger.info(f"[COHORT] Successfully stored in Redis")
         return True
     except Exception as e:
-        logger.error(f"Error storing cohorts in Redis: {e}")
+        logger.error(f"[COHORT] Error storing cohorts in Redis: {e}")
         return False
 
 
@@ -112,15 +115,15 @@ def retrieve_cohorts_redis(session_hash: str):
     logger = logging.getLogger("languia")
     try:
         cohorts_comma_separated = r.get(f"cohorts:{session_hash}")
-        logger.debug(cohorts_comma_separated)
-        
+        logger.info(f"[COHORT] Retrieved from Redis for {session_hash}: {cohorts_comma_separated}")
+
         if cohorts_comma_separated:
             return cohorts_comma_separated
         else:
             return None
-        
+
     except Exception as e:
-        logger.error(f"Error getting cohort list from Redis: {e}")
+        logger.error(f"[COHORT] Error getting cohort list from Redis: {e}")
         return None
 
 

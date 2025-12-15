@@ -189,37 +189,37 @@ class Logger {
     ) // sendToBackend = true
   }
 
-  // Méthodes standards (stdout uniquement)
-  error(message: string, context?: Record<string, any>): void {
+  // Méthodes standards (stdout uniquement par défaut, backend optionnel)
+  error(message: string, context?: Record<string, any>, sendToBackend = false): void {
     this.writeLog({
       level: 'error',
       message,
       context
-    })
+    }, sendToBackend)
   }
 
-  warn(message: string, context?: Record<string, any>): void {
+  warn(message: string, context?: Record<string, any>, sendToBackend = false): void {
     this.writeLog({
       level: 'warn',
       message,
       context
-    })
+    }, sendToBackend)
   }
 
-  info(message: string, context?: Record<string, any>): void {
+  info(message: string, context?: Record<string, any>, sendToBackend = false): void {
     this.writeLog({
       level: 'info',
       message,
       context
-    })
+    }, sendToBackend)
   }
 
-  debug(message: string, context?: Record<string, any>): void {
+  debug(message: string, context?: Record<string, any>, sendToBackend = false): void {
     this.writeLog({
       level: 'debug',
       message,
       context
-    })
+    }, sendToBackend)
   }
 
   // Méthode pour logger les requêtes API

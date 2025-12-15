@@ -2,10 +2,9 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
-import { getCohortContext } from '$lib/stores/cohortStore.svelte'
+import { logger } from '$lib/logger'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
-import { logger } from '$lib/logger'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -140,9 +139,9 @@ export const api = {
     try {
       // Connect to Gradio with event subscriptions for real-time updates
       this.client = await Client.connect(fullUrl, { events: ['data', 'status'] })
-      logger.debug('Connected to Gradio successfully', { 
-        sessionHash: this.client.session_hash, 
-        endpoint 
+      logger.debug('Connected to Gradio successfully', {
+        sessionHash: this.client.session_hash,
+        endpoint
       })
 
       // Send cohort information to backend if not already sent
@@ -267,10 +266,10 @@ export const api = {
       // Format error message with HTTP status and response body
       const errorText = await response.text()
       const message = `Error ${response.status} [GET](${url}): "${errorText}"`
-      logger.error('HTTP GET request failed', { 
-        status: response.status, 
-        url, 
-        errorText 
+      logger.error('HTTP GET request failed', {
+        status: response.status,
+        url,
+        errorText
       })
       throw new Error(message)
     })
@@ -281,13 +280,25 @@ export const api = {
    * This should be called when session hash is available.
    */
   async sendCurrentCohortsToBackend() {
+    logger.debug(
+      '[COHORT] sendCurrentCohortsToBackend called',
+      {
+        cohortsSent: this.cohortsSent,
+        hasSessionHash: !!this.client?.session_hash
+      },
+      true
+    )
+
     // Only send once per session
     if (this.cohortsSent || !this.client?.session_hash) {
+      logger.debug('[COHORT] Skipping send - already sent or no session hash', {}, true)
       return
     }
 
-    // Get cohort from sessionStorage (set by client-side detection)
-    const cohortsCommaSepareted: string = getCohortContext()
+    // Get cohort directly from sessionStorage (Svelte context not accessible in module scope)
+    const cohortsCommaSepareted: string =
+      typeof window !== 'undefined' ? (sessionStorage.getItem('comparia-cohorts') ?? '') : ''
+    logger.debug('[COHORT] Got from sessionStorage', { cohorts: cohortsCommaSepareted }, true)
 
     // Only send if we have a cohort (not '')
     if (cohortsCommaSepareted) {
@@ -298,6 +309,7 @@ export const api = {
           cohorts: cohortsCommaSepareted
         }
 
+        logger.debug('[COHORT] Sending to backend', requestBody, true)
         const response = await fetch(`${this.url}/cohorts`, {
           method: 'POST',
           headers: {
@@ -308,29 +320,34 @@ export const api = {
 
         if (response.ok) {
           this.cohortsSent = true
-          logger.debug('Cohort information sent to backend successfully', { 
-            sessionHash: this.client.session_hash,
-            cohorts: cohortsCommaSepareted
-          })
+          logger.debug('[COHORT] Successfully sent to backend', {}, true)
         } else {
           const errorText = await response.text()
-          logger.error('Failed to send cohort to backend', { 
-            status: response.statusText,
-            errorText,
-            sessionHash: this.client.session_hash,
-            cohorts: cohortsCommaSepareted
-          })
+          logger.error(
+            '[COHORT] Failed to send',
+            {
+              status: response.status,
+              statusText: response.statusText,
+              errorText,
+              sessionHash: this.client.session_hash,
+              cohorts: cohortsCommaSepareted
+            },
+            true
+          )
         }
       } catch (error) {
-        logger.error('Error sending cohort to backend', { 
-          error: (error as Error).message,
-          sessionHash: this.client?.session_hash,
-          cohorts: cohortsCommaSepareted
-        })
+        logger.error(
+          '[COHORT] Error sending',
+          {
+            error: (error as Error).message,
+            sessionHash: this.client?.session_hash,
+            cohorts: cohortsCommaSepareted
+          },
+          true
+        )
       }
+    } else {
+      logger.debug('[COHORT] No cohort to send (empty string)', {}, true)
     }
   }
-
-
-
 }
