@@ -206,6 +206,9 @@ def configure_uvicorn_logging():
 logger = build_logger(log_filename)
 configure_uvicorn_logging()
 
+# Log séparateur au démarrage pour marquer les redémarrages
+logger.info("=" * 80)
+
 if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
 else:
