@@ -125,7 +125,6 @@ class PostgresHandler(logging.Handler):
             self.connect()
             if self.connection:
                 with self.connection.cursor() as cursor:
-
                     # del(record.__dict__["request"])
 
                     insert_statement = sql.SQL(
@@ -407,11 +406,11 @@ def vote_last_response(
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
         logger.info(
-            f'preferences_a: {details["prefs_a"]}',
+            f"preferences_a: {details['prefs_a']}",
             extra={"request": request},
         )
         logger.info(
-            f'preferences_b: {details["prefs_b"]}',
+            f"preferences_b: {details['prefs_b']}",
             extra={"request": request},
         )
         if details["comments_a"] != "":
@@ -975,7 +974,6 @@ def upsert_conv_to_db(data):
                 conv_turns = EXCLUDED.conv_turns,
                 total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
                 total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
-                country_portal = EXCLUDED.country_portal,
                 cohorts = EXCLUDED.cohorts
                 """
         )
@@ -1002,8 +1000,8 @@ def record_conversations(
     app_state_scoped,
     conversations: List[Conversation],
     request: gr.Request,
-    locale:str|None=None,
-    cohorts_comma_separated:str|None=None
+    locale: str | None = None,
+    cohorts_comma_separated: str | None = None,
 ):
     """
     Record complete conversation pair to database and JSON log files.
@@ -1044,8 +1042,6 @@ def record_conversations(
         7. Call upsert_conv_to_db() for database
     """
     from languia.config import get_model_system_prompt
-
-    # logger = logging.getLogger("languia")
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
@@ -1103,6 +1099,9 @@ def record_conversations(
         "country_portal": locale,
         "cohorts": cohorts_comma_separated,
     }
+
+    logger = logging.getLogger("languia")
+    logger.debug(f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}")
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
     conv_log_path = os.path.join(LOGDIR, conv_log_filename)
