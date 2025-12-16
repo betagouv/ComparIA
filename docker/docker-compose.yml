@@ -16,8 +16,9 @@ services:
       - ../data:/data
       # Dev config - mount everything except .venv
       - ../:/app
-      - /app/.venv  # Exclude .venv from host mount (use container's .venv)
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+      - /app/.venv # Exclude .venv from host mount (use container's .venv)
+    command:
+      ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     # depends_on:
     #   - postgres
 
@@ -37,7 +38,7 @@ services:
     # Dev config
     volumes:
       - ../frontend:/app
-      - /app/node_modules  # Exclude node_modules from host mount
+      - /app/node_modules # Exclude node_modules from host mount
     command: ["npx", "vite", "dev", "--host", "--port", "3000"]
   postgres:
     image: postgres:16
@@ -49,10 +50,25 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./data/file.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
   redis:
     image: redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
+
 volumes:
   db-data:
+  pgadmin-data:
