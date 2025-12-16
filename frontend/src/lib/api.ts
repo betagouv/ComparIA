@@ -182,14 +182,14 @@ export const api = {
    * 5. If backend returns error → throw Error + show toast notification
    */
   async submit<T>(uri: string, params: Record<string, unknown> = {}): Promise<AsyncIterable<T>> {
-    logger.debug(`Submitting Gradio job ${uri} ${JSON.stringify(params)}`)
+    logger.debug(`Submitting (streaming) Gradio job ${uri} ${JSON.stringify(params)}`)
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Submit request and get streaming response iterable
       const result = await client.submit(uri, params)
-      logger.debug(`Gradio job submitted successfully ${uri}`)
+      logger.debug(`Gradio job submitted (streaming) successfully ${uri}`)
       // Filter and parse the streaming response data
       return iterGradioResponses(result as GradioSubmitIterable<T>)
     } catch (error) {
@@ -230,14 +230,14 @@ export const api = {
    * - submit(): Streams multiple responses, returns Promise<AsyncIterable<T>>
    */
   async predict<T>(uri: string, params: Record<string, unknown> = {}): Promise<T> {
-    logger.debug(`Predicting Gradio job ${uri} ${JSON.stringify(params)}`)
+    logger.debug(`Calling single Gradio job ${uri} ${JSON.stringify(params)}`)
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Call Gradio function and wait for response
       const result = await client.predict(uri, params)
-      logger.debug(`Gradio job predicted successfully ${uri}`)
+      logger.debug(`Gradio job called successfully ${uri}`)
       // Parse and return the response data
       return parseGradioResponse(result as GradioResponse<T>)
     } catch (error) {
