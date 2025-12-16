@@ -46,7 +46,7 @@ function detectCohorts(): string {
  */
 export function setCohortContext() {
   const cohortsCommaSeparetedParam = detectCohorts()
-  const cohortsForLogging = cohortsCommaSeparetedParam ?? '(empty)'
+  const cohortsForLogging = cohortsCommaSeparetedParam || '(empty)'
   logger.debug(`[COHORT] Setting context with ${cohortsForLogging}`)
   setContext<string>(COHORT_STORAGE_KEY, cohortsCommaSeparetedParam)
 }
