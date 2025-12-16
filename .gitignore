@@ -59,7 +59,8 @@ results-output/
 venv.bak
 cache/
 
-# Claude Code
+# Agentic stuffs
 CLAUDE.md
+AGENTS.md
 .claude
 ignored_files
