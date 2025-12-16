@@ -58,7 +58,7 @@
 <main>
   <section class="fr-container--fluid bg-light-info py-6!">
     <div class="fr-container">
-      <div class="cg-border grid gap-8 bg-white px-5 py-8 md:px-8 md:py-10 lg:grid-cols-2">
+      <div class="cg-border gap-8 bg-white px-5 py-8 md:px-8 md:py-10 lg:grid-cols-2 grid">
         <div>
           <h2 class="fr-h6">{m['datasets.access.title']()}</h2>
           <p>
@@ -77,12 +77,12 @@
             variant="secondary"
             href="mailto:{i18nData.contact}"
             text={m['datasets.access.share']()}
-            class="w-full! md:w-auto!"
+            class="md:w-auto! w-full!"
           />
         </div>
 
         <div
-          class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:content-center md:gap-6 lg:grid-cols-2 xl:grid-cols-3"
+          class="gap-4 sm:grid-cols-3 md:content-center md:gap-6 lg:grid-cols-2 xl:grid-cols-3 grid grid-cols-2"
         >
           {#each datasetCards as card, i (i)}
             <div class="cg-border bg-very-light-grey">
@@ -108,23 +108,23 @@
 
   <section class="fr-container mb-20 py-8!">
     <h2 class="fr-h4 mb-4! text-center">{m['datasets.reuse.title']()}</h2>
-    <p class="mb-10! px-10! text-center text-grey">{m['datasets.reuse.desc']()}</p>
+    <p class="mb-10! px-10! text-grey text-center">{m['datasets.reuse.desc']()}</p>
 
     <div class="fr-container cg-border rounded-2xl bg-light-grey p-5! md:p-10!">
       <div class="pb-8 md:flex">
         <img
           src="/datasets/bunka-ai-logo.jpg"
-          class="mb-2 block h-[100px] w-[100px] rounded-2xl md:mr-8 md:mb-0"
+          class="mb-2 rounded-2xl md:mr-8 md:mb-0 block h-[100px] w-[100px]"
           alt="Bunka.ai"
         />
         <p class="mb-0!">{m['datasets.reuse.bunka.desc']()}</p>
       </div>
 
       <div>
-        <div class="grid gap-5 md:grid-cols-2 md:grid-rows-1 md:gap-10">
+        <div class="gap-5 md:grid-cols-2 md:grid-rows-1 md:gap-10 grid">
           {#each bunkaCards as card, i (i)}
             <div
-              class="fr-container flex flex-col rounded-xl bg-very-light-grey px-3! py-5! md:px-10! md:py-8!"
+              class="fr-container rounded-xl bg-very-light-grey px-3! py-5! md:px-10! md:py-8! flex flex-col"
             >
               <div class="px-2 md:p-0">
                 <img src={card.img} class="fr-responsive-img" alt="" aria-hidden="true" />

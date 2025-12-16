@@ -21,7 +21,9 @@
   "devDependencies": {
     "@eslint/compat": "^1.2.5",
     "@eslint/js": "^9.18.0",
+    "@iconify-json/ri": "^1.2.6",
     "@inlang/paraglide-js": "^2.4.0",
+    "@lobehub/icons-static-svg": "^1.74.0",
     "@playwright/test": "^1.49.1",
     "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.16.0",
@@ -32,6 +34,9 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/svelte": "^5.2.4",
     "@types/sanitize-html": "^2.16.0",
+    "@unocss/extractor-svelte": "^66.5.10",
+    "@unocss/preset-icons": "^66.5.10",
+    "@unocss/preset-wind4": "^66.5.10",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-svelte": "^3.0.0",
@@ -45,6 +50,7 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.20.0",
+    "unocss": "^66.5.10",
     "vite": "^6.4.1",
     "vitest": "^3.0.0"
   },

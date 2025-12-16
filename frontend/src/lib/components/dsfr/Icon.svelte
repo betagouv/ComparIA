@@ -8,7 +8,12 @@
   } & SvelteHTMLElements['span']
 
   let { icon, size = 'md', block = false, ...props }: IconProps = $props()
-  const classes = $derived([`fr-icon-${icon} fr-icon--${size}`, { block: block }, props.class])
+
+  const classes = $derived([
+    `${icon.startsWith('i-') ? '' : 'fr-icon-'}${icon} fr-icon--${size}`,
+    { block: block },
+    props.class
+  ])
   // FIXME check if aria-label else set aria-hidden="true"
 </script>
 

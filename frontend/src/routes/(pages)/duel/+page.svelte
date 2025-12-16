@@ -6,25 +6,25 @@
     {
       desc: 'Pour découvrir concrètement les coulisses de l’IA.',
       title: 'Collèges et Lycées',
-      icon: 'school-line',
+      icon: 'i-ri-school-line',
       variant: 'text-yellow'
     },
     {
       desc: 'Pour enrichir les discussions sur l’innovation et le développement durable.',
       title: 'Universités',
-      icon: 'university',
+      icon: 'i-ri-graduation-cap-fill',
       variant: 'text-red'
     },
     {
       desc: 'Pour débattre d’un sujet de société en s’appuyant sur un exemple vécu.',
       title: 'Associations, Médiation numérique',
-      icon: 'association',
+      icon: 'i-ri-home-smile-2-line',
       variant: 'text-green'
     },
     {
       desc: 'Pour réfléchir à un usage plus responsable des outils numériques.',
       title: 'Entreprises',
-      icon: 'building-4-line',
+      icon: 'i-ri-building-4-line',
       variant: 'text-primary'
     }
   ]
@@ -81,8 +81,8 @@
 <main>
   <section class="fr-container--fluid bg-very-light-grey py-15">
     <div class="fr-container">
-      <div class="grid gap-10 md:grid-cols-2 lg:px-20">
-        <div class="my-auto md:max-w-[415px]">
+      <div class="gap-10 md:grid-cols-2 lg:px-20 grid">
+        <div class="md:max-w-[415px] my-auto">
           <h1 class="fr-h2 mb-3!">
             Vous souhaitez <span class="text-primary">sensibiliser votre public</span> à l’impact environnemental
             de l’IA générative ?
@@ -114,8 +114,8 @@
 
   <section class="fr-container--fluid bg-light-grey py-15">
     <div class="fr-container">
-      <div class="grid gap-10 md:grid-cols-2 lg:px-20">
-        <h2 class="fr-h4 my-auto! leading-[1.875]! md:max-w-[460px]">
+      <div class="gap-10 md:grid-cols-2 lg:px-20 grid">
+        <h2 class="fr-h4 md:max-w-[460px] my-auto! leading-[1.875]!">
           Les <span class="text-primary">Duels de l’IA</span> : un format d’<span
             class="text-primary">atelier</span
           >
@@ -123,10 +123,10 @@
           <span class="text-primary">impact environnemental</span>.
         </h2>
 
-        <ul class="m-0! my-auto p-0! md:ms-auto!">
+        <ul class="m-0! p-0! md:ms-auto! my-auto">
           {#each ['Durée : 45min à 1h30', 'Format présentiel ou en ligne', 'Accès à compar:IA et des supports fournis', 'Atelier clé en main, accessible et interactif'] as text, i (i)}
-            <li class="list-none p-0! not-last:mb-4 md:text-lg">
-              <Icon icon="checkbox-line" class="text-primary" />
+            <li class="p-0! not-last:mb-4 md:text-lg list-none">
+              <Icon icon="i-ri-checkbox-circle-line" class="text-primary" />
               {text}
             </li>
           {/each}
@@ -145,7 +145,7 @@
           </p>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div class="gap-6 md:grid-cols-2 lg:grid-cols-4 grid">
           {#each publicCards as card, i (i)}
             <div class="cg-border bg-white p-4 md:px-7 md:py-6">
               <Icon icon={card.icon} class={card.variant} size="lg" block />
@@ -166,17 +166,17 @@
           <p class="mb-0! text-grey">Durée approximative : 60 minutes</p>
         </div>
 
-        <div class="grid gap-x-15 gap-y-10 md:grid-cols-2 md:gap-y-20 lg:grid-cols-3">
+        <div class="gap-x-15 gap-y-10 md:grid-cols-2 md:gap-y-20 lg:grid-cols-3 grid">
           {#each workshopSteps as step, i (i)}
-            <div class="flex items-start gap-2">
-              <div class="mt-1 flex items-end gap-1">
-                <div class="h-[11px] w-[11px] rounded-full bg-primary"></div>
-                <span class="text-[40px] font-bold text-primary">{i + 1}</span>
+            <div class="gap-2 flex items-start">
+              <div class="mt-1 gap-1 flex items-end">
+                <div class="bg-primary h-[11px] w-[11px] rounded-full"></div>
+                <span class="text-primary font-bold text-[40px]">{i + 1}</span>
               </div>
               <div>
                 <h3 class="fr-h6 mb-1!">{step.title}</h3>
                 <p class="mb-0!"><em>{step.duration}</em></p>
-                <p class="mb-0! leading-[1.7]! text-grey">{step.desc}</p>
+                <p class="mb-0! text-grey leading-[1.7]!">{step.desc}</p>
               </div>
             </div>
           {/each}
@@ -187,14 +187,14 @@
 
   <section class="fr-container--fluid bg-very-light-grey py-18">
     <div class="fr-container">
-      <div class="grid gap-10 md:grid-cols-2 lg:px-12">
-        <div class="my-auto md:max-w-[440px]">
+      <div class="gap-10 md:grid-cols-2 lg:px-12 grid">
+        <div class="md:max-w-[440px] my-auto">
           <h2 class="mb-6!">Le guide facilitateur</h2>
 
           <ul class="m-0! mb-13! p-0!">
             {#each ['Guide détaillé avec tout le déroulé expliqué', 'Diapositives prêtes à projeter', 'FAQ et glossaire pour répondre facilement aux questions', 'Exension Chrome pour avoir toutes ces informations à portée de main'] as text, i (i)}
-              <li class="list-none p-0! not-last:mb-3 md:text-lg">
-                <Icon icon="checkbox-line" class="text-primary" />
+              <li class="p-0! not-last:mb-3 md:text-lg list-none">
+                <Icon icon="i-ri-checkbox-circle-line" class="text-primary" />
                 {text}
               </li>
             {/each}
@@ -219,10 +219,10 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid bg-white py-15">
+  <section class="fr-container--fluid py-15 bg-white">
     <div class="fr-container">
       <div class="lg:px-24">
-        <h2 class="fr-h3 mb-8! text-center lg:mb-10!">Foire aux questions</h2>
+        <h2 class="fr-h3 mb-8! lg:mb-10! text-center">Foire aux questions</h2>
 
         <AccordionGroup>
           {#each faq as q, i (i)}
@@ -232,7 +232,7 @@
           {/each}
         </AccordionGroup>
 
-        <div class="mt-8 text-center lg:mt-11">
+        <div class="mt-8 lg:mt-11 text-center">
           <Link
             button
             size="lg"

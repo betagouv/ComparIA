@@ -103,12 +103,12 @@
   <h2 class="fr-h4 mb-12!">{m['product.history.title']()}</h2>
 
   {#each steps as step (step.key)}
-    <div class="relative pb-8">
+    <div class="pb-8 relative">
       <div class="md:ms-[196px]">
         <Badge
           text={step.tag}
           variant="blue-ecume"
-          class="mb-6 text-(--blue-france-sun-113-625)! md:ms-4"
+          class="mb-6 md:ms-4 text-[--blue-france-sun-113-625]!"
         />
       </div>
 
@@ -116,16 +116,16 @@
         {#if item.date}
           <p class="ms-7! font-bold md:hidden">{item.date}</p>
         {/if}
-        <div class="flex gap-4">
-          <div class="flex gap-4 md:w-[196px] md:min-w-[196px]">
+        <div class="gap-4 flex">
+          <div class="gap-4 md:w-[196px] md:min-w-[196px] flex">
             {#if item.date}
-              <p class="hidden w-full text-end font-bold md:block">{item.date}</p>
+              <p class="font-bold md:block hidden w-full text-end">{item.date}</p>
             {/if}
             <div
               class={[
-                'z-1 h-[26px] w-[26px] min-w-[26px] rounded-full border-3 md:ms-auto',
+                'md:ms-auto z-1 h-[26px] w-[26px] min-w-[26px] rounded-full border-3',
                 item.special
-                  ? 'border-[#FFCC00] bg-(--green-tilleul-verveine-975-75)'
+                  ? 'border-[#FFCC00] bg-[--green-tilleul-verveine-975-75]'
                   : 'border-primary bg-white'
               ]}
             ></div>
@@ -138,7 +138,7 @@
       {/each}
 
       <div
-        class="absolute top-14 left-[12px] h-full border-s-2 border-dashed border-[#CECECE] md:left-[182px]"
+        class="top-14 md:left-[182px] absolute left-[12px] h-full border-s-2 border-dashed border-[#CECECE]"
         class:hidden={step.key === 'investigation'}
       ></div>
     </div>

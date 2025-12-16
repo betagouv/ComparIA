@@ -67,7 +67,7 @@
 
 <style>
   .fr-badge--light-info {
-    background-color: var(--color-light-info);
-    color: var(--color-info);
+    background-color: var(--info-950-100);
+    color: var(--info-425-625);
   }
 </style>

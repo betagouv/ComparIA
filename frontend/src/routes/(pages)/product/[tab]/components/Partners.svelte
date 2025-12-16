@@ -8,10 +8,10 @@
   const i18nData = getI18nContext()
 </script>
 
-<div class="grid gap-8 lg:grid-cols-2">
+<div class="gap-8 lg:grid-cols-2 grid">
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
-      <Icon icon="government-line" size="lg" class="me-1 text-primary" />
+      <Icon icon="i-ri-government-line" size="lg" class="text-primary me-1" />
       {m['product.partners.institution.title']()}
     </h2>
 
@@ -48,7 +48,7 @@
   {#if locale === 'fr' || locale === 'en'}
     <section class="cg-border cl-card">
       <h2 class="fr-h6">
-        <Icon icon="presentation" size="lg" class="me-1 text-yellow" />
+        <Icon icon="i-ri-presentation-line" size="lg" class="text-yellow me-1" />
         {m['product.partners.diffusion.title']()}
       </h2>
 
@@ -78,13 +78,13 @@
         button
         href="mailto:{i18nData.contact}"
         text={m['product.partners.diffusion.cta']()}
-        class="w-full! sm:w-auto!"
+        class="sm:w-auto! w-full!"
       />
     </section>
 
     <section class="cg-border cl-card">
       <h2 class="fr-h6">
-        <Icon icon="chat-search" size="lg" class="me-1 text-orange" />
+        <Icon icon="i-ri-chat-search-line" size="lg" class="text-orange me-1" />
         {m['product.partners.academy.title']()}
       </h2>
 
@@ -99,14 +99,14 @@
         button
         href="mailto:{i18nData.contact}"
         text={m['actions.contactUs']()}
-        class="w-full! sm:w-auto!"
+        class="sm:w-auto! w-full!"
       />
     </section>
   {/if}
 
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
-      <Icon icon="presentation" size="lg" class="me-1 text-green" />
+      <Icon icon="i-ri-presentation-line" size="lg" class="text-green me-1" />
       {m['product.partners.services.title']()}
     </h2>
 
@@ -126,6 +126,6 @@
     @apply bg-very-light-info p-4 md:p-8;
   }
   .cl-logos {
-    @apply my-4 flex flex-wrap gap-8 *:object-contain;
+    @apply my-4 gap-8 flex flex-wrap *:object-contain;
   }
 </style>

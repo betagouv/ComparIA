@@ -430,6 +430,9 @@
                     "commercial_use_specificities": "under 50 millioner dollars i årlig omsætning",
                     "license_desc": "<p>Denne licens gør det muligt at bruge, reproducere, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for organisationer, der overstiger 50 millioner dollars i årlig omsætning.</p>"
                 },
+                "LFM 1.0": {
+                    "license_desc": "<p>Denne verdensomspændende, gratis og ikke-eksklusive licens tillader brugen, modifikationen og redistributionen af modellen og dens afledte værker, herunder genanvendelse af outputs til at træne andre modeller. Den forbliver liberal, men begrænser enhver kommerciel brug til organisationer, hvis årlige indtægter er under 10 millioner dollars, hvorefter brugen ikke længere er dækket.</p>"
+                },
                 "Llama 3 Community": {
                     "commercial_use_specificities": "Under 700 millioner brugere",
                     "license_desc": "<p>Denne licens gør det muligt at bruge, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for operationer, der overstiger 700 millioner månedlige brugere, og forbyder genanvendelse af koden eller det genererede indhold til træning eller forbedring af konkurrerende modeller, hvilket således beskytter Metas teknologiske investeringer og brand.</p>"
@@ -490,7 +493,7 @@
                 "size_desc": "<p>Med 70 milliarder parametre hører denne model til de små modeller. Den kan bruges lokalt på en kraftig computer, hvilket garanterer databeskyttelse, eller hostes på en server udstyret med et enkelt grafikkort, hvilket begrænser infrastrukturomkostningerne. Dens kontekstvindue på 65.536 tokens gør det muligt at behandle længere dokumenter.</p>"
             },
             "Apertus 8B Instruct": {
-                "desc": "<p>Lille open-source model. Dens vægte og træningskode er open-source. Modellen er udviklet af et konsortium af schweiziske institutioner. Den er blevet trænet på mere end 1.800 sprog ud fra 15.000 milliarder tokens. Modellen er trænet på CSCS' superdatamat Alps i Lugano, som er drevet af CO2 neutral vandkraft og er dermed en mere bæredygtig tilgang til AI-udvikling. Den er blevet designet fra starten til at være i overensstemmelse med AI Act.</p>",
+                "desc": "<p>Lille semi-åben og reproducerbar model, udviklet af et konsortium af schweiziske institutioner. Dens vægte og træningskode er publiceret under liberal licens. Den er blevet trænet på mere end 1.800 sprog på over 15.000 milliarder tokens. Træningen fandt sted på CSCS' supercomputer Alps i Lugano, drevet af CO2-neutralt vandkraft.</p>",
                 "fyi": "<p>Modellen er blevet trænet på supercomputeren Alps i Lugano ved hjælp af mere end 10 millioner GPU-timer drevet af CO2-neutral vandkraft. Modellen er blevet prætrænet på 15.000 milliarder tokens udelukkende fra offentlige og permissive kilder, der dækker mere end 1.800 sprog, hvoraf en betydelig del er underrepræsenterede sprog.</p>\n<p>Apertus bygger på en byte-level BPE-tokenizer med 131.000 indgange, afledt af Mistral AI's \"tekken\"-tokenizer, optimeret til flersprogethed, kode og matematiske udtryk. Arkitekturen kombinerer flere innovationer: Rotary Positional Embeddings (RoPE) med udvidet base og NTK-aware justering til lange kontekster, Grouped Query Attention (GQA) for bedre hukommelseseffektivitet, QK-Norm normalisering til at stabilisere træningen, og en xIELU-aktiveringsfunktion (extended Integrated ELU), der forbedrer MLP'ernes performance.</p>\n<p>Modellens endelige finjustering bygger på en alignment-algoritme kaldet QRPO (Quantile Reward-Preferring Optimization), et alternativ til klassisk RLHF, som bruger absolutte belønningssignaler til en mere stabil indlæring, der er bedre alignet med menneskelige præferencer. Selvom den ikke konkurrerer direkte med de mest avancerede proprietære modeller, skiller Apertus sig ud ved sin totale åbenhed, videnskabelige stringens og eksemplariske tilgang til gennemsigtighed og regulatorisk compliance.</p>",
                 "size_desc": "<p>Med 8 milliarder parametre hører denne model til de små modeller. Den kan bruges lokalt på en kraftig computer, hvilket garanterer databeskyttelse, eller hostes på en server udstyret med et enkelt grafikkort, hvilket begrænser infrastrukturomkostningerne. Dens kontekstvindue på 65.536 tokens gør det muligt at behandle ret lange dokumenter.</p>"
             },
@@ -578,6 +581,11 @@
                 "desc": "<p>Meget stor model designet til komplekse opgaver: kodegenerering, brug af værktøjer, analyse af lange dokumenter. Den kan behandle mange sprog, men den er særligt egnet til engelsk og kinesisk.</p>",
                 "fyi": "<p>Denne model er baseret på en Mixture of Experts-arkitektur (MoE) med 671 milliarder parametre, men aktiverer kun 37 milliarder per genereret token. Den er effektiv til funktionskald, generering af strukturerede output (JSON) og kodegenerering.</p>",
                 "size_desc": "<p>DeepSeek V3 er en meget stor model, der kræver flere grafikkort for at fungere. Mixture of Experts-arkitekturen (MoE) gør det dog muligt kun at aktivere en del af parametrene, hvilket reducerer aftrykket sammenlignet med en tæt model af samme størrelse.</p>\n<p>Kontekstvinduet når op på 128.000 tokens, hvilket er nyttigt til analyse af lange dokumenter.</p>"
+            },
+            "DeepSeek V3.2": {
+                "desc": "<p>Meget stor model designet til komplekse opgaver: agentisk orkestrering, kodegenerering, analyse af lange dokumenter. Denne version er særligt stærk til brug af værktøjer og kan simulere en ræsonneringsfase før den leverer det endelige svar.</p>",
+                "fyi": "<p>For denne version er API-omkostningerne og beregningsbehovene reduceret med omkring 50 % eller mere for lange kontekster. Denne forbedring bygger på \"DeepSeek Sparse Attention (DSA)\", en opmærksomhedsmekanisme, der beregner opmærksomhed selektivt for at mindske kompleksiteten på lange sekvenser, samtidig med at det væsentligste af konteksten bevares.</p>\n<p>Modellen er blevet trænet med prioritet på ræsonneringsevner og agentiske anvendelser.</p>",
+                "size_desc": "<p>DeepSeek V3.2 er en stor model, som kræver flere grafikkort for at fungere. Mixture of Experts-arkitekturen (MoE) gør det dog muligt kun at aktivere en del af parametrene, hvilket reducerer fodaftrykket sammenlignet med en tæt model af samme størrelse. Kontekstvinduet når op på 163.000 tokens, hvilket er nyttigt til analyse af meget lange dokumenter.</p>"
             },
             "DeepSeek v3": {
                 "desc": "<p>Udgivet i december 2024, har DeepSeek V3-modellen en Mixture-of-Experts-arkitektur, der gør det muligt for den at være meget stor, samtidig med at inferensomkostningerne reduceres.</p>",
@@ -824,11 +832,6 @@
                 "fyi": "<p>Denne model er blevet trænet med en høj andel af data i kode (mere end 80 programmeringssprog) og matematik, hvilket forbedrer dens evne til at løse komplekse problemer og bruge eksterne værktøjer.</p>",
                 "size_desc": "<p>Med 123 milliarder parametre tilhører denne model kategorien af store modeller. Den kræver en server udstyret med mindst et kraftigt grafikkort, hvilket medfører betydelige driftsomkostninger. Den har et kontekstvindue på op til 128.000 tokens, hvilket er nyttigt til analyse af lange dokumenter.</p>"
             },
-            "Mistral Medium 2508": {
-                "desc": "<p>Mellemstor flersproget, multimodal model, der er billigere sammenlignet med andre modeller, som tilbyder lignende præstationer. Den blev særligt interessant efter en opdatering i august 2025 med betydelige forbedringer af den generelle performance, en \"forbedret\" tone og en bedre evne til at søge information på internettet.</p>",
-                "fyi": "<p>Denne model er blevet designet til at tilbyde solid performance til en lavere pris end proprietære eller semi-åbne modeller. Der er blevet lagt særlig vægt på data til professionel brug under dens træning. Den er særligt god sammenlignet med andre modeller af lignende størrelse til at generere kode og udføre matematiske opgaver.</p>\n<p>Denne model har tjent som grundlag for træning af Magistral Medium - en ræsonneringsmodel.</p>",
-                "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indikationer tyder på, at det er en stor model, der kræver mindst flere kraftige grafikkort for at fungere. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlantens.</p>\n<p>Den har et kontekstvindue på op til 128.000 tokens, hvilket er nyttigt til analyse af lange dokumenter.</p>"
-            },
             "Mistral Medium 3.1": {
                 "desc": "<p>Mellemstor flersproget, multimodal model, der er billigere sammenlignet med andre modeller, som tilbyder lignende præstationer. Den er særligt interessant til programmeringsopgaver eller ræsonneringsopgaver, for eksempel matematik.</p>",
                 "fyi": "<p>Denne model er blevet designet til at tilbyde solid performance til en lavere pris end proprietære eller semi-åbne modeller. Der er blevet lagt særlig vægt på data til professionel brug under dens træning. Den er særligt god sammenlignet med andre modeller af lignende størrelse til at generere kode og udføre matematiske opgaver.</p>\n<p>Denne model har tjent som grundlag for træning af Magistral Medium - en ræsonneringsmodel.</p>",
@@ -992,7 +995,7 @@
         }
     },
     "header": {
-        "banner": "Claude 4, GLM 4.5, GPT OSS og andre nye modeller kommer til arenaen...for at blive testet!",
+        "banner": "Mistral 3 er kommer til arenaen!",
         "chatbot": {
             "newDiscussion": "Ny samtale",
             "step": "Trin",
@@ -1348,6 +1351,7 @@
                 "desc": "Arenaen er nu tilgængelig for deres borgere på nationale sprog med en central mission: at opbygge præferencedatasæt for at forbedre fremtidige AI-modellers ydeevne på sprog med begrænsede ressourcer.",
                 "title": "Arenaen <span {props}>bliver europæisk</span>!"
             },
+            "screenshotAlt": "Skærmbillede af compar:ia-arenaen, med det indledende spørgsmål, de to modelsvar og afstemningsknapperne.",
             "tabLabel": "Arenaen",
             "title": "Arenaen gør det muligt at oprette <span {props}>præference-datasæt</span> med fokus på <span {props}>reel brug</span> i <span {props}>europæiske sprog</span>."
         },
@@ -1360,11 +1364,13 @@
                     "items": {
                         "1": {
                             "date": "marts 2025",
-                            "desc": "Oprettelse og tilgængeliggørelse af det første compar:IA-datasæt på fransk, der samler spørgsmål og præferencer fra platformens brugere."
+                            "desc": "Oprettelse og tilgængeliggørelse af det første compar:IA-datasæt på fransk, der samler spørgsmål og præferencer fra platformens brugere.",
+                            "title": "50.000 stemmer på sammenligningsplatformen!"
                         },
                         "2": {
                             "date": "maj 2025",
-                            "desc": "Og første genanvendelse af datasættet med Bunka.ai, som har gennemført en <a {linkProps}>dybdegående undersøgelse</a> af interaktionerne mellem platformens brugere."
+                            "desc": "Og første genanvendelse af datasættet med Bunka.ai, som har gennemført en <a {linkProps}>dybdegående undersøgelse</a> af interaktionerne mellem platformens brugere.",
+                            "title": "Målet på 100.000 stemmer nået!"
                         },
                         "3": {
                             "date": "Juni 2025",
@@ -1388,12 +1394,62 @@
                         },
                         "3": {
                             "date": "Januar 2025",
-                            "desc": "Lancering af den nye funktionalitet til valg af modelvalgstilstand."
+                            "desc": "Lancering af den nye funktionalitet til valg af modelvalgstilstand.",
+                            "title": "v2 af AI-arenaen"
+                        },
+                        "4": {
+                            "date": "Februar 2025",
+                            "desc": "Mere end 300 personer i forbindelse med konferencer og workshops dedikeret til etiske, kulturelle og miljømæssige udfordringer ved konverserende AI-systemer.",
+                            "title": "<a {linkProps}>comparIA-dag på BnF</a> under topmødet for handling om AI"
                         }
-                    }
+                    },
+                    "tag": "Konstruktion"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Sommer 2025",
+                            "desc": "Partnerskab med Danmark, Sverige og Litauen for at åbne tjenesten på deres sprog.",
+                            "title": "Udvidelse til europæisk skala"
+                        },
+                        "2": {
+                            "date": "September 2025",
+                            "desc": "Skabelse af dette nye workshopformat åbent for alle, til at opdage de generative AI'ers bagsiden og reflektere over deres miljømæssige påvirkning, og offentliggørelse af faciliteringsguiden tilknyttet udvidelsen \"AI-dueller\".",
+                            "title": "Lancering af <a {linkProps}>\"AI-duellerne\"</a>"
+                        },
+                        "3": {
+                            "desc": "Bygget i partnerskab med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), er compar:IA-rangeringen baseret på alle stemmer og reaktioner indsamlet siden tjenestens offentlige lancering i oktober 2024.",
+                            "title": "Offentliggørelse af <a {linkProps}>compar:IA-rangeringen</a>"
+                        },
+                        "4": {
+                            "desc": "Danmark slutter sig til eventyret ved at tilbyde sammenligningsplatformen på sit nationale sprog med et dedikeret domænenavn.",
+                            "title": "Åbning af AI-Arenaen <a {linkProps}>på dansk</a>"
+                        },
+                        "5": {
+                            "desc": "Tjenesten er anerkendt som et digitalt fællesgode af Digital Public Goods Alliance.",
+                            "title": "AI-arenaen anerkendt som <a {linkProps}>digitalt fællesgode</a>"
+                        },
+                        "6": {
+                            "date": "November 2025",
+                            "desc": "Med mere end 500.000 unikke samtaler siden lanceringen af arenaen.",
+                            "title": "Målet på 200.000 stemmer nået!"
+                        }
+                    },
+                    "tag": "Internationalisering"
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "Jan-marts 2024",
+                            "desc": "Samtaler med aktører i økosystemet og første løsningshypoteser om problemstillingen: \"Hvordan lettes adgangen til data på fransk til træning af sprogmodeller?\".",
+                            "title": "Undersøgelsesfase"
+                        }
+                    },
+                    "tag": "Undersøgelse"
                 }
             },
-            "tabLabel": "Historieprojekt"
+            "tabLabel": "Nøgledatoer",
+            "title": "AI-Arenaen i datoer"
         },
         "partners": {
             "academy": {
@@ -1599,7 +1655,7 @@
             "title": "Hvordan fordeler brugernes præferencer sig?"
         },
         "ranking": {
-            "desc": "Tak for jeres bidrag! Jeres stemmer fodrer en Bradley-Terry (BT) rangordning, som vi gør transparent for jer.<br>Denne Bradley-Terry (BT) tilfredshedsscore er konstrueret i partnerskab med <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> og er baseret på jeres stemmer og jeres godkendelses- og misbilligelsesreaktioner.",
+            "desc": "Tak for jeres bidrag!<br> Rangeringen <strong>AI-arenaen</strong> er baseret på alle stemmer og reaktioner fra den <strong>blinde sammenligning</strong> af modellerne og indsamlet siden tjenestens offentlige lancering i oktober 2024.<br> Bygget i partnerskab med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), er modelrangeringen etableret baseret på <strong>tilfredshedsscore</strong> beregnet ud fra den statistiske model <strong>Bradley Terry</strong>, en udbredt metode til at konvertere binære stemmer til probabilistisk rangering.<br> AI-arenaens-rangeringen har ikke til formål at udgøre en officiel anbefaling eller evaluere modellernes tekniske ydeevne. Den afspejler platformens brugeres <strong>subjektive præferencer</strong> og ikke svarenes faktualitet eller sandfærdighed.",
             "tabLabel": "Rangliste"
         },
         "table": {
@@ -1621,6 +1677,7 @@
                 "estimation": "(estimering)",
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
+                    "consumption_wh": "Målt i watttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtig information om størrelse og arkitektur for, som gråtonede ikke-analyserede (N/A).",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
                     "size": "Modellens størrelse i milliarder af parametre, kategoriseret i fem klasser. For proprietære modeller oplyses denne størrelse ikke.",
@@ -1666,12 +1723,20 @@
                 "label": "modelstørrelse",
                 "quantized": "(kvantiseret)"
             },
-            "title": "Chatens energiforbrug",
+            "title": "Chatens estimerede energiforbrug",
             "tokens": {
                 "label": "tekststørrelse",
                 "tokens": "tokens",
                 "tooltip": "AI analyserer og genererer sætninger ud fra ord eller dele af ord på cirka fire bogstaver; denne tekstdel kaldes et token. Jo længere en tekst er, jo større er antallet af tokens."
-            }
+            },
+            "tooltip": "Estimering baseret på modellens størrelse, dens arkitektur og længden af det genererede svar."
+        },
+        "thanks": {
+            "cta": "Gå til rangeringen",
+            "desc": "Oplev hvordan din præference placerer sig i forhold til den generelle rangering af modeller i AI-arenaen.",
+            "graphAlt": "Oversigt over grafen der repræsenterer modellernes score og elektricitetsforbrug",
+            "rankingAlt": "Oversigt over rangeringen i tabelform",
+            "title": "Tak for dit bidrag!"
         }
     },
     "seo": {
@@ -1680,17 +1745,18 @@
         "titles": {
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
+            "community": "Fællesskab",
             "comparator": "Arenaen",
             "datasets": "Datasæt",
             "donnees-personnelles": "Fortrolighedspolitik",
             "duel": "AI Duel Workshop",
             "faq": "Ofte stillede spørgsmål",
-            "history": "Projektets historie",
+            "history": "Nøgledatoer",
             "home": "Hjem",
             "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
-            "news": "Nyheder",
+            "news": "Nyheder og ressourcer",
             "partners": "Partnere",
             "problem": "Den indledende udfordring",
             "product": "Produkt og partnere",

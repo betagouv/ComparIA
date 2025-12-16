@@ -8,6 +8,7 @@
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
+  import 'uno.css'
   import '../css/app.css'
 
   if (browser) {

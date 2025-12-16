@@ -538,7 +538,6 @@ def register_listeners():
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
 
-        # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
         chatbot = to_threeway_chatbot(conversations)
@@ -619,7 +618,6 @@ def register_listeners():
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
 
-        # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
         chatbot = to_threeway_chatbot(conversations)

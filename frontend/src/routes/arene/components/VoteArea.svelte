@@ -26,10 +26,10 @@
   <VoteRadioGroup bind:value={form.selected} {disabled} />
 
   {#if form.selected}
-    <div class="mt-11 flex flex-col gap-6 md:flex-row">
+    <div class="mt-11 gap-6 md:flex-row flex flex-col">
       {#each ['a', 'b'] as const as model (model)}
         <div
-          class="cg-border flex w-full flex-col gap-4 rounded-lg! bg-white p-4 md:rounded-lg md:px-6 md:py-8"
+          class="cg-border gap-4 rounded-lg! bg-white p-4 md:rounded-lg md:px-6 md:py-8 flex w-full flex-col"
         >
           <div class="flex items-center">
             <div class="c-bot-disk-{model}"></div>
