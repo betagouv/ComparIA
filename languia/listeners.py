@@ -50,6 +50,8 @@ import copy
 
 import requests
 
+from typing import List
+
 
 from languia.utils import (
     AppState,
@@ -60,7 +62,7 @@ from languia.utils import (
     to_threeway_chatbot,
 )
 
-from languia.session import increment_input_chars, redis_host, is_ratelimited
+from languia.session import increment_input_chars, redis_host, is_ratelimited, r, retrieve_cohorts_redis
 
 from languia.reveal import (
     build_reveal_dict,
@@ -264,10 +266,19 @@ def register_listeners():
             extra={"request": request},
         )
 
-        # record even tho there are no responses yet to log questions (and stats on ppl abandoning before generation completion)
-        # + add locale info
+        # record for questions only dataset and stats on ppl abandoning before generation completion + add locale info
+        # Check if session has cohorts using direct Redis get
+
+        cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
+
+        logger.info(f"cohorts_comma_separated: {cohorts_comma_separated}", extra={"request": request})
+
         record_conversations(
-            app_state_scoped, [conv_a_scoped, conv_b_scoped], request, locale
+            app_state_scoped,
+            [conv_a_scoped, conv_b_scoped],
+            request,
+            locale,
+            cohorts_comma_separated=cohorts_comma_separated,
         )
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
 
@@ -427,8 +438,10 @@ def register_listeners():
             # Got answer at this point (or error?)
             app_state_scoped.awaiting_responses = False
 
+            logger.debug(f"{app_state_scoped}, [{conv_a_scoped}, {conv_b_scoped}], {request}, {cohorts_comma_separated}")
+
             record_conversations(
-                app_state_scoped, [conv_a_scoped, conv_b_scoped], request
+                app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated
             )
 
             if conv_a_scoped.messages[-1].role != "user":
@@ -520,7 +533,8 @@ def register_listeners():
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
 
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+        cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
+        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated)
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
@@ -600,7 +614,9 @@ def register_listeners():
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
 
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+
+        cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
+        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated)
 
         chatbot = to_threeway_chatbot(conversations)
 
@@ -689,8 +705,9 @@ def register_listeners():
             # Got answer at this point
             app_state_scoped.awaiting_responses = False
 
+            cohorts_comma_separated = retrieve_cohorts_redis(request.session_hash)
             record_conversations(
-                app_state_scoped, [conv_a_scoped, conv_b_scoped], request
+                app_state_scoped, [conv_a_scoped, conv_b_scoped], request, cohorts_comma_separated=cohorts_comma_separated
             )
 
             if conv_a_scoped.messages[-1].role != "user":

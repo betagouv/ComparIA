@@ -7,13 +7,26 @@ and provides session state management.
 
 import redis
 import os
+import logging
+from typing import List
 
-# Redis connection configuration
-redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
-# Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
+try: 
+    # Redis connection configuration
+    redis_host = os.getenv("COMPARIA_REDIS_HOST", "localhost")
+    # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
 
-# Initialize Redis client (decode_responses=True returns strings instead of bytes)
-r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
+    # Initialize Redis client (decode_responses=True returns strings instead of bytes)
+    r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
+
+    # Fail if we don't have a working redis
+    response = r.ping()
+    if not r.ping():
+        logger = logging.getLogger("languia")
+        logger.error(f"Erreur de connection au redis - {response}")
+
+except Exception as e:
+    raise Exception(f"Redis Connection Error {e}")
+
 
 from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
 
@@ -59,42 +72,81 @@ def is_ratelimited(ip: str):
         return False
 
 
-class Session:
+def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
     """
-    Represents a user session with conversation history and metadata.
-
-    Attributes:
-        session_hash: Unique identifier for the session (from Gradio)
-        conversations: Tuple of two conversation dicts (model A and B)
-        ip: User's IP address
-        total_input_chars: Total character count for rate limiting
-    """
-    session_hash: str | None
-    conversations: tuple[dict, dict]
-    # Future fields for votes and reactions
-    # vote: Vote | None
-    # reactions: dict = []
-    ip: str | None
-    total_input_chars: int = 0
-
-
-def save_session(session: Session):
-    """
-    Save session state to Redis for later retrieval.
+    Stocke dans Redis une indication de ne pas suivre pour une session donnée.
 
     Args:
-        session: Session object to save
+        session_hash: Identifiant unique de la session
+        cohorts_comma_separated: Liste des cohortes à stocker sous forme d'une chaine comma separated
+
+    Returns:
+        bool: True si l'opération a réussi, False sinon
     """
-    # Store session as Redis hash with conversations and IP
-    r.hset(
-        f"session:{session.session_hash}",
-        mapping={
-            "conversations": session.conversations,
-            "ip": session.ip,
-        },
-    )
-    # Verify the save by retrieving the data
-    r.hgetall(f"session:{session.session_hash}")
+    if not redis_host:
+        logger = logging.getLogger("languia")
+        logger.warning("[COHORT] Redis not configured (COMPARIA_REDIS_HOST not set)")
+        return False
+    logger = logging.getLogger("languia")
+    try:
+        # Stocke la clé avec une expiration de 24 heures
+        expire_time = 86400
+        logger.info(f"[COHORT] Storing in Redis: cohorts:{session_hash} = {cohorts_comma_separated} (expire={expire_time}s)")
+        r.setex(f"cohorts:{session_hash}", expire_time, cohorts_comma_separated)
+        logger.info(f"[COHORT] Successfully stored in Redis")
+        return True
+    except Exception as e:
+        logger.error(f"[COHORT] Error storing cohorts in Redis: {e}")
+        return False
+
+
+def retrieve_cohorts_redis(session_hash: str):
+    """
+    Vérifie si une session a une indication de ne pas suivre.
+
+    Args:
+        session_hash: Identifiant unique de la session
+
+    Returns:
+        - 'cohorts_comma_separated': str|None - Optionnel, Nom des cohortes comma separated ou None
+    """
+    if not redis_host:
+        return None
+    logger = logging.getLogger("languia")
+    try:
+        cohorts_comma_separated = r.get(f"cohorts:{session_hash}")
+        logger.info(f"[COHORT] Retrieved from Redis for {session_hash}: {cohorts_comma_separated}")
+
+        if cohorts_comma_separated:
+            return cohorts_comma_separated
+        else:
+            return None
+
+    except Exception as e:
+        logger.error(f"[COHORT] Error getting cohort list from Redis: {e}")
+        return None
+
+
+# Draft session class and methods
+
+# class Session:
+#     session_hash: str | None
+#     conversations: tuple[dict, dict]
+#     # vote: Vote | None
+#     # reactions: dict = []
+#     ip: str | None
+#     total_input_chars: int = 0
+
+
+# def save_session(session: Session):
+#     r.hset(
+#         f"session:{session.session_hash}",
+#         mapping={
+#             "conversations": session.conversations,
+#             "ip": session.ip,
+#         },
+#     )
+#     r.hgetall(f"session:{session.session_hash}")
 
 
 #     r.hset(f'session:{session.session_hash}', mapping={
