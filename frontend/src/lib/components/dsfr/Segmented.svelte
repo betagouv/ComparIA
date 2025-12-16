@@ -34,7 +34,7 @@
   <legend class={['fr-segmented__legend', legendClass]}>{legend}</legend>
 
   <div class="fr-segmented__elements">
-    {#each options as option, i}
+    {#each options as option (option.value)}
       <div class="fr-segmented__element">
         <input
           name={id}

@@ -46,9 +46,9 @@
   role="log"
   aria-label={m['chatbot.conversation']()}
   aria-live="polite"
-  class="flex grow flex-col pb-7"
+  class="pb-7 flex grow flex-col"
 >
-  {#each groupedMessages as { user, bots }, i}
+  {#each groupedMessages as { user, bots }, i (i)}
     <GroupedMessages {user} {bots} {generating} {disabled} {onReactionChange} />
   {/each}
 
@@ -58,7 +58,7 @@
 
   {#if errorString}
     <div class="fr-container">
-      <div class="cg-border lg:max-w-1/2 pe-13 m-auto flex gap-4 bg-white p-4 pb-7">
+      <div class="cg-border gap-4 bg-white p-4 pe-13 pb-7 lg:max-w-1/2 m-auto flex">
         <Icon icon="warning-fill" class="text-error" />
         <div>
           {#if errorString === 'Context too long.'}
@@ -79,7 +79,7 @@
             </p>
           {/if}
 
-          <div class="grid gap-5 md:grid-cols-2">
+          <div class="gap-5 md:grid-cols-2 grid">
             {#if errorString === 'Context too long.'}
               <Link
                 button

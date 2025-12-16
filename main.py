@@ -17,8 +17,8 @@ origins = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:8000",
-    "http://localhost:8001"
-    ]
+    "http://localhost:8001",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -53,6 +53,7 @@ from languia.utils import get_country_portal_count
 
 @app.get("/", response_class=JSONResponse)
 @app.get("/available_models", response_class=JSONResponse)
+@app.get("/models", response_class=JSONResponse)
 async def available_models():
     return JSONResponse(
         {
@@ -73,24 +74,30 @@ async def available_models():
 from fastapi import Query
 from typing import Annotated, Optional
 
+
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
     request: Request,
     c: str | None = None,
 ):
-    # Get hostname from request headers
-    hostname = request.headers.get("Host")
-    
-    # Check if we should use country portal count based on hostname or query parameter
-    country_portal = request.query_params.get("c")
-    
-    if hostname == "ai-arenaen.dk" or country_portal == "da":
-        count = get_country_portal_count('da')
+    # don't get it from host
+    # hostname = request.headers.get("Host")
+    # Always check the query parameter 'c' for locale
+    country_portal = request.query_params.get(
+        "c", "fr"
+    )  # Default to "fr" if not provided
+
+    # Only allow "da" or "fr" as valid locales
+    if country_portal not in ("da", "fr"):
+        country_portal = "fr"  # Default to "fr" for invalid values
+
+    if country_portal == "da":
+        count = get_country_portal_count("da")
         objective = config.OBJECTIVES.get("da")
-    else:
-        count = get_country_portal_count('fr')
+    else:  # country_portal == "fr"
+        count = get_country_portal_count("fr")
         objective = config.OBJECTIVES.get("fr")
-    
+
     return JSONResponse(
         {
             "count": count,

@@ -24,7 +24,7 @@ services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: ../docker/Dockerfile-sveltekit
+      dockerfile: ../docker/Dockerfile.front
     # For runtime access in +page.server.ts via same hostname
     network_mode: host
     depends_on:

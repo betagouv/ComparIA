@@ -47,12 +47,12 @@
   {...props}
   class={[
     'fr-tabs',
-    { 'tabs-nav': kind === 'nav', 'before:shadow-none! shadow-none!': noBorders },
+    { 'tabs-nav': kind === 'nav', 'shadow-none! before:shadow-none!': noBorders },
     props.class
   ]}
 >
   <ul class={['fr-tabs__list', { 'px-0!': kind === 'nav' }]} role="tablist" aria-label={label}>
-    {#each items as item}
+    {#each items as item, i (i)}
       <li role="presentation" class="whitespace-nowrap">
         {#if item.href}
           <a {...item.props} href={item.href}>
@@ -66,7 +66,7 @@
       </li>
     {/each}
   </ul>
-  {#each tabs as item, i}
+  {#each tabs as item, i (i)}
     <div
       id={`tab-${item.id}-panel`}
       role="tabpanel"
@@ -77,7 +77,7 @@
         {
           'fr-tabs__panel--selected': item.id === initialId,
           'px-0! py-5!': noBorders,
-          'transition-none! visibility-none!': item.href && item.id !== currentTabId
+          'visibility-none! transition-none!': item.href && item.id !== currentTabId
         },
         panelClass
       ]}
@@ -95,7 +95,7 @@
     a {
       &[aria-selected='true'] {
         --border-active-blue-france: var(--blue-france-main-525);
-        @apply text-primary;
+        color: var(--blue-france-main-525);
       }
     }
   }

@@ -24,17 +24,17 @@
   } & SvelteHTMLElements['div'] = $props()
 </script>
 
-<div {...props} class={['cg-border rounded-sm! relative p-3', props.class]}>
-  <Tooltip id="mini-card-tooltip-{id}" size="sm" class="absolute right-1.5 top-1">
+<div {...props} class={['cg-border rounded-sm! p-3 relative', props.class]}>
+  <Tooltip id="mini-card-tooltip-{id}" size="sm" class="top-1 right-1.5 absolute">
     {@html sanitize(tooltip)}
   </Tooltip>
 
-  <div class={[icon ? 'flex flex-col items-center gap-2 md:flex-row md:gap-3' : '']}>
+  <div class={[icon ? 'gap-2 md:flex-row md:gap-3 flex flex-col items-center' : '']}>
     {#if icon}
       <Icon {icon} block class={iconClass} />
     {/if}
-    <div class={[icon ? 'text-center md:text-start' : '']}>
-      <strong class="inline-flex items-baseline leading-normal">
+    <div class={[icon ? 'md:text-start text-center' : '']}>
+      <strong class="leading-normal inline-flex items-baseline">
         <span class={[icon ? 'text-[24px]' : 'text-[18px]']}>{value}</span>
         <span class={[icon ? 'text-[14px]' : 'ms-1 text-[10px]']}>
           {#if units}
@@ -44,7 +44,7 @@
           {/if}
         </span>
       </strong>
-      <p class="text-sm! mb-0! -mt-1! leading-normal">{@html sanitize(desc)}</p>
+      <p class="-mt-1! mb-0! text-sm! leading-normal">{@html sanitize(desc)}</p>
     </div>
   </div>
 </div>

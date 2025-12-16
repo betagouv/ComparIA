@@ -19,6 +19,7 @@
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
         "scrollRight": "Défiler vers la droite",
+        "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue",
         "vote": "Donner mon avis"
@@ -263,6 +264,7 @@
             "accessibility": "Accessibilité : non conforme",
             "legal": "Mentions légales",
             "privacy": "Politique de confidentialité",
+            "rgesn": "Déclaration d’écoconception",
             "sources": "Code source",
             "tos": "Modalités d'utilisation"
         },
@@ -339,6 +341,97 @@
             "privacyResp": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme. En acceptant les <a {linkProps}>modalités d’utilisation</a>, l’utilisateur ou l’utilisatrice s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
             "privacyTitle": "Traitons-nous des données à caractère personnel ?",
             "title": "Politique de confidentialité"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Le site compar:IA permet de donner accès simplement et gratuitement à une très grande diversité de modèles d'IA conversationnelle et ainsi de sensibiliser les citoyens aux divers enjeux des IA génératives : diversité, biais, impact environnemental. Par ailleurs, les jeux de données de questions et de préférences constitués sont partagés en open source sous licence MIT/Etalab 2.0.",
+                "2": "Les cibles utilisatrices du service Compar:IA ont été identifiées en procédant à des entretiens utilisateurs et une phase préalable d'investigation des besoins.",
+                "3": "Ainsi, tous les citoyens sont concernés comme utilisateurs potentiels, mais particulièrement les professeurs, élèves, étudiants, médiateurs numériques, formateurs IA, ainsi que chercheurs (computer sciences, IA, SHS) et entreprises intéressées par l'analyse ou l’utilisation des jeux de données partagés en open source.<br> En cohérence, le service numérique répond à leurs besoins grâce aux fonctionnalités suivantes : tester et comparer gratuitement les modèles, utiliser les données partagées en open source.",
+                "4": "Le service compar:IA s’inscrit dans une démarche d’écoconception visant à réduire les impacts environnementaux. À cette fin, la déclaration a été rédigée dans le cadre de la mise en œuvre du référentiel général de l’écoconception des services numériques (RGESN, version 2024).<br> Le RGESN, réalisé par l’Arcep et l’Arcom, en collaboration avec l’ADEME, la DINUM, la CNIL et l’Inria, est disponible sur le <a {linkProps}>site web de l’Arcep</a>.",
+                "title": "Raison d’être de ce service"
+            },
+            "2": {
+                "1": "L'écoconception de services numériques est une démarche visant à réduire et limiter les impacts environnementaux d’un service dès sa phase de conception et tout au long de son cycle de vie.",
+                "2": {
+                    "1": "Concevoir des services numériques plus durables permettant d’allonger la durée de vie des terminaux ;",
+                    "2": "Promouvoir une démarche de sobriété environnementale face aux stratégies de captation de l’attention de l’utilisateur pour des usages en ligne avec les objectifs environnementaux internationaux ;",
+                    "3": "Diminuer les ressources informatiques mobilisées, optimiser le trafic de données et la sollicitation des infrastructures numériques ;",
+                    "4": "Accroître le niveau de transparence sur l’empreinte environnementale du service numérique.",
+                    "title": "Sa mise en œuvre poursuit quatre objectifs principaux :"
+                },
+                "3": {
+                    "1": "Limiter le poids d’une page",
+                    "2": "Limiter la complexité d’une page",
+                    "3": "Limiter le nombre de requêtes serveurs",
+                    "4": "Limiter la consommation d’énergie permettant d’héberger le service",
+                    "title": "Concrètement, l’écoconception se traduit par un ensemble de bonnes pratiques à respecter avant, pendant et après la création ou l’amélioration d’un service, permettant notamment de :"
+                },
+                "4": "Il s’agit d’une démarche d'amélioration continue et collective.",
+                "title": "Qu’est ce que l’écoconception ?"
+            },
+            "3": {
+                "1": {
+                    "1": "Simplification de l’expérience utilisateur : les parcours de navigation sont optimisés et centrés autour des fonctionnalités essentielles du service Compar:IA (arène de modèles à tester, jeux de données, classement) avec des tests utilisateurs réguliers.",
+                    "2": "Sensibilisation auprès des utilisateurs sur l’empreinte écologique du service : mise en avant d’indicateurs d’impact énergétique sur les questions posées aux IA ; valorisation des usages « frugaux », avec un mode dédié à l’interrogation de « petits » modèles d’IA conversationnelles dont l’impact environnemental est moindre.",
+                    "3": "Utilisation des composants d’interfaces du Système de Design de l’État (DSFR) : ils sont accessibles et leur empreinte est minimale.",
+                    "4": "Navigation la plus intuitive possible pour réduire le temps passé à trouver une information.",
+                    "5": "Conception « mobile first » : tous les contenus sont consultables a minima sur mobile. Le site s’adapte à toutes les tailles d’écran.",
+                    "6": "Exclusion de l’intégration des vidéos sur le site.",
+                    "title": "L’enjeu principal consiste à ce que le service compar:IA fonctionne sur les terminaux utilisateurs les plus anciens possibles, dans des conditions de connectivité variées. Plusieurs mesures ont été mise en œuvre lors de la conception, parmi lesquelles :"
+                },
+                "title": "Stratégie mise en œuvre et objectifs en matière de réduction ou de limitation des impacts environnementaux"
+            },
+            "4": {
+                "1": "L’auto-diagnostic, mené entre mai et octobre 2025 par l’équipe produit (deux personnes ont été en charge de la relecture et la validation de toutes les réponses), a porté sur l’ensemble des pages du site. Les outils utilisés pour évaluer certains indicateurs techniques sont l’inspecteur « réseau » des outils de développement du navigateur, l’extension <a {greenitLinkProps}>Green IT Analysis</a> et l’outil <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "Diagnostic RGESN"
+            },
+            "5": {
+                "1": {
+                    "1": "Score d’avancement dans la mise en œuvre du RGESN, le 10/12/2025 : 89%",
+                    "title": "L’auto-diagnostic donne un taux de conformité au <a {linkProps}>RGESN</a> (référentiel général d’écoconception) de 89%."
+                },
+                "2": "Le service numérique compar:IA vise une amélioration de ce score d’avancement pour atteindre 95% en 2027.",
+                "3": {
+                    "1": "Stratégie : 100 %",
+                    "2": "Spécifications : 78 %",
+                    "3": "Architecture : 100 %",
+                    "4": "Expérience et interface utilisateur (UX/UI) : 100 %",
+                    "5": "Contenus : 67 %",
+                    "6": "Frontend : 82 %",
+                    "7": "Backend : 64 %",
+                    "8": "Hébergement : 90 %",
+                    "9": "Algorithmie : 100 %",
+                    "title": "Score par thématique :"
+                },
+                "4": {
+                    "date": "10 décembre 2025",
+                    "title": "Tableau d’audit RGESN"
+                },
+                "title": "Score dans la mise en oeuvre du référentiel"
+            },
+            "6": {
+                "1": "Le site est conçu pour être accessible pour tout équipement mobile datant de 2017 minimum.",
+                "2": "Connexion minimum pour un accès et une utilisation confortable du service : 3G en mobile et 512 Kbs en connexion fixe.",
+                "3": "Le site est conçu pour les différentes tailles d’écran (minimum 320 pixels de large).",
+                "4": "Le site n’est pas accessible via le navigateur Internet Explorer. ",
+                "title": "Configuration minimale pour accéder au site"
+            },
+            "7": {
+                "1": "Concevoir le service avec une revue de conception et une revue de code, dont l’un des objectifs de réduire les impacts environnementaux de chaque fonctionnalité (critère 2.1)",
+                "2": "Mettre en place des durées de conservation sur les données en vue de leur suppression ou archivage : suppression des logs régulières dans le serveur de fichiers « S3 » et la base de données (Postgres) notamment.",
+                "3": {
+                    "1": "Nombre de requêtes serveurs maximum astreinte par écran : 30",
+                    "2": "Poids des ressources maximum astreint par écran : 600 Ko",
+                    "title": "S’astreindre à un poids maximum et une limite de requêtes par écran (critère 6.1) :"
+                },
+                "4": "Convertir les illustrations en WebP, AVIF, JPEG XL ou un format d’image plus performant pour les images matricielles (critère 5.1).",
+                "5": "Laisser la possibilité d'interrompre l'inférence (chargement des réponses) lors de la comparaison des modèles.",
+                "6": "Les scores d’analyses EcoIndex démontrent un décalage important dans les mesures d’impact avec des notes allant jusqu’à E ou F pour certaines pages (poids, complexité et nombre de requêtes des pages relativement importants) ; il s’agit désormais de comprendre plus finement ces résultats au cas par cas, malgré les bonnes pratiques mises en œuvre, pour identifier de nouvelles améliorations.",
+                "desc": "Plusieurs améliorations ont été ou sont toujours en cours d’identification, parmi lesquelles :",
+                "title": "Améliorations identifiées"
+            },
+            "desc": "publiée le 11 décembre 2025",
+            "title": "Déclaration d’écoconception"
         },
         "tos": {
             "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>{contactLink}</a>.",
@@ -690,6 +783,11 @@
                 "fyi": "<p>Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs.</p>",
                 "size_desc": "<p>DeepSeek V3.1 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.</p>\n<p>La fenêtre de contexte atteint désormais 163 000 jetons, contre 128 000 dans la version précédente, ce qui améliore l’analyse de très longs documents.</p>"
             },
+            "DeepSeek V3.2": {
+                "desc": "<p>Très grand modèle conçu pour des tâches complexes : orchestration agentique, génération de code, analyse de documents longs. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.</p>",
+                "fyi": "<p>Pour cette version, le coût de l’API et les besoins en calcul sont réduits d’environ 50 % ou plus pour les contextes longs. Cette amélioration repose sur le \"DeepSeek Sparse Attention (DSA)\", un mécanisme d’attention clairsemée à granularité fine qui calcule l’attention de façon sélective afin de diminuer la complexité sur les longues séquences tout en préservant l’essentiel du contexte.</p>\n<p>Le modèle a été entraîné en donnant la priorité aux capacités de raisonnement et aux usages agentiques.</p>",
+                "size_desc": "<p>DeepSeek V3.2 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte atteint 163 000 jetons, ce qui est utile pour l’analyse de très longs documents ou des bases de code.</p>"
+            },
             "Gemini 1.5 Pro": {
                 "desc": "<p>Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.</p>",
                 "fyi": "<p>Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google.</p>",
@@ -779,6 +877,11 @@
                 "desc": "<p>Deuxième itération de GPT 5, avec un style jugé (par l'éditeur) plus naturel, avec de meilleurs résultats en code et en tâches d’agents. Le modèle a la spécificité d'ajuster son temps de raisonnement selon la difficulté.</p>",
                 "fyi": "<p>L’arrivée de cette nouvelle itération apporte un routage automatique entre deux modes. Pour les demandes simples, le modèle choisit une réponse rapide. Pour les tâches plus complexes, il bascule vers un mode avec raisonnement avant de répondre. Cette logique évite de perdre du temps sur les requêtes faciles tout en gardant une vraie profondeur quand il le faut.</p>\n<p>La première sortie de la famille GPT 5 avait provoqué beaucoup de réactions négatives vis-à-vis de son style d'écriture. Beaucoup d’utilisateurs trouvaient le modèle moins chaleureux que GPT 4o. Cette itération vise à revenir vers un style plus chaleureux.</p>\n<p>Cette nouvelle version marque aussi des progrès en code et en mathématiques qui sont confirmés par des benchmarks comme SWE Bench pour le code et AIME pour les compétences mathématiques.</p>",
                 "size_desc": "<p>Les tailles des modèles derrière le système GPT-5.1 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.</p>"
+            },
+            "GPT 5.2": {
+                "desc": "<p>Troisième itération de GPT 5, avec une attention spéciale portée à son utilité sur des tâches professionelles.</p>",
+                "fyi": "<p>Le modèle a été présenté comme atteignant, voire dépassant, le niveau de performance d’experts humains sur le benchmark GDPval, qui évalue des tâches professionnelles numériques bien définies. Il propose différents niveaux d’effort de raisonnement configurables par l’utilisateur ou le développeur, permettant d’arbitrer entre coût, latence et qualité des réponses selon la complexité de la tâche. GPT 5.2 se distingue également par sa capacité à retrouver des informations précises au sein de contextes très volumineux, y compris lorsque celles-ci sont rares et dispersées dans de longs corpus (needle in the haystack).</p>",
+                "size_desc": "<p>Les tailles des modèles derrière le système GPT-5.2 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse. GPT 5.2 prend en charge une fenêtre de contexte allant jusqu’à 400 000 jetons, ce qui le rend adapté à l’analyse de corpus volumineux ou de bases de code étendues.</p>"
             },
             "GPT OSS-120B": {
                 "desc": "<p>Le plus grand des deux premiers modèles semi-ouverts d'OpenAI depuis GPT-2. Conçu en réponse à la montée en puissance des acteurs open source comme Meta (LLaMA) et Mistral, il s'agit d'un modèle de raisonnement performant, notamment sur des tâches complexes et dans des environnements « agentiques ».</p>",
@@ -920,18 +1023,18 @@
                 "fyi": "<p>Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues.</p>",
                 "size_desc": "<p>Avec ses 8 milliards de paramètres, ce modèle appartient à la catégorie des petits modèles (entre 7 et 20 milliards de paramètres). Il peut être déployé localement sur un ordinateur assez puissant, garantissant la confidentialité des données ou hébergé sur un serveur avec une seule carte graphique pour limiter les coûts d’infrastructure.</p>"
             },
+            "Mistral 3 Large": {
+                "desc": "<p>Très grand modèle multimodal semi-ouvert performant en code et contextes multilingues.</p>",
+                "fyi": "<p>Ce modèle a été entraîné sur 3 000 GPU Nvidia H200. Il se positionne en concurrence directe avec les modèles semi-ouverts chinois. À sa sortie, il est compétitif avec DeepSeek V3.1, Kimi K2, GLM 4.6 et d’autres références en termes de code et cas d'usages généralistes.</p>",
+                "size_desc": "<p>Avec 675 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que des modèles denses de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Ce modèle active 41 milliards de paramètres par génération de jeton. Sa fenêtre de contexte va jusqu’à 256 000 jetons, ce qui permet de traiter de très longs documents.</p>"
+            },
             "Mistral Large 2": {
                 "desc": "<p>Grand modèle prévu pour traiter des questions et tâches complexes : par exemple génération de code, utilisation d’outils, analyse de documents longs ou compréhension précise du langage.</p>",
                 "fyi": "<p>Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes.</p>",
                 "size_desc": "<p>Avec 123 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite un serveur équipé d’au moins une carte graphique puissante, ce qui implique un coût de fonctionnement important. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
             },
-            "Mistral Medium 2508": {
-                "desc": "<p>Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet.</p>",
-                "fyi": "<p>Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.</p>\n<p>Ce modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.</p>",
-                "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>\n<p>Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
-            },
             "Mistral Medium 3.1": {
-                "desc": "<p>Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques.</p>",
+                "desc": "<p>Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet.</p>",
                 "fyi": "<p>Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.</p>\n<p>Ce modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.</p>",
                 "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>\n<p>Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
             },
@@ -1449,6 +1552,7 @@
                 "desc": "Le comparateur sera mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
                 "title": "Le comparateur <span {props}>devient européen</span> !"
             },
+            "screenshotAlt": "Capture d'écran de l'arène compar:ia, avec la question initiale, les deux réponses des modèles et les boutons de vote.",
             "tabLabel": "Le comparateur",
             "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
         },
@@ -1783,7 +1887,6 @@
                 }
             },
             "lastUpdate": "Mise à jour le {date}",
-            "search": "Rechercher un modèle",
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
@@ -1822,16 +1925,19 @@
                 "label": "taille du modèle",
                 "quantized": "(quantisé)"
             },
-            "title": "Impact énergétique de la discussion",
+            "title": "Impact énergétique estimé de la discussion",
             "tokens": {
                 "label": "taille du texte",
                 "tokens": "jetons",
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
-            }
+            },
+            "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée."
         },
         "thanks": {
             "cta": "Accéder au classement",
             "desc": "Découvrez comment votre préférence se situe par rapport au classement général des modèles dans compar:IA.",
+            "graphAlt": "Aperçu du graphique représentant le score et la consommation d'électricité des modèles",
+            "rankingAlt": "Aperçu du classement sous forme de tableau",
             "title": "Merci pour votre contribution !"
         }
     },
@@ -1857,6 +1963,7 @@
             "problem": "Le problème initial",
             "product": "À propos",
             "ranking": "Classement",
+            "rgesn": "Déclaration d’écoconception",
             "share": "Mon bilan"
         }
     },

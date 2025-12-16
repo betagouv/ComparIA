@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Button, CheckboxGroup, Toggle } from '$components/dsfr'
+  import {
+    Accordion,
+    AccordionGroup,
+    Button,
+    CheckboxGroup,
+    Search,
+    Toggle
+  } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import SeoHead from '$components/SEOHead.svelte'
@@ -50,38 +57,43 @@
   let licenses = $state<License[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let showArchived = $state(false)
+  let search = $state('')
 
-  const filteredModels = $derived(
-    models
+  const filteredModels = $derived.by(() => {
+    const _search = search.toLowerCase()
+    return models
       .filter((model) => {
+        const searchMatch = !_search || model.search.includes(_search)
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
         const orgMatch = editors.length === 0 || editors.includes(model.organisation)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
         const archivedMatch = model.status === 'enabled' || showArchived
-        return sizeMatch && orgMatch && licenseMatch && archivedMatch
+        return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
           case 'date-desc':
             if (a.release_date && b.release_date && a.release_date !== b.release_date) {
-              // @ts-ignore
+              // @ts-expect-error date works
               return new Date('01/' + b.release_date) - new Date('01/' + a.release_date)
             } else if (a.release_date) {
               return -1
             } else if (b.release_date) {
               return 1
             }
+          // falls through
           case 'params-asc':
             if (a.params && b.params && a.params !== b.params) {
               return a.params - b.params
             }
+          // falls through
           case 'org-asc':
             return a.organisation.localeCompare(b.organisation)
           default:
             return a.simple_name.localeCompare(b.simple_name)
         }
       })
-  )
+  })
 
   const allFilter = $derived([editors, sizes, licenses])
   const filterCount = $derived(allFilter.reduce((acc, f) => acc + (f.length ? 1 : 0), 0))
@@ -114,17 +126,24 @@
         >
           {m['models.list.filters.display']()}
           {#if filterCount}
-            <span class="fr-badge bg-primary! fr-badge--sm rounded-full! text-white! ms-2">
+            <span class="fr-badge fr-badge--sm bg-primary! text-white! ms-2 rounded-full!">
               {filterCount}
             </span>
           {/if}
         </button>
         <div class="fr-collapse" id="fr-modal-filters-section">
-          <p class="fr-h5 mb-5! hidden md:block">
+          <p class="fr-h5 -mt-4! mb-5! md:block hidden">
             {filteredModels.length}
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
           <form class="mt-8 md:mt-0">
+            <Search
+              id="model-list-search"
+              bind:value={search}
+              label={m['actions.searchModel']()}
+              class="md:flex! mb-7 hidden!"
+            />
+
             <Toggle
               id="archived"
               bind:value={showArchived}
@@ -147,7 +166,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2">{option.value}</div>
-                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -164,7 +183,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
-                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -181,7 +200,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2">{option.label}</div>
-                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -211,6 +230,13 @@
         {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
       </p>
 
+      <Search
+        id="model-list-search"
+        bind:value={search}
+        label={m['actions.searchModel']()}
+        class="md:hidden! mb-4"
+      />
+
       <div class="fr-select-group">
         <label class="fr-label" for="model-order">{m['models.list.triage.label']()}</label>
         <select
@@ -219,13 +245,13 @@
           name="model-order"
           class="fr-select w-auto! max-w-full"
         >
-          {#each sortingOptions as option}
+          {#each sortingOptions as option (option.value)}
             <option value={option.value}>{option.label}</option>
           {/each}
         </select>
       </div>
 
-      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
         {#each filteredModels as model (model.id)}
           <ModelCard
             {model}

@@ -27,7 +27,7 @@
 
 <SeoHead title={m[`seo.titles.${data.tab}`]()} />
 
-<main class={['pb-30 bg-light-grey pt-12', isFr ? 'next' : 'prev']}>
+<main class={['bg-light-grey pt-12 pb-30', isFr ? 'next' : 'prev']}>
   <div class="fr-container">
     <h1 class="fr-h3 mb-10!">{m['product.title']()}</h1>
 

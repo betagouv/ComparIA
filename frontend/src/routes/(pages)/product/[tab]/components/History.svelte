@@ -85,13 +85,13 @@
       items: step.items.map((item) => {
         const baseKey = `product.history.steps.${step.key}.items.${item.index}` as const
         return {
-          // @ts-expect-error
+          // @ts-expect-error i18n
           date: !item.noDate ? m[`${baseKey}.date`]() : null,
-          // @ts-expect-error
+          // @ts-expect-error i18n
           special: item.vote,
-          // @ts-expect-error
+          // @ts-expect-error i18n
           title: item.title ?? m[`${baseKey}.title`](),
-          // @ts-expect-error
+          // @ts-expect-error i18n
           desc: item.desc ?? m[`${baseKey}.desc`]()
         }
       })
@@ -102,43 +102,43 @@
 <div>
   <h2 class="fr-h4 mb-12!">{m['product.history.title']()}</h2>
 
-  {#each steps as step}
-    <div class="relative pb-8">
+  {#each steps as step (step.key)}
+    <div class="pb-8 relative">
       <div class="md:ms-[196px]">
         <Badge
           text={step.tag}
           variant="blue-ecume"
-          class="text-(--blue-france-sun-113-625)! mb-6 md:ms-4"
+          class="mb-6 md:ms-4 text-[--blue-france-sun-113-625]!"
         />
       </div>
 
-      {#each step.items as item}
+      {#each step.items as item, i (`${step.key}-${i}`)}
         {#if item.date}
           <p class="ms-7! font-bold md:hidden">{item.date}</p>
         {/if}
-        <div class="flex gap-4">
-          <div class="flex gap-4 md:w-[196px] md:min-w-[196px]">
+        <div class="gap-4 flex">
+          <div class="gap-4 md:w-[196px] md:min-w-[196px] flex">
             {#if item.date}
-              <p class="hidden w-full text-end font-bold md:block">{item.date}</p>
+              <p class="font-bold md:block hidden w-full text-end">{item.date}</p>
             {/if}
             <div
               class={[
-                'z-1 border-3 h-[26px] w-[26px] min-w-[26px] rounded-full md:ms-auto',
+                'md:ms-auto z-1 h-[26px] w-[26px] min-w-[26px] rounded-full border-3',
                 item.special
-                  ? 'bg-(--green-tilleul-verveine-975-75) border-[#FFCC00]'
+                  ? 'border-[#FFCC00] bg-[--green-tilleul-verveine-975-75]'
                   : 'border-primary bg-white'
               ]}
             ></div>
           </div>
           <div class="mb-10 max-w-[620px]">
             <p class="mb-1!"><strong>{@html sanitize(item.title)}</strong></p>
-            <p class="text-grey text-sm! leading-normal! mb-0!">{@html sanitize(item.desc)}</p>
+            <p class="mb-0! text-sm! leading-normal! text-grey">{@html sanitize(item.desc)}</p>
           </div>
         </div>
       {/each}
 
       <div
-        class="absolute left-[12px] top-14 h-full border-s-2 border-dashed border-[#CECECE] md:left-[182px]"
+        class="top-14 md:left-[182px] absolute left-[12px] h-full border-s-2 border-dashed border-[#CECECE]"
         class:hidden={step.key === 'investigation'}
       ></div>
     </div>

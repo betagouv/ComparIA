@@ -6,11 +6,13 @@
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { setModelsContext } from '$lib/models'
   import { onMount } from 'svelte'
+  import { SvelteURLSearchParams } from 'svelte/reactivity'
+  import 'uno.css'
   import '../css/app.css'
 
   if (browser) {
     // FIXME import only needed parts?
-    // @ts-ignore - DSFR module import
+    // @ts-expect-error - DSFR module import
     import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
   }
 
@@ -18,7 +20,7 @@
 
   onMount(() => {
     // Remove locale param to avoid locale changes override problems
-    const params = new URLSearchParams(page.url.searchParams)
+    const params = new SvelteURLSearchParams(page.url.searchParams)
     params.delete('locale')
     goto(`?${params}`)
   })

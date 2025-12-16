@@ -23,14 +23,14 @@
   <h2 class="fr-h4">
     {m['product.community.title']()}
   </h2>
-  <div class="grid gap-4 lg:grid-cols-2">
+  <div class="gap-4 lg:grid-cols-2 grid">
     <section class="cg-border cl-card">
       <h3 class="fr-h5 mb-7!">
-        <Icon icon="flag-2-line" class="text-[#000091]" />
+        <Icon icon="i-ri-flag-2-line" class="text-[#000091]" />
         {m['product.community.countries.fr']()}
       </h3>
 
-      <div class="my-6 flex flex-col gap-8">
+      <div class="my-6 gap-8 flex flex-col">
         <div class="cl-logos gap-2">
           <img src="/orgs/etalab.svg" alt="Etalab" title="Etalab" width="235px" />
           <img
@@ -78,19 +78,19 @@
 
     <section class="cg-border cl-card">
       <h3 class="fr-h5">
-        <Icon icon="flag-2-line" class="text-(--red-marianne-main-472)" />
+        <Icon icon="i-ri-flag-2-line" class="text-[--red-marianne-main-472]" />
         {m['product.community.countries.da']()}
       </h3>
 
-      <div class="my-6 flex flex-col gap-8">
+      <div class="my-6 gap-8 flex flex-col">
         <div class="cl-logos">
           <img
-            src={`/orgs/countries/da-light.png`}
+            src="/orgs/countries/da-light.png"
             alt={m['header.logoAlt']()}
             class="max-h-[75px] dark:hidden"
           />
           <img
-            src={`/orgs/countries/da-dark.png`}
+            src="/orgs/countries/da-dark.png"
             alt={m['header.logoAlt']()}
             class="hidden max-h-[75px] dark:block"
           />
@@ -105,23 +105,23 @@
     {m['product.community.teams.fr.title']()}
   </h2>
 
-  <div class="grid gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
-    {#each frTeam as person}
-      <div class="cg-border cl-card p-4! flex gap-5">
+  <div class="gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3 grid">
+    {#each frTeam as person (person.key)}
+      <div class="cg-border cl-card p-4! gap-5 flex">
         <div
-          class="after:bg-primary relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:opacity-10 after:content-['']"
+          class="after:bg-primary after:inset-0 relative h-[100px] min-w-[100px] after:absolute after:rounded-full after:opacity-10 after:content-['']"
         >
           <img
             src={'/product/community/' + person.imgSrc}
             aria-hidden="true"
             alt=""
-            class="saturate-80 h-[100px] w-[100px] rounded-full"
+            class="h-[100px] w-[100px] rounded-full saturate-80"
           />
         </div>
         <div class="flex flex-col">
           <p class="mb-2! font-bold">{person.name}</p>
-          <p class="text-grey text-[12px]! leading-normal! mb-0!">{person.job}</p>
-          <p class="text-[10px]! leading-normal! mb-0! mt-auto!">{person.date}</p>
+          <p class="mb-0! leading-normal! text-grey text-[12px]!">{person.job}</p>
+          <p class="mb-0! leading-normal! mt-auto! text-[10px]!">{person.date}</p>
         </div>
       </div>
     {/each}

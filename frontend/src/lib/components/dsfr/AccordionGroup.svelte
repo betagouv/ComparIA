@@ -7,7 +7,7 @@
 
 <div data-fr-group="true" class="fr-accordions-group" {...props}>
   {#if items}
-    {#each items as item, i}
+    {#each items as item, i (i)}
       <Accordion id={item.id ?? i.toString()} label={item.label} content={item.content} />
     {/each}
   {:else}

@@ -34,7 +34,7 @@
 </a>
 <span
   {id}
-  class="fr-tooltip fr-placement font-normal normal-case z-2000!"
+  class="fr-tooltip fr-placement font-normal z-2000! normal-case"
   role="tooltip"
   {@attach teleport(teleportId)}
 >

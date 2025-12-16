@@ -8,8 +8,8 @@
 </script>
 
 <div id="ranking-energy">
-  <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
-  <p class="mb-8! text-[14px]! text-dark-grey">
+  <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.energy.title']()}</h2>
+  <p class="mb-8! text-dark-grey text-[14px]!">
     {@html sanitize(
       m['ranking.energy.desc']({
         linkProps: externalLinkProps('https://ecologits.ai/latest/')
@@ -17,20 +17,20 @@
     )}
   </p>
 
-  <div class="flex flex-col gap-8">
+  <div class="gap-8 flex flex-col">
     <section class="cg-border bg-white p-4 md:p-10">
       <div class="mb-10 text-center">
-        <h3 class="text-lg! mt-3! mb-0!">{m['ranking.energy.views.graph.title']()}</h3>
-        <p class="text-grey! text-sm!">{m['ranking.energy.views.graph.desc']()}</p>
+        <h3 class="mt-3! mb-0! text-lg!">{m['ranking.energy.views.graph.title']()}</h3>
+        <p class="text-sm! text-grey!">{m['ranking.energy.views.graph.desc']()}</p>
       </div>
 
       <EnergyGraph />
     </section>
 
-    <div class="flex flex-col gap-8 md:flex-row">
-      <section class="cg-border basis-1/2 bg-white p-4 md:p-10">
-        <h3 class="text-lg! flex items-center gap-3">
-          <Icon icon="search-eye" size="lg" block class="text-yellow" />
+    <div class="gap-8 md:flex-row flex flex-col">
+      <section class="cg-border bg-white p-4 md:p-10 basis-1/2">
+        <h3 class="text-lg! gap-3 flex items-center">
+          <Icon icon="i-ri-search-eye-line" size="lg" block class="text-yellow" />
           <span>
             {m['ranking.energy.views.methodo.1.title']()}
             <span class="font-normal!">{m['ranking.energy.views.methodo.1.subTitle']()}</span>
@@ -38,15 +38,15 @@
         </h3>
 
         <ul class="text-grey text-[14px]">
-          {#each ['1', '2', '3'] as const as n}
+          {#each ['1', '2', '3'] as const as n (n)}
             <li>{@html sanitize(m[`ranking.energy.views.methodo.1.list.${n}`]())}</li>
           {/each}
         </ul>
       </section>
 
-      <section class="cg-border basis-1/2 bg-white p-4 md:p-10">
-        <h3 class="text-lg! flex items-center gap-3">
-          <Icon icon="database" size="lg" block class="text-primary" />
+      <section class="cg-border bg-white p-4 md:p-10 basis-1/2">
+        <h3 class="text-lg! gap-3 flex items-center">
+          <Icon icon="i-ri-database-2-line" size="lg" block class="text-primary" />
           {m['ranking.energy.views.methodo.2.title']()}
         </h3>
 
@@ -56,8 +56,8 @@
     </div>
 
     <section class="cg-border bg-white p-4 md:p-10">
-      <h3 class="text-lg! flex items-center gap-3">
-        <Icon icon="leaf-line" size="lg" block class="text-green" />
+      <h3 class="text-lg! gap-3 flex items-center">
+        <Icon icon="i-ri-leaf-line" size="lg" block class="text-green" />
         {m['ranking.energy.views.methodo.3.title']()}
       </h3>
 
@@ -73,11 +73,11 @@
         {@html sanitize(m['ranking.energy.views.methodo.3.descs.2']())}
       </p>
       <p class="text-grey text-[14px]!">{m['ranking.energy.views.methodo.3.descs.3']()}</p>
-      <p class="text-grey text-[14px]! mb-0!">{m['ranking.energy.views.methodo.3.descs.4']()}</p>
+      <p class="mb-0! text-grey text-[14px]!">{m['ranking.energy.views.methodo.3.descs.4']()}</p>
     </section>
 
     <section class="cg-border bg-white p-4 md:p-10">
-      <h3 class="text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
+      <h3 class="mb-0! text-lg!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
         initialOrderCol="consumption_wh"

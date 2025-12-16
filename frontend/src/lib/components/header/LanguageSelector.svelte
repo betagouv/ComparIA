@@ -4,6 +4,7 @@
   import { LOCALES, type LocaleOption } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
+  import { SvelteURL } from 'svelte/reactivity'
 
   let { id }: { id: string } = $props()
 
@@ -11,7 +12,7 @@
 
   function onLocaleSelect(locale: LocaleOption) {
     if (page.url.host !== locale.host) {
-      const url = new URL(window.location.href)
+      const url = new SvelteURL(window.location.href)
       url.host = locale.host
       url.search = `locale=${locale.code}`
       window.location.href = url.href
@@ -35,14 +36,14 @@
         src={`/flags/${currentLocale}.png`}
         aria-hidden="true"
         alt=""
-        class="me-2 max-w-[30px] rounded-md"
+        class="me-2 rounded-md max-w-[30px]"
       />
       {LOCALES.find((locale) => locale.code === currentLocale)!.short}
     </Button>
 
     <div class="fr-collapse fr-translate__menu fr-menu" {id}>
       <ul class="fr-menu__list">
-        {#each LOCALES as locale}
+        {#each LOCALES as locale (locale.code)}
           <li>
             <button
               class="fr-translate__language fr-nav__link"

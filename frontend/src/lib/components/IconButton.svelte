@@ -15,7 +15,6 @@
     border?: boolean
     disabled?: boolean
     hasPopup?: boolean
-    color?: string
     transparent?: boolean
   }
   let {
@@ -29,7 +28,6 @@
     border = false,
     disabled = false,
     hasPopup = false,
-    color = 'var(--block-label-text-color)',
     transparent = false,
     ...props
   }: IconButtonProps = $props()
@@ -53,7 +51,7 @@
     class:large={size === 'large'}
     class:medium={size === 'medium'}
   >
-    <Icon {icon} size="sm" class="text-primary" />
+    <Icon {icon} block size="sm" class="text-primary" />
   </div>
 </button>
 

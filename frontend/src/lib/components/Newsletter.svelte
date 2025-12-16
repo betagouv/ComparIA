@@ -11,7 +11,7 @@
       const response = await fetch(form.action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        // @ts-ignore (legit)
+        // @ts-expect-error (legit)
         body: new URLSearchParams(formData).toString()
       })
 
@@ -37,7 +37,7 @@
 </script>
 
 <div class="mt-3 text-center">
-  <div class="bg-light-info inline-block p-3">
+  <div class="bg-light-info p-3 inline-block">
     <Link href="#" text="Haut de page" icon="arrow-up-line" class="pb-1!" />
   </div>
 </div>
@@ -45,7 +45,7 @@
   <div class="fr-container pb-10 pt-8 lg:grid lg:grid-cols-2 lg:gap-6">
     <div>
       <h5 class="mb-2! flex items-center">
-        <Icon icon="mail-line" size="lg" block class="text-primary me-2" />
+        <Icon icon="i-ri-mail-line" size="lg" block class="text-primary me-2" />
         Abonnez-vous à notre lettre d’information
       </h5>
       <p class="text-sm! lg:mb-0!">

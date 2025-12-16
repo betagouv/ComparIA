@@ -49,12 +49,12 @@
 
 <div class="flex flex-col">
   <div
-    class="message-bot cg-border rounded-lg! relative flex h-full flex-col overflow-scroll bg-white px-5"
+    class="message-bot cg-border rounded-lg! bg-white px-5 relative flex h-full flex-col overflow-scroll"
   >
     <div>
-      <div class="z-2 sticky top-0 flex items-center bg-white pb-5 pt-7">
+      <div class="top-0 bg-white pb-5 pt-7 sticky z-2 flex items-center">
         <div class="c-bot-disk-{bot}"></div>
-        <h3 class="mb-0! ms-2! text-base!">{m[`models.names.${bot}`]()}</h3>
+        <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
       {#if message.reasoning != ''}
@@ -67,7 +67,7 @@
                 aria-expanded="true"
                 aria-controls="reasoning-{message.metadata.bot}"
               >
-                <Icon icon="brain" class="text-primary me-1" />
+                <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
                 {#if message.content === '' && generating}
                   {m['chatbot.reasoning.inProgress']()}
                 {:else}
@@ -94,10 +94,10 @@
       {/if}
     </div>
 
-    <div class="sticky bottom-0 mt-auto flex bg-white py-3">
+    <div class="bottom-0 bg-white py-3 sticky mt-auto flex">
       <Copy value={message.content} />
 
-      <div class="ms-auto flex gap-2">
+      <div class="gap-2 ms-auto flex">
         <LikeDislike
           bind:liked={reaction.liked}
           disabled={generating || disabled}
@@ -108,13 +108,13 @@
   </div>
 
   {#if reaction.liked !== null}
-    <div class="cg-border rounded-lg! border-dashed! mt-3 bg-white p-5">
+    <div class="cg-border rounded-lg! mt-3 bg-white p-5 border-dashed!">
       <LikePanel
+        id={message.metadata.generation_id}
         kind={reaction.liked ? 'like' : 'dislike'}
         show={true}
         bind:selection={reaction.prefs}
         bind:comment={reaction.comment}
-        modalId="modal-prefs-{message.metadata.generation_id}"
         onSelectionChange={() => dispatchOnReactionChange('like')}
         onCommentChange={() => dispatchOnReactionChange('comment')}
         model={bot.toUpperCase()}

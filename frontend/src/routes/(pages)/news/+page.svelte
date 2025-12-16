@@ -29,7 +29,7 @@
     resource: {
       title: 'Ressources',
       variant: 'light-info',
-      icon: 'book-ai-fill',
+      icon: 'i-ri-book-ai-fill',
       subKinds: [
         { id: 'comparia', label: 'Organisé par compar:IA' },
         { id: 'blog', label: 'Billet de blog' },
@@ -39,7 +39,7 @@
     talk: {
       title: 'Prises de parole',
       variant: 'purple',
-      icon: 'speak-ai-fill',
+      icon: 'i-ri-speak-ai-fill',
       subKinds: [
         { id: 'podcast', label: 'Podcast', linkLabel: 'Écouter le podcast' },
         { id: 'webinar', label: 'Webinaire', linkLabel: 'Revoir le webinaire' },
@@ -51,7 +51,7 @@
     media: {
       title: 'Médias',
       variant: 'green-tilleul',
-      icon: 'megaphone-fill',
+      icon: 'i-ri-megaphone-fill',
       subKinds: [
         { id: 'analyze', label: 'Analyse' },
         { id: 'press', label: 'Presse écrite', linkLabel: "Lire l'article" },
@@ -110,7 +110,7 @@
           default:
             if (!a.date) return -1
             if (!b.date) return 1
-            // @ts-ignore
+            // @ts-expect-error date works
             return b.date - a.date
         }
       })
@@ -150,7 +150,7 @@
           >
             Afficher les filtres
             {#if filterCount}
-              <span class="fr-badge bg-primary! fr-badge--sm rounded-full! text-white! ms-2">
+              <span class="fr-badge fr-badge--sm bg-primary! text-white! ms-2 rounded-full!">
                 {filterCount}
               </span>
             {/if}
@@ -158,7 +158,7 @@
 
           <div class="fr-collapse" id="fr-modal-filters-section">
             <form class="mt-8 md:mt-0">
-              {#each filters as filter}
+              {#each filters as filter (filter.id)}
                 <CheckboxGroup
                   {...filter}
                   bind:value={kinds[filter.id]}
@@ -172,7 +172,7 @@
                       variant={filter.variant}
                       size="md"
                       noTooltip
-                      class="w-full! block"
+                      class="block w-full!"
                     >
                       <Icon icon={filter.icon} size="xs" class="me-1" />
                       {legend}
@@ -180,7 +180,7 @@
                   {/snippet}
                   {#snippet labelSlot({ option })}
                     <div class="me-2">{option.label}</div>
-                    <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
                   {/snippet}
                 </CheckboxGroup>
               {/each}
@@ -212,25 +212,25 @@
             name="news-order"
             class="fr-select w-auto! max-w-full"
           >
-            {#each sortingOptions as option}
+            {#each sortingOptions as option (option.value)}
               <option value={option.value}>{option.label}</option>
             {/each}
           </select>
         </div>
 
-        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
           {#each filteredNews as news (news.title)}
-            <div class="fr-card fr-enlarge-link fr-card--no-border cg-border bg-none! rounded-xl">
+            <div class="fr-card fr-enlarge-link fr-card--no-border cg-border rounded-xl bg-none!">
               <div class="fr-card__body">
-                <div class="fr-card__content px-5! md:px-4! md:pt-4! pb-18!">
-                  <h6 class="fr-card__title text-lg! mb-0!">
+                <div class="fr-card__content px-5! pb-18! md:px-4! md:pt-4!">
+                  <h6 class="fr-card__title mb-0! text-lg!">
                     <Link
                       href={news.href}
                       text={news.title}
                       class="after:content-none!"
                       onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
                     >
-                      <span class="text-(--grey-50-1000)!">{news.title}</span>
+                      <span class="text-[--grey-50-1000]!">{news.title}</span>
                     </Link>
                   </h6>
 
@@ -243,7 +243,7 @@
                       {#if news.pinned}
                         <li class="m-0!">
                           <Badge id="card-badge-kind" variant="red" size="xs" noTooltip>
-                            <Icon icon="pushpin-fill" size="xxs" />
+                            <Icon icon="i-ri-pushpin-fill" size="xxs" />
                           </Badge>
                         </li>
                       {/if}
@@ -282,7 +282,7 @@
                       >
                         {news.linkLabel}
                         {#if news.href.startsWith('/')}
-                          <Icon icon="arrow-right-line" size="xs" />
+                          <Icon icon="i-ri-arrow-right-line" size="xs" />
                         {/if}
                       </Link>
                     </p>

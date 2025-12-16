@@ -19,7 +19,7 @@
 
 <div
   bind:this={elem}
-  class="message-user bg-(--grey-950-100) md:max-w-3/5 mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8 md:ms-auto"
+  class="message-user md:max-w-3/5 mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8 md:ms-auto bg-[--grey-950-100]"
 >
   <Markdown message={message.content} kind="user" />
 

@@ -1,41 +1,6 @@
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons.css';
-@import 'tailwindcss';
-@plugin '@tailwindcss/typography';
 @import './icons.css';
-
-@source inline("text-primary");
-@source inline("text-orange");
-
-@custom-variant dark (&:where([data-fr-theme="dark"], [data-fr-theme="dark"] *));
-
-@theme {
-  --breakpoint-sm: 36em;
-  --breakpoint-md: 48em;
-  --breakpoint-lg: 62em;
-  --breakpoint-xl: 78em;
-
-  /* DFSR COLORS */
-  --color-white: var(--grey-1000-50);
-  --color-black: var(--grey-0-1000);
-  --color-primary: var(--blue-france-main-525);
-  --color-info: var(--info-425-625);
-  --color-light-info: var(--info-950-100);
-  --color-very-light-info: var(--cg-very-light-blue);
-  --color-error: var(--error-425-625);
-  --color-warning: var(--warning-425-625);
-  --color-success: var(--green-emeraude-main-632);
-  --color-yellow: var(--yellow-tournesol-850-200);
-  --color-green: var(--cg-green);
-  --color-purple: var(--cg-purple);
-  --color-orange: var(--cg-orange);
-  --color-red: var(--red-marianne-425-625-active);
-  --color-grey: var(--grey-425-625);
-  --color-dark-grey: var(--grey-200-850);
-  /* CUSTOM COLORS */
-  --color-very-light-grey: var(--cg-very-light-grey);
-  --color-light-grey: var(--cg-light-grey);
-}
 
 :root {
   /* CUSTOM DSFR LIKE ADDITION */
@@ -97,22 +62,4 @@ main {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-}
-
-/* CUSTOM HELPER CLASSES */
-.cg-border {
-  @apply rounded-xl border border-(--grey-925-125);
-}
-
-.c-bot-disk-a {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: var(--cg-purple);
-}
-.c-bot-disk-b {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: var(--cg-orange);
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
   import { ARCHS } from '$lib/generated/models'
   import { m } from '$lib/i18n/messages'
@@ -31,10 +32,7 @@
               ? ('S' as const)
               : m.consumption_wh < 100
                 ? ('M' as const)
-                : ('L' as const),
-          search: (['id', 'simple_name', 'organisation'] as const)
-            .map((key) => m[key].toLowerCase())
-            .join(' ')
+                : ('L' as const)
         }
       })
   )
@@ -117,7 +115,7 @@
 {#snippet legend(kind: string)}
   <div
     id="graph-legend"
-    class="cg-border rounded-md! bg-very-light-grey flex h-full flex-col p-4 text-[12px] leading-normal"
+    class="cg-border rounded-md! bg-very-light-grey p-4 leading-normal flex h-full flex-col text-[12px]"
   >
     <Search
       id="energy-graph-model-search"
@@ -126,7 +124,7 @@
       class="mb-5"
     />
 
-    <p class="mb-1! text-[13px]! leading-normal!" aria-hidden="true">
+    <p class="mb-1! leading-normal! text-[13px]!" aria-hidden="true">
       <strong>{consoFilter.legend}</strong>
     </p>
     <CheckboxGroup
@@ -138,7 +136,7 @@
       class="mb-5!"
     ></CheckboxGroup>
 
-    <p class="mb-1! text-[13px]! leading-tight!" aria-hidden="true">
+    <p class="mb-1! leading-tight! text-[13px]!" aria-hidden="true">
       <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
@@ -150,7 +148,7 @@
             class={['dot border-dark-grey me-2 rounded-full border']}
             style="--size: {dotSizes[option.value] * 2}px"
           ></div>
-          <span class="text-dark-grey text-[12px] font-medium">{option.label}</span>
+          <span class="text-dark-grey font-medium text-[12px]">{option.label}</span>
         </div>
       {/snippet}
     </CheckboxGroup>
@@ -163,16 +161,16 @@
       uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
       inline={false}
       groupClass="mb-2"
-      class="mb-2! text-[13px]! leading-tight! text-(--text-default-grey)) font-medium"
+      class="mb-2! leading-tight! font-medium text-[13px]! text-[--text-default-grey]"
       checkLabelClass="text-[12px]"
     />
 
     <hr class="pb-2!" />
-    <p class="mb-1! text-[13px]! leading-normal!">
+    <p class="mb-1! leading-normal! text-[13px]!">
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
-    <ul class="p-0! list-none! mt-0! md:mb-10! flex flex-wrap gap-x-3 font-medium md:block">
-      {#each ARCHS.filter((arch) => arch !== 'na') as arch}
+    <ul class="mt-0! p-0! md:mb-10! gap-x-3 font-medium md:block flex list-none! flex-wrap">
+      {#each ARCHS.filter((arch) => arch !== 'na') as arch (arch)}
         <li class="p-0! md:not-last:mb-2 flex items-center">
           <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
@@ -189,9 +187,9 @@
 {/snippet}
 
 <div id="energy-graph">
-  <div class="flex items-center gap-2">
+  <div class="gap-2 flex items-center">
     <div
-      class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible whitespace-nowrap text-center"
+      class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible text-center whitespace-nowrap"
     >
       <Icon icon="thumb-up-line" class="text-primary" />
       <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
@@ -202,7 +200,7 @@
         <svg bind:this={svg}>
           <!-- y axis -->
           <g class="axis y-axis">
-            {#each yTicks as tick}
+            {#each yTicks as tick (tick)}
               <g transform="translate(0, {yScale(tick)})">
                 <line x1={padding.left} x2={xScale(minMaxX[1])} />
                 <text x={padding.left - 8} y="+4">{tick}</text>
@@ -212,7 +210,7 @@
 
           <!-- x axis -->
           <g class="axis x-axis">
-            {#each xTicks as tick}
+            {#each xTicks as tick (tick)}
               <g transform="translate({xScale(tick)},0)">
                 <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
                 <text y={height - padding.bottom + 20}>{tick}</text>
@@ -238,7 +236,7 @@
           {/if}
 
           <!-- data -->
-          {#each filteredModels as m}
+          {#each filteredModels as m (m.id)}
             <circle
               cx={xScale(m.x)}
               cy={yScale(m.y)}
@@ -256,23 +254,23 @@
         {#if hoveredModelData}
           <div
             id="graph-tooltip"
-            class="cg-border rounded-sm! z-1 absolute min-w-[175px] bg-white p-3 drop-shadow-md"
+            class="cg-border rounded-sm! bg-white p-3 drop-shadow-md absolute z-1 min-w-[175px]"
             style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
           >
             <div class="flex">
-              <img
-                src="/orgs/ai/{hoveredModelData.icon_path}"
+              <AILogo
+                iconPath={hoveredModelData.icon_path}
                 alt={hoveredModelData.organisation}
-                class="me-1 w-[14px] object-contain"
+                class="me-1"
               />
-              <strong class="text-[14px] leading-normal">{hoveredModelData.id}</strong>
+              <strong class="leading-normal text-[14px]">{hoveredModelData.id}</strong>
             </div>
 
             <div class="mt-1 text-[12px]">
-              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
-                <div class="flex gap-1 leading-relaxed">
+              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'i-ri-flashlight-line' }] as const as item (item.key)}
+                <div class="gap-1 leading-relaxed flex">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
-                  <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
+                  <p class="mb-0! leading-relaxed! text-grey text-[12px]!">
                     {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
                   </p>
                   <strong class="ms-auto"
@@ -284,10 +282,10 @@
               {/each}
 
               <div class="mt-4">
-                {#each tooltipExtraData as key}
+                {#each tooltipExtraData as key (key)}
                   {#if hoveredModelData[key]}
-                    <div class="flex gap-1 leading-relaxed">
-                      <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
+                    <div class="gap-1 leading-relaxed flex">
+                      <p class="mb-0! leading-relaxed! text-grey text-[12px]!">
                         {m[`ranking.energy.views.graph.tooltip.${key}`]()}
                       </p>
                       <strong class="ms-auto">
@@ -307,13 +305,13 @@
           </div>
         {/if}
 
-        <div class="hidden h-[675px] w-[230px] md:block">
+        <div class="md:block hidden h-[675px] w-[230px]">
           {@render legend('desktop')}
         </div>
       </div>
 
       <div class="text-center">
-        <Icon icon="flashlight-line" class="text-primary" />
+        <Icon icon="i-ri-flashlight-line" class="text-primary" />
         <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
       </div>
     </div>
@@ -332,7 +330,7 @@
     }
 
     text {
-      fill: var(--color-black);
+      fill: var(--grey-0-1000);
     }
 
     .axis {
@@ -355,29 +353,29 @@
 
     .target-line {
       line {
-        stroke: var(--color-grey);
+        stroke: var(--grey-425-625);
         stroke-dasharray: 5;
         stroke-width: 2px;
       }
 
       rect {
-        fill: var(--color-black);
+        fill: var(--grey-0-1000);
       }
 
       text {
         text-anchor: middle;
         font-size: 14px;
-        fill: var(--color-white);
+        fill: var(--grey-1000-50);
         font-weight: 700;
       }
     }
 
     circle {
       stroke-width: 1px;
-      stroke: var(--color-dark-grey);
+      stroke: var(--grey-200-850);
 
       &.hovered {
-        stroke: var(--color-dark-grey);
+        stroke: var(--grey-200-850);
       }
 
       &.blurred {

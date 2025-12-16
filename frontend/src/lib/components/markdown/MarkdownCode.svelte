@@ -1,28 +1,39 @@
 <script lang="ts">
-  import { afterUpdate, tick, onMount } from 'svelte'
-  import { create_marked } from './utils'
+  // This is the base MarkdownCode component from gradio migrated to svelte 5
+  // https://github.com/gradio-app/gradio/tree/main/js/markdown-code
   import { sanitize } from '@gradio/sanitize'
-  import './prism.css'
+  import { tick } from 'svelte'
   import { standardHtmlAndSvgTags } from './html-tags'
-  import type { ThemeMode } from '@gradio/core'
+  import './prism.css'
+  import { copy, create_marked } from './utils'
 
-  export let chatbot = false
-  export let message: string
-  export let sanitize_html = true
-  export let latex_delimiters: {
-    left: string
-    right: string
-    display: boolean
-  }[] = []
-  export let render_markdown = true
-  export let line_breaks = true
-  export let header_links = false
-  export let allow_tags: string[] | boolean = false
-  export let theme_mode: ThemeMode = 'system'
-  export let kind: 'bot' | 'user' = 'bot'
-  let el: HTMLSpanElement
-  let html: string
-  let katex_loaded = false
+  let {
+    message,
+    chatbot = false,
+    sanitize_html = true,
+    latex_delimiters = [],
+    render_markdown = true,
+    line_breaks = true,
+    header_links = false,
+    allow_tags = false,
+    theme_mode = 'system',
+    kind = 'bot'
+  }: {
+    message: string
+    chatbot?: boolean
+    sanitize_html?: boolean
+    latex_delimiters?: { left: string; right: string; display: boolean }[]
+    render_markdown?: boolean
+    line_breaks?: boolean
+    header_links?: boolean
+    allow_tags?: string[] | boolean
+    theme_mode?: 'system' | 'light' | 'dark'
+    kind?: 'bot' | 'user'
+  } = $props()
+
+  let el = $state<HTMLElement>()
+  let katex_loaded = $state(false)
+  const html = $derived(message && message.trim() ? process_message(message) : '')
 
   const marked = create_marked({
     header_links,
@@ -48,7 +59,7 @@
     if (tagsToEscape === true) {
       // https://www.w3schools.com/tags/
       const tagRegex = /<\/?([a-zA-Z][a-zA-Z0-9-]*)([\s>])/g
-      return content.replace(tagRegex, (match, tagName, endChar) => {
+      return content.replace(tagRegex, (match, tagName, _endChar) => {
         if (!standardHtmlAndSvgTags.includes(tagName.toLowerCase())) {
           return match.replace(/</g, '&lt;').replace(/>/g, '&gt;')
         }
@@ -81,11 +92,11 @@
     let parsedValue = value
     if (render_markdown) {
       const latexBlocks: string[] = []
-      latex_delimiters.forEach((delimiter, index) => {
+      latex_delimiters.forEach((delimiter, _index) => {
         const leftDelimiter = escapeRegExp(delimiter.left)
         const rightDelimiter = escapeRegExp(delimiter.right)
         const regex = new RegExp(`${leftDelimiter}([\\s\\S]+?)${rightDelimiter}`, 'g')
-        parsedValue = parsedValue.replace(regex, (match, p1) => {
+        parsedValue = parsedValue.replace(regex, (match, _p1) => {
           latexBlocks.push(match)
           return `%%%LATEX_BLOCK_${latexBlocks.length - 1}%%%`
         })
@@ -95,7 +106,7 @@
 
       parsedValue = parsedValue.replace(
         /%%%LATEX_BLOCK_(\d+)%%%/g,
-        (match, p1) => latexBlocks[parseInt(p1, 10)]
+        (_match, p1) => latexBlocks[parseInt(p1, 10)]
       )
     }
 
@@ -104,15 +115,10 @@
     }
 
     if (sanitize_html && sanitize) {
-      parsedValue = sanitize(parsedValue)
+      // FIXME use custom sanitize when removing gradio
+      parsedValue = sanitize(parsedValue, '/')
     }
     return parsedValue
-  }
-
-  $: if (message && message.trim()) {
-    html = process_message(message)
-  } else {
-    html = ''
   }
 
   async function render_html(value: string): Promise<void> {
@@ -123,14 +129,14 @@
           import('katex/contrib/auto-render')
         ]).then(([, { default: render_math_in_element }]) => {
           katex_loaded = true
-          render_math_in_element(el, {
+          render_math_in_element(el!, {
             delimiters: latex_delimiters,
             throwOnError: false
           })
         })
       } else {
         const { default: render_math_in_element } = await import('katex/contrib/auto-render')
-        render_math_in_element(el, {
+        render_math_in_element(el!, {
           delimiters: latex_delimiters,
           throwOnError: false
         })
@@ -155,9 +161,9 @@
     }
   }
 
-  afterUpdate(async () => {
+  $effect(() => {
     if (el && document.body.contains(el)) {
-      await render_html(message)
+      render_html(message)
     } else {
       console.error('Element is not in the DOM')
     }
@@ -165,6 +171,7 @@
 </script>
 
 <span
+  {@attach copy}
   class:chatbot
   bind:this={el}
   class={['md', kind]}
@@ -298,5 +305,17 @@
     span.bot :global(h6) {
       font-size: 1.25rem;
     }
+  }
+
+  span :global(pre) {
+    --tw-prose-pre-code: var(--grey-200-850);
+    margin-bottom: 1rem;
+  }
+
+  span :global(.copy_code_button) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100% !important;
   }
 </style>

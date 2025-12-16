@@ -28,7 +28,7 @@
 <svg bind:this={svg} class="histogram">
   <g>
     <!-- bars -->
-    {#each data as d, i}
+    {#each data as d, i (i)}
       <rect
         x={xScale(i)}
         y={yScale(d.y)}
@@ -41,7 +41,7 @@
 
   <!-- y axis -->
   <g transform="translate({padding.left}, 0)">
-    {#each yTicks as y}
+    {#each yTicks as y, i (i)}
       <g class="axis" transform="translate(0,{yScale(y)})">
         <line x2="-5" />
         <text x="-10" y="+4">
@@ -53,7 +53,7 @@
 
   <!-- x axis -->
   <g transform="translate(0, {height - padding.bottom})">
-    {#each xTicks as x, i}
+    {#each xTicks as x, i (i)}
       <g class="axis" transform="translate({xScale(x)},0)">
         <!-- <line y2="6" /> -->
         <text x={barWidth / 2} class="rotated">
@@ -72,7 +72,7 @@
     text {
       font-size: 12px;
       text-anchor: end;
-      fill: var(--color-black);
+      fill: var(--grey-0-1000);
 
       &.rotated {
         transform: rotate(-65deg) translate(-20px, 30px);
@@ -80,7 +80,7 @@
     }
 
     line {
-      stroke: var(--color-black);
+      stroke: var(--grey-0-1000);
     }
   }
 </style>

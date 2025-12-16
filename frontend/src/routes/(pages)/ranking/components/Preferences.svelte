@@ -7,8 +7,8 @@
 </script>
 
 <div id="ranking-preferences">
-  <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.preferences.title']()}</h2>
-  <p class="text-[14px]! text-dark-grey mb-4!">{m['ranking.preferences.desc']()}</p>
+  <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.preferences.title']()}</h2>
+  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.preferences.desc']()}</p>
   <p class="mb-4!">
     <Link
       href="#"
@@ -30,7 +30,7 @@
     </h6>
 
     <!-- FIXME alt -->
-    <img src="/ranking/preferences.png" />
+    <img src="/ranking/preferences.png" alt="" />
   </Modal>
 
   <PreferencesTable id="preferences-table" {onDownloadData} />

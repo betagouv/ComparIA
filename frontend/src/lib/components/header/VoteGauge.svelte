@@ -17,13 +17,13 @@
 </script>
 
 {#if votes}
-  <div class="flex w-full items-center justify-center gap-3 text-xs lg:gap-1">
+  <div class="gap-3 text-xs lg:gap-1 flex w-full items-center justify-center">
     <div
-      class="linear-gauge w-full max-w-[260px] grow rounded-sm lg:w-[160px]"
+      class="linear-gauge rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
       style:--gauge-ratio={votes?.ratio}
     >
       <div class="linear-gauge-fill rounded-sm">
-        <span class="vote-count ms-2 whitespace-nowrap align-middle font-bold">
+        <span class="vote-count ms-2 font-bold align-middle whitespace-nowrap">
           {m['header.votes.count']({ count: votes.count })}
         </span>
       </div>

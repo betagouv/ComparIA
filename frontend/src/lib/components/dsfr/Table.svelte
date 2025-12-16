@@ -110,12 +110,12 @@
 <svelte:window onresize={() => updateGradientDisplay()} {onscroll} />
 
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
-  <div class="fr-table__header mb-4 flex flex-col gap-5 md:flex-row md:flex-wrap">
-    <div class="flex flex-wrap items-center gap-5">
+  <div class="fr-table__header mb-4 gap-5 md:flex-row md:flex-wrap flex flex-col">
+    <div class="gap-5 flex flex-wrap items-center">
       {@render headerLeft?.()}
     </div>
 
-    <div class="flex flex-col gap-5 md:flex-row md:items-center">
+    <div class="gap-5 md:flex-row md:items-center flex flex-col">
       {@render headerRight?.()}
 
       {#if search !== undefined}
@@ -123,12 +123,12 @@
           id="table-search"
           bind:value={search}
           label={searchLabel}
-          class="ms-auto w-full md:w-auto"
+          class="md:w-auto ms-auto w-full"
         />
       {/if}
 
       {#if scrollable.left || scrollable.right}
-        <div class="flex w-full justify-between gap-2 md:w-auto">
+        <div class="gap-2 md:w-auto flex w-full justify-between">
           <Button
             text={m['actions.scrollLeft']()}
             icon="arrow-left-line"
@@ -143,7 +143,7 @@
             iconOnly
             variant="tertiary"
             disabled={!scrollable.right}
-            class="ms-auto md:ms-0"
+            class="md:ms-0 ms-auto"
             onclick={() => scrollTable(1)}
           />
         </div>
@@ -154,7 +154,7 @@
   <div class="fr-table__wrapper relative">
     <div
       id="table-gradient"
-      class={['z-3 absolute inset-0 start-[80%] md:start-[95%]', { hidden: !scrollable.right }]}
+      class={['inset-0 md:start-[95%] absolute start-[80%] z-3', { hidden: !scrollable.right }]}
     ></div>
 
     <div
@@ -166,11 +166,11 @@
         <table {id} {...props}>
           <caption>{caption}</caption>
 
-          <thead bind:this={stickyElem} class="z-2 relative">
+          <thead bind:this={stickyElem} class="relative z-2">
             <tr>
               {#each cols as col (col.id)}
                 <th class={col.colHeaderClass}>
-                  <div class="text-dark-grey! flex items-center text-xs font-medium">
+                  <div class="text-xs font-medium text-dark-grey! flex items-center">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
                       <Tooltip id="{id}-{col.id}" text={col.tooltip} size="xs" class="ms-1" />

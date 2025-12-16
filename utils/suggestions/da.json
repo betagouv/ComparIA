@@ -2,7 +2,7 @@
   {
     "title": "Administrativt",
     "description": "Udarbejd et administrativt dokument",
-    "icon": "draft-line",
+    "icon": "i-ri-draft-line",
     "suggestions": [
       "Skriv en kort e-mail for at anmode om et tilbud fra en [elektriker] til et problem med en strømafbrydelse. Jeg skal have hjælp inden for en uge.",
       "Udarbejd et brev for at opsige lejemålet på min lejlighed.",
@@ -19,7 +19,7 @@
   {
     "title": "Råd",
     "description": "Få råd om kost og motion",
-    "icon": "clipboard-line",
+    "icon": "i-ri-clipboard-line",
     "suggestions": [
       "Hvordan kompenserer man for køds nærringsindhold i en vegetarisk kost?",
       "Foreslå mig en balanceret madplan for ugen til en husstand på to personer, der bor i byen og ikke altid har meget tid til at lave mad.",
@@ -37,7 +37,7 @@
   {
     "title": "Forklaringer",
     "description": "Forklar et koncept simpelt",
-    "icon": "chat-3-line",
+    "icon": "i-ri-chat-3-line",
     "suggestions": [
       "Beskriv [gæringsprocessen] ved hjælp af eksempler relateret til traditionel dansk madlavning.",
       "Du er økonomilærer. Forklar mig spilteori på en enkel måde. Giv mig eksempler på anvendelse i den virkelige verden. Til sidst skal du give en ordliste over begreber og termer, man skal kende om emnet.",
@@ -53,8 +53,8 @@
 
   {
     "title": "Ideer",
-    "description": "Generere nye ideer",
-    "icon": "lightbulb-line",
+    "description": "Generér nye ideer",
+    "icon": "i-ri-lightbulb-line",
     "suggestions": [
       "Jeg forbereder en brainstorming-session om [emne] med 15 personer. Foreslå mig dine 3 bedste ideer til at igangsætte kreative diskussioner.",
       "Jeg søger at løse mit problem med [problem], foreslå mig en liste med 3 innovative løsningsspor",
@@ -67,8 +67,8 @@
   },
   {
     "title": "Oversættelse",
-    "description": "udtryk dig på et andet sprog",
-    "icon": "translate-2",
+    "description": "Udtryk dig på et andet sprog",
+    "icon": "i-ri-translate-2",
     "suggestions": [
       "Hvad er betyder en kneppemand på sønderjysk?",
       "Hvad betyder udtrykket 'slå to fluer med ét smæk'?",
@@ -80,7 +80,7 @@
   {
     "title": "Opskrifter",
     "description": "Opdag en ny madopskrift",
-    "icon": "bowl",
+    "icon": "i-ri-bowl-line",
     "suggestions": [
       "Kan du hjælpe mig med at lave en ret med det, jeg har i mit køleskab: [ingrediens 1], [ingrediens 2] og [ingrediens 3]?",
       "Jeg vil gerne opdage en let og hurtig opskrift baseret på [ingrediens]. Kan du foreslå mig en?",
@@ -95,7 +95,7 @@
   {
     "title": "Anbefalinger",
     "description": "Foreslå ideer til film, bøger, musik",
-    "icon": "music-2-line",
+    "icon": "i-ri-music-2-line",
     "suggestions": [
       "Kan du anbefale film om temaet [tema] med en mere dramatisk tone?",
       "Hvad er de bedste forslag til science fiction-film at se, hvis jeg kan lide komplekse plots?",
@@ -112,8 +112,8 @@
   },
   {
     "title": "Historier",
-    "description": "Fortælle en historie",
-    "icon": "book-open",
+    "description": "Fortæl en historie",
+    "icon": "i-ri-book-open-line",
     "suggestions": [
       "Skriv en historie på 100 ord uden at bruge bogstavet \"e\", hvor et barn opdager en mystisk genstand på sine bedsteforældres loft.",
       "Lav en historie på 200 ord, hvor en person skal konfrontere en overnaturlig begivenhed. Historien skal foregår på Mols.",

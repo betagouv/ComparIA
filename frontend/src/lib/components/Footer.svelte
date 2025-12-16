@@ -14,6 +14,7 @@
       { href: '/modalites', labelKey: 'tos' },
       { href: '/donnees-personnelles', labelKey: 'privacy' },
       { href: '/accessibilite', labelKey: 'accessibility' },
+      { href: '/rgesn', labelKey: 'rgesn' },
       { href: 'https://github.com/betagouv/languia', labelKey: 'sources' }
     ] as const
   ).map(({ href, labelKey }) => {
@@ -26,10 +27,10 @@
   })
 </script>
 
-<footer class="fr-footer fr-pb-2w" role="contentinfo" id="main-footer">
+<footer class="fr-footer fr-pb-2w" id="main-footer">
   <div class="fr-container">
     <div class="fr-footer__body">
-      <div class="flex flex-wrap gap-8 lg:basis-1/2">
+      <div class="gap-8 lg:basis-1/2 flex flex-wrap">
         <div class="fr-footer__brand fr-enlarge-link">
           <div class="">
             <a href="/" title={m['footer.backHome']()}>
@@ -39,12 +40,12 @@
                 </p>
               {:else if locale === 'da'}
                 <img
-                  src={`/orgs/countries/da-light.png`}
+                  src="/orgs/countries/da-light.png"
                   alt={m['header.logoAlt']()}
                   class="max-h-[70px] dark:hidden"
                 />
                 <img
-                  src={`/orgs/countries/da-dark.png`}
+                  src="/orgs/countries/da-dark.png"
                   alt={m['header.logoAlt']()}
                   class="hidden max-h-[70px] dark:block"
                 />
@@ -59,15 +60,15 @@
           </div>
         </div>
 
-        <div class="fr-footer__brand fr-enlarge-link flex-col! items-start! max-w-[165px] gap-3">
+        <div class="fr-footer__brand fr-enlarge-link gap-3 max-w-[165px] flex-col! items-start!">
           <a
             href="https://www.digitalpublicgoods.net/r/comparia"
             target="_blank"
             class="after:content-none!"
           >
-            <img src={`/orgs/dpg.png`} alt="DPG" class="max-h-[47px]" />
+            <img src="/orgs/dpg.png" alt="DPG" class="max-h-[47px]" />
           </a>
-          <p class="text-[11px]! leading-normal! mb-0!">{m['footer.dpg']()}</p>
+          <p class="mb-0! leading-normal! text-[11px]!">{m['footer.dpg']()}</p>
         </div>
       </div>
       <div class="fr-footer__content">
@@ -84,7 +85,7 @@
     </div>
     <div class="fr-footer__bottom">
       <ul class="fr-footer__bottom-list">
-        {#each links as { label, ...props }}
+        {#each links as { label, ...props } (props.href)}
           <li class="fr-footer__bottom-item">
             <a class="fr-footer__bottom-link" {...props}>{label}</a>
           </li>

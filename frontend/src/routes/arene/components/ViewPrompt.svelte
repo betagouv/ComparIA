@@ -114,8 +114,8 @@
     <h3 class="mb-0! text-center">
       {m['arenaHome.title']()}
     </h3>
-    <div class="grid gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pb-20 md:pt-12">
-      <div class="order-1 md:order-none md:col-span-full">
+    <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pt-12 md:pb-20 grid">
+      <div class="md:order-none md:col-span-full order-1">
         <TextPrompt
           id="initial-prompt"
           bind:el={promptEl}
@@ -140,7 +140,7 @@
         type="submit"
         text={m['words.send']()}
         disabled={prompt == '' || disabled}
-        class="w-full! md:w-auto! order-2 min-w-[130px] place-self-end md:order-none"
+        class="md:order-none md:w-auto! order-2 w-full! min-w-[130px] place-self-end"
         onclick={() => dispatchSubmit()}
       />
     </div>

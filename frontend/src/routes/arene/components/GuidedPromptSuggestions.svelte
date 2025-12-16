@@ -97,7 +97,7 @@
 
 {#if suggestionsCategoriesCards.length}
   <div class="fr-container px-0!">
-    <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
+    <h4 class="mb-4! text-dark-grey md:mb-5! md:text-base! text-[14px]!">
       <strong>{m['arenaHome.suggestions.title']()}</strong>
     </h4>
 
@@ -110,20 +110,20 @@
       {#snippet item({ value, label, icon, title, tooltip })}
         {#if icon.includes('iasummit')}
           <img
-            class="mb-3 hidden md:block dark:invert"
+            class="mb-3 md:block hidden dark:invert"
             width="110"
             height="35"
             src="/iasummit.png"
             alt={title}
           />
           <img
-            class="me-2 inline-block object-contain md:hidden dark:invert"
+            class="me-2 md:hidden inline-block object-contain dark:invert"
             width="24"
             src="/iasummit-small.png"
             alt={title}
           />
         {:else}
-          <Icon {icon} aria-label={title} class="text-primary me-2 md:mb-4 md:block" />
+          <Icon {icon} aria-label={title} block class="text-primary me-2 md:mb-4 md:block" />
         {/if}
         <span>
           {label}
@@ -135,12 +135,12 @@
     </RadioGroupCard>
 
     {#if selected}
-      <div class="mt-4 text-center md:mt-5">
+      <div class="mt-4 md:mt-5 text-center">
         <Button
           icon="shuffle"
           variant="secondary"
           text={m['arenaHome.suggestions.generateAnother']()}
-          class="w-full! md:w-auto!"
+          class="md:w-auto! w-full!"
           onclick={shufflePrompts}
         />
       </div>

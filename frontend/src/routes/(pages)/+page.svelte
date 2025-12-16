@@ -96,9 +96,9 @@
 
   const usageCards = (
     [
-      { i18nKey: 'use', icon: 'database-line' },
-      { i18nKey: 'explore', icon: 'search-line' },
-      { i18nKey: 'educate', icon: 'presentation' }
+      { i18nKey: 'use', icon: 'i-ri-database-line' },
+      { i18nKey: 'explore', icon: 'i-ri-search-line' },
+      { i18nKey: 'educate', icon: 'i-ri-presentation-line' }
     ] as const
   ).map(({ i18nKey, ...card }) => ({
     ...card,
@@ -148,11 +148,11 @@
 <main id="content" class="">
   <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
     <div
-      class="fr-container max-w-[1070px]! flex flex-col gap-20 md:flex-row md:items-center md:gap-0"
+      class="fr-container gap-20 md:flex-row md:items-center md:gap-0 flex max-w-[1070px]! flex-col"
     >
       <div class="">
         <div class="mb-15 px-4 md:px-0">
-          <div class="mb-10 max-w-[280px] md:w-[320px] md:max-w-[320px]">
+          <div class="mb-10 md:w-[320px] md:max-w-[320px] max-w-[280px]">
             <h1 class="mb-5!">
               {@html sanitize(m['home.intro.title']({ props: 'class="text-primary"' }))}
             </h1>
@@ -175,11 +175,11 @@
           type="submit"
           text={m['header.startDiscussion']()}
           size="lg"
-          class="w-full! md:max-w-[355px]"
+          class="md:max-w-[355px] w-full!"
           onclick={handleRedirect}
         />
       </div>
-      <div class="bg-light-grey m-auto max-w-[545px] grow px-4 md:me-0 md:px-0">
+      <div class="bg-light-grey px-4 md:me-0 md:px-0 m-auto max-w-[545px] grow">
         <HowItWorks />
       </div>
     </div>
@@ -188,24 +188,24 @@
   <section class="fr-container--fluid md:py-15 py-10">
     <div class="fr-container">
       <h3 class="mb-3! text-center">{m['home.use.title']()}</h3>
-      <p class="text-grey mb-8! text-center">{m['home.use.desc']()}</p>
+      <p class="mb-8! text-grey text-center">{m['home.use.desc']()}</p>
 
-      <div class="grid gap-7 md:grid-cols-3">
-        {#each utilyCards as card}
+      <div class="gap-7 md:grid-cols-3 grid">
+        {#each utilyCards as card, i (i)}
           <div class="cg-border">
             <img
               src={card.src}
               alt={card.alt}
-              class="fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain dark:hidden"
+              class="fr-responsive-img bg-light-grey sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 rounded-t-xl h-full! max-h-3/5 object-contain dark:hidden"
             />
             <img
               src={card.srcDark}
               alt={card.alt}
-              class="fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey hidden rounded-t-xl object-contain dark:block"
+              class="fr-responsive-img bg-light-grey sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 rounded-t-xl hidden h-full! max-h-3/5 object-contain dark:block"
             />
             <div class="px-5 pb-7 pt-4 md:px-8 md:pb-10 md:pt-5">
               <h6 class="mb-1! md:mb-2!">{card.title}</h6>
-              <p class="text-grey mb-0!">{card.desc}</p>
+              <p class="mb-0! text-grey">{card.desc}</p>
             </div>
           </div>
         {/each}
@@ -216,11 +216,11 @@
   <!-- TODO remove hidden -->
   <section
     id="european"
-    class="fr-container--fluid bg-light-info pb-18 lg:pb-25 hidden pt-10 lg:pt-20"
+    class="fr-container--fluid bg-light-info pb-18 lg:pb-25 pt-10 lg:pt-20 hidden"
   >
-    <div class="fr-container max-w-[1150px]! flex flex-col gap-8 lg:flex-row lg:items-center">
+    <div class="fr-container gap-8 lg:flex-row lg:items-center flex max-w-[1150px]! flex-col">
       <div class="lg:max-w-[360px]">
-        <h3 class="mb-4! fr-h2 max-w-[320px]">
+        <h3 class="fr-h2 mb-4! max-w-[320px]">
           {@html sanitize(m['home.europe.title']({ props: 'class="text-primary"' }))}
         </h3>
         <p class="mb-2!">{m['home.europe.desc']()}</p>
@@ -231,23 +231,23 @@
           size="lg"
           href="mailto:{i18nData.contact}"
           text={m['actions.contactUs']()}
-          class="w-full! sm:w-auto!"
+          class="sm:w-auto! w-full!"
         />
       </div>
 
       <div
-        class="py-15 flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 xl:flex-row"
+        class="py-15 gap-8 rounded-xl bg-white px-9 xl:flex-row flex w-full flex-col justify-center"
       >
         <img
           src="/home/comparia-stars.png"
           aria-hidden="true"
           alt=""
-          class="m-auto max-w-[180px] object-contain xl:m-0"
+          class="xl:m-0 m-auto max-w-[180px] object-contain"
         />
 
-        <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
-          {#each europeCards as card}
-            <div class="cg-border bg-very-light-grey flex items-center gap-4 px-4 py-5">
+        <div class="gap-4 sm:grid-cols-2 xl:gap-8 grid">
+          {#each europeCards as card, i (i)}
+            <div class="cg-border bg-very-light-grey gap-4 px-4 py-5 flex items-center">
               <div class="bg-light-info rounded-md p-2 leading-none">
                 {card.flag}
               </div>
@@ -259,7 +259,7 @@
                   text={card.title}
                   size="sm"
                 />
-                <p class="mb-0! fr-message">{card.desc}</p>
+                <p class="fr-message mb-0!">{card.desc}</p>
               </div>
             </div>
           {/each}
@@ -274,17 +274,17 @@
         <h4 class="mb-2! text-center">{m['home.vote.title']()}</h4>
         <p class="text-grey text-center">{m['home.vote.desc']()}</p>
 
-        <div class="md:mt-13 mt-10 flex flex-col text-center lg:flex-row">
-          {#each whyVoteCards as card, index}
+        <div class="md:mt-13 mt-10 lg:flex-row flex flex-col text-center">
+          {#each whyVoteCards as card, index (index)}
             <div class="basis-1/3">
               <div class="xl:h-4/7 lg:h-1/2">
-                <img src={card.src} alt={card.title} width="72" height="72" class="m-auto mb-4" />
+                <img src={card.src} alt={card.title} width="72" height="72" class="mb-4 m-auto" />
                 <h6 class="mb-1! mx-auto! max-w-[230px]">{card.title}</h6>
               </div>
-              <p class="m-auto! text-sm! text-grey max-w-[280px]">{card.desc}</p>
+              <p class="text-sm! text-grey m-auto! max-w-[280px]">{card.desc}</p>
             </div>
             {#if index < 2}
-              <div class="arrow relative my-5 shrink-0 xl:-me-12 xl:-ms-12"></div>
+              <div class="arrow my-5 xl:-me-12 xl:-ms-12 relative shrink-0"></div>
             {/if}
           {/each}
         </div>
@@ -305,14 +305,14 @@
   <section class="fr-container--fluid bg-light-grey py-10 lg:py-20">
     <div class="fr-container">
       <h3 class="mb-2! text-center">{m['home.usage.title']()}</h3>
-      <p class="text-grey fr-mb-4w text-center">{m['home.vote.desc']()}</p>
+      <p class="fr-mb-4w text-grey text-center">{m['home.vote.desc']()}</p>
 
-      <div class="grid gap-8 md:grid-cols-3">
-        {#each usageCards as card}
+      <div class="gap-8 md:grid-cols-3 grid">
+        {#each usageCards as card, i (i)}
           <div class="cg-border bg-white p-5 lg:px-8 lg:pb-11 lg:pt-6">
             <Icon icon={card.icon} size="lg" block class="text-primary mb-4" />
             <h6 class="mb-2!">{card.title}</h6>
-            <p class="text-grey mb-0!">{card.desc}</p>
+            <p class="mb-0! text-grey">{card.desc}</p>
           </div>
         {/each}
       </div>
@@ -320,14 +320,14 @@
   </section>
 
   <section class="fr-container--fluid bg-very-light-grey lg:pb-38 py-12 lg:pt-20">
-    <div class="fr-container grid gap-10 lg:grid-cols-2 lg:gap-6">
+    <div class="fr-container gap-10 lg:grid-cols-2 lg:gap-6 grid">
       <!-- i18n: specific to locales -->
       <div class="cg-border bg-white px-5 py-10 md:px-8">
         <h5>{m['home.origin.team.title']()}</h5>
         <p>{m['home.origin.team.desc']()}</p>
 
-        <div class="mt-12 flex flex-wrap gap-8">
-          {#each localizedLogos as logoProps}
+        <div class="mt-12 gap-8 flex flex-wrap">
+          {#each localizedLogos as logoProps, i (i)}
             <img {...logoProps} />
           {/each}
         </div>
@@ -341,7 +341,7 @@
           )}
         </p>
 
-        <div class="mt-12 flex flex-wrap gap-8">
+        <div class="mt-12 gap-8 flex flex-wrap">
           <img
             src="/orgs/betagouv.svg"
             alt="beta.gouv.fr"
@@ -375,7 +375,7 @@
         {/each}
       </AccordionGroup>
 
-      <div class="mt-8 text-center lg:mt-11">
+      <div class="mt-8 lg:mt-11 text-center">
         <Link button size="lg" href="/product/faq" text={m['home.faq.discover']()} />
       </div>
     </div>

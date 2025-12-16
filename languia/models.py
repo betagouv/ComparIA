@@ -171,6 +171,15 @@ class PreferencesData(BaseModel):
     instructions_not_followed: int
     superficial: int
 
+    @field_validator("positive_prefs_ratio", mode="before")
+    @classmethod
+    def handle_nan_ratio(cls, value: Any) -> float:
+        """Replace NaN values with -1 to prevent JSON serialization errors."""
+        import math
+        if isinstance(value, float) and math.isnan(value):
+            return -1
+        return value
+
 
 # Raw model definitions from 'utils/models/models.json'
 class RawModel(BaseModel):
@@ -246,7 +255,7 @@ class RawModel(BaseModel):
         if "arch" in info.data and "moe" in info.data["arch"] and value is None:
             raise PydanticCustomError(
                 "missing_active_params",
-                f"Model's arch is '{info.data["arch"]}' and requires 'active_params' to be defined.",
+                f"Model's arch is '{info.data['arch']}' and requires 'active_params' to be defined.",
             )
 
         return value
@@ -360,7 +369,7 @@ class RawOrganisation(BaseModel):
     @classmethod
     def check_icon_exists(cls, value: str) -> str:
         file_path = FRONTEND_PATH / "static" / "orgs" / "ai" / value
-        if not file_path.exists():
+        if "." in value and not file_path.exists():
             raise PydanticCustomError(
                 "file_missing",
                 f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_PATH)}' doesn't exists.",
