@@ -298,7 +298,12 @@ export const api = {
     // Get cohort directly from sessionStorage (Svelte context not accessible in module scope)
     const cohortsCommaSepareted: string =
       typeof window !== 'undefined' ? (sessionStorage.getItem('comparia-cohorts') ?? '') : ''
-    logger.debug('[COHORT] Got from sessionStorage', { cohorts: cohortsCommaSepareted }, true)
+
+    logger.debug(
+      `[COHORT] Got from sessionStorage cohorts ${cohortsCommaSepareted}`,
+      { cohorts: cohortsCommaSepareted },
+      true
+    )
 
     // Only send if we have a cohort (not '')
     if (cohortsCommaSepareted) {
@@ -309,7 +314,11 @@ export const api = {
           cohorts: cohortsCommaSepareted
         }
 
-        logger.debug('[COHORT] Sending to backend', requestBody, true)
+        logger.debug(
+          `[COHORT] Sending to backend cohorts ${cohortsCommaSepareted}`,
+          requestBody,
+          true
+        )
         const response = await fetch(`${this.url}/cohorts`, {
           method: 'POST',
           headers: {
@@ -320,11 +329,15 @@ export const api = {
 
         if (response.ok) {
           this.cohortsSent = true
-          logger.debug('[COHORT] Successfully sent to backend', {}, true)
+          logger.debug(
+            `[COHORT] Successfully sent to backend cohorts ${cohortsCommaSepareted}`,
+            {},
+            true
+          )
         } else {
           const errorText = await response.text()
           logger.error(
-            '[COHORT] Failed to send',
+            `[COHORT] Failed to send cohorts ${cohortsCommaSepareted}`,
             {
               status: response.status,
               statusText: response.statusText,
@@ -337,7 +350,7 @@ export const api = {
         }
       } catch (error) {
         logger.error(
-          '[COHORT] Error sending',
+          `[COHORT] Error sending cohorts ${cohortsCommaSepareted}`,
           {
             error: (error as Error).message,
             sessionHash: this.client?.session_hash,

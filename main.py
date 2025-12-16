@@ -194,7 +194,12 @@ async def frontlog(request: FrontendLogRequest, http_request: Request):
                 "frontend_timestamp": log_entry.timestamp,
             }
 
+            # Ajouter tout le contexte du frontend de façon applatie
             if log_entry.context:
+                # Applatissement du contexte avec préfixe "context_"
+                for key, value in log_entry.context.items():
+                    extra_data[f"context_{key}"] = value
+                # Garder aussi le contexte complet pour compatibilité
                 extra_data["context"] = log_entry.context
 
             log_func(log_entry.message, extra=extra_data)

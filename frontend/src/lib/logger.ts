@@ -1,5 +1,5 @@
-import type { FrontendLogRequest, LogEntry } from '$lib/logger'
 import { env } from '$env/dynamic/public'
+import type { FrontendLogRequest, LogEntry } from '$lib/logger'
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
@@ -77,17 +77,6 @@ class Logger {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
-
-      // Log de succès vers stdout
-      console.log(
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          level: 'debug',
-          service: this.service,
-          message: `Sent ${logsToSend.length} logs to backend`,
-          type: 'log_forwarding'
-        })
-      )
     } catch (error) {
       // Fallback: stdout en cas d'échec
       console.log(
@@ -106,11 +95,18 @@ class Logger {
 
       // Écrire les logs échoués vers stdout
       logsToSend.forEach((log) => {
+        // Modifier le message pour inclure les informations de contexte si présentes
+        let message = log.message
+        if (log.context && log.context.cohorts) {
+          message = `${log.message} cohorts ${log.context.cohorts}`
+        }
+
         console.log(
           JSON.stringify({
             ...log,
             timestamp: log.timestamp || new Date().toISOString(),
-            service: this.service
+            service: this.service,
+            message: message
           })
         )
       })
@@ -146,7 +142,15 @@ class Logger {
     }
 
     // Toujours écrire vers stdout
-    console.log(JSON.stringify(logEntry))
+    if (env.PUBLIC_LOG_TO_STDOUT?.toLowerCase() === 'true') {
+      let message = logEntry.message
+      console.log(
+        JSON.stringify({
+          ...logEntry,
+          message: message
+        })
+      )
+    }
   }
 
   // Logs critiques envoyés au backend
@@ -191,35 +195,47 @@ class Logger {
 
   // Méthodes standards (stdout uniquement par défaut, backend optionnel)
   error(message: string, context?: Record<string, any>, sendToBackend = false): void {
-    this.writeLog({
-      level: 'error',
-      message,
-      context
-    }, sendToBackend)
+    this.writeLog(
+      {
+        level: 'error',
+        message,
+        context
+      },
+      sendToBackend
+    )
   }
 
   warn(message: string, context?: Record<string, any>, sendToBackend = false): void {
-    this.writeLog({
-      level: 'warn',
-      message,
-      context
-    }, sendToBackend)
+    this.writeLog(
+      {
+        level: 'warn',
+        message,
+        context
+      },
+      sendToBackend
+    )
   }
 
   info(message: string, context?: Record<string, any>, sendToBackend = false): void {
-    this.writeLog({
-      level: 'info',
-      message,
-      context
-    }, sendToBackend)
+    this.writeLog(
+      {
+        level: 'info',
+        message,
+        context
+      },
+      sendToBackend
+    )
   }
 
   debug(message: string, context?: Record<string, any>, sendToBackend = false): void {
-    this.writeLog({
-      level: 'debug',
-      message,
-      context
-    }, sendToBackend)
+    this.writeLog(
+      {
+        level: 'debug',
+        message,
+        context
+      },
+      sendToBackend
+    )
   }
 
   // Méthode pour logger les requêtes API
