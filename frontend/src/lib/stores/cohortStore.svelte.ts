@@ -17,28 +17,24 @@ function detectCohorts(): string {
 
   const cohortsCommaSepareted = sessionStorage.getItem(COHORT_STORAGE_KEY) ?? ''
   if (cohortsCommaSepareted) {
-    logger.debug('[COHORT] Found in sessionStorage', { cohorts: cohortsCommaSepareted }, true)
+    logger.debug(`[COHORT] Found in sessionStorage ${cohortsCommaSepareted}`)
     return cohortsCommaSepareted
   }
   // Detect from GET parameter
   const urlParams = new URLSearchParams(window.location.search)
   const cohortsCommaSeparetedParam = urlParams.get('c') ?? ''
-  logger.debug('[COHORT] URL param c', { param: cohortsCommaSeparetedParam }, true)
+  logger.debug(`[COHORT] URL param c ${cohortsCommaSeparetedParam}`)
 
   const inputCohortList = cohortsCommaSeparetedParam.split(',')
 
   const validCohorts: string[] = inputCohortList.filter((item) => EXISTING_COHORTS.includes(item))
-  logger.debug('[COHORT] Valid cohorts after filtering', { validCohorts }, true)
+  logger.debug(`[COHORT] Valid cohorts after filtering ${validCohorts.join(',')}`)
 
   // rebuilding the string after sorting cohort names for consistant orders in the backend/db
   const validCohortsCommaSeparated = validCohorts.sort().join(',')
 
   if (cohortsCommaSeparetedParam) {
-    logger.debug(
-      '[COHORT] Storing in sessionStorage',
-      { cohorts: validCohortsCommaSeparated },
-      true
-    )
+    logger.debug(`[COHORT] Storing in sessionStorage ${validCohortsCommaSeparated}`)
     sessionStorage.setItem(COHORT_STORAGE_KEY, validCohortsCommaSeparated)
   }
 
@@ -50,7 +46,8 @@ function detectCohorts(): string {
  */
 export function setCohortContext() {
   const cohortsCommaSeparetedParam = detectCohorts()
-  logger.debug('[COHORT] Setting context with', { cohorts: cohortsCommaSeparetedParam }, true)
+  const cohortsForLogging = cohortsCommaSeparetedParam ?? '(empty)'
+  logger.debug(`[COHORT] Setting context with ${cohortsForLogging}`)
   setContext<string>(COHORT_STORAGE_KEY, cohortsCommaSeparetedParam)
 }
 

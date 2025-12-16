@@ -538,31 +538,27 @@ class CohortRequest(BaseModel):
 
 class FrontendLogEntry(BaseModel):
     """
-    Single log entry from frontend.
+    Single log entry from frontend (simplified format).
 
     Fields:
-        timestamp: ISO timestamp from frontend
         level: Log level (info, warn, error, debug)
         message: Log message text
-        context: Optional additional context data
-        service: Optional service identifier
     """
-    timestamp: str
     level: str
     message: str
-    context: dict[str, Any] | None = None
-    service: str | None = None
 
 
 class FrontendLogRequest(BaseModel):
     """
-    Batch of frontend logs sent to backend.
+    Single frontend log sent to backend (simplified format).
 
     Fields:
-        logs: List of log entries
+        level: Log level (info, warn, error, debug)
+        message: Log message text
         session_hash: User session identifier
         user_agent: Browser user agent string
     """
-    logs: list[FrontendLogEntry]
+    level: str
+    message: str
     session_hash: str | None = None
     user_agent: str | None = None

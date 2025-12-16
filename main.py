@@ -157,62 +157,51 @@ async def define_current_cohorts(request: CohortRequest):
 @app.post("/frontend_logs", response_class=JSONResponse)
 async def frontlog(request: FrontendLogRequest, http_request: Request):
     """
-    Route pour recevoir les logs du frontend.
+    Route pour recevoir les logs du frontend (format simplifié).
 
     Args:
-        request: Les logs du frontend avec métadonnées
+        request: Le log du frontend avec niveau et message
         http_request: La requête HTTP pour obtenir l'IP client
 
     Returns:
-        JSONResponse: Statut de réception des logs
+        JSONResponse: Statut de réception du log
     """
     try:
         client_ip = http_request.client.host if http_request.client else "unknown"
+                
+        # Créer un logger pour le frontend
+        frontend_logger = logging.getLogger("frontend")
 
-        # Loguer chaque entrée du frontend dans les logs backend
-        for log_entry in request.logs:
-            # Créer un logger avec le nom du service frontend
-            service_name = log_entry.service or "frontend"
-            frontend_logger = logging.getLogger(service_name)
+        # Map frontend log level to Python logging levels
+        level_map = {
+            "debug": frontend_logger.debug,
+            "info": frontend_logger.info,
+            "warn": frontend_logger.warning,
+            "warning": frontend_logger.warning,
+            "error": frontend_logger.error,
+        }
 
-            # Map frontend log level to Python logging levels
-            level_map = {
-                "debug": frontend_logger.debug,
-                "info": frontend_logger.info,
-                "warn": frontend_logger.warning,
-                "warning": frontend_logger.warning,
-                "error": frontend_logger.error,
-            }
+        log_func = level_map.get(request.level.lower(), frontend_logger.info)
 
-            log_func = level_map.get(log_entry.level.lower(), frontend_logger.info)
+        # Données supplémentaires pour le log
+        extra_data = {
+            "session_hash": request.session_hash,
+            "client_ip": client_ip,
+            "user_agent": request.user_agent,
+        }
 
-            # Log message sans préfixe
-            extra_data = {
-                "session_hash": request.session_hash,
-                "client_ip": client_ip,
-                "user_agent": request.user_agent,
-                "frontend_timestamp": log_entry.timestamp,
-            }
-
-            # Ajouter tout le contexte du frontend de façon applatie
-            if log_entry.context:
-                # Applatissement du contexte avec préfixe "context_"
-                for key, value in log_entry.context.items():
-                    extra_data[f"context_{key}"] = value
-                # Garder aussi le contexte complet pour compatibilité
-                extra_data["context"] = log_entry.context
-
-            log_func(log_entry.message, extra=extra_data)
+        # Loguer le message avec les métadonnées
+        log_func(request.message, extra=extra_data)
 
         return JSONResponse({
             "success": True,
-            "logs_received": len(request.logs),
+            "log_received": True,
             "session_hash": request.session_hash
         })
 
     except Exception as e:
-        config.logger.error(f"Error receiving frontend logs: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to process frontend logs: {str(e)}")
+        config.logger.error(f"Error receiving frontend log: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to process frontend log: {str(e)}")
 
 
 app = SentryAsgiMiddleware(app)

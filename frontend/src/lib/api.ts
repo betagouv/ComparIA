@@ -135,21 +135,18 @@ export const api = {
     const endpoint = this._getLoadBalancedEndpoint()
     const fullUrl = this.url + endpoint
 
-    logger.debug('Connecting to Gradio', { url: fullUrl })
+    logger.debug(`Connecting to Gradio ${fullUrl}`)
     try {
       // Connect to Gradio with event subscriptions for real-time updates
       this.client = await Client.connect(fullUrl, { events: ['data', 'status'] })
-      logger.debug('Connected to Gradio successfully', {
-        sessionHash: this.client.session_hash,
-        endpoint
-      })
+      logger.debug(`Connected to Gradio successfully ${this.client.session_hash} ${endpoint}`)
 
       // Send cohort information to backend if not already sent
       this.sendCurrentCohortsToBackend()
 
       return this.client
     } catch (error) {
-      logger.apiError('CONNECT', '/api', error as Error, { url: fullUrl })
+      logger.error(`CONNECT /api failed: ${(error as Error).message} ${fullUrl}`)
       throw error
     }
   },
@@ -185,18 +182,18 @@ export const api = {
    * 5. If backend returns error → throw Error + show toast notification
    */
   async submit<T>(uri: string, params: Record<string, unknown> = {}): Promise<AsyncIterable<T>> {
-    logger.debug(`Submitting Gradio job`, { uri, params })
+    logger.debug(`Submitting Gradio job ${uri} ${JSON.stringify(params)}`)
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Submit request and get streaming response iterable
       const result = await client.submit(uri, params)
-      logger.debug('Gradio job submitted successfully', { uri })
+      logger.debug(`Gradio job submitted successfully ${uri}`)
       // Filter and parse the streaming response data
       return iterGradioResponses(result as GradioSubmitIterable<T>)
     } catch (error) {
-      logger.apiError('SUBMIT', uri, error as Error, { params })
+      logger.error(`SUBMIT ${uri} failed: ${(error as Error).message}`)
       throw error
     }
   },
@@ -233,18 +230,18 @@ export const api = {
    * - submit(): Streams multiple responses, returns Promise<AsyncIterable<T>>
    */
   async predict<T>(uri: string, params: Record<string, unknown> = {}): Promise<T> {
-    logger.debug(`Predicting Gradio job`, { uri, params })
+    logger.debug(`Predicting Gradio job ${uri} ${JSON.stringify(params)}`)
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Call Gradio function and wait for response
       const result = await client.predict(uri, params)
-      logger.debug('Gradio job predicted successfully', { uri })
+      logger.debug(`Gradio job predicted successfully ${uri}`)
       // Parse and return the response data
       return parseGradioResponse(result as GradioResponse<T>)
     } catch (error) {
-      logger.apiError('PREDICT', uri, error as Error, { params })
+      logger.error(`PREDICT ${uri} failed: ${(error as Error).message}`)
       throw error
     }
   },
@@ -266,11 +263,7 @@ export const api = {
       // Format error message with HTTP status and response body
       const errorText = await response.text()
       const message = `Error ${response.status} [GET](${url}): "${errorText}"`
-      logger.error('HTTP GET request failed', {
-        status: response.status,
-        url,
-        errorText
-      })
+      logger.error(`HTTP GET request failed ${response.status} ${url} ${errorText}`)
       throw new Error(message)
     })
   },
@@ -281,17 +274,12 @@ export const api = {
    */
   async sendCurrentCohortsToBackend() {
     logger.debug(
-      '[COHORT] sendCurrentCohortsToBackend called',
-      {
-        cohortsSent: this.cohortsSent,
-        hasSessionHash: !!this.client?.session_hash
-      },
-      true
+      `[COHORT] sendCurrentCohortsToBackend called cohortsSent=${this.cohortsSent} hasSessionHash=${!!this.client?.session_hash}`
     )
 
     // Only send once per session
     if (this.cohortsSent || !this.client?.session_hash) {
-      logger.debug('[COHORT] Skipping send - already sent or no session hash', {}, true)
+      logger.debug('[COHORT] Skipping send - already sent or no session hash')
       return
     }
 
@@ -299,11 +287,7 @@ export const api = {
     const cohortsCommaSepareted: string =
       typeof window !== 'undefined' ? (sessionStorage.getItem('comparia-cohorts') ?? '') : ''
 
-    logger.debug(
-      `[COHORT] Got from sessionStorage cohorts ${cohortsCommaSepareted}`,
-      { cohorts: cohortsCommaSepareted },
-      true
-    )
+    logger.debug(`[COHORT] Got from sessionStorage cohorts ${cohortsCommaSepareted}`)
 
     // Only send if we have a cohort (not '')
     if (cohortsCommaSepareted) {
@@ -314,11 +298,7 @@ export const api = {
           cohorts: cohortsCommaSepareted
         }
 
-        logger.debug(
-          `[COHORT] Sending to backend cohorts ${cohortsCommaSepareted}`,
-          requestBody,
-          true
-        )
+        logger.debug(`[COHORT] Sending to backend cohorts ${cohortsCommaSepareted}`)
         const response = await fetch(`${this.url}/cohorts`, {
           method: 'POST',
           headers: {
@@ -329,38 +309,20 @@ export const api = {
 
         if (response.ok) {
           this.cohortsSent = true
-          logger.debug(
-            `[COHORT] Successfully sent to backend cohorts ${cohortsCommaSepareted}`,
-            {},
-            true
-          )
+          logger.debug(`[COHORT] Successfully sent to backend cohorts ${cohortsCommaSepareted}`)
         } else {
           const errorText = await response.text()
           logger.error(
-            `[COHORT] Failed to send cohorts ${cohortsCommaSepareted}`,
-            {
-              status: response.status,
-              statusText: response.statusText,
-              errorText,
-              sessionHash: this.client.session_hash,
-              cohorts: cohortsCommaSepareted
-            },
-            true
+            `[COHORT] Failed to send cohorts ${cohortsCommaSepareted} ${response.status} ${response.statusText} ${errorText}`
           )
         }
       } catch (error) {
         logger.error(
-          `[COHORT] Error sending cohorts ${cohortsCommaSepareted}`,
-          {
-            error: (error as Error).message,
-            sessionHash: this.client?.session_hash,
-            cohorts: cohortsCommaSepareted
-          },
-          true
+          `[COHORT] Error sending cohorts ${cohortsCommaSepareted} ${(error as Error).message}`
         )
       }
     } else {
-      logger.debug('[COHORT] No cohort to send (empty string)', {}, true)
+      logger.debug('[COHORT] No cohort to send (empty string)')
     }
   }
 }
