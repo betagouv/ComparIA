@@ -1,14 +1,17 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from languia.session import store_cohorts_redis
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from languia.block_arena import demo
 
 import gradio as gr
+import logging
 
 from languia import config
+from languia.models import FrontendLogRequest, FrontendLogEntry
 
 app = FastAPI()
 
@@ -74,6 +77,7 @@ async def available_models():
 from fastapi import Query
 from typing import Annotated, Optional
 
+from languia.models import CohortRequest
 
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
@@ -104,6 +108,100 @@ async def counter(
             "objective": objective,
         }
     )
+
+
+@app.post("/cohorts", response_class=JSONResponse)
+async def define_current_cohorts(request: CohortRequest):
+    """
+    Route pour définir les cohortes pour une session.
+
+    Args:
+        request: La requête FastAPI
+        session_hash: Identifiant unique de la session
+        cohorts: liste de noms de cohorte comma separated
+
+    Returns:
+        JSONResponse: Statut du suivi de cohorte
+    """
+    config.logger.info(f"[COHORT] Received cohort request: session_hash={request.session_hash}, cohorts={request.cohorts}")
+
+    if not request.session_hash:
+        config.logger.warning("[COHORT] Missing session_hash in request")
+        return JSONResponse(
+            {
+                "success": False,
+                "error": "session_hash is required",
+                "tracking_info": None,
+            },
+            status_code=400,
+        )
+
+    if request.cohorts:
+        cohorts_comma_separated: str = request.cohorts
+        success = store_cohorts_redis(request.session_hash, cohorts_comma_separated)
+        config.logger.info(f"[COHORT] Stored in Redis: success={success}, session_hash={request.session_hash}, cohorts={cohorts_comma_separated}")
+    else:
+        config.logger.warning(f"[COHORT] Empty cohorts received for session_hash={request.session_hash}")
+        success = False
+        cohorts_comma_separated = ""
+
+    return JSONResponse(
+        {
+            "success": success,
+            "session_hash": request.session_hash,
+            "tracking_info": cohorts_comma_separated,
+        }
+    )
+
+
+@app.post("/frontend_logs", response_class=JSONResponse)
+async def frontlog(request: FrontendLogRequest, http_request: Request):
+    """
+    Route pour recevoir les logs du frontend (format simplifié).
+
+    Args:
+        request: Le log du frontend avec niveau et message
+        http_request: La requête HTTP pour obtenir l'IP client
+
+    Returns:
+        JSONResponse: Statut de réception du log
+    """
+    try:
+        client_ip = http_request.client.host if http_request.client else "unknown"
+                
+        # Créer un logger pour le frontend
+        frontend_logger = logging.getLogger("frontend")
+
+        # Map frontend log level to Python logging levels
+        level_map = {
+            "debug": frontend_logger.debug,
+            "info": frontend_logger.info,
+            "warn": frontend_logger.warning,
+            "warning": frontend_logger.warning,
+            "error": frontend_logger.error,
+        }
+
+        log_func = level_map.get(request.level.lower(), frontend_logger.info)
+
+        # Données supplémentaires pour le log
+        extra_data = {
+            "session_hash": request.session_hash,
+            "client_ip": client_ip,
+            "user_agent": request.user_agent,
+        }
+
+        # Loguer le message avec les métadonnées
+        log_func(request.message, extra=extra_data)
+
+        return JSONResponse({
+            "success": True,
+            "log_received": True,
+            "session_hash": request.session_hash
+        })
+
+    except Exception as e:
+        config.logger.error(f"Error receiving frontend log: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to process frontend log: {str(e)}")
 
 
 app = SentryAsgiMiddleware(app)

@@ -5,6 +5,7 @@
   import Toaster from '$components/Toaster.svelte'
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { setModelsContext } from '$lib/models'
+  import { setCohortContext } from '$lib/stores/cohortStore.svelte'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import 'uno.css'
@@ -28,6 +29,7 @@
   setVotesContext(data.votes)
   setModelsContext(data.data)
   setI18nContext()
+  setCohortContext()
 </script>
 
 <Toaster />

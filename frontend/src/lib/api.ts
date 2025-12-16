@@ -2,6 +2,7 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
+import { logger } from '$lib/logger'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
@@ -16,7 +17,7 @@ function getBackendUrl(): string {
     return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else {
     // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL
+    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   }
 }
 
@@ -84,6 +85,7 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 export const api = {
   url: getBackendUrl(),
   client: undefined as Client | undefined,
+  cohortsSent: false, // Track if cohort has been sent for this session
 
   _getLoadBalancedEndpoint(): string {
     const replicas = parseInt(publicEnv.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10)
@@ -133,16 +135,18 @@ export const api = {
     const endpoint = this._getLoadBalancedEndpoint()
     const fullUrl = this.url + endpoint
 
-    console.debug('Connecting to Gradio at:', fullUrl)
+    logger.debug(`Connecting to Gradio ${fullUrl}`)
     try {
       // Connect to Gradio with event subscriptions for real-time updates
       this.client = await Client.connect(fullUrl, { events: ['data', 'status'] })
-      console.debug(
-        `Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`
-      )
+      logger.debug(`Connected to Gradio successfully ${this.client.session_hash} ${endpoint}`)
+
+      // Send cohort information to backend if not already sent
+      this.sendCurrentCohortsToBackend()
+
       return this.client
     } catch (error) {
-      console.error('Failed to connect to Gradio:', error)
+      logger.error(`CONNECT /api failed: ${(error as Error).message} ${fullUrl}`)
       throw error
     }
   },
@@ -178,18 +182,18 @@ export const api = {
    * 5. If backend returns error → throw Error + show toast notification
    */
   async submit<T>(uri: string, params: Record<string, unknown> = {}): Promise<AsyncIterable<T>> {
-    console.debug(`Submitting Gradio job '${uri}' with params:`, params)
+    logger.debug(`Submitting (streaming) Gradio job ${uri} ${JSON.stringify(params)}`)
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Submit request and get streaming response iterable
       const result = await client.submit(uri, params)
-      console.debug('Gradio job submitted successfully')
+      logger.debug(`Gradio job submitted (streaming) successfully ${uri}`)
       // Filter and parse the streaming response data
       return iterGradioResponses(result as GradioSubmitIterable<T>)
     } catch (error) {
-      console.error('Failed to submit Gradio job:', error)
+      logger.error(`SUBMIT ${uri} failed: ${(error as Error).message}`)
       throw error
     }
   },
@@ -226,18 +230,18 @@ export const api = {
    * - submit(): Streams multiple responses, returns Promise<AsyncIterable<T>>
    */
   async predict<T>(uri: string, params: Record<string, unknown> = {}): Promise<T> {
-    console.debug(`Predicting Gradio job '${uri}' with params:`, params)
+    logger.debug(`Calling single Gradio job ${uri} ${JSON.stringify(params)}`)
 
     try {
       // Get (or connect to) backend client
       const client = await this._connect()
       // Call Gradio function and wait for response
       const result = await client.predict(uri, params)
-      console.debug('Gradio job predicted successfully')
+      logger.debug(`Gradio job called successfully ${uri}`)
       // Parse and return the response data
       return parseGradioResponse(result as GradioResponse<T>)
     } catch (error) {
-      console.error('Failed to predict Gradio job:', error)
+      logger.error(`PREDICT ${uri} failed: ${(error as Error).message}`)
       throw error
     }
   },
@@ -257,9 +261,68 @@ export const api = {
       // Return parsed JSON if response is successful
       if (response.ok) return response.json()
       // Format error message with HTTP status and response body
-      const message = `Error ${response.status} [GET](${url}): "${await response.text()}"`
-      console.error(message)
+      const errorText = await response.text()
+      const message = `Error ${response.status} [GET](${url}): "${errorText}"`
+      logger.error(`HTTP GET request failed ${response.status} ${url} ${errorText}`)
       throw new Error(message)
     })
+  },
+
+  /**
+   * Send cohort information to backend via /cohorts endpoint.
+   * This should be called when session hash is available.
+   */
+  async sendCurrentCohortsToBackend() {
+    logger.debug(
+      `[COHORT] sendCurrentCohortsToBackend called cohortsSent=${this.cohortsSent} hasSessionHash=${!!this.client?.session_hash}`
+    )
+
+    // Only send once per session
+    if (this.cohortsSent || !this.client?.session_hash) {
+      logger.debug('[COHORT] Skipping send - already sent or no session hash')
+      return
+    }
+
+    // Get cohort directly from sessionStorage (Svelte context not accessible in module scope)
+    const cohortsCommaSepareted: string =
+      typeof window !== 'undefined' ? (sessionStorage.getItem('comparia-cohorts') ?? '') : ''
+
+    logger.debug(`[COHORT] Got from sessionStorage cohorts ${cohortsCommaSepareted}`)
+
+    // Only send if we have a cohort (not '')
+    if (cohortsCommaSepareted) {
+      try {
+        // Backend now expects JSON with Pydantic model
+        const requestBody = {
+          session_hash: this.client.session_hash,
+          cohorts: cohortsCommaSepareted
+        }
+
+        logger.debug(`[COHORT] Sending to backend cohorts ${cohortsCommaSepareted}`)
+        const response = await fetch(`${this.url}/cohorts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+
+        if (response.ok) {
+          this.cohortsSent = true
+          logger.debug(`[COHORT] Successfully sent to backend cohorts ${cohortsCommaSepareted}`)
+        } else {
+          const errorText = await response.text()
+          logger.error(
+            `[COHORT] Failed to send cohorts ${cohortsCommaSepareted} ${response.status} ${response.statusText} ${errorText}`
+          )
+        }
+      } catch (error) {
+        logger.error(
+          `[COHORT] Error sending cohorts ${cohortsCommaSepareted} ${(error as Error).message}`
+        )
+      }
+    } else {
+      logger.debug('[COHORT] No cohort to send (empty string)')
+    }
   }
 }

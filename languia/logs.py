@@ -18,7 +18,10 @@ import logging
 
 import datetime
 
+from typing import List
 
+
+from languia.models import Conversation
 from languia.utils import (
     get_chosen_model_name,
     messages_to_dict_list,
@@ -44,6 +47,7 @@ class JSONFormatter(logging.Formatter):
     Converts log records to JSON with context information (IP, session, query params).
     Used for both file and database logging.
     """
+
     def format(self, record):
         """
         Format a log record as JSON with request context.
@@ -83,6 +87,7 @@ class PostgresHandler(logging.Handler):
     Connects to database and stores log entries for centralized logging.
     Maintains persistent connection with auto-reconnection.
     """
+
     def __init__(self, dsn):
         """
         Initialize PostgreSQL logging handler.
@@ -120,7 +125,6 @@ class PostgresHandler(logging.Handler):
             self.connect()
             if self.connection:
                 with self.connection.cursor() as cursor:
-
                     # del(record.__dict__["request"])
 
                     insert_statement = sql.SQL(
@@ -276,6 +280,17 @@ def save_vote_to_db(data):
 
         cursor.execute(insert_statement, data)
         conn.commit()
+
+        # TODO: also increment redis counter
+        # if data.get("country_portal") == "da":
+        #     from languia.session import r
+
+        #     if r:
+        #         try:
+        #             r.incr("danish_count")
+        #         except Exception as e:
+        #             logger.error(f"Error incrementing danish count in Redis: {e}")
+
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
     finally:
@@ -391,11 +406,11 @@ def vote_last_response(
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
         logger.info(
-            f'preferences_a: {details["prefs_a"]}',
+            f"preferences_a: {details['prefs_a']}",
             extra={"request": request},
         )
         logger.info(
-            f'preferences_b: {details["prefs_b"]}',
+            f"preferences_b: {details['prefs_b']}",
             extra={"request": request},
         )
         if details["comments_a"] != "":
@@ -554,8 +569,7 @@ def upsert_reaction_to_db(data, request):
             question_id = EXCLUDED.question_id;
         """
         )
-
-        # TODO:
+        # TODO: fixes some edge case
         #     RETURNING
         # (CASE
         #     WHEN (pg_trigger_depth() = 0) THEN 'inserted'
@@ -567,6 +581,19 @@ def upsert_reaction_to_db(data, request):
         cursor.execute(query, data)
         conn.commit()
         logger.info("Reaction data successfully saved to DB.")
+
+        # TODO: also increment redis counter
+        # country_portal = request.query_params.get(
+        #     "country_portal"
+        # ) or request.query_params.get("locale")
+        # if country_portal == "da":
+        #     from languia.session import r
+
+        #     if r:
+        #         try:
+        #             r.incr("danish_count")
+        #         except Exception as e:
+        #             logger.error(f"Error incrementing danish count in Redis: {e}")
 
     except Exception as e:
         logger.error(f"Error saving reaction to DB: {e}")
@@ -911,9 +938,9 @@ def upsert_conv_to_db(data):
                 custom_models_selection,
                 total_conv_a_output_tokens,
                 total_conv_b_output_tokens,
-                country_portal
-                
-                                        )
+                country_portal,
+                cohorts
+                )
             VALUES (
                 %(model_a_name)s,
                 %(model_b_name)s,
@@ -936,7 +963,8 @@ def upsert_conv_to_db(data):
                 %(custom_models_selection)s,
                 %(total_conv_a_output_tokens)s,
                 %(total_conv_b_output_tokens)s,
-                %(country_portal)s
+                %(country_portal)s,
+                %(cohorts)s
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
@@ -945,7 +973,8 @@ def upsert_conv_to_db(data):
                 conversation_b = EXCLUDED.conversation_b,
                 conv_turns = EXCLUDED.conv_turns,
                 total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
-                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens
+                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
+                cohorts = EXCLUDED.cohorts
                 """
         )
 
@@ -968,7 +997,11 @@ def upsert_conv_to_db(data):
 
 
 def record_conversations(
-    app_state_scoped, conversations, request: gr.Request, locale=None
+    app_state_scoped,
+    conversations: List[Conversation],
+    request: gr.Request,
+    locale: str | None = None,
+    cohorts_comma_separated: str | None = None,
 ):
     """
     Record complete conversation pair to database and JSON log files.
@@ -985,6 +1018,7 @@ def record_conversations(
         conversations: List of 2 Conversation objects
         request: Gradio request object with session_hash, IP, cookies
         locale: Country portal code (e.g., "fr", "en") - optional
+        cohorts_comma_separated: Liste de nom de cohorts sous for de str comma separated ou None
 
     Returns:
         dict: Conversation record saved, including:
@@ -1008,8 +1042,6 @@ def record_conversations(
         7. Call upsert_conv_to_db() for database
     """
     from languia.config import get_model_system_prompt
-
-    # logger = logging.getLogger("languia")
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
@@ -1065,7 +1097,11 @@ def record_conversations(
         "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
         "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
         "country_portal": locale,
+        "cohorts": cohorts_comma_separated,
     }
+
+    logger = logging.getLogger("languia")
+    logger.debug(f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}")
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
     conv_log_path = os.path.join(LOGDIR, conv_log_filename)

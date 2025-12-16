@@ -10,8 +10,8 @@ HARBOR_PROJECT="atnum"
 BACKEND_IMAGE="$HARBOR_REGISTRY/$HARBOR_PROJECT/languia"
 FRONTEND_IMAGE="$HARBOR_REGISTRY/$HARBOR_PROJECT/languia-front"
 
-# Récupérer le hash court du commit courant
-COMMIT_HASH=$(git rev-parse --short HEAD)
+# Récupérer le hash long du commit courant
+COMMIT_HASH=$(git rev-parse HEAD)
 echo "Commit hash: $COMMIT_HASH"
 
 # Tags avec hash du commit
