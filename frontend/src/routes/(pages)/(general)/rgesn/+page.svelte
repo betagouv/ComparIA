@@ -41,7 +41,7 @@
     </ul>
     <p>{m['general.rgesn.2.4']()}</p>
 
-    <h2 id="strategy" class="mt-28!">{m['general.rgesn.3.title']()}</h2>
+    <h2 id="strategy" class="mt-10!">{m['general.rgesn.3.title']()}</h2>
     <p>{m['general.rgesn.3.1.title']()}</p>
     <ul class="mb-6!">
       {#each ['1', '2', '3', '4', '5', '6'] as const as n (n)}
