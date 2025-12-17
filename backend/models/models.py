@@ -141,9 +141,9 @@ class DatasetData(BaseModel):
     mean_win_prob: float
     win_rate: float
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    def trust_range(self) -> list[int, int]:
+    def trust_range(self) -> list[int]:
         """Confidence interval: [lower bound, upper bound] for ranking."""
         return [
             self.rank - self.rank_p2_5,
@@ -241,6 +241,9 @@ class RawModel(BaseModel):
     @field_validator("arch", mode="after")
     @classmethod
     def check_arch_exists(cls, value: str, info: ValidationInfo) -> str:
+        assert info.context is not None
+        assert info.context["archs"] is not None
+
         if value.replace("maybe-", "") not in info.context["archs"]:
             raise PydanticCustomError(
                 "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
@@ -257,7 +260,7 @@ class RawModel(BaseModel):
     @field_validator("active_params", mode="before")
     @classmethod
     def check_active_params_is_defined_if_moe(
-        cls, value: str, info: ValidationInfo
+        cls, value: int | float | None, info: ValidationInfo
     ) -> int | float | None:
         if "arch" in info.data and "moe" in info.data["arch"] and value is None:
             raise PydanticCustomError(
@@ -319,7 +322,7 @@ class Model(RawModel):
 
         return value
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def friendly_size(self) -> FriendlySize:
         intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
@@ -330,7 +333,7 @@ class Model(RawModel):
 
         raise Exception("Error: Could not guess friendly_size")
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def required_ram(self) -> int | float:
         if self.quantization == "q8":
@@ -339,7 +342,7 @@ class Model(RawModel):
         # We suppose from q4 to fp16
         return self.params
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def wh_per_million_token(self) -> int | float:
         model_info = {
@@ -371,7 +374,7 @@ class RawOrganisation(BaseModel):
     proprietary_commercial_use: bool | None = None
     proprietary_reuse_specificities: str | None = None
     proprietary_commercial_use_specificities: str | None = None
-    models: list[RawModel]
+    models: list[RawModel] | list[Model]
 
     @field_validator("icon_path", mode="after")
     @classmethod
@@ -393,6 +396,10 @@ class Organisation(RawOrganisation):
     @field_validator("models", mode="before")
     @classmethod
     def enhance_models(cls, value: Any, info: ValidationInfo) -> list[RawModel]:
+        assert info.context is not None
+        assert info.context["data"] is not None
+        assert info.context["licenses"] is not None
+
         for model in value:
             # forward organisation data
             model["organisation"] = info.data.get("name")
