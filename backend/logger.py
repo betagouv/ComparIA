@@ -7,6 +7,7 @@ from logging.handlers import WatchedFileHandler
 
 import psycopg2  # type: ignore
 from psycopg2 import sql
+from pydantic import BaseModel
 
 from backend.config import settings
 from backend.utils.user import get_ip
