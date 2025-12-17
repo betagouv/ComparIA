@@ -9,13 +9,14 @@ import logging
 import os
 from typing import List
 
+import redis
 from pydantic import BaseModel
 
-from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
+from backend.config import RATELIMIT_PRICEY_MODELS_INPUT, settings
 
 try:
     # Redis connection configuration
-    redis_host = os.getenv("COMPARIA_REDIS_HOST", "localhost")
+    redis_host = settings.COMPARIA_REDIS_HOST
     # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
 
     # Initialize Redis client (decode_responses=True returns strings instead of bytes)
@@ -79,38 +80,14 @@ def is_ratelimited(ip: str):
 
 def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
     """
-    <<<<<<< HEAD:languia/session.py
-        Stocke dans Redis une indication de ne pas suivre pour une session donnée.
-    =======
-        Represents a user session with conversation history and metadata.
+    Stocke dans Redis une indication de ne pas suivre pour une session donnée.
 
-        Attributes:
-            session_hash: Unique identifier for the session (from Gradio)
-            conversations: Tuple of two conversation dicts (model A and B)
-            ip: User's IP address
-            total_input_chars: Total character count for rate limiting
-    """
+    Args:
+        session_hash: Identifiant unique de la session
+        cohorts_comma_separated: Liste des cohortes à stocker sous forme d'une chaine comma separated
 
-    session_hash: str | None
-    conversations: tuple[dict, dict]
-    # Future fields for votes and reactions
-    # vote: Vote | None
-    # reactions: dict = []
-    ip: str | None
-    total_input_chars: int = 0
-
-
-def save_session(session: Session):
-    """
-        Save session state to Redis for later retrieval.
-    >>>>>>> 934fa8b0 (refactor(back): move session file):backend/session.py
-
-        Args:
-            session_hash: Identifiant unique de la session
-            cohorts_comma_separated: Liste des cohortes à stocker sous forme d'une chaine comma separated
-
-        Returns:
-            bool: True si l'opération a réussi, False sinon
+    Returns:
+        bool: True si l'opération a réussi, False sinon
     """
     if not redis_host:
         logger = logging.getLogger("languia")
