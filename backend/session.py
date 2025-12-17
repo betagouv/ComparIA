@@ -9,6 +9,10 @@ import logging
 import os
 from typing import List
 
+from pydantic import BaseModel
+
+from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
+
 try:
     # Redis connection configuration
     redis_host = os.getenv("COMPARIA_REDIS_HOST", "localhost")
@@ -27,7 +31,9 @@ except Exception as e:
     raise Exception(f"Redis Connection Error {e}")
 
 
-from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
+class CohortRequest(BaseModel):
+    session_hash: str
+    cohorts: str
 
 
 def increment_input_chars(ip: str, input_chars: int):

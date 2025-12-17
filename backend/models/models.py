@@ -437,8 +437,3 @@ Licenses = RootModel[list[License]]
 Archs = RootModel[list[Arch]]
 RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]
-
-
-class CohortRequest(BaseModel):
-    session_hash: str
-    cohorts: str
