@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     MOCK_RESPONSE: bool = False
     DATABASE_URI: str | None = None
     LOGDIR: str = "./data"
-    LOG_FORMAT: Literal["JSON" | "RAW"] = "JSON"
+    LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None
     SENTRY_DSN: str | None = None
