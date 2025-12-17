@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     LANGUIA_DEBUG: bool = False
     LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
-    COMPARIA_REDIS_HOST: str | None = None
+    COMPARIA_REDIS_HOST: str = "localhost"
     MOCK_RESPONSE: bool = False
     DATABASE_URI: str | None = None
     LOGDIR: str = "./data"
