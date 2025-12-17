@@ -6,8 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from backend.logger import FrontendLogEntry, FrontendLogRequest
 from backend.models.data import all_models_data
-from backend.models.models import CohortRequest, FrontendLogEntry, FrontendLogRequest
+from backend.models.models import CohortRequest
 from backend.session import store_cohorts_redis
 from backend.utils.countries import get_country_portal_count
 from languia.block_arena import demo

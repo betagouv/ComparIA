@@ -284,3 +284,34 @@ def configure_frontend_logger() -> None:
     frontend_logger.setLevel(logging.DEBUG if settings.LANGUIA_DEBUG else logging.INFO)
     for handler in default_logger.handlers:
         frontend_logger.addHandler(handler)
+
+
+# FIXME not used?
+class FrontendLogEntry(BaseModel):
+    """
+    Single log entry from frontend (simplified format).
+
+    Fields:
+        level: Log level (info, warn, error, debug)
+        message: Log message text
+    """
+
+    level: str
+    message: str
+
+
+class FrontendLogRequest(BaseModel):
+    """
+    Single frontend log sent to backend (simplified format).
+
+    Fields:
+        level: Log level (info, warn, error, debug)
+        message: Log message text
+        session_hash: User session identifier
+        user_agent: Browser user agent string
+    """
+
+    level: str
+    message: str
+    session_hash: str | None = None
+    user_agent: str | None = None
