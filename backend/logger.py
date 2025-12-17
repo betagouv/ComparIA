@@ -182,16 +182,13 @@ def configure_logger() -> logging.Logger:
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
 
-    # Récupérer le format de logs depuis la variable d'environnement
-    log_format = os.getenv("LOG_FORMAT", "JSON").upper()
-
     if settings.LOGDIR:
         os.makedirs(settings.LOGDIR, exist_ok=True)
         filename = os.path.join(settings.LOGDIR, logger_filename)
         file_handler = WatchedFileHandler(filename, encoding="utf-8")
 
         # Choisir le formatter en fonction de LOG_FORMAT
-        if log_format == "RAW":
+        if settings.LOG_FORMAT == "RAW":
             # Format identique à la console pour une meilleure lisibilité en dev
             file_formatter = logging.Formatter(
                 "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s",
@@ -215,7 +212,7 @@ def configure_logger() -> logging.Logger:
     return logger
 
 
-def configure_uvicorn_logging():
+def configure_uvicorn_logging() -> None:
     """
     Configure uvicorn/FastAPI loggers to use the same handlers as languia logger.
 
@@ -234,7 +231,7 @@ def configure_uvicorn_logging():
         uvicorn_logger.handlers.clear()
         uvicorn_logger.propagate = False
 
-        if debug:
+        if settings.LANGUIA_DEBUG:
             uvicorn_logger.setLevel(logging.DEBUG)
         else:
             uvicorn_logger.setLevel(logging.INFO)
@@ -249,17 +246,17 @@ def configure_uvicorn_logging():
         uvicorn_logger.addHandler(console_handler)
 
         # File handler
-        if LOGDIR:
-            os.makedirs(LOGDIR, exist_ok=True)
+        if settings.LOGDIR:
+            os.makedirs(settings.LOGDIR, exist_ok=True)
             t = datetime.datetime.now()
             hostname = os.uname().nodename
             uvicorn_log_filename = (
                 f"uvicorn-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
             )
-            filename = os.path.join(LOGDIR, uvicorn_log_filename)
+            filename = os.path.join(settings.LOGDIR, uvicorn_log_filename)
             file_handler = WatchedFileHandler(filename, encoding="utf-8")
 
-            if log_format == "RAW":
+            if settings.LOG_FORMAT == "RAW":
                 file_formatter = logging.Formatter(
                     "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                     datefmt="%Y-%m-%d %H:%M:%S",
@@ -275,14 +272,15 @@ def configure_uvicorn_logging():
             uvicorn_logger.addHandler(file_handler)
 
         # PostgreSQL handler
-        if db and enable_postgres_handler:
-            postgres_handler = PostgresHandler(db)
+        if settings.COMPARIA_DB_URI and settings.enable_postgres_handler:
+            postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
             uvicorn_logger.addHandler(postgres_handler)
 
 
-def configure_frontend_logger():
+def configure_frontend_logger() -> None:
     # Configurer le logger frontend pour utiliser les mêmes handlers
+    default_logger = logging.getLogger("languia")
     frontend_logger = logging.getLogger("frontend")
-    frontend_logger.setLevel(logging.DEBUG if debug else logging.INFO)
-    for handler in logger.handlers:
+    frontend_logger.setLevel(logging.DEBUG if settings.LANGUIA_DEBUG else logging.INFO)
+    for handler in default_logger.handlers:
         frontend_logger.addHandler(handler)
