@@ -119,9 +119,11 @@ def load_session_hash_ip():
         return False
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
     with engine.connect() as conn:
-        session_hash_to_ip_map = pd.read_sql_query(
+        df = pd.read_sql_query(
             "SELECT ip_map, session_hash FROM conversations", conn
         )
+        # Convert DataFrame to dictionary for efficient lookup
+        session_hash_to_ip_map = dict(zip(df['session_hash'], df['ip_map']))
     return True
 
 
