@@ -53,60 +53,6 @@ app = gr.mount_gradio_app(
 )
 
 
-@app.get("/", response_class=JSONResponse)
-@app.get("/available_models", response_class=JSONResponse)
-@app.get("/models", response_class=JSONResponse)
-async def available_models():
-    return JSONResponse(
-        {
-            "models": [
-                model
-                for model in all_models_data["models"].values()
-                if model["status"] in ("enabled", "archived")
-            ],
-            "data_timestamp": all_models_data["timestamp"],
-        }
-    )
-
-
-# @app.get("/enabled_models", response_class=JSONResponse)
-# async def enabled_models():
-#     return JSONResponse(dict(config.models))
-
-
-@app.get("/counter", response_class=JSONResponse)
-async def counter(
-    request: Request,
-    c: str | None = None,
-):
-    from backend.config import OBJECTIVES
-
-    # don't get it from host
-    # hostname = request.headers.get("Host")
-    # Always check the query parameter 'c' for locale
-    country_portal = request.query_params.get(
-        "c", "fr"
-    )  # Default to "fr" if not provided
-
-    # Only allow "da" or "fr" as valid locales
-    if country_portal not in ("da", "fr"):
-        country_portal = "fr"  # Default to "fr" for invalid values
-
-    if country_portal == "da":
-        count = get_country_portal_count("da")
-        objective = OBJECTIVES.get("da")
-    else:  # country_portal == "fr"
-        count = get_country_portal_count("fr")
-        objective = OBJECTIVES.get("fr")
-
-    return JSONResponse(
-        {
-            "count": count,
-            "objective": objective,
-        }
-    )
-
-
 @app.post("/cohorts", response_class=JSONResponse)
 async def define_current_cohorts(request: CohortRequest):
     """
