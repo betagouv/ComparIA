@@ -1,7 +1,9 @@
 import logging
 from typing import TYPE_CHECKING
 
+from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
+from ecologits.utils.range_value import RangeValue, ValueOrRange
 
 if TYPE_CHECKING:
     from backend.models.models import Model
@@ -24,7 +26,7 @@ def filter_enabled_models(models: dict[str, "Model"]):
     return enabled_models
 
 
-def convert_range_to_value(value_or_range):
+def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
     """
     Convert impact range to a single representative value.
 
@@ -38,13 +40,13 @@ def convert_range_to_value(value_or_range):
         float: Average of range, or the value itself if scalar
     """
 
-    if hasattr(value_or_range, "min"):
+    if isinstance(value_or_range, RangeValue):
         return (value_or_range.min + value_or_range.max) / 2
     else:
         return value_or_range
 
 
-def get_total_params(model_extra_info):
+def get_total_params(model_extra_info) -> int | None:
     """
     Get the total number of parameters for a model.
 
@@ -69,7 +71,7 @@ def get_total_params(model_extra_info):
         return None
 
 
-def get_active_params(model_extra_info):
+def get_active_params(model_extra_info) -> int | None:
     """
     Get the number of active parameters for a model.
 
@@ -94,8 +96,11 @@ def get_active_params(model_extra_info):
 
 
 def get_llm_impact(
-    model_extra_info: dict, model_name: str, token_count: int, request_latency: float
-) -> dict[str, int]:
+    model_extra_info: dict,
+    model_name: str,
+    token_count: int,
+    request_latency: float | None,
+) -> Impacts | None:
     """
     Calculate environmental impact (energy, CO2) for LLM inference.
 
@@ -141,6 +146,10 @@ def get_llm_impact(
     # Currently uses World (WOR) average; could use specific countries (FR, DE, US, etc.)
     electricity_mix_zone = "WOR"
     electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
+
+    if electricity_mix is None:
+        # FIXME raise error?
+        return None
 
     # Extract electricity mix components for impact calculation
     if_electricity_mix_adpe = electricity_mix.adpe  # Abiotic Depletion Potential
