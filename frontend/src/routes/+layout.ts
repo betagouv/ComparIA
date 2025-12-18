@@ -11,7 +11,7 @@ export async function load() {
   const counterLocale = locale === 'da' ? 'da' : 'fr'
   const votes = await api.get<VotesData>(`/counter?c=${counterLocale}`)
 
-  const data = await api.get<APIData>('/available_models')
+  const data = await api.get<APIData>('/models')
 
   return { data, votes }
 }
