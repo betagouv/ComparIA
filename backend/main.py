@@ -42,6 +42,31 @@ app.add_middleware(
 
 app.include_router(models_router)
 
+# GRADIO TEMP
+import gradio as gr
+
+from languia.block_arena import demo
+
+demo = demo.queue(
+    max_size=None,
+    default_concurrency_limit=None,
+    # default_concurrency_limit=40,
+    # status_update_rate="auto",
+    api_open=False,
+)
+# Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
+demo.run_startup_events()
+
+app = gr.mount_gradio_app(
+    app,
+    demo,
+    path="/api",
+    root_path="/api",
+    # allowed_paths=[config.assets_absolute_path],
+    # show_error=config.debug,
+)
+# GRADIO END
+
 
 @app.get("/counter")
 async def get_counter(c: str | None = None):
