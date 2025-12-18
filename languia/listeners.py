@@ -12,6 +12,7 @@ Key flows:
 """
 
 import copy
+import logging
 import os
 import traceback
 from typing import List
@@ -20,8 +21,8 @@ import gradio as gr
 import requests
 import sentry_sdk
 
-from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT
-from backend.models.data import pricey_models
+from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
+from backend.models.data import models, pricey_models
 from backend.session import (
     increment_input_chars,
     is_ratelimited,
@@ -30,7 +31,6 @@ from backend.session import (
     retrieve_cohorts_redis,
 )
 from backend.utils.user import get_ip
-from languia import config
 from languia.block_arena import (  # UI state components; first_textbox,
     CustomDropdown,
     app_state,
@@ -60,7 +60,7 @@ from languia.block_arena import (  # UI state components; first_textbox,
     vote_area,
     which_model_radio,
 )
-from languia.config import logger
+from languia.config import unavailable_models
 from languia.conversation import Conversation, bot_response
 from languia.custom_components.customchatbot import ChatMessage
 from languia.logs import record_conversations, sync_reactions, vote_last_response
@@ -72,6 +72,8 @@ from languia.utils import (
     pick_models,
     to_threeway_chatbot,
 )
+
+logger = logging.getLogger("languia")
 
 
 def register_listeners():
@@ -107,7 +109,7 @@ def register_listeners():
             f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
-        return config.models
+        return models
 
     gr.on(
         triggers=[demo.load],  # Triggered when page loads
@@ -199,7 +201,7 @@ def register_listeners():
 
         # Select two models based on mode (random, big-vs-small, reasoning, etc.)
         first_model_name, second_model_name = pick_models(
-            mode, custom_models_selection, unavailable_models=config.unavailable_models
+            mode, custom_models_selection, unavailable_models=unavailable_models
         )
 
         # Important: to avoid sharing object references between Gradio sessions
@@ -357,7 +359,7 @@ def register_listeners():
             print(error_reason)
             try:
                 requests.post(
-                    f"{config.controller_url}/models/{error_with_model}/error",
+                    f"{settings.LANGUIA_CONTROLLER_URL}/models/{error_with_model}/error",
                     json={"error": error_reason},
                     timeout=1,
                 )
@@ -401,7 +403,7 @@ def register_listeners():
                     # FIXME: if error with model wasn't the one chosen (case where you select only one model) just reroll the other one
                     [],
                     # temporarily exclude the buggy model here
-                    config.unavailable_models + [error_with_model],
+                    unavailable_models + [error_with_model],
                 )
                 logger.info(
                     f"reinitializing convs w/ two new models: {model_left} and {model_right}",
@@ -685,7 +687,7 @@ def register_listeners():
             )
             try:
                 requests.post(
-                    f"{config.controller_url}/models/{error_with_model}/error",
+                    f"{settings.LANGUIA_CONTROLLER_URL}/models/{error_with_model}/error",
                     json={"error": error_reason},
                     timeout=1,
                 )
