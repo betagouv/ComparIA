@@ -65,7 +65,7 @@ dev: ## Launch backend and frontend without Redis (Ctrl+C to stop)
 
 dev-backend: ## Launch only the backend (FastAPI + Gradio)
 	@echo "Starting backend on port $(BACKEND_PORT)..."
-	$(UV) run uvicorn main:app --reload --host 0.0.0.0 --port $(BACKEND_PORT) --timeout-graceful-shutdown 1
+	$(UV) run uvicorn backend.main:app --reload --host 0.0.0.0 --port $(BACKEND_PORT) --timeout-graceful-shutdown 1
 
 dev-frontend: ## Launch only the frontend (Vite + SvelteKit)
 	@echo "Starting frontend on port $(FRONTEND_PORT)..."
