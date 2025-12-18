@@ -357,7 +357,7 @@ class Model(RawModel):
             None,
         )
 
-        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
+        if impact:
             energy_kwh = convert_range_to_value(impact.energy.value)
             return energy_kwh * 1000
 
