@@ -111,20 +111,23 @@ WHERE archived = FALSE
 
 
 def load_session_hash_ip():
-
     global session_hash_to_ip_map
     DATABASE_URI = os.getenv("DATABASE_URI")
     if not DATABASE_URI:
         logger.error("Cannot connect to the database: no configuration provided")
         return False
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
-    with engine.connect() as conn:
-        df = pd.read_sql_query(
-            "SELECT ip_map, session_hash FROM conversations", conn
-        )
-        # Convert DataFrame to dictionary for efficient lookup
-        session_hash_to_ip_map = dict(zip(df['session_hash'], df['ip_map']))
-    return True
+    try:
+        with engine.connect() as conn:
+            df = pd.read_sql_query(
+                "SELECT ip_map, session_hash FROM conversations", conn
+            )
+            # Convert DataFrame to dictionary for efficient lookup
+            session_hash_to_ip_map = dict(zip(df["session_hash"], df["ip_map"]))
+        return True
+    except Exception as e:
+        logger.error(f"Failed to load session hash IP mapping: {e}")
+        return False
 
 
 def hash_md5(value):
@@ -252,7 +255,8 @@ def fetch_and_transform_data(conn, table_name, query=None):
         return df
     except Exception as e:
         logger.error(f"Failed to fetch data from {table_name}: {e}")
-        return pd.DataFrame()
+        # Return None instead of empty DataFrame to indicate failure
+        return None
 
 
 def export_data(df, table_name, export_dir):
@@ -317,14 +321,14 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
     DATABASE_URI = os.getenv("DATABASE_URI")
     if not DATABASE_URI:
         logger.error(f"Cannot process {dataset_name}: no $DATABASE_URI")
-        return
+        return False
 
     repo_name = dataset_config.get("repo")
     query = dataset_config.get("query")
 
     if not repo_name:
         logger.error(f"No repository defined for dataset: {dataset_name}")
-        return
+        return False
 
     repo_org = os.getenv("REPO_ORG", "ministere-culture")
 
@@ -342,16 +346,27 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
             # Fetch and transform data
             data = fetch_and_transform_data(conn, dataset_name, query)
 
+            # Check if data fetching failed
+            if data is None:
+                logger.error(
+                    f"Failed to fetch data for dataset {dataset_name}, aborting export"
+                )
+                return False
+
             # Export data
             export_data(data, dataset_name, repo_path)
 
             # Commit and push changes for the repository
-            commit_and_push(repo_org, repo_name, repo_path)
+            push_success = commit_and_push(repo_org, repo_name, repo_path)
+
+            return push_success
 
     except OperationalError as e:
         logger.error(f"Database connection error for dataset {dataset_name}: {e}")
+        return False
     except Exception as e:
         logger.error(f"An error occurred while processing dataset {dataset_name}: {e}")
+        return False
     finally:
         if engine:
             engine.dispose()
