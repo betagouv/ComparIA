@@ -267,25 +267,22 @@ all_models_data = json5.loads(Path("./utils/models/generated-models.json").read_
 # Filter to only enabled models (removes disabled or deprecated models)
 models = filter_enabled_models(all_models_data["models"])
 
-# Models with extended reasoning capability (o1-like models)
-# Used for "reasoning" selection mode
-reasoning_models = [id for id, model in models.items() if model.get("reasoning", False)]
 
-# All models except reasoning models (for standard random selection)
-random_pool = [id for id, _model in models.items() if id not in reasoning_models]
+# All models (for standard random selection)
+random_pool = [id for id, _model in models.items()]
 
 # Models with parameters <= 60B (for "small-models" selection mode)
 small_models = [
     id
     for id, model in models.items()
-    if model["params"] <= SMALL_MODELS_BUCKET_UPPER_LIMIT and id not in reasoning_models
+    if model["params"] <= SMALL_MODELS_BUCKET_UPPER_LIMIT
 ]
 
 # Models with parameters >= 100B (for "big-vs-small" selection mode)
 big_models = [
     id
     for id, model in models.items()
-    if model["params"] >= BIG_MODELS_BUCKET_LOWER_LIMIT and id not in reasoning_models
+    if model["params"] >= BIG_MODELS_BUCKET_LOWER_LIMIT
 ]
 
 # Commercial models with higher API costs (e.g., Claude, GPT-4)

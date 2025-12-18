@@ -74,12 +74,14 @@ def get_active_params(model_extra_info):
 
 class ContextTooLongError(ValueError):
     """Raised when the context window of a model is exceeded."""
+
     def __str__(self):
         return "Context too long."
 
 
 class EmptyResponseError(RuntimeError):
     """Raised when a model API returns an empty response."""
+
     def __init__(self, response=None, *args: object) -> None:
         super().__init__(*args)
         self.response = response
@@ -267,10 +269,7 @@ def strip_metadata(messages: list[dict]) -> list[dict]:
             )
         else:
             # Handle missing content gracefully
-            stripped_messages.append({
-                "role": message["role"],
-                "content": ""
-            })
+            stripped_messages.append({"role": message["role"], "content": ""})
     return stripped_messages
 
 
@@ -350,6 +349,7 @@ class AppState:
 
     Tracks the current comparison mode, model selections, user preferences, and reactions.
     """
+
     def __init__(
         self,
         awaiting_responses=False,
@@ -449,7 +449,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     Returns:
         list: [model_left, model_right] - pair of model names, randomly swapped
     """
-    from languia.config import big_models, small_models, reasoning_models, random_pool
+    from languia.config import big_models, small_models, random_pool
     import random
 
     if mode == "big-vs-small":
@@ -464,14 +464,6 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         model_left_name = choose_among(models=small_models, excluded=unavailable_models)
         model_right_name = choose_among(
             models=small_models, excluded=unavailable_models + [model_left_name]
-        )
-    elif mode == "reasoning":
-        # Compare two reasoning-capable models (o1, etc.)
-        model_left_name = choose_among(
-            models=reasoning_models, excluded=unavailable_models
-        )
-        model_right_name = choose_among(
-            models=reasoning_models, excluded=unavailable_models + [model_left_name]
         )
 
     elif mode == "custom" and len(custom_models_selection) > 0:
