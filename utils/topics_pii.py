@@ -7,13 +7,25 @@ import os
 from enum import Enum
 from concurrent.futures import ThreadPoolExecutor
 import time
+import re
+
+
+def remove_danish_cpr_numbers(text):
+
+    # Basic pattern: 6 digits, optional separator, 4 digits
+    cpr_basic = r"\d{6}[-\s]?\d{4}"
+
+    # Examples
+    # text = "CPR: 010203-1234 or 0102031234 or 010203 1234"
+
+    return re.sub(cpr_basic, "[REPLACED NUMBER MATCHING DANISH CPR FORMAT]", text)
 
 
 class Config:
     PROJECT_ID = "languia-430909"
     LOCATION = "europe-west1"
     # MODEL_NAME = "gemini-2.0-flash-lite"
-    MODEL_NAME = "gemini-2.0-flash-001"
+    MODEL_NAME = "gemini-3-flash-preview"
     MAX_RETRIES = 3
     RETRY_DELAY = 1
 
