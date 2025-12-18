@@ -16,7 +16,7 @@ from typing import List
 
 import gradio as gr
 
-from backend.models.models import Conversation
+from backend.arena.models import Conversation
 from backend.utils.user import get_ip
 from languia.utils import (
     count_turns,
