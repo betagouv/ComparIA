@@ -1,1 +1,115 @@
-{}
+{
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "accessData": "Acceder a los datos",
+        "contact": "Contactar",
+        "contactUs": "Ponerse en contacto con nosotros",
+        "copyLink": {
+            "do": "Copiar enlace",
+            "done": "Enlace copiado al portapapeles"
+        },
+        "copyMessage": {
+            "do": "Copiar mensaje",
+            "done": "Mensaje copiado"
+        },
+        "downloadData": "Descargar datos",
+        "home": "Página principal",
+        "returnHome": "Regresar a la página principal",
+        "scrollLeft": "Desplazar a la izquierda",
+        "scrollRight": "Desplazar a la derecha",
+        "searchModel": "Buscar un modelo",
+        "seeMore": "Ver más",
+        "selectLanguage": "Seleccionar idioma",
+        "vote": "Dar retroalimentación"
+    },
+    "arenaHome": {
+        "compareModels": {
+            "count": "{count}/2 modelos",
+            "help": "Si elige solo uno, el segundo sera elegido al azar",
+            "question": "¿Qué modelo te gustaría elegir?"
+        },
+        "modelSelection": "Selección de modelo",
+        "prompt": {
+            "label": "Escribir tu primer mensaje",
+            "placeholder": "Escribe tu primer mensaje"
+        },
+        "selectModels": {
+            "help": "Eliga un modo de comparación",
+            "question": "¿Qué modelo le gustaría comparar?"
+        },
+        "suggestions": {
+            "generateAnother": "Generar otra instrucción",
+            "title": "Instrucciones sugeridas"
+        },
+        "title": "¿Cómo puedo ayudarte el día de hoy?"
+    },
+    "chatbot": {
+        "continuePrompt": "Continuar la conversación con los modelos de IA",
+        "conversation": "Conversación",
+        "errors": {
+            "other": {
+                "message": "Se ha producido un error temporal.",
+                "retry": "Puedes volver a intentar y solicitar los modelos nuevamente.",
+                "title": "Oops, error temporal",
+                "vote": "O finaliza tu experiencia dando preferencia a estos modelos."
+            },
+            "tooLong": {
+                "message": "Cada modelo está limitado por el tamaño de conversación que puede manejar.",
+                "retry": "Puedes reiniciar una conversación con dos nuevos modelos.",
+                "title": "Oops, la conversación es muy demasiado larga para uno de los modelos."
+            }
+        },
+        "loading": "Cargando respuestas",
+        "reasoning": {
+            "finished": "Razonamiento completado",
+            "inProgress": "Razonando…"
+        },
+        "revealButton": "Revelar modelos"
+    },
+    "closeModal": "Cerrar ventana emergente",
+    "components": {
+        "pagination": {
+            "first": "Primera página",
+            "label": "Páginas",
+            "last": "Última página",
+            "next": "Página siguiente",
+            "nth": "Página {count}",
+            "previous": "Página anterior"
+        },
+        "table": {
+            "linePerPage": "Número de líneas por página",
+            "pageCount": "{count} líneas por página",
+            "triage": "Ordenar"
+        },
+        "theme": {
+            "legend": "Eligir un tema para cambiar la apariencia del sitio.",
+            "options": {
+                "dark": "Tema oscuro",
+                "light": "Tema claro",
+                "system": "Sistema"
+            }
+        }
+    },
+    "datasets": {
+        "access": {
+            "repos": {
+                "votes": {
+                    "title": "/votos"
+                }
+            },
+            "share": "Comparte con nosotros como usas los datos",
+            "title": "Acceder al conjunto de datos de compar:IA"
+        }
+    },
+    "errors": {
+        "404": {
+            "error": "Error 404",
+            "title": "Página no encontrada"
+        },
+        "unexpected": {
+            "error": "Error {code}"
+        }
+    }
+}
