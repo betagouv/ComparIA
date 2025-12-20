@@ -1,1 +1,240 @@
-{}
+{
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "accessData": "Juurdepääs andmetele",
+        "contact": "Võta ühendust",
+        "contactUs": "Võta ühendust",
+        "copyLink": {
+            "do": "Kopeeri link",
+            "done": "Link kopeeriti lõikelauale"
+        },
+        "copyMessage": {
+            "do": "Kopeeri sõnum",
+            "done": "Sõnum kopeeritud"
+        },
+        "downloadData": "Lae andmed alla",
+        "home": "Avaleht",
+        "returnHome": "Tagasi avalehele",
+        "scrollLeft": "Keri vasakule",
+        "scrollRight": "Keri paremale",
+        "searchModel": "Otsi mudelit",
+        "seeMore": "Vaata veel",
+        "selectLanguage": "Vali keel",
+        "vote": "Anna tagasisidet"
+    },
+    "arenaHome": {
+        "compareModels": {
+            "count": "{count}/2 mudelit",
+            "help": "Kui valid ainult ühe, valitakse teine juhuslikult",
+            "question": "Missuguseid mudeleid võrrelda soovid?"
+        },
+        "modelSelection": "Mudelite valik",
+        "prompt": {
+            "label": "Sisesta oma esimene sõnum",
+            "placeholder": "Sisesta siia oma esimene sõnum"
+        },
+        "selectModels": {
+            "help": "Vali võrldusrežiim",
+            "question": "Missuguseid mudeleid võrrelda soovid?"
+        },
+        "suggestions": {
+            "generateAnother": "Genereeri veel üks viip",
+            "title": "Soovitatud viibad"
+        },
+        "title": "Millega sind täna aidata saan?"
+    },
+    "chatbot": {
+        "continuePrompt": "Jätka nende keelemudelitega vestlemist",
+        "conversation": "Vestlus",
+        "errors": {
+            "other": {
+                "message": "Ilmnes ajutine tõrge.",
+                "retry": "Võid uuesti proovida.",
+                "title": "Ups, ajutine tõrge",
+                "vote": "Või lõpeta oma katse hääle andmisega."
+            },
+            "tooLong": {
+                "message": "Igal mudelil on piiratud vestluste maht, mida see suudab käsitleda.",
+                "retry": "Võid kahe uue mudeliga vestlust uuesti alustada.",
+                "title": "Ups, vestlus on ühe mudeli jaoks liiga pikk.",
+                "vote": "Võid nendele mudelitele siiski hääle anda või alustada vestlust kahe uue mudeliga."
+            }
+        },
+        "loading": "Vastuste laadimine",
+        "reasoning": {
+            "finished": "Arutlemine lõpetatud",
+            "inProgress": "Arutlemine on käimas …"
+        },
+        "revealButton": "Näita mudeleid"
+    },
+    "closeModal": "Sulge hüpikaken",
+    "components": {
+        "pagination": {
+            "first": "Esimene lehekülg",
+            "label": "Leheküljed",
+            "last": "Viimane lehekülg",
+            "next": "Järgmine lehekülg",
+            "nth": "Lehekülg {count}",
+            "previous": "Eelmine lehekülg"
+        },
+        "table": {
+            "linePerPage": "Ridade arv leheküljel",
+            "pageCount": "{count} rida leheküljel",
+            "triage": "Sorteeri"
+        },
+        "theme": {
+            "legend": "Vali režiim lehekülje välimuse kohandamiseks.",
+            "options": {
+                "dark": "Tume režiim",
+                "light": "Hele režiim",
+                "system": "Süsteem",
+                "systemSub": "Kasuta süsteemi sätteid"
+            },
+            "title": "Vaateseadistused"
+        }
+    },
+    "datasets": {
+        "access": {
+            "catch": "Mudelite avaldajad, teadlased, ettevõtted – nüüd on teie kord!",
+            "desc": "Platvormi küsimused ja eelistused on peamiselt prantsuse, taani, rootsi ja leedu keeles ning kajastavad orgaanilist, päriselulist kasutust – mitte tehislikke viipasid. Need andmestikud on avalikult kättesaadavad veebilehel <a {linkProps}>data.gouv.fr</a> ja Hugging Face’is.",
+            "repos": {
+                "conversations": {
+                    "desc": "Kõik küsimused ja vastused",
+                    "title": "/vestlused"
+                },
+                "reactions": {
+                    "desc": "Kõik reaktsioonid sõnumitele",
+                    "title": "/reaktsioonid"
+                },
+                "votes": {
+                    "title": "/hääled"
+                }
+            },
+            "share": "Näidake meile, kuidas te andmeid kasutate",
+            "title": "Pääse ligi compar:IA andmestikele"
+        },
+        "reuse": {
+            "bunka": {
+                "analyze": {
+                    "desc": "Kasutajavestluste analüüs koos ülesannete (loomine, infootsing jne) tuvastamisega, teemade (kunst ja kultuur, haridus jne), keerukate emotsioonide (uudishimu, entusiasm jne) ning toonide (formaalne, professionaalne jne) määratlemisega",
+                    "title": "Vaata analüüsi"
+                },
+                "conversations": {
+                    "desc": "Interaktiivne vestluste visualiseerimine, kus iga klaster esindab kasutajate poolt korduvalt käsitletud teemat (näiteks haridus, tervishoid, keskkond või isegi filosoofia).",
+                    "title": "Tutvu andmete visualiseeringuga"
+                },
+                "method": "Lisateave metoodika kohta"
+            },
+            "desc": "Näited compar:IA andmestiku kasutamisest",
+            "title": "Kuidas neid andmeid kasutatakse?"
+        }
+    },
+    "errors": {
+        "404": {
+            "desc": "Kui trükkisid URL-i oma veebilehitsejasse, kontrolli selle õigsust. Leht ei pruugi enam saadaval olla. <br />Võid jätkata minnes meie avalehele. <br />Kui sul on raskusi otsitava lehe leidmisega, võta meiega ühendust, et saaksime sind õigele URL-ile suunata.",
+            "error": "Tõrge 404",
+            "sorry": "Otsitavat lehte ei leitud. Vabandame ebamugavuste pärast.",
+            "title": "Lehekülge ei leitud"
+        },
+        "unexpected": {
+            "desc": "Proovi lehekülge värskendada või proovi hiljem uuesti.",
+            "error": "Tõrge {code}",
+            "sorry": "Vabandame, teenusega on tekkinud probleem ja me töötame selle võimalikult kiire lahendamise nimel.",
+            "title": "Ootamatu tõrge"
+        },
+        "unknown": "Tekkis tõrge"
+    },
+    "faq": {
+        "datasets": {
+            "questions": {
+                "1": {
+                    "desc": "<p>Eelistuste andmeid kasutatakse mudelite täiustamiseks tulevase treenimise käigus.</p> <p>Compar:IA kasutajad väljendavad oma eelistusi kahe mudeli vastuseid pimesi võrreldes, näidates, millised vastused on kõige asjakohasemad. Neid eelistuste andmeid saab kasutada mudelite paremasse vastavusse viimise eesmärgil — see tähendab nende treenimiseks selliselt, et need genereeriksid vastuseid, mis on rohkem kooskõlas kasutajate ootuste ja eelistustega.</p> <p>See on iteratiivne protsess, mille käigus mudel õpib järk-järgult inimeste tagasiside põhjal paremaid vastuseid looma. Eelistuste andmeid kasutades kohandavad mudelid oma vastamisstiili.</p>",
+                    "title": "Kas eelistuse andmetel on mudeli jõudlusele vahetu mõju?"
+                },
+                "2": {
+                    "desc": "<p>Compar:IA platvormil kogutud andmete eripära seisneb selles, et need on väheste ressurssidega keeltes ja kajastavad päriselulisi kasutaja ülesandeid. Nendes andmetes väljenduvad inimeste eelistused konkreetsetes keelelistes ja kultuurilistes kontekstides. Andmed võimaldavad meil mudeleid kohandada nii, et need oleksid asjakohasemad, täpsemad ja vastaksid paremini kasutajate vajadustele, püüdes samal ajal tuvastada võimalikke kallutatusi või täita lünki.</p>",
+                    "title": "Miks compar:IA platvormil kogutud hääled kasulikud on?"
+                },
+                "3": {
+                    "title": "Kuidas compar:iA teistest samalaadsetest ettevõtmistest erineb?"
+                }
+            },
+            "title": "Andmestik"
+        },
+        "ecology": {
+            "questions": {
+                "1": {
+                    "title": "Kuidas keskkonnamõõdikuid arvutatakse?"
+                },
+                "2": {
+                    "desc": "<p>Andmekeskuste asukohad mängivad tehisintellekti süsiniku jalajälje kujunemisel väga olulist rolli. Kui mudelit treenitakse või kasutatakse riigis, kus kasutatakse peamiselt fossiilkütusteseid, on selle keskkonnamõju suurem võrreldes sellega, kui seda majutatakse riigis, kus kasutatakse peamiselt taastuvenergiat.</p> <p>Tehisintellekti keskkonnamõju analüüsimeetod, mille on välja töötanud <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (GenAI Impactist)</a>, hõlmab andmeid nende riikide energiakoosseisu kohta, kus serverid asuvad. See võimaldab täpsemat ja nüansirikkamat hinnangut erinevate generatiivmudelite tegelikule süsiniku jalajäljele.</p>",
+                    "title": "Kas keskkonnamõõdikute arvutamise võetakse arvesse seda, millest erinevad riigid energiat toodavad?"
+                }
+            }
+        },
+        "models": {
+            "questions": {
+                "1": {
+                    "title": "Kuidas te platvormile mudeleid valite?"
+                },
+                "5": {
+                    "title": "Kas mudelite treeningandmeid on võimalik vaadata?"
+                }
+            },
+            "title": "Mudelid"
+        },
+        "title": "Korduma Kippuvad Küsimused",
+        "usage": {
+            "questions": {
+                "1": {
+                    "title": "Kas mudelid saavad oma allikatele viidata?"
+                },
+                "2": {
+                    "title": "Kas mudel saab vastata, kui küsin küsimuse viimaste uudiste kohta?"
+                },
+                "5": {
+                    "title": "Mis on viipade kirjutamise parimad tavad?"
+                }
+            }
+        }
+    },
+    "footer": {
+        "backHome": "Tagasi avalehele - compar:IA",
+        "helpUs": "Aita meil platvormi paremaks muuta!",
+        "license": {
+            "linkTitle": "Etalab litsents - uues aknas"
+        },
+        "links": {
+            "privacy": "Privaatsuseeskirjad",
+            "sources": "Lähtekood",
+            "tos": "Kasutustingimused"
+        }
+    },
+    "general": {
+        "a11y": {
+            "improveDelay": "Püüame vastata kahe tööpäeva jooksul.",
+            "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>"
+        },
+        "legal": {
+            "reportTitle": "Teavita probleemist",
+            "securityTitle": "Turvalisus"
+        },
+        "privacy": {
+            "cookiesTitle": "Küpsised ja nõusolek",
+            "dataAccessDesc": "Muidugi! Lehekülje kasutusstatistika on vabalt kättesaadav aadressil <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Panustan teie andmestikku, kas mul on sellele juurdepääs?",
+            "dataExtraCountry": "Asukohariik: Prantsusmaa",
+            "dataExtraHost": "Alltöövõtja: OVH",
+            "dataExtraTitle": "Kes aitab meil andmeid töödelda?",
+            "dataRespTitle": "Kes vastutab andmete töötlemise eest?",
+            "dataTimeDesc": "Kasutajate ja nende vestluste kohta käivaid andmeid säilitatakse alates hetkest, mil eelistus on salvestatud.",
+            "dataTimeTitle": "Kui kaua me andmeid säilitame?",
+            "privacyData": "Leheküljel kogutakse järgnevaid andmeid:",
+            "privacyDataArena": "Kasutajate mudelitega vestlemise andmed: kasutajate esitatud küsimused, mudelite vastused ning kasutajate vastuse eelistused",
+            "privacyDataForm": "Küsimustiku \"Aita meil compar:IA-d paremaks muuta\" andmed.",
+            "title": "Privaatsuseeskirjad"
+        }
+    }
+}
