@@ -1,8 +1,10 @@
 import json
+import logging
 from functools import lru_cache
 from typing import Any
 
 import json5
+import numpy as np
 from pydantic import BaseModel, computed_field, field_validator
 
 from backend.config import (
@@ -11,6 +13,8 @@ from backend.config import (
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
 )
 from backend.models.models import LanguageModel
+
+logger = logging.getLogger("languia")
 
 
 class LanguageModels(BaseModel):
@@ -76,6 +80,50 @@ class LanguageModels(BaseModel):
         These have stricter rate limits applied
         """
         return [model.id for model in self.enabled.values() if model.pricey]
+
+    def pick_one(self, models: list[str], excluded: list[str] = []) -> str:
+        """
+        Randomly select a model from a list, excluding specified models.
+
+        Args:
+            models: List of available model names to choose from
+            excluded: List of model names to exclude from selection
+
+        Returns:
+            str: Selected model name
+
+        Raises:
+            Error: If no models are available after filtering
+        """
+        # Filter out excluded models
+        models_pool = [_id for _id in models if _id not in excluded]
+
+        logger.debug("chosing from:" + str(models_pool))
+        logger.debug("excluded:" + str(excluded))
+
+        # Handle empty pool
+        if len(models_pool) == 0:
+            # TODO: tell user in a toast notif that we couldn't respect prefs
+            logger.warning("Couldn't respect exclusion prefs")
+            if len(models) == 0:
+                logger.critical("No model to choose from")
+                # No models available at all
+                # FIXME use Error that can be toasted
+                # raise Exception(
+                #     duration=0,
+                #     message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
+                # )
+                raise Exception(
+                    "Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
+                )
+            else:
+                # Fall back to all models if couldn't respect exclusions
+                # FIXME hmm readding excluded models ?
+                models_pool = models
+
+        # Random selection from available models
+        picked_index = np.random.choice(len(models_pool), p=None)
+        return models_pool[picked_index]
 
 
 @lru_cache
