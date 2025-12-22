@@ -253,18 +253,18 @@ def fetch_and_transform_data(conn, table_name, query=None):
         # Add model metadata for conversations dataset
         if table_name == "conversations":
             logger.info("Adding model infos...")
-            # Add parameter counts (total and active)
+            # Add parameter counts (total and active) - only for models that exist in MODELS_DATA
             dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
-                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {}))
+                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
             )
             dataframe["model_b_total_params"] = dataframe["model_b_name"].apply(
-                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {}))
+                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
             )
             dataframe["model_a_active_params"] = dataframe["model_a_name"].apply(
-                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
+                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
             )
             dataframe["model_b_active_params"] = dataframe["model_b_name"].apply(
-                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
+                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {})) if x.lower() in MODELS_DATA else None
             )
 
             # Calculate energy consumption with vectorized operations
