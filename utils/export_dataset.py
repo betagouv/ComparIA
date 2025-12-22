@@ -8,8 +8,12 @@ This script:
 4. Exports to multiple formats (parquet, jsonl, tsv samples)
 5. Uploads to HuggingFace Hub repositories
 
-Usage: python export_dataset.py [repo_prefix] [dataset_name]
-Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY
+Usage:
+    python export_dataset.py ./exports conversations
+    python export_dataset.py --dry-run
+    python export_dataset.py ./exports --dry-run
+
+Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
 import pandas as pd
@@ -20,6 +24,7 @@ import subprocess
 import os
 import json
 import hashlib
+import argparse
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
@@ -384,10 +389,16 @@ def commit_and_push(repo_org, repo_name, repo_path):
         return False
 
 
-def process_dataset(dataset_name, dataset_config, repo_prefix):
+def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
     Export to multiple formats (parquet, jsonl, samples), and push to HF Hub.
+
+    Args:
+        dataset_name: Name of the dataset to process
+        dataset_config: Configuration dict with 'query' and 'repo' keys
+        repo_prefix: Local directory for export
+        dry_run: If True, skip HuggingFace upload
     """
 
     logger.info(f"Starting processing for dataset: {dataset_name}")
@@ -426,10 +437,13 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
             # Export data to local files
             export_data(data, dataset_name, repo_path)
 
-            # Upload to HuggingFace Hub
-            push_success = commit_and_push(REPO_ORG, repo_name, repo_path)
-
-            return push_success
+            # Upload to HuggingFace Hub (skip if dry_run)
+            if dry_run:
+                logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
+                return True
+            else:
+                push_success = commit_and_push(REPO_ORG, repo_name, repo_path)
+                return push_success
 
     except OperationalError as e:
         logger.error(f"Database connection error for dataset {dataset_name}: {e}")
@@ -448,53 +462,73 @@ def main():
     Main entry point for dataset export script.
 
     Args (via command line):
-        sys.argv[1]: repo_prefix - directory for export (default: ".")
-        sys.argv[2]: dataset_name - specific dataset to export (optional, default: all)
+        repo_prefix: directory for export (positional, default: ".")
+        dataset: specific dataset to export (positional, optional)
+        --dry-run: skip HuggingFace upload (optional)
 
-    Example:
+    Examples:
         python export_dataset.py ./exports conversations
+        python export_dataset.py --dry-run
+        python export_dataset.py ./exports --dry-run
     """
+    parser = argparse.ArgumentParser(
+        description="Export ComparIA datasets from PostgreSQL to HuggingFace Hub"
+    )
+    parser.add_argument(
+        "repo_prefix",
+        nargs="?",
+        type=str,
+        default=".",
+        help="Directory for local export (default: current directory)"
+    )
+    parser.add_argument(
+        "dataset",
+        nargs="?",
+        type=str,
+        default=None,
+        help="Specific dataset to export (conversations, votes, reactions, conversations_raw). Default: all"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Skip HuggingFace upload (only export locally)"
+    )
+
+    args = parser.parse_args()
+
     # Load lookup tables for data enrichment
     load_session_hash_ip()
     load_models_data()
 
-    # Authenticate with HuggingFace CLI
-    logger.info("hf auth login --token $HF_PUSH_DATASET_KEY")
+    # Authenticate with HuggingFace CLI (skip if dry_run)
+    if not args.dry_run:
+        logger.info("hf auth login --token $HF_PUSH_DATASET_KEY")
 
-    _login_result = subprocess.run(
-        args=[
-            "hf",
-            "auth",
-            "login",
-            "--token",
-            os.getenv("HF_PUSH_DATASET_KEY", ""),
-        ]
-    )
+        _login_result = subprocess.run(
+            args=[
+                "hf",
+                "auth",
+                "login",
+                "--token",
+                os.getenv("HF_PUSH_DATASET_KEY", ""),
+            ]
+        )
 
-    if _login_result.returncode == 0:
-        logger.info("Logged in")
+        if _login_result.returncode == 0:
+            logger.info("Logged in")
+        else:
+            logger.error(f"Failed to login: {_login_result.stderr}")
+            return False
     else:
-        logger.error(f"Failed to login: {_login_result.stderr}")
-        return False
+        logger.info("[DRY RUN] Skipping HuggingFace authentication")
 
-    # Parse command-line arguments
-    if len(sys.argv) > 1:
-        repo_prefix = sys.argv[1]
-    else:
-        repo_prefix = "."
-
-    if len(sys.argv) > 2:
-        only_dataset = sys.argv[2] or None
-    else:
-        only_dataset = None
-
-    if only_dataset:
-        logger.warning(f"only processing dataset: {only_dataset}")
+    if args.dataset:
+        logger.warning(f"only processing dataset: {args.dataset}")
 
     # Process each dataset (or just the specified one)
     for dataset_name, config in DATASET_CONFIG.items():
-        if not only_dataset or only_dataset == dataset_name:
-            process_dataset(dataset_name, config, repo_prefix)
+        if not args.dataset or args.dataset == dataset_name:
+            process_dataset(dataset_name, config, args.repo_prefix, dry_run=args.dry_run)
 
     logger.info("Finished processing all datasets.")
 
