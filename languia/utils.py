@@ -18,7 +18,7 @@ import numpy as np
 from gradio import Request
 
 if TYPE_CHECKING:
-    from backend.models.models import Endpoint
+    from backend.language_models.models import Endpoint
 
 from backend.utils.user import get_ip
 

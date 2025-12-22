@@ -30,7 +30,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
-from backend.models.utils import get_active_params, get_total_params
+from backend.language_models.utils import get_active_params, get_total_params
 
 # Add the parent directory to the Python path to resolve the 'languia' module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

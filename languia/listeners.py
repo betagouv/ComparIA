@@ -22,7 +22,7 @@ import requests
 import sentry_sdk
 
 from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
-from backend.models.data import get_models
+from backend.language_models.data import get_models
 from backend.session import (
     increment_input_chars,
     is_ratelimited,

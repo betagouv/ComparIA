@@ -12,7 +12,7 @@ from uuid import uuid4
 import gradio as gr
 from litellm.litellm_core_utils.token_counter import token_counter
 
-from backend.models.data import get_models
+from backend.language_models.data import get_models
 from languia import config
 from languia.custom_components.customchatbot import ChatMessage
 from languia.litellm import litellm_stream_iter
