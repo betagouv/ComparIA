@@ -1777,7 +1777,7 @@
   }, 
   {
     "name": "EuroLLM",
-    "icon_path": "EuroLLM",  
+    "icon_path": "euroLLM.webp",  
     "models": [
       {
         "new": true,
