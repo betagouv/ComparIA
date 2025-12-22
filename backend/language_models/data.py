@@ -13,7 +13,7 @@ from backend.config import (
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
     SelectionMode,
 )
-from backend.models.models import LanguageModel
+from backend.language_models.models import LanguageModel
 
 logger = logging.getLogger("languia")
 

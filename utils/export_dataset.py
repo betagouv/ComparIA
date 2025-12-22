@@ -13,7 +13,7 @@ from sqlalchemy.exc import OperationalError
 # Add the parent directory to the Python path to resolve the 'languia' module
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from backend.models.utils import get_active_params, get_total_params
+from backend.language_models.utils import get_active_params, get_total_params
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 

@@ -5,12 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from backend.config import OBJECTIVES, settings
+from backend.language_models.router import router as models_router
 from backend.logger import (
     configure_frontend_logger,
     configure_logger,
     configure_uvicorn_logging,
 )
-from backend.models.router import router as models_router
 from backend.sentry import init_sentry
 from backend.utils.countries import get_country_code, get_country_portal_count
 
