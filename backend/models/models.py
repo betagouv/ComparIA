@@ -25,6 +25,7 @@ from pydantic import (
     AfterValidator,
     AliasChoices,
     BaseModel,
+    ConfigDict,
     Field,
     RootModel,
     ValidationError,
@@ -364,6 +365,43 @@ class Model(RawModel):
 
         # FIXME return None?
         return 0
+
+
+class LanguageModel(BaseModel):
+    """
+    Final language model definition.
+
+    Populated with 'utils/models/generated-models.json' data.
+    It is immutable and no default values are defined so it expects complete data.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    new: bool
+    status: Literal["archived", "enabled"]
+    id: str
+    simple_name: str
+    license: str
+    fully_open_source: bool
+    release_date: str
+    arch: str
+    params: int | float
+    active_params: int | float | None
+    reasoning: bool | Literal["hybrid"]
+    quantization: Literal["q4", "q8"] | None
+    url: str | None
+    endpoint: Endpoint | None
+    pricey: bool
+    distribution: Distribution
+    reuse: bool
+    commercial_use: bool | None
+    organisation: str
+    icon_path: str
+    data: DatasetData | None
+    prefs: PreferencesData | None
+    friendly_size: FriendlySize
+    required_ram: int | float
+    wh_per_million_token: int | float
 
 
 # Model to validate organisations data from 'utils/models/models.json'
