@@ -88,7 +88,8 @@ WHERE archived = FALSE
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
-AND (cohorts NOT LIKE '%%pix%%' AND cohorts NOT LIKE '%%do-not-track%%')
+AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%' AND COALESCE(cohorts, '') NOT LIKE '%%do-not-track%%')
+LIMIT 100
 ;
 """
 
@@ -103,7 +104,7 @@ AND EXISTS (
     AND c.pii_analyzed = TRUE
     AND c.contains_pii = FALSE
     AND c.postprocess_failed = FALSE
-    AND (c.cohorts NOT LIKE '%%pix%%' AND c.cohorts NOT LIKE '%%do-not-track%%')
+    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%' AND COALESCE(cohorts, '') NOT LIKE '%%do-not-track%%')
 )
 ;
 """
@@ -119,7 +120,7 @@ AND EXISTS (
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
     AND c.postprocess_failed = FALSE
-    AND (c.cohorts NOT LIKE '%pix%' AND c.cohorts NOT LIKE '%do-not-track%')
+    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%' AND COALESCE(cohorts, '') NOT LIKE '%%do-not-track%%')
 )
 ;
 """
@@ -228,6 +229,8 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
         # Execute SQL query and load all results into a pandas DataFrame
         dataframe = pd.read_sql_query(query, conn)
+        if dataframe.empty:
+            logger.warning("DataFrame vide")
 
         # Anonymize visitor_id using MD5 hash
         if "visitor_id" in dataframe.columns:
