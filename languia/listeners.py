@@ -69,7 +69,6 @@ from languia.utils import (
     AppState,
     get_chosen_model,
     get_matomo_tracker_from_cookies,
-    pick_models,
     to_threeway_chatbot,
 )
 
@@ -204,7 +203,7 @@ def register_listeners():
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
         # Select two models based on mode (random, big-vs-small, reasoning, etc.)
-        first_model_name, second_model_name = pick_models(
+        first_model_name, second_model_name = m.pick_two(
             mode, custom_models_selection, unavailable_models=unavailable_models
         )
 
@@ -401,7 +400,7 @@ def register_listeners():
                         message="""<div class="visible fr-p-2w">Le comparateur n'a pas pu piocher parmi les modèles sélectionnés car ils ne sont temporairement pas disponibles. Si vous réessayez, le comparateur piochera parmi d'autres modèles.</div>""",
                     )
 
-                model_left, model_right = pick_models(
+                model_left, model_right = m.pick_two(
                     app_state_scoped.mode,
                     # Doesn't make sense to keep custom model options here
                     # FIXME: if error with model wasn't the one chosen (case where you select only one model) just reroll the other one
