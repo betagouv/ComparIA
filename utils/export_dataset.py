@@ -1,3 +1,17 @@
+"""
+Export ComparIA datasets from PostgreSQL to HuggingFace Hub.
+
+This script:
+1. Fetches conversations, votes, and reactions from the database
+2. Applies transformations (hashing visitor_id, adding model metadata, calculating energy consumption)
+3. Filters out PII, archived data, and specific cohorts (Pix, do-not-track)
+4. Exports to multiple formats (parquet, jsonl, tsv samples)
+5. Uploads to HuggingFace Hub repositories
+
+Usage: python export_dataset.py [repo_prefix] [dataset_name]
+Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY
+"""
+
 import pandas as pd
 import logging
 import sys
@@ -35,7 +49,8 @@ COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
 
 REPO_ORG = os.getenv("REPO_ORG", "ministere-culture")
 
-# Define datasets and their corresponding queries and repository paths
+# Dataset queries - filter out PII, archived data, and specific cohorts
+# All queries exclude: archived=TRUE, contains_pii=TRUE, cohorts matching 'pix' or 'do-not-track'
 conversations_db_query = """
 SELECT
     id,
@@ -132,35 +147,40 @@ DATASET_CONFIG = {
 
 
 def load_session_hash_ip():
+    """Load session hash to IP map from database for visitor_id fallback."""
     global session_hash_to_ip_map
     if not COMPARIA_DB_URI:
         logger.error("Cannot connect to the database: no configuration provided")
         return False
-    
+
     engine = create_engine(COMPARIA_DB_URI, execution_options={"stream_results": True})
-    
+
     try:
         with engine.connect() as conn:
             df = pd.read_sql_query(
                 "SELECT ip_map, session_hash FROM conversations", conn
             )
-            # Convert DataFrame to dictionary for efficient lookup
+            # Convert DataFrame to dictionary for efficient lookup when visitor_id is missing
             session_hash_to_ip_map = dict(zip(df["session_hash"], df["ip_map"]))
         return True
-    
+
     except Exception as e:
         logger.error(f"Failed to load session hash IP mapping: {e}")
         return False
 
 
 def hash_md5(value):
+    """Hash a value using MD5 for anonymization."""
     if not value:
         return None
     return hashlib.md5(value.encode("utf-8")).hexdigest()
 
 
 def load_models_data():
-    """Load the generated models JSON data."""
+    """
+    Load the generated models JSON data.
+    Used to enrich conversations with model metadata (params count, energy consumption).
+    """
     global MODELS_DATA
     try:
         with open(MODELS_JSON_PATH, "r") as f:
@@ -179,21 +199,29 @@ def load_models_data():
 def fetch_and_transform_data(conn, table_name, query=None):
     """
     Fetch data from a database table and apply transformations.
-    Optionally process visitor_id (hash and fallback to ip_map).
+
+    Transformations include:
+    - Hash visitor_id with MD5 for anonymization
+    - Fallback to hashed IP map when visitor_id is missing
+    - Add model metadata (params count, energy consumption) for conversations
+    - Drop sensitive/internal columns (IP, PII flags, cohorts, etc.)
     """
 
     try:
         logger.info(f"Fetching data for table: {table_name}")
 
-        df = pd.read_sql_query(query, conn)
+        # Execute SQL query and load all results into a pandas DataFrame
+        dataframe = pd.read_sql_query(query, conn)
 
-        if "visitor_id" in df.columns:
+        # Anonymize visitor_id using MD5 hash
+        if "visitor_id" in dataframe.columns:
             logger.info("Hashing visitor_id with MD5...")
-            df["visitor_id"] = df["visitor_id"].apply(
+            dataframe["visitor_id"] = dataframe["visitor_id"].apply(
                 lambda x: hash_md5(x) if pd.notnull(x) else None
             )
+            # Fallback: use hashed IP map for rows without visitor_id
             logger.info("Replacing missing visitor_id with hashed IP map ID...")
-            df["visitor_id"] = df.apply(
+            dataframe["visitor_id"] = dataframe.apply(
                 lambda row: (
                     hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
                     if pd.isnull(row["visitor_id"])
@@ -203,34 +231,26 @@ def fetch_and_transform_data(conn, table_name, query=None):
                 axis=1,
             )
 
-        columns_to_drop = [
-            "archived",
-            "pii_analyzed",
-            "ip",
-            "chatbot_index",
-            "conversation_a_pii_removed",
-            "conversation_b_pii_removed",
-            "opening_msg_pii_removed",
-            "ip_map",
-            "cohorts",
-            "country_portal",
-        ]
+        # Add model metadata for conversations dataset
         if table_name == "conversations":
             logger.info("Adding model infos...")
-            df["model_a_total_params"] = df["model_a_name"].apply(
+            # Add parameter counts (total and active)
+            dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
                 lambda x: get_total_params(MODELS_DATA.get(x.lower(), {}))
             )
-            df["model_b_total_params"] = df["model_b_name"].apply(
+            dataframe["model_b_total_params"] = dataframe["model_b_name"].apply(
                 lambda x: get_total_params(MODELS_DATA.get(x.lower(), {}))
             )
-            df["model_a_active_params"] = df["model_a_name"].apply(
+            dataframe["model_a_active_params"] = dataframe["model_a_name"].apply(
                 lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
             )
-            df["model_b_active_params"] = df["model_b_name"].apply(
+            dataframe["model_b_active_params"] = dataframe["model_b_name"].apply(
                 lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
             )
 
-            df["total_conv_a_kwh"] = df.apply(
+            # Calculate energy consumption in kWh based on token output
+            # Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
+            dataframe["total_conv_a_kwh"] = dataframe.apply(
                 lambda row: (
                     (
                         (
@@ -249,7 +269,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
                 ),
                 axis=1,
             )
-            df["total_conv_b_kwh"] = df.apply(
+            dataframe["total_conv_b_kwh"] = dataframe.apply(
                 lambda row: (
                     (
                         (
@@ -269,30 +289,56 @@ def fetch_and_transform_data(conn, table_name, query=None):
                 axis=1,
             )
 
+        # Il faudrait supprimer du dataset ces infos un peu legacy
         # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
-        #     -- selected_category VARCHAR(255),
-        #     -- is_unedited_prompt BOOLEAN,
-        df = df.drop(
-            columns=[col for col in columns_to_drop if col in df.columns],
+        #     -- selected_category VARCHAR(255), (suggested question category)
+        #     -- is_unedited_prompt BOOLEAN, (if the prompt is exactly a suggestion)
+
+        # Drop sensitive columns before export
+        # List of sensitive columns :
+               
+        columns_to_drop = [
+            "archived",
+            "pii_analyzed",
+            "ip",
+            "chatbot_index",
+            "conversation_a_pii_removed",
+            "conversation_b_pii_removed",
+            "opening_msg_pii_removed",
+            "ip_map",
+            "cohorts",
+            "country_portal",
+        ]
+        dataframe = dataframe.drop(
+            columns=[col for col in columns_to_drop if col in dataframe.columns],
             errors="ignore",
         )
-        return df
+        return dataframe
+    
     except Exception as e:
         logger.error(f"Failed to fetch data from {table_name}: {e}")
         # Return None instead of empty DataFrame to indicate failure
         return None
 
 
-def export_data(df, table_name, export_dir):
+def export_data(dataframe, table_name, export_dir):
+    """
+    Export DataFrame to multiple formats.
 
+    Generates:
+    - Full dataset: parquet, jsonl
+    - 1000-row sample: tsv, jsonl
+    """
     os.makedirs(export_dir, exist_ok=True)
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
-        df.to_parquet(f"{export_dir}/{table_name}.parquet")
-        df.to_json(f"{export_dir}/{table_name}.jsonl", orient="records", lines=True)
+        # Full dataset exports
+        dataframe.to_parquet(f"{export_dir}/{table_name}.parquet")
+        dataframe.to_json(f"{export_dir}/{table_name}.jsonl", orient="records", lines=True)
 
-        sample_df = df.sample(n=min(len(df), 1000), random_state=42)
+        # Sample dataset exports (max 1000 rows)
+        sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
         sample_df.to_csv(
             f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False
         )
@@ -306,10 +352,10 @@ def export_data(df, table_name, export_dir):
 
 
 def commit_and_push(repo_org, repo_name, repo_path):
-    """Commits and pushes changes for a given repository."""
-    # Check for changes
-
-    # Commit
+    """
+    Upload exported files to HuggingFace Hub repository.
+    Uses 'hf upload' CLI command with timestamped commit message.
+    """
     commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     logger.info(
         f"hf upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'"
@@ -330,7 +376,6 @@ def commit_and_push(repo_org, repo_name, repo_path):
         ]
     )
 
-    # push_result = subprocess.run(["git", "pull", "-C", repo_path, "push", "--dry-run"])
     if push_result.returncode == 0:
         logger.info(f"Successfully pushed changes for {repo_path}")
         return True
@@ -340,7 +385,11 @@ def commit_and_push(repo_org, repo_name, repo_path):
 
 
 def process_dataset(dataset_name, dataset_config, repo_prefix):
-    """Processes a single dataset."""
+    """
+    Process a single dataset: fetch from DB, transform (anonymize, add metadata),
+    Export to multiple formats (parquet, jsonl, samples), and push to HF Hub.
+    """
+
     logger.info(f"Starting processing for dataset: {dataset_name}")
     if not COMPARIA_DB_URI:
         logger.error(f"Cannot process {dataset_name}: no $COMPARIA_DB_URI")
@@ -374,10 +423,10 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
                 )
                 return False
 
-            # Export data
+            # Export data to local files
             export_data(data, dataset_name, repo_path)
 
-            # Commit and push changes for the repository
+            # Upload to HuggingFace Hub
             push_success = commit_and_push(REPO_ORG, repo_name, repo_path)
 
             return push_success
@@ -395,13 +444,21 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
 
 
 def main():
+    """
+    Main entry point for dataset export script.
 
+    Args (via command line):
+        sys.argv[1]: repo_prefix - directory for export (default: ".")
+        sys.argv[2]: dataset_name - specific dataset to export (optional, default: all)
+
+    Example:
+        python export_dataset.py ./exports conversations
+    """
+    # Load lookup tables for data enrichment
     load_session_hash_ip()
     load_models_data()
-    # logger.info("")
-    # subprocess.run(args=
-    #         ["git", "--global" "config","credential.helper", "store"]
-    #     )
+
+    # Authenticate with HuggingFace CLI
     logger.info("hf auth login --token $HF_PUSH_DATASET_KEY")
 
     _login_result = subprocess.run(
@@ -420,6 +477,7 @@ def main():
         logger.error(f"Failed to login: {_login_result.stderr}")
         return False
 
+    # Parse command-line arguments
     if len(sys.argv) > 1:
         repo_prefix = sys.argv[1]
     else:
@@ -429,8 +487,11 @@ def main():
         only_dataset = sys.argv[2] or None
     else:
         only_dataset = None
+
     if only_dataset:
         logger.warning(f"only processing dataset: {only_dataset}")
+
+    # Process each dataset (or just the specified one)
     for dataset_name, config in DATASET_CONFIG.items():
         if not only_dataset or only_dataset == dataset_name:
             process_dataset(dataset_name, config, repo_prefix)
