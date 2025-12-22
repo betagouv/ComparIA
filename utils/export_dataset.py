@@ -181,6 +181,17 @@ def hash_md5(value):
     return hashlib.md5(value.encode("utf-8")).hexdigest()
 
 
+def calculate_kwh(model_name, tokens):
+    """
+    Calculate energy consumption in kWh for a model based on token output.
+    Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
+    """
+    if tokens is None:
+        return None
+    wh_per_million = MODELS_DATA.get(model_name.lower(), {}).get("wh_per_million_token", 0)
+    return (wh_per_million / 1_000_000) * tokens / 1_000
+
+
 def load_models_data():
     """
     Load the generated models JSON data.
@@ -253,22 +264,13 @@ def fetch_and_transform_data(conn, table_name, query=None):
                 lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
             )
 
-            # Calculate energy consumption in kWh based on token output
-            # Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
-            def calculate_kwh(model_name, tokens):
-                if tokens is None:
-                    return None
-                wh_per_million = MODELS_DATA.get(model_name.lower(), {}).get("wh_per_million_token", 0)
-                return (wh_per_million / 1_000_000) * tokens / 1_000
+            # Calculate energy consumption with vectorized operations
+            dataframe["total_conv_a_kwh"] = None
+            dataframe["total_conv_b_kwh"] = None
 
-            dataframe["total_conv_a_kwh"] = dataframe.apply(
-                lambda row: calculate_kwh(row["model_a_name"], row["total_conv_a_output_tokens"]),
-                axis=1
-            )
-            dataframe["total_conv_b_kwh"] = dataframe.apply(
-                lambda row: calculate_kwh(row["model_b_name"], row["total_conv_b_output_tokens"]),
-                axis=1
-            )
+            for idx, row in dataframe.iterrows():
+                dataframe.at[idx, "total_conv_a_kwh"] = calculate_kwh(row["model_a_name"], row["total_conv_a_output_tokens"])
+                dataframe.at[idx, "total_conv_b_kwh"] = calculate_kwh(row["model_b_name"], row["total_conv_b_output_tokens"])
 
         # Il faudrait supprimer du dataset ces infos un peu legacy
         # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
