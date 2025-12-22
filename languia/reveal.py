@@ -138,8 +138,8 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
 
     # Calculate environmental impact using ecologits library
     # Uses model parameters, active parameters (for MoE), and token count
-    model_a_impact = get_llm_impact(model_a, conv_a.model_name, model_a_tokens, None)
-    model_b_impact = get_llm_impact(model_b, conv_b.model_name, model_b_tokens, None)
+    model_a_impact = get_llm_impact(model_a, model_a_tokens, None)
+    model_b_impact = get_llm_impact(model_b, model_b_tokens, None)
 
     # Extract and normalize energy and CO2 values (handles value ranges)
     model_a_kwh = convert_range_to_value(model_a_impact.energy.value)

@@ -347,17 +347,7 @@ class Model(RawModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def wh_per_million_token(self) -> int | float:
-        model_info = {
-            "params": self.params,
-            "active_params": self.active_params,
-            "quantization": self.quantization,
-        }
-        impact = get_llm_impact(
-            model_info,
-            self.id,
-            1_000_000,
-            None,
-        )
+        impact = get_llm_impact(self, 1_000_000, None)
 
         if impact:
             energy_kwh = convert_range_to_value(impact.energy.value)
