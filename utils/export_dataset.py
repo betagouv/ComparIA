@@ -88,7 +88,7 @@ WHERE archived = FALSE
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
-AND (cohorts NOT LIKE '%pix%' AND cohorts NOT LIKE '%do-not-track%')
+AND (cohorts NOT LIKE '%%pix%%' AND cohorts NOT LIKE '%%do-not-track%%')
 ;
 """
 
@@ -103,7 +103,7 @@ AND EXISTS (
     AND c.pii_analyzed = TRUE
     AND c.contains_pii = FALSE
     AND c.postprocess_failed = FALSE
-    AND (c.cohorts NOT LIKE '%pix%' AND c.cohorts NOT LIKE '%do-not-track%')
+    AND (c.cohorts NOT LIKE '%%pix%%' AND c.cohorts NOT LIKE '%%do-not-track%%')
 )
 ;
 """
@@ -255,43 +255,19 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
             # Calculate energy consumption in kWh based on token output
             # Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
+            def calculate_kwh(model_name, tokens):
+                if tokens is None:
+                    return None
+                wh_per_million = MODELS_DATA.get(model_name.lower(), {}).get("wh_per_million_token", 0)
+                return (wh_per_million / 1_000_000) * tokens / 1_000
+
             dataframe["total_conv_a_kwh"] = dataframe.apply(
-                lambda row: (
-                    (
-                        (
-                            (
-                                MODELS_DATA.get(row["model_a_name"].lower(), {}).get(
-                                    "wh_per_million_token", 0
-                                )
-                                / 1_000_000
-                            )
-                            * row["total_conv_a_output_tokens"]
-                        )
-                        / 1_000  # convert wh to kwh
-                    )
-                    if row["total_conv_a_output_tokens"] is not None
-                    else None
-                ),
-                axis=1,
+                lambda row: calculate_kwh(row["model_a_name"], row["total_conv_a_output_tokens"]),
+                axis=1
             )
             dataframe["total_conv_b_kwh"] = dataframe.apply(
-                lambda row: (
-                    (
-                        (
-                            (
-                                MODELS_DATA.get(row["model_b_name"].lower(), {}).get(
-                                    "wh_per_million_token", 0
-                                )
-                                / 1_000_000
-                            )
-                            * row["total_conv_b_output_tokens"]
-                        )
-                        / 1_000  # convert wh to kwh
-                    )
-                    if row["total_conv_b_output_tokens"] is not None
-                    else None
-                ),
-                axis=1,
+                lambda row: calculate_kwh(row["model_b_name"], row["total_conv_b_output_tokens"]),
+                axis=1
             )
 
         # Il faudrait supprimer du dataset ces infos un peu legacy
