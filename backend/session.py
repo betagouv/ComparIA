@@ -14,6 +14,8 @@ from pydantic import BaseModel
 
 from backend.config import RATELIMIT_PRICEY_MODELS_INPUT, settings
 
+logger = logging.getLogger("languia")
+
 try:
     # Redis connection configuration
     redis_host = settings.COMPARIA_REDIS_HOST
@@ -25,8 +27,8 @@ try:
     # Fail if we don't have a working redis
     response = r.ping()
     if not r.ping():
-        logger = logging.getLogger("languia")
         logger.error(f"Erreur de connection au redis - {response}")
+        # FIXME raise?
 
 except Exception as e:
     raise Exception(f"Redis Connection Error {e}")
@@ -37,7 +39,7 @@ class CohortRequest(BaseModel):
     cohorts: str
 
 
-def increment_input_chars(ip: str, input_chars: int):
+def increment_input_chars(ip: str, input_chars: int) -> bool:
     """
     Track input character count per IP address for rate limiting.
 
@@ -60,7 +62,7 @@ def increment_input_chars(ip: str, input_chars: int):
     return True
 
 
-def is_ratelimited(ip: str):
+def is_ratelimited(ip: str) -> bool:
     """
     Check if an IP address has exceeded rate limit for expensive models.
 
@@ -78,7 +80,7 @@ def is_ratelimited(ip: str):
         return False
 
 
-def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
+def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str) -> bool:
     """
     Stocke dans Redis une indication de ne pas suivre pour une session donnée.
 
@@ -90,10 +92,9 @@ def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
         bool: True si l'opération a réussi, False sinon
     """
     if not redis_host:
-        logger = logging.getLogger("languia")
         logger.warning("[COHORT] Redis not configured (COMPARIA_REDIS_HOST not set)")
         return False
-    logger = logging.getLogger("languia")
+
     try:
         # Stocke la clé avec une expiration de 24 heures
         expire_time = 86400
@@ -103,12 +104,13 @@ def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str):
         r.setex(f"cohorts:{session_hash}", expire_time, cohorts_comma_separated)
         logger.info(f"[COHORT] Successfully stored in Redis")
         return True
+
     except Exception as e:
         logger.error(f"[COHORT] Error storing cohorts in Redis: {e}")
         return False
 
 
-def retrieve_cohorts_redis(session_hash: str):
+def retrieve_cohorts_redis(session_hash: str) -> str | None:
     """
     Vérifie si une session a une indication de ne pas suivre.
 
@@ -120,7 +122,7 @@ def retrieve_cohorts_redis(session_hash: str):
     """
     if not redis_host:
         return None
-    logger = logging.getLogger("languia")
+
     try:
         cohorts_comma_separated = r.get(f"cohorts:{session_hash}")
         logger.info(
