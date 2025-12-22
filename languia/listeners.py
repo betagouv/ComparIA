@@ -22,7 +22,7 @@ import requests
 import sentry_sdk
 
 from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
-from backend.models.data import models, pricey_models
+from backend.models.data import get_models
 from backend.session import (
     increment_input_chars,
     is_ratelimited,
@@ -74,6 +74,10 @@ from languia.utils import (
 )
 
 logger = logging.getLogger("languia")
+
+m = get_models()
+models = m.enabled
+pricey_models = m.pricey_models
 
 
 def register_listeners():
