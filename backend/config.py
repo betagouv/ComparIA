@@ -44,10 +44,15 @@ GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 # Available country codes
 CountryCode = Literal["fr", "da"]
 COUNTRY_CODES: tuple[CountryCode, ...] = get_args(CountryCode)
-DEFAULT_COUNTRY_CODE = cast(CountryCode, "fr")
+DEFAULT_COUNTRY_CODE: CountryCode = "fr"
 
 # Per-country objectives for data collection (rows to collect)
 OBJECTIVES: dict[CountryCode, int] = {"fr": 250_000, "da": 10_000}
+
+# Language model selection modes
+SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
+SELECTION_MODES: tuple[SelectionMode, ...] = get_args(SelectionMode)
+DEFAULT_SELECTION_MODE: SelectionMode = "random"
 
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
