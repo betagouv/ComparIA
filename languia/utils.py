@@ -371,7 +371,12 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     """
     import random
 
-    from backend.models.data import big_models, random_pool, small_models
+    from backend.models.data import get_models
+
+    models = get_models()
+    big_models = models.big_models
+    random_pool = models.random_models
+    small_models = models.small_models
 
     if mode == "big-vs-small":
         # Compare large models against small models
