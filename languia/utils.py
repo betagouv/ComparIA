@@ -303,53 +303,6 @@ class AppState:
     #     return self.__dict__.copy()
 
 
-def choose_among(
-    models,
-    excluded,
-):
-    """
-    Randomly select a model from a list, excluding specified models.
-
-    Args:
-        models: List of available model names to choose from
-        excluded: List of model names to exclude from selection
-
-    Returns:
-        str: Selected model name
-
-    Raises:
-        gr.Error: If no models are available after filtering
-    """
-    enabled_models = models
-    # Filter out excluded models
-    models_pool = [
-        model_name for model_name in enabled_models if model_name not in excluded
-    ]
-    logger = logging.getLogger("languia")
-    logger.debug("chosing from:" + str(models_pool))
-    logger.debug("excluded:" + str(excluded))
-
-    # Handle empty pool
-    if len(models_pool) == 0:
-        # TODO: tell user in a toast notif that we couldn't respect prefs
-        logger.warning("Couldn't respect exclusion prefs")
-        if len(enabled_models) == 0:
-            logger.critical("No model to choose from")
-            # No models available at all
-            raise gr.Error(
-                duration=0,
-                message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
-            )
-        else:
-            # Fall back to all models if couldn't respect exclusions
-            models_pool = enabled_models
-
-    # Random selection from available models
-    chosen_idx = np.random.choice(len(models_pool), p=None)
-    chosen_model_name = models_pool[chosen_idx]
-    return chosen_model_name
-
-
 def pick_models(mode, custom_models_selection, unavailable_models):
     """
     Select two models based on the comparison mode.
