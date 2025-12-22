@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
+from backend.arena.router import router as arena_router
 from backend.config import OBJECTIVES, settings
 from backend.language_models.router import router as models_router
 from backend.logger import (
@@ -41,6 +42,7 @@ app.add_middleware(
 )
 
 app.include_router(models_router)
+app.include_router(arena_router)
 
 # GRADIO TEMP
 import gradio as gr
