@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.models.data import all_models_data
+from backend.models.data import get_models
 
 router = APIRouter(
     prefix="/models",
@@ -10,11 +10,8 @@ router = APIRouter(
 
 @router.get("/")
 async def get_available_models():
+    models = get_models()
     return {
-        "models": [
-            model
-            for model in all_models_data["models"].values()
-            if model["status"] in ("enabled", "archived")
-        ],
-        "data_timestamp": all_models_data["timestamp"],
+        "data_timestamp": models.data_timestamp,
+        "models": models.all,
     }

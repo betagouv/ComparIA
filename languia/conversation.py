@@ -5,24 +5,20 @@ This module manages the interaction with multiple AI models through LiteLLM,
 handling streaming responses, token counting, and message tracking.
 """
 
-import gradio as gr
-
-from languia.litellm import litellm_stream_iter
-from litellm.litellm_core_utils.token_counter import token_counter
-
-import time
-from languia.custom_components.customchatbot import (
-    ChatMessage,
-)
-
-from languia.utils import EmptyResponseError, messages_to_dict_list, get_api_key
-from languia import config
-
 import logging
-
+import time
 from uuid import uuid4
 
-from backend.models.data import models
+import gradio as gr
+from litellm.litellm_core_utils.token_counter import token_counter
+
+from backend.models.data import get_models
+from languia import config
+from languia.custom_components.customchatbot import ChatMessage
+from languia.litellm import litellm_stream_iter
+from languia.utils import EmptyResponseError, get_api_key, messages_to_dict_list
+
+models = get_models().enabled
 
 
 class Conversation:

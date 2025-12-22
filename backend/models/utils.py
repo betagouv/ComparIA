@@ -1,29 +1,10 @@
 import logging
-from typing import TYPE_CHECKING
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
-if TYPE_CHECKING:
-    from backend.models.models import Model
-
 logger = logging.getLogger("languia")
-
-
-def filter_enabled_models(models: dict[str, "Model"]):
-    from backend.models.models import Endpoint
-
-    enabled_models = {}
-    for model_id, model_dict in models.items():
-        if model_dict.get("status") == "enabled":
-            try:
-                if Endpoint.model_validate(model_dict.get("endpoint")):
-                    enabled_models[model_id] = model_dict
-            except:
-                continue
-
-    return enabled_models
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
