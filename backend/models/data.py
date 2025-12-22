@@ -11,6 +11,7 @@ from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     MODELS_DATA_PATH,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
+    SelectionMode,
 )
 from backend.models.models import LanguageModel
 
@@ -124,6 +125,75 @@ class LanguageModels(BaseModel):
         # Random selection from available models
         picked_index = np.random.choice(len(models_pool), p=None)
         return models_pool[picked_index]
+
+    def pick_two(
+        self,
+        mode: SelectionMode | None = "random",
+        custom_selection: tuple[str] | tuple[str, str] | None = None,
+        unavailable_models: list[str] = [],
+    ) -> tuple[str, str]:
+        """
+        Select two models based on the comparison mode.
+
+        Supports multiple selection modes:
+        - random: Two random models
+        - big-vs-small: One large model vs one small model
+        - small-models: Two small models
+        - custom: User-specified models
+
+        Args:
+            mode: Selection mode string
+            custom_models_selection: User's custom model choices (if custom mode)
+            unavailable_models: Models that are currently unavailable/offline
+
+        Returns:
+            tuple: (model_a_id, model_b_id) - pair of model ids, randomly swapped
+        """
+        import random
+
+        # FIXME rework unavailable_models, models should be available if endpoint is defined or use class attribute to store unavailable models
+
+        if mode == "big-vs-small":
+            # Compare large models against small models
+            model_a_id = self.pick_one(self.big_models, excluded=unavailable_models)
+            model_b_id = self.pick_one(self.small_models, excluded=unavailable_models)
+
+        elif mode == "small-models":
+            # Compare two small models
+            model_a_id = self.pick_one(self.small_models, excluded=unavailable_models)
+            model_b_id = self.pick_one(
+                self.small_models, excluded=[*unavailable_models, model_a_id]
+            )
+
+        elif mode == "custom" and custom_selection and len(custom_selection) > 0:
+            # User-selected models
+            # FIXME: input sanitization needed
+            # if any(mode[1], not in models):
+            #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+
+            if len(custom_selection) == 1:
+                # One model chosen by user, pair with random model
+                model_a_id = custom_selection[0]
+                model_b_id = self.pick_one(
+                    self.random_models, excluded=[*unavailable_models, model_a_id]
+                )
+            elif len(custom_selection) == 2:
+                # Two models chosen by user
+                model_a_id = custom_selection[0]
+                model_b_id = custom_selection[1]
+
+        else:
+            # Default to random mode
+            model_a_id = self.pick_one(self.random_models, excluded=unavailable_models)
+            model_b_id = self.pick_one(
+                self.random_models, excluded=[*unavailable_models, model_a_id]
+            )
+
+        # Randomly swap models to avoid position bias
+        swap = random.randint(0, 1)
+        if swap == 1:
+            return (model_b_id, model_a_id)
+        return (model_a_id, model_b_id)
 
 
 @lru_cache
