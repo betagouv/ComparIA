@@ -30,10 +30,14 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
+
+REPO_ORG = os.getenv("REPO_ORG", "ministere-culture")
+
 # Define datasets and their corresponding queries and repository paths
-DATASET_CONFIG = {
-    "conversations": {
-        "query": """SELECT
+conversations_db_query = """
+SELECT
     id,
     timestamp,
     model_a_name,
@@ -65,11 +69,11 @@ AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
 AND (cohorts NOT LIKE '%pix%' AND cohorts NOT LIKE '%do-not-track%')
-;""",
-        "repo": "comparia-conversations",
-    },
-    "votes": {
-        "query": """SELECT v.*
+;
+"""
+
+votes_db_query = """
+SELECT v.*
 FROM votes v
 WHERE v.archived = FALSE
 AND EXISTS (
@@ -81,11 +85,11 @@ AND EXISTS (
     AND c.postprocess_failed = FALSE
     AND (c.cohorts NOT LIKE '%pix%' AND c.cohorts NOT LIKE '%do-not-track%')
 )
-;""",
-        "repo": "comparia-votes",
-    },
-    "reactions": {
-        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+;
+"""
+
+reactions_db_query = """
+SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
 FROM reactions r
 WHERE r.archived = FALSE
 AND EXISTS (
@@ -97,14 +101,31 @@ AND EXISTS (
     AND c.postprocess_failed = FALSE
     AND (c.cohorts NOT LIKE '%pix%' AND c.cohorts NOT LIKE '%do-not-track%')
 )
-;""",
+;
+"""
+
+conversations_raw_db_query = """
+SELECT *
+FROM conversations
+WHERE archived = FALSE
+;
+"""
+
+DATASET_CONFIG = {
+    "conversations": {
+        "query": conversations_db_query,
+        "repo": "comparia-conversations",
+    },
+    "votes": {
+        "query": votes_db_query,
+        "repo": "comparia-votes",
+    },
+    "reactions": {
+        "query": reactions_db_query,
         "repo": "comparia-reactions",
     },
     "conversations_raw": {
-        "query": """SELECT *
-FROM conversations
-WHERE archived = FALSE
-;""",
+        "query": conversations_raw_db_query,
         "repo": "comparia-conversations_raw",
     },
 }
@@ -112,11 +133,12 @@ WHERE archived = FALSE
 
 def load_session_hash_ip():
     global session_hash_to_ip_map
-    DATABASE_URI = os.getenv("DATABASE_URI")
-    if not DATABASE_URI:
+    if not COMPARIA_DB_URI:
         logger.error("Cannot connect to the database: no configuration provided")
         return False
-    engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
+    
+    engine = create_engine(COMPARIA_DB_URI, execution_options={"stream_results": True})
+    
     try:
         with engine.connect() as conn:
             df = pd.read_sql_query(
@@ -125,6 +147,7 @@ def load_session_hash_ip():
             # Convert DataFrame to dictionary for efficient lookup
             session_hash_to_ip_map = dict(zip(df["session_hash"], df["ip_map"]))
         return True
+    
     except Exception as e:
         logger.error(f"Failed to load session hash IP mapping: {e}")
         return False
@@ -161,6 +184,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
     try:
         logger.info(f"Fetching data for table: {table_name}")
+
         df = pd.read_sql_query(query, conn)
 
         if "visitor_id" in df.columns:
@@ -318,9 +342,8 @@ def commit_and_push(repo_org, repo_name, repo_path):
 def process_dataset(dataset_name, dataset_config, repo_prefix):
     """Processes a single dataset."""
     logger.info(f"Starting processing for dataset: {dataset_name}")
-    DATABASE_URI = os.getenv("DATABASE_URI")
-    if not DATABASE_URI:
-        logger.error(f"Cannot process {dataset_name}: no $DATABASE_URI")
+    if not COMPARIA_DB_URI:
+        logger.error(f"Cannot process {dataset_name}: no $COMPARIA_DB_URI")
         return False
 
     repo_name = dataset_config.get("repo")
@@ -330,8 +353,6 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return False
 
-    repo_org = os.getenv("REPO_ORG", "ministere-culture")
-
     logger.info(f"Folder defined for dataset: {repo_prefix}")
 
     repo_path = os.path.join(repo_prefix, repo_name)
@@ -339,7 +360,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
     engine = None
     conn = None
     try:
-        engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
+        engine = create_engine(COMPARIA_DB_URI, execution_options={"stream_results": True})
         with engine.connect() as conn:
             logger.info(f"Database connection established for dataset: {dataset_name}")
 
@@ -357,7 +378,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
             export_data(data, dataset_name, repo_path)
 
             # Commit and push changes for the repository
-            push_success = commit_and_push(repo_org, repo_name, repo_path)
+            push_success = commit_and_push(REPO_ORG, repo_name, repo_path)
 
             return push_success
 
