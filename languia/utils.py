@@ -9,67 +9,20 @@ This module provides helper functions for:
 - Data transformation for API calls and storage
 """
 
-import numpy as np
-import os
-
-from gradio import Request
-from typing import TYPE_CHECKING
-import gradio as gr
 import logging
+import os
+from typing import TYPE_CHECKING
+
+import gradio as gr
+import numpy as np
+from gradio import Request
 
 if TYPE_CHECKING:
-    from languia.models import Endpoint
+    from backend.language_models.models import Endpoint
+
+from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
-
-
-def get_total_params(model_extra_info):
-    """
-    Get the total number of parameters for a model.
-
-    Accounts for q8 quantization which reduces effective parameters by half.
-
-    Args:
-        model_extra_info: Dict containing model metadata with 'params' and optional 'quantization'
-
-    Returns:
-        int: Total parameters, or None if params not available
-    """
-    if model_extra_info.get("params"):
-        # Q8 quantization reduces parameter count (2x compression)
-        if model_extra_info.get("quantization", None) == "q8":
-            return int(model_extra_info["params"]) // 2
-        else:
-            return int(model_extra_info["params"])
-    else:
-        logger.error(
-            f"Couldn't get total params for {model_extra_info.get('id')}, missing params"
-        )
-        return None
-
-
-def get_active_params(model_extra_info):
-    """
-    Get the number of active parameters for a model.
-
-    For Mixture of Experts (MoE) models, this is different from total parameters.
-    Active params represent how many parameters are used for each token.
-
-    Args:
-        model_extra_info: Dict containing model metadata
-
-    Returns:
-        int: Active parameters, or total params if not available
-    """
-    if model_extra_info.get("active_params"):
-        # Account for Q8 quantization if present
-        if model_extra_info.get("quantization", None) == "q8":
-            return int(model_extra_info["active_params"]) // 2
-        else:
-            return int(model_extra_info["active_params"])
-    else:
-        # Fallback to total params if active_params is not available (non-MoE models)
-        return get_total_params(model_extra_info)
 
 
 class ContextTooLongError(ValueError):
@@ -89,39 +42,6 @@ class EmptyResponseError(RuntimeError):
     def __str__(self):
         msg = "Empty response"
         return msg
-
-
-def get_ip(request: Request):
-    """
-    Extract user's real IP address from Gradio request headers.
-
-    Handles proxy chains and cloud protection services by checking multiple headers.
-    Priority order: cloud-protector-client-ip > x-original-forwarded-for > x-forwarded-for > request.client.host
-
-    Args:
-        request: Gradio Request object with headers
-
-    Returns:
-        str: User's IP address (first IP if multiple comma-separated values)
-    """
-    # Try cloud protection provider IP first (OVH, etc.)
-    if "cloud-protector-client-ip" in request.headers:
-        ip = request.headers["cloud-protector-client-ip"]
-    # Try original forwarded IP (before multiple proxies)
-    elif "x-original-forwarded-for" in request.headers:
-        ip = request.headers["x-original-forwarded-for"]
-    # Try standard forwarded-for header
-    elif "x-forwarded-for" in request.headers:
-        ip = request.headers["x-forwarded-for"]
-    # Fall back to direct client IP
-    else:
-        ip = request.client.host
-
-    # Multiple IPs can be returned as comma-separated string; take the first (client IP)
-    if "," in ip:
-        ip = ip.split(",")[0].strip()
-
-    return ip
 
 
 def get_chosen_model(which_model_radio):
@@ -383,122 +303,6 @@ class AppState:
     #     return self.__dict__.copy()
 
 
-def choose_among(
-    models,
-    excluded,
-):
-    """
-    Randomly select a model from a list, excluding specified models.
-
-    Args:
-        models: List of available model names to choose from
-        excluded: List of model names to exclude from selection
-
-    Returns:
-        str: Selected model name
-
-    Raises:
-        gr.Error: If no models are available after filtering
-    """
-    enabled_models = models
-    # Filter out excluded models
-    models_pool = [
-        model_name for model_name in enabled_models if model_name not in excluded
-    ]
-    logger = logging.getLogger("languia")
-    logger.debug("chosing from:" + str(models_pool))
-    logger.debug("excluded:" + str(excluded))
-
-    # Handle empty pool
-    if len(models_pool) == 0:
-        # TODO: tell user in a toast notif that we couldn't respect prefs
-        logger.warning("Couldn't respect exclusion prefs")
-        if len(enabled_models) == 0:
-            logger.critical("No model to choose from")
-            # No models available at all
-            raise gr.Error(
-                duration=0,
-                message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
-            )
-        else:
-            # Fall back to all models if couldn't respect exclusions
-            models_pool = enabled_models
-
-    # Random selection from available models
-    chosen_idx = np.random.choice(len(models_pool), p=None)
-    chosen_model_name = models_pool[chosen_idx]
-    return chosen_model_name
-
-
-def pick_models(mode, custom_models_selection, unavailable_models):
-    """
-    Select two models based on the comparison mode.
-
-    Supports multiple selection modes:
-    - random: Two random models
-    - big-vs-small: One large model vs one small model
-    - small-models: Two small models
-    - reasoning: Two reasoning-capable models
-    - custom: User-specified models
-
-    Args:
-        mode: Selection mode string
-        custom_models_selection: User's custom model choices (if custom mode)
-        unavailable_models: Models that are currently unavailable/offline
-
-    Returns:
-        list: [model_left, model_right] - pair of model names, randomly swapped
-    """
-    from languia.config import big_models, small_models, random_pool
-    import random
-
-    if mode == "big-vs-small":
-        # Compare large models against small models
-        model_left_name = choose_among(models=big_models, excluded=unavailable_models)
-        model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models
-        )
-
-    elif mode == "small-models":
-        # Compare two small models
-        model_left_name = choose_among(models=small_models, excluded=unavailable_models)
-        model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models + [model_left_name]
-        )
-
-    elif mode == "custom" and len(custom_models_selection) > 0:
-        # User-selected models
-        # FIXME: input sanitization needed
-        # if any(mode[1], not in models):
-        #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
-
-        if len(custom_models_selection) == 1:
-            # One model chosen by user, pair with random model
-            model_left_name = custom_models_selection[0]
-            model_right_name = choose_among(
-                models=random_pool,
-                excluded=[custom_models_selection[0]] + unavailable_models,
-            )
-        elif len(custom_models_selection) == 2:
-            # Two models chosen by user
-            model_left_name = custom_models_selection[0]
-            model_right_name = custom_models_selection[1]
-
-    else:
-        # Default to random mode
-        model_left_name = choose_among(models=random_pool, excluded=unavailable_models)
-        model_right_name = choose_among(
-            models=random_pool, excluded=[model_left_name] + unavailable_models
-        )
-
-    # Randomly swap models to avoid position bias
-    swap = random.randint(0, 1)
-    if swap == 1:
-        model_right_name, model_left_name = model_left_name, model_right_name
-
-    return [model_left_name, model_right_name]
-
-
 def get_api_key(endpoint: "Endpoint"):
     """
     Get the appropriate API key for an endpoint.
@@ -610,76 +414,3 @@ def to_threeway_chatbot(conversations):
                     }
                 )
     return threeway_chatbot
-
-
-def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
-    """
-    Get the count of votes and reactions for conversations with a specific country portal.
-
-    Args:
-        country_code: The country code to filter by (e.g., 'da' for Danish)
-        ttl: Time-to-live for Redis cache in seconds (default: 120 seconds = 2 minutes)
-
-    Returns:
-        The count of votes and reactions for the specified country portal
-    """
-    import psycopg2
-    from psycopg2 import sql
-    from languia.config import db as dsn
-    from languia.session import r
-
-    logger = logging.getLogger("languia")
-
-    cache_key = f"{country_code}_count"
-    # Try Redis first
-    if r:
-        try:
-            count = r.get(cache_key)
-            if count is not None:
-                return int(count)
-        except Exception as e:
-            logger.debug(f"cache miss for {country_code} count from Redis: {e}")
-
-    # Fallback to Postgres
-    if not dsn:
-        logger.warning("Cannot log to db: no db configured")
-        return 0
-
-    conn = None
-    cursor = None
-    result = 0
-    try:
-        conn = psycopg2.connect(dsn)
-        cursor = conn.cursor()
-        # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL(
-            """
-            SELECT
-                (SELECT COUNT(*) FROM votes v
-                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s) +
-                (SELECT COUNT(*) FROM reactions r
-                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s)
-            as total;
-        """
-        )
-        cursor.execute(query, (country_code, country_code))
-        res = cursor.fetchone()
-        result = res[0] if res and res[0] is not None else 0
-
-        if r:
-            try:
-                r.setex(cache_key, ttl, result)
-            except Exception as e:
-                logger.error(f"Error setting {country_code} count in Redis: {e}")
-
-        return result
-    except Exception as e:
-        logger.error(f"Error getting {country_code} count from db: {e}")
-        return 0
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()

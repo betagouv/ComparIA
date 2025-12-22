@@ -1,17 +1,17 @@
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-
-from languia.session import store_cohorts_redis
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-
-from languia.block_arena import demo
-
-import gradio as gr
 import logging
 
-from languia import config
-from languia.models import FrontendLogRequest, FrontendLogEntry
+import gradio as gr
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+
+from backend.logger import FrontendLogEntry, FrontendLogRequest
+from backend.session import CohortRequest, store_cohorts_redis
+from backend.utils.countries import get_country_portal_count
+from languia.block_arena import demo
+
+logger = logging.getLogger("languia")
 
 app = FastAPI()
 
@@ -48,66 +48,8 @@ app = gr.mount_gradio_app(
     path="/api",
     root_path="/api",
     # allowed_paths=[config.assets_absolute_path],
-    show_error=config.debug,
+    # show_error=config.debug,
 )
-
-from languia.utils import get_country_portal_count
-
-
-@app.get("/", response_class=JSONResponse)
-@app.get("/available_models", response_class=JSONResponse)
-@app.get("/models", response_class=JSONResponse)
-async def available_models():
-    return JSONResponse(
-        {
-            "models": [
-                model
-                for model in config.all_models_data["models"].values()
-                if model["status"] in ("enabled", "archived")
-            ],
-            "data_timestamp": config.all_models_data["timestamp"],
-        }
-    )
-
-
-# @app.get("/enabled_models", response_class=JSONResponse)
-# async def enabled_models():
-#     return JSONResponse(dict(config.models))
-
-from fastapi import Query
-from typing import Annotated, Optional
-
-from languia.models import CohortRequest
-
-@app.get("/counter", response_class=JSONResponse)
-async def counter(
-    request: Request,
-    c: str | None = None,
-):
-    # don't get it from host
-    # hostname = request.headers.get("Host")
-    # Always check the query parameter 'c' for locale
-    country_portal = request.query_params.get(
-        "c", "fr"
-    )  # Default to "fr" if not provided
-
-    # Only allow "da" or "fr" as valid locales
-    if country_portal not in ("da", "fr"):
-        country_portal = "fr"  # Default to "fr" for invalid values
-
-    if country_portal == "da":
-        count = get_country_portal_count("da")
-        objective = config.OBJECTIVES.get("da")
-    else:  # country_portal == "fr"
-        count = get_country_portal_count("fr")
-        objective = config.OBJECTIVES.get("fr")
-
-    return JSONResponse(
-        {
-            "count": count,
-            "objective": objective,
-        }
-    )
 
 
 @app.post("/cohorts", response_class=JSONResponse)
@@ -123,10 +65,12 @@ async def define_current_cohorts(request: CohortRequest):
     Returns:
         JSONResponse: Statut du suivi de cohorte
     """
-    config.logger.info(f"[COHORT] Received cohort request: session_hash={request.session_hash}, cohorts={request.cohorts}")
+    logger.info(
+        f"[COHORT] Received cohort request: session_hash={request.session_hash}, cohorts={request.cohorts}"
+    )
 
     if not request.session_hash:
-        config.logger.warning("[COHORT] Missing session_hash in request")
+        logger.warning("[COHORT] Missing session_hash in request")
         return JSONResponse(
             {
                 "success": False,
@@ -139,9 +83,13 @@ async def define_current_cohorts(request: CohortRequest):
     if request.cohorts:
         cohorts_comma_separated: str = request.cohorts
         success = store_cohorts_redis(request.session_hash, cohorts_comma_separated)
-        config.logger.info(f"[COHORT] Stored in Redis: success={success}, session_hash={request.session_hash}, cohorts={cohorts_comma_separated}")
+        logger.info(
+            f"[COHORT] Stored in Redis: success={success}, session_hash={request.session_hash}, cohorts={cohorts_comma_separated}"
+        )
     else:
-        config.logger.warning(f"[COHORT] Empty cohorts received for session_hash={request.session_hash}")
+        logger.warning(
+            f"[COHORT] Empty cohorts received for session_hash={request.session_hash}"
+        )
         success = False
         cohorts_comma_separated = ""
 
@@ -168,7 +116,7 @@ async def frontlog(request: FrontendLogRequest, http_request: Request):
     """
     try:
         client_ip = http_request.client.host if http_request.client else "unknown"
-                
+
         # Créer un logger pour le frontend
         frontend_logger = logging.getLogger("frontend")
 
@@ -193,15 +141,19 @@ async def frontlog(request: FrontendLogRequest, http_request: Request):
         # Loguer le message avec les métadonnées
         log_func(request.message, extra=extra_data)
 
-        return JSONResponse({
-            "success": True,
-            "log_received": True,
-            "session_hash": request.session_hash
-        })
+        return JSONResponse(
+            {
+                "success": True,
+                "log_received": True,
+                "session_hash": request.session_hash,
+            }
+        )
 
     except Exception as e:
-        config.logger.error(f"Error receiving frontend log: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to process frontend log: {str(e)}")
+        logger.error(f"Error receiving frontend log: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to process frontend log: {str(e)}"
+        )
 
 
 app = SentryAsgiMiddleware(app)

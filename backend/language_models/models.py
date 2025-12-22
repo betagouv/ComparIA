@@ -4,7 +4,6 @@ Data validation models using Pydantic.
 Defines all data structures for:
 - Model metadata (licenses, architectures, model definitions)
 - Ranking/preference data (Elo scores, preference statistics)
-- Conversation data (messages, participant info, metadata)
 
 Uses Pydantic validators to ensure data integrity:
 - Architecture validation (must exist in archs.json)
@@ -15,33 +14,36 @@ Uses Pydantic validators to ensure data integrity:
 The models are organized in hierarchy:
 - RawModel/Model: Individual model definitions
 - RawOrganisation/Organisation: Organization containing multiple models
-- Conversation/ConversationMessage: Chat history with metadata
 - DatasetData/PreferencesData: Rankings and user preferences
 """
 
 import datetime
 from pathlib import Path
+from typing import Annotated, Any, Literal, get_args
+
 from pydantic import (
     AfterValidator,
+    AliasChoices,
     BaseModel,
+    ConfigDict,
     Field,
     RootModel,
     ValidationError,
     ValidationInfo,
-    model_validator,
     computed_field,
     field_validator,
+    model_validator,
 )
 from pydantic_core import PydanticCustomError
-from typing import Annotated, Any, Literal, get_args
-from languia.reveal import get_llm_impact, convert_range_to_value
 
-ROOT_PATH = Path(__file__).parent.parent
-FRONTEND_PATH = ROOT_PATH / "frontend"
+from backend.config import FRONTEND_PATH, ROOT_PATH
+from backend.language_models.utils import convert_range_to_value, get_llm_impact
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
-Distribution = Literal["api-only", "open-weights", "fully-open-source"]  # License/access types
+Distribution = Literal[
+    "api-only", "open-weights", "fully-open-source"
+]  # License/access types
 FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
@@ -62,6 +64,7 @@ class License(BaseModel):
         reuse_specificities: Additional reuse restrictions/notes
         commercial_use_specificities: Additional commercial use restrictions/notes
     """
+
     license: str
     license_desc: str
     distribution: Distribution
@@ -85,6 +88,7 @@ class Arch(BaseModel):
         title: Display title
         desc: Detailed description of the architecture
     """
+
     id: str
     name: str
     title: str
@@ -102,6 +106,7 @@ class Endpoint(BaseModel):
         api_base: Base URL for the API endpoint
         api_model_id: Model identifier used in API calls
     """
+
     api_type: str | None = "openai"
     api_base: str | None = None
     api_model_id: str
@@ -127,19 +132,20 @@ class DatasetData(BaseModel):
         win_rate: Percentage of matches won
         trust_range: Computed confidence interval for ranking
     """
-    elo: RoundInt = Field(validation_alias="median")
-    score_p2_5: RoundInt = Field(validation_alias="p2.5")
-    score_p97_5: RoundInt = Field(validation_alias="p97.5")
-    rank_p2_5: int = Field(validation_alias="rank_p2.5")
-    rank_p97_5: int = Field(validation_alias="rank_p97.5")
+
+    elo: RoundInt = Field(validation_alias=AliasChoices("median", "elo"))
+    score_p2_5: RoundInt = Field(validation_alias=AliasChoices("p2.5", "score_p2_5"))
+    score_p97_5: RoundInt = Field(validation_alias=AliasChoices("p97.5", "score_p97_5"))
+    rank_p2_5: int = Field(validation_alias=AliasChoices("rank_p2.5", "rank_p2_5"))
+    rank_p97_5: int = Field(validation_alias=AliasChoices("rank_p97.5", "rank_p97_5"))
     rank: int
     n_match: int
     mean_win_prob: float
     win_rate: float
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    def trust_range(self) -> list[int, int]:
+    def trust_range(self) -> list[int]:
         """Confidence interval: [lower bound, upper bound] for ranking."""
         return [
             self.rank - self.rank_p2_5,
@@ -159,6 +165,7 @@ class PreferencesData(BaseModel):
         useful/complete/creative/clear_formatting: Count of positive preferences
         incorrect/superficial/instructions_not_followed: Count of negative preferences
     """
+
     positive_prefs_ratio: float
     total_prefs: int
     # Positive quality indicators
@@ -176,6 +183,7 @@ class PreferencesData(BaseModel):
     def handle_nan_ratio(cls, value: Any) -> float:
         """Replace NaN values with -1 to prevent JSON serialization errors."""
         import math
+
         if isinstance(value, float) and math.isnan(value):
             return -1
         return value
@@ -210,6 +218,7 @@ class RawModel(BaseModel):
         fyi: Additional notes for users
         pricey: Whether model has high API costs (triggers stricter rate limits)
     """
+
     new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
@@ -234,6 +243,9 @@ class RawModel(BaseModel):
     @field_validator("arch", mode="after")
     @classmethod
     def check_arch_exists(cls, value: str, info: ValidationInfo) -> str:
+        assert info.context is not None
+        assert info.context["archs"] is not None
+
         if value.replace("maybe-", "") not in info.context["archs"]:
             raise PydanticCustomError(
                 "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
@@ -250,7 +262,7 @@ class RawModel(BaseModel):
     @field_validator("active_params", mode="before")
     @classmethod
     def check_active_params_is_defined_if_moe(
-        cls, value: str, info: ValidationInfo
+        cls, value: int | float | None, info: ValidationInfo
     ) -> int | float | None:
         if "arch" in info.data and "moe" in info.data["arch"] and value is None:
             raise PydanticCustomError(
@@ -289,6 +301,7 @@ class Model(RawModel):
         required_ram: Estimated RAM needed to run model (depends on quantization)
         wh_per_million_token: Energy consumption per million tokens
     """
+
     status: Literal["archived", "enabled", "disabled"] = "enabled"
     # Merged from License
     distribution: Distribution
@@ -311,7 +324,7 @@ class Model(RawModel):
 
         return value
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def friendly_size(self) -> FriendlySize:
         intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
@@ -322,7 +335,7 @@ class Model(RawModel):
 
         raise Exception("Error: Could not guess friendly_size")
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def required_ram(self) -> int | float:
         if self.quantization == "q8":
@@ -331,27 +344,54 @@ class Model(RawModel):
         # We suppose from q4 to fp16
         return self.params
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def wh_per_million_token(self) -> int | float:
-        model_info = {
-            "params": self.params,
-            "active_params": self.active_params,
-            "quantization": self.quantization,
-        }
-        impact = get_llm_impact(
-            model_info,
-            self.id,
-            1_000_000,
-            None,
-        )
+        impact = get_llm_impact(self, 1_000_000, None)
 
-        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
+        if impact:
             energy_kwh = convert_range_to_value(impact.energy.value)
             return energy_kwh * 1000
 
         # FIXME return None?
         return 0
+
+
+class LanguageModel(BaseModel):
+    """
+    Final language model definition.
+
+    Populated with 'utils/models/generated-models.json' data.
+    It is immutable and no default values are defined so it expects complete data.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    new: bool
+    status: Literal["archived", "enabled"]
+    id: str
+    simple_name: str
+    license: str
+    fully_open_source: bool
+    release_date: str
+    arch: str
+    params: int | float
+    active_params: int | float | None
+    reasoning: bool | Literal["hybrid"]
+    quantization: Literal["q4", "q8"] | None
+    url: str | None
+    endpoint: Endpoint | None
+    pricey: bool
+    distribution: Distribution
+    reuse: bool
+    commercial_use: bool | None
+    organisation: str
+    icon_path: str
+    data: DatasetData | None
+    prefs: PreferencesData | None
+    friendly_size: FriendlySize
+    required_ram: int | float
+    wh_per_million_token: int | float
 
 
 # Model to validate organisations data from 'utils/models/models.json'
@@ -363,7 +403,7 @@ class RawOrganisation(BaseModel):
     proprietary_commercial_use: bool | None = None
     proprietary_reuse_specificities: str | None = None
     proprietary_commercial_use_specificities: str | None = None
-    models: list[RawModel]
+    models: list[RawModel] | list[Model]
 
     @field_validator("icon_path", mode="after")
     @classmethod
@@ -385,6 +425,10 @@ class Organisation(RawOrganisation):
     @field_validator("models", mode="before")
     @classmethod
     def enhance_models(cls, value: Any, info: ValidationInfo) -> list[RawModel]:
+        assert info.context is not None
+        assert info.context["data"] is not None
+        assert info.context["licenses"] is not None
+
         for model in value:
             # forward organisation data
             model["organisation"] = info.data.get("name")
@@ -422,143 +466,3 @@ Licenses = RootModel[list[License]]
 Archs = RootModel[list[Arch]]
 RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]
-
-
-def filter_enabled_models(models: dict[str, Model]):
-    enabled_models = {}
-    for model_id, model_dict in models.items():
-        if model_dict.get("status") == "enabled":
-            try:
-                if Endpoint.model_validate(model_dict.get("endpoint")):
-                    enabled_models[model_id] = model_dict
-            except:
-                continue
-
-    return enabled_models
-
-
-class ConversationMessage(BaseModel):
-    """
-    Single message in a conversation.
-
-    Represents one user or assistant message with content and metadata.
-    Assistant messages MUST include output_tokens for tracking.
-
-    Attributes:
-        role: "user", "assistant", or "system"
-        content: Message text content
-        metadata: Additional data (output_tokens for assistant messages, etc.)
-    """
-    role: str
-    content: str
-    metadata: dict[str, Any] | None = None
-
-    # Validate that assistant messages include token counts
-    @model_validator(mode="after")
-    def check_assistant_metadata(self) -> "ConversationMessage":
-        if self.role == "assistant":
-            if not self.metadata or "output_tokens" not in self.metadata:
-                raise ValueError(
-                    "Assistant messages must have 'output_tokens' in metadata"
-                )
-        return self
-
-
-# Type alias for list of messages
-ConversationMessages = RootModel[list[ConversationMessage]]
-
-
-class Conversation(BaseModel):
-    """
-    Complete conversation record with both models' responses and metadata.
-
-    Stores a paired comparison between two models on the same prompts.
-    Used to persist conversation data to database and JSON logs.
-
-    Attributes:
-        id: Internal database ID
-        timestamp: When conversation was created
-        model_a_name/model_b_name: Model identifiers
-        conversation_a/conversation_b: Message histories for each model
-        conv_turns: Number of user-model exchange rounds
-        system_prompt_a/b: System prompts used (if any)
-        conversation_pair_id: Unique ID combining both conv IDs
-        conv_a_id/conv_b_id: Individual conversation IDs
-        session_hash: User session identifier
-        visitor_id: Matomo visitor tracking ID (if enabled)
-        ip: User's IP address (PII)
-        model_pair_name: Sorted model pair for analysis
-        opening_msg: Initial user prompt
-        archived: Whether conversation is archived
-        mode: Model selection mode (random, big-vs-small, etc.)
-        custom_models_selection: Custom model selection if mode=custom
-        short_summary: Auto-generated summary (added during post-processing)
-        keywords/categories/languages: Extracted metadata (post-processing)
-        pii_analyzed/contains_pii: PII detection results
-        total_conv_a_output_tokens/total_conv_b_output_tokens: Token usage
-        ip_map: Geographic region derived from IP
-        postprocess_failed: Whether post-processing failed
-    """
-    id: int
-    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
-    model_a_name: str
-    model_b_name: str
-    conversation_a: ConversationMessages
-    conversation_b: ConversationMessages
-    conv_turns: int = 0
-    system_prompt_a: str | None = None
-    system_prompt_b: str | None = None
-    conversation_pair_id: str
-    conv_a_id: str
-    conv_b_id: str
-    session_hash: str
-    visitor_id: str | None = None
-    ip: str | None = None  # Warning: PII
-    model_pair_name: str
-    opening_msg: str
-    archived: bool = False
-    mode: str | None = None
-    custom_models_selection: dict[str, Any] | None = None
-    short_summary: str | None = None
-    keywords: dict[str, Any] | None = None
-    categories: dict[str, Any] | None = None
-    languages: dict[str, Any] | None = None
-    pii_analyzed: bool = False
-    contains_pii: bool | None = None
-    total_conv_a_output_tokens: int | None = None
-    total_conv_b_output_tokens: int | None = None
-    ip_map: str | None = None
-    postprocess_failed: bool = False
-
-
-class CohortRequest(BaseModel):
-    session_hash: str
-    cohorts: str
-
-
-class FrontendLogEntry(BaseModel):
-    """
-    Single log entry from frontend (simplified format).
-
-    Fields:
-        level: Log level (info, warn, error, debug)
-        message: Log message text
-    """
-    level: str
-    message: str
-
-
-class FrontendLogRequest(BaseModel):
-    """
-    Single frontend log sent to backend (simplified format).
-
-    Fields:
-        level: Log level (info, warn, error, debug)
-        message: Log message text
-        session_hash: User session identifier
-        user_agent: Browser user agent string
-    """
-    level: str
-    message: str
-    session_hash: str | None = None
-    user_agent: str | None = None
