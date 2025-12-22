@@ -15,7 +15,7 @@ Functions:
 
 import logging
 
-from backend.models.utils import convert_range_to_value, get_llm_impact
+from backend.language_models.utils import convert_range_to_value, get_llm_impact
 from languia.utils import sum_tokens
 
 
@@ -114,7 +114,7 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         5. Encode summary to base64 for efficient storage
         6. Return comprehensive metrics for reveal screen display
     """
-    from backend.models.data import get_models
+    from backend.language_models.data import get_models
 
     models = get_models().enabled
 
