@@ -88,8 +88,7 @@ WHERE archived = FALSE
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
-AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%' AND COALESCE(cohorts, '') NOT LIKE '%%do-not-track%%')
-LIMIT 100
+AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
 ;
 """
 
@@ -104,7 +103,7 @@ AND EXISTS (
     AND c.pii_analyzed = TRUE
     AND c.contains_pii = FALSE
     AND c.postprocess_failed = FALSE
-    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%' AND COALESCE(cohorts, '') NOT LIKE '%%do-not-track%%')
+    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
 )
 ;
 """
@@ -120,7 +119,7 @@ AND EXISTS (
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
     AND c.postprocess_failed = FALSE
-    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%' AND COALESCE(cohorts, '') NOT LIKE '%%do-not-track%%')
+    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
 )
 ;
 """
@@ -370,6 +369,53 @@ def commit_and_push(repo_org, repo_name, repo_path):
         return False
 
 
+def count_dataset_rows():
+    """Display row counts for each dataset without performing export."""
+    if not COMPARIA_DB_URI:
+        logger.error("Cannot count rows: no $COMPARIA_DB_URI")
+        return False
+
+    engine = None
+    try:
+        engine = create_engine(COMPARIA_DB_URI)
+        with engine.connect() as conn:
+            logger.info("Counting rows for each dataset...")
+            print("\n" + "=" * 60)
+            print("Dataset Row Counts")
+            print("=" * 60)
+
+            for dataset_name, config in DATASET_CONFIG.items():
+                query = config.get("query")
+                if not query:
+                    logger.warning(f"No query defined for {dataset_name}")
+                    continue
+
+                # Remove trailing semicolon and wrap the original query with COUNT(*)
+                clean_query = query.rstrip().rstrip(';')
+                count_query = f"SELECT COUNT(*) as count FROM ({clean_query}) AS subquery"
+
+                try:
+                    result = pd.read_sql_query(count_query, conn)
+                    count = result['count'].iloc[0]
+                    print(f"{dataset_name:30} {count:>10,} rows")
+                except Exception as e:
+                    logger.error(f"Failed to count rows for {dataset_name}: {e}")
+                    print(f"{dataset_name:30} {'ERROR':>10}")
+
+            print("=" * 60 + "\n")
+            return True
+
+    except OperationalError as e:
+        logger.error(f"Database connection error: {e}")
+        return False
+    except Exception as e:
+        logger.error(f"An error occurred while counting rows: {e}")
+        return False
+    finally:
+        if engine:
+            engine.dispose()
+
+
 def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
@@ -474,8 +520,18 @@ def main():
         action="store_true",
         help="Skip HuggingFace upload (only export locally)"
     )
+    parser.add_argument(
+        "--count",
+        action="store_true",
+        help="Display row counts for each dataset without exporting"
+    )
 
     args = parser.parse_args()
+
+    # If --count flag is set, display counts and exit
+    if args.count:
+        count_dataset_rows()
+        return
 
     # Load lookup tables for data enrichment
     load_session_hash_ip()
