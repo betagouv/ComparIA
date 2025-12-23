@@ -105,3 +105,45 @@ class Conversation(BaseModel):
     total_conv_b_output_tokens: int | None = None
     ip_map: str | None = None
     postprocess_failed: bool = False
+
+
+# Request/Response models for FastAPI endpoints
+
+
+class AddTextRequest(BaseModel):
+    """Request body for adding a message to an existing conversation."""
+
+    session_hash: str
+    message: str = Field(min_length=1)
+
+
+class RetryRequest(BaseModel):
+    """Request body for retrying the last bot response."""
+
+    session_hash: str
+
+
+class ReactRequest(BaseModel):
+    """Request body for updating message reactions (like/dislike)."""
+
+    session_hash: str
+    message_id: str
+    reaction: str | None  # "like", "dislike", or None to remove
+
+
+class VoteRequest(BaseModel):
+    """Request body for submitting a vote after conversation."""
+
+    session_hash: str
+    chosen_model: str  # "a", "b", or "tie"
+    preferences: dict[str, Any] = Field(default_factory=dict)
+    comment: str | None = None
+
+
+class RevealData(BaseModel):
+    """Response data revealing model identities after vote."""
+
+    model_a: str
+    model_b: str
+    model_a_metadata: dict[str, Any]
+    model_b_metadata: dict[str, Any]
