@@ -12,7 +12,7 @@ from backend.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
-from languia.utils import strip_metadata, ContextTooLongError
+from backend.arena.utils import strip_metadata, ContextTooLongError
 
 # Load Google Cloud credentials for Vertex AI if available
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
@@ -32,7 +32,7 @@ def litellm_stream_iter(
     max_new_tokens,
     api_base=None,
     api_key=None,
-    request=None,
+    ip=None,
     api_version=None,
     vertex_ai_location=None,
     include_reasoning=False,
@@ -51,7 +51,7 @@ def litellm_stream_iter(
         max_new_tokens: Maximum tokens to generate
         api_base: Optional API base URL override
         api_key: API key for the provider
-        request: Gradio request for logging context
+        ip: Client IP address for logging context
         api_version: Optional API version (e.g., for Azure)
         vertex_ai_location: Google Vertex AI region
         include_reasoning: Whether to include reasoning in response
@@ -62,7 +62,7 @@ def litellm_stream_iter(
     """
 
     # Debug mode can be enabled but is very verbose for streaming
-    # from languia.config import debug
+    # from backend.config import debug
     # if debug:
     #     litellm._turn_on_debug()
 
@@ -149,7 +149,7 @@ def litellm_stream_iter(
             data["generation_id"] = chunk.id
             logger.debug(
                 f"generation_id: {chunk.id} for api {api_base} and model {model_name}",
-                extra={"request": request},
+                extra={"ip": ip},
             )
         # Extract token count from streaming completion (if available)
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
@@ -157,7 +157,7 @@ def litellm_stream_iter(
             logger.debug(
                 f"reported output tokens for api {api_base} and model {model_name}: "
                 + str(data["output_tokens"]),
-                extra={"request": request},
+                extra={"ip": ip},
             )
         # Process content chunks
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
@@ -189,7 +189,7 @@ def litellm_stream_iter(
                 elif chunk.choices[0].finish_reason == "length":
                     # Model hit max tokens limit
                     logger.error(
-                        "context_too_long: " + str(chunk), extra={request: request}
+                        "context_too_long: " + str(chunk), extra={"ip": ip}
                     )
                     raise ContextTooLongError
 
