@@ -11,14 +11,6 @@ This module provides helper functions for:
 
 import logging
 import os
-from typing import TYPE_CHECKING
-
-import gradio as gr
-import numpy as np
-from gradio import Request
-
-if TYPE_CHECKING:
-    from backend.language_models.models import Endpoint
 
 from backend.utils.user import get_ip
 
@@ -68,17 +60,17 @@ def get_matomo_tracker_from_cookies(cookies):
     Used for anonymous visitor tracking (if enabled by user).
 
     Args:
-        cookies: Request cookies list (tuples of [key, value])
+        cookies: Request cookies dict
 
     Returns:
         str: Matomo visitor ID, or None if not found
     """
     logger = logging.getLogger("languia")
     # Matomo cookies start with "_pk_id."
-    for cookie in cookies:
-        if cookie[0].startswith("_pk_id."):
-            logger.debug(f"Found matomo cookie: {cookie[0]}: {cookie[1]}")
-            return cookie[1]
+    for key, value in cookies.items():
+        if key.startswith("_pk_id."):
+            logger.debug(f"Found matomo cookie: {key}: {value}")
+            return value
     return None
 
 
@@ -136,7 +128,7 @@ def is_unedited_prompt(opening_msg, category):
     """
     if not category:
         return False
-    from languia.config import prompts_table
+    from backend.config import prompts_table
 
     # Check if the exact message exists in the category's prompt list
     return opening_msg in prompts_table[category]
@@ -233,77 +225,7 @@ def messages_to_dict_list(
     return output
 
 
-def get_user_info(request):
-    """
-    Extract user identification from request.
-
-    Tries Matomo tracker ID first (if user opted in), falls back to IP address.
-
-    Args:
-        request: Gradio Request object
-
-    Returns:
-        tuple: (user_id, session_id) - either can be None
-    """
-    if request:
-        # Try to get Matomo visitor ID for privacy-respecting tracking
-        if hasattr(request, "cookies"):
-            user_id = get_matomo_tracker_from_cookies(request.cookies)
-        else:
-            # Fallback to IP address
-            try:
-                user_id = get_ip(request)
-            except:
-                user_id = None
-        # Get Gradio session hash (unique per session, not per user)
-        session_id = getattr(request, "session_hash", None)
-    else:
-        session_id = None
-        user_id = None
-    return user_id, session_id
-
-
-class AppState:
-    """
-    Application state for an ongoing session.
-
-    Tracks the current comparison mode, model selections, user preferences, and reactions.
-    """
-
-    def __init__(
-        self,
-        awaiting_responses=False,
-        model_left=None,
-        model_right=None,
-        category=None,
-        custom_models_selection=None,
-        mode="random",
-    ):
-        """
-        Initialize application state.
-
-        Args:
-            awaiting_responses: Whether waiting for model responses
-            model_left: Model name for left position
-            model_right: Model name for right position
-            category: User's selected prompt category
-            custom_models_selection: User's custom model selection if in custom mode
-            mode: Selection mode (random, big-vs-small, small-models, reasoning, custom)
-        """
-        self.awaiting_responses = awaiting_responses
-        self.model_left = model_left
-        self.model_right = model_right
-        self.category = category
-        self.mode = mode
-        self.custom_models_selection = custom_models_selection
-        # Store reactions (likes/dislikes) on individual messages
-        self.reactions = []
-
-    # def to_dict(self) -> dict:
-    #     return self.__dict__.copy()
-
-
-def get_api_key(endpoint: "Endpoint"):
+def get_api_key(endpoint):
     """
     Get the appropriate API key for an endpoint.
 
@@ -353,64 +275,3 @@ def sum_tokens(messages) -> int:
         if msg.role == "assistant"
     )
     return total_output_tokens
-
-
-def to_threeway_chatbot(conversations):
-    """
-    Convert two conversations into a single alternating chatbot view.
-
-    Merges two parallel conversations (model A and B) into a single chat history
-    showing user messages alternating with bot responses from both models.
-    Format: [User Q1, Bot A Response, Bot B Response, User Q2, Bot A Response, Bot B Response, ...]
-
-    Args:
-        conversations: Tuple of two Conversation objects with messages
-
-    Returns:
-        list: Merged chatbot messages with model identifier in metadata
-    """
-    threeway_chatbot = []
-    # Extract non-system messages from both conversations
-    conv_a_messages = [
-        message for message in conversations[0].messages if message.role != "system"
-    ]
-    conv_b_messages = [
-        message for message in conversations[1].messages if message.role != "system"
-    ]
-
-    # Zip conversations together - assumes same number of turns in both
-    for msg_a, msg_b in zip(conv_a_messages, conv_b_messages):
-        if msg_a.role == "user":
-            # Both should have user message at same turn
-            # Could even test if msg_a == msg_b (they should be identical)
-            if msg_b.role != "user":
-                raise IndexError
-            # Add user message (same for both models)
-            threeway_chatbot.append(msg_a)
-        else:
-            # Both are bot responses
-            if msg_a:
-                # Tag with model A identifier
-                msg_a.metadata.update({"bot": "a"})
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_a.content,
-                        "error": msg_a.error,
-                        "reasoning": msg_a.reasoning,
-                        "metadata": msg_a.metadata,
-                    }
-                )
-            if msg_b:
-                # Tag with model B identifier
-                msg_b.metadata.update({"bot": "b"})
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_b.content,
-                        "error": msg_a.error,  # Note: Uses msg_a.error, might be bug?
-                        "reasoning": msg_b.reasoning,
-                        "metadata": msg_b.metadata,
-                    }
-                )
-    return threeway_chatbot
