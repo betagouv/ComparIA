@@ -393,6 +393,28 @@ class LanguageModel(BaseModel):
     required_ram: int | float
     wh_per_million_token: int | float
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def system_prompt(self) -> str | None:
+        """
+        Get model-specific system prompt if configured.
+
+        Allows customization of model behavior through system prompts.
+        Currently only specific French models (chocolatine, lfm-40b) have custom prompts.
+        Other models use None (no system prompt by default).
+
+        Args:
+            model_name: Model identifier (e.g., "openai/gpt-4", "chocolatine")
+
+        Returns:
+            str: French system prompt, or None for no custom system prompt
+
+        Note:
+            The system prompt is included in conversations when provided.
+            This ensures consistent behavior across multiple conversations.
+        """
+        return None
+
 
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
