@@ -17,7 +17,7 @@ from backend.arena.models import ChatMessage
 from backend.arena.litellm import litellm_stream_iter
 from backend.arena.utils import EmptyResponseError, get_api_key, messages_to_dict_list
 
-models = get_models().enabled
+language_models = get_models()
 
 
 class Conversation:
@@ -53,7 +53,8 @@ class Conversation:
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
         # Retrieve API endpoint configuration for this model
-        self.endpoint = models.get(model_name, {}).get("endpoint", {})
+        model = language_models.enabled.get(model_name)
+        self.endpoint = model.endpoint if model else None
 
 
 logger = logging.getLogger("languia")

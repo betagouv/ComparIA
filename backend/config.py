@@ -63,3 +63,28 @@ RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+
+
+def get_model_system_prompt(model_name: str) -> str | None:
+    """
+    Get model-specific system prompt if configured.
+
+    Allows customization of model behavior through system prompts.
+    Currently only specific French models (chocolatine, lfm-40b) have custom prompts.
+    Other models use None (no system prompt by default).
+
+    Args:
+        model_name: Model identifier (e.g., "openai/gpt-4", "chocolatine")
+
+    Returns:
+        str: French system prompt, or None for no custom system prompt
+
+    Note:
+        The system prompt is included in conversations when provided.
+        This ensures consistent behavior across multiple conversations.
+    """
+    if "chocolatine" in model_name or "lfm-40b" in model_name:
+        # French system prompt for helpful and concise responses
+        return "Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."
+    else:
+        return None

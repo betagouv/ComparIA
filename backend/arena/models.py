@@ -6,9 +6,34 @@ Defines all data structures for:
 """
 
 import datetime
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field, RootModel, model_validator
+
+
+class Metadata(BaseModel):
+    """Metadata for chat messages."""
+
+    bot: Optional[Literal["a", "b"]] = None
+    duration: Optional[float] = None
+    generation_id: Optional[str] = None
+    output_tokens: Optional[int] = None
+
+
+@dataclass
+class ChatMessage:
+    """
+    Chat message dataclass for Gradio compatibility.
+
+    Used for frontend communication with similar structure to Gradio's ChatMessage.
+    """
+
+    role: Literal["user", "assistant", "system"]
+    content: str
+    error: Optional[str] = None
+    reasoning: Optional[str] = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ConversationMessage(BaseModel):
