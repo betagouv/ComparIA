@@ -11,7 +11,8 @@ router = APIRouter(
 @router.get("/")
 async def get_available_models():
     models = get_models()
+    # Convert dict to list of model objects for frontend compatibility
     return {
         "data_timestamp": models.data_timestamp,
-        "models": models.all,
+        "models": list(models.all.values()),
     }
