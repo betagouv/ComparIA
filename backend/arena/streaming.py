@@ -39,8 +39,21 @@ async def stream_bot_response(
 
     try:
         # Reconstruct Conversation object from state dict
+        # Convert message dicts back to ChatMessage objects
+        from backend.arena.models import ChatMessage
+        messages = [
+            ChatMessage(
+                role=msg["role"],
+                content=msg["content"],
+                error=msg.get("error"),
+                reasoning=msg.get("reasoning"),
+                metadata=msg.get("metadata", {})
+            )
+            for msg in conv_state.get("messages", [])
+        ]
+
         conv = Conversation(
-            messages=conv_state.get("messages", []),
+            messages=messages,
             model_name=conv_state.get("model_name")
         )
         conv.conv_id = conv_state.get("conv_id", "")
@@ -127,22 +140,27 @@ async def stream_both_responses(
             done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
             # Process completed chunks
+            has_update = False
             for task in done:
                 result = task.result()
 
                 if result["source"] == "a":
                     if result["done"]:
                         done_a = True
-                    else:
+                    elif result["data"] and result["data"].get("type") == "chunk":
+                        # Only update if it's a chunk event, not a "done" event
                         last_a = result["data"]
+                        has_update = True
                 else:  # source == "b"
                     if result["done"]:
                         done_b = True
-                    else:
+                    elif result["data"] and result["data"].get("type") == "chunk":
+                        # Only update if it's a chunk event, not a "done" event
                         last_b = result["data"]
+                        has_update = True
 
-            # Yield combined state if we have updates
-            if last_a or last_b:
+            # Yield combined state if we have updates (but not for individual "done" events)
+            if has_update and (last_a or last_b):
                 combined = {
                     "type": "update",
                     "a": last_a if last_a else {"type": "waiting"},

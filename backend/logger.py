@@ -13,6 +13,22 @@ from backend.config import settings
 from backend.utils.user import get_ip
 
 
+class FrontendLogRequest(BaseModel):
+    """
+    Single frontend log sent to backend (simplified format).
+
+    Fields:
+        level: Log level (info, warn, error, debug)
+        message: Log message text
+        session_hash: User session identifier
+        user_agent: Browser user agent string
+    """
+    level: str
+    message: str
+    session_hash: str | None = None
+    user_agent: str | None = None
+
+
 class JSONFormatter(logging.Formatter):
     """
     Custom logging formatter that outputs structured JSON.
@@ -42,7 +58,7 @@ class JSONFormatter(logging.Formatter):
                 log_data["path_params"] = dict(record.request.path_params)
                 # TODO: remove IP? (privacy concern)
                 log_data["ip"] = get_ip(record.request)
-                log_data["session_hash"] = record.request.session_hash
+                log_data["session_hash"] = getattr(record.request, "session_hash", None)
 
             except:
                 pass
@@ -119,10 +135,10 @@ class PostgresHandler(logging.Handler):
                         query_params = dict(record.request.query_params)
                         path_params = dict(record.request.path_params)
                         # ip = get_ip(record.request)
-                        session_hash = record.request.session_hash
+                        session_hash = getattr(record.request, "session_hash", None)
                         values["query_params"] = json.dumps(query_params)
                         values["path_params"] = json.dumps(path_params)
-                        values["session_hash"] = str(session_hash)
+                        values["session_hash"] = str(session_hash) if session_hash else ""
                     else:
                         values["query_params"] = "{}"
                         values["path_params"] = "{}"
