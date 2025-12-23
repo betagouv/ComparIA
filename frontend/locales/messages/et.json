@@ -401,5 +401,322 @@
                 }
             }
         }
+    },
+    "models": {
+        "extra": {
+            "experts": {
+                "open-weights": "Põhjalikuma info leiad <a {linkProps}>mudeli lehelt Hugging Face’is</a>"
+            },
+            "title": "Lisainfo saamiseks"
+        },
+        "licenses": {
+            "type": {
+                "openSource": "Avatud lähtekoodiga",
+                "proprietary": "Omandtarkvara",
+                "semiOpen": "Avatud parameetritega"
+            }
+        },
+        "list": {
+            "filters": {
+                "archived": {
+                    "checkedLabel": "Nähtavad",
+                    "help": "Vaikimisi kuvatakse ainult platvormil aktiivsed mudelid.",
+                    "label": "Arhiveeritud mudelid",
+                    "uncheckedLabel": "Peidetud"
+                },
+                "display": "Näita filtreid",
+                "editor": {
+                    "legend": "Avaldaja"
+                },
+                "license": {
+                    "legend": "Litsents"
+                },
+                "reset": "Eemalda kõik filtrid",
+                "size": {
+                    "labels": {
+                        "L": "100–400 miljardit",
+                        "M": "60–100 miljardit",
+                        "S": "15–60 miljardit",
+                        "XL": "> 400 miljardit",
+                        "XS": "< 15 miljardit"
+                    },
+                    "legend": "Suurus (parameetrid)"
+                }
+            },
+            "intro": "Tutvu erinevate vestluslike keelemudelite, nende spetsifikatsioonide ja litsentsidega.",
+            "model": "mudel",
+            "models": "mudelid",
+            "noresults": "Ükski mudel ei vasta sinu otsingukriteeriumidele.",
+            "title": "Tutvu mudelitega",
+            "triage": {
+                "label": "Sorteeri",
+                "options": {
+                    "date-desc": "Avaldamise kuupäev (uusimast vanimani)",
+                    "name-asc": "Mudeli nimi (A–Z)",
+                    "org-asc": "Avaldaja (A–Z)",
+                    "params-asc": "Suurus (väikseimast suurimani)"
+                }
+            }
+        },
+        "names": {
+            "a": "Mudel A",
+            "b": "Mudel B"
+        },
+        "openWeight": {
+            "tooltips": {
+                "copyleft": "Kui mudelit muudetakse, tuleb seda levitada algse lähtemudeliga sama litsentsi alusel.",
+                "free": "Kui mudelit muudetakse, võib seda levitada algsest lähtemudelist erineva litsentsi alusel.",
+                "openSource": "Selle mudeli treeningandmed, kood ja kaalud (st treenimise käigus õpitud parameetrid) on täielikult allalaaditavad ja muudetavad, võimaldades mudelit käitada ja kohandada omaenda riistvaral. Küsimus, kas mudel on avatud lähtekoodiga, on piiravam kui avatud kaaludega, eelkõige treeningkorpuse läbipaistvuse nõude tõttu, ning väheseid mudeleid peetakse tõeliselt avatud lähtekoodiga mudeliteks.",
+                "params": "Parameetrid ehk kaalud, mida arvutatakse miljardites, on muutujad, mille mudel treenimise käigus omandab ja mis määravad selle vastused. Mida suurem on parameetrite arv, seda suurem on mudeli õppimisvõime.",
+                "ram": "RAM (muutmälu) salvestab andmeid, mida suur keelemudel reaalajas töötleb. Mida suurem on mudel, seda rohkem muutmälu on selle käitamiseks vaja."
+            }
+        },
+        "parameters": "{number} parameetrit",
+        "ram": "{min}–{max} GB",
+        "release": "Avaldatud {date}",
+        "size": {
+            "count": {
+                "L": "100–400 miljardit",
+                "M": "60–100 miljardit",
+                "S": "15–60 miljardit",
+                "XL": "> 400 miljardit",
+                "XS": "<15 miljardit"
+            },
+            "estimated": "Hinnanguline suurus ({size})",
+            "title": "Suurus"
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "Väike versus suur mudel",
+            "description": "Üks juhuslikult valitud väike mudel ühe juhuslikult valitud suure mudeli vastu",
+            "label": "Väike versus suur",
+            "title": "Režiim väike versus suur"
+        },
+        "custom": {
+            "altLabel": "Mudelite valimine käsitsi",
+            "description": "Kas tunned oma kaks valitud mudelit ära?",
+            "label": "Käsitsi valimine",
+            "title": "Käsitsi valimise režiim"
+        },
+        "random": {
+            "altLabel": "Juhuslik mudelite valik",
+            "description": "Kaks mudelit valitakse kogunimekirjast juhuslikult",
+            "label": "Juhuslik",
+            "title": "Juhusliku valiku režiim"
+        },
+        "reasoning": {
+            "altLabel": "Arutlevate mudelite valik",
+            "description": "Kaks juhuslikult valitud arutlevat mudelit",
+            "label": "Arutlemine",
+            "title": "Arutlevate mudelite režiim"
+        },
+        "small-models": {
+            "altLabel": "Väikeste mudelite valik",
+            "description": "Kaks juhuslikult valitud väikest mudelit",
+            "label": "Väike",
+            "title": "Väikeste mudelite režiim"
+        }
+    },
+    "product": {
+        "community": {
+            "countries": {
+                "da": "Taani",
+                "fr": "Prantsusmaa"
+            },
+            "tabLabel": "Kogukond",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Alates 2024. aasta juunist",
+                            "job": "UX/UI tootedisainer"
+                        },
+                        "elie": {
+                            "date": "Alates 2025. aasta novembrist"
+                        }
+                    }
+                }
+            }
+        },
+        "comparator": {
+            "challenges": {
+                "pluralism": {
+                    "desc": "Tagada kodanikele juurdepääs mitmekesisele keelemudelite valikule, võimaldades neil teha teadlikke valikuid ning kujundada nende tehnoloogiate suhtes kriitiline arusaam.",
+                    "title": "Mudelite mitmekesisus"
+                },
+                "thinking": {
+                    "desc": "Soodustada kriitilist mõtlemist generatiivse tehisintellekti rolli üle nii isiklikes kui ka tööalastes praktikates.",
+                    "title": "Kriitiline mõtlemine ja ühiskondlikud küsimused"
+                },
+                "title": "Platvorm käsitleb mitmeid väljakutseid"
+            },
+            "cta": "Proovi järele",
+            "europe": {
+                "adventure": "2025. aasta suvel liitusid algatusega Leedu, Rootsi ja Taani!",
+                "catch": "Kas sooviksid seda platvormi ka oma keelele?",
+                "desc": "Platvorm on nüüd nende riikide kodanikele kättesaadav riigikeeles ning selle põhieesmärk on luua eelistusandmestikke, et parandada tulevaste tehisintellekti mudelite toimivust väheste ressurssidega keeltes.",
+                "title": "Platvorm <span {props}>laieneb Euroopas</span>!"
+            },
+            "screenshotAlt": "Compar:AI areeni kuvatõmmis, kus on näha algne küsimus, kahe mudeli vastused ja hääletusnupud.",
+            "tabLabel": "Baromeeter",
+            "title": "Platvorm võimaldab luua <span {props}>eelistusandmestikke</span>, mis keskenduvad <span {props}>reaalsele kasutusele</span> <span {props}>Euroopa keeltes</span>."
+        },
+        "faq": {
+            "tabLabel": "KKK"
+        },
+        "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "Märts 2025",
+                            "desc": "Platvormi kasutajate küsimusi ja eelistusi hõlmava esimese prantsuskeelse compar:IA andmestiku loomine ja avaldamine.",
+                            "title": "Kogutud on 50 000 häält!"
+                        },
+                        "2": {
+                            "date": "Mai 2025",
+                            "desc": "Ning andmestiku esimene taaskasutus koos Bunka.ai-ga, mis viis läbi põhjaliku uuringu platvormi kasutajate omavaheliste interaktsioonide kohta.",
+                            "title": "100 000 hääle eesmärk täidetud!"
+                        },
+                        "3": {
+                            "date": "Juuni 2025",
+                            "desc": "Kolm andmestikku — vestlused, reaktsioonid ja hääled — on kättesaadavad <a {hgLinkProps}>HuggingFace’is</a> ja <a {dataLinkProps}>leheküljel Data.gouv.fr</a>.",
+                            "title": "Kolme andmestiku avaldamine"
+                        }
+                    },
+                    "tag": "Hoogustumine"
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "Juuni–September 2024",
+                            "desc": "Platvormi esimese versiooni arendamine ja beetatestijatelt saadud tagasiside rakendamine.",
+                            "title": "Platvormi esimese versiooni disain"
+                        },
+                        "2": {
+                            "date": "Oktoober 2024",
+                            "desc": "Platvormi ametlik esitlus ja esimene kasutuselevõtt.",
+                            "title": "Ametlik käivitamine Villers-Cotterêts’is toimunud tippkohtumisel Francophonie Summit!"
+                        },
+                        "3": {
+                            "date": "Jaanuar 2025",
+                            "desc": "Tooteomaduste täiendamine võimalusega valida mudeleid käsitsi.",
+                            "title": "Platvormi versioon 2"
+                        },
+                        "4": {
+                            "date": "Veebruar 2025",
+                            "desc": "Enam kui 300 osalejat konverentsidel ja töötubades, mis käsitlesid vestluslike tehisintellekti süsteemide eetilisi, kultuurilisi ja keskkonnaalaseid väljakutseid.",
+                            "title": "<a {linkProps}>ComparIA päev Prantsusmaa rahvusraamatukogus</a> tippkohtumisel AI Action Summit"
+                        }
+                    },
+                    "tag": "Arendamine"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Suvi 2025",
+                            "desc": "Partnerlus Taani, Rootsi ja Leeduga, et avada platvorm nende keeltele.",
+                            "title": "Laienemine Euroopas"
+                        },
+                        "2": {
+                            "date": "September 2025"
+                        },
+                        "6": {
+                            "date": "November 2025",
+                            "title": "200 000 hääle eesmärk täidetud!"
+                        }
+                    },
+                    "tag": "Rahvusvahelistamine"
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "Jaanuar–Märts 2024",
+                            "title": "Idee väljatöötamine"
+                        }
+                    },
+                    "tag": "Idee"
+                }
+            }
+        },
+        "partners": {
+            "academy": {
+                "catch": "Töötad teadusprojekti kallal? Sul on ettepanekuid või vajad selgitusi meie metoodika või andmestike kohta?",
+                "desc": "Oleme pühendunud sellele, et meie loodud andmestikud toetaksid interdistsiplinaarset teadustööd, ühendades humanitaarteadused, sotsiaalteadused ja andmeteaduse.",
+                "title": "Akademilised partnerid"
+            },
+            "diffusion": {
+                "catch": "Kas soovid platvormi töökontekstis kasutada?",
+                "cta": "Anna meile teada",
+                "desc": "Loome partnerite võrgustikku, kes integreerivad platvormi oma teenustesse ja koolituspakkumistesse.",
+                "title": "Kommunikatsioonipartnerid"
+            },
+            "services": {
+                "title": "Kasutatud teenused"
+            },
+            "tabLabel": "Partnerid"
+        },
+        "problem": {
+            "alignment": {
+                "datasets": {
+                    "title": "Spetsiifilised andmestikud"
+                },
+                "english": {
+                    "a": "Eelistusandmete loomine on kulukas, sest <strong>iga näide nõuab pädeva inimese hinnangut</strong>. Platvormid nagu chat.lmsys.org aitavad neid andmestikke ühisloome kaudu koguda, kuid vähesed kasutajad panustavad oma emakeeles, mistõttu on väheste ressurssidega keeled alaesindatud.",
+                    "b": "Euroopa keelte eelistusandmestikke on vähe või need puuduvad sootuks. Näiteks LMSYS-i andmestikus moodustavad prantsuskeelsed päringud vähem kui 1 % kogumahust.",
+                    "title": "Euroopa keeled kannatavad eelistusandmete nappuse all"
+                },
+                "title": "Kuidas saame nendes mudelites vähendada kultuurilisi ja keelelisi kallutatusi?"
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "Need kallutatused võivad viia puudulike või lausa valede vastusteni, tõrjudes kõrvale Euroopa keelte ja kultuuride mitmekesisuse.",
+                    "title": "Tähelepanuta jäetud kultuuriline ja keeleline mitmekesisus"
+                },
+                "english": {
+                    "desc": "Vestluslik tehisintellekt tugineb suurtel keelemudelitel, mida on peamiselt treenitud ingliskeelsetel andmetel, mistõttu tekivad nende väljundites keelelised ja kultuurilised kallutatused.",
+                    "title": "Valdav osa treeningandmetest on ingliskeelsed"
+                },
+                "stereotypes": {
+                    "desc": "Vestluslikud tehisintellekti süsteemid näivad valdavat kõiki keeli, kuid nende väljundid võivad siiski olla stereotüüpsed või diskrimineerivad.",
+                    "title": "Kallutatust võimendavad vastused"
+                }
+            },
+            "tabLabel": "Algne probleem",
+            "title": "Kas vestluslikud tehisintellekti mudelid austavad Euroopa keelte <span {props}>mitmekesisust</span>?"
+        },
+        "title": "Kõik, mida platvormi kohta teadma pead"
+    },
+    "ranking": {
+        "energy": {
+            "title": "Kas kõige populaarsemad mudelid on energiatõhusad?",
+            "views": {
+                "graph": {
+                    "legends": {
+                        "arch": "Mudeli arhitektuur",
+                        "size": "Filtreeri suuruse järgi",
+                        "sizeSub": "(miljardit parameetrit)"
+                    },
+                    "tabLabel": "Graafiku vaade",
+                    "tooltip": {
+                        "active_params": "Aktiivsed parameetrid (miljardites)",
+                        "arch": "Arhitektuur",
+                        "consumption_wh": "Keskmine tarbimine (Wh)",
+                        "elo": "BT skoor",
+                        "params": "Parameetrit (miljardites)"
+                    },
+                    "yLabel": "Bradley-Terry skoor (BT)"
+                },
+                "table": {
+                    "title": "Graafiku andmed tabeli vormis"
+                }
+            }
+        },
+        "methodo": {
+            "desc": {
+                "1": "Alates 2024. aastast on tuhanded kasutajad platvormi erinevate mudelite vastuste võrdlemiseks kasutanud, genereerides sadu tuhandeid hääli. Pingerea koostamiseks ei piisa pelgalt võitude arvu lugemisest. Õiglane süsteem peab olema statistiliselt usaldusväärne, kohanduma pärast iga võrdust ning kajastama saavutatud soorituste väärtust tõepäraselt."
+            }
+        }
     }
 }
