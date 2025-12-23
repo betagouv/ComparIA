@@ -1774,5 +1774,29 @@
         "fyi": "Modèle conçu spécifiquement pour des tâches agentiques (notamment du code), avec un entraînement pour respecter des protocoles stricts de contrôle d'agent (planification, appels d'outils, vérification)."
       }
     ]
+  }, 
+  {
+    "name": "EuroLLM",
+    "icon_path": "euroLLM.webp",  
+    "models": [
+      {
+        "new": true,
+        "id": "EuroLLM-22B-Instruct-2512",
+        "simple_name": "EuroLLM 22B Instruct",
+        "license": "Apache 2.0",
+        "release_date": "12/2025",
+        "arch": "dense",
+        "params": 22,
+        "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
+        "endpoint": {
+          "api_type": "huggingface",
+          "api_base": "https://router.huggingface.co/v1",
+          "api_model_id": "utter-project/EuroLLM-22B-Instruct-2512"
+        },
+        "desc": "Modèle multilingue conçu spécifiquement pour la diversité linguistique européenne, avec de fortes capacités en traduction et compréhension multilingue.",
+        "size_desc": "Avec 22 milliards de paramètres, ce modèle se situe dans la catégorie des modèles de taille intermédiaire. Son utilisation nécessite un ordinateur personnel très puissant ou, plus généralement, un serveur disposant d’au moins une carte graphique performante. La fenêtre de contexte atteint 32 000 jetons.",
+        "fyi": "EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l’Union européenne ainsi que 11 langues supplémentaires. L’entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d’un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d’une allocation de calcul « extreme-scale ».\n\nLes données d’entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l’équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue."
+      }
+    ]
   }
 ]
