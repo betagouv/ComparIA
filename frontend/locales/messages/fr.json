@@ -264,7 +264,7 @@
             "accessibility": "Accessibilité : non conforme",
             "legal": "Mentions légales",
             "privacy": "Politique de confidentialité",
-            "rgesn": "Déclaration d’écoconception",
+            "rgesn": "Écoconception",
             "sources": "Code source",
             "tos": "Modalités d'utilisation"
         },
@@ -382,7 +382,7 @@
                 "title": "Stratégie mise en œuvre et objectifs en matière de réduction ou de limitation des impacts environnementaux"
             },
             "4": {
-                "1": "L’auto-diagnostic, mené entre mai et octobre 2025 par l’équipe produit (deux personnes ont été en charge de la relecture et la validation de toutes les réponses), a porté sur l’ensemble des pages du site. Les outils utilisés pour évaluer certains indicateurs techniques sont l’inspecteur « réseau » des outils de développement du navigateur, l’extension <a {greenitLinkProps}>Green IT Analysis</a> et l’outil <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "1": "L’auto-diagnostic, mené entre mai et octobre 2025 par l’équipe produit (deux personnes ont été en charge de la relecture et la validation de tous les critères), a porté sur l’ensemble des pages du site. Les outils utilisés pour évaluer certains indicateurs techniques sont l’inspecteur « réseau » des outils de développement du navigateur, l’extension <a {greenitLinkProps}>Green IT Analysis</a> et l’outil <a {ecoindexLinkProps}>EcoIndex</a>.",
                 "title": "Diagnostic RGESN"
             },
             "5": {
@@ -420,7 +420,7 @@
                 "1": "Concevoir le service avec une revue de conception et une revue de code, dont l’un des objectifs de réduire les impacts environnementaux de chaque fonctionnalité (critère 2.1)",
                 "2": "Mettre en place des durées de conservation sur les données en vue de leur suppression ou archivage : suppression des logs régulières dans le serveur de fichiers « S3 » et la base de données (Postgres) notamment.",
                 "3": {
-                    "1": "Nombre de requêtes serveurs maximum astreinte par écran : 30",
+                    "1": "Nombre de requêtes serveurs maximum astreinte par écran : 40",
                     "2": "Poids des ressources maximum astreint par écran : 600 Ko",
                     "title": "S’astreindre à un poids maximum et une limite de requêtes par écran (critère 6.1) :"
                 },
@@ -601,6 +601,11 @@
                     "reuse_specificities": ""
                 },
                 "DeepSeek": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "EuroLLM": {
                     "commercial_use_specificities": "",
                     "license_desc": "",
                     "reuse_specificities": ""
@@ -787,6 +792,11 @@
                 "desc": "<p>Très grand modèle conçu pour des tâches complexes : orchestration agentique, génération de code, analyse de documents longs. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.</p>",
                 "fyi": "<p>Pour cette version, le coût de l’API et les besoins en calcul sont réduits d’environ 50 % ou plus pour les contextes longs. Cette amélioration repose sur le \"DeepSeek Sparse Attention (DSA)\", un mécanisme d’attention clairsemée à granularité fine qui calcule l’attention de façon sélective afin de diminuer la complexité sur les longues séquences tout en préservant l’essentiel du contexte.</p>\n<p>Le modèle a été entraîné en donnant la priorité aux capacités de raisonnement et aux usages agentiques.</p>",
                 "size_desc": "<p>DeepSeek V3.2 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte atteint 163 000 jetons, ce qui est utile pour l’analyse de très longs documents ou des bases de code.</p>"
+            },
+            "EuroLLM 22B Instruct": {
+                "desc": "<p>Modèle multilingue conçu spécifiquement pour la diversité linguistique européenne, avec de fortes capacités en traduction et compréhension multilingue.</p>",
+                "fyi": "<p>EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l’Union européenne ainsi que 11 langues supplémentaires. L’entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d’un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d’une allocation de calcul « extreme-scale ».</p>\n<p>Les données d’entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l’équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue.</p>",
+                "size_desc": "<p>Avec 22 milliards de paramètres, ce modèle se situe dans la catégorie des modèles de taille intermédiaire. Son utilisation nécessite un ordinateur personnel très puissant ou, plus généralement, un serveur disposant d’au moins une carte graphique performante. La fenêtre de contexte atteint 32 000 jetons.</p>"
             },
             "Gemini 1.5 Pro": {
                 "desc": "<p>Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.</p>",
