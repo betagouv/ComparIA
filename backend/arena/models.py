@@ -159,10 +159,13 @@ class ReactRequest(BaseModel):
 class VoteRequest(BaseModel):
     """Request body for submitting a vote after conversation."""
 
-    session_hash: str
-    chosen_model: str  # "a", "b", or "tie"
-    preferences: dict[str, Any] = Field(default_factory=dict)
-    comment: str | None = None
+    which_model_radio_output: str  # "model-a", "model-b", or "both-equal"
+    positive_a_output: list[str] = Field(default_factory=list)
+    positive_b_output: list[str] = Field(default_factory=list)
+    negative_a_output: list[str] = Field(default_factory=list)
+    negative_b_output: list[str] = Field(default_factory=list)
+    comments_a_output: str = ""
+    comments_b_output: str = ""
 
 
 class RevealData(BaseModel):
