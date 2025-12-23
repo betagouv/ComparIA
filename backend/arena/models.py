@@ -8,10 +8,14 @@ Defines all data structures for:
 import datetime
 from dataclasses import dataclass, field
 from typing import Any, Literal, Optional
+from uuid import uuid4
 
 from pydantic import BaseModel, Field, RootModel, model_validator
 
+from backend.language_models.models import Endpoint, LanguageModel
 
+
+# Legacy metadata model (kept for compatibility)
 class Metadata(BaseModel):
     """Metadata for chat messages."""
 
@@ -26,7 +30,8 @@ class ChatMessage:
     """
     Chat message dataclass for Gradio compatibility.
 
-    Used for frontend communication with similar structure to Gradio's ChatMessage.
+    Used for frontend communication and during streaming (flexible metadata).
+    Will be converted to AnyMessage types for persistence.
     """
 
     role: Literal["user", "assistant", "system"]
@@ -36,24 +41,65 @@ class ChatMessage:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
+# New message hierarchy from commit 6b42a0964b34
+class BaseMessage(BaseModel):
+    """
+    Base message class with strict typing.
+
+    All messages have a role and content.
+    """
+
+    role: Literal["user", "assistant", "system"]
+    content: str
+
+
+class SystemMessage(BaseMessage):
+    """System prompt message."""
+
+    role: Literal["system"] = "system"
+
+
+class UserMessage(BaseMessage):
+    """User input message."""
+
+    role: Literal["user"] = "user"
+
+
+class AssistantMessage(BaseMessage):
+    """
+    Assistant response message with required metadata.
+
+    Metadata must include generation_id, bot, and output_tokens.
+    """
+
+    class AssistantMessageMetadata(BaseModel):
+        generation_id: str
+        bot: Literal["a", "b"]
+        output_tokens: int
+        duration: int | None = None
+
+    role: Literal["assistant"] = "assistant"
+    error: str | None = None
+    reasoning: str | None = None
+    metadata: AssistantMessageMetadata
+
+
+# Union type for any message
+AnyMessage = SystemMessage | UserMessage | AssistantMessage
+
+
+# Legacy ConversationMessage (kept for backward compatibility)
 class ConversationMessage(BaseModel):
     """
-    Single message in a conversation.
+    Single message in a conversation (legacy).
 
-    Represents one user or assistant message with content and metadata.
-    Assistant messages MUST include output_tokens for tracking.
-
-    Attributes:
-        role: "user", "assistant", or "system"
-        content: Message text content
-        metadata: Additional data (output_tokens for assistant messages, etc.)
+    DEPRECATED: Use AnyMessage types instead.
     """
 
     role: str
     content: str
     metadata: dict[str, Any] | None = None
 
-    # Validate that assistant messages include token counts
     @model_validator(mode="after")
     def check_assistant_metadata(self) -> "ConversationMessage":
         if self.role == "assistant":
@@ -68,36 +114,99 @@ class ConversationMessage(BaseModel):
 ConversationMessages = RootModel[list[ConversationMessage]]
 
 
+# New Conversation model (runtime, single model)
 class Conversation(BaseModel):
     """
-    Complete conversation record with both models' responses and metadata.
+    Represents a conversation with a single AI model.
 
-    Stores a paired comparison between two models on the same prompts.
-    Used to persist conversation data to database and JSON logs.
+    Stores messages, model information, and metadata about the conversation.
+    Each conversation has a unique ID and tracks the model's endpoint for API calls.
+    """
 
-    Attributes:
-        id: Internal database ID
-        timestamp: When conversation was created
-        model_a_name/model_b_name: Model identifiers
-        conversation_a/conversation_b: Message histories for each model
-        conv_turns: Number of user-model exchange rounds
-        system_prompt_a/b: System prompts used (if any)
-        conversation_pair_id: Unique ID combining both conv IDs
-        conv_a_id/conv_b_id: Individual conversation IDs
-        session_hash: User session identifier
-        visitor_id: Matomo visitor tracking ID (if enabled)
-        ip: User's IP address (PII)
-        model_pair_name: Sorted model pair for analysis
-        opening_msg: Initial user prompt
-        archived: Whether conversation is archived
-        mode: Model selection mode (random, big-vs-small, etc.)
-        custom_models_selection: Custom model selection if mode=custom
-        short_summary: Auto-generated summary (added during post-processing)
-        keywords/categories/languages: Extracted metadata (post-processing)
-        pii_analyzed/contains_pii: PII detection results
-        total_conv_a_output_tokens/total_conv_b_output_tokens: Token usage
-        ip_map: Geographic region derived from IP
-        postprocess_failed: Whether post-processing failed
+    conv_id: str = Field(default_factory=lambda: str(uuid4()).replace("-", ""))
+    model_name: str
+    endpoint: Endpoint
+    messages: list[AnyMessage]
+
+    @property
+    def has_system_msg(self) -> bool:
+        return len(self.messages) > 0 and isinstance(self.messages[0], SystemMessage)
+
+    @property
+    def opening_msg(self) -> str:
+        return self.messages[1 if self.has_system_msg else 0].content
+
+    @property
+    def conv_turns(self) -> int:
+        """
+        Count the number of conversation turns (user messages or exchanges).
+
+        A turn is one user message and one llm response pair.
+        """
+        return (len(self.messages) - (1 if self.has_system_msg else 0)) // 2
+
+
+def create_conversation(llm: LanguageModel, user_msg: UserMessage) -> Conversation:
+    """Create a single conversation with system prompt if configured."""
+    messages: list[AnyMessage] = (
+        [SystemMessage(content=llm.system_prompt), user_msg]
+        if llm.system_prompt
+        else [user_msg]
+    )
+
+    return Conversation(model_name=llm.id, endpoint=llm.endpoint, messages=messages)
+
+
+# New Conversations model (paired conversations for arena)
+class Conversations(BaseModel):
+    """
+    Paired conversations for arena comparison.
+
+    Wraps two Conversation objects for type-safe handling.
+    """
+
+    conversation_a: Conversation
+    conversation_b: Conversation
+
+    @property
+    def session_id(self) -> str:
+        """Generate session identifier from both conv IDs."""
+        return f"{self.conversation_a.conv_id}-{self.conversation_b.conv_id}"
+
+    def record(self) -> None:
+        """
+        Record conversation data (placeholder).
+
+        TODO: Implement database persistence.
+        """
+        # FIXME use custom serializer?
+        data = self.model_dump()
+        conv = self.conversation_a
+        data["conversation_pair_id"] = (
+            f"{self.conversation_a.conv_id}-{self.conversation_b.conv_id}"
+        )
+        data["opening_msg"] = conv.opening_msg
+        data["conv_turns"] = conv.conv_turns
+
+
+def create_conversations(
+    llm_a: LanguageModel, llm_b: LanguageModel, user_prompt: str
+) -> Conversations:
+    """Create paired conversations for arena comparison."""
+    user_msg = UserMessage(content=user_prompt)
+    conv_a = create_conversation(llm_a, user_msg)
+    conv_b = create_conversation(llm_b, user_msg)
+
+    return Conversations(conversation_a=conv_a, conversation_b=conv_b)
+
+
+# Database model (renamed from Conversation to avoid collision)
+class ConversationRecord(BaseModel):
+    """
+    Database record for a paired conversation comparison.
+
+    Stores complete conversation data from both models for PostgreSQL persistence.
+    This is the model used for database operations and post-processing.
     """
 
     id: int
