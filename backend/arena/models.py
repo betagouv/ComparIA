@@ -149,11 +149,9 @@ class RetryRequest(BaseModel):
 
 
 class ReactRequest(BaseModel):
-    """Request body for updating message reactions (like/dislike)."""
+    """Request body for updating message reactions."""
 
-    session_hash: str
-    message_id: str
-    reaction: str | None  # "like", "dislike", or None to remove
+    reaction_json: dict[str, Any]  # Reaction data with index, liked, prefs, comment
 
 
 class VoteRequest(BaseModel):
