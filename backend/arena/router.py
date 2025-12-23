@@ -128,16 +128,18 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     conv_b = Conversation(messages=[user_message], model_name=model_b)
 
     # Convert to dicts for Redis storage
+    from dataclasses import asdict
+
     conv_a_dict = {
-        "messages": conv_a.messages,
+        "messages": [asdict(msg) for msg in conv_a.messages],
         "model_name": conv_a.model_name,
-        "endpoint": conv_a.endpoint,
+        "endpoint": conv_a.endpoint.model_dump() if conv_a.endpoint else None,
         "conv_id": conv_a.conv_id,
     }
     conv_b_dict = {
-        "messages": conv_b.messages,
+        "messages": [asdict(msg) for msg in conv_b.messages],
         "model_name": conv_b.model_name,
-        "endpoint": conv_b.endpoint,
+        "endpoint": conv_b.endpoint.model_dump() if conv_b.endpoint else None,
         "conv_id": conv_b.conv_id,
     }
 
