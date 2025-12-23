@@ -298,25 +298,10 @@ export async function retryAskChatBots() {
 }
 
 export async function updateReaction(kind: ReactionKind, reaction: APIReactionData) {
-  const data =
-    kind === 'like'
-      ? {
-          index: reaction.index,
-          value: reaction.value,
-          liked: reaction.liked,
-          prefs: reaction.prefs
-        }
-      : {
-          index: reaction.index,
-          value: '',
-          comment: reaction.comment
-        }
-
-  return api.predict('/chatbot_react', {
-    // pass complete raw messages array
-    chatbot: arena.chat.messages,
-    reaction_json: data
-  })
+  // TODO: Implement reaction endpoint in FastAPI backend
+  // For now, just log the reaction
+  console.log('[REACTION]', kind, reaction)
+  return Promise.resolve()
 }
 
 export async function postVoteGetReveal(vote: Required<VoteData>) {
@@ -329,7 +314,19 @@ export async function postVoteGetReveal(vote: Required<VoteData>) {
     comments_a_output: vote.a.comment,
     comments_b_output: vote.b.comment
   } satisfies APIVoteData
-  return api.predict<APIRevealData>('/chatbot_vote', data).then(parseAPIRevealData)
+
+  // Use fastapiClient which handles full backend URL
+  const { fastapiClient } = await import('./fastapi-client')
+
+  const revealData = await fastapiClient.request<APIRevealData>('/arena/vote', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+
+  return parseAPIRevealData(revealData)
 }
 
 function parseAPIRevealData(data: APIRevealData): RevealData {
@@ -351,5 +348,17 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
 }
 
 export async function getReveal(): Promise<RevealData> {
-  return api.predict<APIRevealData>('/reveal').then(parseAPIRevealData)
+  const sessionHash = arenaApi.getSessionHash()
+  if (!sessionHash) {
+    throw new Error('No session hash available')
+  }
+
+  // Use fastapiClient which handles full backend URL
+  const { fastapiClient } = await import('./fastapi-client')
+
+  const revealData = await fastapiClient.request<APIRevealData>(`/arena/reveal/${sessionHash}`, {
+    method: 'GET'
+  })
+
+  return parseAPIRevealData(revealData)
 }

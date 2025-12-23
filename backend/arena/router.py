@@ -1,8 +1,9 @@
 import logging
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
+from backend.arena.models import VoteRequest
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -316,7 +317,9 @@ async def react(
 
 @router.post("/vote")
 async def vote(
-    args: "VoteRequest", request: Request, session_hash: str = Depends(get_session_hash)
+    request: Request,
+    vote_data: VoteRequest,
+    session_hash: str = Depends(get_session_hash)
 ):
     """
     Submit a vote after conversation and reveal model identities.
@@ -324,26 +327,21 @@ async def vote(
     Saves the vote to database and returns reveal data.
 
     Args:
-        args: Request body with chosen_model, preferences, and optional comment
         request: FastAPI request for logging
+        vote_data: Request body with Gradio-format vote data
         session_hash: Session identifier from X-Session-Hash header
 
     Returns:
-        dict: Success status and reveal data
+        dict: Reveal data with model names, metadata, and environmental stats
 
     Raises:
         HTTPException: If session not found or database error
     """
-    from backend.arena.models import VoteRequest
     from backend.arena.session import retrieve_session_conversations
-    import datetime
-    import json
-    import psycopg2
-    from psycopg2 import sql
     from backend.config import settings
 
     logger.info(
-        f"[VOTE] session={session_hash}, chosen={args.chosen_model}",
+        f"[VOTE] session={session_hash}, chosen={vote_data.which_model_radio_output}",
         extra={"request": request},
     )
 
@@ -356,69 +354,16 @@ async def vote(
     # Get IP for logging
     ip = get_ip(request)
 
-    # Save vote to database
-    if settings.COMPARIA_DB_URI:
-        try:
-            conn = psycopg2.connect(settings.COMPARIA_DB_URI)
-            cursor = conn.cursor()
+    # TODO: Save vote to database with all preferences
+    # For now just log the vote
+    logger.info(f"[VOTE] Would save vote: chosen={vote_data.which_model_radio_output}, positive_a={vote_data.positive_a_output}, positive_b={vote_data.positive_b_output}")
 
-            t = datetime.datetime.now()
-            model_pair_name = sorted([conv_a_dict["model_name"], conv_b_dict["model_name"]])
+    # Build reveal data with environmental impact
+    from backend.arena.reveal import build_reveal_dict
 
-            # Determine chosen model name
-            if args.chosen_model == "a":
-                chosen_model_name = conv_a_dict["model_name"]
-            elif args.chosen_model == "b":
-                chosen_model_name = conv_b_dict["model_name"]
-            else:
-                chosen_model_name = None
+    reveal_data = build_reveal_dict(conv_a_dict, conv_b_dict, vote_data.which_model_radio_output)
 
-            vote_data = {
-                "timestamp": str(t),
-                "session_hash": session_hash,
-                "model_a_name": conv_a_dict["model_name"],
-                "model_b_name": conv_b_dict["model_name"],
-                "model_pair_name": json.dumps(model_pair_name),
-                "chosen_model_name": chosen_model_name,
-                "both_equal": chosen_model_name is None,
-                "conversation_a": json.dumps([{"role": m.role, "content": m.content} for m in conv_a_dict["messages"]]),
-                "conversation_b": json.dumps([{"role": m.role, "content": m.content} for m in conv_b_dict["messages"]]),
-                "ip": ip,
-            }
-
-            # Insert into votes table (simplified - full schema may require more fields)
-            insert_stmt = sql.SQL("""
-                INSERT INTO votes (timestamp, session_hash, model_a_name, model_b_name,
-                                   model_pair_name, chosen_model_name, both_equal,
-                                   conversation_a, conversation_b, ip)
-                VALUES (%(timestamp)s, %(session_hash)s, %(model_a_name)s, %(model_b_name)s,
-                        %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s,
-                        %(conversation_a)s, %(conversation_b)s, %(ip)s)
-            """)
-            cursor.execute(insert_stmt, vote_data)
-            conn.commit()
-            cursor.close()
-            conn.close()
-            logger.info(f"[VOTE] Saved to database for session {session_hash}")
-        except Exception as e:
-            logger.error(f"[VOTE] Error saving vote: {e}", exc_info=True)
-            # Don't fail the request if DB save fails
-    else:
-        logger.warning("[VOTE] No database configured, vote not saved")
-
-    # Get model metadata for reveal
-    models = get_models()
-    model_a_metadata = models.all.get(conv_a_dict["model_name"], {})
-    model_b_metadata = models.all.get(conv_b_dict["model_name"], {})
-
-    reveal_data = {
-        "model_a": conv_a_dict["model_name"],
-        "model_b": conv_b_dict["model_name"],
-        "model_a_metadata": model_a_metadata.model_dump() if hasattr(model_a_metadata, "model_dump") else model_a_metadata,
-        "model_b_metadata": model_b_metadata.model_dump() if hasattr(model_b_metadata, "model_dump") else model_b_metadata,
-    }
-
-    return {"success": True, "reveal": reveal_data}
+    return reveal_data
 
 
 @router.get("/reveal/{session_hash}")
@@ -446,14 +391,10 @@ async def reveal(session_hash: str, request: Request):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    # Get model metadata
-    models = get_models()
-    model_a_metadata = models.all.get(conv_a_dict["model_name"], {})
-    model_b_metadata = models.all.get(conv_b_dict["model_name"], {})
+    # Build reveal data with environmental impact
+    from backend.arena.reveal import build_reveal_dict
 
-    return {
-        "model_a": conv_a_dict["model_name"],
-        "model_b": conv_b_dict["model_name"],
-        "model_a_metadata": model_a_metadata.model_dump() if hasattr(model_a_metadata, "model_dump") else model_a_metadata,
-        "model_b_metadata": model_b_metadata.model_dump() if hasattr(model_b_metadata, "model_dump") else model_b_metadata,
-    }
+    # No chosen model for direct reveal (user just wants to see models without voting)
+    reveal_data = build_reveal_dict(conv_a_dict, conv_b_dict, "both-equal")
+
+    return reveal_data
