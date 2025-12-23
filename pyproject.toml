@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "ecologits==0.8.2",
-    "gradio==5.48.0",
     "litellm==1.77.5",
     "langfuse>=3.6.0",
     "fastapi>=0.118.0",
@@ -34,7 +33,7 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["languia*", "utils*"]
+include = ["backend*", "utils*"]
 
 [dependency-groups]
 dev = [

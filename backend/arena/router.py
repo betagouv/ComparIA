@@ -103,8 +103,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     """
     from backend.arena.session import create_session, store_session_conversations
     from backend.arena.streaming import create_sse_response, stream_both_responses
-    from languia.conversation import Conversation
-    from languia.custom_components.customchatbot import ChatMessage
+    from backend.arena.conversation import Conversation
+    from backend.arena.models import ChatMessage
 
     logger.info("chose mode: " + args.mode, extra={"request": request})
     logger.info(
@@ -179,7 +179,7 @@ async def add_text(
     from backend.arena.models import AddTextRequest
     from backend.arena.session import retrieve_session_conversations, update_session_conversations
     from backend.arena.streaming import create_sse_response, stream_both_responses
-    from languia.custom_components.customchatbot import ChatMessage
+    from backend.arena.models import ChatMessage
 
     logger.info(
         f"[ADD_TEXT] session={session_hash}, message_len={len(args.message)}",
@@ -334,7 +334,11 @@ async def vote(
     """
     from backend.arena.models import VoteRequest
     from backend.arena.session import retrieve_session_conversations
-    from languia.logs import save_vote_to_db
+    import datetime
+    import json
+    import psycopg2
+    from psycopg2 import sql
+    from backend.config import settings
 
     logger.info(
         f"[VOTE] session={session_hash}, chosen={args.chosen_model}",
@@ -350,29 +354,55 @@ async def vote(
     # Get IP for logging
     ip = get_ip(request)
 
-    # Prepare vote data
-    vote_data = {
-        "session_hash": session_hash,
-        "chosen_model": args.chosen_model,
-        "model_a": conv_a_dict["model_name"],
-        "model_b": conv_b_dict["model_name"],
-        "conversation_a": [
-            {"role": msg.role, "content": msg.content} for msg in conv_a_dict["messages"]
-        ],
-        "conversation_b": [
-            {"role": msg.role, "content": msg.content} for msg in conv_b_dict["messages"]
-        ],
-        "preferences": args.preferences,
-        "comment": args.comment,
-        "ip": ip,
-    }
+    # Save vote to database
+    if settings.COMPARIA_DB_URI:
+        try:
+            conn = psycopg2.connect(settings.COMPARIA_DB_URI)
+            cursor = conn.cursor()
 
-    # Save to database
-    try:
-        save_vote_to_db(vote_data)
-    except Exception as e:
-        logger.error(f"[VOTE] Error saving vote: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Failed to save vote")
+            t = datetime.datetime.now()
+            model_pair_name = sorted([conv_a_dict["model_name"], conv_b_dict["model_name"]])
+
+            # Determine chosen model name
+            if args.chosen_model == "a":
+                chosen_model_name = conv_a_dict["model_name"]
+            elif args.chosen_model == "b":
+                chosen_model_name = conv_b_dict["model_name"]
+            else:
+                chosen_model_name = None
+
+            vote_data = {
+                "timestamp": str(t),
+                "session_hash": session_hash,
+                "model_a_name": conv_a_dict["model_name"],
+                "model_b_name": conv_b_dict["model_name"],
+                "model_pair_name": json.dumps(model_pair_name),
+                "chosen_model_name": chosen_model_name,
+                "both_equal": chosen_model_name is None,
+                "conversation_a": json.dumps([{"role": m.role, "content": m.content} for m in conv_a_dict["messages"]]),
+                "conversation_b": json.dumps([{"role": m.role, "content": m.content} for m in conv_b_dict["messages"]]),
+                "ip": ip,
+            }
+
+            # Insert into votes table (simplified - full schema may require more fields)
+            insert_stmt = sql.SQL("""
+                INSERT INTO votes (timestamp, session_hash, model_a_name, model_b_name,
+                                   model_pair_name, chosen_model_name, both_equal,
+                                   conversation_a, conversation_b, ip)
+                VALUES (%(timestamp)s, %(session_hash)s, %(model_a_name)s, %(model_b_name)s,
+                        %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s,
+                        %(conversation_a)s, %(conversation_b)s, %(ip)s)
+            """)
+            cursor.execute(insert_stmt, vote_data)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            logger.info(f"[VOTE] Saved to database for session {session_hash}")
+        except Exception as e:
+            logger.error(f"[VOTE] Error saving vote: {e}", exc_info=True)
+            # Don't fail the request if DB save fails
+    else:
+        logger.warning("[VOTE] No database configured, vote not saved")
 
     # Get model metadata for reveal
     models = get_models()

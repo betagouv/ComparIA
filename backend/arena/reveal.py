@@ -9,14 +9,12 @@ Functions:
 - calculate_lightbulb_consumption: Energy equivalent in LED light hours
 - calculate_streaming_hours: CO2 equivalent in video streaming hours
 - build_reveal_dict: Main function generating reveal screen data
-- determine_choice_badge: Infer user preference from message reactions
-- get_llm_impact: Calculate environmental impact for a model
 """
 
 import logging
 
 from backend.language_models.utils import convert_range_to_value, get_llm_impact
-from languia.utils import sum_tokens
+from backend.arena.utils import sum_tokens
 
 
 def calculate_lightbulb_consumption(impact_energy_value):
@@ -202,40 +200,3 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         lightbulb_b=lightbulb_b,
         lightbulb_b_unit=lightbulb_b_unit,
     )
-
-
-def determine_choice_badge(reactions):
-    your_choice_badge = None
-    reactions = [reaction for reaction in reactions if reaction]
-    # Case: Only one reaction exists
-    if len(reactions) == 1:
-
-        print("reaction")
-        print(reactions)
-        if reactions[0].get("liked") == True:
-            # Assign "a" if the reaction is for the first message
-            your_choice_badge = (
-                "model-a" if reactions[0].get("index") == 1 else "model-b"
-            )
-
-    # Case: Two reactions exist
-    elif len(reactions) == 2:
-        print("reactions")
-        print(reactions)
-
-        # Ensure one reaction is "liked" and the other is different
-        if (
-            reactions[0].get("liked") == True
-            and reactions[0].get("liked") != reactions[1].get("liked")
-        ) or (
-            reactions[1].get("liked") == True
-            and reactions[1].get("liked") != reactions[0].get("liked")
-        ):
-            # Assign "a" or "b" based on the liked reaction's index
-            your_choice_badge = (
-                "model-a"
-                if reactions[0]["liked"] and reactions[0].get("index") == 1
-                else "model-b"
-            )
-
-    return your_choice_badge

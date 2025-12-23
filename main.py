@@ -1,15 +1,11 @@
 import logging
 
-import gradio as gr
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
-from backend.logger import FrontendLogEntry, FrontendLogRequest
 from backend.session import CohortRequest, store_cohorts_redis
-from backend.utils.countries import get_country_portal_count
-from languia.block_arena import demo
 
 logger = logging.getLogger("languia")
 
@@ -29,26 +25,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-
-demo = demo.queue(
-    max_size=None,
-    default_concurrency_limit=None,
-    # default_concurrency_limit=40,
-    # status_update_rate="auto",
-    api_open=False,
-)
-# Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
-demo.run_startup_events()
-
-app = gr.mount_gradio_app(
-    app,
-    demo,
-    path="/api",
-    root_path="/api",
-    # allowed_paths=[config.assets_absolute_path],
-    # show_error=config.debug,
 )
 
 
@@ -103,19 +79,23 @@ async def define_current_cohorts(request: CohortRequest):
 
 
 @app.post("/frontend_logs", response_class=JSONResponse)
-async def frontlog(request: FrontendLogRequest, http_request: Request):
+async def frontlog(request: Request):
     """
     Route pour recevoir les logs du frontend (format simplifié).
 
     Args:
-        request: Le log du frontend avec niveau et message
-        http_request: La requête HTTP pour obtenir l'IP client
+        request: La requête HTTP pour obtenir l'IP client
 
     Returns:
         JSONResponse: Statut de réception du log
     """
+    from backend.logger import FrontendLogRequest
+
     try:
-        client_ip = http_request.client.host if http_request.client else "unknown"
+        body = await request.json()
+        log_request = FrontendLogRequest(**body)
+
+        client_ip = request.client.host if request.client else "unknown"
 
         # Créer un logger pour le frontend
         frontend_logger = logging.getLogger("frontend")
@@ -129,23 +109,23 @@ async def frontlog(request: FrontendLogRequest, http_request: Request):
             "error": frontend_logger.error,
         }
 
-        log_func = level_map.get(request.level.lower(), frontend_logger.info)
+        log_func = level_map.get(log_request.level.lower(), frontend_logger.info)
 
         # Données supplémentaires pour le log
         extra_data = {
-            "session_hash": request.session_hash,
+            "session_hash": log_request.session_hash,
             "client_ip": client_ip,
-            "user_agent": request.user_agent,
+            "user_agent": log_request.user_agent,
         }
 
         # Loguer le message avec les métadonnées
-        log_func(request.message, extra=extra_data)
+        log_func(log_request.message, extra=extra_data)
 
         return JSONResponse(
             {
                 "success": True,
                 "log_received": True,
-                "session_hash": request.session_hash,
+                "session_hash": log_request.session_hash,
             }
         )
 
