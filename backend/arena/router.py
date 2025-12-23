@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from backend.arena.models import VoteRequest
+from backend.arena.models import ReactRequest, VoteRequest
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -264,27 +264,26 @@ async def retry(
 
 @router.post("/react")
 async def react(
-    args: "ReactRequest", request: Request, session_hash: str = Depends(get_session_hash)
+    react_data: ReactRequest, request: Request, session_hash: str = Depends(get_session_hash)
 ):
     """
     Update reaction (like/dislike) for a specific message.
 
     Args:
-        args: Request body with message_id and reaction
+        react_data: Request body with chatbot messages and reaction_json (Gradio format)
         request: FastAPI request for logging
         session_hash: Session identifier from X-Session-Hash header
 
     Returns:
-        dict: Success status
+        dict: Success status with reaction data
 
     Raises:
-        HTTPException: If session or message not found
+        HTTPException: If session not found
     """
-    from backend.arena.models import ReactRequest
     from backend.arena.session import retrieve_session_conversations, update_session_conversations
 
     logger.info(
-        f"[REACT] session={session_hash}, message_id={args.message_id}, reaction={args.reaction}",
+        f"[REACT] session={session_hash}, reaction={react_data.reaction_json}",
         extra={"request": request},
     )
 
@@ -294,25 +293,36 @@ async def react(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    # Find and update message reaction
-    message_found = False
-    for conv_dict in [conv_a_dict, conv_b_dict]:
-        for msg in conv_dict["messages"]:
-            # Check if message has matching ID (may need to add ID field to ChatMessage)
-            if hasattr(msg, "id") and msg.id == args.message_id:
-                msg.reaction = args.reaction
-                message_found = True
-                break
-        if message_found:
-            break
+    # Extract reaction index and data
+    reaction_index = react_data.reaction_json.get("index")
+    if reaction_index is None:
+        raise HTTPException(status_code=400, detail="Missing reaction index")
 
-    if not message_found:
-        raise HTTPException(status_code=404, detail=f"Message {args.message_id} not found")
+    # Store reaction metadata on the corresponding message
+    # The reaction index corresponds to the bot message pair (0-indexed)
+    # We need to find the assistant message at position (reaction_index * 2 + 1)
+    message_position = reaction_index * 2 + 1  # User messages at even positions, assistant at odd
+
+    # Update reaction in both conversations' messages
+    for conv_dict in [conv_a_dict, conv_b_dict]:
+        messages = conv_dict.get("messages", [])
+        if message_position < len(messages):
+            msg = messages[message_position]
+            # Add reaction metadata to the message
+            if isinstance(msg, dict):
+                if "metadata" not in msg:
+                    msg["metadata"] = {}
+                msg["metadata"]["reaction"] = react_data.reaction_json
+            else:
+                # Handle ChatMessage object
+                if not hasattr(msg, "metadata") or msg.metadata is None:
+                    msg.metadata = {}
+                msg.metadata["reaction"] = react_data.reaction_json
 
     # Update in Redis
     update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
 
-    return {"success": True, "message_id": args.message_id, "reaction": args.reaction}
+    return {"success": True, "index": reaction_index, "reaction": react_data.reaction_json}
 
 
 @router.post("/vote")

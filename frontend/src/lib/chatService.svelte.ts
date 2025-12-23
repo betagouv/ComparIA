@@ -298,10 +298,17 @@ export async function retryAskChatBots() {
 }
 
 export async function updateReaction(kind: ReactionKind, reaction: APIReactionData) {
-  // TODO: Implement reaction endpoint in FastAPI backend
-  // For now, just log the reaction
-  console.log('[REACTION]', kind, reaction)
-  return Promise.resolve()
+  const data = {
+    reaction_json: reaction
+  }
+
+  // Use fastapiClient which handles full backend URL
+  const { fastapiClient } = await import('./fastapi-client')
+  await fastapiClient.request('/arena/react', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
 }
 
 export async function postVoteGetReveal(vote: Required<VoteData>) {
