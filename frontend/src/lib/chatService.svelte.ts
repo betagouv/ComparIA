@@ -1,4 +1,5 @@
 import { api } from '$lib/api'
+import { arenaApi } from '$lib/arena-api'
 import { m } from '$lib/i18n/messages'
 import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
@@ -186,19 +187,38 @@ export async function runChatBots(args: APIModeAndPromptData) {
   arena.chat.status = 'pending'
 
   try {
-    const job = await api.submit<APIChatMessage[]>('/add_first_text', {
-      model_dropdown_scoped: args,
-      locale: getLocale()
-    })
+    // Use new FastAPI client
+    const customModels =
+      args.mode === 'custom' && args.custom_models_selection.length === 2
+        ? (args.custom_models_selection as [string, string])
+        : undefined
 
     arena.currentScreen = 'chat'
     arena.mode = args.mode
     arena.chat.step = 1
-    // arena.chat.status = 'streaming'
 
-    for await (const messages of job) {
-      arena.chat.status = 'generating'
-      arena.chat.messages = messages
+    // Stream from FastAPI endpoint
+    for await (const event of arenaApi.addFirstText(
+      args.prompt_value,
+      args.mode,
+      customModels
+    )) {
+      if (event.type === 'init') {
+        // Session initialized, continue streaming
+        arena.chat.status = 'generating'
+      } else if (event.type === 'update' && event.a && event.b) {
+        // Merge messages from both models
+        arena.chat.status = 'generating'
+        // Combine messages from both sides
+        const messagesA = event.a.messages || []
+        const messagesB = event.b.messages || []
+        // Interleave or merge as needed - for now just concatenate unique messages
+        arena.chat.messages = mergeMessages(messagesA, messagesB)
+      } else if (event.type === 'chunk' && event.messages) {
+        // Single chunk update
+        arena.chat.status = 'generating'
+        arena.chat.messages = event.messages
+      }
     }
 
     arena.chat.status = 'complete'
@@ -210,16 +230,40 @@ export async function runChatBots(args: APIModeAndPromptData) {
   return arena.chat.status
 }
 
+/**
+ * Merge messages from both models into a single array.
+ * Messages are deduplicated by role and content.
+ */
+function mergeMessages(messagesA: any[], messagesB: any[]): APIChatMessage[] {
+  const seen = new Set<string>()
+  const merged: APIChatMessage[] = []
+
+  for (const msg of [...messagesA, ...messagesB]) {
+    const key = `${msg.role}:${msg.content}:${msg.metadata?.bot || ''}`
+    if (!seen.has(key)) {
+      seen.add(key)
+      merged.push(msg)
+    }
+  }
+
+  return merged
+}
+
 export async function askChatBots(text: string) {
   arena.chat.status = 'pending'
 
   try {
-    const job = await api.submit<APIChatMessage[]>('/add_text', { text })
-    // arena.chat.status = 'streaming'
-
-    for await (const messages of job) {
-      arena.chat.status = 'generating'
-      arena.chat.messages = messages
+    // Stream from FastAPI endpoint
+    for await (const event of arenaApi.addText(text)) {
+      if (event.type === 'update' && event.a && event.b) {
+        arena.chat.status = 'generating'
+        const messagesA = event.a.messages || []
+        const messagesB = event.b.messages || []
+        arena.chat.messages = mergeMessages(messagesA, messagesB)
+      } else if (event.type === 'chunk' && event.messages) {
+        arena.chat.status = 'generating'
+        arena.chat.messages = event.messages
+      }
     }
 
     arena.chat.status = 'complete'
@@ -233,12 +277,17 @@ export async function retryAskChatBots() {
   arena.chat.status = 'pending'
 
   try {
-    const job = await api.submit<APIChatMessage[]>('/chatbot_retry')
-    // arena.chat.status = 'streaming'
-
-    for await (const messages of job) {
-      arena.chat.status = 'generating'
-      arena.chat.messages = messages
+    // Stream from FastAPI endpoint
+    for await (const event of arenaApi.retry()) {
+      if (event.type === 'update' && event.a && event.b) {
+        arena.chat.status = 'generating'
+        const messagesA = event.a.messages || []
+        const messagesB = event.b.messages || []
+        arena.chat.messages = mergeMessages(messagesA, messagesB)
+      } else if (event.type === 'chunk' && event.messages) {
+        arena.chat.status = 'generating'
+        arena.chat.messages = event.messages
+      }
     }
 
     arena.chat.status = 'complete'
