@@ -9,14 +9,13 @@ import logging
 import time
 from uuid import uuid4
 
-import gradio as gr
 from litellm.litellm_core_utils.token_counter import token_counter
 
 from backend.language_models.data import get_models
-from languia import config
-from languia.custom_components.customchatbot import ChatMessage
-from languia.litellm import litellm_stream_iter
-from languia.utils import EmptyResponseError, get_api_key, messages_to_dict_list
+from backend.config import get_model_system_prompt
+from backend.arena.models import ChatMessage
+from backend.arena.litellm import litellm_stream_iter
+from backend.arena.utils import EmptyResponseError, get_api_key, messages_to_dict_list
 
 models = get_models().enabled
 
@@ -42,7 +41,7 @@ class Conversation:
             model_name: Name of the model to use for this conversation
         """
         # Load model-specific system prompt (e.g., French instructions)
-        system_prompt = config.get_model_system_prompt(model_name)
+        system_prompt = get_model_system_prompt(model_name)
         if system_prompt:
             # Prepend system prompt to messages if available
             self.messages = [
@@ -113,25 +112,24 @@ def update_last_message(
     return messages
 
 
-def bot_response(
+async def bot_response_async(
     position,
     state,
-    request: gr.Request,
+    ip: str,
     temperature=0.7,
-    # top_p=1.0,
     max_new_tokens=4096,
 ):
     """
-    Stream a response from an AI model.
+    Stream a response from an AI model asynchronously.
 
-    This is a generator function that yields conversation state updates as the model
+    This is an async generator function that yields conversation state updates as the model
     generates responses token by token. It handles model endpoint configuration,
     API calls through LiteLLM, token counting, and performance tracking.
 
     Args:
         position: Which model position ("a" or "b") to respond
         state: Conversation object with messages and model info
-        request: Gradio request context for logging
+        ip: Client IP address for logging
         temperature: Sampling temperature (default 0.7)
         max_new_tokens: Maximum tokens to generate (default 4096)
 
@@ -142,13 +140,11 @@ def bot_response(
         Exception: If model endpoint is not configured
         EmptyResponseError: If model returns empty response
     """
-    # Note: temperature and top_p can be converted to float/int if needed
-
     # Validate that the model has a configured endpoint
     if not state.endpoint:
         logger.critical(
             "No endpoint for model name: " + str(state.model_name),
-            extra={"request": request},
+            extra={"ip": ip},
         )
         raise Exception("No endpoint for model name: " + str(state.model_name))
 
@@ -158,7 +154,7 @@ def bot_response(
     endpoint_name = endpoint.get("api_id", state.model_name)
     logger.info(
         f"using endpoint {endpoint_name} for {state.model_name}",
-        extra={"request": request},
+        extra={"ip": ip},
     )
     # Check if this model supports extended reasoning (like o1)
     include_reasoning = endpoint.get("include_reasoning", True)
@@ -187,7 +183,7 @@ def bot_response(
         api_base=endpoint.get("api_base", None),
         api_version=endpoint.get("api_version", None),
         max_new_tokens=max_new_tokens,
-        request=request,
+        ip=ip,
         vertex_ai_location=endpoint.get("vertex_ai_location", None),
         include_reasoning=include_reasoning,
     )
@@ -219,21 +215,21 @@ def bot_response(
                 generation_id=generation_id,
                 reasoning=reasoning,
             )
-            # Yield to frontend for real-time display
+            # Yield to caller for real-time display
             yield (state)
 
     # Log generation ID for API debugging
     if generation_id:
         logger.info(
             f"generation_id: {generation_id} for {litellm_model_name}",
-            extra={"request": request},
+            extra={"ip": ip},
         )
 
     # Calculate total generation duration
     stop_tstamp = time.time()
     duration = stop_tstamp - start_tstamp
     logger.debug(
-        f"duration for {generation_id}: {str(duration)}", extra={"request": request}
+        f"duration for {generation_id}: {str(duration)}", extra={"ip": ip}
     )
 
     # Extract final response text and reasoning from last chunk
@@ -244,7 +240,7 @@ def bot_response(
         logger.error(
             f"reponse_vide: {state.model_name}, data: " + str(data),
             exc_info=True,
-            extra={"request": request},
+            extra={"ip": ip},
         )
         raise EmptyResponseError(
             f"No answer from API {endpoint_name} for model {state.model_name}"

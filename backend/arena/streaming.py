@@ -34,24 +34,23 @@ async def stream_bot_response(
 
         data: {"type": "error", "error": "error message"}
     """
-    from languia.conversation import bot_response
+    from backend.arena.conversation import bot_response_async, Conversation
+    from backend.utils.user import get_ip
 
     try:
-        # Create a temporary Conversation-like object for bot_response
-        # Note: bot_response expects a Conversation object with specific attributes
-        # For now we'll need to adapt this once we migrate conversation.py
+        # Reconstruct Conversation object from state dict
+        conv = Conversation(
+            messages=conv_state.get("messages", []),
+            model_name=conv_state.get("model_name")
+        )
+        conv.conv_id = conv_state.get("conv_id", "")
+        conv.endpoint = conv_state.get("endpoint", {})
 
-        class ConvWrapper:
-            def __init__(self, state_dict):
-                self.messages = state_dict.get("messages", [])
-                self.model_name = state_dict.get("model_name")
-                self.endpoint = state_dict.get("endpoint", {})
-                self.conv_id = state_dict.get("conv_id", "")
+        # Get IP from request for logging
+        ip = get_ip(request)
 
-        conv = ConvWrapper(conv_state)
-
-        # Stream responses from bot_response generator
-        for updated_state in bot_response(position, conv, request):
+        # Stream responses from bot_response_async generator
+        async for updated_state in bot_response_async(position, conv, ip):
             messages = [
                 {
                     "role": msg.role,
