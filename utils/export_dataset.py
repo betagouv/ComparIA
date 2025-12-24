@@ -12,6 +12,7 @@ Usage:
     python export_dataset.py ./exports conversations
     python export_dataset.py --dry-run
     python export_dataset.py ./exports --dry-run
+    python export_dataset.py --count # only count db rows that would be exported exported
 
 Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
