@@ -56,7 +56,7 @@
                 "vote": "Või lõpeta oma katse hääle andmisega."
             },
             "tooLong": {
-                "message": "Igal mudelil on piiratud vestluste maht, mida see suudab käsitleda.",
+                "message": "Igal mudelil on piiratud vestluste maht, mida see käsitleda suudab.",
                 "retry": "Võid vestlust kahe uue mudeliga uuesti alustada.",
                 "title": "Ups, vestlus on ühe mudeli jaoks liiga pikk.",
                 "vote": "Võid nendele mudelitele siiski hääle anda või alustada vestlust kahe uue mudeliga."
@@ -126,7 +126,7 @@
                     "desc": "Interaktiivne vestluste visualiseerimine, kus iga klaster esindab kasutajate poolt korduvalt käsitletud teemat (näiteks haridus, tervishoid, keskkond või isegi filosoofia).",
                     "title": "Tutvu andmete visualiseeringuga"
                 },
-                "desc": "Bunka.ai meeskond viis platvormil läbi ulatusliku uuringu kasutajate ja tehisintellekti interaktsiooni kohta, kaardistades peamised teemad, ülesanded ning tasakaalu automatiseerimise ja inimeste võimestamise vahel. Nende 25 000 reaalsel vestlusel põhinev analüüs pakub haruldast empiirilist ülevaadet sellest, kuidas inimesed tehisintellekti tegelikult kasutavad.",
+                "desc": "Bunka.ai meeskond viis Compar:AI platvormil läbi ulatusliku kasutajate ja tehisaru interaktsioonide uuringu, kaardistades peamised teemad, ülesanded ning tasakaalu automatiseerimise ja inimeste võimestamise vahel. Nende 25 000 reaalsel vestlusel põhinev analüüs pakub haruldast empiirilist ülevaadet sellest, kuidas inimesed tehisaru tegelikult kasutavad.",
                 "method": "Lisateave metoodika kohta"
             },
             "desc": "Näited compar:IA andmestiku kasutamisest",
@@ -152,7 +152,7 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p>Eelistuste andmeid kasutatakse mudelite täiustamiseks tulevase treenimise käigus.</p> <p>baromeeter.ai kasutajad väljendavad oma eelistusi kahe mudeli vastuseid pimesi võrreldes, näidates, millised vastused on kõige asjakohasemad. Neid eelistuste andmeid saab kasutada mudelite paremasse vastavusse viimise eesmärgil — see tähendab nende treenimiseks selliselt, et need genereeriksid vastuseid, mis on rohkem kooskõlas kasutajate ootuste ja eelistustega.</p> <p>See on iteratiivne protsess, mille käigus mudel õpib järk-järgult inimeste tagasiside põhjal paremaid vastuseid looma. Eelistuste andmeid kasutades kohandavad mudelid oma vastamisstiili.</p>",
+                    "desc": "<p>Eelistusandmestikku kasutatakse mudelite täiustamiseks tulevase treenimise käigus.</p> <p>baromeeter.ai kasutajad väljendavad kahe mudeli vastuseid pimesi võrreldes oma eelistusi, näidates, millised vastused on kõige asjakohasemad. Neid eelistuste andmeid saab kasutada mudelite paremasse vastavusse viimise eesmärgil — see tähendab nende treenimiseks selliselt, et need genereeriksid vastuseid, mis on rohkem kooskõlas kasutajate ootuste ja eelistustega.</p> <p>See on iteratiivne protsess, mille käigus mudel õpib järk-järgult inimeste tagasiside põhjal paremaid vastuseid looma. Eelistuste andmeid kasutades kohandavad mudelid oma vastamisstiili.</p>",
                     "title": "Kas eelistuse andmetel on mudeli jõudlusele vahetu mõju?"
                 },
                 "2": {
@@ -273,9 +273,9 @@
             "improveTitle": "Parandused ja kontakt",
             "remedyList": "Saad:",
             "remedyTitle": "Vaidlusavalduse esitada",
-            "stateNavigate": "navigeerida kõikidel lehekülgedel vaid klaviatuuri abil",
-            "statePrefs": "lehekülge ilma sisu kaotamata oma eelistustega kohandada (kirjasuurus, ekraani suum, kirjatüübi muutmine jne)",
-            "stateScreenReader": "vaadata veebilehte ekraanilugeja abil.",
+            "stateNavigate": "Kõikidel lehekülgedel vaid klaviatuuri abil navigeerida",
+            "statePrefs": "Lehekülge ilma sisu kaotamata oma eelistustega kohandada (kirjasuurus, ekraani suum, kirjatüübi muutmine jne)",
+            "stateScreenReader": "Veebilehte ekraanilugeja abil vaadata.",
             "stateTitle": "Nõuetele vastavuse staatus",
             "title": "Ligipääsetavuse avaldus"
         },
@@ -286,7 +286,7 @@
             "hostingTitle": "Lehekülje majutamine",
             "reportA11y": "Kui sul tekib ligipääsetavusprobleem, mis takistab saidi sisu või funktsioonide kasutamist, anna meile sellest teada.",
             "reportTitle": "Teavita probleemist",
-            "securityNoMail": "Platvormiga seotud teenused ei saada mitte mingil juhul e-kirju, milles palutakse sisestada isikuandmeid.",
+            "securityNoMail": "Platvormiga seotud teenused ei saada mitte mingil juhul e-kirju, milles küsitakse isikuandmeid.",
             "securityTitle": "Turvalisus",
             "sources": "Kui ei ole märgitud teisiti, on kõik selle lehekülje tekstid avaldatud <a {etalabLinkProps}>Etalab Open 2.0 litsentsi</a> alusel. Selle rakenduse lähtekood on vabalt taaskasutatav ja kättesaadav <a {githubLinkProps}>GitHubis</a>.",
             "title": "Õigusteave"
@@ -461,10 +461,10 @@
                 "a11yDesc": "1. Vestle kahe keelemudeliga pimesi: Vestle nii kaua kui soovid 2. Hääleta eelistatud vastuse poolt: Aitad seeläbi keelemudeleid paremaks muuta. 3. Saa teada, mis mudelitega vestlesid: Õpi mudelite ja nende omaduste kohta.",
                 "one": {
                     "desc": "Vestle nii kaua kui soovid",
-                    "title": "Vestle pimesi kahe keelemudeliga"
+                    "title": "Vestle kahe keelemudeliga pimesi"
                 },
                 "three": {
-                    "desc": "Saa keelemudelitest ja nende omadustest rohkem teada",
+                    "desc": "Saa keelemudelite ja nende omaduste kohta rohkem teada",
                     "title": "Saad teada, mis mudelitega vestlesid!"
                 },
                 "title": "Kuidas see töötab",
@@ -491,7 +491,7 @@
         "usage": {
             "desc": "Tööriist on mõeldud ka tehisaru ekspertidele ja haridustöötajatele konkreetsemate kasutusjuhtumite jaoks.",
             "educate": {
-                "desc": "Kasuta tehisaru baromeetrit haridusliku tööriistana, et arutada tehisintellekti teemasid oma sihtrühmaga",
+                "desc": "Kasuta baromeeter.ai-d haridusliku tööriistana, et tehisaru teemasid oma sihtrühmaga arutada",
                 "title": "Hari ja tõsta teadlikkust"
             },
             "explore": {
@@ -959,7 +959,7 @@
                 },
                 "percentLabel": "Eelistused protsentidena väljendatult",
                 "tooltips": {
-                    "positive_prefs_ratio": "Hääletamisel kasutatakse silte, et eelistuse põhjused märkida. See veerg näitab nende siltide (positiivsete või negatiivsete) protsentuaalset jaotust kõigi antud häälte lõikes."
+                    "positive_prefs_ratio": "Hääletamisel kasutatakse eelistuse põhjuste märkimiseks silte. See veerg näitab nende siltide (positiivsete või negatiivsete) protsentuaalset jaotust kõigi antud häälte lõikes."
                 }
             },
             "title": "Kuidas kasutajate eelistused jagunevad?"
