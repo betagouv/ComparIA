@@ -113,7 +113,7 @@
                     "title": "/hääled"
                 }
             },
-            "share": "Näidake meile, kuidas te andmeid kasutate",
+            "share": "Jagage meiega, kuidas te andmeid kasutate",
             "title": "Pääse ligi baromeeter.ai andmestikele"
         },
         "reuse": {
@@ -250,6 +250,7 @@
     },
     "footer": {
         "backHome": "Tagasi avalehele - baromeeter.ai",
+        "dpg": "Teenus on Digital Public Goods Alliance'i poolt digitaalse avaliku hüvena tunnustatud.",
         "helpUs": "Aita meil platvormi paremaks muuta!",
         "license": {
             "linkTitle": "Etalab litsents - uues aknas",
@@ -703,7 +704,8 @@
                         "elie": {
                             "date": "Alates 2025. aasta novembrist"
                         }
-                    }
+                    },
+                    "title": "baromeeter.ai meeskond"
                 }
             },
             "title": "Partnerid"
@@ -795,6 +797,9 @@
                         "2": {
                             "date": "September 2025"
                         },
+                        "5": {
+                            "desc": "Teenus on Digital Public Goods Alliance'i poolt digitaalse avaliku hüvena tunnustatud."
+                        },
                         "6": {
                             "date": "November 2025",
                             "title": "200 000 hääle eesmärk täidetud!"
@@ -811,7 +816,8 @@
                     },
                     "tag": "Idee"
                 }
-            }
+            },
+            "tabLabel": "Olulised kuupäevad"
         },
         "partners": {
             "academy": {
@@ -841,6 +847,7 @@
                 "english": {
                     "a": "Eelistusandmete loomine on kulukas, sest <strong>iga näide nõuab pädeva inimese hinnangut</strong>. Platvormid nagu chat.lmsys.org aitavad neid andmestikke ühisloome kaudu koguda, kuid vähesed kasutajad panustavad oma emakeeles, mistõttu on väheste ressurssidega keeled alaesindatud.",
                     "b": "Euroopa keelte eelistusandmestikke on vähe või need puuduvad sootuks. Näiteks LMSYS-i andmestikus moodustavad prantsuskeelsed päringud vähem kui 1 % kogumahust.",
+                    "c": "Tehisaru baromeeter on Eesti teadlaste loodud platvorm, mille eesmärk on hinnata, kui hästi mõistavad ja kasutavad tänapäeva tehisarud eesti keelt. Veebilehel baromeeter.ai saab võrrelda erinevate keelemudelite vastuseid ning aidata kaasa nende järjestamisele – ja seeläbi eesti keele ja meele hoidmisele tehisaru ajastul.",
                     "title": "Euroopa keeled kannatavad eelistusandmete nappuse all"
                 },
                 "title": "Kuidas saame nendes mudelites vähendada kultuurilisi ja keelelisi kallutatusi?"
@@ -1011,15 +1018,18 @@
                 "label": "teksti suurus",
                 "tokens": "tookenid",
                 "tooltip": "Tehisintellekt analüüsib ja genereerib lauseid sõnadest või ligikaudu neljatähelistest sõnaosadest; seda tekstiühikut nimetatakse tookeniks. Mida pikem on tekst, seda suurem on tookenite arv."
-            }
+            },
+            "tooltip": "Mudeli suurusel, arhitektuuril ja genereeritud vastuse pikkusel põhinev hinnang."
         },
         "thanks": {
-            "cta": "Vaata edetabeleid",
+            "cta": "Vaata edetabelit",
+            "desc": "Vaata kus sinu eelistatud mudel baromeeter.ai mudelite üldises pingereas asub.",
+            "rankingAlt": "Edetabeli ülevaade tabeli kujul",
             "title": "Täname sind sinu panuse eest!"
         }
     },
     "seo": {
-        "desc": "Tehisaru baromeeter on tööriist, mis võimaldab erinevate vestluslike tehisintellekti mudelite võrdlemist pimekatses. See aitab tõsta teadlikkust generatiivse tehisintellektiga seotud küsimustest (mitmekesisus, kallutatus, keskkonnamõju) ning aitab luua väheste ressurssidega keelte jaoks eelistusandmestikke.",
+        "desc": "Tehisaru baromeeter on tööriist, mille abil saab erinevaid keelemudeleid pimesi võrrelda. See aitab generatiivse tehisaruga seotud teemadel (mitmekesisus, kallutatus, keskkonnamõju) teadlikkust tõsta ning  väheste ressurssidega keelte jaoks eelistusandmestikke luua.",
         "title": "baromeeter.ai, Tehisaru baromeeter",
         "titles": {
             "accessibilite": "Ligipääsetavuse avaldus",
