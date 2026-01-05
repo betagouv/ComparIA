@@ -243,13 +243,14 @@ def get_api_key(endpoint):
     # Albert is French government LLM
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
 
+    # Handle both dict and Pydantic Endpoint object
+    api_base = endpoint.api_base if hasattr(endpoint, "api_base") else endpoint.get("api_base")
+
     # "api_type": "huggingface/cohere" doesn't work, using the openai api type and api_base="https://router.huggingface.co/cohere/compatibility/v1/"
-    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get(
-        "api_base"
-    ):
+    if api_base and "albert.api.etalab.gouv.fr" in api_base:
         return os.getenv("ALBERT_KEY")
     # HuggingFace Inference API
-    if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
+    if api_base and "huggingface.co" in api_base:
         return os.getenv("HF_INFERENCE_KEY")
     # OpenRouter and Vertex AI are handled by LiteLLM reading env variables directly
     # OPENROUTER_API_KEY and Google credentials are checked automatically
