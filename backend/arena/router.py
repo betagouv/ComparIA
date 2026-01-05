@@ -61,26 +61,6 @@ class AddFirstTextBody(BaseModel):
     custom_models_selection: tuple[str] | tuple[str, str] | None = None
 
 
-@router.post("/init")
-async def init_arena(request: Request) -> dict:
-    """
-    Initialize a new arena session.
-
-    Returns:
-        dict: Session hash and available models
-    """
-    from backend.arena.session import create_session
-
-    session_hash = create_session()
-    models = get_models()
-
-    return {
-        "session_hash": session_hash,
-        "available_models": {k: v.model_dump() for k, v in models.enabled.items()},
-        "data_timestamp": models.data_timestamp,
-    }
-
-
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
 async def add_first_text(args: AddFirstTextBody, request: Request):
     """
@@ -152,7 +132,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         # Send session hash first
         import json
 
-        yield f'data: {json.dumps({"type": "init", "session_hash": session_hash})}\n\n'
+        yield f"data: {json.dumps({'type': 'init', 'session_hash': session_hash})}\n\n"
 
         # Stream both model responses
         async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
@@ -163,7 +143,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
 
 @router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
 async def add_text(
-    args: "AddTextRequest", request: Request, session_hash: str = Depends(get_session_hash)
+    args: "AddTextRequest",
+    request: Request,
+    session_hash: str = Depends(get_session_hash),
 ):
     """
     Add a follow-up message to an existing conversation.
@@ -180,7 +162,10 @@ async def add_text(
         HTTPException: If session not found or rate limiting triggered
     """
     from backend.arena.models import AddTextRequest
-    from backend.arena.session import retrieve_session_conversations, update_session_conversations
+    from backend.arena.session import (
+        retrieve_session_conversations,
+        update_session_conversations,
+    )
     from backend.arena.streaming import create_sse_response, stream_both_responses
     from backend.arena.models import ChatMessage
 
@@ -213,7 +198,9 @@ async def add_text(
 
 @router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
-    args: "RetryRequest", request: Request, session_hash: str = Depends(get_session_hash)
+    args: "RetryRequest",
+    request: Request,
+    session_hash: str = Depends(get_session_hash),
 ):
     """
     Retry generating the last bot response.
@@ -232,7 +219,10 @@ async def retry(
         HTTPException: If session not found or rate limiting triggered
     """
     from backend.arena.models import RetryRequest
-    from backend.arena.session import retrieve_session_conversations, update_session_conversations
+    from backend.arena.session import (
+        retrieve_session_conversations,
+        update_session_conversations,
+    )
     from backend.arena.streaming import create_sse_response, stream_both_responses
 
     logger.info(f"[RETRY] session={session_hash}", extra={"request": request})
@@ -264,7 +254,9 @@ async def retry(
 
 @router.post("/react")
 async def react(
-    react_data: ReactRequest, request: Request, session_hash: str = Depends(get_session_hash)
+    react_data: ReactRequest,
+    request: Request,
+    session_hash: str = Depends(get_session_hash),
 ):
     """
     Update reaction (like/dislike) for a specific message.
@@ -280,7 +272,10 @@ async def react(
     Raises:
         HTTPException: If session not found
     """
-    from backend.arena.session import retrieve_session_conversations, update_session_conversations
+    from backend.arena.session import (
+        retrieve_session_conversations,
+        update_session_conversations,
+    )
 
     logger.info(
         f"[REACT] session={session_hash}, reaction={react_data.reaction_json}",
@@ -301,7 +296,9 @@ async def react(
     # Store reaction metadata on the corresponding message
     # The reaction index corresponds to the bot message pair (0-indexed)
     # We need to find the assistant message at position (reaction_index * 2 + 1)
-    message_position = reaction_index * 2 + 1  # User messages at even positions, assistant at odd
+    message_position = (
+        reaction_index * 2 + 1
+    )  # User messages at even positions, assistant at odd
 
     # Update reaction in both conversations' messages
     for conv_dict in [conv_a_dict, conv_b_dict]:
@@ -322,14 +319,18 @@ async def react(
     # Update in Redis
     update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
 
-    return {"success": True, "index": reaction_index, "reaction": react_data.reaction_json}
+    return {
+        "success": True,
+        "index": reaction_index,
+        "reaction": react_data.reaction_json,
+    }
 
 
 @router.post("/vote")
 async def vote(
     request: Request,
     vote_data: VoteRequest,
-    session_hash: str = Depends(get_session_hash)
+    session_hash: str = Depends(get_session_hash),
 ):
     """
     Submit a vote after conversation and reveal model identities.
@@ -366,12 +367,16 @@ async def vote(
 
     # TODO: Save vote to database with all preferences
     # For now just log the vote
-    logger.info(f"[VOTE] Would save vote: chosen={vote_data.which_model_radio_output}, positive_a={vote_data.positive_a_output}, positive_b={vote_data.positive_b_output}")
+    logger.info(
+        f"[VOTE] Would save vote: chosen={vote_data.which_model_radio_output}, positive_a={vote_data.positive_a_output}, positive_b={vote_data.positive_b_output}"
+    )
 
     # Build reveal data with environmental impact
     from backend.arena.reveal import build_reveal_dict
 
-    reveal_data = build_reveal_dict(conv_a_dict, conv_b_dict, vote_data.which_model_radio_output)
+    reveal_data = build_reveal_dict(
+        conv_a_dict, conv_b_dict, vote_data.which_model_radio_output
+    )
 
     return reveal_data
 
