@@ -1337,6 +1337,37 @@
       "url": null,
       "wh_per_million_token": 87485.15999999997
     },
+    "gemini-3-flash-preview": {
+      "active_params": 137,
+      "arch": "moe",
+      "commercial_use": null,
+      "data": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "google/gemini-3-flash-preview",
+        "api_type": "openrouter"
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "google-color",
+      "id": "gemini-3-flash-preview",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "Google",
+      "params": 440,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 440,
+      "reuse": false,
+      "simple_name": "Gemini 3 Flash",
+      "status": "enabled",
+      "url": "https://blog.google/products/gemini/gemini-3-flash/",
+      "wh_per_million_token": 87485.15999999997
+    },
     "gemini-3-pro-preview": {
       "active_params": 45,
       "arch": "moe",
@@ -1819,7 +1850,7 @@
       "required_ram": 355,
       "reuse": true,
       "simple_name": "GLM 4.5",
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 21407.82
     },
@@ -1876,6 +1907,37 @@
       "simple_name": "GLM 4.6",
       "status": "enabled",
       "url": null,
+      "wh_per_million_token": 21407.82
+    },
+    "glm-4.7": {
+      "active_params": 32,
+      "arch": "moe",
+      "commercial_use": true,
+      "data": null,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "z-ai/glm-4.7",
+        "api_type": "openrouter"
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "zhipu-color",
+      "id": "glm-4.7",
+      "license": "MIT",
+      "new": false,
+      "organisation": "Zhipu",
+      "params": 357,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 357,
+      "reuse": true,
+      "simple_name": "GLM 4.7",
+      "status": "enabled",
+      "url": "https://z.ai/blog/glm-4.7",
       "wh_per_million_token": 21407.82
     },
     "gpt-3.5-turbo-0301": {
@@ -2618,7 +2680,7 @@
       "icon_path": "xai",
       "id": "grok-4.1-fast",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "xAI",
       "params": 1700,
       "prefs": {
@@ -2885,7 +2947,7 @@
       "icon_path": "moonshot",
       "id": "kimi-k2-thinking",
       "license": "MIT",
-      "new": true,
+      "new": false,
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
@@ -2991,7 +3053,7 @@
       "icon_path": "liquid",
       "id": "lfm2-8b-a1b",
       "license": "LFM 1.0",
-      "new": true,
+      "new": false,
       "organisation": "Liquid",
       "params": 8,
       "prefs": {
@@ -3591,7 +3653,7 @@
       "icon_path": "minimax-color",
       "id": "minimax-m2",
       "license": "MIT",
-      "new": true,
+      "new": false,
       "organisation": "MiniMax",
       "params": 230,
       "prefs": {
@@ -4383,7 +4445,7 @@
       "icon_path": "ai2.svg",
       "id": "olmo-3-32b-think",
       "license": "Apache 2.0",
-      "new": true,
+      "new": false,
       "organisation": "Ai2",
       "params": 32,
       "prefs": {
