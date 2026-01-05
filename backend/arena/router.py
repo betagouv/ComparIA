@@ -3,7 +3,16 @@ import logging
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from backend.arena.models import ReactRequest, VoteRequest
+from backend.arena.models import Conversations, ReactRequest, VoteRequest, UserMessage, create_conversations
+from backend.arena.persistence import record_conversations, record_reaction, record_vote
+from backend.arena.session import (
+    create_session,
+    retrieve_session_conversations,
+    store_session_conversations,
+    update_session_conversations,
+)
+from backend.arena.streaming import create_sse_response, stream_both_responses
+from backend.arena.utils import deserialize_conversation_from_redis, serialize_conversation_for_redis
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -82,11 +91,6 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     Raises:
         HTTPException: If rate limiting triggered or validation fails
     """
-    from backend.arena.session import create_session, store_session_conversations
-    from backend.arena.streaming import create_sse_response, stream_both_responses
-    from backend.arena.models import UserMessage, create_conversations
-    from backend.arena.utils import serialize_conversation_for_redis
-
     logger.info("chose mode: " + args.mode, extra={"request": request})
     logger.info(
         "custom_models_selection: " + str(args.custom_models_selection),
@@ -113,8 +117,10 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     conv_a_dict = serialize_conversation_for_redis(conversations.conversation_a)
     conv_b_dict = serialize_conversation_for_redis(conversations.conversation_b)
 
-    # Store in Redis
-    store_session_conversations(session_hash, conv_a_dict, conv_b_dict)
+    # Store in Redis with mode and category metadata
+    store_session_conversations(
+        session_hash, conv_a_dict, conv_b_dict, mode=args.mode, category=None
+    )
 
     # Stream responses
     async def event_stream():
@@ -126,6 +132,26 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         # Stream both model responses
         async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
             yield chunk
+
+        # After streaming completes, archive conversation to database
+        try:
+            # Retrieve updated conversations from Redis (after bot responses)
+            conv_a_updated, conv_b_updated, meta = retrieve_session_conversations(session_hash)
+
+            conversation_record = record_conversations(
+                conversations=Conversations(
+                    conversation_a=deserialize_conversation_from_redis(conv_a_updated),
+                    conversation_b=deserialize_conversation_from_redis(conv_b_updated),
+                ),
+                session_hash=session_hash,
+                request=request,
+                mode=meta.get("mode"),
+                category=meta.get("category"),
+            )
+            logger.info(f"[ADD_FIRST_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}")
+        except Exception as e:
+            # Log error but don't fail the streaming
+            logger.error(f"[ADD_FIRST_TEXT] Error archiving conversation: {e}", exc_info=True)
 
     return create_sse_response(event_stream())
 
@@ -155,13 +181,6 @@ async def add_text(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    from backend.arena.models import UserMessage
-    from backend.arena.session import (
-        retrieve_session_conversations,
-        update_session_conversations,
-    )
-    from backend.arena.streaming import create_sse_response, stream_both_responses
-
     logger.info(
         f"[ADD_TEXT] session={session_hash}, message_len={len(args.message)}",
         extra={"request": request},
@@ -169,7 +188,7 @@ async def add_text(
 
     # Retrieve conversations from Redis
     try:
-        conv_a_dict, conv_b_dict = retrieve_session_conversations(session_hash)
+        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -185,6 +204,26 @@ async def add_text(
     async def event_stream():
         async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
             yield chunk
+
+        # After streaming completes, archive conversation to database
+        try:
+            # Retrieve updated conversations from Redis (after bot responses)
+            conv_a_updated, conv_b_updated, meta = retrieve_session_conversations(session_hash)
+
+            conversation_record = record_conversations(
+                conversations=Conversations(
+                    conversation_a=deserialize_conversation_from_redis(conv_a_updated),
+                    conversation_b=deserialize_conversation_from_redis(conv_b_updated),
+                ),
+                session_hash=session_hash,
+                request=request,
+                mode=meta.get("mode"),
+                category=meta.get("category"),
+            )
+            logger.info(f"[ADD_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}")
+        except Exception as e:
+            # Log error but don't fail the streaming
+            logger.error(f"[ADD_TEXT] Error archiving conversation: {e}", exc_info=True)
 
     return create_sse_response(event_stream())
 
@@ -209,17 +248,11 @@ async def retry(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    from backend.arena.session import (
-        retrieve_session_conversations,
-        update_session_conversations,
-    )
-    from backend.arena.streaming import create_sse_response, stream_both_responses
-
     logger.info(f"[RETRY] session={session_hash}", extra={"request": request})
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict = retrieve_session_conversations(session_hash)
+        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -238,6 +271,26 @@ async def retry(
     async def event_stream():
         async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
             yield chunk
+
+        # After streaming completes, archive conversation to database
+        try:
+            # Retrieve updated conversations from Redis (after bot responses)
+            conv_a_updated, conv_b_updated, meta = retrieve_session_conversations(session_hash)
+
+            conversation_record = record_conversations(
+                conversations=Conversations(
+                    conversation_a=deserialize_conversation_from_redis(conv_a_updated),
+                    conversation_b=deserialize_conversation_from_redis(conv_b_updated),
+                ),
+                session_hash=session_hash,
+                request=request,
+                mode=meta.get("mode"),
+                category=meta.get("category"),
+            )
+            logger.info(f"[RETRY] Archived conversation: {conversation_record['conversation_pair_id']}")
+        except Exception as e:
+            # Log error but don't fail the streaming
+            logger.error(f"[RETRY] Error archiving conversation: {e}", exc_info=True)
 
     return create_sse_response(event_stream())
 
@@ -274,7 +327,7 @@ async def react(
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict = retrieve_session_conversations(session_hash)
+        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -308,6 +361,24 @@ async def react(
 
     # Update in Redis
     update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
+
+    # Save reaction to database
+    try:
+        reaction_record = record_reaction(
+            conversations=Conversations(
+                conversation_a=deserialize_conversation_from_redis(conv_a_dict),
+                conversation_b=deserialize_conversation_from_redis(conv_b_dict),
+            ),
+            reaction_data=react_data.reaction_json,
+            session_hash=session_hash,
+            request=request,
+            mode=metadata.get("mode"),
+            category=metadata.get("category"),
+        )
+        logger.info(f"[REACT] Saved to database: {reaction_record}")
+    except Exception as e:
+        # Log error but don't fail the request
+        logger.error(f"[REACT] Error saving to database: {e}", exc_info=True)
 
     return {
         "success": True,
@@ -348,18 +419,29 @@ async def vote(
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict = retrieve_session_conversations(session_hash)
+        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
     # Get IP for logging
     ip = get_ip(request)
 
-    # TODO: Save vote to database with all preferences
-    # For now just log the vote
-    logger.info(
-        f"[VOTE] Would save vote: chosen={vote_data.which_model_radio_output}, positive_a={vote_data.positive_a_output}, positive_b={vote_data.positive_b_output}"
-    )
+    # Save vote to database with all preferences
+    try:
+        vote_record = record_vote(
+            conversations=Conversations(
+                conversation_a=deserialize_conversation_from_redis(conv_a_dict),
+                conversation_b=deserialize_conversation_from_redis(conv_b_dict),
+            ),
+            vote_data=vote_data,
+            request=request,
+            mode=metadata.get("mode"),
+            category=metadata.get("category"),
+        )
+        logger.info(f"[VOTE] Saved to database: {vote_record['conversation_pair_id']}")
+    except Exception as e:
+        # Log error but don't fail the request
+        logger.error(f"[VOTE] Error saving to database: {e}", exc_info=True)
 
     # Build reveal data with environmental impact
     from backend.arena.reveal import build_reveal_dict
@@ -386,13 +468,11 @@ async def reveal(session_hash: str, request: Request):
     Raises:
         HTTPException: If session not found
     """
-    from backend.arena.session import retrieve_session_conversations
-
     logger.info(f"[REVEAL] session={session_hash}", extra={"request": request})
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict = retrieve_session_conversations(session_hash)
+        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

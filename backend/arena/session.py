@@ -36,20 +36,34 @@ def create_session() -> str:
 
 
 def store_session_conversations(
-    session_hash: str, conv_a: dict, conv_b: dict
+    session_hash: str,
+    conv_a: dict,
+    conv_b: dict,
+    mode: str | None = None,
+    category: str | None = None,
 ) -> None:
     """
-    Store conversation pair in Redis for an active session.
+    Store conversation pair with metadata in Redis for an active session.
 
     Args:
         session_hash: Unique session identifier
         conv_a: First conversation state (dict with messages, model_name, etc.)
         conv_b: Second conversation state (dict with messages, model_name, etc.)
+        mode: Model selection mode (e.g., "random", "big-vs-small")
+        category: Prompt category (e.g., "writing", "coding")
 
     Note:
         Session expires after 24 hours
     """
-    data = {"conv_a": conv_a, "conv_b": conv_b}
+    from datetime import datetime
+
+    data = {
+        "conv_a": conv_a,
+        "conv_b": conv_b,
+        "mode": mode,
+        "category": category,
+        "created_at": datetime.now().isoformat(),
+    }
     expire_time = 86400  # 24 hours
 
     try:
@@ -60,15 +74,18 @@ def store_session_conversations(
         raise
 
 
-def retrieve_session_conversations(session_hash: str) -> Tuple[dict, dict]:
+def retrieve_session_conversations(
+    session_hash: str,
+) -> Tuple[dict, dict, dict]:
     """
-    Retrieve conversation pair from Redis.
+    Retrieve conversation pair and metadata from Redis.
 
     Args:
         session_hash: Unique session identifier
 
     Returns:
-        Tuple[dict, dict]: (conv_a, conv_b) conversation states
+        Tuple[dict, dict, dict]: (conv_a, conv_b, metadata)
+            where metadata contains {"mode": str, "category": str, "created_at": str}
 
     Raises:
         ValueError: If session not found or expired
@@ -81,7 +98,15 @@ def retrieve_session_conversations(session_hash: str) -> Tuple[dict, dict]:
 
         parsed = json.loads(data)
         logger.info(f"[SESSION] Retrieved conversations for {session_hash}")
-        return (parsed["conv_a"], parsed["conv_b"])
+
+        # Extract metadata
+        metadata = {
+            "mode": parsed.get("mode"),
+            "category": parsed.get("category"),
+            "created_at": parsed.get("created_at"),
+        }
+
+        return (parsed["conv_a"], parsed["conv_b"], metadata)
 
     except json.JSONDecodeError as e:
         logger.error(f"[SESSION] Error decoding session data: {e}")
@@ -92,17 +117,33 @@ def retrieve_session_conversations(session_hash: str) -> Tuple[dict, dict]:
 
 
 def update_session_conversations(
-    session_hash: str, conv_a: dict, conv_b: dict
+    session_hash: str,
+    conv_a: dict,
+    conv_b: dict,
+    mode: str | None = None,
+    category: str | None = None,
 ) -> None:
     """
-    Update existing session conversations (alias for store_session_conversations).
+    Update existing session conversations and metadata.
 
     Args:
         session_hash: Unique session identifier
         conv_a: Updated first conversation state
         conv_b: Updated second conversation state
+        mode: Model selection mode (optional, preserves existing if None)
+        category: Prompt category (optional, preserves existing if None)
     """
-    store_session_conversations(session_hash, conv_a, conv_b)
+    # If mode/category not provided, preserve existing values
+    if mode is None or category is None:
+        try:
+            _, _, existing_metadata = retrieve_session_conversations(session_hash)
+            mode = mode or existing_metadata.get("mode")
+            category = category or existing_metadata.get("category")
+        except ValueError:
+            # Session doesn't exist yet, use provided values
+            pass
+
+    store_session_conversations(session_hash, conv_a, conv_b, mode, category)
 
 
 def delete_session(session_hash: str) -> bool:
