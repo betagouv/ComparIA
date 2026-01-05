@@ -84,8 +84,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     """
     from backend.arena.session import create_session, store_session_conversations
     from backend.arena.streaming import create_sse_response, stream_both_responses
-    from backend.arena.conversation import Conversation
-    from backend.arena.models import ChatMessage
+    from backend.arena.models import UserMessage, create_conversations
+    from backend.arena.utils import serialize_conversation_for_redis
 
     logger.info("chose mode: " + args.mode, extra={"request": request})
     logger.info(
@@ -102,27 +102,12 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     # Create new session
     session_hash = create_session()
 
-    # Initialize conversations
-    user_message = ChatMessage(role="user", content=args.prompt_value)
+    # Initialize conversations using Pydantic models
+    conversations = create_conversations(model_a, model_b, args.prompt_value)
 
-    conv_a = Conversation(messages=[user_message], model_name=model_a)
-    conv_b = Conversation(messages=[user_message], model_name=model_b)
-
-    # Convert to dicts for Redis storage
-    from dataclasses import asdict
-
-    conv_a_dict = {
-        "messages": [asdict(msg) for msg in conv_a.messages],
-        "model_name": conv_a.model_name,
-        "endpoint": conv_a.endpoint.model_dump() if conv_a.endpoint else None,
-        "conv_id": conv_a.conv_id,
-    }
-    conv_b_dict = {
-        "messages": [asdict(msg) for msg in conv_b.messages],
-        "model_name": conv_b.model_name,
-        "endpoint": conv_b.endpoint.model_dump() if conv_b.endpoint else None,
-        "conv_id": conv_b.conv_id,
-    }
+    # Serialize for Redis storage
+    conv_a_dict = serialize_conversation_for_redis(conversations.conversation_a)
+    conv_b_dict = serialize_conversation_for_redis(conversations.conversation_b)
 
     # Store in Redis
     store_session_conversations(session_hash, conv_a_dict, conv_b_dict)
@@ -161,13 +146,12 @@ async def add_text(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    from backend.arena.models import AddTextRequest
+    from backend.arena.models import AddTextRequest, UserMessage
     from backend.arena.session import (
         retrieve_session_conversations,
         update_session_conversations,
     )
     from backend.arena.streaming import create_sse_response, stream_both_responses
-    from backend.arena.models import ChatMessage
 
     logger.info(
         f"[ADD_TEXT] session={session_hash}, message_len={len(args.message)}",
@@ -181,9 +165,9 @@ async def add_text(
         raise HTTPException(status_code=404, detail=str(e))
 
     # Add user message to both conversations
-    user_message = ChatMessage(role="user", content=args.message)
-    conv_a_dict["messages"].append(user_message)
-    conv_b_dict["messages"].append(user_message)
+    user_message = UserMessage(content=args.message)
+    conv_a_dict["messages"].append(user_message.model_dump())
+    conv_b_dict["messages"].append(user_message.model_dump())
 
     # Update in Redis
     update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
@@ -235,10 +219,10 @@ async def retry(
 
     # Remove last assistant messages
     conv_a_dict["messages"] = [
-        msg for msg in conv_a_dict["messages"] if msg.role != "assistant"
+        msg for msg in conv_a_dict["messages"] if msg.get("role") != "assistant"
     ]
     conv_b_dict["messages"] = [
-        msg for msg in conv_b_dict["messages"] if msg.role != "assistant"
+        msg for msg in conv_b_dict["messages"] if msg.get("role") != "assistant"
     ]
 
     # Update in Redis
