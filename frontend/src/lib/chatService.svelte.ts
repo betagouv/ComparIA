@@ -1,7 +1,5 @@
-import { api } from '$lib/api'
 import { arenaApi } from '$lib/arena-api'
 import { m } from '$lib/i18n/messages'
-import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
 import type { LoadingStatus } from '@gradio/statustracker'
@@ -297,7 +295,7 @@ export async function retryAskChatBots() {
   }
 }
 
-export async function updateReaction(kind: ReactionKind, reaction: APIReactionData) {
+export async function updateReaction(_kind: ReactionKind, reaction: APIReactionData) {
   const data = {
     reaction_json: reaction
   }
