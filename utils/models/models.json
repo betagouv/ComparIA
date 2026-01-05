@@ -1471,6 +1471,23 @@
     "name": "Zhipu",
     "icon_path": "zhipu-color",
     "models": [
+        {
+        "id": "glm-4.7",
+        "simple_name": "GLM 4.7",
+        "license": "MIT",
+        "release_date": "12/2025",
+        "arch": "moe",
+        "params": 357,
+        "active_params": 32,
+        "url": "https://z.ai/blog/glm-4.7",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "z-ai/glm-4.7"
+        },
+        "desc": "Grand modèle spécialisé en code créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour améliore sa performance en code (notamment pour les interfaces web), interragi mieux avec des environnements de code assisté par IA et plus généralement performe mieux dans des contextes agentiques.",
+        "size_desc": "Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.",
+        "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications et des interfaces. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
+      },
       {
         "id": "glm-4.6",
         "simple_name": "GLM 4.6",
@@ -1483,11 +1500,12 @@
           "api_type": "openrouter",
           "api_model_id": "z-ai/glm-4.6"
         },
-        "desc": "Mise à jour du grand modèle créé par Zhipu AI - GLM 4.6, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.",
+        "desc": "Grand modèle spécialisé en code créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.",
         "size_desc": "Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.",
         "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
       },
       {
+        "status": "archived",
         "id": "glm-4.5",
         "simple_name": "GLM 4.5",
         "license": "MIT",
@@ -1499,7 +1517,7 @@
           "api_type": "openrouter",
           "api_model_id": "z-ai/glm-4.5"
         },
-        "desc": "Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
+        "desc": "Grand modèle spécialisé en code créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "Avec 355 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.",
         "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
       }
