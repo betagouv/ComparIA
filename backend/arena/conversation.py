@@ -3,61 +3,104 @@ Module for handling conversations with AI models.
 
 This module manages the interaction with multiple AI models through LiteLLM,
 handling streaming responses, token counting, and message tracking.
+
+Uses Pydantic Conversation model with hybrid ChatMessage approach during streaming.
 """
 
 import logging
 import time
-from uuid import uuid4
 
 from litellm.litellm_core_utils.token_counter import token_counter
 
-from backend.language_models.data import get_models
-from backend.config import get_model_system_prompt
-from backend.arena.models import ChatMessage
+from backend.arena.models import (
+    ChatMessage,
+    Conversation,
+    SystemMessage,
+    UserMessage,
+    AssistantMessage,
+    AnyMessage,
+)
 from backend.arena.litellm import litellm_stream_iter
 from backend.arena.utils import EmptyResponseError, get_api_key, messages_to_dict_list
 
-language_models = get_models()
-
-
-class Conversation:
-    """
-    Represents a conversation with a single AI model.
-
-    Stores messages, model information, and metadata about the conversation.
-    Each conversation has a unique ID and tracks the model's endpoint for API calls.
-    """
-
-    def __init__(
-        self,
-        messages=[],
-        model_name=None,
-    ):
-        """
-        Initialize a conversation with an optional system prompt.
-
-        Args:
-            messages: List of ChatMessage objects for this conversation
-            model_name: Name of the model to use for this conversation
-        """
-        # Load model-specific system prompt (e.g., French instructions)
-        system_prompt = get_model_system_prompt(model_name)
-        if system_prompt:
-            # Prepend system prompt to messages if available
-            self.messages = [
-                ChatMessage(role="system", content=system_prompt)
-            ] + messages
-        else:
-            self.messages = messages
-        # Generate unique conversation ID without hyphens
-        self.conv_id = str(uuid4()).replace("-", "")
-        self.model_name = model_name
-        # Retrieve API endpoint configuration for this model
-        model = language_models.enabled.get(model_name)
-        self.endpoint = model.endpoint if model else None
-
 
 logger = logging.getLogger("languia")
+
+
+def anymessage_to_chatmessage(msg: AnyMessage) -> ChatMessage:
+    """
+    Convert AnyMessage (Pydantic) to ChatMessage (dataclass) for streaming.
+
+    Args:
+        msg: AnyMessage (SystemMessage, UserMessage, or AssistantMessage)
+
+    Returns:
+        ChatMessage with equivalent data
+    """
+    if isinstance(msg, SystemMessage):
+        return ChatMessage(role="system", content=msg.content)
+    elif isinstance(msg, UserMessage):
+        return ChatMessage(role="user", content=msg.content)
+    elif isinstance(msg, AssistantMessage):
+        # Convert structured metadata to dict
+        metadata_dict = {
+            "bot": msg.metadata.bot,
+            "generation_id": msg.metadata.generation_id,
+            "output_tokens": msg.metadata.output_tokens,
+        }
+        if msg.metadata.duration is not None:
+            metadata_dict["duration"] = msg.metadata.duration
+
+        return ChatMessage(
+            role="assistant",
+            content=msg.content,
+            error=msg.error,
+            reasoning=msg.reasoning,
+            metadata=metadata_dict,
+        )
+    else:
+        raise ValueError(f"Unknown message type: {type(msg)}")
+
+
+def chatmessage_to_anymessage(msg: ChatMessage) -> AnyMessage:
+    """
+    Convert ChatMessage (dataclass) to AnyMessage (Pydantic) after streaming.
+
+    Args:
+        msg: ChatMessage with complete metadata
+
+    Returns:
+        Appropriate AnyMessage subtype
+
+    Raises:
+        ValueError: If assistant message is missing required metadata
+    """
+    if msg.role == "system":
+        return SystemMessage(content=msg.content)
+    elif msg.role == "user":
+        return UserMessage(content=msg.content)
+    elif msg.role == "assistant":
+        # Validate required metadata
+        if not msg.metadata.get("generation_id"):
+            raise ValueError("Assistant message missing generation_id in metadata")
+        if not msg.metadata.get("output_tokens"):
+            raise ValueError("Assistant message missing output_tokens in metadata")
+        if not msg.metadata.get("bot"):
+            raise ValueError("Assistant message missing bot in metadata")
+
+        return AssistantMessage(
+            content=msg.content,
+            error=msg.error,
+            reasoning=msg.reasoning,
+            metadata=AssistantMessage.AssistantMessageMetadata(
+                generation_id=msg.metadata["generation_id"],
+                bot=msg.metadata["bot"],
+                output_tokens=msg.metadata["output_tokens"],
+                duration=msg.metadata.get("duration"),
+            ),
+        )
+    else:
+        raise ValueError(f"Unknown role: {msg.role}")
 
 
 def update_last_message(
@@ -115,7 +158,7 @@ def update_last_message(
 
 async def bot_response_async(
     position,
-    state,
+    state: Conversation,
     ip: str,
     temperature=0.7,
     max_new_tokens=4096,
@@ -124,18 +167,18 @@ async def bot_response_async(
     Stream a response from an AI model asynchronously.
 
     This is an async generator function that yields conversation state updates as the model
-    generates responses token by token. It handles model endpoint configuration,
-    API calls through LiteLLM, token counting, and performance tracking.
+    generates responses token by token. Uses hybrid approach: accepts Pydantic Conversation,
+    converts to ChatMessage for streaming flexibility, then converts back to Conversation.
 
     Args:
         position: Which model position ("a" or "b") to respond
-        state: Conversation object with messages and model info
+        state: Conversation (Pydantic model) with messages and model info
         ip: Client IP address for logging
         temperature: Sampling temperature (default 0.7)
         max_new_tokens: Maximum tokens to generate (default 4096)
 
     Yields:
-        Updated conversation state as response chunks arrive
+        Updated Conversation (Pydantic) as response chunks arrive
 
     Raises:
         Exception: If model endpoint is not configured
@@ -144,36 +187,43 @@ async def bot_response_async(
     # Validate that the model has a configured endpoint
     if not state.endpoint:
         logger.critical(
-            "No endpoint for model name: " + str(state.model_name),
+            f"No endpoint for model: {state.model_name}",
             extra={"ip": ip},
         )
-        raise Exception("No endpoint for model name: " + str(state.model_name))
+        raise Exception(f"No endpoint for model: {state.model_name}")
 
     endpoint = state.endpoint
 
     # Get endpoint identifier for logging (API provider name)
-    endpoint_name = endpoint.get("api_id", state.model_name)
+    endpoint_name = endpoint.api_id if hasattr(endpoint, "api_id") else state.model_name
     logger.info(
         f"using endpoint {endpoint_name} for {state.model_name}",
         extra={"ip": ip},
     )
     # Check if this model supports extended reasoning (like o1)
-    include_reasoning = endpoint.get("include_reasoning", True)
+    include_reasoning = endpoint.include_reasoning if hasattr(endpoint, "include_reasoning") else True
 
     # Track generation start time for performance metrics
     start_tstamp = time.time()
 
+    # Convert AnyMessage (Pydantic) → ChatMessage (dataclass) for flexible streaming
+    chat_messages = [anymessage_to_chatmessage(msg) for msg in state.messages]
+
     # Convert ChatMessage objects to dict format for API calls
-    messages_dict = messages_to_dict_list(state.messages)
+    messages_dict = messages_to_dict_list(chat_messages)
+
     # Build LiteLLM model identifier (e.g., "openai/gpt-4", "google/gemini-pro")
-    litellm_model_name = (
-        endpoint.get("api_type", "openai")
-        + "/"
-        + endpoint.get("api_model_id", state.model_name)
-    )
+    api_type = endpoint.api_type if hasattr(endpoint, "api_type") else "openai"
+    api_model_id = endpoint.api_model_id if hasattr(endpoint, "api_model_id") else state.model_name
+    litellm_model_name = f"{api_type}/{api_model_id}"
 
     # Retrieve API key from environment or config
     api_key = get_api_key(endpoint)
+
+    # Get optional endpoint attributes
+    api_base = endpoint.api_base if hasattr(endpoint, "api_base") else None
+    api_version = endpoint.api_version if hasattr(endpoint, "api_version") else None
+    vertex_ai_location = endpoint.vertex_ai_location if hasattr(endpoint, "vertex_ai_location") else None
 
     # Initialize streaming iterator from LiteLLM
     stream_iter = litellm_stream_iter(
@@ -181,11 +231,11 @@ async def bot_response_async(
         messages=messages_dict,
         temperature=temperature,
         api_key=api_key,
-        api_base=endpoint.get("api_base", None),
-        api_version=endpoint.get("api_version", None),
+        api_base=api_base,
+        api_version=api_version,
         max_new_tokens=max_new_tokens,
         ip=ip,
-        vertex_ai_location=endpoint.get("vertex_ai_location", None),
+        vertex_ai_location=vertex_ai_location,
         include_reasoning=include_reasoning,
     )
 
@@ -207,17 +257,29 @@ async def bot_response_async(
         # Yield intermediate results only if there's content to display
         if output or reasoning:
             output.strip()
-            # Update conversation state with partial response
-            state.messages = update_last_message(
-                messages=state.messages,
+            # Update chat_messages (ChatMessage list) with partial response
+            chat_messages = update_last_message(
+                messages=chat_messages,
                 text=output,
                 position=position,
                 output_tokens=output_tokens,
                 generation_id=generation_id,
                 reasoning=reasoning,
             )
-            # Yield to caller for real-time display
-            yield (state)
+
+            # Convert back to AnyMessage and yield Conversation
+            try:
+                any_messages = [chatmessage_to_anymessage(msg) for msg in chat_messages]
+                updated_state = Conversation(
+                    conv_id=state.conv_id,
+                    model_name=state.model_name,
+                    endpoint=state.endpoint,
+                    messages=any_messages,
+                )
+                yield updated_state
+            except ValueError:
+                # During streaming, metadata may be incomplete, skip this yield
+                pass
 
     # Log generation ID for API debugging
     if generation_id:
@@ -239,7 +301,7 @@ async def bot_response_async(
     # Check for empty responses and raise error
     if (not output or output == "") and (not reasoning or reasoning == ""):
         logger.error(
-            f"reponse_vide: {state.model_name}, data: " + str(data),
+            f"reponse_vide: {state.model_name}, data: {str(data)}",
             exc_info=True,
             extra={"ip": ip},
         )
@@ -252,8 +314,8 @@ async def bot_response_async(
         output_tokens = token_counter(text=[reasoning, output], model=state.model_name)
 
     # Final update with complete response and timing data
-    state.messages = update_last_message(
-        messages=state.messages,
+    chat_messages = update_last_message(
+        messages=chat_messages,
         text=output,
         position=position,
         output_tokens=output_tokens,
@@ -261,5 +323,14 @@ async def bot_response_async(
         reasoning=reasoning,
     )
 
+    # Convert final ChatMessage list to AnyMessage and create final Conversation
+    any_messages = [chatmessage_to_anymessage(msg) for msg in chat_messages]
+    final_state = Conversation(
+        conv_id=state.conv_id,
+        model_name=state.model_name,
+        endpoint=state.endpoint,
+        messages=any_messages,
+    )
+
     # Final yield with complete response
-    yield (state)
+    yield final_state
