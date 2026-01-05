@@ -261,7 +261,7 @@ export class FastAPIClient {
 
               // Yield the parsed event
               yield data as T
-            } catch (parseError) {
+            } catch (_parseError) {
               logger.error(`Failed to parse SSE data: ${dataStr}`)
             }
           }
