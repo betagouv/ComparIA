@@ -5,7 +5,6 @@
  */
 
 import { fastapiClient } from './fastapi-client'
-import type { SSEEvent } from './fastapi-client'
 
 /**
  * Selection mode for model pairing
@@ -15,11 +14,7 @@ export type SelectionMode = 'random' | 'big-vs-small' | 'small-models' | 'custom
 /**
  * Arena-specific types
  */
-export interface InitArenaResponse {
-  session_hash: string
-  available_models: Record<string, any>
-  data_timestamp: number
-}
+
 
 export interface ChatUpdate {
   type: 'init' | 'update' | 'chunk' | 'done' | 'error'
@@ -46,14 +41,6 @@ export interface RevealData {
  * Arena API methods
  */
 export const arenaApi = {
-  /**
-   * Initialize a new arena session
-   */
-  async init(): Promise<InitArenaResponse> {
-    return fastapiClient.request<InitArenaResponse>('/arena/init', {
-      method: 'POST'
-    })
-  },
 
   /**
    * Send first message and stream responses from both models
