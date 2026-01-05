@@ -34,45 +34,28 @@ async def stream_bot_response(
 
         data: {"type": "error", "error": "error message"}
     """
-    from backend.arena.conversation import bot_response_async, Conversation
+    from backend.arena.conversation import bot_response_async
+    from backend.arena.utils import deserialize_conversation_from_redis
     from backend.utils.user import get_ip
 
     try:
-        # Reconstruct Conversation object from state dict
-        # Convert message dicts back to ChatMessage objects
-        from backend.arena.models import ChatMessage
-        messages = [
-            ChatMessage(
-                role=msg["role"],
-                content=msg["content"],
-                error=msg.get("error"),
-                reasoning=msg.get("reasoning"),
-                metadata=msg.get("metadata", {})
-            )
-            for msg in conv_state.get("messages", [])
-        ]
-
-        conv = Conversation(
-            messages=messages,
-            model_name=conv_state.get("model_name")
-        )
-        conv.conv_id = conv_state.get("conv_id", "")
-        conv.endpoint = conv_state.get("endpoint", {})
+        # Reconstruct Conversation (Pydantic) from Redis state dict
+        conv = deserialize_conversation_from_redis(conv_state)
 
         # Get IP from request for logging
         ip = get_ip(request)
 
         # Stream responses from bot_response_async generator
         async for updated_state in bot_response_async(position, conv, ip):
-            messages = [
-                {
-                    "role": msg.role,
-                    "content": msg.content,
-                    "metadata": msg.metadata if hasattr(msg, "metadata") else {},
-                    "reasoning": msg.reasoning if hasattr(msg, "reasoning") else None,
-                }
-                for msg in updated_state.messages
-            ]
+            # Serialize Pydantic messages to dicts for JSON response
+            messages = []
+            for msg in updated_state.messages:
+                msg_dict = msg.model_dump()
+                # For assistant messages, serialize metadata properly
+                if hasattr(msg, "metadata") and msg.metadata:
+                    if hasattr(msg.metadata, "model_dump"):
+                        msg_dict["metadata"] = msg.metadata.model_dump()
+                messages.append(msg_dict)
 
             chunk = {"type": "chunk", "messages": messages}
             yield f"data: {json.dumps(chunk)}\n\n"
