@@ -95,15 +95,19 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
 
     # Select models
     models = get_models()
-    model_a, model_b = models.pick_two(args.mode, args.custom_models_selection)
+    model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
 
-    logger.info(f"Selected models: {model_a} vs {model_b}", extra={"request": request})
+    logger.info(f"Selected models: {model_a_id} vs {model_b_id}", extra={"request": request})
 
     # Create new session
     session_hash = create_session()
 
+    # Get LanguageModel objects from IDs
+    llm_a = models.all[model_a_id]
+    llm_b = models.all[model_b_id]
+
     # Initialize conversations using Pydantic models
-    conversations = create_conversations(model_a, model_b, args.prompt_value)
+    conversations = create_conversations(llm_a, llm_b, args.prompt_value)
 
     # Serialize for Redis storage
     conv_a_dict = serialize_conversation_for_redis(conversations.conversation_a)
@@ -126,9 +130,14 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     return create_sse_response(event_stream())
 
 
+class AddTextBody(BaseModel):
+    """Request body for add_text endpoint."""
+    message: str = Field(min_length=1)
+
+
 @router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
 async def add_text(
-    args: "AddTextRequest",
+    args: AddTextBody,
     request: Request,
     session_hash: str = Depends(get_session_hash),
 ):
@@ -146,7 +155,7 @@ async def add_text(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    from backend.arena.models import AddTextRequest, UserMessage
+    from backend.arena.models import UserMessage
     from backend.arena.session import (
         retrieve_session_conversations,
         update_session_conversations,
@@ -182,7 +191,6 @@ async def add_text(
 
 @router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
-    args: "RetryRequest",
     request: Request,
     session_hash: str = Depends(get_session_hash),
 ):
@@ -192,7 +200,6 @@ async def retry(
     Removes the last assistant messages and re-generates them.
 
     Args:
-        args: Request body (currently empty, just needs session_hash)
         request: FastAPI request for logging
         session_hash: Session identifier from X-Session-Hash header
 
@@ -202,7 +209,6 @@ async def retry(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    from backend.arena.models import RetryRequest
     from backend.arena.session import (
         retrieve_session_conversations,
         update_session_conversations,

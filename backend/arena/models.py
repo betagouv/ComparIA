@@ -76,7 +76,7 @@ class AssistantMessage(BaseMessage):
         generation_id: str
         bot: Literal["a", "b"]
         output_tokens: int
-        duration: int | None = None
+        duration: float | None = None
 
     role: Literal["assistant"] = "assistant"
     error: str | None = None
