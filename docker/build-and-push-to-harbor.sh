@@ -1,8 +1,5 @@
 #!/bin/bash
-
-# Script pour builder et pousser les images Docker sur Harbor
-
-set -e
+set -euo pipefail
 
 # Configuration Harbor
 HARBOR_REGISTRY="55h10w99.gra7.container-registry.ovh.net"
@@ -10,35 +7,65 @@ HARBOR_PROJECT="atnum"
 BACKEND_IMAGE="$HARBOR_REGISTRY/$HARBOR_PROJECT/languia"
 FRONTEND_IMAGE="$HARBOR_REGISTRY/$HARBOR_PROJECT/languia-front"
 
-# Récupérer le hash long du commit courant
+# Login à Harbor
+#echo "Connexion à Harbor..."
+#echo $HARBOR_PASSWORD | docker login $HARBOR_REGISTRY -u $HARBOR_USER --password-stdin
+
 COMMIT_HASH=$(git rev-parse HEAD)
-echo "Commit hash: $COMMIT_HASH"
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
-# Tags avec hash du commit
-BACKEND_TAG="$BACKEND_IMAGE:$COMMIT_HASH"
-FRONTEND_TAG="$FRONTEND_IMAGE:$COMMIT_HASH"
+# Tags multiples
+BACKEND_TAGS=("$BACKEND_IMAGE:$COMMIT_HASH")
+[[ "$BRANCH_NAME" != "main" ]] && BACKEND_TAGS+=("$BACKEND_IMAGE:$BRANCH_NAME")
 
-echo "Construction des images Docker..."
+FRONTEND_TAGS=("$FRONTEND_IMAGE:$COMMIT_HASH")
+[[ "$BRANCH_NAME" != "main" ]] && FRONTEND_TAGS+=("$FRONTEND_IMAGE:$BRANCH_NAME")
 
-# Build l'image backend avec le hash du commit
-echo "Build de l'image backend (languia)..."
-docker build -t $BACKEND_TAG -f Dockerfile ..
+# Setup buildx
+docker buildx create --name comparia-builder --use --bootstrap 2>/dev/null || docker buildx use comparia-builder
+docker buildx inspect --bootstrap
 
-# Build l'image frontend avec le hash du commit
-echo "Build de l'image frontend (languia-front)..."
-docker build -t $FRONTEND_TAG -f Dockerfile.front ../frontend
+# Build arguments
+BUILD_ARGS=(
+  "--build-arg" "GIT_COMMIT=$COMMIT_HASH"
+  "--build-arg" "PUBLIC_API_URL=${PUBLIC_API_URL:-}"
+  "--build-arg" "MATOMO_ID=${MATOMO_ID:-}"
+  "--build-arg" "MATOMO_URL=${MATOMO_URL:-}"
+)
 
-echo "Push des images sur Harbor..."
+echo "Construction parallèle des images avec buildx..."
 
-# Push de l'image backend
-echo "Push de l'image backend..."
-docker push $BACKEND_TAG
+# Construction parallèle
+{
+  # Backend
+  echo "Build backend..."
+  docker buildx build \
+    "${BUILD_ARGS[@]}" \
+    $(printf -- "-t %s " "${BACKEND_TAGS[@]}") \
+    -f Dockerfile \
+    --push \
+    .. &
+  
+  BACKEND_PID=$!
+  
+  # Frontend
+  echo "Build frontend..."  
+  docker buildx build \
+    "${BUILD_ARGS[@]}" \
+    $(printf -- "-t %s " "${FRONTEND_TAGS[@]}") \
+    -f Dockerfile.front \
+    --push \
+    ../frontend &
+  
+  FRONTEND_PID=$!
+  
+  # Attendre les deux builds
+  wait $BACKEND_PID
+  echo "✅ Backend build terminé"
+  wait $FRONTEND_PID  
+  echo "✅ Frontend build terminé"
+}
 
-# Push de l'image frontend
-echo "Push de l'image frontend..."
-docker push $FRONTEND_TAG
-
-echo "Images buildées et poussées sur Harbor avec succès !"
-echo "Images disponibles :"
-echo "- $BACKEND_TAG"
-echo "- $FRONTEND_TAG"
+echo "Images buildées et poussées avec succès !"
+echo "Backend: ${BACKEND_TAGS[*]}"
+echo "Frontend: ${FRONTEND_TAGS[*]}"
