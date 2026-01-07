@@ -37,9 +37,9 @@
     arena.chat.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
   )
 
-  const onReactionChange: OnReactionFn = async (kind, reaction) => {
+  const onReactionChange: OnReactionFn = async (reaction) => {
     canVote = reaction.liked === null
-    await updateReaction(kind, reaction)
+    await updateReaction(reaction)
   }
 
   function onRetry() {

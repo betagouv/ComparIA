@@ -49,7 +49,7 @@
   class="pb-7 flex grow flex-col"
 >
   {#each groupedMessages as { user, bots }, i (i)}
-    <GroupedMessages {user} {bots} {generating} {disabled} {onReactionChange} />
+    <GroupedMessages {user} {bots} index={i + 1} {generating} {disabled} {onReactionChange} />
   {/each}
 
   {#if pending}
