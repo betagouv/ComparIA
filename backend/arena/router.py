@@ -335,55 +335,45 @@ async def react(
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
+        conversations = Conversations.from_session(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
     # Extract reaction index and data
     reaction_index = react_data.reaction_json.get("index")
+    reaction_bot = react_data.reaction_json.get("bot")
     if reaction_index is None:
         raise HTTPException(status_code=400, detail="Missing reaction index")
 
     # Store reaction metadata on the corresponding message
-    # The reaction index corresponds to the bot message pair (0-indexed)
+    # The reaction index corresponds to the bot message
     # We need to find the assistant message at position (reaction_index * 2 + 1)
-    message_position = (
-        reaction_index * 2 + 1
-    )  # User messages at even positions, assistant at odd
+    conv = (
+        conversations.conversation_a
+        if reaction_bot == "a"
+        else conversations.conversation_b
+    )
 
-    # Update reaction in both conversations' messages
-    for conv_dict in [conv_a_dict, conv_b_dict]:
-        messages = conv_dict.get("messages", [])
-        if message_position < len(messages):
-            msg = messages[message_position]
-            # Add reaction metadata to the message
-            if isinstance(msg, dict):
-                if "metadata" not in msg:
-                    msg["metadata"] = {}
-                msg["metadata"]["reaction"] = react_data.reaction_json
-            else:
-                # Handle ChatMessage object
-                if not hasattr(msg, "metadata") or msg.metadata is None:
-                    msg.metadata = {}
-                msg.metadata["reaction"] = react_data.reaction_json
+    # FIXME try
+    message = conv.messages[
+        reaction_index if not conv.has_system_msg else reaction_index + 1
+    ]
+    message.reaction = react_data.reaction_json
 
     # Update in Redis
-    update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
+    conversations.store_to_session(session_hash)
 
     # Save reaction to database
     try:
-        reaction_record = record_reaction(
-            conversations=Conversations(
-                conversation_a=deserialize_conversation_from_redis(conv_a_dict),
-                conversation_b=deserialize_conversation_from_redis(conv_b_dict),
-            ),
-            reaction_data=react_data.reaction_json,
-            session_hash=session_hash,
-            request=request,
-            mode=metadata.get("mode"),
-            category=metadata.get("category"),
-        )
-        logger.info(f"[REACT] Saved to database: {reaction_record}")
+        pass
+        # FIXME rework db recording
+        # reaction_record = record_reaction(
+        #     conversations=conversations,
+        #     reaction_data=react_data.reaction_json,
+        #     session_hash=session_hash,
+        #     request=request,
+        # )
+        # logger.info(f"[REACT] Saved to database: {reaction_record}")
     except Exception as e:
         # Log error but don't fail the request
         logger.error(f"[REACT] Error saving to database: {e}", exc_info=True)

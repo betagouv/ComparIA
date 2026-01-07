@@ -70,13 +70,14 @@ export type ReactionPref = (typeof positiveReactions)[number] | (typeof negative
 
 export type ReactionKind = 'like' | 'comment'
 export type APIReactionData = {
+  bot: Bot
   index: number
   value: string
-  liked?: boolean | null
-  prefs?: ReactionPref[]
+  liked: boolean | null
+  prefs: ReactionPref[]
   comment?: string
 }
-export type OnReactionFn = (kind: ReactionKind, reaction: Required<APIReactionData>) => void
+export type OnReactionFn = (reaction: APIReactionData) => void
 
 // VOTE
 
@@ -289,7 +290,7 @@ export async function retryAskChatBots() {
   }
 }
 
-export async function updateReaction(_kind: ReactionKind, reaction: APIReactionData) {
+export async function updateReaction(reaction: APIReactionData) {
   const data = {
     reaction_json: reaction
   }

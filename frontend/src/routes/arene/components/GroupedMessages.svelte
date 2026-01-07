@@ -6,12 +6,14 @@
   let {
     user,
     bots,
+    index,
     generating,
     disabled,
     onReactionChange
   }: {
     user: ChatMessage<'user'>
     bots: [ChatMessage<'assistant'>, ChatMessage<'assistant'>]
+    index: number
     generating: boolean
     disabled: boolean
     onReactionChange: OnReactionFn
@@ -29,7 +31,7 @@
 
   <div class="gap-10 md:grid-cols-2 md:gap-6 grid">
     {#each bots as botMessage, j (j)}
-      <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
+      <MessageBot message={botMessage} {index} {generating} {disabled} {onReactionChange} />
     {/each}
   </div>
 </div>
