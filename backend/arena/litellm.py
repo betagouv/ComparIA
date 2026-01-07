@@ -186,9 +186,7 @@ def litellm_stream_iter(
                     break
                 elif chunk.choices[0].finish_reason == "length":
                     # Model hit max tokens limit
-                    logger.error(
-                        "context_too_long: " + str(chunk), extra={"ip": ip}
-                    )
+                    logger.error("context_too_long: " + str(chunk), extra={"ip": ip})
                     raise ContextTooLongError
 
             # Yield partial results for streaming to frontend

@@ -111,7 +111,9 @@ async def stream_both_responses(
                 break
 
             # Wait for next chunk from either model
-            done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            done, pending = await asyncio.wait(
+                tasks, return_when=asyncio.FIRST_COMPLETED
+            )
 
             # Process completed chunks
             has_update = False
@@ -146,9 +148,7 @@ async def stream_both_responses(
         yield f'data: {{"type": "done"}}\n\n'
 
     except Exception as e:
-        logger.error(
-            f"[STREAMING] Error in stream_both_responses: {e}", exc_info=True
-        )
+        logger.error(f"[STREAMING] Error in stream_both_responses: {e}", exc_info=True)
         error_chunk = {"type": "error", "error": str(e)}
         yield f"data: {json.dumps(error_chunk)}\n\n"
 
