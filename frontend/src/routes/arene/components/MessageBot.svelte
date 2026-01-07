@@ -3,13 +3,14 @@
   import { Icon } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import Pending from '$components/Pending.svelte'
-  import type { ChatMessage, OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
+  import type { APIReactionData, ChatMessage, OnReactionFn } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { LikeDislike, LikePanel } from '.'
 
   export type MessageBotProps = {
     message: ChatMessage<'assistant'>
+    index: number
     generating?: boolean
     disabled?: boolean
     onReactionChange: OnReactionFn
@@ -17,31 +18,30 @@
 
   let {
     message,
+    index,
     generating = false,
     disabled = false,
     onReactionChange
   }: MessageBotProps = $props()
 
   const bot = message.metadata.bot
-  const reaction = $state<{
-    liked: boolean | null
-    prefs: ReactionPref[]
-    comment: string
-  }>({
+  const reaction = $state<APIReactionData>({
+    index: index,
+    bot: message.metadata.bot,
     liked: null,
     prefs: [],
-    comment: ''
+    comment: '',
+    value: message.content
   })
 
   function onLikedChanged() {
     reaction.prefs = []
-    dispatchOnReactionChange('like')
+    dispatchOnReactionChange()
   }
 
-  function dispatchOnReactionChange(kind: 'like' | 'comment') {
-    onReactionChange(kind, {
+  function dispatchOnReactionChange() {
+    onReactionChange({
       ...reaction,
-      index: message.index,
       value: message.content
     })
   }
@@ -65,7 +65,7 @@
                 type="button"
                 class="fr-accordion__btn text-primary! bg-transparent!"
                 aria-expanded="true"
-                aria-controls="reasoning-{message.metadata.bot}"
+                aria-controls="reasoning-{message.metadata.generation_id}"
               >
                 <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
                 {#if message.content === '' && generating}
@@ -76,7 +76,7 @@
               </button>
             </h3>
             <div
-              id="reasoning-{message.metadata.bot}"
+              id="reasoning-{message.metadata.generation_id}"
               class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
             >
               <div class="px-5 py-4">
@@ -115,8 +115,8 @@
         show={true}
         bind:selection={reaction.prefs}
         bind:comment={reaction.comment}
-        onSelectionChange={() => dispatchOnReactionChange('like')}
-        onCommentChange={() => dispatchOnReactionChange('comment')}
+        onSelectionChange={dispatchOnReactionChange}
+        onCommentChange={dispatchOnReactionChange}
         model={bot.toUpperCase()}
       />
     </div>
