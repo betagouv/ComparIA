@@ -480,7 +480,7 @@ async def reveal(session_hash: str, request: Request):
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
+        conversations = Conversations.from_session(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -488,6 +488,6 @@ async def reveal(session_hash: str, request: Request):
     from backend.arena.reveal import build_reveal_dict
 
     # No chosen model for direct reveal (user just wants to see models without voting)
-    reveal_data = build_reveal_dict(conv_a_dict, conv_b_dict, "both-equal")
+    reveal_data = build_reveal_dict(conversations, "both-equal")
 
     return reveal_data
