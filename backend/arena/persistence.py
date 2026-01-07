@@ -19,11 +19,12 @@ import psycopg2
 from fastapi import Request
 from psycopg2 import sql
 
-from backend.arena.models import Conversations
+from backend.arena.models import Conversations, ReactionData
 from backend.arena.utils import (
     count_turns,
     get_matomo_tracker_from_cookies,
     is_unedited_prompt,
+    messages_to_dict_list,
     sum_tokens,
 )
 from backend.config import settings
@@ -140,20 +141,23 @@ def save_vote_to_db(data: dict) -> dict:
             conn.close()
 
 
-def upsert_reaction_to_db(data: dict) -> dict:
+def upsert_reaction_to_db(data: dict, request: Request) -> dict:
     """
     UPSERT a reaction to the database.
 
     Uses ON CONFLICT to update existing reactions or insert new ones.
 
     Args:
-        data: Reaction data dict with all fields
+        data: Reaction data dict (see record_reaction for fields)
+        request: FastApi Request
 
     Returns:
         dict: The saved reaction data
 
-    Raises:
-        psycopg2.Error: If database operation fails
+    Database Operation:
+        - Uses PostgreSQL UPSERT (INSERT ... ON CONFLICT ... DO UPDATE)
+        - Key conflict: (refers_to_conv_id, msg_index)
+        - Updates all fields except timestamps on conflict
     """
     conn = None
     cursor = None
@@ -163,75 +167,138 @@ def upsert_reaction_to_db(data: dict) -> dict:
         cursor = conn.cursor()
 
         # SQL UPSERT for reactions table
-        upsert_query = sql.SQL(
+        query = sql.SQL(
             """
-            INSERT INTO reactions (
-                refers_to_conv_id,
-                msg_index,
-                msg_rank,
-                question_id,
-                session_hash,
-                ip_address,
-                matomo_visitor_id,
-                tstamp,
-                reaction_type,
-                bot_position,
-                model_name,
-                category,
-                mode,
-                opening_msg,
-                is_unedited_prompt,
-                conv_turns,
-                user_message,
-                bot_message
-            ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-            )
-            ON CONFLICT (refers_to_conv_id, msg_index)
-            DO UPDATE SET
-                reaction_type = EXCLUDED.reaction_type,
-                tstamp = EXCLUDED.tstamp,
-                matomo_visitor_id = EXCLUDED.matomo_visitor_id
+        INSERT INTO reactions (
+            model_a_name, 
+            model_b_name, 
+            refers_to_model, 
+            msg_index, 
+            opening_msg, 
+            conversation_a, 
+            conversation_b, 
+            model_pos, 
+            conv_turns, 
+            system_prompt, 
+            conversation_pair_id, 
+            conv_a_id, 
+            conv_b_id, 
+            refers_to_conv_id, 
+            session_hash, 
+            visitor_id, 
+            ip, 
+            response_content, 
+            question_content, 
+            liked, 
+            disliked, 
+            comment, 
+            useful, 
+            complete,
+            creative, 
+            clear_formatting, 
+            incorrect, 
+            superficial, 
+            instructions_not_followed, 
+            model_pair_name, 
+            msg_rank,
+            chatbot_index,
+            question_id
+        )
+        VALUES (
+            %(model_a_name)s, 
+            %(model_b_name)s, 
+            %(refers_to_model)s, 
+            %(msg_index)s, 
+            %(opening_msg)s, 
+            %(conversation_a)s, 
+            %(conversation_b)s, 
+            %(model_pos)s, 
+            %(conv_turns)s, 
+            %(system_prompt)s, 
+            %(conversation_pair_id)s, 
+            %(conv_a_id)s, 
+            %(conv_b_id)s, 
+            %(refers_to_conv_id)s, 
+            %(session_hash)s, 
+            %(visitor_id)s, 
+            %(ip)s, 
+            %(response_content)s, 
+            %(question_content)s, 
+            %(liked)s, 
+            %(disliked)s, 
+            %(comment)s, 
+            %(useful)s, 
+            %(complete)s, 
+            %(creative)s, 
+            %(clear_formatting)s, 
+            %(incorrect)s, 
+            %(superficial)s, 
+            %(instructions_not_followed)s, 
+            %(model_pair_name)s, 
+            %(msg_rank)s,
+            %(chatbot_index)s,
+            %(question_id)s
+        )
+        ON CONFLICT (refers_to_conv_id, msg_index) 
+        DO UPDATE SET
+            model_a_name = EXCLUDED.model_a_name,
+            model_b_name = EXCLUDED.model_b_name,
+            refers_to_model = EXCLUDED.refers_to_model,
+            opening_msg = EXCLUDED.opening_msg,
+            conversation_a = EXCLUDED.conversation_a,
+            conversation_b = EXCLUDED.conversation_b,
+            model_pos = EXCLUDED.model_pos,
+            conv_turns = EXCLUDED.conv_turns,
+            system_prompt = EXCLUDED.system_prompt,
+            conv_a_id = EXCLUDED.conv_a_id,
+            conv_b_id = EXCLUDED.conv_b_id,
+            conversation_pair_id = EXCLUDED.conversation_pair_id,
+            session_hash = EXCLUDED.session_hash,
+            visitor_id = EXCLUDED.visitor_id,
+            ip = EXCLUDED.ip,
+            response_content = EXCLUDED.response_content,
+            question_content = EXCLUDED.question_content,
+            liked = EXCLUDED.liked,
+            disliked = EXCLUDED.disliked,
+            comment = EXCLUDED.comment,
+            useful = EXCLUDED.useful,
+            complete = EXCLUDED.complete,
+            creative = EXCLUDED.creative,
+            clear_formatting = EXCLUDED.clear_formatting,
+            incorrect = EXCLUDED.incorrect,
+            superficial = EXCLUDED.superficial,
+            instructions_not_followed = EXCLUDED.instructions_not_followed,
+            model_pair_name = EXCLUDED.model_pair_name,
+            msg_rank = EXCLUDED.msg_rank,
+            chatbot_index = EXCLUDED.chatbot_index,
+            question_id = EXCLUDED.question_id;
         """
         )
+        # TODO: fixes some edge case
+        #     RETURNING
+        # (CASE
+        #     WHEN (pg_trigger_depth() = 0) THEN 'inserted'
+        #     ELSE 'updated'
+        # END) AS operation;
 
-        cursor.execute(
-            upsert_query,
-            (
-                data["refers_to_conv_id"],
-                data["msg_index"],
-                data.get("msg_rank"),
-                data.get("question_id"),
-                data["session_hash"],
-                data.get("ip_address"),
-                data.get("matomo_visitor_id"),
-                data["tstamp"],
-                data.get("reaction_type"),
-                data.get("bot_position"),
-                data.get("model_name"),
-                data.get("category"),
-                data.get("mode"),
-                data.get("opening_msg"),
-                data.get("is_unedited_prompt"),
-                data.get("conv_turns"),
-                data.get("user_message"),
-                data.get("bot_message"),
-            ),
-        )
-
+        cursor.execute(query, data)
         conn.commit()
         logger.info(
             f"[DB] Upserted reaction for {data['refers_to_conv_id']} msg_index={data['msg_index']}"
         )
 
-        # Write JSON backup file
-        t = datetime.fromisoformat(data["tstamp"])
-        filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{data['session_hash']}.json"
-        filepath = os.path.join(LOGDIR, filename)
-        with open(filepath, "a") as f:
-            f.write(json.dumps(data) + "\n")
+        # TODO: also increment redis counter
+        # country_portal = request.query_params.get(
+        #     "country_portal"
+        # ) or request.query_params.get("locale")
+        # if country_portal == "da":
+        #     from languia.session import r
 
-        return data
+        #     if r:
+        #         try:
+        #             r.incr("danish_count")
+        #         except Exception as e:
+        #             logger.error(f"Error incrementing danish count in Redis: {e}")
 
     except psycopg2.Error as e:
         logger.error(f"[DB] Error upserting reaction: {e}", exc_info=True)
@@ -244,6 +311,8 @@ def upsert_reaction_to_db(data: dict) -> dict:
             cursor.close()
         if conn:
             conn.close()
+
+    return data
 
 
 def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
@@ -514,133 +583,117 @@ def record_vote(
 
 def record_reaction(
     conversations: Conversations,
-    reaction_data: dict,
+    reaction: ReactionData,
+    msg_index: int,
     session_hash: str,
     request: Request,
-    mode: str | None = None,
-    category: str | None = None,
-) -> dict:
+):
     """
-    Record a reaction (like/dislike) to the database.
+    Record a single message reaction (like/dislike + preferences).
+
+    Handles individual reactions to specific bot responses. Uses UPSERT logic
+    to allow users to change reactions without creating duplicates.
+    Also handles deleting reactions when user removes feedback.
 
     Args:
-        conversations: Conversations object with both conversation_a and conversation_b
-        reaction_data: Reaction dict from frontend (Gradio format with index, value, liked)
-        session_hash: Session identifier
-        request: FastAPI Request for IP and cookies
-        mode: Model selection mode (from session metadata)
-        category: Prompt category (from session metadata)
+        conversations: Conversations
+        reaction: ReactionData
+        request:  FastAPI Request for IP and cookies
 
     Returns:
         dict: The saved reaction record, or delete result if reaction was cleared
+
+    Special Handling:
+        - reaction="none": Deletes reaction from database (undo)
+        - Uses UPSERT to allow reaction changes
+        - Handles system prompt offsets in message indexing
     """
+
+    if reaction.bot not in ["a", "b"]:  # FIXME remove, is handled before
+        raise Exception(f"Weird reaction.bot: {reaction.bot}")
+
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
+    current_conversation = conv_a if reaction.bot == "a" else conv_b
+    response_content = current_conversation.messages[msg_index].content
+    question_content = current_conversation.messages[msg_index - 1].content
 
-    # Extract reaction details
-    msg_index = reaction_data.get("index")
-    reaction_value = reaction_data.get("value")
-    liked = reaction_data.get("liked")
+    # a reaction has been undone and none replaced it
+    if reaction.liked is None:
+        delete_reaction_in_db(
+            msg_index=msg_index, refers_to_conv_id=current_conversation.conv_id
+        )
+        return {
+            "msg_index": msg_index,
+            "refers_to_conv_id": current_conversation.conv_id,
+        }
 
-    if msg_index is None:
-        raise ValueError("Missing reaction index")
+    conversation_a_messages = messages_to_dict_list(conv_a.messages)
+    conversation_b_messages = messages_to_dict_list(conv_b.messages)
 
-    # Calculate msg_rank (which exchange in the conversation)
-    msg_rank = msg_index // 2
+    model_pair_name = sorted([conv_a.model_name, conv_b.model_name])
 
-    # Determine bot position (which conversation the reaction is for)
-    bot_position = None
-    model_name = None
-    bot_message = None
-
-    # Get the message at this index from conversation A
-    # The reaction index corresponds to pairs of messages (user + assistant)
-    message_position = msg_index * 2 + 1  # Assistant message position
-
-    if message_position < len(conv_a.messages):
-        msg = conv_a.messages[message_position]
-        if msg.role == "assistant":
-            bot_message = msg.content
-            # Check if this message has metadata indicating bot position
-            if hasattr(msg, "metadata") and msg.metadata:
-                metadata_dict = (
-                    msg.metadata.model_dump()
-                    if hasattr(msg.metadata, "model_dump")
-                    else msg.metadata
-                )
-                bot_position = metadata_dict.get("bot", "a")
-                model_name = (
-                    conv_a.model_name if bot_position == "a" else conv_b.model_name
-                )
-
-    # Get user message (previous message)
-    user_message = None
-    if message_position > 0 and message_position - 1 < len(conv_a.messages):
-        user_msg = conv_a.messages[message_position - 1]
-        if user_msg.role == "user":
-            user_message = user_msg.content
-
-    # Get opening message
-    opening_msg = None
-    for msg in conv_a.messages:
-        if msg.role == "user":
-            opening_msg = msg.content
-            break
-
-    # Handle reaction deletion (when user un-likes/un-dislikes)
-    if liked is False or reaction_value is None:
-        # Delete reaction
-        conv_a_id = conv_a.conv_id
-        return delete_reaction_in_db(msg_index, conv_a_id)
-
-    # Determine reaction type
-    reaction_type = None
-    if liked is True:
-        reaction_type = "like"
-    elif liked is False:
-        reaction_type = "dislike"
-
-    # Get user context
-    ip_address = get_ip(request)
-    matomo_visitor_id = get_matomo_tracker_from_cookies(request.cookies)
-
-    # Count turns
+    opening_msg = conv_a.messages[1 if conv_a.has_system_msg else 0]
     conv_turns = count_turns(conv_a.messages)
+    t = datetime.now()  # FIXME
 
-    # Build conversation IDs
-    conv_a_id = conv_a.conv_id
-    conv_b_id = conv_b.conv_id
-    conversation_pair_id = f"{conv_a_id}-{conv_b_id}"
-    question_id = f"{conversation_pair_id}-{msg_rank}"
+    conv_pair_id = conv_a.conv_id + "-" + conv_b.conv_id
+    refers_to_model = current_conversation.model_name
 
-    # Build reaction data dict
+    # rank begins at zero # FIXME change in msg_index computing, need to reflect (used in peren code)
+    msg_rank = msg_index // 2
+    question_id = conv_pair_id + "-" + str(msg_rank)
+
     data = {
-        "refers_to_conv_id": conv_a_id,
+        # id
+        # "timestamp": t,
+        "model_a_name": conv_a.model_name,
+        "model_b_name": conv_b.model_name,
+        "refers_to_model": refers_to_model,  # (model name)
         "msg_index": msg_index,
-        "msg_rank": msg_rank,
-        "question_id": question_id,
-        "session_hash": session_hash,
-        "ip_address": ip_address,
-        "matomo_visitor_id": matomo_visitor_id,
-        "tstamp": datetime.now().isoformat(),
-        "reaction_type": reaction_type,
-        "bot_position": bot_position,
-        "model_name": model_name,
-        "category": category,
-        "mode": mode,
         "opening_msg": opening_msg,
-        "is_unedited_prompt": (
-            is_unedited_prompt(opening_msg, category)
-            if opening_msg and category
-            else False
-        ),
+        "conversation_a": json.dumps(conversation_a_messages),
+        "conversation_b": json.dumps(conversation_b_messages),
+        "model_pos": reaction.bot,
+        # conversation can be longer if like is on older messages
         "conv_turns": conv_turns,
-        "user_message": user_message,
-        "bot_message": bot_message,
+        "system_prompt": current_conversation.system_msg,
+        "conversation_pair_id": conv_pair_id,
+        "conv_a_id": conv_a.conv_id,
+        "conv_b_id": conv_b.conv_id,
+        "session_hash": session_hash,
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        "refers_to_conv_id": current_conversation.conv_id,
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "comment": reaction.comment,
+        "response_content": response_content,
+        "question_content": question_content,
+        "liked": reaction.liked is True,
+        "disliked": reaction.liked is False,
+        "useful": "useful" in reaction.prefs,
+        "complete": "complete" in reaction.prefs,
+        "creative": "creative" in reaction.prefs,
+        "clear_formatting": "clear-formatting" in reaction.prefs,
+        "incorrect": "incorrect" in reaction.prefs,
+        "superficial": "superficial" in reaction.prefs,
+        "instructions_not_followed": "instructions-not-followed" in reaction.prefs,
+        # Not asked:
+        "chatbot_index": msg_index,  # chatbot_index, FIXME legacy? changes in msg_index to reflect?
+        "msg_rank": msg_rank,  # FIXME used in peren pipeline, what should it be?
+        "model_pair_name": json.dumps(model_pair_name),
+        "question_id": question_id,
     }
 
-    # Save to database
-    return upsert_reaction_to_db(data)
+    reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
+    reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
+    with open(reaction_log_path, "a") as fout:
+        fout.write(json.dumps(data) + "\n")
+    logger.info(f"saved_reaction: {json.dumps(data)}", extra={"request": request})
+
+    upsert_reaction_to_db(data=data, request=request)
+
+    return data
 
 
 def record_conversations(
@@ -673,9 +726,6 @@ def record_conversations(
         6. Write JSON log file (full overwrite)
         7. Call upsert_conv_to_db() for database
     """
-    from datetime import datetime
-
-    from backend.arena.utils import messages_to_dict_list
 
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
