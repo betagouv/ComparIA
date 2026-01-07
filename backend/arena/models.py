@@ -214,6 +214,30 @@ class Conversations(BaseModel):
         data["opening_msg"] = conv.opening_msg
         data["conv_turns"] = conv.conv_turns
 
+    def store_to_session(self, session_hash: str) -> None:
+        """
+        Store conversation pair with metadata in Redis for an active session.
+
+        Note:
+            Session expires after 24 hours
+        """
+        from backend.arena.session import store_session_conversations
+
+        data = self.model_dump()
+
+        store_session_conversations(session_hash, data)
+
+    @staticmethod
+    def from_session(session_hash: str) -> "Conversations":
+        """
+        Build a Conversations from data stored in Redis for an active session.
+        """
+        from backend.arena.session import retrieve_session_conversations
+
+        data = retrieve_session_conversations(session_hash)
+
+        return Conversations(**data)
+
 
 def create_conversations(
     llm_a: LanguageModel,
