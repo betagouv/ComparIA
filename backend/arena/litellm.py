@@ -5,14 +5,15 @@ This module provides a unified interface to call different LLM APIs (OpenAI, Goo
 OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting, and error handling.
 """
 
-import os
-import logging
-
-from backend.config import GLOBAL_TIMEOUT
-import litellm
 import json
+import logging
+import os
+from typing import Generator
 
-from backend.arena.utils import strip_metadata, ContextTooLongError
+import litellm
+
+from backend.arena.utils import ContextTooLongError
+from backend.config import GLOBAL_TIMEOUT
 
 # Load Google Cloud credentials for Vertex AI if available
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
@@ -37,7 +38,7 @@ def litellm_stream_iter(
     vertex_ai_location=None,
     include_reasoning=False,
     enable_reasoning=False,
-):
+) -> Generator:
     """
     Stream responses from an LLM API using LiteLLM.
 
@@ -83,9 +84,6 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    # Remove custom metadata from messages before sending to API
-    messages = strip_metadata(messages)
-    logging.debug("stripping metadata")
 
     # Check for mock response environment variable (useful for testing/demo)
     mock_response = os.getenv("MOCK_RESPONSE")

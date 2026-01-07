@@ -12,6 +12,7 @@ This module provides helper functions for:
 import logging
 import os
 
+from backend.arena.models import AnyMessage, AssistantMessage
 from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
@@ -186,8 +187,10 @@ def strip_metadata(messages: list[dict]) -> list[dict]:
 
 
 def messages_to_dict_list(
-    messages, strip_metadata=False, concat_reasoning_with_content=False
-):
+    messages: list[AnyMessage],
+    strip_metadata=False,
+    concat_reasoning_with_content=False,
+) -> list[dict]:
     """
     Convert ChatMessage objects to dict format for API calls or storage.
 
@@ -203,13 +206,21 @@ def messages_to_dict_list(
     """
     output = []
     for message in messages:
-        msg_dict = {"role": message.role}
+        msg_dict: dict = {"role": message.role}
 
         # Handle reasoning content (for o1 and similar models)
-        if message.reasoning and not concat_reasoning_with_content:
+        if (
+            isinstance(message, AssistantMessage)
+            and message.reasoning
+            and not concat_reasoning_with_content
+        ):
             # Store reasoning separately if model supports it
             msg_dict["reasoning_content"] = message.reasoning
-        elif message.reasoning and concat_reasoning_with_content:
+        elif (
+            isinstance(message, AssistantMessage)
+            and message.reasoning
+            and concat_reasoning_with_content
+        ):
             # Concatenate reasoning with content for models that don't support separate reasoning
             msg_dict["content"] = (
                 "<|think|>" + message.reasoning + "<|think|>" + message.content
@@ -218,7 +229,11 @@ def messages_to_dict_list(
             msg_dict["content"] = message.content
 
         # Include metadata if not stripped and not empty
-        if not strip_metadata and metadata_to_dict(message.metadata):
+        if (
+            isinstance(message, AssistantMessage)
+            and not strip_metadata
+            and metadata_to_dict(message.metadata)
+        ):
             msg_dict["metadata"] = metadata_to_dict(message.metadata)
 
         output.append(msg_dict)

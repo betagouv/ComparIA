@@ -16,17 +16,17 @@ from datetime import datetime
 from typing import Any
 
 import psycopg2
-from psycopg2 import sql
 from fastapi import Request
+from psycopg2 import sql
 
-from backend.config import settings
 from backend.arena.models import Conversations
 from backend.arena.utils import (
-    get_matomo_tracker_from_cookies,
     count_turns,
+    get_matomo_tracker_from_cookies,
     is_unedited_prompt,
     sum_tokens,
 )
+from backend.config import settings
 from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
@@ -612,8 +612,6 @@ def record_conversations(
     conversations: Conversations,
     session_hash: str,
     request: Request,
-    mode: str | None = None,
-    category: str | None = None,
 ) -> dict:
     """
     Record/update a conversation pair to the database.
@@ -678,12 +676,14 @@ def record_conversations(
         "ip_address": ip_address,
         "matomo_visitor_id": matomo_visitor_id,
         "tstamp": datetime.now().isoformat(),
-        "category": category,
-        "mode": mode,
+        "category": conversations.category,
+        "mode": conversations.mode,
         "opening_msg": opening_msg,
-        "is_unedited_prompt": is_unedited_prompt(opening_msg, category)
-        if opening_msg and category
-        else False,
+        "is_unedited_prompt": (
+            is_unedited_prompt(opening_msg, conversations.category)
+            if opening_msg and conversations.category
+            else False
+        ),
         "conv_turns": conv_turns,
         "model_a": conv_a.model_name,
         "model_b": conv_b.model_name,
