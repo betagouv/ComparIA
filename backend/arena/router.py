@@ -417,7 +417,9 @@ async def vote(
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
+        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(
+            session_hash
+        )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

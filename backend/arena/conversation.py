@@ -199,14 +199,18 @@ async def bot_response_async(
         extra={"ip": ip},
     )
     # Check if this model supports extended reasoning (like o1)
-    include_reasoning = endpoint.include_reasoning if hasattr(endpoint, "include_reasoning") else True
+    include_reasoning = (
+        endpoint.include_reasoning if hasattr(endpoint, "include_reasoning") else True
+    )
 
     # Track generation start time for performance metrics
     start_tstamp = time.time()
 
     # Build LiteLLM model identifier (e.g., "openai/gpt-4", "google/gemini-pro")
     api_type = endpoint.api_type if hasattr(endpoint, "api_type") else "openai"
-    api_model_id = endpoint.api_model_id if hasattr(endpoint, "api_model_id") else state.model_name
+    api_model_id = (
+        endpoint.api_model_id if hasattr(endpoint, "api_model_id") else state.model_name
+    )
     litellm_model_name = f"{api_type}/{api_model_id}"
 
     # Retrieve API key from environment or config
@@ -215,7 +219,9 @@ async def bot_response_async(
     # Get optional endpoint attributes
     api_base = endpoint.api_base if hasattr(endpoint, "api_base") else None
     api_version = endpoint.api_version if hasattr(endpoint, "api_version") else None
-    vertex_ai_location = endpoint.vertex_ai_location if hasattr(endpoint, "vertex_ai_location") else None
+    vertex_ai_location = (
+        endpoint.vertex_ai_location if hasattr(endpoint, "vertex_ai_location") else None
+    )
 
     # Initialize streaming iterator from LiteLLM
     stream_iter = litellm_stream_iter(
@@ -272,9 +278,7 @@ async def bot_response_async(
     # Calculate total generation duration
     stop_tstamp = time.time()
     duration = stop_tstamp - start_tstamp
-    logger.debug(
-        f"duration for {generation_id}: {str(duration)}", extra={"ip": ip}
-    )
+    logger.debug(f"duration for {generation_id}: {str(duration)}", extra={"ip": ip})
 
     # Extract final response text and reasoning from last chunk
     output = data.get("text")
