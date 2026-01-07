@@ -149,6 +149,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
                 conversations=conversations,
                 session_hash=session_hash,
                 request=request,
+                locale="fr",  # FIXME
+                cohorts_comma_separated="",  # FIXME
+                custom_models_selection=args.custom_models_selection,
             )
             logger.info(
                 f"[ADD_FIRST_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
@@ -220,6 +223,8 @@ async def add_text(
                 conversations=conversations,
                 session_hash=session_hash,
                 request=request,
+                locale="fr",  # FIXME
+                cohorts_comma_separated="",  # FIXME
             )
             logger.info(
                 f"[ADD_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
@@ -292,6 +297,8 @@ async def retry(
                 conversations=conversations,
                 session_hash=session_hash,
                 request=request,
+                locale="fr",  # FIXME
+                cohorts_comma_separated="",  # FIXME
             )
             logger.info(
                 f"[RETRY] Archived conversation: {conversation_record['conversation_pair_id']}"

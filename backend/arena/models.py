@@ -145,6 +145,10 @@ class Conversation(BaseModel):
         return len(self.messages) > 0 and isinstance(self.messages[0], SystemMessage)
 
     @property
+    def system_msg(self) -> SystemMessage | None:
+        return self.messages[0] if isinstance(self.messages[0], SystemMessage) else None
+
+    @property
     def opening_msg(self) -> str:
         return self.messages[1 if self.has_system_msg else 0].content
 
