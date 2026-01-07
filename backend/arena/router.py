@@ -3,7 +3,14 @@ import logging
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from backend.arena.models import Conversations, ReactRequest, VoteRequest, UserMessage, create_conversations
+from backend.arena.models import (
+    AssistantMessage,
+    Conversations,
+    ReactRequest,
+    UserMessage,
+    VoteRequest,
+    create_conversations,
+)
 from backend.arena.persistence import record_conversations, record_reaction, record_vote
 from backend.arena.session import (
     create_session,
@@ -12,7 +19,10 @@ from backend.arena.session import (
     update_session_conversations,
 )
 from backend.arena.streaming import create_sse_response, stream_both_responses
-from backend.arena.utils import deserialize_conversation_from_redis, serialize_conversation_for_redis
+from backend.arena.utils import (
+    deserialize_conversation_from_redis,
+    serialize_conversation_for_redis,
+)
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -101,7 +111,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     models = get_models()
     model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
 
-    logger.info(f"Selected models: {model_a_id} vs {model_b_id}", extra={"request": request})
+    logger.info(
+        f"Selected models: {model_a_id} vs {model_b_id}", extra={"request": request}
+    )
 
     # Create new session
     session_hash = create_session()
@@ -111,16 +123,12 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     llm_b = models.all[model_b_id]
 
     # Initialize conversations using Pydantic models
-    conversations = create_conversations(llm_a, llm_b, args.prompt_value)
+    conversations = create_conversations(
+        llm_a, llm_b, args.prompt_value, args.mode, category=None
+    )  # FIXME category?
 
-    # Serialize for Redis storage
-    conv_a_dict = serialize_conversation_for_redis(conversations.conversation_a)
-    conv_b_dict = serialize_conversation_for_redis(conversations.conversation_b)
-
-    # Store in Redis with mode and category metadata
-    store_session_conversations(
-        session_hash, conv_a_dict, conv_b_dict, mode=args.mode, category=None
-    )
+    # Store conversations in Redis
+    conversations.store_to_session(session_hash)
 
     # Stream responses
     async def event_stream():
@@ -130,34 +138,33 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         yield f"data: {json.dumps({'type': 'init', 'session_hash': session_hash})}\n\n"
 
         # Stream both model responses
-        async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
+        async for chunk in stream_both_responses(conversations, request):
             yield chunk
 
-        # After streaming completes, archive conversation to database
-        try:
-            # Retrieve updated conversations from Redis (after bot responses)
-            conv_a_updated, conv_b_updated, meta = retrieve_session_conversations(session_hash)
+        # After streaming completes, archive conversation to Redis and database
+        conversations.store_to_session(session_hash)
 
+        try:
             conversation_record = record_conversations(
-                conversations=Conversations(
-                    conversation_a=deserialize_conversation_from_redis(conv_a_updated),
-                    conversation_b=deserialize_conversation_from_redis(conv_b_updated),
-                ),
+                conversations=conversations,
                 session_hash=session_hash,
                 request=request,
-                mode=meta.get("mode"),
-                category=meta.get("category"),
             )
-            logger.info(f"[ADD_FIRST_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}")
+            logger.info(
+                f"[ADD_FIRST_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
+            )
         except Exception as e:
             # Log error but don't fail the streaming
-            logger.error(f"[ADD_FIRST_TEXT] Error archiving conversation: {e}", exc_info=True)
+            logger.error(
+                f"[ADD_FIRST_TEXT] Error archiving conversation: {e}", exc_info=True
+            )
 
     return create_sse_response(event_stream())
 
 
 class AddTextBody(BaseModel):
     """Request body for add_text endpoint."""
+
     message: str = Field(min_length=1)
 
 
@@ -188,39 +195,35 @@ async def add_text(
 
     # Retrieve conversations from Redis
     try:
-        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
+        conversations = Conversations.from_session(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
     # Add user message to both conversations
     user_message = UserMessage(content=args.message)
-    conv_a_dict["messages"].append(user_message.model_dump())
-    conv_b_dict["messages"].append(user_message.model_dump())
+    conversations.conversation_a.messages.append(user_message)
+    conversations.conversation_b.messages.append(user_message)
 
     # Update in Redis
-    update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
+    conversations.store_to_session(session_hash)
 
     # Stream responses
     async def event_stream():
-        async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
+        async for chunk in stream_both_responses(conversations, request):
             yield chunk
 
-        # After streaming completes, archive conversation to database
-        try:
-            # Retrieve updated conversations from Redis (after bot responses)
-            conv_a_updated, conv_b_updated, meta = retrieve_session_conversations(session_hash)
+        # After streaming completes, archive conversation to Redis and database
+        conversations.store_to_session(session_hash)
 
+        try:
             conversation_record = record_conversations(
-                conversations=Conversations(
-                    conversation_a=deserialize_conversation_from_redis(conv_a_updated),
-                    conversation_b=deserialize_conversation_from_redis(conv_b_updated),
-                ),
+                conversations=conversations,
                 session_hash=session_hash,
                 request=request,
-                mode=meta.get("mode"),
-                category=meta.get("category"),
             )
-            logger.info(f"[ADD_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}")
+            logger.info(
+                f"[ADD_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
+            )
         except Exception as e:
             # Log error but don't fail the streaming
             logger.error(f"[ADD_TEXT] Error archiving conversation: {e}", exc_info=True)
@@ -252,42 +255,47 @@ async def retry(
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(session_hash)
+        conversations = Conversations.from_session(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
+    conv_a = conversations.conversation_a
+    conv_b = conversations.conversation_b
     # Remove last assistant messages
-    conv_a_dict["messages"] = [
-        msg for msg in conv_a_dict["messages"] if msg.get("role") != "assistant"
-    ]
-    conv_b_dict["messages"] = [
-        msg for msg in conv_b_dict["messages"] if msg.get("role") != "assistant"
-    ]
+    if isinstance(conv_a.messages[-1], AssistantMessage) and isinstance(
+        conv_b.messages[-1], AssistantMessage
+    ):
+        conv_a.messages = conv_a.messages[:-1]
+        conv_b.messages = conv_b.messages[:-1]
+
+    if not (
+        isinstance(conv_a.messages[-1], UserMessage)
+        and isinstance(conv_b.messages[-1], UserMessage)
+    ):
+        raise Exception(
+            "Il n'est pas possible de réessayer, veuillez recharger la page."
+        )
 
     # Update in Redis
-    update_session_conversations(session_hash, conv_a_dict, conv_b_dict)
+    conversations.store_to_session(session_hash)
 
     # Re-stream responses
     async def event_stream():
-        async for chunk in stream_both_responses(conv_a_dict, conv_b_dict, request):
+        async for chunk in stream_both_responses(conversations, request):
             yield chunk
 
-        # After streaming completes, archive conversation to database
-        try:
-            # Retrieve updated conversations from Redis (after bot responses)
-            conv_a_updated, conv_b_updated, meta = retrieve_session_conversations(session_hash)
+        # After streaming completes, archive conversation to Redis and database
+        conversations.store_to_session(session_hash)
 
+        try:
             conversation_record = record_conversations(
-                conversations=Conversations(
-                    conversation_a=deserialize_conversation_from_redis(conv_a_updated),
-                    conversation_b=deserialize_conversation_from_redis(conv_b_updated),
-                ),
+                conversations=conversations,
                 session_hash=session_hash,
                 request=request,
-                mode=meta.get("mode"),
-                category=meta.get("category"),
             )
-            logger.info(f"[RETRY] Archived conversation: {conversation_record['conversation_pair_id']}")
+            logger.info(
+                f"[RETRY] Archived conversation: {conversation_record['conversation_pair_id']}"
+            )
         except Exception as e:
             # Log error but don't fail the streaming
             logger.error(f"[RETRY] Error archiving conversation: {e}", exc_info=True)
