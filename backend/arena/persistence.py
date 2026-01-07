@@ -303,9 +303,11 @@ def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
 
 def upsert_conv_to_db(data: dict) -> dict:
     """
-    UPSERT a conversation to the database.
+    Insert or update a conversation record in PostgreSQL using UPSERT.
 
-    Uses ON CONFLICT to update existing conversations or insert new ones.
+    Allows conversation data to be updated as users continue chatting.
+    Uses conversation_pair_id as the unique key. Updates token counts and
+    message histories while preserving other metadata.
 
     Args:
         data: Conversation data dict with all fields
@@ -315,6 +317,12 @@ def upsert_conv_to_db(data: dict) -> dict:
 
     Raises:
         psycopg2.Error: If database operation fails
+
+    Database Operation:
+        - Key: conversation_pair_id (text, unique)
+        - On conflict: Updates message histories and token counts
+        - On conflict: Updates country_portal only if EXCLUDED value exists
+        - Preserves initial timestamps on updates
     """
     conn = None
     cursor = None
@@ -324,72 +332,75 @@ def upsert_conv_to_db(data: dict) -> dict:
         cursor = conn.cursor()
 
         # SQL UPSERT for conversations table
+        # FIXME add tstamp?
+
         upsert_query = sql.SQL(
             """
             INSERT INTO conversations (
-                conversation_pair_id,
-                session_hash,
-                ip_address,
-                matomo_visitor_id,
-                tstamp,
-                category,
-                mode,
-                opening_msg,
-                is_unedited_prompt,
-                conv_turns,
-                model_a,
-                model_b,
-                model_a_tokens,
-                model_b_tokens,
+                model_a_name,
+                model_b_name,
                 conversation_a,
-                conversation_b
-            ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                conversation_b,
+                conv_turns,
+                system_prompt_a,
+                system_prompt_b,
+                conversation_pair_id,
+                conv_a_id,
+                conv_b_id,
+                session_hash,
+                visitor_id,
+                ip,
+                model_pair_name,
+                opening_msg,
+                selected_category,
+                is_unedited_prompt,
+                mode,
+                custom_models_selection,
+                total_conv_a_output_tokens,
+                total_conv_b_output_tokens,
+                country_portal,
+                cohorts
+            )
+            VALUES (
+                %(model_a_name)s,
+                %(model_b_name)s,
+                %(conversation_a)s,
+                %(conversation_b)s,
+                %(conv_turns)s,
+                %(system_prompt_a)s,
+                %(system_prompt_b)s,
+                %(conversation_pair_id)s,
+                %(conv_a_id)s,
+                %(conv_b_id)s,
+                %(session_hash)s,
+                %(visitor_id)s,
+                %(ip)s,
+                %(model_pair_name)s,
+                %(opening_msg)s,
+                %(selected_category)s,
+                %(is_unedited_prompt)s,
+                %(mode)s,
+                %(custom_models_selection)s,
+                %(total_conv_a_output_tokens)s,
+                %(total_conv_b_output_tokens)s,
+                %(country_portal)s,
+                %(cohorts)s
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
-                conv_turns = EXCLUDED.conv_turns,
-                model_a_tokens = EXCLUDED.model_a_tokens,
-                model_b_tokens = EXCLUDED.model_b_tokens,
+                country_portal =  coalesce(EXCLUDED.country_portal, conversations.country_portal),
                 conversation_a = EXCLUDED.conversation_a,
                 conversation_b = EXCLUDED.conversation_b,
-                tstamp = EXCLUDED.tstamp,
-                matomo_visitor_id = EXCLUDED.matomo_visitor_id
-        """
+                conv_turns = EXCLUDED.conv_turns,
+                total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
+                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
+                cohorts = EXCLUDED.cohorts
+                """
         )
 
-        cursor.execute(
-            upsert_query,
-            (
-                data["conversation_pair_id"],
-                data["session_hash"],
-                data.get("ip_address"),
-                data.get("matomo_visitor_id"),
-                data["tstamp"],
-                data.get("category"),
-                data.get("mode"),
-                data.get("opening_msg"),
-                data.get("is_unedited_prompt"),
-                data.get("conv_turns"),
-                data.get("model_a"),
-                data.get("model_b"),
-                data.get("model_a_tokens"),
-                data.get("model_b_tokens"),
-                json.dumps(data.get("conversation_a")),
-                json.dumps(data.get("conversation_b")),
-            ),
-        )
-
+        cursor.execute(upsert_query, data)
         conn.commit()
         logger.info(f"[DB] Upserted conversation {data['conversation_pair_id']}")
-
-        # Write JSON backup file (OVERWRITE mode for conversations)
-        filename = f"conv-{data['conversation_pair_id']}.json"
-        filepath = os.path.join(LOGDIR, filename)
-        with open(filepath, "w") as f:
-            f.write(json.dumps(data, indent=2) + "\n")
-
-        return data
 
     except psycopg2.Error as e:
         logger.error(f"[DB] Error upserting conversation: {e}", exc_info=True)
@@ -402,6 +413,8 @@ def upsert_conv_to_db(data: dict) -> dict:
             cursor.close()
         if conn:
             conn.close()
+
+    return data
 
 
 # ============================================================================
@@ -634,86 +647,87 @@ def record_conversations(
     conversations: Conversations,
     session_hash: str,
     request: Request,
+    locale: str,
+    cohorts_comma_separated: str,
+    custom_models_selection: tuple[str] | tuple[str, str] | None,
 ) -> dict:
     """
-    Record/update a conversation pair to the database.
-
-    This archives the full conversation state after each turn.
+    Record or update the conversation pair to database and JSON log files after each turn.
 
     Args:
         conversations: Conversations object with both conversation_a and conversation_b
         session_hash: Session identifier
         request: FastAPI Request for IP and cookies
-        mode: Model selection mode (from session metadata)
-        category: Prompt category (from session metadata)
+        locale: Country portal code (e.g., "fr", "en") - optional
+        cohorts_comma_separated: Liste de nom de cohorts sous for de str comma separated ou None
 
     Returns:
         dict: The saved conversation record
+
+    Process:
+        1. Extract messages from both conversations
+        2. Get opening prompt (skip system prompt if present)
+        3. Count conversation turns
+        4. Determine category and mode from app state
+        5. Calculate total output tokens for each model
+        6. Write JSON log file (full overwrite)
+        7. Call upsert_conv_to_db() for database
     """
+    from datetime import datetime
+
+    from backend.arena.utils import messages_to_dict_list
+
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
 
-    # Extract conversation IDs
-    conv_a_id = conv_a.conv_id
-    conv_b_id = conv_b.conv_id
-    conversation_pair_id = f"{conv_a_id}-{conv_b_id}"
+    conversation_a_messages = messages_to_dict_list(conv_a.messages)
+    conversation_b_messages = messages_to_dict_list(conv_b.messages)
 
-    # Get user context
-    ip_address = get_ip(request)
-    matomo_visitor_id = get_matomo_tracker_from_cookies(request.cookies)
+    model_pair_name = sorted([conv_a.model_name, conv_b.model_name])
 
-    # Get opening message
-    opening_msg = None
-    for msg in conv_a.messages:
-        if msg.role == "user":
-            opening_msg = msg.content
-            break
-
-    # Count turns
+    opening_msg = conv_a.messages[1 if conv_a.has_system_msg else 0]
     conv_turns = count_turns(conv_a.messages)
+    t = datetime.now()  # FIXME
 
-    # Calculate tokens
-    model_a_tokens = sum_tokens(conv_a.messages)
-    model_b_tokens = sum_tokens(conv_b.messages)
+    conv_pair_id = conv_a.conv_id + "-" + conv_b.conv_id
 
-    # Serialize conversations to dicts
-    from backend.arena.utils import messages_to_dict_list
-
-    conversation_a_dict = {
-        "conv_id": conv_a_id,
-        "model_name": conv_a.model_name,
-        "messages": messages_to_dict_list(conv_a.messages),
-    }
-
-    conversation_b_dict = {
-        "conv_id": conv_b_id,
-        "model_name": conv_b.model_name,
-        "messages": messages_to_dict_list(conv_b.messages),
-    }
-
-    # Build conversation data dict
     data = {
-        "conversation_pair_id": conversation_pair_id,
-        "session_hash": session_hash,
-        "ip_address": ip_address,
-        "matomo_visitor_id": matomo_visitor_id,
-        "tstamp": datetime.now().isoformat(),
-        "category": conversations.category,
-        "mode": conversations.mode,
-        "opening_msg": opening_msg,
-        "is_unedited_prompt": (
-            is_unedited_prompt(opening_msg, conversations.category)
-            if opening_msg and conversations.category
-            else False
-        ),
+        "selected_category": conversations.category,
+        "is_unedited_prompt": (is_unedited_prompt(opening_msg, conversations.category)),
+        "model_a_name": conv_a.model_name,
+        "model_b_name": conv_b.model_name,
+        "opening_msg": conv_a.opening_msg,
+        "conversation_a": json.dumps(conversation_a_messages),
+        "conversation_b": json.dumps(conversation_b_messages),
         "conv_turns": conv_turns,
-        "model_a": conv_a.model_name,
-        "model_b": conv_b.model_name,
-        "model_a_tokens": model_a_tokens,
-        "model_b_tokens": model_b_tokens,
-        "conversation_a": conversation_a_dict,
-        "conversation_b": conversation_b_dict,
+        "system_prompt_a": conv_a.system_msg,
+        "system_prompt_b": conv_b.system_msg,
+        "conversation_pair_id": conv_pair_id,
+        "conv_a_id": conv_a.conv_id,
+        "conv_b_id": conv_b.conv_id,
+        "session_hash": session_hash,
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "model_pair_name": model_pair_name,
+        "mode": conversations.mode,
+        "custom_models_selection": json.dumps(custom_models_selection),
+        "total_conv_a_output_tokens": sum_tokens(conv_a.messages),
+        "total_conv_b_output_tokens": sum_tokens(conv_b.messages),
+        "country_portal": locale,
+        "cohorts": cohorts_comma_separated,
     }
 
-    # Save to database
-    return upsert_conv_to_db(data)
+    logger = logging.getLogger("languia")
+    logger.debug(
+        f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}"
+    )
+
+    conv_log_filename = f"conv-{conv_pair_id}.json"
+    conv_log_path = os.path.join(LOGDIR, conv_log_filename)
+
+    # Always rewrite the file
+    with open(conv_log_path, "w") as fout:
+        fout.write(json.dumps(data) + "\n")
+
+    return upsert_conv_to_db(data=data)
