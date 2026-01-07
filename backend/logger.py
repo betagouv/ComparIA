@@ -23,6 +23,7 @@ class FrontendLogRequest(BaseModel):
         session_hash: User session identifier
         user_agent: Browser user agent string
     """
+
     level: str
     message: str
     session_hash: str | None = None
@@ -138,7 +139,9 @@ class PostgresHandler(logging.Handler):
                         session_hash = getattr(record.request, "session_hash", None)
                         values["query_params"] = json.dumps(query_params)
                         values["path_params"] = json.dumps(path_params)
-                        values["session_hash"] = str(session_hash) if session_hash else ""
+                        values["session_hash"] = (
+                            str(session_hash) if session_hash else ""
+                        )
                     else:
                         values["query_params"] = "{}"
                         values["path_params"] = "{}"
