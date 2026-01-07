@@ -12,17 +12,16 @@ import time
 
 from litellm.litellm_core_utils.token_counter import token_counter
 
+from backend.arena.litellm import litellm_stream_iter
 from backend.arena.models import (
+    AnyMessage,
+    AssistantMessage,
     ChatMessage,
     Conversation,
     SystemMessage,
     UserMessage,
-    AssistantMessage,
-    AnyMessage,
 )
-from backend.arena.litellm import litellm_stream_iter
 from backend.arena.utils import EmptyResponseError, get_api_key, messages_to_dict_list
-
 
 logger = logging.getLogger("languia")
 
@@ -104,14 +103,14 @@ def chatmessage_to_anymessage(msg: ChatMessage) -> AnyMessage:
 
 
 def update_last_message(
-    messages,
+    messages: list[AnyMessage],
     text,
     position,
     output_tokens=None,
     generation_id=None,
     duration=0,
     reasoning=None,
-):
+) -> list[AnyMessage]:
     """
     Update or create the last message in a conversation with model response data.
 
@@ -139,17 +138,16 @@ def update_last_message(
     }
 
     # Create new message if the last message is from user or list is empty
-    if not messages or messages[-1].role == "user":
-        return messages + [
-            ChatMessage(
-                role="assistant", content=text, metadata=metadata, reasoning=reasoning
-            )
-        ]
+    if not isinstance(messages[-1], AssistantMessage):
+        messages.append(
+            AssistantMessage(content=text, metadata=metadata, reasoning=reasoning)
+        )
+        return messages
 
     # Update existing message with streaming chunks
     last_message = messages[-1]
     last_message.content = text
-    last_message.metadata = {**last_message.metadata, **metadata}
+    last_message.metadata = {**last_message.metadata.model_dump(), **metadata}
     if reasoning is not None:
         last_message.reasoning = reasoning
 
@@ -206,12 +204,6 @@ async def bot_response_async(
     # Track generation start time for performance metrics
     start_tstamp = time.time()
 
-    # Convert AnyMessage (Pydantic) → ChatMessage (dataclass) for flexible streaming
-    chat_messages = [anymessage_to_chatmessage(msg) for msg in state.messages]
-
-    # Convert ChatMessage objects to dict format for API calls
-    messages_dict = messages_to_dict_list(chat_messages)
-
     # Build LiteLLM model identifier (e.g., "openai/gpt-4", "google/gemini-pro")
     api_type = endpoint.api_type if hasattr(endpoint, "api_type") else "openai"
     api_model_id = endpoint.api_model_id if hasattr(endpoint, "api_model_id") else state.model_name
@@ -228,7 +220,9 @@ async def bot_response_async(
     # Initialize streaming iterator from LiteLLM
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
-        messages=messages_dict,
+        messages=[
+            msg.model_dump(include={"role", "content"}) for msg in state.messages
+        ],  # Only pass supported message args 'role' and 'content'
         temperature=temperature,
         api_key=api_key,
         api_base=api_base,
@@ -258,28 +252,15 @@ async def bot_response_async(
         if output or reasoning:
             output.strip()
             # Update chat_messages (ChatMessage list) with partial response
-            chat_messages = update_last_message(
-                messages=chat_messages,
+            update_last_message(
+                messages=state.messages,
                 text=output,
                 position=position,
                 output_tokens=output_tokens,
                 generation_id=generation_id,
                 reasoning=reasoning,
             )
-
-            # Convert back to AnyMessage and yield Conversation
-            try:
-                any_messages = [chatmessage_to_anymessage(msg) for msg in chat_messages]
-                updated_state = Conversation(
-                    conv_id=state.conv_id,
-                    model_name=state.model_name,
-                    endpoint=state.endpoint,
-                    messages=any_messages,
-                )
-                yield updated_state
-            except ValueError:
-                # During streaming, metadata may be incomplete, skip this yield
-                pass
+            yield state
 
     # Log generation ID for API debugging
     if generation_id:
@@ -314,8 +295,8 @@ async def bot_response_async(
         output_tokens = token_counter(text=[reasoning, output], model=state.model_name)
 
     # Final update with complete response and timing data
-    chat_messages = update_last_message(
-        messages=chat_messages,
+    update_last_message(
+        messages=state.messages,
         text=output,
         position=position,
         output_tokens=output_tokens,
@@ -323,14 +304,4 @@ async def bot_response_async(
         reasoning=reasoning,
     )
 
-    # Convert final ChatMessage list to AnyMessage and create final Conversation
-    any_messages = [chatmessage_to_anymessage(msg) for msg in chat_messages]
-    final_state = Conversation(
-        conv_id=state.conv_id,
-        model_name=state.model_name,
-        endpoint=state.endpoint,
-        messages=any_messages,
-    )
-
-    # Final yield with complete response
-    yield final_state
+    yield state

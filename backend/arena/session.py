@@ -35,35 +35,19 @@ def create_session() -> str:
     return str(uuid4())
 
 
-def store_session_conversations(
-    session_hash: str,
-    conv_a: dict,
-    conv_b: dict,
-    mode: str | None = None,
-    category: str | None = None,
-) -> None:
+def store_session_conversations(session_hash: str, data: dict) -> None:
     """
     Store conversation pair with metadata in Redis for an active session.
 
     Args:
         session_hash: Unique session identifier
-        conv_a: First conversation state (dict with messages, model_name, etc.)
-        conv_b: Second conversation state (dict with messages, model_name, etc.)
-        mode: Model selection mode (e.g., "random", "big-vs-small")
-        category: Prompt category (e.g., "writing", "coding")
+        data: serialized conversations data (see Conversations.store_to_session)
 
     Note:
         Session expires after 24 hours
     """
     from datetime import datetime
 
-    data = {
-        "conv_a": conv_a,
-        "conv_b": conv_b,
-        "mode": mode,
-        "category": category,
-        "created_at": datetime.now().isoformat(),
-    }
     expire_time = 86400  # 24 hours
 
     try:
@@ -76,7 +60,7 @@ def store_session_conversations(
 
 def retrieve_session_conversations(
     session_hash: str,
-) -> Tuple[dict, dict, dict]:
+) -> dict:
     """
     Retrieve conversation pair and metadata from Redis.
 
@@ -96,17 +80,10 @@ def retrieve_session_conversations(
             logger.warning(f"[SESSION] Session not found: {session_hash}")
             raise ValueError(f"Session not found: {session_hash}")
 
-        parsed = json.loads(data)
+        # parsed = json.loads(data)
         logger.info(f"[SESSION] Retrieved conversations for {session_hash}")
 
-        # Extract metadata
-        metadata = {
-            "mode": parsed.get("mode"),
-            "category": parsed.get("category"),
-            "created_at": parsed.get("created_at"),
-        }
-
-        return (parsed["conv_a"], parsed["conv_b"], metadata)
+        return json.loads(data)
 
     except json.JSONDecodeError as e:
         logger.error(f"[SESSION] Error decoding session data: {e}")

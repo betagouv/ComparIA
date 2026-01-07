@@ -35,27 +35,16 @@ async def stream_bot_response(
         data: {"type": "error", "error": "error message"}
     """
     from backend.arena.conversation import bot_response_async
-    from backend.arena.utils import deserialize_conversation_from_redis
     from backend.utils.user import get_ip
 
     try:
-        # Reconstruct Conversation (Pydantic) from Redis state dict
-        conv = deserialize_conversation_from_redis(conv_state)
-
         # Get IP from request for logging
         ip = get_ip(request)
 
         # Stream responses from bot_response_async generator
         async for updated_state in bot_response_async(position, conv, ip):
             # Serialize Pydantic messages to dicts for JSON response
-            messages = []
-            for msg in updated_state.messages:
-                msg_dict = msg.model_dump()
-                # For assistant messages, serialize metadata properly
-                if hasattr(msg, "metadata") and msg.metadata:
-                    if hasattr(msg.metadata, "model_dump"):
-                        msg_dict["metadata"] = msg.metadata.model_dump()
-                messages.append(msg_dict)
+            messages = [msg.model_dump() for msg in updated_state.messages]
 
             chunk = {"type": "chunk", "messages": messages}
             yield f"data: {json.dumps(chunk)}\n\n"
@@ -70,7 +59,7 @@ async def stream_bot_response(
 
 
 async def stream_both_responses(
-    conv_a: dict, conv_b: dict, request: Any
+    conversations: Conversations, request: Any
 ) -> AsyncIterator[str]:
     """
     Stream both model responses in parallel using Server-Sent Events.
@@ -97,8 +86,8 @@ async def stream_both_responses(
 
     try:
         # Create async generators for both models
-        gen_a = stream_bot_response("a", conv_a, request)
-        gen_b = stream_bot_response("b", conv_b, request)
+        gen_a = stream_bot_response("a", conversations.conversation_a, request)
+        gen_b = stream_bot_response("b", conversations.conversation_b, request)
 
         # Track state from both generators
         last_a = None

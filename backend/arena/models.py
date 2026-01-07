@@ -5,13 +5,21 @@ Defines all data structures for:
 - Conversation data (messages, participant info, metadata)
 """
 
-import datetime
 from dataclasses import dataclass, field
-from typing import Any, Literal, Optional
+from datetime import datetime
+from typing import Annotated, Any, Literal, Optional
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, RootModel, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PlainSerializer,
+    RootModel,
+    model_validator,
+)
 
+from backend.config import SelectionMode
 from backend.language_models.models import Endpoint, LanguageModel
 
 
@@ -75,13 +83,16 @@ class AssistantMessage(BaseMessage):
     class AssistantMessageMetadata(BaseModel):
         generation_id: str
         bot: Literal["a", "b"]
-        output_tokens: int
+        output_tokens: int | None = None  # FIXME required?
         duration: float | None = None
 
     role: Literal["assistant"] = "assistant"
     error: str | None = None
     reasoning: str | None = None
     metadata: AssistantMessageMetadata
+
+    # use assignment validation since messages are updated gradually
+    model_config = ConfigDict(validate_assignment=True)
 
 
 # Union type for any message
@@ -163,8 +174,22 @@ class Conversations(BaseModel):
     Paired conversations for arena comparison.
 
     Wraps two Conversation objects for type-safe handling.
+
+    Args:
+        session_hash: Unique session identifier
+        conv_a: First conversation state (dict with messages, model_name, etc.)
+        conv_b: Second conversation state (dict with messages, model_name, etc.)
+        mode: Model selection mode (e.g., "random", "big-vs-small")
+        category: Prompt category (e.g., "writing", "coding")
+
+
     """
 
+    created_at: Annotated[datetime, PlainSerializer(lambda v: v.isoformat())] = Field(
+        default_factory=datetime.now
+    )
+    mode: SelectionMode
+    category: str | None = None
     conversation_a: Conversation
     conversation_b: Conversation
 
@@ -190,14 +215,20 @@ class Conversations(BaseModel):
 
 
 def create_conversations(
-    llm_a: LanguageModel, llm_b: LanguageModel, user_prompt: str
+    llm_a: LanguageModel,
+    llm_b: LanguageModel,
+    user_prompt: str,
+    mode: SelectionMode,
+    category: str | None = None,
 ) -> Conversations:
     """Create paired conversations for arena comparison."""
     user_msg = UserMessage(content=user_prompt)
     conv_a = create_conversation(llm_a, user_msg)
     conv_b = create_conversation(llm_b, user_msg)
 
-    return Conversations(conversation_a=conv_a, conversation_b=conv_b)
+    return Conversations(
+        conversation_a=conv_a, conversation_b=conv_b, mode=mode, category=category
+    )
 
 
 # Database model (renamed from Conversation to avoid collision)

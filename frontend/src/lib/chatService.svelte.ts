@@ -233,18 +233,12 @@ export async function runChatBots(args: APIModeAndPromptData) {
  * Messages are deduplicated by role and content.
  */
 function mergeMessages(messagesA: any[], messagesB: any[]): APIChatMessage[] {
-  const seen = new Set<string>()
-  const merged: APIChatMessage[] = []
-
-  for (const msg of [...messagesA, ...messagesB]) {
-    const key = `${msg.role}:${msg.content}:${msg.metadata?.bot || ''}`
-    if (!seen.has(key)) {
-      seen.add(key)
-      merged.push(msg)
-    }
-  }
-
-  return merged
+  return messagesA
+    .map((m, i) => {
+      if (m.role === 'user') return m
+      return [m, messagesB[i]]
+    })
+    .flat()
 }
 
 export async function askChatBots(text: string) {
