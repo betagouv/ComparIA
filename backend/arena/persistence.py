@@ -62,7 +62,8 @@ def save_vote_to_db(data: dict) -> dict:
         cursor = conn.cursor()
 
         # SQL INSERT for votes table
-        insert_query = sql.SQL("""
+        insert_query = sql.SQL(
+            """
             INSERT INTO votes (
                 conversation_pair_id,
                 chosen_model,
@@ -86,7 +87,8 @@ def save_vote_to_db(data: dict) -> dict:
             ) VALUES (
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
             )
-        """)
+        """
+        )
 
         cursor.execute(
             insert_query,
@@ -161,7 +163,8 @@ def upsert_reaction_to_db(data: dict) -> dict:
         cursor = conn.cursor()
 
         # SQL UPSERT for reactions table
-        upsert_query = sql.SQL("""
+        upsert_query = sql.SQL(
+            """
             INSERT INTO reactions (
                 refers_to_conv_id,
                 msg_index,
@@ -189,7 +192,8 @@ def upsert_reaction_to_db(data: dict) -> dict:
                 reaction_type = EXCLUDED.reaction_type,
                 tstamp = EXCLUDED.tstamp,
                 matomo_visitor_id = EXCLUDED.matomo_visitor_id
-        """)
+        """
+        )
 
         cursor.execute(
             upsert_query,
@@ -263,10 +267,12 @@ def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        delete_query = sql.SQL("""
+        delete_query = sql.SQL(
+            """
             DELETE FROM reactions
             WHERE refers_to_conv_id = %s AND msg_index = %s
-        """)
+        """
+        )
 
         cursor.execute(delete_query, (refers_to_conv_id, msg_index))
         deleted_count = cursor.rowcount
@@ -276,7 +282,11 @@ def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
             f"[DB] Deleted reaction for {refers_to_conv_id} msg_index={msg_index} (count={deleted_count})"
         )
 
-        return {"deleted": deleted_count, "refers_to_conv_id": refers_to_conv_id, "msg_index": msg_index}
+        return {
+            "deleted": deleted_count,
+            "refers_to_conv_id": refers_to_conv_id,
+            "msg_index": msg_index,
+        }
 
     except psycopg2.Error as e:
         logger.error(f"[DB] Error deleting reaction: {e}", exc_info=True)
@@ -314,7 +324,8 @@ def upsert_conv_to_db(data: dict) -> dict:
         cursor = conn.cursor()
 
         # SQL UPSERT for conversations table
-        upsert_query = sql.SQL("""
+        upsert_query = sql.SQL(
+            """
             INSERT INTO conversations (
                 conversation_pair_id,
                 session_hash,
@@ -344,7 +355,8 @@ def upsert_conv_to_db(data: dict) -> dict:
                 conversation_b = EXCLUDED.conversation_b,
                 tstamp = EXCLUDED.tstamp,
                 matomo_visitor_id = EXCLUDED.matomo_visitor_id
-        """)
+        """
+        )
 
         cursor.execute(
             upsert_query,
@@ -398,7 +410,11 @@ def upsert_conv_to_db(data: dict) -> dict:
 
 
 def record_vote(
-    conversations: Conversations, vote_data: Any, request: Request, mode: str | None = None, category: str | None = None
+    conversations: Conversations,
+    vote_data: Any,
+    request: Request,
+    mode: str | None = None,
+    category: str | None = None,
 ) -> dict:
     """
     Record a vote to the database with all metadata.
@@ -464,7 +480,11 @@ def record_vote(
         "category": category,
         "mode": mode,
         "opening_msg": opening_msg,
-        "is_unedited_prompt": is_unedited_prompt(opening_msg, category) if opening_msg and category else False,
+        "is_unedited_prompt": (
+            is_unedited_prompt(opening_msg, category)
+            if opening_msg and category
+            else False
+        ),
         "positive_a": vote_data.positive_a_output,
         "positive_b": vote_data.positive_b_output,
         "negative_a": vote_data.negative_a_output,
@@ -596,9 +616,11 @@ def record_reaction(
         "category": category,
         "mode": mode,
         "opening_msg": opening_msg,
-        "is_unedited_prompt": is_unedited_prompt(opening_msg, category)
-        if opening_msg and category
-        else False,
+        "is_unedited_prompt": (
+            is_unedited_prompt(opening_msg, category)
+            if opening_msg and category
+            else False
+        ),
         "conv_turns": conv_turns,
         "user_message": user_message,
         "bot_message": bot_message,
