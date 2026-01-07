@@ -422,9 +422,7 @@ async def vote(
 
     # Retrieve conversations
     try:
-        conv_a_dict, conv_b_dict, metadata = retrieve_session_conversations(
-            session_hash
-        )
+        conversations = Conversations.from_session(session_hash)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -434,14 +432,10 @@ async def vote(
     # Save vote to database with all preferences
     try:
         vote_record = record_vote(
-            conversations=Conversations(
-                conversation_a=deserialize_conversation_from_redis(conv_a_dict),
-                conversation_b=deserialize_conversation_from_redis(conv_b_dict),
-            ),
-            vote_data=vote_data,
+            conversations=conversations,
+            vote=vote_data,
+            session_hash=session_hash,
             request=request,
-            mode=metadata.get("mode"),
-            category=metadata.get("category"),
         )
         logger.info(f"[VOTE] Saved to database: {vote_record['conversation_pair_id']}")
     except Exception as e:
@@ -451,9 +445,7 @@ async def vote(
     # Build reveal data with environmental impact
     from backend.arena.reveal import build_reveal_dict
 
-    reveal_data = build_reveal_dict(
-        conv_a_dict, conv_b_dict, vote_data.which_model_radio_output
-    )
+    reveal_data = build_reveal_dict(conversations, vote_data.which_model_radio_output)
 
     return reveal_data
 
