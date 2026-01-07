@@ -90,6 +90,7 @@ class AssistantMessage(BaseMessage):
     error: str | None = None
     reasoning: str | None = None
     metadata: AssistantMessageMetadata
+    reaction: dict | None = None  # FIXME type
 
     # use assignment validation since messages are updated gradually
     model_config = ConfigDict(validate_assignment=True)
@@ -241,7 +242,7 @@ class ConversationRecord(BaseModel):
     """
 
     id: int
-    timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    timestamp: datetime = Field(default_factory=datetime.now)
     model_a_name: str
     model_b_name: str
     conversation_a: ConversationMessages

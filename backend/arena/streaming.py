@@ -10,11 +10,13 @@ from typing import Any, AsyncIterator, Literal
 
 from fastapi.responses import StreamingResponse
 
+from backend.arena.models import Conversation, Conversations
+
 logger = logging.getLogger("languia")
 
 
 async def stream_bot_response(
-    position: Literal["a", "b"], conv_state: dict, request: Any
+    position: Literal["a", "b"], conv: Conversation, request: Any
 ) -> AsyncIterator[str]:
     """
     Stream a single bot response using Server-Sent Events format.
