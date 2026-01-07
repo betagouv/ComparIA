@@ -90,7 +90,7 @@ class AssistantMessage(BaseMessage):
     error: str | None = None
     reasoning: str | None = None
     metadata: AssistantMessageMetadata
-    reaction: dict | None = None  # FIXME type
+    reaction: "ReactionData" | None = None
 
     # use assignment validation since messages are updated gradually
     model_config = ConfigDict(validate_assignment=True)
@@ -317,10 +317,22 @@ class RetryRequest(BaseModel):
     session_hash: str
 
 
+class ReactionData(BaseModel):
+    bot: Literal["a", "b"]
+    index: int
+    value: str
+    liked: bool | None
+    prefs: (
+        Literal["useful", "complete", "creative", "clear-formatting"]
+        | Literal["incorrect", "superficial", "instructions-not-followed"]
+    )
+    comment: str | None
+
+
 class ReactRequest(BaseModel):
     """Request body for updating message reactions."""
 
-    reaction_json: dict[str, Any]  # Reaction data with index, liked, prefs, comment
+    reaction_json: ReactionData
 
 
 class VoteRequest(BaseModel):

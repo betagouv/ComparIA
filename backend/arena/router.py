@@ -347,8 +347,8 @@ async def react(
         raise HTTPException(status_code=404, detail=str(e))
 
     # Extract reaction index and data
-    reaction_index = react_data.reaction_json.get("index")
-    reaction_bot = react_data.reaction_json.get("bot")
+    reaction_index = react_data.reaction_json.index
+    reaction_bot = react_data.reaction_json.bot
     if reaction_index is None:
         raise HTTPException(status_code=400, detail="Missing reaction index")
 
@@ -362,9 +362,8 @@ async def react(
     )
 
     # FIXME try
-    message = conv.messages[
-        reaction_index if not conv.has_system_msg else reaction_index + 1
-    ]
+    msg_index = reaction_index if not conv.has_system_msg else reaction_index + 1
+    message = conv.messages[msg_index]
     message.reaction = react_data.reaction_json
 
     # Update in Redis
@@ -372,15 +371,14 @@ async def react(
 
     # Save reaction to database
     try:
-        pass
-        # FIXME rework db recording
-        # reaction_record = record_reaction(
-        #     conversations=conversations,
-        #     reaction_data=react_data.reaction_json,
-        #     session_hash=session_hash,
-        #     request=request,
-        # )
-        # logger.info(f"[REACT] Saved to database: {reaction_record}")
+        reaction_record = record_reaction(
+            conversations=conversations,
+            reaction=react_data.reaction_json,
+            msg_index=msg_index,
+            session_hash=session_hash,
+            request=request,
+        )
+        logger.info(f"[REACT] Saved to database: {reaction_record}")
     except Exception as e:
         # Log error but don't fail the request
         logger.error(f"[REACT] Error saving to database: {e}", exc_info=True)
