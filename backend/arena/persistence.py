@@ -14,12 +14,14 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, Annotated, Any
 
 import psycopg2
 from fastapi import Request
 from psycopg2 import sql
+from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer, model_serializer
 
-from backend.arena.models import Conversations, ReactionData, VoteRequest
+from backend.arena.models import Conversations, MessageRole, ReactionData, VoteRequest
 from backend.arena.utils import (
     count_turns,
     get_matomo_tracker_from_cookies,
@@ -27,10 +29,16 @@ from backend.arena.utils import (
     messages_to_dict_list,
     sum_tokens,
 )
-from backend.config import settings
+from backend.config import CountryCode, SelectionMode, settings
 from backend.utils.user import get_ip
 
+if TYPE_CHECKING:
+    from pydantic import SerializerFunctionWrapHandler
+
 logger = logging.getLogger("languia")
+
+JSONSerializer = PlainSerializer(lambda v: json.dumps(v))
+JSONModelSerializer = WrapSerializer(lambda v, handler: json.dumps(handler(v)))
 
 
 def get_db_connection():
@@ -759,6 +767,102 @@ def record_reaction(
     return data
 
 
+class ConversationMessageRecord(BaseModel):
+    class MessageMetadata(BaseModel):
+        generation_id: str | None
+        output_tokens: int | None
+        duration: float | None
+
+        # FIXME remove in favor of Field(exclude_if=lambda v: v is None)
+        @model_serializer(mode="wrap")
+        def serialize_model(self, handler: "SerializerFunctionWrapHandler") -> str:
+            serialized = handler(self)
+
+            if self.generation_id is None:
+                serialized.pop("generation_id")
+            if self.duration in (None, 0):
+                serialized.pop("duration")
+
+            return json.dumps(serialized)
+
+    role: MessageRole
+    content: str
+    reasoning_content: Annotated[str | None, Field(validation_alias="reasoning")] = None
+    metadata: MessageMetadata | None = None
+
+    # FIXME remove in favor of Field(exclude_if=lambda v: v is None)
+    @model_serializer(mode="wrap")
+    def serialize_model(self, handler: "SerializerFunctionWrapHandler") -> str:
+        serialized = handler(self)
+
+        if not self.reasoning_content:
+            serialized.pop("reasoning_content")
+        if not self.metadata:
+            serialized.pop("metadata")
+
+        return serialized
+
+
+class ConversationsRecord(BaseModel):
+    """
+    Database/logs record for a paired conversation comparison.
+
+    Stores complete conversation data from both models for PostgreSQL persistence.
+    This is the model used for database operations and post-processing.
+
+    We do not use serialization on Conversations model but define here another model
+    to make sure data is of database expected type.
+    """
+
+    # Set with database defaults, not present in logs?
+    # id: int | None = None
+    # timestamp: datetime | None = None
+    # Conversations args
+    selected_category: Annotated[str | None, Field(validation_alias="category")]
+    mode: SelectionMode
+
+    custom_models_selection: Annotated[
+        list[str] | None, JSONSerializer
+    ]  # FIXME, not sure what serialization is needed
+    is_unedited_prompt: bool
+    # General
+    conv_turns: int
+    conversation_pair_id: str
+    model_pair_name: Annotated[
+        list[str], JSONSerializer
+    ]  # FIXME, not sure what serialization is needed
+    opening_msg: str
+    # Language model pairs specific
+    model_a_name: str
+    model_b_name: str
+    conv_a_id: str
+    conv_b_id: str
+    system_prompt_a: str | None
+    system_prompt_b: str | None
+    conversation_a: Annotated[list[ConversationMessageRecord], JSONModelSerializer]
+    conversation_b: Annotated[list[ConversationMessageRecord], JSONModelSerializer]
+    total_conv_a_output_tokens: int
+    total_conv_b_output_tokens: int
+    # Identity
+    session_hash: str
+    visitor_id: str | None
+    ip: str  # FIXME | None? cf get_ip()
+    country_portal: CountryCode
+    cohorts: str  # FIXME | None?
+    # Additional? (not found in record_conversations but present in conversations.sql)
+    # archived: bool | None = None
+    # short_summary: str | None = None
+    # ip_map: str | None = None
+    # keywords: dict[str, Any] | None = None
+    # categories: dict[str, Any] | None = None
+    # languages: dict[str, Any] | None = None
+    # pii_analyzed: bool = False
+    # contains_pii: bool | None = None
+    # conversation_a_pii_removed: Any = None  # JSONB
+    # conversation_b_pii_removed: Any = None  # JSONB
+    # TODO: add 'interrupted' bool field?
+
+
 def record_conversations(
     conversations: Conversations,
     session_hash: str,
@@ -777,65 +881,37 @@ def record_conversations(
         cohorts_comma_separated: Liste de nom de cohorts sous for de str comma separated ou None
 
     Returns:
-        dict: The saved conversation record
-
-    Process:
-        1. Extract messages from both conversations
-        2. Get opening prompt (skip system prompt if present)
-        3. Count conversation turns
-        4. Determine category and mode from app state
-        5. Calculate total output tokens for each model
-        6. Write JSON log file (full overwrite)
-        7. Call upsert_conv_to_db() for database
+        dict: The saved serialized ConversationsRecord
     """
 
-    conv_a = conversations.conversation_a
-    conv_b = conversations.conversation_b
-
-    conversation_a_messages = messages_to_dict_list(conv_a.messages)
-    conversation_b_messages = messages_to_dict_list(conv_b.messages)
-
-    model_pair_name = sorted([conv_a.model_name, conv_b.model_name])
-
-    opening_msg = conv_a.messages[1 if conv_a.has_system_msg else 0]
-    conv_turns = count_turns(conv_a.messages)
     t = datetime.now()  # FIXME
-
-    conv_pair_id = conv_a.conv_id + "-" + conv_b.conv_id
-
-    data = {
-        "selected_category": conversations.category,
-        "is_unedited_prompt": (is_unedited_prompt(opening_msg, conversations.category)),
-        "model_a_name": conv_a.model_name,
-        "model_b_name": conv_b.model_name,
-        "opening_msg": conv_a.opening_msg,
-        "conversation_a": json.dumps(conversation_a_messages),
-        "conversation_b": json.dumps(conversation_b_messages),
-        "conv_turns": conv_turns,
-        "system_prompt_a": conv_a.system_msg,
-        "system_prompt_b": conv_b.system_msg,
-        "conversation_pair_id": conv_pair_id,
-        "conv_a_id": conv_a.conv_id,
-        "conv_b_id": conv_b.conv_id,
+    convs_data = conversations.model_dump() | {
         "session_hash": session_hash,
-        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
-        # Warning: IP is a PII
+        "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
         "ip": str(get_ip(request)),
-        "model_pair_name": model_pair_name,
-        "mode": conversations.mode,
-        "custom_models_selection": json.dumps(conversations.custom_models_selection),
-        "total_conv_a_output_tokens": sum_tokens(conv_a.messages),
-        "total_conv_b_output_tokens": sum_tokens(conv_b.messages),
         "country_portal": locale,
         "cohorts": cohorts_comma_separated,
     }
 
-    logger = logging.getLogger("languia")
+    for pos in {"a", "b"}:
+        conv = convs_data.pop(f"conversation_{pos}")
+        for data_key, db_key in [
+            ("model_name", "model_{}_name"),
+            ("conv_id", "conv_{}_id"),
+            ("system_msg", "system_prompt_{}"),
+            ("messages", "conversation_{}"),
+            ("tokens", "total_conv_{}_output_tokens"),
+        ]:
+            convs_data[db_key.format(pos)] = conv[data_key]
+
+    convs_record = ConversationsRecord(**convs_data)
+
     logger.debug(
-        f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}"
+        f"[COHORT] record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts_comma_separated={convs_record.cohorts}, type={type(convs_record.cohorts)}"
     )
 
-    conv_log_path = settings.LOGDIR / f"conv-{conv_pair_id}.json"
+    data = convs_record.model_dump()  # FIXME exclude_none=True
+    conv_log_path = settings.LOGDIR / f"conv-{convs_record.conversation_pair_id}.json"
     # Always rewrite the file
     conv_log_path.write_text(json.dumps(data) + "\n")
 
