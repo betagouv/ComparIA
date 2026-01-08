@@ -4,7 +4,7 @@ Module for handling conversations with AI models.
 This module manages the interaction with multiple AI models through LiteLLM,
 handling streaming responses, token counting, and message tracking.
 
-Uses Pydantic Conversation model with hybrid ChatMessage approach during streaming.
+Uses Pydantic Conversation model update and validation during streaming.
 """
 
 import logging
@@ -16,90 +16,13 @@ from backend.arena.litellm import litellm_stream_iter
 from backend.arena.models import (
     AnyMessage,
     AssistantMessage,
-    ChatMessage,
     Conversation,
     SystemMessage,
     UserMessage,
 )
-from backend.arena.utils import EmptyResponseError, get_api_key, messages_to_dict_list
+from backend.arena.utils import EmptyResponseError, get_api_key
 
 logger = logging.getLogger("languia")
-
-
-def anymessage_to_chatmessage(msg: AnyMessage) -> ChatMessage:
-    """
-    Convert AnyMessage (Pydantic) to ChatMessage (dataclass) for streaming.
-
-    Args:
-        msg: AnyMessage (SystemMessage, UserMessage, or AssistantMessage)
-
-    Returns:
-        ChatMessage with equivalent data
-    """
-    if isinstance(msg, SystemMessage):
-        return ChatMessage(role="system", content=msg.content)
-    elif isinstance(msg, UserMessage):
-        return ChatMessage(role="user", content=msg.content)
-    elif isinstance(msg, AssistantMessage):
-        # Convert structured metadata to dict
-        metadata_dict = {
-            "bot": msg.metadata.bot,
-            "generation_id": msg.metadata.generation_id,
-            "output_tokens": msg.metadata.output_tokens,
-        }
-        if msg.metadata.duration is not None:
-            metadata_dict["duration"] = msg.metadata.duration
-
-        return ChatMessage(
-            role="assistant",
-            content=msg.content,
-            error=msg.error,
-            reasoning=msg.reasoning,
-            metadata=metadata_dict,
-        )
-    else:
-        raise ValueError(f"Unknown message type: {type(msg)}")
-
-
-def chatmessage_to_anymessage(msg: ChatMessage) -> AnyMessage:
-    """
-    Convert ChatMessage (dataclass) to AnyMessage (Pydantic) after streaming.
-
-    Args:
-        msg: ChatMessage with complete metadata
-
-    Returns:
-        Appropriate AnyMessage subtype
-
-    Raises:
-        ValueError: If assistant message is missing required metadata
-    """
-    if msg.role == "system":
-        return SystemMessage(content=msg.content)
-    elif msg.role == "user":
-        return UserMessage(content=msg.content)
-    elif msg.role == "assistant":
-        # Validate required metadata
-        if not msg.metadata.get("generation_id"):
-            raise ValueError("Assistant message missing generation_id in metadata")
-        if not msg.metadata.get("output_tokens"):
-            raise ValueError("Assistant message missing output_tokens in metadata")
-        if not msg.metadata.get("bot"):
-            raise ValueError("Assistant message missing bot in metadata")
-
-        return AssistantMessage(
-            content=msg.content,
-            error=msg.error,
-            reasoning=msg.reasoning,
-            metadata=AssistantMessage.AssistantMessageMetadata(
-                generation_id=msg.metadata["generation_id"],
-                bot=msg.metadata["bot"],
-                output_tokens=msg.metadata["output_tokens"],
-                duration=msg.metadata.get("duration"),
-            ),
-        )
-    else:
-        raise ValueError(f"Unknown role: {msg.role}")
 
 
 def update_last_message(
@@ -118,7 +41,7 @@ def update_last_message(
     with partial text, token counts, reasoning, and performance metrics.
 
     Args:
-        messages: List of ChatMessage objects
+        messages: List of AnyMessage objects
         text: The response text to add/update
         position: Which model ("a" or "b") generated this response
         output_tokens: Number of tokens in the response
@@ -165,8 +88,7 @@ async def bot_response_async(
     Stream a response from an AI model asynchronously.
 
     This is an async generator function that yields conversation state updates as the model
-    generates responses token by token. Uses hybrid approach: accepts Pydantic Conversation,
-    converts to ChatMessage for streaming flexibility, then converts back to Conversation.
+    generates responses token by token.
 
     Args:
         position: Which model position ("a" or "b") to respond
@@ -257,7 +179,7 @@ async def bot_response_async(
         # Yield intermediate results only if there's content to display
         if output or reasoning:
             output.strip()
-            # Update chat_messages (ChatMessage list) with partial response
+            # Update messages with partial response
             update_last_message(
                 messages=state.messages,
                 text=output,
