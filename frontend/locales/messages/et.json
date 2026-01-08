@@ -85,7 +85,7 @@
             "triage": "Sorteeri"
         },
         "theme": {
-            "legend": "Vali režiim lehekülje välimuse kohandamiseks.",
+            "legend": "Vali lehekülje välimuse kohandamiseks režiim.",
             "options": {
                 "dark": "Tume režiim",
                 "light": "Hele režiim",
@@ -98,7 +98,7 @@
     "datasets": {
         "access": {
             "catch": "Mudelite avaldajad, teadlased, ettevõtted – nüüd on teie kord!",
-            "desc": "Platvormi küsimused ja eelistused on peamiselt prantsuse, taani, rootsi ja leedu keeles ning kajastavad orgaanilist, päriselulist kasutust – mitte tehislikke viipasid. Need andmestikud on avalikult kättesaadavad veebilehel <a {linkProps}>data.gouv.fr</a> ja Hugging Face’is.",
+            "desc": "Platvormi küsimused ja eelistused on peamiselt prantsuse, taani, rootsi ja leedu keeles ning kajastavad orgaanilist, päriselulist kasutust, mitte tehislikke viipasid. Need andmestikud on avalikult kättesaadavad veebilehel <a {linkProps}>data.gouv.fr</a> ja Hugging Face’is.",
             "repos": {
                 "conversations": {
                     "desc": "Kõik küsimused ja vastused",
@@ -126,7 +126,7 @@
                     "desc": "Interaktiivne vestluste visualiseerimine, kus iga klaster esindab kasutajate poolt korduvalt käsitletud teemat (näiteks haridus, tervishoid, keskkond või isegi filosoofia).",
                     "title": "Tutvu andmete visualiseeringuga"
                 },
-                "desc": "Bunka.ai meeskond viis Compar:AI platvormil läbi ulatusliku kasutajate ja tehisaru interaktsioonide uuringu, kaardistades peamised teemad, ülesanded ning tasakaalu automatiseerimise ja inimeste võimestamise vahel. Nende 25 000 reaalsel vestlusel põhinev analüüs pakub haruldast empiirilist ülevaadet sellest, kuidas inimesed tehisaru tegelikult kasutavad.",
+                "desc": "Bunka.ai meeskond viis Compar:AI platvormil läbi ulatusliku kasutajate ja tehisaru vaheliste interaktsioonide uuringu, kaardistades peamised teemad, ülesanded ning tasakaalu automatiseerimise ja inimeste võimestamise vahel. Nende 25 000 reaalsel vestlusel põhinev analüüs pakub haruldast empiirilist ülevaadet sellest, kuidas inimesed tehisaru tegelikult kasutavad.",
                 "method": "Lisateave metoodika kohta"
             },
             "desc": "Näited compar:IA andmestiku kasutamisest",
@@ -135,7 +135,7 @@
     },
     "errors": {
         "404": {
-            "desc": "Kui trükkisid URL-i oma veebilehitsejasse, kontrolli selle õigsust. Leht ei pruugi enam saadaval olla. <br />Võid jätkata minnes meie avalehele. <br />Kui sul on raskusi otsitava lehe leidmisega, võta meiega ühendust, et saaksime sind õigele URL-ile suunata.",
+            "desc": "Kui trükkisid URL-i oma veebilehitsejasse, kontrolli selle õigsust. Leht ei pruugi enam saadaval olla. <br />Võid jätkata, minnes meie avalehele. <br />Kui sul on raskusi otsitava lehe leidmisega, võta meiega ühendust, et saaksime sind õigele URL-ile suunata.",
             "error": "Tõrge 404",
             "sorry": "Otsitavat lehte ei leitud. Vabandame ebamugavuste pärast.",
             "title": "Lehekülge ei leitud"
@@ -169,15 +169,15 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p>compar:AI kasutab <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologitsi</strong> (GenAI Impact) poolt välja töötatud energiatarbimisele hinnangu andmise metoodikat </a>, mis võimaldab kasutajatel võrrelda erinevate tehisintellekti mudelite keskkonnamõju sama päringu puhul. Selline läbipaistvus on oluline soodustamaks keskkonnateadlikumate tehisintellekti mudelite arendamist ja kasutuselevõttu.</p> <p>Ecologits rakendab elutsükli hindamise (Life Cycle Assessment, LCA) põhimõtteid vastavalt standardile ISO 14044, keskendudes praegu <strong>järeldamisele</strong> (st mudelite kasutamisele päringutele vastamiseks) ning <strong>graafikakaartide tootmisele</strong> (ressursside kaevandamine, tootmine ja transport).</p> <p>Mudeli energiatarbimist hinnatakse, võttes arvesse mitmesuguseid parameetreid, nagu kasutatava tehisintellekti mudeli suurus, serverite asukoht, kus mudeleid käitatakse, ning väljundtookenite arv. Globaalse soojenemise potentsiaali näitaja, mida väljendatakse CO2-ekvivalendina, tuletatakse mudeli energiatarbimise mõõtmise põhjal.</p> <p>Oluline on märkida, et tehisintellekti keskkonnamõju hindamise metoodikad on alles väljatöötamisel.</p>",
+                    "desc": "<p>compar:AI kasutab <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologitsi</strong> (GenAI Impact) poolt välja töötatud energiatarbimisele hinnangu andmise metoodikat </a>, mis võimaldab kasutajatel võrrelda erinevate tehisaru mudelite keskkonnamõju sama päringu puhul. Selline läbipaistvus on oluline soodustamaks keskkonnateadlikumate tehisaru mudelite arendamist ja kasutuselevõttu.</p> <p>Ecologits rakendab elutsükli hindamise (Life Cycle Assessment, LCA) põhimõtteid vastavalt ISO 14044 standardile, keskendudes praegu <strong>järeldamisele</strong> (st mudelite kasutamisele päringutele vastamiseks) ning <strong>graafikakaartide tootmisele</strong> (ressursside kaevandamine, tootmine ja transport).</p> <p>Mudeli energiatarbimist hinnatakse mitmesuguseid parameetreid arvesse võttes. Seesuguste parameetrite hulka kuuluvad näiteks tehisaru mudeli suurus, serverite asukoht, kus mudeleid käitatakse, ning väljundtookenite arv. Globaalse soojenemise potentsiaali näitaja, mida väljendatakse CO2-ekvivalendina, tuletatakse mudeli energiatarbimise mõõtmise põhjal.</p> <p>Oluline on märkida, et tehisaru keskkonnamõju hindamise metoodikad on alles väljatöötamisel.</p>",
                     "title": "Kuidas keskkonnamõõdikuid arvutatakse?"
                 },
                 "2": {
-                    "desc": "<p>Andmekeskuste asukohad mängivad tehisintellekti süsiniku jalajälje kujunemisel väga olulist rolli. Kui mudelit treenitakse või kasutatakse riigis, kus kasutatakse peamiselt fossiilkütusteseid, on selle keskkonnamõju suurem võrreldes sellega, kui seda majutatakse riigis, kus kasutatakse peamiselt taastuvenergiat.</p> <p>Tehisintellekti keskkonnamõju analüüsimeetod, mille on välja töötanud <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (GenAI Impactist)</a>, hõlmab andmeid nende riikide energiakoosseisu kohta, kus serverid asuvad. See võimaldab täpsemat ja nüansirikkamat hinnangut erinevate generatiivmudelite tegelikule süsiniku jalajäljele.</p>",
+                    "desc": "<p>Andmekeskuste asukohad mängivad tehisaru süsiniku jalajälje kujunemisel väga olulist rolli. Kui mudelit treenitakse või kasutatakse riigis, kus kasutatakse peamiselt fossiilkütuseid, on selle keskkonnamõju suurem võrreldes sellega, kui seda majutatakse riigis, kus kasutatakse peamiselt taastuvenergiat.</p> <p>Tehisaru keskkonnamõju analüüsimeetod, mille on välja töötanud <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (GenAI Impactist)</a>, hõlmab andmeid nende riikide energiakoosseisu kohta, kus serverid asuvad. See võimaldab erinevate generatiivmudelite tegeliku süsiniku jalajälje täpsemat ja nüansirikkamat hindamist.</p>",
                     "title": "Kas keskkonnamõõdikute arvutamise võetakse arvesse seda, millest erinevad riigid energiat toodavad?"
                 },
                 "3": {
-                    "desc": "<p>Paljud keskkonnamõju näitajad keskenduvad peamiselt <strong>järeldamise</strong> mõjule, st tehisintellekti mudelite kasutamisele päringutele vastamiseks. Selline lähenemine võib jätta mulje, et järeldamine on vähem energiamahukas kui mudeli treenimine. <strong>Tegelikkus on siiski keerukam.</strong> Mõtleme sellest auto analoogia kontekstis:</p> <ul> <li>Auto ehitamine (treenimine) on ühekordne ja ressursimahukas protsess.</li> <li>Iga autosõit (järeldamine) kulutab vähem energiat, kuid neid sõite tehakse iga päev ning nende arv võib olla tohutu.</li> </ul> <p>Sarnaselt on <strong>järeldamise kumulatiivne mõju — miljonite kasutajate igapäevaste päringute lõikes — sageli oluliselt suurem kui algse treenimise mõju<strong>. Seetõttu on ülioluline, et tehisintellekti süsinikujalajälje hindamise tööriistad arvestaksid mudelite kogu elutsüklit</strong>, alates treenimisest kuni järeldamiseni.</strong> </p>",
+                    "desc": "<p>Paljud keskkonnamõju hinnangud keskenduvad peamiselt <strong>järeldamisele</strong>, st tehisaru kasutamisele päringutele vastamiseks. Selline lähenemine võib jätta mulje, et järeldamine on vähem energiamahukas kui mudeli treenimine. <strong>Tegelikkus on siiski keerukam.</strong> Mõtleme sellest auto analoogia kontekstis:</p> <ul> <li>auto ehitamine (treenimine) on ühekordne ja ressursimahukas protsess.</li> <li>Iga autosõit (järeldamine) kulutab vähem energiat, kuid neid sõite tehakse iga päev ning nende arv võib olla tohutu.</li> </ul> <p>Sarnaselt on <strong>järeldamise kumulatiivne mõju miljonite kasutajate igapäevaste päringute lõikes sageli oluliselt suurem kui algse treenimise mõju<strong>. Seetõttu on ülioluline, et tehisaru süsinikujalajälje hindamise tööriistad arvestaksid mudelite kogu elutsüklit</strong>, alates treenimisest kuni järeldamiseni.</strong> </p>",
                     "title": "Kas keskkonnamõju hinnangud võtavad arvesse mudelite treenimiseks kasutatud ressursse?"
                 }
             },
@@ -186,7 +186,7 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p>Jah, compar:AI rahvusvahelistamine on käimas. Alustame laienemist kolme pilootriiki: Leetu, Rootsi ja Taani. See esimene etapp võimaldab meil lähenemist testida ning kasutajaliidest erinevate Euroopa keeleliste ja kultuuriliste kontekstidega kohandada. Edaspidi võib ring laieneda ka teistele Euroopa keeltele, lähtudes nende pilootriikide tagasisidest. Eesmärk on järk-järgult üles ehitada tõeline Euroopa digitaalne ühisvara vestlusliku tehisintellekti inimhindamiseks, mille koostööpõhise juhtimismudeli panevad paika osalevad riigid. </p>",
+                    "desc": "<p>Jah, compar:AI rahvusvahelistamine on käimas. Alustame laienemist kolme pilootriiki: Leetu, Rootsi ja Taani. See esimene etapp võimaldab meil lähenemist testida ning kasutajaliidest erinevate Euroopa keeleliste ja kultuuriliste kontekstidega kohandada. Edaspidi võib ring laieneda ka teistele Euroopa keeltele, lähtudes nende pilootriikide tagasisidest. Eesmärk on järk-järgult üles ehitada tõeline Euroopa digitaalne ühisvara vestlusliku tehisaru inimhindamiseks, mille koostööpõhise juhtimismudeli panevad paika osalevad riigid. </p>",
                     "title": "Compar:AI keskendus algselt prantsuse keelele: kas on kavas lisada ka teisi Euroopa keeli?"
                 },
                 "2": {
@@ -242,7 +242,7 @@
                 },
                 "6": {
                     "desc": "<p>Tavalised vestluslikud tehisintellekti mudelid vastavad otse, ennustades tõenäosuste alusel tookeneid (sõnu), samas kui otsingumootor pakub linke ja allikaid, mida kasutaja iseseisvalt uurida saab.</p>",
-                    "title": "Mis vahe on sellel, kas esitan küsimuse vestluspõhisele tehisintellekti mudelile või teen Google’i otsingu?"
+                    "title": "Mis vahe on sellel, kas esitan küsimuse keelemudelile või teen Google’i otsingu?"
                 }
             },
             "title": "Kasuta"
@@ -295,7 +295,7 @@
             "cookiesBannerDesc": "See on tõsi – sa ei pidanud klõpsama poolt lehe katval hüpikaknal, et kinnitada, et nõustud küpsiste kasutamisega – isegi siis, kui sa ei tea täpselt, mida see tähendab!",
             "cookiesBannerNoNeed": "Selles pole midagi omapärast. Me lihtsalt järgime seadust, mis sätestab, et teatud külastajate jälgimise tööriistad, kui need on korrektselt ja privaatsust austavalt seadistatud, on eelnevast nõusolekust vabastatud.",
             "cookiesBannerTitle": "Miks sellele leheküljel küpsiste kasutamise nõusolekut ei küsita?",
-            "cookiesBannerTools": "Kasutame <a {matomoLinkProps}>Matomot</a>, <a {libreLinkProps}>vabatarkvaralist</a> tööriista, mis on seadistatud vastama CNILi küpsiste <a {cnilLinkProps}>soovitustele</a>. See tähendab näiteks, et sinu IP-aadress anonümiseeritakse enne salvestamist. Seetõttu ei ole võimalik selle lehekülje külastusi sinu isikuga seostada.",
+            "cookiesBannerTools": "Kasutame <a {matomoLinkProps}>Matomot</a>, <a {libreLinkProps}>vabatarkvaralist</a> tööriista, mis on seadistatud kooskõlas CNILi küpsiste <a {cnilLinkProps}>soovitustega</a>. See tähendab näiteks seda, et sinu IP-aadress anonümiseeritakse enne salvestamist. Seetõttu ei ole võimalik selle lehekülje külastusi sinu isikuga seostada.",
             "cookiesDesc": "Selle veebilehe külastamine salvestab sinu arvutisse väikese tekstifaili („küpsise“). See võimaldab meil mõõta külastuste arvu ja mõista, millised lehed on kõige enam vaadatud.",
             "cookiesDescMore": "Saad veebilehitsemise jälgimisest sellel veebisaidil keelduda. See kaitseb sinu privaatsust, kuid takistab ka saidi omanikul sinu tegevustest õppida ning sulle ja teistele kasutajatele paremat kasutuskogemust luua.",
             "cookiesTitle": "Küpsised ja nõusolek",
@@ -307,12 +307,22 @@
             "dataRespTitle": "Kes vastutab andmete töötlemise eest?",
             "dataTimeDesc": "Kasutajate ja nende vestluste kohta käivaid andmeid säilitatakse alates hetkest, mil eelistus on salvestatud.",
             "dataTimeTitle": "Kui kaua me andmeid säilitame?",
+            "dataUseTitle": "Kuidas vestlusandmeid töödeldakse?",
             "privacyData": "Leheküljel kogutakse järgnevaid andmeid:",
             "privacyDataArena": "Kasutajate mudelitega vestlemise andmed: kasutajate esitatud küsimused, mudelite vastused ning kasutajate vastuse eelistused",
             "privacyDataForm": "Küsimustiku \"Aita meil compar:IA-d paremaks muuta\" andmed.",
-            "privacyResp": "Kasutaja vastutab andmete või sisu eest, mida ta platvormi pakutud viipa sisestab. <a {linkProps}>Kasutustingimustega</a> nõustudes kohustub kasutaja mitte edastama teavet, mis võiks tuvastada teda ennast või kolmandat isikut.",
+            "privacyDesc": "See teenus ei töötle andmeid, mis CNILi määratluse kohaselt klassifitseeruvad isikuandmeteks, st teabeks, mis puudutab otseselt või kaudselt tuvastatavat füüsilist isikut.",
+            "privacyResp": "Kasutaja vastutab andmete või sisu eest, mida ta platvormi pakutud viipa sisestab. <a {linkProps}>Kasutustingimustega</a> nõustudes kohustub kasutaja mitte edastama teavet, mille põhjal võiks tuvastada teda ennast või kolmandat isikut.",
             "privacyTitle": "Kas me töötleme isikuandmeid?",
             "title": "Privaatsuseeskirjad"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Veebileht compar:IA võimaldab lihtsat ja tasuta juurdepääsu väga laiale valikule keelemudelitele ning aitab seeläbi tõsta kodanike teadlikkust generatiivse tehisaru erinevatest aspektidest, nagu mitmekesisus, kallutatus ja keskkonnamõju. Lisaks jagatakse koostatud viipade ja eelistuste andmekogumeid avatud lähtekoodina MIT/Etalab 2.0 litsentsi alusel.",
+                "2": "Teenuse Compar:IA kasutajate sihtgrupid tuvastati kasutajaintervjuude ning vajaduste kaardistamise etapi kaudu.",
+                "3": "Seega kuuluvad potentsiaalsete kasutajate hulka kõik kodanikud, kuid eelkõige õpetajad, õpilased, üliõpilased, digivahendajad, tehisaru koolitajad ning ka teadlased (arvutiteadus, tehisaru, sotsiaal- ja humanitaarteadused) ja ettevõtted, kes on huvitatud avatud lähtekoodina jagatud andmekogumite analüüsimisest või kasutamisest.<br> Sellega kooskõlas vastab digiteenus nende vajadustele järgmiste funktsioonide kaudu: mudelite tasuta testimine ja võrdlemine ning avatud lähtekoodina jagatud andmete kasutamine.",
+                "title": "Teenuse eesmärk"
+            }
         },
         "tos": {
             "contactDesc": "Kui sul tekib teenuse osas küsimusi, saad kirjutada aadressil <a {linkProps}>{contactLink}</a>.",
@@ -340,11 +350,12 @@
             "featuresModelsMore": "Mudelite võrldemise kasutajaliides.",
             "featuresTitle": "4. Omadused",
             "featuresVote": "Kasutaja saab vaadata olemasolevate mudelite loendit ning tutvuda nende mudelite kohta käiva lisateabega.",
-            "featuresVoteMore": "Kasutajate eelistuste põhjal loodud andmekogumite jagamine, neile juurdepääsu võimaldamine ja taaskasutus.",
+            "featuresVoteMore": "Kasutajate eelistuste põhjal loodud andmekogumite jagamine, juurdepääsu ning kasutamise võimaldamine.",
             "licenceCode": "Platvormi lähtekood on avatud ja kättesaadav siin: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
             "licenceLLM": "Teenuseid toetavad suured keelemudelid on reguleeritud järgmiste litsentsidega:",
             "licenceLLMEvolution": "Platvormi integreeritud keelemudelite loend võib aja jooksul muutuda ning seda ajakohastatakse iga muudatuse korral.",
             "licenceLLMLicence": "Litsents",
+            "licenceLLMModel": "Vestluslik tehisaru mudel",
             "licenceLLMNoticeLink": "Link mudeli litsentsidele",
             "licenceLLMUnavailable": "Pole saadaval",
             "licenceTitle": "6. Kood ja litsentsid",
@@ -352,7 +363,7 @@
             "respLegal": "Platvorm ei ole mõeldud ebaseadusliku sisu ega avalikku korda rikkuva sisu loomiseks ega üldisemalt mis tahes sisu genereerimiseks, mis rikub kehtivat õigusraamistikku.",
             "respLegalMore": "Sellega seoses ei sisesta kasutaja viipa sisu ega teavet, mis on vastuolus kehtivate õigusnormidega.",
             "respPrivacy": "Kuna kasutaja poolt platvormile sisestatud andmed on mõeldud avalikuks tegemiseks, vastutab kasutaja selle eest, et ta ei sisestaks teavet, mille põhjal võiks tuvastada teda ennast või kolmandat isikut.",
-            "respPrivacyMore": "Igal juhul peab väljaandja rakendama meetmeid, et enne andmete kättesaadavaks tegemist tagada dialoogiandmete võimalikult ulatuslik anonümiseerimine. Kui hoolimata väljaandja pingutustest peaks andmestikes siiski avalduma tundlikke andmeid, saab sellest teada anda selle vormi kaudu: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
+            "respPrivacyMore": "Igal juhul peab väljaandja rakendama meetmeid, et tagada dialoogiandmete võimalikult ulatuslik anonümiseerimine enne andmete kättesaadavaks tegemist. Kui hoolimata väljaandja pingutustest peaks andmestikes siiski leiduma tundlikke andmeid, saab sellest teada anda selle vormi kaudu: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
             "respTitle": "5. Vastutus",
             "respUser": "Kasutaja vastutab andmete või sisu eest, mida ta platvormi pakutud viipa sisestab.",
             "scopeDesc": "Platvormile juurdepääs on tasuta, ei nõua registreerimist ning sellega kaasneb nende eritingimuste kohaldamine, mis on kasutustingimustes loetletud.",
@@ -364,6 +375,16 @@
         "archs": {
             "dense": {
                 "desc": "Tihe arhitektuur viitab närvivõrgu tüübile, kus iga ühe kihi neuron on ühendatud kõigi järgmise kihi neuronitega. See võimaldab kõigil kihi parameetritel väljundi arvutamisse panustada."
+            },
+            "matformer": {
+                "desc": "Kujutage ette Vene puunukke (matrjoškad → matrjoška-transformer → Matformer): iga plokk sisaldab mitut pesastatud kasvava suurusega alam-mudelit, mis jagavad samu parameetreid. See võimaldab iga päringu puhul valida sobiva mahuga mudeli vastavalt saadaolevale mälule või lubatud latentsusele, ilma et oleks vaja erinevaid mudeleid eraldi ümber treenida.",
+                "name": "Matformer",
+                "title": "Matformeri arhitektuur"
+            },
+            "moe": {
+                "desc": "Mixture-of-experts (MoE) arhitektuur kasutab suunamismehhanismi, mis aktiveerib sisendist sõltuvalt närvivõrgus ainult teatud spetsialiseeritud alamhulgad („eksperdid“). See võimaldab ehitada väga suuri mudeleid, hoides samal ajal arvutuslikud kulud madalad, kuna igal sammul kasutatakse vaid osa võrgust.",
+                "name": "MoE",
+                "title": "MoE arhitektuur"
             },
             "na": {
                 "desc": "Väljaandja ei ole avalikustanud teavet mudeli arhitektuuri kohta.",
@@ -383,6 +404,13 @@
                 "Gemma": {
                     "license_desc": "<p>See litsents on loodud soodustama tarkvara kasutamist, muutmist ja edasi levitamist, kuid sisaldab klauslit, mille kohaselt kõik muudetud või täiustatud versioonid tuleb jagada kogukonnaga sama lähtekoodi litsentsi alusel, edendades seeläbi koostööd ja läbipaistvust tarkvaraarenduses.</p>"
                 },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "aastakäive alla 50 miljoni USA dollari",
+                    "license_desc": "<p>See litsents võimaldab koodi tasuta kasutada, reprodutseerida, muuta ja levitada koos autorluse viitamisega, kuid kehtestab piirangud organisatsioonidele, mille aastakäive ületab 50 miljonit USA dollarit.</p>"
+                },
+                "LFM 1.0": {
+                    "license_desc": "<p>See ülemaailmne, tasuta lihtlitsents lubab mudeli ja selle tuletiste kasutamist, muutmist ja edasi levitamist, sealhulgas väljundite taaskasutamist teiste mudelite treenimiseks. Litsents lubab ärilist kasutust siiski ainult organisatsioonidele, mille aastakäive on alla 10 miljoni USA dollari; sellest piirist suurema käibe korral sama litsents ei kehti.</p>"
+                },
                 "Llama 3 Community": {
                     "commercial_use_specificities": "alla 700 miljoni kasutaja",
                     "license_desc": "<p> See litsents võimaldab koodi vabalt kasutada, muuta ja levitada koos autorile viitamisega, kuid seab piirangud kasutusele, mis ületab 700 miljonit igakuist kasutajat, ning keelab koodi või genereeritud sisu taaskasutamise konkureerivate mudelite treenimiseks või täiustamiseks, kaitstes seeläbi Meta tehnoloogilisi investeeringuid ja kaubamärki.</p>"
@@ -396,15 +424,30 @@
                     "license_desc": "<p>See <strong>mittevälistav, ülemaailmne ja autoritasuta</strong> litsents võimaldab Llama 3.3 koodi ja materjale vabalt kasutada, reprodutseerida, muuta ja levitada koos autorile viitamisega. Märkimisväärselt lubab see ka taaskasutust tuletatud mudelite täiustamiseks, kuid seab piirangud väga suuremahulistele ärilistele kasutusviisidele.</p>"
                 },
                 "Llama 4": {
-                    "commercial_use_specificities": "alla 700 miljoni kasutaja\n"
+                    "commercial_use_specificities": "alla 700 miljoni kasutaja\n",
+                    "license_desc": "<p>See ülemaailmne ja tasuta lihtlitsents võimaldab Llama 4 materjalide (mudelid ja dokumentatsioon) kasutamist, reprodutseerimist, muutmist ja levitamist koos autorluse viitamisega. Siiski kehtestab see kaks olulist piirangut: (1) ettevõtted, kellel on üle 700 miljoni igakuise aktiivse kasutaja, peavad hankima Meta eriloa, ning (2) <strong>ELi elanike ja ELis registreeritud ettevõtete täielik välistamine</strong> multimodaalsete mudelite otsesest kasutamisest seoses Euroopa tehisintellekti määrusega (AI Act) seotud regulatiivse ebakindlusega. Euroopa lõppkasutajad võivad siiski kasutada teenuseid, millesse Llama 4 on integreeritud, tingimusel et neid pakutakse väljaspool ELi.</p>"
+                },
+                "MIT": {
+                    "license_desc": "<p>MIT-litsents on lubav vaba tarkvara litsents: see võimaldab kõigil mudelit taaskasutada, muuta ja levitada, sealhulgas ärilistel eesmärkidel, tingimusel et säilitatakse algne litsents ja autoriõiguse märked.</p>"
                 },
                 "Mistral AI Research License": {
+                    "license_desc": "<p>See tasuta lihtlitsents lubab Mistrali mudelite ja nende tuletiste (sealhulgas muudetud või täiustatud versioonide) kasutamist, kopeerimist, muutmist ja levitamist. Kuid see on rangelt piiratud üksnes teadusuuringute eesmärkidega.</p>",
                     "reuse_specificities": "kuid ainult mitteärilistel eesmärkidel"
                 }
             },
             "proprio": {
                 "Alibaba": {
                     "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ja ligipääsetav Alibaba ettevõtte platvormide kaudu API vahendusel ning nõuab tasu vastavalt töödeldud tookenite arvule või reserveeritud taristule."
+                },
+                "Amazon": {
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ja sellele pääseb ligi Amazon Bedrocki kaudu, kus kehtib kasutuspõhine hinnastamine vastavalt töödeldud tookenite arvule või reserveeritud taristule.",
+                    "reuse_specificities": "välja arvatud teiste mudelite treenimiseks või neile teadmiste ülekandmiseks Amazoni platvormidel."
+                },
+                "Anthropic": {
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Anthropic’u platvormil või partnerplatvormidel; tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või mudeli majutamiseks reserveeritud taristule."
+                },
+                "Google": {
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Google’i platvormidel; tasumine toimub kasutuspõhiselt vastavalt töödeldud tokenite arvule või reserveeritud taristule."
                 }
             }
         }
@@ -414,7 +457,7 @@
             "newDiscussion": "Uus vestlus",
             "step": "Samm",
             "stepOne": {
-                "description": "Pööra tähelepanu nii sisule kui ka vormile ning  hinda seejärel iga vastust.",
+                "description": "Pööra tähelepanu nii sisule kui ka vormile ning hinda seejärel iga vastust.",
                 "title": "Mis sa sellest vastusest arvad?"
             },
             "stepTwo": {
@@ -441,7 +484,7 @@
     },
     "home": {
         "europe": {
-            "desc": "Leedu, Rootsi ja Taani ühinevad Prantsusmaaga platvormi kasutuselevõtmisel, et tulevasi tehisintellekti mudeleid oma riigikeeltes täiustada.",
+            "desc": "Leedu, Rootsi ja Taani ühinevad Prantsusmaaga platvormi kasutuselevõtmisel, et tulevasi tehisaru mudeleid oma riigikeeltes täiustada.",
             "languages": {
                 "da": "Taani keeles",
                 "fr": "Prantsuse keeles",
@@ -500,7 +543,7 @@
             },
             "title": "baromeeter.ai konkreetsed kasutusjuhtumid",
             "use": {
-                "desc": "Arendajad, teadlased ja mudelite avaldajad – tutvuge baromeeter.ai andmestikega, et mudeleid väheste ressurssidega keeltes  täiustada.",
+                "desc": "Arendajad, teadlased ja mudelite avaldajad – tutvuge baromeeter.ai andmestikega, et mudeleid väheste ressurssidega keeltes täiustada.",
                 "title": "Rakenda andmeid"
             }
         },
@@ -510,7 +553,7 @@
                 "desc": "Vestle ja arenda eelistust väljendades oma kriitilist mõtlemist",
                 "title": "Võrdle erinevate keelemudelite vastuseid"
             },
-            "desc": "baromeeter.ai on tasuta tööriist, mis aitab tõsta teadlikkust generatiivsest tehisiarust ja sellega seotud väljakutsetest.",
+            "desc": "baromeeter.ai on tasuta tööriist, mis aitab tõsta teadlikkust generatiivsest tehisarust ja sellega seotud väljakutsetest.",
             "measure": {
                 "alt": "Mõõda",
                 "desc": "Avasta iga mudeli puhul oma vestluste keskkonnamõju"
@@ -580,7 +623,7 @@
         "licenses": {
             "type": {
                 "openSource": "Avatud lähtekoodiga",
-                "proprietary": "Omandtarkvara",
+                "proprietary": "Suletud",
                 "semiOpen": "Avatud parameetritega"
             }
         },
@@ -721,7 +764,7 @@
                     "title": "Mudelite mitmekesisus"
                 },
                 "thinking": {
-                    "desc": "Soodustada kriitilist mõtlemist generatiivse tehisintellekti rolli üle nii isiklikes kui ka tööalastes praktikates.",
+                    "desc": "Soodustada kriitilist mõtlemist generatiivse tehisaru rolli üle nii isiklikes kui ka tööalastes praktikates.",
                     "title": "Kriitiline mõtlemine ja ühiskondlikud küsimused"
                 },
                 "title": "Platvorm käsitleb mitmeid väljakutseid"
@@ -850,7 +893,7 @@
                     "c": "Tehisaru baromeeter on Eesti teadlaste loodud platvorm, mille eesmärk on hinnata, kui hästi mõistavad ja kasutavad tänapäeva tehisarud eesti keelt. Veebilehel baromeeter.ai saab võrrelda erinevate keelemudelite vastuseid ning aidata kaasa nende järjestamisele – ja seeläbi eesti keele ja meele hoidmisele tehisaru ajastul.",
                     "title": "Euroopa keeled kannatavad eelistusandmete nappuse all"
                 },
-                "title": "Kuidas saame nendes mudelites vähendada kultuurilisi ja keelelisi kallutatusi?"
+                "title": "Kuidas saame nendes mudelites kultuurilisi ja keelelisi kallutatusi vähendada?"
             },
             "diversity": {
                 "diversity": {
@@ -858,7 +901,7 @@
                     "title": "Tähelepanuta jäetud kultuuriline ja keeleline mitmekesisus"
                 },
                 "english": {
-                    "desc": "Vestluslik tehisintellekt tugineb suurtel keelemudelitel, mida on peamiselt treenitud ingliskeelsetel andmetel, mistõttu tekivad nende väljundites keelelised ja kultuurilised kallutatused.",
+                    "desc": "Vestluslik tehisaru tugineb suurtel keelemudelitel, mida on peamiselt treenitud ingliskeelsetel andmetel, mistõttu tekivad nende väljundites keelelised ja kultuurilised kallutatused.",
                     "title": "Valdav osa treeningandmetest on ingliskeelsed"
                 },
                 "stereotypes": {
@@ -1017,7 +1060,7 @@
             "tokens": {
                 "label": "teksti suurus",
                 "tokens": "tookenid",
-                "tooltip": "Tehisintellekt analüüsib ja genereerib lauseid sõnadest või ligikaudu neljatähelistest sõnaosadest; seda tekstiühikut nimetatakse tookeniks. Mida pikem on tekst, seda suurem on tookenite arv."
+                "tooltip": "Tehisaru analüüsib ja genereerib lauseid sõnadest või ligikaudu neljatähelistest sõnaosadest; seda tekstiühikut nimetatakse tookeniks. Mida pikem on tekst, seda suurem on tookenite arv."
             },
             "tooltip": "Mudeli suurusel, arhitektuuril ja genereeritud vastuse pikkusel põhinev hinnang."
         },
@@ -1094,7 +1137,7 @@
         "yours": "Sinu hääl"
     },
     "welcome": {
-        "errors": "Tehisintellekt võib eksida – soovitame esitatud teabe üle kontrollida.",
+        "errors": "Tehisaru võib eksida – soovitame esitatud teabe üle kontrollida.",
         "go": "Hakkame pihta",
         "privacy": "Ära jaga isikuandmeid, nagu oma ees- ja perekonnanimi või aadress.",
         "title": "Tere tulemast baromeeter.ai lehele!",
