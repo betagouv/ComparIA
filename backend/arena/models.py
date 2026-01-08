@@ -7,7 +7,7 @@ Defines all data structures for:
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Annotated, Any, Literal, Optional
+from typing import Annotated, Any, Literal, Optional, Union
 from uuid import uuid4
 
 from pydantic import (
@@ -19,7 +19,7 @@ from pydantic import (
     model_validator,
 )
 
-from backend.config import SelectionMode
+from backend.config import CountryCode, CustomModelsSelection, SelectionMode
 from backend.language_models.models import Endpoint, LanguageModel
 
 
@@ -90,7 +90,7 @@ class AssistantMessage(BaseMessage):
     error: str | None = None
     reasoning: str | None = None
     metadata: AssistantMessageMetadata
-    reaction: "ReactionData" | None = None
+    reaction: Union["ReactionData", None] = None
 
     # use assignment validation since messages are updated gradually
     model_config = ConfigDict(validate_assignment=True)
@@ -194,6 +194,7 @@ class Conversations(BaseModel):
         default_factory=datetime.now
     )
     mode: SelectionMode
+    custom_models_selection: CustomModelsSelection
     category: str | None = None
     conversation_a: Conversation
     conversation_b: Conversation
@@ -248,6 +249,7 @@ def create_conversations(
     llm_b: LanguageModel,
     user_prompt: str,
     mode: SelectionMode,
+    custom_models_selection: CustomModelsSelection,
     category: str | None = None,
 ) -> Conversations:
     """Create paired conversations for arena comparison."""
@@ -256,7 +258,11 @@ def create_conversations(
     conv_b = create_conversation(llm_b, user_msg)
 
     return Conversations(
-        conversation_a=conv_a, conversation_b=conv_b, mode=mode, category=category
+        conversation_a=conv_a,
+        conversation_b=conv_b,
+        mode=mode,
+        custom_models_selection=custom_models_selection,
+        category=category,
     )
 
 
