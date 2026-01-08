@@ -121,18 +121,18 @@ def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[A
         raise Exception("Errors in 'models.json', exiting...")
 
 
-def connect_to_db(DATABASE_URI):
+def connect_to_db(COMPARIA_DB_URI):
 
     from sqlalchemy import create_engine
     from sqlalchemy.exc import OperationalError
 
-    if not DATABASE_URI:
+    if not COMPARIA_DB_URI:
         log.error(
-            "Cannot connect to the database: no $DATABASE_URI configuration provided."
+            "Cannot connect to the database: no $COMPARIA_DB_URI configuration provided."
         )
 
     try:
-        engine = create_engine(DATABASE_URI)
+        engine = create_engine(COMPARIA_DB_URI)
     except Exception as e:
         log.error(f"Failed to create database engine: {e}")
         return {}
@@ -241,9 +241,9 @@ def main() -> None:
         "models": {},
     }
 
-    if os.getenv("DATABASE_URI"):
+    if os.getenv("COMPARIA_DB_URI"):
         existing_generated_models = read_json(GENERATED_MODELS_PATH)
-        engine = connect_to_db(os.getenv("DATABASE_URI"))
+        engine = connect_to_db(os.getenv("COMPARIA_DB_URI"))
         fetch_distinct_model_ids(engine, existing_generated_models)
 
     for orga in orgas.root:

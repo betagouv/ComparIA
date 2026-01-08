@@ -14,7 +14,10 @@
         "rank_p97_5": 67,
         "score_p2_5": 963,
         "score_p97_5": 993,
-        "trust_range": [7, 9],
+        "trust_range": [
+          7,
+          9
+        ],
         "win_rate": 0.42614369501466276
       },
       "distribution": "open-weights",
@@ -66,7 +69,10 @@
         "rank_p97_5": 80,
         "score_p2_5": 903,
         "score_p97_5": 1018,
-        "trust_range": [25, 13],
+        "trust_range": [
+          25,
+          13
+        ],
         "win_rate": 0.46869047619047616
       },
       "distribution": "open-weights",
@@ -141,7 +147,10 @@
         "rank_p97_5": 55,
         "score_p2_5": 985,
         "score_p97_5": 1002,
-        "trust_range": [2, 5],
+        "trust_range": [
+          2,
+          5
+        ],
         "win_rate": 0.46251711324075884
       },
       "distribution": "open-weights",
@@ -193,7 +202,10 @@
         "rank_p97_5": 68,
         "score_p2_5": 959,
         "score_p97_5": 991,
-        "trust_range": [7, 9],
+        "trust_range": [
+          7,
+          9
+        ],
         "win_rate": 0.5014285714285714
       },
       "distribution": "open-weights",
@@ -268,7 +280,10 @@
         "rank_p97_5": 80,
         "score_p2_5": 923,
         "score_p97_5": 940,
-        "trust_range": [4, 2],
+        "trust_range": [
+          4,
+          2
+        ],
         "win_rate": 0.42968786709179396
       },
       "distribution": "open-weights",
@@ -343,7 +358,10 @@
         "rank_p97_5": 89,
         "score_p2_5": 704,
         "score_p97_5": 792,
-        "trust_range": [1, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.2402265372168285
       },
       "distribution": "open-weights",
@@ -418,7 +436,10 @@
         "rank_p97_5": 87,
         "score_p2_5": 804,
         "score_p97_5": 837,
-        "trust_range": [0, 1],
+        "trust_range": [
+          0,
+          1
+        ],
         "win_rate": 0.3317316258351893
       },
       "distribution": "open-weights",
@@ -466,7 +487,10 @@
         "rank_p97_5": 66,
         "score_p2_5": 964,
         "score_p97_5": 982,
-        "trust_range": [5, 4],
+        "trust_range": [
+          5,
+          4
+        ],
         "win_rate": 0.4921080415273623
       },
       "distribution": "api-only",
@@ -514,7 +538,10 @@
         "rank_p97_5": 31,
         "score_p2_5": 1042,
         "score_p97_5": 1062,
-        "trust_range": [6, 3],
+        "trust_range": [
+          6,
+          3
+        ],
         "win_rate": 0.524225748656258
       },
       "distribution": "api-only",
@@ -562,7 +589,10 @@
         "rank_p97_5": 25,
         "score_p2_5": 1057,
         "score_p97_5": 1076,
-        "trust_range": [2, 8],
+        "trust_range": [
+          2,
+          8
+        ],
         "win_rate": 0.5309093484419264
       },
       "distribution": "api-only",
@@ -614,7 +644,10 @@
         "rank_p97_5": 26,
         "score_p2_5": 1054,
         "score_p97_5": 1076,
-        "trust_range": [5, 6],
+        "trust_range": [
+          5,
+          6
+        ],
         "win_rate": 0.5356400157542339
       },
       "distribution": "api-only",
@@ -666,7 +699,10 @@
         "rank_p97_5": 28,
         "score_p2_5": 1052,
         "score_p97_5": 1067,
-        "trust_range": [5, 5],
+        "trust_range": [
+          5,
+          5
+        ],
         "win_rate": 0.5551339915373765
       },
       "distribution": "open-weights",
@@ -745,7 +781,10 @@
         "rank_p97_5": 23,
         "score_p2_5": 1060,
         "score_p97_5": 1093,
-        "trust_range": [7, 8],
+        "trust_range": [
+          7,
+          8
+        ],
         "win_rate": 0.5132988721804511
       },
       "distribution": "open-weights",
@@ -797,7 +836,10 @@
         "rank_p97_5": 42,
         "score_p2_5": 1018,
         "score_p97_5": 1038,
-        "trust_range": [7, 3],
+        "trust_range": [
+          7,
+          3
+        ],
         "win_rate": 0.5313019943019943
       },
       "distribution": "open-weights",
@@ -849,7 +891,10 @@
         "rank_p97_5": 33,
         "score_p2_5": 1038,
         "score_p97_5": 1075,
-        "trust_range": [11, 7],
+        "trust_range": [
+          11,
+          7
+        ],
         "win_rate": 0.5394820717131474
       },
       "distribution": "open-weights",
@@ -901,7 +946,10 @@
         "rank_p97_5": 76,
         "score_p2_5": 937,
         "score_p97_5": 959,
-        "trust_range": [6, 2],
+        "trust_range": [
+          6,
+          2
+        ],
         "win_rate": 0.4396947333109695
       },
       "distribution": "open-weights",
@@ -953,7 +1001,10 @@
         "rank_p97_5": 11,
         "score_p2_5": 1086,
         "score_p97_5": 1104,
-        "trust_range": [2, 5],
+        "trust_range": [
+          2,
+          5
+        ],
         "win_rate": 0.5851128848346637
       },
       "distribution": "open-weights",
@@ -1005,7 +1056,10 @@
         "rank_p97_5": 17,
         "score_p2_5": 1073,
         "score_p97_5": 1090,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.6141481069042317
       },
       "distribution": "open-weights",
@@ -1053,7 +1107,10 @@
         "rank_p97_5": 44,
         "score_p2_5": 1012,
         "score_p97_5": 1099,
-        "trust_range": [20, 17],
+        "trust_range": [
+          20,
+          17
+        ],
         "win_rate": 0.535909090909091
       },
       "distribution": "open-weights",
@@ -1092,6 +1149,37 @@
       "url": "https://huggingface.co/deepseek/deepseek-v3.2",
       "wh_per_million_token": 47025.74
     },
+    "EuroLLM-22B-Instruct-2512": {
+      "active_params": null,
+      "arch": "dense",
+      "commercial_use": true,
+      "data": null,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": "https://router.huggingface.co/v1",
+        "api_model_id": "utter-project/EuroLLM-22B-Instruct-2512",
+        "api_type": "huggingface"
+      },
+      "friendly_size": "S",
+      "fully_open_source": false,
+      "icon_path": "euroLLM.webp",
+      "id": "EuroLLM-22B-Instruct-2512",
+      "license": "Apache 2.0",
+      "new": true,
+      "organisation": "EuroLLM",
+      "params": 22,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 22,
+      "reuse": true,
+      "simple_name": "EuroLLM 22B Instruct",
+      "status": "enabled",
+      "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
+      "wh_per_million_token": 5732.573333333333
+    },
     "gemini-1.5-pro": {
       "active_params": 220,
       "arch": "moe",
@@ -1105,7 +1193,10 @@
         "rank_p97_5": 39,
         "score_p2_5": 1025,
         "score_p97_5": 1042,
-        "trust_range": [4, 4],
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.5830743197509137
       },
       "distribution": "api-only",
@@ -1153,7 +1244,10 @@
         "rank_p97_5": 7,
         "score_p2_5": 1096,
         "score_p97_5": 1110,
-        "trust_range": [1, 3],
+        "trust_range": [
+          1,
+          3
+        ],
         "win_rate": 0.6317699216950714
       },
       "distribution": "api-only",
@@ -1201,7 +1295,10 @@
         "rank_p97_5": 7,
         "score_p2_5": 1097,
         "score_p97_5": 1119,
-        "trust_range": [1, 4],
+        "trust_range": [
+          1,
+          4
+        ],
         "win_rate": 0.5878485145282403
       },
       "distribution": "api-only",
@@ -1240,6 +1337,37 @@
       "url": null,
       "wh_per_million_token": 87485.15999999997
     },
+    "gemini-3-flash-preview": {
+      "active_params": 137,
+      "arch": "moe",
+      "commercial_use": null,
+      "data": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "google/gemini-3-flash-preview",
+        "api_type": "openrouter"
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "google-color",
+      "id": "gemini-3-flash-preview",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "Google",
+      "params": 440,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 440,
+      "reuse": false,
+      "simple_name": "Gemini 3 Flash",
+      "status": "enabled",
+      "url": "https://blog.google/products/gemini/gemini-3-flash/",
+      "wh_per_million_token": 87485.15999999997
+    },
     "gemini-3-pro-preview": {
       "active_params": 45,
       "arch": "moe",
@@ -1253,7 +1381,10 @@
         "rank_p97_5": 16,
         "score_p2_5": 1072,
         "score_p97_5": 1117,
-        "trust_range": [4, 9],
+        "trust_range": [
+          4,
+          9
+        ],
         "win_rate": 0.5335568513119533
       },
       "distribution": "api-only",
@@ -1332,7 +1463,10 @@
         "rank_p97_5": 59,
         "score_p2_5": 980,
         "score_p97_5": 1026,
-        "trust_range": [11, 10],
+        "trust_range": [
+          11,
+          10
+        ],
         "win_rate": 0.5826115485564304
       },
       "distribution": "open-weights",
@@ -1407,7 +1541,10 @@
         "rank_p97_5": 73,
         "score_p2_5": 946,
         "score_p97_5": 964,
-        "trust_range": [4, 3],
+        "trust_range": [
+          4,
+          3
+        ],
         "win_rate": 0.5068660801564027
       },
       "distribution": "open-weights",
@@ -1455,7 +1592,10 @@
         "rank_p97_5": 24,
         "score_p2_5": 1059,
         "score_p97_5": 1074,
-        "trust_range": [3, 6],
+        "trust_range": [
+          3,
+          6
+        ],
         "win_rate": 0.5626548536209554
       },
       "distribution": "open-weights",
@@ -1507,7 +1647,10 @@
         "rank_p97_5": 14,
         "score_p2_5": 1080,
         "score_p97_5": 1094,
-        "trust_range": [3, 4],
+        "trust_range": [
+          3,
+          4
+        ],
         "win_rate": 0.5778001165501165
       },
       "distribution": "open-weights",
@@ -1559,7 +1702,10 @@
         "rank_p97_5": 34,
         "score_p2_5": 1035,
         "score_p97_5": 1049,
-        "trust_range": [3, 3],
+        "trust_range": [
+          3,
+          3
+        ],
         "win_rate": 0.5238793447862565
       },
       "distribution": "open-weights",
@@ -1611,7 +1757,10 @@
         "rank_p97_5": 40,
         "score_p2_5": 1022,
         "score_p97_5": 1044,
-        "trust_range": [6, 4],
+        "trust_range": [
+          6,
+          4
+        ],
         "win_rate": 0.4914280652019844
       },
       "distribution": "open-weights",
@@ -1663,7 +1812,10 @@
         "rank_p97_5": 23,
         "score_p2_5": 1059,
         "score_p97_5": 1087,
-        "trust_range": [6, 7],
+        "trust_range": [
+          6,
+          7
+        ],
         "win_rate": 0.5520911360799001
       },
       "distribution": "open-weights",
@@ -1698,7 +1850,7 @@
       "required_ram": 355,
       "reuse": true,
       "simple_name": "GLM 4.5",
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 21407.82
     },
@@ -1715,7 +1867,10 @@
         "rank_p97_5": 40,
         "score_p2_5": 1021,
         "score_p97_5": 1053,
-        "trust_range": [5, 8],
+        "trust_range": [
+          5,
+          8
+        ],
         "win_rate": 0.5016537649542576
       },
       "distribution": "open-weights",
@@ -1752,6 +1907,37 @@
       "simple_name": "GLM 4.6",
       "status": "enabled",
       "url": null,
+      "wh_per_million_token": 21407.82
+    },
+    "glm-4.7": {
+      "active_params": 32,
+      "arch": "moe",
+      "commercial_use": true,
+      "data": null,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "z-ai/glm-4.7",
+        "api_type": "openrouter"
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "zhipu-color",
+      "id": "glm-4.7",
+      "license": "MIT",
+      "new": false,
+      "organisation": "Zhipu",
+      "params": 357,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 357,
+      "reuse": true,
+      "simple_name": "GLM 4.7",
+      "status": "enabled",
+      "url": "https://z.ai/blog/glm-4.7",
       "wh_per_million_token": 21407.82
     },
     "gpt-3.5-turbo-0301": {
@@ -1794,7 +1980,10 @@
         "rank_p97_5": 38,
         "score_p2_5": 1027,
         "score_p97_5": 1041,
-        "trust_range": [3, 4],
+        "trust_range": [
+          3,
+          4
+        ],
         "win_rate": 0.515105285176405
       },
       "distribution": "api-only",
@@ -1846,7 +2035,10 @@
         "rank_p97_5": 62,
         "score_p2_5": 973,
         "score_p97_5": 988,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.4674846947699843
       },
       "distribution": "api-only",
@@ -1898,7 +2090,10 @@
         "rank_p97_5": 70,
         "score_p2_5": 955,
         "score_p97_5": 973,
-        "trust_range": [4, 4],
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.48863297150610585
       },
       "distribution": "api-only",
@@ -1946,7 +2141,10 @@
         "rank_p97_5": 61,
         "score_p2_5": 976,
         "score_p97_5": 992,
-        "trust_range": [5, 5],
+        "trust_range": [
+          5,
+          5
+        ],
         "win_rate": 0.49947067238912735
       },
       "distribution": "api-only",
@@ -1994,7 +2192,10 @@
         "rank_p97_5": 52,
         "score_p2_5": 993,
         "score_p97_5": 1013,
-        "trust_range": [4, 4],
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.45610721302273366
       },
       "distribution": "api-only",
@@ -2046,7 +2247,10 @@
         "rank_p97_5": 48,
         "score_p2_5": 1003,
         "score_p97_5": 1027,
-        "trust_range": [4, 6],
+        "trust_range": [
+          4,
+          6
+        ],
         "win_rate": 0.47244562805148693
       },
       "distribution": "api-only",
@@ -2098,7 +2302,10 @@
         "rank_p97_5": 76,
         "score_p2_5": 936,
         "score_p97_5": 965,
-        "trust_range": [7, 3],
+        "trust_range": [
+          7,
+          3
+        ],
         "win_rate": 0.39220737573490116
       },
       "distribution": "api-only",
@@ -2150,7 +2357,10 @@
         "rank_p97_5": 18,
         "score_p2_5": 1070,
         "score_p97_5": 1104,
-        "trust_range": [7, 7],
+        "trust_range": [
+          7,
+          7
+        ],
         "win_rate": 0.5648636763412489
       },
       "distribution": "api-only",
@@ -2233,7 +2443,10 @@
         "rank_p97_5": 17,
         "score_p2_5": 1069,
         "score_p97_5": 1105,
-        "trust_range": [5, 8],
+        "trust_range": [
+          5,
+          8
+        ],
         "win_rate": 0.5667617107942973
       },
       "distribution": "open-weights",
@@ -2285,7 +2498,10 @@
         "rank_p97_5": 42,
         "score_p2_5": 1017,
         "score_p97_5": 1046,
-        "trust_range": [8, 4],
+        "trust_range": [
+          8,
+          4
+        ],
         "win_rate": 0.4939969372128637
       },
       "distribution": "open-weights",
@@ -2337,7 +2553,10 @@
         "rank_p97_5": 28,
         "score_p2_5": 1049,
         "score_p97_5": 1080,
-        "trust_range": [6, 9],
+        "trust_range": [
+          6,
+          9
+        ],
         "win_rate": 0.5305338541666668
       },
       "distribution": "api-only",
@@ -2389,7 +2608,10 @@
         "rank_p97_5": 28,
         "score_p2_5": 1049,
         "score_p97_5": 1073,
-        "trust_range": [5, 7],
+        "trust_range": [
+          5,
+          7
+        ],
         "win_rate": 0.5263937208315655
       },
       "distribution": "api-only",
@@ -2441,7 +2663,10 @@
         "rank_p97_5": 26,
         "score_p2_5": 1054,
         "score_p97_5": 1103,
-        "trust_range": [10, 12],
+        "trust_range": [
+          10,
+          12
+        ],
         "win_rate": 0.5550185873605948
       },
       "distribution": "api-only",
@@ -2455,7 +2680,7 @@
       "icon_path": "xai",
       "id": "grok-4.1-fast",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "xAI",
       "params": 1700,
       "prefs": {
@@ -2493,7 +2718,10 @@
         "rank_p97_5": 76,
         "score_p2_5": 936,
         "score_p97_5": 952,
-        "trust_range": [5, 1],
+        "trust_range": [
+          5,
+          1
+        ],
         "win_rate": 0.46634743875278395
       },
       "distribution": "open-weights",
@@ -2541,7 +2769,10 @@
         "rank_p97_5": 80,
         "score_p2_5": 919,
         "score_p97_5": 949,
-        "trust_range": [4, 4],
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.37784324324324325
       },
       "distribution": "open-weights",
@@ -2593,7 +2824,10 @@
         "rank_p97_5": 79,
         "score_p2_5": 926,
         "score_p97_5": 1021,
-        "trust_range": [20, 19],
+        "trust_range": [
+          20,
+          19
+        ],
         "win_rate": 0.5449418604651163
       },
       "distribution": "open-weights",
@@ -2641,7 +2875,10 @@
         "rank_p97_5": 34,
         "score_p2_5": 1035,
         "score_p97_5": 1080,
-        "trust_range": [10, 10],
+        "trust_range": [
+          10,
+          10
+        ],
         "win_rate": 0.4913715277777777
       },
       "distribution": "open-weights",
@@ -2693,7 +2930,10 @@
         "rank_p97_5": 48,
         "score_p2_5": 1003,
         "score_p97_5": 1109,
-        "trust_range": [22, 23],
+        "trust_range": [
+          22,
+          23
+        ],
         "win_rate": 0.45411764705882357
       },
       "distribution": "open-weights",
@@ -2707,7 +2947,7 @@
       "icon_path": "moonshot",
       "id": "kimi-k2-thinking",
       "license": "MIT",
-      "new": true,
+      "new": false,
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
@@ -2745,7 +2985,10 @@
         "rank_p97_5": 82,
         "score_p2_5": 872,
         "score_p97_5": 894,
-        "trust_range": [1, 0],
+        "trust_range": [
+          1,
+          0
+        ],
         "win_rate": 0.416296813862493
       },
       "distribution": "api-only",
@@ -2793,7 +3036,10 @@
         "rank_p97_5": 52,
         "score_p2_5": 991,
         "score_p97_5": 1037,
-        "trust_range": [10, 9],
+        "trust_range": [
+          10,
+          9
+        ],
         "win_rate": 0.4758333333333334
       },
       "distribution": "open-weights",
@@ -2807,7 +3053,7 @@
       "icon_path": "liquid",
       "id": "lfm2-8b-a1b",
       "license": "LFM 1.0",
-      "new": true,
+      "new": false,
       "organisation": "Liquid",
       "params": 8,
       "prefs": {
@@ -2845,7 +3091,10 @@
         "rank_p97_5": 71,
         "score_p2_5": 952,
         "score_p97_5": 966,
-        "trust_range": [4, 2],
+        "trust_range": [
+          4,
+          2
+        ],
         "win_rate": 0.4950747166783672
       },
       "distribution": "open-weights",
@@ -2897,7 +3146,10 @@
         "rank_p97_5": 66,
         "score_p2_5": 965,
         "score_p97_5": 983,
-        "trust_range": [4, 5],
+        "trust_range": [
+          4,
+          5
+        ],
         "win_rate": 0.530445996775927
       },
       "distribution": "open-weights",
@@ -2945,7 +3197,10 @@
         "rank_p97_5": 79,
         "score_p2_5": 927,
         "score_p97_5": 941,
-        "trust_range": [3, 2],
+        "trust_range": [
+          3,
+          2
+        ],
         "win_rate": 0.4425648302182209
       },
       "distribution": "open-weights",
@@ -2997,7 +3252,10 @@
         "rank_p97_5": 33,
         "score_p2_5": 1040,
         "score_p97_5": 1055,
-        "trust_range": [4, 3],
+        "trust_range": [
+          4,
+          3
+        ],
         "win_rate": 0.5452863107664778
       },
       "distribution": "open-weights",
@@ -3049,7 +3307,10 @@
         "rank_p97_5": 59,
         "score_p2_5": 980,
         "score_p97_5": 994,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.4753419262441819
       },
       "distribution": "open-weights",
@@ -3101,7 +3362,10 @@
         "rank_p97_5": 48,
         "score_p2_5": 1004,
         "score_p97_5": 1020,
-        "trust_range": [4, 4],
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.49095075376884423
       },
       "distribution": "open-weights",
@@ -3153,7 +3417,10 @@
         "rank_p97_5": 50,
         "score_p2_5": 996,
         "score_p97_5": 1020,
-        "trust_range": [5, 4],
+        "trust_range": [
+          5,
+          4
+        ],
         "win_rate": 0.4789038634321653
       },
       "distribution": "open-weights",
@@ -3205,7 +3472,10 @@
         "rank_p97_5": 14,
         "score_p2_5": 1078,
         "score_p97_5": 1103,
-        "trust_range": [3, 6],
+        "trust_range": [
+          3,
+          6
+        ],
         "win_rate": 0.5804043616537937
       },
       "distribution": "api-only",
@@ -3257,7 +3527,10 @@
         "rank_p97_5": 31,
         "score_p2_5": 1040,
         "score_p97_5": 1062,
-        "trust_range": [7, 2],
+        "trust_range": [
+          7,
+          2
+        ],
         "win_rate": 0.5215781100859052
       },
       "distribution": "open-weights",
@@ -3363,7 +3636,10 @@
         "rank_p97_5": 72,
         "score_p2_5": 948,
         "score_p97_5": 996,
-        "trust_range": [12, 9],
+        "trust_range": [
+          12,
+          9
+        ],
         "win_rate": 0.404104134762634
       },
       "distribution": "open-weights",
@@ -3377,7 +3653,7 @@
       "icon_path": "minimax-color",
       "id": "minimax-m2",
       "license": "MIT",
-      "new": true,
+      "new": false,
       "organisation": "MiniMax",
       "params": 230,
       "prefs": {
@@ -3415,7 +3691,10 @@
         "rank_p97_5": 69,
         "score_p2_5": 958,
         "score_p97_5": 972,
-        "trust_range": [3, 4],
+        "trust_range": [
+          3,
+          4
+        ],
         "win_rate": 0.47576819407008086
       },
       "distribution": "open-weights",
@@ -3463,7 +3742,10 @@
         "rank_p97_5": 43,
         "score_p2_5": 1014,
         "score_p97_5": 1028,
-        "trust_range": [3, 3],
+        "trust_range": [
+          3,
+          3
+        ],
         "win_rate": 0.527441386340469
       },
       "distribution": "open-weights",
@@ -3511,7 +3793,10 @@
         "rank_p97_5": 9,
         "score_p2_5": 1088,
         "score_p97_5": 1159,
-        "trust_range": [1, 7],
+        "trust_range": [
+          1,
+          7
+        ],
         "win_rate": 0.6028268551236748
       },
       "distribution": "open-weights",
@@ -3563,7 +3848,10 @@
         "rank_p97_5": 18,
         "score_p2_5": 1068,
         "score_p97_5": 1093,
-        "trust_range": [5, 5],
+        "trust_range": [
+          5,
+          5
+        ],
         "win_rate": 0.5526197916666666
       },
       "distribution": "api-only",
@@ -3615,7 +3903,10 @@
         "rank_p97_5": 85,
         "score_p2_5": 845,
         "score_p97_5": 863,
-        "trust_range": [1, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.37482482802751566
       },
       "distribution": "open-weights",
@@ -3663,7 +3954,10 @@
         "rank_p97_5": 46,
         "score_p2_5": 1009,
         "score_p97_5": 1025,
-        "trust_range": [2, 5],
+        "trust_range": [
+          2,
+          5
+        ],
         "win_rate": 0.4829677680924387
       },
       "distribution": "api-only",
@@ -3715,7 +4009,10 @@
         "rank_p97_5": 60,
         "score_p2_5": 977,
         "score_p97_5": 998,
-        "trust_range": [3, 8],
+        "trust_range": [
+          3,
+          8
+        ],
         "win_rate": 0.4952350813743219
       },
       "distribution": "open-weights",
@@ -3763,7 +4060,10 @@
         "rank_p97_5": 28,
         "score_p2_5": 1050,
         "score_p97_5": 1070,
-        "trust_range": [5, 6],
+        "trust_range": [
+          5,
+          6
+        ],
         "win_rate": 0.5370412999322952
       },
       "distribution": "open-weights",
@@ -3815,7 +4115,10 @@
         "rank_p97_5": 50,
         "score_p2_5": 999,
         "score_p97_5": 1016,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.4945107304587517
       },
       "distribution": "open-weights",
@@ -3890,7 +4193,10 @@
         "rank_p97_5": 86,
         "score_p2_5": 833,
         "score_p97_5": 853,
-        "trust_range": [1, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.36710357470210814
       },
       "distribution": "open-weights",
@@ -3938,7 +4244,10 @@
         "rank_p97_5": 82,
         "score_p2_5": 872,
         "score_p97_5": 899,
-        "trust_range": [1, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.43488671874999996
       },
       "distribution": "open-weights",
@@ -3986,7 +4295,10 @@
         "rank_p97_5": 64,
         "score_p2_5": 968,
         "score_p97_5": 999,
-        "trust_range": [6, 9],
+        "trust_range": [
+          6,
+          9
+        ],
         "win_rate": 0.51142063001853
       },
       "distribution": "api-only",
@@ -4034,7 +4346,10 @@
         "rank_p97_5": 51,
         "score_p2_5": 995,
         "score_p97_5": 1017,
-        "trust_range": [5, 4],
+        "trust_range": [
+          5,
+          4
+        ],
         "win_rate": 0.47113978494623654
       },
       "distribution": "api-only",
@@ -4113,7 +4428,10 @@
         "rank_p97_5": 82,
         "score_p2_5": 876,
         "score_p97_5": 1018,
-        "trust_range": [29, 11],
+        "trust_range": [
+          29,
+          11
+        ],
         "win_rate": 0.4001754385964913
       },
       "distribution": "open-weights",
@@ -4127,7 +4445,7 @@
       "icon_path": "ai2.svg",
       "id": "olmo-3-32b-think",
       "license": "Apache 2.0",
-      "new": true,
+      "new": false,
       "organisation": "Ai2",
       "params": 32,
       "prefs": {
@@ -4219,7 +4537,10 @@
         "rank_p97_5": 84,
         "score_p2_5": 848,
         "score_p97_5": 878,
-        "trust_range": [1, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.4021104536489152
       },
       "distribution": "open-weights",
@@ -4267,7 +4588,10 @@
         "rank_p97_5": 67,
         "score_p2_5": 963,
         "score_p97_5": 975,
-        "trust_range": [4, 3],
+        "trust_range": [
+          4,
+          3
+        ],
         "win_rate": 0.4694895140664962
       },
       "distribution": "open-weights",
@@ -4319,7 +4643,10 @@
         "rank_p97_5": 62,
         "score_p2_5": 973,
         "score_p97_5": 1002,
-        "trust_range": [4, 9],
+        "trust_range": [
+          4,
+          9
+        ],
         "win_rate": 0.44024767801857584
       },
       "distribution": "open-weights",
@@ -4452,7 +4779,10 @@
         "rank_p97_5": 89,
         "score_p2_5": 637,
         "score_p97_5": 810,
-        "trust_range": [2, 0],
+        "trust_range": [
+          2,
+          0
+        ],
         "win_rate": 0.2525
       },
       "distribution": "open-weights",
@@ -4500,7 +4830,10 @@
         "rank_p97_5": 80,
         "score_p2_5": 909,
         "score_p97_5": 1013,
-        "trust_range": [24, 12],
+        "trust_range": [
+          24,
+          12
+        ],
         "win_rate": 0.5557042253521126
       },
       "distribution": "open-weights",
@@ -4548,7 +4881,10 @@
         "rank_p97_5": 80,
         "score_p2_5": 909,
         "score_p97_5": 946,
-        "trust_range": [7, 1],
+        "trust_range": [
+          7,
+          1
+        ],
         "win_rate": 0.49383909668313336
       },
       "distribution": "open-weights",
@@ -4596,7 +4932,10 @@
         "rank_p97_5": 80,
         "score_p2_5": 921,
         "score_p97_5": 936,
-        "trust_range": [4, 0],
+        "trust_range": [
+          4,
+          0
+        ],
         "win_rate": 0.43789423208658723
       },
       "distribution": "open-weights",
@@ -4644,7 +4983,10 @@
         "rank_p97_5": 61,
         "score_p2_5": 975,
         "score_p97_5": 1000,
-        "trust_range": [2, 10],
+        "trust_range": [
+          2,
+          10
+        ],
         "win_rate": 0.4529285714285714
       },
       "distribution": "open-weights",
@@ -4696,7 +5038,10 @@
         "rank_p97_5": 42,
         "score_p2_5": 1016,
         "score_p97_5": 1050,
-        "trust_range": [9, 5],
+        "trust_range": [
+          9,
+          5
+        ],
         "win_rate": 0.5366636029411764
       },
       "distribution": "open-weights",
@@ -4748,7 +5093,10 @@
         "rank_p97_5": 46,
         "score_p2_5": 1006,
         "score_p97_5": 1063,
-        "trust_range": [11, 13],
+        "trust_range": [
+          11,
+          13
+        ],
         "win_rate": 0.5497010869565218
       },
       "distribution": "open-weights",
@@ -4800,7 +5148,10 @@
         "rank_p97_5": 10,
         "score_p2_5": 1087,
         "score_p97_5": 1114,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.5798989898989898
       },
       "distribution": "api-only",
@@ -4852,7 +5203,10 @@
         "rank_p97_5": 76,
         "score_p2_5": 937,
         "score_p97_5": 967,
-        "trust_range": [7, 4],
+        "trust_range": [
+          7,
+          4
+        ],
         "win_rate": 0.4485997442455243
       },
       "distribution": "open-weights",
@@ -4904,7 +5258,10 @@
         "rank_p97_5": 89,
         "score_p2_5": 670,
         "score_p97_5": 853,
-        "trust_range": [3, 2],
+        "trust_range": [
+          3,
+          2
+        ],
         "win_rate": 0.32599999999999996
       },
       "distribution": "open-weights",

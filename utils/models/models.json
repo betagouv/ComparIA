@@ -359,7 +359,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
         "id": "grok-4.1-fast",
         "simple_name": "Grok 4.1 Fast",
         "license": "proprietary",
@@ -482,6 +481,24 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
+        {
+        "new": true,
+        "id": "gemini-3-flash-preview",
+        "simple_name": "Gemini 3 Flash",
+        "license": "proprietary",
+        "release_date": "12/2025",
+        "arch": "moe",
+        "params": 440,
+        "active_params": 137,
+        "url": "https://blog.google/products/gemini/gemini-3-flash/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3-flash-preview"
+        },
+        "desc": "Grand modèle multimodal natif et multilingue, distillé depuis Gemini 3 Pro. Il intègre une capacité de raisonnement avancée (\"Deep Think\") activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur. Le modèle prend en charge nativement le texte, le code, l'audio, l'image, la vidéo et les PDF.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE). Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton, ce qui réduit la puissance de calcul nécessaire. Sa fenêtre de contexte s'étend jusqu'à 1 million de jetons. Le modèle est environ 9 fois moins coûteux que Gemini 3 Pro. L'impact environnemental varie selon le niveau de raisonnement choisi : un raisonnement approfondi génère davantage de jetons et consomme donc plus de ressources.",
+        "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Gemini 3 Flash peut traiter des volumes importants de contenu multimodal par prompt : jusqu'à 900 images, 900 PDFs de 900 pages chacun, des vidéos de 45 minutes à 1 heure, et jusqu'à 8,4 heures d'audio. Au moment de sa sortie, Gemini 3 Flash se montre très performant tout en étant environ neuf fois moins coûteux que Gemini 3 Pro. "
+      },
       {
         "new": true,
         "id": "gemini-3-pro-preview",
@@ -879,7 +896,6 @@
     "icon_path": "moonshot",
     "models": [
       {
-        "new": true,
         "id": "kimi-k2-thinking",
         "simple_name": "Kimi K2 Thinking",
         "license": "MIT",
@@ -1387,7 +1403,6 @@
     "proprietary_reuse_specificities": "sauf pour distiller ou entraîner d’autres modèles sur les plateformes d’Amazon.",
     "models": [
       {
-        "new": true,
         "id": "nova-lite",
         "status": "missing_data",
         "simple_name": "Nova Lite",
@@ -1471,6 +1486,23 @@
     "name": "Zhipu",
     "icon_path": "zhipu-color",
     "models": [
+        {
+        "id": "glm-4.7",
+        "simple_name": "GLM 4.7",
+        "license": "MIT",
+        "release_date": "12/2025",
+        "arch": "moe",
+        "params": 357,
+        "active_params": 32,
+        "url": "https://z.ai/blog/glm-4.7",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "z-ai/glm-4.7"
+        },
+        "desc": "Grand modèle spécialisé en code créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour améliore sa performance en code (notamment pour les interfaces web), interragi mieux avec des environnements de code assisté par IA et plus généralement performe mieux dans des contextes agentiques.",
+        "size_desc": "Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.",
+        "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications et des interfaces. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
+      },
       {
         "id": "glm-4.6",
         "simple_name": "GLM 4.6",
@@ -1483,11 +1515,12 @@
           "api_type": "openrouter",
           "api_model_id": "z-ai/glm-4.6"
         },
-        "desc": "Mise à jour du grand modèle créé par Zhipu AI - GLM 4.6, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.",
+        "desc": "Grand modèle spécialisé en code créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.",
         "size_desc": "Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.",
         "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
       },
       {
+        "status": "archived",
         "id": "glm-4.5",
         "simple_name": "GLM 4.5",
         "license": "MIT",
@@ -1499,7 +1532,7 @@
           "api_type": "openrouter",
           "api_model_id": "z-ai/glm-4.5"
         },
-        "desc": "Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
+        "desc": "Grand modèle spécialisé en code créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "Avec 355 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.",
         "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
       }
@@ -1604,7 +1637,6 @@
     "icon_path": "ai2.svg",
     "models": [
       {
-        "new": true,
         "id": "olmo-3-32b-think",
         "simple_name": "Olmo 3 32B Think",
         "license": "Apache 2.0",
@@ -1663,7 +1695,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
     "models": [
       {
-        "new": true,
         "id": "lfm2-8b-a1b",
         "simple_name": "LFM 2 8B A1B",
         "license": "LFM 1.0",
@@ -1756,7 +1787,6 @@
     "icon_path": "minimax-color",
     "models": [
       {
-        "new": true,
         "id": "minimax-m2",
         "simple_name": "MiniMax M2",
         "license": "MIT",
@@ -1772,6 +1802,30 @@
         "desc": "Modèle spécialisé dans le code avec un rapport qualité/rapidité/prix très compétitif. Il a été conçu par MiniMax, entreprise basée à Shanghai en Chine.",
         "size_desc": "Modèle d'architecture mélange d'experts avec 230 milliards de paramètres (dont 10 milliards actifs par génération de jeton). La fenêtre de contexte s'élève à 200 000 jetons, permettant de traîter des bases de code entières et des documents longs.",
         "fyi": "Modèle conçu spécifiquement pour des tâches agentiques (notamment du code), avec un entraînement pour respecter des protocoles stricts de contrôle d'agent (planification, appels d'outils, vérification)."
+      }
+    ]
+  }, 
+  {
+    "name": "EuroLLM",
+    "icon_path": "euroLLM.webp",  
+    "models": [
+      {
+        "new": true,
+        "id": "EuroLLM-22B-Instruct-2512",
+        "simple_name": "EuroLLM 22B Instruct",
+        "license": "Apache 2.0",
+        "release_date": "12/2025",
+        "arch": "dense",
+        "params": 22,
+        "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
+        "endpoint": {
+          "api_type": "huggingface",
+          "api_base": "https://router.huggingface.co/v1",
+          "api_model_id": "utter-project/EuroLLM-22B-Instruct-2512"
+        },
+        "desc": "Modèle multilingue conçu spécifiquement pour la diversité linguistique européenne, avec de fortes capacités en traduction et compréhension multilingue.",
+        "size_desc": "Avec 22 milliards de paramètres, ce modèle se situe dans la catégorie des modèles de taille intermédiaire. Son utilisation nécessite un ordinateur personnel très puissant ou, plus généralement, un serveur disposant d’au moins une carte graphique performante. La fenêtre de contexte atteint 32 000 jetons.",
+        "fyi": "EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l’Union européenne ainsi que 11 langues supplémentaires. L’entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d’un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d’une allocation de calcul « extreme-scale ».\n\nLes données d’entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l’équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue."
       }
     ]
   }
