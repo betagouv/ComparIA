@@ -11,6 +11,7 @@ from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     MODELS_DATA_PATH,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
+    CustomModelsSelection,
     SelectionMode,
 )
 from backend.language_models.models import LanguageModel
@@ -129,7 +130,7 @@ class LanguageModels(BaseModel):
     def pick_two(
         self,
         mode: SelectionMode | None = "random",
-        custom_selection: tuple[str] | tuple[str, str] | None = None,
+        custom_selection: CustomModelsSelection = None,
         unavailable_models: list[str] = [],
     ) -> tuple[str, str]:
         """

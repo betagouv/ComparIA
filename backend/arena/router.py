@@ -26,6 +26,7 @@ from backend.arena.utils import (
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
+    CustomModelsSelection,
     SelectionMode,
 )
 from backend.errors import Errors
@@ -77,7 +78,7 @@ def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) ->
 class AddFirstTextBody(BaseModel):
     prompt_value: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
     mode: SelectionMode = DEFAULT_SELECTION_MODE
-    custom_models_selection: tuple[str] | tuple[str, str] | None = None
+    custom_models_selection: CustomModelsSelection = None
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
@@ -124,7 +125,12 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
 
     # Initialize conversations using Pydantic models
     conversations = create_conversations(
-        llm_a, llm_b, args.prompt_value, args.mode, category=None
+        llm_a,
+        llm_b,
+        args.prompt_value,
+        args.mode,
+        args.custom_models_selection,
+        category=None,
     )  # FIXME category?
 
     # Store conversations in Redis
@@ -151,7 +157,6 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
                 request=request,
                 locale="fr",  # FIXME
                 cohorts_comma_separated="",  # FIXME
-                custom_models_selection=args.custom_models_selection,
             )
             logger.info(
                 f"[ADD_FIRST_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
