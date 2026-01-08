@@ -6,17 +6,17 @@ Handles real-time streaming of model responses to the frontend using SSE protoco
 
 import json
 import logging
-from typing import Any, AsyncIterator, Literal
+from typing import Any, AsyncIterator
 
 from fastapi.responses import StreamingResponse
 
-from backend.arena.models import Conversation, Conversations
+from backend.arena.models import BotPos, Conversation, Conversations
 
 logger = logging.getLogger("languia")
 
 
 async def stream_bot_response(
-    position: Literal["a", "b"], conv: Conversation, request: Any
+    position: BotPos, conv: Conversation, request: Any
 ) -> AsyncIterator[str]:
     """
     Stream a single bot response using Server-Sent Events format.
