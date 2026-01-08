@@ -13,7 +13,7 @@ import json
 import logging
 import os
 from datetime import datetime
-from typing import Any
+from pathlib import Path
 
 import psycopg2
 from fastapi import Request
@@ -31,10 +31,6 @@ from backend.config import settings
 from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
-
-# Directory for JSON backup files
-LOGDIR = os.getenv("LOGDIR", "./data")
-os.makedirs(LOGDIR, exist_ok=True)
 
 
 def get_db_connection():
@@ -618,9 +614,10 @@ def record_vote(
         "conv_comments_b": details["comments_b"],
     }
     vote_string = chosen_model_name or "both_equal"
+
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
-    vote_log_path = os.path.join(LOGDIR, vote_log_filename)
-    with open(vote_log_path, "a") as fout:
+    vote_log_path = settings.LOGDIR / vote_log_filename
+    with vote_log_path.open(mode="a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
         logger.info(
             f"preferences_a: {details['prefs_a']}",
@@ -752,8 +749,8 @@ def record_reaction(
     }
 
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
-    reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
-    with open(reaction_log_path, "a") as fout:
+    reaction_log_path = settings.LOGDIR / reaction_log_filename
+    with reaction_log_path.open(mode="a") as fout:
         fout.write(json.dumps(data) + "\n")
     logger.info(f"saved_reaction: {json.dumps(data)}", extra={"request": request})
 
@@ -838,11 +835,8 @@ def record_conversations(
         f"[COHORT] record_conversations - conv_pair_id={conv_pair_id}, cohorts_comma_separated={cohorts_comma_separated}, type={type(cohorts_comma_separated)}"
     )
 
-    conv_log_filename = f"conv-{conv_pair_id}.json"
-    conv_log_path = os.path.join(LOGDIR, conv_log_filename)
-
+    conv_log_path = settings.LOGDIR / f"conv-{conv_pair_id}.json"
     # Always rewrite the file
-    with open(conv_log_path, "w") as fout:
-        fout.write(json.dumps(data) + "\n")
+    conv_log_path.write_text(json.dumps(data) + "\n")
 
     return upsert_conv_to_db(data=data)
