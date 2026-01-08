@@ -1,8 +1,15 @@
+import os
 from pathlib import Path
 from typing import Literal, cast, get_args
 
 from httpx import Timeout
 from pydantic_settings import BaseSettings
+
+BACKEND_PATH = Path(__file__).parent
+ROOT_PATH = BACKEND_PATH.parent
+FRONTEND_PATH = ROOT_PATH / "frontend"
+
+MODELS_DATA_PATH = ROOT_PATH / "utils" / "models" / "generated-models.json"
 
 
 class Settings(BaseSettings):
@@ -11,7 +18,7 @@ class Settings(BaseSettings):
     COMPARIA_REDIS_HOST: str = "localhost"
     MOCK_RESPONSE: bool = False
     DATABASE_URI: str | None = None
-    LOGDIR: str = "./data"
+    LOGDIR: Path = ROOT_PATH / "data"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None
@@ -31,11 +38,8 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-BACKEND_PATH = Path(__file__).parent
-ROOT_PATH = BACKEND_PATH.parent
-FRONTEND_PATH = ROOT_PATH / "frontend"
-
-MODELS_DATA_PATH = ROOT_PATH / "utils" / "models" / "generated-models.json"
+# Create directory for JSON backup files
+os.makedirs(settings.LOGDIR, exist_ok=True)
 
 # HTTP timeout for API calls to LLM providers
 # Structure: total timeout, read, write, connect (all in seconds)
