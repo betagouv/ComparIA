@@ -100,6 +100,11 @@ i18n-build-news: ## generate news files
 	@echo "Generating news files..."
 	$(UV) run python -m utils.news.build_news
 
+dev-full-reset-data:
+	@echo "Removing docker dev data (volumes)..."
+	@cd docker && docker down -v
+	@$(MAKE) dev-full
+
 
 
 # db-schema-init: ## Initialize database schema
