@@ -5,9 +5,8 @@ Defines all data structures for:
 - Conversation data (messages, participant info, metadata)
 """
 
-from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Annotated, Any, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Union
 from uuid import uuid4
 
 from pydantic import (
@@ -15,7 +14,6 @@ from pydantic import (
     ConfigDict,
     Field,
     PlainSerializer,
-    RootModel,
     computed_field,
     model_validator,
 )
@@ -25,32 +23,6 @@ from backend.language_models.models import Endpoint, LanguageModel
 
 MessageRole = Literal["user", "assistant", "system"]
 BotPos = Literal["a", "b"]
-
-
-# Legacy metadata model (kept for compatibility)
-class Metadata(BaseModel):
-    """Metadata for chat messages."""
-
-    bot: Optional[Literal["a", "b"]] = None
-    duration: Optional[float] = None
-    generation_id: Optional[str] = None
-    output_tokens: Optional[int] = None
-
-
-@dataclass
-class ChatMessage:
-    """
-    Chat message dataclass for Gradio compatibility.
-
-    Used for frontend communication and during streaming (flexible metadata).
-    Will be converted to AnyMessage types for persistence.
-    """
-
-    role: Literal["user", "assistant", "system"]
-    content: str
-    error: Optional[str] = None
-    reasoning: Optional[str] = None
-    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 # New message hierarchy from commit 6b42a0964b34
@@ -102,32 +74,6 @@ class AssistantMessage(BaseMessage):
 
 # Union type for any message
 AnyMessage = SystemMessage | UserMessage | AssistantMessage
-
-
-# Legacy ConversationMessage (kept for backward compatibility)
-class ConversationMessage(BaseModel):
-    """
-    Single message in a conversation (legacy).
-
-    DEPRECATED: Use AnyMessage types instead.
-    """
-
-    role: str
-    content: str
-    metadata: dict[str, Any] | None = None
-
-    @model_validator(mode="after")
-    def check_assistant_metadata(self) -> "ConversationMessage":
-        if self.role == "assistant":
-            if not self.metadata or "output_tokens" not in self.metadata:
-                raise ValueError(
-                    "Assistant messages must have 'output_tokens' in metadata"
-                )
-        return self
-
-
-# Type alias for list of messages
-ConversationMessages = RootModel[list[ConversationMessage]]
 
 
 # New Conversation model (runtime, single model)
@@ -288,47 +234,6 @@ def create_conversations(
         custom_models_selection=custom_models_selection,
         category=category,
     )
-
-
-# Database model (renamed from Conversation to avoid collision)
-class ConversationRecord(BaseModel):
-    """
-    Database record for a paired conversation comparison.
-
-    Stores complete conversation data from both models for PostgreSQL persistence.
-    This is the model used for database operations and post-processing.
-    """
-
-    id: int
-    timestamp: datetime = Field(default_factory=datetime.now)
-    model_a_name: str
-    model_b_name: str
-    conversation_a: ConversationMessages
-    conversation_b: ConversationMessages
-    conv_turns: int = 0
-    system_prompt_a: str | None = None
-    system_prompt_b: str | None = None
-    conversation_pair_id: str
-    conv_a_id: str
-    conv_b_id: str
-    session_hash: str
-    visitor_id: str | None = None
-    ip: str | None = None  # Warning: PII
-    model_pair_name: str
-    opening_msg: str
-    archived: bool = False
-    mode: str | None = None
-    custom_models_selection: dict[str, Any] | None = None
-    short_summary: str | None = None
-    keywords: dict[str, Any] | None = None
-    categories: dict[str, Any] | None = None
-    languages: dict[str, Any] | None = None
-    pii_analyzed: bool = False
-    contains_pii: bool | None = None
-    total_conv_a_output_tokens: int | None = None
-    total_conv_b_output_tokens: int | None = None
-    ip_map: str | None = None
-    postprocess_failed: bool = False
 
 
 # Request/Response models for FastAPI endpoints
