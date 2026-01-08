@@ -768,7 +768,6 @@ def record_conversations(
     request: Request,
     locale: str,
     cohorts_comma_separated: str,
-    custom_models_selection: tuple[str] | tuple[str, str] | None,
 ) -> dict:
     """
     Record or update the conversation pair to database and JSON log files after each turn.
@@ -827,7 +826,7 @@ def record_conversations(
         "ip": str(get_ip(request)),
         "model_pair_name": model_pair_name,
         "mode": conversations.mode,
-        "custom_models_selection": json.dumps(custom_models_selection),
+        "custom_models_selection": json.dumps(conversations.custom_models_selection),
         "total_conv_a_output_tokens": sum_tokens(conv_a.messages),
         "total_conv_b_output_tokens": sum_tokens(conv_b.messages),
         "country_portal": locale,
