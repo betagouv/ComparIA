@@ -447,8 +447,121 @@
                     "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Anthropic’u platvormil või partnerplatvormidel; tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või mudeli majutamiseks reserveeritud taristule."
                 },
                 "Google": {
-                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Google’i platvormidel; tasumine toimub kasutuspõhiselt vastavalt töödeldud tokenite arvule või reserveeritud taristule."
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Google’i platvormidel; tasumine toimub kasutuspõhiselt vastavalt töödeldud tokenite arvule või reserveeritud taristule.",
+                    "reuse_specificities": "välja arvatud teiste mudelite treenimiseks Vertex AI platvormil"
+                },
+                "Liquid": {
+                    "license_desc": "See mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Liquid AI ja partnerite platvormidel; tasu arvestatakse kas tookenipõhiselt või reserveeritud taristu alusel."
+                },
+                "Mistral AI": {
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb ligi Mistrali API, Amazon SageMakeri ja mitme teise taristupakkuja kaudu; tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
+                },
+                "OpenAI": {
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi OpenAI platvormidel või Microsoft Azure’i teenuste kaudu; tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
+                },
+                "xAI": {
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb ligi X-i ja xAI kaudu; tasu arvestatakse kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
                 }
+            }
+        },
+        "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p>Avatud parameetritega ja reprodutseeritav keskmise suurusega mudel, mille on välja töötanud Šveitsi institutsioonide konsortsium. Selle parameetrid ja treeningkood on avaldatud lubava litsentsi alusel. Mudelit treeniti enam kui 1 800 keeles rohkem kui 15 triljoni tookeni põhjal. Treening toimus Luganos asuvas CSCS Alpsi superarvutil, mida toidab süsinikuneutraalne hüdroenergia.</p>",
+                "fyi": "<p>Mudelit treeniti Luganos asuval Alpsi superarvutil, kasutades enam kui 10 miljonit GPU-tundi, mida toitis süsinikuneutraalne hüdroenergia. Mudel eeltreeniti 15 triljoni tookeni põhjal, mis hõlmasid enam kui 1 800 keelt, sealhulgas märkimisväärses osas alaesindatud keeli.</p>\n<p>Apertus põhineb 131 000 kirjet hõlmaval baittasemel BPE-tokenisaatoril, mis on tuletatud Mistral AI „tekken“ tokenisaatorist ning optimeeritud mitmekeelsuse, koodi ja matemaatiliste avaldiste jaoks. Arhitektuur ühendab mitu uuendust: laiendatud baasiga <i>rotary positional embeddings</i> (RoPE ja NTK-teadliku häälestusega pikkade kontekstide jaoks, <i>grouped query attention</i> (GQA) parema mälutõhususe saavutamiseks, QK-Norm normaliseerimise treeningu stabiliseerimiseks ning xIELU aktiveerimisfunktsiooni, mis parandab MLP jõudlust.</p>\n<p>Mudeli lõplik täiustamine põhineb joondusalgoritmil nimega QRPO (Quantile Reward-Preferring Optimization), mis on alternatiiv klassikalisele RLHF-ile ja kasutab absoluutseid tasusignaale stabiilsema ning inimeste eelistustega paremini kooskõlas oleva õppimise saavutamiseks. Kuigi see ei konkureeri otseselt kõige arenenumate kommertsmudelitega, paistab Apertus silma oma läbipaistvuse taseme poolest.</p>"
+            },
+            "Chocolatine 2 14B": {
+                "desc": "<p>Alibaba Qwen 2.5 mudelil põhinev mudel on spetsialiseeritud prantsuse keelele.</p>",
+                "fyi": "<p>Alibaba Qwen 2.5 mudelil põhinev mudel on spetsialiseeritud prantsuse keelele. Mudeli nimi Chocolatine viitab CroissantLLM projektile, mis oli üks esimesi algatusi luua prantsuse keele jaoks optimeeritud väike avatud lähtekoodiga mudel.</p>",
+                "size_desc": "<p>Väikest mudelit on suuremate mudelitega võrreldes lihtsam ja odavam käitada. Samal ajal pakub see paljude ülesannete jaoks, nagu kokkuvõtete tegemine, tõlkimine jms, piisavat jõudlust.</p>"
+            },
+            "Claude 3.5 Sonnet v2": {
+                "desc": "<p>Väga tõhus koodiga töötamisel, mudel on loodud Claude 3 järeltreeningu käigus toimunud täiustuste tulemusena.</p>",
+                "fyi": "<p>Claude 3.5 perekonna parim mudel, mis on spetsialiseerunud kirjanduslike tekstide genereerimisele ja loomulikumale toonile. Versioon v2 ilmus 2024 oktoobris.</p>",
+                "size_desc": "<p>Need mudelid, millel on sadu miljardeid parameetreid, on jõudluse ja täpsuse poolest kõige keerukamad ja arenenumad. Nende mudelite kasutuselevõtuks vajalikud arvutus- ja mäluresursid on sedavõrd suured, et need on mõeldud kõige arenenumate rakenduste ja väga spetsialiseeritud keskkondade jaoks.</p>"
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "<p>Väga suur, multimodaalne ja mitmekeelne mudel, mis on tõhus koodi genereerimisel ning pakub kahte vastuserežiimi: kasutaja saab valida põhjalikumate vastuste jaoks arutlusrežiimi või lõppvastuse koheseks genereerimiseks kiire režiimi.</p>",
+                "fyi": "<p>Claude 4 Opus on Claude 4 perekonna kõige arenenum mudel. See on optimeeritud maksimaalse jõudluse ja keerukate ülesannete jaoks, mis nõuavad pikaajalist ja järjepidevat arutlemist: näiteks suudab see töötada pika kestvusega ülesannetega (Anthropicu väitel iseseisvalt kuni seitse tundi). Teisalt on Opuse kasutamine kallim, vastamine aeglasem ning see nõuab rohkem ressursse.</p>\n<p>Mudel pakub kahte kasutusrežiimi: keerukate probleemide jaoks arutlusrežiimi samm-sammulise arutlemisega ning otseste vastuste jaoks kiiret režiimi. Erinevalt teistest mudelitest ei ole arutlusrežiimi treenitud peamiselt matemaatiliste andmete põhjal, vaid see on kohandatud igapäevasteks kasutusjuhtudeks.</p>",
+                "size_desc": "<p>Mudeli täpne suurus ei ole teada. Tõendid viitavad sellele, et tegemist on väga suure mudeliga, mille käitamiseks on vaja mitme võimsa graafikakaardiga servereid. Olemasolevad hinnangud põhinevad kaudsetel näitajatel, nagu järelduskulud ja vastamise latentsus. Mudelil on kuni 200 000 tookeni suurune kontekstiaken, mis sobib pikkade dokumentide või koodihoidlate analüüsimiseks.</p>"
+            },
+            "Claude 4 Sonnet": {
+                "desc": "<p>Väga suur multimodaalne ja mitmekeelne mudel, mis on koodi käsitlemisel väga võimas. Kasutaja või arendaja saab selle mudeli kasutamisel valida mitme arutlustaseme vahel.</p>",
+                "fyi": "<p>Claude 4 Sonnet on Claude 4 Opuse kompaktsem versioon, mis on optimeeritud kiiruse, tõhususe ja parema kättesaadavuse jaoks. See on veidi vähem tõhus ülesannetes, mis nõuavad keerukat mitmeetapilist arutlemist. Samas on see oluliselt odavam, kiirem ja energiatõhusam kui Opus 4.</p>\n<p>Mudel pakub võimalust valida arutlemise intensiivsus. Erinevalt teistest mudelitest ei ole arutlusrežiimi treenitud peamiselt matemaatiliste andmete põhjal, vaid see on treenitud eelkõige reaalse elu kasutusjuhtude jaoks.</p>",
+                "size_desc": "<p>Täpne suurus ei ole teada. Tõendid viitavad sellele, et tegemist on väga suure mudeliga, mille käitamiseks on vaja mitme võimsa graafikakaardiga servereid. Olemasolevad hinnangud põhinevad kaudsetel näitajatel, nagu järelduskulud ja vastamise latentsus. Mudelil on kuni 1 000 000 tookeni suurune kontekstiaken, mis sobib väga pikkade dokumentide või koodihoidlate analüüsimiseks.</p>"
+            },
+            "Claude 4.5 Sonnet": {
+                "desc": "<p>Väga suur multimodaalne ja mitmekeelne mudel, mis on äärmiselt võimas koodi kirjutamises, arutlemises ja matemaatikas. Kasutajad või arendajad saavad selle mudeli kasutamisel valida mitme arutlustaseme vahel.</p>",
+                "fyi": "<p>Claude Sonnet 4.5 on Sonnet 4 otsene edasiarendus. Versioon .5 viitab olulistele muudatustele, mis viidi sisse järeltreeningu käigus ning mis tõid märkimisväärseid parandusi arutlemises, matemaatikas ja eelkõige arvutite praktilises kasutamises. Avaldamise hetkel peeti seda maailma parimaks mudeliks koodi kirjutamisel ning see paistis silma pikkade ja keerukate mitmeetapiliste ülesannete lahendamisel. Selle sooritus sellistes võrdluskatsetes nagu SWE-bench Verified ja OSWorld näitas selget edasiminekut võrreldes varasemate versioonidega, sealhulgas võimet säilitada fookust sama probleemi juures enam kui kolmkümmend tundi.</p>",
+                "size_desc": "<p>Täpne suurus ei ole teada. Kõik kättesaadavad teabeallikad viitavad sellele, et tegemist on väga suure mudeliga, mille käitamiseks on vaja mitme võimsa graafikakaardiga servereid. Suuruse ja energiatarbimise hinnangud põhinevad kaudsetel vihjetel, nagu järelduskulud ja täheldatud latentsus. Claude Sonnet 4.5 kontekstiaken ulatub kuni 1 000 000 tookenini, mis sobib tervete koodihoidlate või väga mahukate dokumentide analüüsimiseks.</p>"
+            },
+            "Command A": {
+                "desc": "<p>Suur mudel, mis on tõhus programmeerimisel, tööriistade kasutamisel ja RAG (<i>Retrieval Augmented Generation</i>) rakendustes.</p>"
+            },
+            "DeepSeek V3": {
+                "desc": "<p>Väga suur mudel, mis on loodud keerukate ülesannete jaoks: koodi kirjutamine, tööriistade kasutamine ja pikkade dokumentide analüüs. See toetab paljusid keeli, kuid sobib eriti hästi inglise ja hiina keele jaoks.</p>",
+                "fyi": "<p>See mudel põhineb <i> mixture-of-experts </i> (MoE) arhitektuuril ning sellel on 671 miljardit parameetrit, kuid iga genereeritud tookeni puhul aktiveeritakse neist vaid 37 miljardit. Mudel sobib hästi väliste tööriistadega (nt API, andmebaasid) suhtlemiseks, struktureeritud väljundi (JSON) genereerimiseks ja koodi kirjutamiseks.</p>",
+                "size_desc": "<p>DeepSeek V3 on väga suur mudel, mille käitamiseks on vaja mitut graafikakaarti. <i>Mixture-of-experts</i> (MoE) arhitektuur võimaldab siiski järgmise tookeni genereerimisel kasutada vaid osa parameetritest, vähendades seeläbi ressursivajadust võrreldes sama suurusega tiheda mudeliga.</p>\n<p>Kontekstiaken ulatub kuni 163 000 tookenini, mis on kasulik pikkade dokumentide analüüsimiseks.</p>"
+            },
+            "DeepSeek V3.2": {
+                "desc": "<p>Väga suur mudel, mis on loodud keerukate ülesannete jaoks: agentide orkestreerimine, koodi kirjutamine ja pikkade dokumentide analüüs. See versioon on eriti tugev tööriistade kasutamises ning suudab enne lõppvastuse esitamist simuleerida arutlusfaasi.</p>"
+            },
+            "DeepSeek v3": {
+                "desc": "<p>2024. aasta detsembris avaldatud DeepSeek V3 mudel kasutab <i>mixture-of-experts</i> (MoE) arhitektuuri, mis võimaldab sellel oma suuruse juures järeldusarvutuse kulusid vähendada.</p>",
+                "fyi": "<p>2024. aasta detsembris avaldatud Hiina ettevõtte DeepSeek juhtiv mudel kasutab <i>mixture-of-experts</i> (MoE) arhitektuuri, mis võimaldab sellel oma suuruse juures järeldusarvutuse kulusid vähendada.</p>",
+                "size_desc": "<p>Need mudelid, millel on sadu miljardeid parameetreid, on jõudluse ja täpsuse poolest kõige keerukamad ja arenenumad. Nende mudelite kasutuselevõtuks vajalikud arvutus- ja mäluresursid on sedavõrd suured, et need on mõeldud kõige kõrgetasemeliste rakenduste ja väga spetsialiseeritud keskkondade jaoks.</p>"
+            },
+            "DeepSeek v3.1": {
+                "desc": "<p>Väga suur mudel, mis on loodud keerukate ülesannete jaoks nagu näiteks koodi kirjutamine ja pikkade dokumentide analüüs. See versioon on eriti tugev tööriistade kasutamises ning suudab enne lõppvastuse esitamist simuleerida arutlusfaasi.</p>",
+                "fyi": "<p>See mudel põhineb <i>mixture-of-experts</i> (MoE) arhitektuuril ning sellel on 671 miljardit parameetrit, kuid iga genereeritud tookeni puhul aktiveeritakse neist vaid 37 miljardit. See on tõhus väliste tööriistadega suhtlemisel, struktureeritud väljundi (JSON) genereerimisel ja koodi kirjutamisel. Treenimisel kasutatakse FP8 mikroskaaleerimist, mis vähendab arvutus- ja mälukulusid, säilitades samal ajal täpsuse. Mudelit treeniti kahes etapis: esmalt 32 000 tookeni pikkustel jadadel, seejärel laiendati konteksti 163 000 tookenini, mis võimaldas paremat stabiilsust ja suuremat jõudlust väga pikkade kontekstide korral.</p>",
+                "size_desc": "<p>DeepSeek V3.1 on väga suur mudel, mille käitamiseks on vaja mitut graafikakaarti. <i>Mixture-of-Experts </i>(MoE) arhitektuur võimaldab siiski aktiveerida vaid osa parameetritest, vähendades seeläbi ressursivajadust võrreldes sama suurusega tiheda mudeliga.</p>\n<p>Kontekstiaken ulatub nüüd 163 000 tookenini, võrreldes eelmise versiooni 128 000 tookeniga, mis muudab väga pikkade dokumentide töötlemise paremaks.</p>"
+            },
+            "Gemini 2.0 Flash": {
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimendi analüüs või arutlemine.</p>"
+            },
+            "Gemini 2.5 Flash": {
+                "desc": "<p>Suur multimodaalne ja mitmekeelne mudel kahe vastusrežiimiga: kasutaja saab valida põhjalikumate vastuste jaoks arutlusrežiimi või lõppvastuse otseseks genereerimiseks kiire režiimi.</p>"
+            },
+            "Gemini 3 Flash": {
+                "desc": "<p>Suur algselt multimodaalne ja mitmekeelne mudel, mille teadmised on üle kantud Gemini 3 Pro mudelist. See sisaldab täiustatud arutlusvõimekust („Deep Think“), mida saab vajadusel aktiveerida ning mille arutlustaset kasutaja või arendaja seadistada saab. Mudel toetab loomupäraselt teksti, koodi, heli, pilte, videot ja PDF-faile.</p>",
+                "fyi": "<p>Mudelit treeniti taristul, mis koosnes üksnes TPU-dest (Tensor Processing Units). Gemini 3 Flash suudab ühe päringu kohta töödelda väga suuri multimodaalse sisu mahtusid: kuni 900 pilti, 900 PDF-faili (igaüks kuni 900 lehekülge), 45 minuti kuni 1 tunni pikkuseid videoid ning kuni 8,4 tundi heli. Avaldamise hetkel oli Gemini 3 Flash väga suure jõudlusega, olles samal ajal ligikaudu üheksa korda soodsam kui Gemini 3 Pro.</p>",
+                "size_desc": "<p>Mudeli täpset suurust ei ole avalikustatud, kuid see põhineb mixture-of-experts (MoE) arhitektuuril. See arhitektuur aktiveerib iga tookeni puhul ainult parameetrite alamhulga, vähendades seeläbi vajalikku arvutusvõimsust. Mudeli kontekstiaken ulatub kuni 1 miljoni tookenini. Mudel on ligikaudu 9 korda soodsam kui Gemini 3 Pro. Keskkonnamõju sõltub valitud arutlustasemest: põhjalikum arutlemine genereerib rohkem tookeneid ja tarbib seetõttu rohkem ressursse.</p>"
+            },
+            "Gemini 3 Pro": {
+                "desc": "<p>Suur, algselt multimodaalne ja mitmekeelne mudel. See integreerib täiustatud arutlusvõimekuse („Deep Think“), mida saab keerukate ülesannete jaoks (matemaatika, loogika, koodi kirjutamine) selle kiiremast tavapärasest genereerimisvõimekusest nõudmisel eraldi aktiveerida. Mudel toetab loomupäraselt teksti, koodi, heli, pilte, videot ja 3D-sisu.</p>"
+            },
+            "Gemma 2 27B": {
+                "desc": "<p>Suure jõudlusega ja mõistliku suurusega mudel, mis võimaldab lahendada spetsiifilisi kasutusjuhtumeid, mis nõuavad suurt täpsust.</p>",
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+            },
+            "Gemma 2 2B": {
+                "desc": "<p>Väga väike mudel, mis pakkus oma suuruse kohta enamiku ülesannete jaoks äärmiselt konkurentsivõimelist jõudlust.</p>",
+                "fyi": "<p>Gemma 2 perekonna nn väikevend – see väga väike mudel, mis avaldati 2024. aasta juulis, suudab konkureerida märksa suuremate mudelitega.</p>",
+                "size_desc": "<p>Väga väikesed mudelid, millel on vähem kui 7 miljardit parameetrit, on kõige vähem keerukad ja kõige ressursitõhusamad ning pakuvad piisavat jõudlust lihtsate ülesannete jaoks, nagu teksti klassifitseerimine.</p>"
+            },
+            "Gemma 2 9B": {
+                "desc": "<p>Gemma 2 perekonna noorem vend – see mudel, mis avaldati 2024. aasta juunis, on treenitud reageerima konkreetsetele juhistele, käsitlema keerukaid päringuid ja pakkuma loovaid lahendusi.</p>",
+                "fyi": "<p>Gemma 2 perekonna nn väikevend – see mudel, mis avaldati 2024. aasta juunis, on treenitud järgima konkreetseid juhiseid, käsitlema keerukaid päringuid ja pakkuma loovaid lahendusi.</p>",
+                "size_desc": "<p>Väikest mudelit on suuremate mudelitega võrreldes lihtsam ja odavam käitada. Samas pakub see paljude ülesannete jaoks, nagu kokkuvõtete tegemine, tõlkimine jms, piisavat jõudlust.</p>"
+            },
+            "Gemma 3 12B": {
+                "desc": "<p>Väike multimodaalne mudel, mis sobib levinud ülesannete jaoks, nagu küsimustele vastamine, kokkuvõtete tegemine või piltide tõlgendamine.</p>",
+                "fyi": "<p>See töötleb teksti ja pilte ning suudab töötada lokaalselt võimsatel sülearvutitel või ühe graafikakaardiga serverites. Mudel on treenitud suhtlema väliste tööriistadega (nt veebipõhine otsing jne) funktsioonikutsete kaudu, mis teeb selle kasulikuks agendipõhiste kasutusjuhtude jaoks.</p>",
+                "size_desc": "<p>12 miljardi parameetriga on see üks väiksemaid mudeleid. Seda saab kasutada lokaalselt personaalarvutis andmete konfidentsiaalsuse säilitamiseks või odaval serveril, et hoida kulud madalamad võrreldes suuremate mudelitega.</p>\n<p>Selle kontekstiaken mahutab kuni 128 000 tookenit, mis muudab pikkade dokumentide töötlemise lihtsaks.</p>"
+            },
+            "Gemma 3 27B": {
+                "desc": "<p>Keskmise suurusega multimodaalne mudel, mis sobib levinud ülesannete jaoks, nagu küsimustele vastamine, kokkuvõtete tegemine või piltide tõlgendamine.</p>",
+                "fyi": "<p>See suudab töödelda teksti ja pilte serveris, mis on varustatud ühe võimsa graafikakaardiga. Mudel on treenitud suhtlema väliste tööriistadega (nt internetiotsing jne) funktsioonikutsete kaudu, mis teeb selle kasulikuks agendipõhiste kasutusjuhtude jaoks.</p>",
+                "size_desc": "<p>27 miljardi parameetriga on tegemist keskmise suurusega mudeliga. Seda saab juurutada serveris, mis on varustatud ühe graafikakaardiga (GPU).</p>\n<p>Mudel toetab kuni 128 000 tookeni pikkuseid kontekste, mistõttu see sobib pikkade dokumentide töötlemiseks.</p>"
+            },
+            "Gemma 3 4B": {
+                "desc": "<p>Väga väike ja kompaktne multimodaalne mudel, mis sobib levinud ülesannete jaoks, nagu küsimustele vastamine, kokkuvõtete tegemine või piltide tõlgendamine.</p>",
+                "fyi": "<p>See suudab töödelda teksti ja pilte ka vähem võimsatel seadmetel, sealhulgas nutitelefonidel ja tahvelarvutitel. Mudel on treenitud suhtlema väliste tööriistadega (nt veebipõhine otsing jne) funktsioonikutsete kaudu, mis teeb selle kasulikuks agendipõhistes kasutusjuhtudes.</p>",
+                "size_desc": "<p>4 miljardi parameetriga peetakse seda väga väikeseks mudeliks. Seda saab kasutada lokaalselt andmete konfidentsiaalsuse säilitamiseks või serveris, et kulusid võrreldes suuremate mudelitega piirata.</p>\n<p>Selle kontekstiaken võib ulatuda kuni 128 000 tookenini, võimaldades analüüsida pikki dokumente.</p>"
+            },
+            "Gemma 3n 4B": {
+                "desc": "<p>Väga väike ja kompaktne multimodaalne mudel, mis on loodud töötama ilma serverita lokaalselt arvutis või nutitelefonis – see suudab oma ressursikasutust kohandada vastavalt seadme võimekusele, millel see töötab.</p>",
+                "fyi": "<p>See mudel suudab töödelda teksti, pilte ja heli. See põhineb MatFormer-arhitektuuril ja PLE (<i>per-layer embeddings</i>) vahemälusüsteemil, mis aktiveerib sõltuvalt ülesandest ainult vajalikud parameetrid, kohandudes nende masinate võimekusega, millel mudel töötab.</p>",
+                "size_desc": "<p>4 miljardi parameetriga on see üks väiksemaid saadaolevaid mudeleid. Seda saab kasutada lokaalselt arvutis või nutitelefonis andmete konfidentsiaalsuse säilitamiseks või serveris, et hoida kulud madalamad võrreldes suuremate mudelitega.</p>\n<p>Selle kontekstiaken ulatub kuni 32 000 tookenini.</p>"
             }
         }
     },
