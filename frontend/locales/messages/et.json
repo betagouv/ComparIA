@@ -671,10 +671,131 @@
                 "desc": "<p>Grok 4 Fast on mudel, mis keskendub jõudluse, kiiruse ja kulu tasakaalustamisele, eriti infootsingu ülesannete ja muude AI agendi tegevuste puhul.</p>",
                 "fyi": "<p>Mudeli täpne suurus ei ole teada. Vaatamata oma nimele on Grok 4 Fast tõenäoliselt väga suur mudel, mille käitamiseks on vaja mitut võimsat graafikakaarti. Lisaks sisaldab see valikulist arutlusfaasi, mis toob kaasa pikemad genereerimisajad ja seega suurema energiatarbimise. Oletatav <i>mixture-of-experts </i>( MoE) arhitektuur aktiveerib siiski iga tookeni puhul vaid osa parameetritest, piirates seeläbi energiakulu. Kättesaadavad hinnangud põhinevad kaudsetel näitajatel, nagu järeldusarvutuse kulud ja vastamise latentsus.</p>\n<p>Stiimulõppe abil treenitud Grok 4 Fast saavutab tulemusi, mis on lähedased väga suurele mudelile Grok 4,olles samas tõhusam. See on treenitud veebisirvimisel ja eriti X-platvormil hästi toimima, samuti tööriistade kutsumise ning koodi täitmise ülesannetes.</p>",
                 "size_desc": "<p>2 miljoni tookeni suuruse kontekstiaknaga Grok 4 Fast ühendab ühes mudelis nii arutlus- kui ka otsese vastuse režiimi. See kasutab ligikaudu 40% vähem arutlustookeneid kui Grok 4, mille tulemusel vähenevad märkimisväärselt nii täitmiskulud kui ka latentsus.</p>"
+            },
+            "Llama 4 Maverick": {
+                "desc": "<p>Väga suur ja väga suure kontekstiaknaga mudel. See on kasulik näiteks korraga mitmest dokumendist kokkuvõtte tegemiseks.</p>",
+                "size_desc": "<p>400 miljardi parameetriga peetakse seda mudelit väga suureks. Tänu <i>mixture-of-experts</i> (MoE) arhitektuurile vajab see siiski vähem ressursse kui sama suurusega mudelid, mis aktiveerivad kõik parameetrid korraga. Selle kontekstiaken ulatub kuni 1 miljoni tookenini, mis võimaldab töödelda väga suuri dokumendikorpusi.</p>"
+            },
+            "Llama 4 Scout": {
+                "desc": "<p>Väga suur ja väga suure kontekstiaknaga mudel. See on kasulik näiteks korraga mitmest dokumendist kokkuvõtte tegemiseks.</p>",
+                "size_desc": "<p>109 miljardi parameetriga kuulub see mudel suurte mudelite kategooriasse. Tänu <i>mixture-of-experts </i>(MoE) arhitektuurile saab seda siiski majutada serveris, mis on varustatud ühe suure jõudlusega graafikakaardiga. Selle kontekstiaken mahutab kuni 10 miljonit tookenit, mis teeb selle kasulikuks äärmiselt pikkade dokumendikorpuste töötlemisel.</p>"
+            },
+            "Magistral Medium": {
+                "desc": "<p>Keskmise suurusega multimodaalne ja mitmekeelne arutlusmudel. Sobib programmeerimisülesannete või muude ülesannete jaoks, mis nõuavad põhjalikku analüüsi, keerukate loogiliste süsteemide mõistmist või planeerimist – näiteks AI agendi ülesannete või pika ja keeruka sisu kirjutamise jaoks.</p>",
+                "fyi": "<p>See mudel kuulub Mistral AI arutlusmudelite esimesse põlvkonda (suvi 2025). Erinevalt enamikust teistest arutlusmudelitest suudab see mudel arutleda mitmes keeles, sealhulgas inglise, prantsuse, hispaania, saksa, itaalia, araabia, vene ja lihtsustatud hiina keeles. Mudel treeniti stiimulõppe abil Mistral Medium 3 põhjal ning sellele ei kantuid olemasolevatest arutlusmudelitest teadmisi üle. See mudel pärib Mistral Medium 3 multimodaalsed võimekused, kuigi stiimulõpet rakendati üksnes tekstile.</p>",
+                "size_desc": "<p>Mudeli täpne suurus ei ole teada. Tõendid osutavad sellele, et tegemist on suure mudeliga, mille käitamiseks on vaja vähemalt mitut võimsat graafikakaarti. Arutlusmudelid vajavad vastuse genereerimiseks rohkem arvutusvõimsust, mis suurendab nende energiatarbimist. Kättesaadavad hinnangud põhinevad kaudsetel näitajatel, nagu järeldusarvutuse kulud ja vastamise latentsus.</p>\n<p>Selle kontekstiaken ulatub kuni 40 000 tookenini, mis on kasulik lühemate dokumentide analüüsimiseks, kuid ei ole piisav suurte dokumendikorpuste töötlemiseks.</p>"
+            },
+            "Magistral Small": {
+                "desc": "<p>Keskmise suurusega multimodaalne ja mitmekeelne arutlusmudel. Sobib ülesannete jaoks, mis nõuavad põhjalikku analüüsi, loogiliste süsteemide mõistmist või planeerimist – näiteks AI agendil põhinevatel kasutusjuhtude või pika ja keeruka sisu kirjutamise jaoks.</p>",
+                "fyi": "<p>See mudel kuulub Mistral AI arutlusmudelite esimesse põlvkonda (suvi 2025). Erinevalt enamikust teistest arutlusmudelitest suudab see mudel arutleda mitmes keeles, sealhulgas inglise, prantsuse, hispaania, saksa, itaalia, araabia, vene ja lihtsustatud hiina keeles.</p>\n<p>Treenimine toimus kahes etapis. Esimene, mida nimetatakse <em>cold-start</em> teamiste ülekandmise teel (mudelitest Mistral Medium 3 ja <em>/OpenR1</em>), võimaldab mudelil omandada põhilised arutlusvõimekused üldistest instruktsiooniandmetest (10%). Teine etapp on kõrge entroopiaga stiimulõppe faas, kus mudelit julgustatakse uurima mitmekesiseid ja varieeruvaid lahendusi, selle asemel et koonduda üheainsa vastuse juurde, ning genereerima pikki väljundeid (kuni 32 000 tookenit). See võimaldab arendada arutlusvõimekusi, mis ületavad õpetava mudeli omad.</p>",
+                "size_desc": "<p>24 miljardi parameetriga peetakse seda mudelit keskmise suurusega mudeliks. Selle käitamiseks on vaja ühte võimsat graafikakaarti. Arutlusmudelitel kulub vastuse genereerimiseks rohkem aega, mis suurendab nende energiatarbimist.</p>\n<p>Selle kontekstiaken ulatub kuni 40 000 tookenini, mis on kasulik lühemate dokumentide analüüsimiseks, kuid ei ole piisav suurte dokumendikorpuste töötlemiseks.</p>"
+            },
+            "MiniMax M2": {
+                "desc": "<p>Koodi kirjutamisele spetsialiseerunud mudel, millel on väga konkurentsivõimeline kvaliteedi, kiiruse ja hinna suhe. Selle treenis Shanghais (Hiina) asuv ettevõte MiniMax.</p>",
+                "fyi": "<p>Spetsiaalselt agendi ülesannete jaoks (näiteks koodi kirjutamine) loodud mudel, mis on treenitud järgima rangeid agentide juhtimisprotokolle (planeerimine, tööriistade kutsumine, kontrollimine).</p>",
+                "size_desc": "<p><i>Mixture-of-experts</i> (MoE) mudel 230 miljardi parameetriga, millest iga tookeni genereerimisel on aktiivsed 10 miljardit. Kontekstiaken toetab kuni 200 000 tookenit, võimaldades töödelda koodibaase ja pikki dokumente.</p>"
+            },
+            "Ministral": {
+                "desc": "<p>Väike mitmekeelne mudel, mis on loodud töötama sülearvutil ilma serveriühenduseta, pakkudes samas häid võimalusi teksti kokkuvõtete tegemiseks, lihtsatele küsimustele vastamiseks ja põhiliste tööriistade kasutamiseks.</p>",
+                "fyi": "<p>See mudel kasutab GQA (<i>Grouped Query Attention</i>) meetodit, et piirata igal genereerimissammul analüüsitava teksti hulka ning saavutada suurem kiirus ja mälutõhusus: arvutusajad vähenevad ilma kvaliteeti mõjutamata. Tähelepanumehhanismi on täiustatud eri suurusega akende rakendamisega, mis võimaldab käsitleda suuri kontekste (kuni 128 000 tookenit), jäädes samal ajal kergkaaluliseks. Suur tokenisaator (V3-Tekken) tihendab keeli ja koodi paremini, mis parandab mudeli jõudlust mitmekeelsetes ülesannetes.</p>",
+                "size_desc": "<p>8 miljardi parameetriga peetakse seda mudelit väikeseks. Seda saab juurutada lokaalselt üsna võimsas arvutis, tagades andmete konfidentsiaalsuse, või majutada serveris, mis on varustatud ühe graafikakaardiga, et piirata taristukulusid.</p>"
+            },
+            "Mistral 3 Large": {
+                "desc": "<p>Väga suur poolavatud multimodaalne mudel, mis on tõhus koodi käsitlemisel ja mitmekeelsetes kontekstides.</p>",
+                "fyi": "<p>See mudel treeniti 3 000 Nvidia H200 GPU abil. See positsioneerib end otseselt konkureerima Hiina poolavatud mudelitega. Oma avaldamise hetkel oli see koodi kirjutamise ja üldiste kasutusjuhtude osas konkurentsivõimeline mudelitega DeepSeek V3.1, Kimi K2, GLM 4.6 ja teiste samalaadsete tippmudelitega.</p>",
+                "size_desc": "<p>675 miljardi parameetriga kuulub see mudel väga suurte mudelite kategooriasse. Tänu <i>mixture-of-experts</i> arhitektuurile on see tõhusam kui sama suurusega mudelid, mis aktiveerivad päringu korral kõik komponendid, kuid vajab siiski majutamiseks serverit, mis on varustatud mitme väga võimsa graafikakaardiga. Mudel aktiveerib iga tookeni genereerimisel 41 miljardit parameetrit. Selle kontekstiaken ulatub kuni 256 000 tookenini, mis võimaldab töödelda väga pikki dokumente.</p>"
+            },
+            "Mistral Large 2": {
+                "desc": "<p>Suur mudel, mis on loodud keerukate küsimuste ja ülesannete käsitlemiseks, näiteks koodi genereerimiseks, tööriistade kasutamiseks, pikkade dokumentide analüüsiks või valdkonnaspetsiifilise keele mõistmiseks.</p>",
+                "fyi": "<p>Selle mudeli treeningandmetes oli suur osakaal koodiandmetel (üle 80 programmeerimiskeele) ja matemaatikal, mis parandab selle võimet lahendada keerukaid probleeme ja kasutada tööriistu.</p>",
+                "size_desc": "<p>123 miljardi parameetriga peetakse seda mudelit suureks. Selle käitamiseks on vaja serverit, mis on varustatud vähemalt ühe võimsa graafikakaardiga, mis tähendab märkimisväärseid käituskulusid. Mudeli kontekstiaken ulatub kuni 128 000 tookenini, mis on kasulik pikkade dokumentide analüüsimiseks.</p>"
+            },
+            "Mistral Medium 3.1": {
+                "desc": "<p>Keskmise suurusega mitmekeelne ja multimodaalne mudel, mis on võrreldes teiste sarnase jõudlusega mudelitega soodne. See muutus eriti huvitavaks pärast 2025. aasta augustis toimunud uuendust, mis tõi kaasa märkimisväärsed edasiarengud üldises jõudluses, parandatud tooniga vastused ning parema võime otsida teavet internetist.</p>",
+                "fyi": "<p>See mudel loodi eesmärgiga pakkuda tugevat jõudlust madalama hinnaga kui teised sarnased mudelid. Selle treenimisel pöörati erilist tähelepanu professionaalsetele kasutusandmetele. Võrreldes teiste sama suurusega mudelitega on see eriti hea koodi kirjutamises ja matemaatiliste ülesannete lahendamises.</p>\n<p>Seda mudelit kasutati alusena arutlusmudeli Magistral Medium treenimisel.</p>",
+                "size_desc": "<p>Mudeli täpne suurus ei ole teada. Olemasolevad viited osutavad sellele, et tegemist on suure mudeliga, mille käitamiseks on vaja vähemalt mitut võimsat graafikakaarti. Praeguses hinnangud põhinevad kaudsetel näitajatel, nagu järeldusarvutuse kulud ja vastamise latentsus.</p>\n<p>Selle kontekstiaken ulatub kuni 128 000 tookenini, mis on kasulik pikkade dokumentide analüüsimiseks.</p>"
+            },
+            "Mistral Nemo": {
+                "desc": "<p>Kiirele reageerimisajale optimeeritud mudel sobib ideaalselt rakendustele, mis nõuavad koheseid vastuseid, ning toetab kuni 128 000 kontekstitookenit enam kui sajas keeles. Avaldatud 2024. aasta juulis.</p>",
+                "fyi": "<p>2024. aasta juulis avaldatud väike mudel on treenitud arutlemiseks, üldteadmisteks ja programmeerimisülesanneteks. See kasutab Tekkeni tokenisaatorit, mis on tõhus kuni 128 000 tookeni pikkuste tekstide tihendamisel enam kui 100 keeles.</p>",
+                "size_desc": "<p>Väikese suurusega mudel on võrreldes suuremate mudelitega vähem keerukas ja ressursimahukas, pakkudes samas piisavat jõudlust mitmesuguste ülesannete jaoks (kokkuvõtete tegemine, tõlkimine, teksti klassifitseerimine jms).</p>"
+            },
+            "Mistral Saba": {
+                "desc": "<p>Keskmise suurusega mudel, mis on loodud Lähis-Ida ja Lõuna-Aasia keelte, sealhulgas araabia, tamili ja malajalami keele, põhjalikuks keeleliseks ja kultuuriliseks mõistmiseks.</p>",
+                "fyi": "<p>Treenimine keskendus peamiselt araabia, tamili ja malajalami keelsetele tekstidele. Piirkondlikud korpused valiti nii, et need kajastaksid autentset keelekasutust, sealhulgas süntaksit, keelelisi registreid ja murdelisi variante. Tokeniseerimiseks (teksti jaotamine põhiühikuteks, mida mudel saab töödelda) kasutati spetsiaalset strateegiat, mis on kohandatud keeruka morfoloogiaga keeltele, nagu araabia keel. Optimeerimise eesmärk oli vältida liigset sõnade killustamist ja maksimeerida sõnavara katvust.</p>",
+                "size_desc": "<p>Mudeli täpne suurus ei ole teada. Praegused tõendid viitavad sellele, et tegemist on keskmise suurusega mudeliga, mille käitamiseks on vaja vähemalt üht võimsat graafikakaarti. Olemasolevad hinnangud põhinevad kaudsetel näitajatel, nagu järeldusarvutuse kulud ja vastamise latentsus.</p>\n<p>Mudel pakub kuni 128 000 tookeni suurust kontekstiakent, mis sobib pikkade dokumentide analüüsimiseks.</p>"
+            },
+            "Mistral Small 3": {
+                "desc": "<p>2025. aasta jaanuaris avaldatud mudel on spetsialiseerunud mitmekeelsusele ning omab arenenud arutlusvõimekust.</p>",
+                "fyi": "<p>2025. aasta jaanuaris avaldatud mudel on spetsialiseerunud mitmekeelsusele, toetab funktsioonikutsete režiimi ning omab 32 000 tookeni suurust konteksti.</p>",
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+            },
+            "Mistral Small 3.1 24B": {
+                "desc": "<p>Mistral Small 3.1 24B Instruct on Mistral Small 3 (jaanuar 2025) täiustatud variant, millel on 24 miljardit parameetrit ja arenenud multimodaalsed võimekused.</p>",
+                "fyi": "<p>Mistral Small 3.1 24B Instruct on multimodaalne mudel, mis pakub tipptasemel jõudlust teksti- ja visioonipõhistes arutlusülesannetes, sealhulgas piltide analüüsimisel, programmeerimisel, matemaatilisel arutlemisel ning mitmekeelsel kasutamisel kümnetes keeltes.</p>",
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+            },
+            "Mistral Small 3.2": {
+                "desc": "<p>Vaatamata oma nimele on tegemist keskmise suurusega mudeliga. See on multimodaalne (suudab töödelda teksti ja pilte) ning paistab silma päringute täpse töötlemise ja tööriistade kasutamise võimekusega.</p>",
+                "fyi": "<p>Selle mudeli versioon 3.2 on optimeeritud struktureeritud väljundi, eriti JSON-i genereerimiseks, piirates samal ajal korduvust ja soovimatut käitumist pikkades genereerimisahelates. Multimodaalsena töötleb see nii teksti- kui ka pildisisendeid, võimaldades nende ühist analüüsi.</p>",
+                "size_desc": "<p>32 miljardi parameetriga peetakse seda mudelit keskmise suurusega mudeliks. Seda saab majutada serveris, mis on varustatud ühe võimsa graafikakaardiga, piirates taristukulusid. Mudeli kontekstiaken ulatub kuni 128 000 tookenini, mis on kasulik pikkade dokumentide analüüsimiseks.</p>"
+            },
+            "Mistral Small 3.2 24B": {
+                "desc": "<p>Mistral Small 3.2 24B Instruct on Mistral Small 3.1 (märts 2025) täiustatud variant, millel on 24 miljardit parameetrit ja arenenud multimodaalsed võimekused.</p>",
+                "fyi": "<p>Mistral Small 3.2 24B Instruct on multimodaalne mudel, mis pakub tipptasemel jõudlust teksti- ja visioonipõhistes arutlusülesannetes, sealhulgas piltide analüüsimisel, programmeerimisel, matemaatilisel arutlemisel ning mitmekeelsel kasutamisel kümnetes keeltes.</p>",
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+            },
+            "Mixtral 8x22B": {
+                "desc": "<p>See mitmekeelne mudel, mis avaldati 2024. aasta aprillis, on spetsiaalselt treenitud inglise, prantsuse, saksa, itaalia ja hispaania keeles ning matemaatika, programmeerimise ja arutlusülesannete jaoks.</p>",
+                "fyi": "<p>Selle mudeli SMoE-arhitektuur (<i>sparse mixture-of-experts</i>) muudab selle kiiremaks ja optimeerib suuruse ning kulu suhte. 141 miljardist parameetrist on aktiivsed vaid 39 miljardit. 64 000 tookeni suurune hüpik-kontekstiaken võimaldab täpset info leidmist ja kasutamist suurtest dokumentides. Avaldatud 2024. aasta aprillis.</p>",
+                "size_desc": "<p>Need mudelid, millel on sadu miljardeid parameetreid, on jõudluse ja täpsuse poolest kõige keerukamad ja arenenumad. Nende mudelite kasutuselevõtuks vajalikud arvutus- ja mäluresursid on sedavõrd suured, et need on mõeldud kõige kõrgetasemelisemate rakenduste ja väga spetsialiseeritud keskkondade jaoks.</p>"
+            },
+            "Mixtral-8x7B": {
+                "desc": "<p>Mitmekeelsel korpusel treenitud mudel on tõhus mitmesuguste madala keerukusega ülesannete jaoks.</p>"
+            },
+            "Qwen2-57B-A14B-Instruct": {
+                "desc": "<p>Keskmise suurusega mudel, millel on segaarhitektuur ning mis toimib hästi koodi kirjutamisel, matemaatilistes ülesannetes ja mitmekeelsetes rakendustes.</p>",
+                "fyi": "<p>Sellel Qweni mudelite edasiarendusel on pikemad kontekstiaknad.</p>",
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+            },
+            "Qwen2-72b-instruct": {
+                "desc": "<p>Suur mudel, mis toimib hästi koodi kirjutamisel, matemaatikas ja mitmekeelsetes ülesannetes.</p>",
+                "fyi": "<p>Sellel Qweni mudelite edasiarendusel on pikemad kontekstiaknad.</p>",
+                "size_desc": "<p>Suured mudelid nõuavad märkimisväärseid ressursse, kuid pakuvad parimat jõudlust keerukate ülesannete jaoks, nagu loovkirjutamine, dialoogimodelleerimine ja rakendused, mis nõuavad konteksti äärmiselt täpset mõistmist.</p>"
+            },
+            "Qwen2-7B": {
+                "desc": "<p>130 000 kontekstitookenit toetav väike, mitmekülgne ja mitmekeelne mudel toimib hästi tõlkimisel, kokkuvõtete tegemisel, analüüsi- ja arutlusülesannetes.</p>",
+                "fyi": "<p>Qwen2 perekonna nn väikevend, mille on loonud Hiina ettevõte Alibaba, suudab pikkade tekstide töötlemiseks toetada kuni 130 000 tookenit.</p>",
+                "size_desc": "<p>Väikese suurusega mudel on võrreldes suuremate mudelitega vähem keerukas ja ressursimahukas, pakkudes samas piisavat jõudlust mitmesuguste ülesannete jaoks (kokkuvõtete tegemine, tõlkimine, teksti klassifitseerimine jms).</p>"
+            },
+            "Qwen2.5-32B": {
+                "desc": "<p>130 000 kontekstitookenit toetav mitmekeelne ja mitmekülgne mudel toimib hästi tõlkimisel, kokkuvõtete tegemisel, analüüsi- ja arutlusülesannetes.</p>",
+                "fyi": "<p>Qwen2.5 perekonna keskmise taseme mudel, mille on loonud Hiina ettevõte Alibaba, suudab pikkade tekstide töötlemiseks toetada kuni 130 000 tookenit .</p>",
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+            },
+            "Qwen2.5-7B": {
+                "desc": "<p>130 000 kontekstitookenit toetav mitmekeelne ja mitmekülgne mudel toimib hästi tõlkimisel, kokkuvõtete tegemisel, analüüsi- ja arutlusülesannetes.</p>",
+                "fyi": "<p>Qwen2.5 perekonna väike mudel, mille on loonud Hiina ettevõte Alibaba, suudab pikkade tekstide töötlemiseks toetada kuni 130 000 tokenit.</p>",
+                "size_desc": "<p>Väikese suurusega mudel on võrreldes suuremate mudelitega vähem keerukas ja ressursimahukas, pakkudes samas piisavat jõudlust mitmesuguste ülesannete jaoks (kokkuvõtete tegemine, tõlkimine, teksti klassifitseerimine jms).</p>"
+            },
+            "Qwen3 Coder 480B A35B": {
+                "desc": "<p>Väga suur mudel, mis on spetsialiseerunud koodi kirjutamisele, tervete koodihoidlate analüüsimisele ja mitmeetapiliste probleemide lahendamisele. See versioon on eriti tugev tööriistade kasutamises ning suudab enne lõppvastuse esitamist simuleerida arutlusfaasi.</p>",
+                "fyi": "<p>See mudel eelõpetati 7,5 triljoni tookeni põhjal (millest 70% moodustab kood) ning kasutab arenenud järeltreeningu protsessi: Code RL-i (<i>Hard to Solve, Easy to Verify</i>), et võimendada korrektset koodi täitmist, ning Agent RL-i (<i>long-horizon </i> stiimulõpe), et optimeerida mitmevooruliste tarkvaraülesannete lahendamist, kasutades massiivselt paralleelset keskkonda (20 000 paralleelset simulatsiooni Alibaba Cloudis).</p>",
+                "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct on väga suur mudel, mille käitamiseks on vaja mitut graafikakaarti. <i>Mixture-of-experts</i> (MoE) arhitektuur võimaldab siiski aktiveerida vaid murdosa parameetritest (35 miljardit 480 miljardist), mis vähendab märkimisväärselt keskkonnamõju ja kulusid võrreldes samaväärse mudeliga, mis aktiveerib kõik parameetrid.  \nMudeli kontekstiaken ulatub algselt 256 000 tookenini ning seda saab ekstrapoleerimistehnikate (YaRN) abil laiendada kuni 1 miljoni tookenini, mis teeb selle suurte koodibaaside analüüsimiseks ideaalseks.</p>"
+            },
+            "Yi-1.5 9B": {
+                "desc": "<p>Yi 1.5 on Hiina ettevõtte 01-ai mudel, mis on spetsialiseerunud koodi kirjutamisele, matemaatikale, arutlemisele ja juhiste järgimisele ning millel on tugev keelest aru saamise võime.</p>",
+                "fyi": "<p>Yi 1.5 on Hiina ettevõtte 01-ai mudel, mis on spetsialiseerunud koodi kirjutamisele, matemaatikale, arutlemisele ja juhiste järgimisele ning millel on tugev keelest aru saamise võime.</p>",
+                "size_desc": "<p>Väikese suurusega mudel on võrreldes suuremate mudelitega vähem keerukas ja ressursimahukas, pakkudes samas piisavat jõudlust mitmesuguste ülesannete jaoks (kokkuvõtete tegemine, tõlkimine, teksti klassifitseerimine jms).</p>"
+            },
+            "qwq 32B": {
+                "desc": "<p>Keskmise suurusega arutlusmudel, mis on spetsialiseerunud ja väga tõhus matemaatikas, koodi kirjutamises ning loogiliste probleemide lahendamises.</p>",
+                "size_desc": "<p>32 miljardi parameetriga kuulub see mudel keskmise suurusega mudelite kategooriasse. Seda saab käitada serveris, mis on varustatud ühe võimsa graafikakaardiga, mis aitab piirata taristukulusid. Samas kulub seda tüüpi arutlusmudelitel vastuse genereerimiseks rohkem aega, kuna lõppvastuse loomisele eelneb arutlusfaas, mis suurendab energiatarbimist.</p>"
             }
         }
     },
     "header": {
+        "banner": "🏆 Mudelite edetabel on nüüd saadaval! Tutvu edetabeliga.",
         "chatbot": {
             "newDiscussion": "Uus vestlus",
             "step": "Samm",
@@ -683,6 +804,7 @@
                 "title": "Mis sa sellest vastusest arvad?"
             },
             "stepTwo": {
+                "description": "Avasta iga mudeli puhul oma vestluste keskkonnamõju",
                 "title": "Näed nüüd mudeleid!"
             }
         },
