@@ -1470,12 +1470,12 @@
             "altText": "{choice} för modellen {model}",
             "negative": {
                 "incorrect": "Fel",
-                "instructions-not-followed": "Instruktioner följdes inte",
+                "instructions_not_followed": "Instruktioner följdes inte",
                 "question": "Varför var du inte nöjd med svaret?",
                 "superficial": "Ytligt"
             },
             "positive": {
-                "clear-formatting": "Rensa formatering",
+                "clear_formatting": "Rensa formatering",
                 "complete": "Komplett",
                 "creative": "Kreativt",
                 "question": "Vad tyckte du om med svaret?",

@@ -6,7 +6,7 @@ Defines all data structures for:
 """
 
 from datetime import datetime
-from typing import Annotated, Any, Literal, Union
+from typing import Annotated, Any, Literal, Union, get_args
 from uuid import uuid4
 
 from pydantic import (
@@ -252,15 +252,19 @@ class RetryRequest(BaseModel):
     session_hash: str
 
 
+PositiveReaction = Literal["useful", "complete", "creative", "clear_formatting"]
+POSITIVE_REACTIONS: tuple[PositiveReaction, ...] = get_args(PositiveReaction)
+NegativeReaction = Literal["incorrect", "superficial", "instructions_not_followed"]
+NEGATIVE_REACTIONS: tuple[NegativeReaction, ...] = get_args(NegativeReaction)
+REACTIONS = POSITIVE_REACTIONS + NEGATIVE_REACTIONS
+
+
 class ReactionData(BaseModel):
     bot: BotPos
     index: int
     value: str
     liked: bool | None
-    prefs: (
-        Literal["useful", "complete", "creative", "clear-formatting"]
-        | Literal["incorrect", "superficial", "instructions-not-followed"]
-    )
+    prefs: list[PositiveReaction] | list[NegativeReaction]
     comment: str | None
 
 
@@ -274,10 +278,10 @@ class VoteRequest(BaseModel):
     """Request body for submitting a vote after conversation."""
 
     which_model_radio_output: str  # "model-a", "model-b", or "both-equal"
-    positive_a_output: list[str] = Field(default_factory=list)
-    positive_b_output: list[str] = Field(default_factory=list)
-    negative_a_output: list[str] = Field(default_factory=list)
-    negative_b_output: list[str] = Field(default_factory=list)
+    positive_a_output: list[PositiveReaction] = Field(default_factory=list)
+    positive_b_output: list[PositiveReaction] = Field(default_factory=list)
+    negative_a_output: list[NegativeReaction] = Field(default_factory=list)
+    negative_b_output: list[NegativeReaction] = Field(default_factory=list)
     comments_a_output: str = ""
     comments_b_output: str = ""
 
