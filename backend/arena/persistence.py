@@ -814,24 +814,31 @@ class ConversationsRecord(BaseModel):
     to make sure data is of database expected type.
     """
 
-    # Set with database defaults, not present in logs?
+    # Set from database defaults, not present in logs?
     # id: int | None = None
     # timestamp: datetime | None = None
-    # Conversations args
+
+    # Session
+    session_hash: str
+    visitor_id: str | None
+    ip: str  # FIXME | None? cf get_ip()
+    country_portal: CountryCode
+    cohorts: str  # FIXME | None?
+
+    # Conversations
     selected_category: Annotated[str | None, Field(validation_alias="category")]
     mode: SelectionMode
-
     custom_models_selection: Annotated[
         list[str] | None, JSONSerializer
     ]  # FIXME, not sure what serialization is needed
-    is_unedited_prompt: bool
-    # General
     conv_turns: int
     conversation_pair_id: str
     model_pair_name: Annotated[
         list[str], JSONSerializer
     ]  # FIXME, not sure what serialization is needed
     opening_msg: str
+    is_unedited_prompt: bool
+
     # Language model pairs specific
     model_a_name: str
     model_b_name: str
@@ -843,14 +850,9 @@ class ConversationsRecord(BaseModel):
     conversation_b: Annotated[list[ConversationMessageRecord], JSONModelSerializer]
     total_conv_a_output_tokens: int
     total_conv_b_output_tokens: int
-    # Identity
-    session_hash: str
-    visitor_id: str | None
-    ip: str  # FIXME | None? cf get_ip()
-    country_portal: CountryCode
-    cohorts: str  # FIXME | None?
+
     # Additional? (not found in record_conversations but present in conversations.sql)
-    # archived: bool | None = None
+    # archived: bool = False
     # short_summary: str | None = None
     # ip_map: str | None = None
     # keywords: dict[str, Any] | None = None
@@ -886,6 +888,7 @@ def record_conversations(
 
     t = datetime.now()  # FIXME
     convs_data = conversations.model_dump() | {
+        # Session
         "session_hash": session_hash,
         "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
         "ip": str(get_ip(request)),
@@ -893,6 +896,7 @@ def record_conversations(
         "cohorts": cohorts_comma_separated,
     }
 
+    # Language model pairs specific
     for pos in {"a", "b"}:
         conv = convs_data.pop(f"conversation_{pos}")
         for data_key, db_key in [
@@ -910,9 +914,10 @@ def record_conversations(
         f"[COHORT] record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts_comma_separated={convs_record.cohorts}, type={type(convs_record.cohorts)}"
     )
 
-    data = convs_record.model_dump()  # FIXME exclude_none=True
+    db_data = convs_record.model_dump()
+
     conv_log_path = settings.LOGDIR / f"conv-{convs_record.conversation_pair_id}.json"
     # Always rewrite the file
-    conv_log_path.write_text(json.dumps(data) + "\n")
+    conv_log_path.write_text(json.dumps(db_data) + "\n")
 
-    return upsert_conv_to_db(data=data)
+    return upsert_conv_to_db(db_data)
