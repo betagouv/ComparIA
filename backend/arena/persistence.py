@@ -534,11 +534,70 @@ def upsert_conv_to_db(data: dict) -> dict:
 # ============================================================================
 
 
+class VoteRecord(BaseModel):
+    # Set with database defaults, not present in logs?
+    # id: int | None = None
+    timestamp: str
+
+    # Session
+    session_hash: str
+    visitor_id: str | None
+    ip: str  # FIXME | None? cf get_ip()
+    country_portal: CountryCode
+    cohorts: str  # FIXME | None?
+
+    # Conversations
+    selected_category: Annotated[str | None, Field(validation_alias="category")]
+    conv_turns: int
+    conversation_pair_id: str
+    model_pair_name: Annotated[
+        list[str], JSONSerializer
+    ]  # FIXME, not sure what serialization is needed
+    opening_msg: str
+    is_unedited_prompt: bool
+
+    # Language model pairs specific
+    model_a_name: str
+    model_b_name: str
+    system_prompt_a: str | None
+    system_prompt_b: str | None
+    conversation_a: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
+    conversation_b: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
+
+    # Vote
+    chosen_model_name: str | None
+    both_equal: bool
+    conv_comments_a: str
+    conv_comments_b: str
+    conv_useful_a: bool
+    conv_useful_b: bool
+    conv_complete_a: bool
+    conv_complete_b: bool
+    conv_creative_a: bool
+    conv_creative_b: bool
+    conv_clear_formatting_a: bool
+    conv_clear_formatting_b: bool
+    conv_incorrect_a: bool
+    conv_incorrect_b: bool
+    conv_superficial_a: bool
+    conv_superficial_b: bool
+    conv_instructions_not_followed_a: bool
+    conv_instructions_not_followed_b: bool
+
+    # Additional? (not found in record_vote but present in votes.sql)
+    # archived: bool = False
+
+
+from backend.arena.models import NEGATIVE_REACTIONS, POSITIVE_REACTIONS, REACTIONS
+
+
 def record_vote(
     conversations: Conversations,
     vote: VoteRequest,
     session_hash: str,
     request: Request,
+    locale: str,
+    cohorts_comma_separated: str,
 ):
     """
     Record a vote to the database with all metadata.
@@ -564,98 +623,70 @@ def record_vote(
     """
     from backend.arena.utils import get_chosen_model, get_chosen_model_name
 
+    t = datetime.now()
+
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
-
     chosen_model_name = get_chosen_model_name(
         vote.which_model_radio_output, [conv_a, conv_b]
     )
-    both_equal = chosen_model_name is None
 
-    conversation_a_messages = messages_to_dict_list(conv_a.messages)
-    conversation_b_messages = messages_to_dict_list(conv_b.messages)
-
-    t = datetime.now()
-
-    model_pair_name = sorted(filter(None, [conv_a.model_name, conv_b.model_name]))
-    opening_msg = conv_a.messages[1 if conv_a.has_system_msg else 0]
-
-    details = {
-        "prefs_a": [*vote.positive_a_output, *vote.negative_a_output],
-        "prefs_b": [*vote.positive_b_output, *vote.negative_b_output],
-        "comments_a": str(vote.comments_a_output),
-        "comments_b": str(vote.comments_b_output),
-    }
-
-    data = {
+    vote_data = conversations.model_dump() | {
         "timestamp": str(t),
-        "model_a_name": conv_a.model_name,
-        "model_b_name": conv_b.model_name,
-        # sorted
-        "model_pair_name": json.dumps(model_pair_name),
-        "chosen_model_name": chosen_model_name,
-        "both_equal": both_equal,
-        "opening_msg": opening_msg,
-        "conversation_a": json.dumps(conversation_a_messages),
-        "conversation_b": json.dumps(conversation_b_messages),
-        "conv_turns": count_turns((conv_a.messages)),
-        "selected_category": conversations.category,
-        "is_unedited_prompt": (is_unedited_prompt(opening_msg, conversations.category)),
-        "system_prompt_a": conv_a.system_msg,
-        "system_prompt_b": conv_b.system_msg,
-        "conversation_pair_id": conv_a.conv_id + "-" + conv_b.conv_id,
-        # Warning: IP is a PII
-        "ip": str(get_ip(request)),
         "session_hash": session_hash,
-        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
-        "conv_useful_a": "useful" in details["prefs_a"],
-        "conv_complete_a": "complete" in details["prefs_a"],
-        "conv_creative_a": "creative" in details["prefs_a"],
-        "conv_clear_formatting_a": "clear-formatting" in details["prefs_a"],
-        "conv_incorrect_a": "incorrect" in details["prefs_a"],
-        "conv_superficial_a": "superficial" in details["prefs_a"],
-        "conv_instructions_not_followed_a": "instructions-not-followed"
-        in details["prefs_a"],
-        "conv_useful_b": "useful" in details["prefs_b"],
-        "conv_complete_b": "complete" in details["prefs_b"],
-        "conv_creative_b": "creative" in details["prefs_b"],
-        "conv_clear_formatting_b": "clear-formatting" in details["prefs_b"],
-        "conv_incorrect_b": "incorrect" in details["prefs_b"],
-        "conv_superficial_b": "superficial" in details["prefs_b"],
-        "conv_instructions_not_followed_b": "instructions-not-followed"
-        in details["prefs_b"],
-        "conv_comments_a": details["comments_a"],
-        "conv_comments_b": details["comments_b"],
+        "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
+        "ip": str(get_ip(request)),
+        "country_portal": locale,
+        "cohorts": cohorts_comma_separated,
+        # Vote
+        "chosen_model_name": chosen_model_name,
+        "both_equal": chosen_model_name is None,
     }
-    vote_string = chosen_model_name or "both_equal"
+
+    for pos in {"a", "b"}:
+        # Vote
+        vote_data[f"conv_comments_{pos}"] = getattr(vote, f"comments_{pos}_output")
+        for pkey in POSITIVE_REACTIONS:
+            vote_data[f"conv_{pkey}_{pos}"] = pkey in getattr(
+                vote, f"positive_{pos}_output"
+            )
+
+        for nkey in NEGATIVE_REACTIONS:
+            vote_data[f"conv_{nkey}_{pos}"] = nkey in getattr(
+                vote, f"negative_{pos}_output"
+            )
+
+        # Language model pairs specific
+        conv = vote_data.pop(f"conversation_{pos}")
+        for data_key, db_key in [
+            ("model_name", "model_{}_name"),
+            ("system_msg", "system_prompt_{}"),
+            ("messages", "conversation_{}"),
+        ]:
+            vote_data[db_key.format(pos)] = conv[data_key]
+
+    vote_record = VoteRecord(**vote_data)
+    print("VOTE RECORD", vote_record)
+    db_data = vote_record.model_dump()
+    print("VOTE RECORD DUMP", db_data)
 
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
     vote_log_path = settings.LOGDIR / vote_log_filename
     with vote_log_path.open(mode="a") as fout:
-        logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
-        logger.info(
-            f"preferences_a: {details['prefs_a']}",
-            extra={"request": request},
-        )
-        logger.info(
-            f"preferences_b: {details['prefs_b']}",
-            extra={"request": request},
-        )
-        if details["comments_a"] != "":
-            logger.info(
-                f"commentaires_a: {details.get('comments_a', '')}",
-                extra={"request": request},
+        vote_string = chosen_model_name or "both_equal"
+        logger.info(f"vote: {vote_string}", extra={"request": request, "data": db_data})
+        for pos in {"a", "b"}:
+            prefs = getattr(vote, f"positive_{pos}_output") + getattr(
+                vote, f"negative_{pos}_output"
             )
-        if details["comments_b"] != "":
-            logger.info(
-                f"commentaires_b: {details.get('comments_b', '')}",
-                extra={"request": request},
-            )
-        fout.write(json.dumps(data) + "\n")
+            logger.info(f"preferences_{pos}: {prefs}", extra={"request": request})
+            if comment := getattr(vote, f"positive_{pos}_output"):
+                logger.info(
+                    f"commentaires_{pos}: {comment}", extra={"request": request}
+                )
+        fout.write(json.dumps(db_data) + "\n")
 
-    save_vote_to_db(data=data)
-
-    return data
+    return save_vote_to_db(db_data)
 
 
 class ReactionRecord(BaseModel):
