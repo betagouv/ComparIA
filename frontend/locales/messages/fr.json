@@ -1993,13 +1993,13 @@
             "altText": "{choice} pour le modèle {model}",
             "negative": {
                 "incorrect": "Incorrecte",
-                "instructions-not-followed": "Instructions non suivies",
+                "instructions_not_followed": "Instructions non suivies",
                 "question": "Pourquoi la réponse ne convient-elle pas ?",
                 "superficial": "Superficielle"
             },
             "other": "Autre…",
             "positive": {
-                "clear-formatting": "Mise en forme claire",
+                "clear_formatting": "Mise en forme claire",
                 "complete": "Complète",
                 "creative": "Créative",
                 "question": "Qu'avez-vous apprécié dans la réponse ?",
