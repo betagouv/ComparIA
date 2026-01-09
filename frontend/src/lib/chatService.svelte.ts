@@ -64,9 +64,6 @@ export const APINegativeReactions = [
 export type APIReactionPref =
   | (typeof APIPositiveReactions)[number]
   | (typeof APINegativeReactions)[number]
-export const positiveReactions = ['useful', 'complete', 'creative', 'clear-formatting'] as const
-export const negativeReactions = ['incorrect', 'superficial', 'instructions-not-followed'] as const
-export type ReactionPref = (typeof positiveReactions)[number] | (typeof negativeReactions)[number]
 
 export type ReactionKind = 'like' | 'comment'
 export type APIReactionData = {
@@ -74,7 +71,7 @@ export type APIReactionData = {
   index: number
   value: string
   liked: boolean | null
-  prefs: ReactionPref[]
+  prefs: APIReactionPref[]
   comment?: string
 }
 export type OnReactionFn = (reaction: APIReactionData) => void
@@ -83,17 +80,17 @@ export type OnReactionFn = (reaction: APIReactionData) => void
 
 export interface APIVoteData {
   which_model_radio_output: 'model-a' | 'model-b' | 'both-equal'
-  positive_a_output: ReactionPref[]
-  positive_b_output: ReactionPref[]
-  negative_a_output: ReactionPref[]
-  negative_b_output: ReactionPref[]
+  positive_a_output: APIReactionPref[]
+  positive_b_output: APIReactionPref[]
+  negative_a_output: APIReactionPref[]
+  negative_b_output: APIReactionPref[]
   comments_a_output: string
   comments_b_output: string
 }
 
 interface VoteDetails {
-  like: ReactionPref[]
-  dislike: ReactionPref[]
+  like: APIReactionPref[]
+  dislike: APIReactionPref[]
   comment: string
 }
 export interface VoteData {
