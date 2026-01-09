@@ -21,7 +21,13 @@ from fastapi import Request
 from psycopg2 import sql
 from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer, model_serializer
 
-from backend.arena.models import Conversations, MessageRole, ReactionData, VoteRequest
+from backend.arena.models import (
+    BotPos,
+    Conversations,
+    MessageRole,
+    ReactionData,
+    VoteRequest,
+)
 from backend.arena.utils import (
     count_turns,
     get_matomo_tracker_from_cookies,
@@ -652,6 +658,66 @@ def record_vote(
     return data
 
 
+class ReactionRecord(BaseModel):
+    # Set with database defaults, not present in logs?
+    # id: int | None = None
+    # timestamp: datetime | None = None
+
+    # Session
+    session_hash: str
+    visitor_id: str | None
+    ip: str  # FIXME | None? cf get_ip()
+
+    # Conversations
+    conv_turns: int
+    conversation_pair_id: str
+    model_pair_name: Annotated[
+        list[str], JSONSerializer
+    ]  # FIXME, not sure what serialization is needed
+    opening_msg: str
+
+    # Language model pairs specific
+    model_a_name: str
+    model_b_name: str
+    conv_a_id: str
+    conv_b_id: str
+    conversation_a: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
+    conversation_b: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
+
+    # Conversation
+    model_pos: BotPos
+    refers_to_model: str
+    refers_to_conv_id: str
+    system_prompt: str | None
+    response_content: str
+    question_content: str
+
+    # Liked/disliked message data
+    msg_index: int
+    msg_rank: int
+    chatbot_index: int
+    question_id: str
+
+    # Reaction
+    liked: bool
+    disliked: bool
+    comment: str
+    useful: bool
+    complete: bool
+    creative: bool
+    clear_formatting: bool
+    incorrect: bool
+    superficial: bool
+    instructions_not_followed: bool
+
+    # Additional? (not found in record_reaction but present in reactions.sql)
+    # archived: bool = False
+
+    # FIXME add?
+    # country_portal: CountryCode
+    # cohorts: str  # FIXME | None?
+
+
 def record_reaction(
     conversations: Conversations,
     reaction: ReactionData,
@@ -680,91 +746,76 @@ def record_reaction(
         - Handles system prompt offsets in message indexing
     """
 
-    if reaction.bot not in ["a", "b"]:  # FIXME remove, is handled before
-        raise Exception(f"Weird reaction.bot: {reaction.bot}")
-
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
-    current_conversation = conv_a if reaction.bot == "a" else conv_b
-    response_content = current_conversation.messages[msg_index].content
-    question_content = current_conversation.messages[msg_index - 1].content
+    conv = conv_a if reaction.bot == "a" else conv_b
 
     # a reaction has been undone and none replaced it
     if reaction.liked is None:
-        delete_reaction_in_db(
-            msg_index=msg_index, refers_to_conv_id=current_conversation.conv_id
-        )
+        delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
         return {
             "msg_index": msg_index,
-            "refers_to_conv_id": current_conversation.conv_id,
+            "refers_to_conv_id": conv.conv_id,
         }
 
-    conversation_a_messages = messages_to_dict_list(conv_a.messages)
-    conversation_b_messages = messages_to_dict_list(conv_b.messages)
-
-    model_pair_name = sorted([conv_a.model_name, conv_b.model_name])
-
-    opening_msg = conv_a.messages[1 if conv_a.has_system_msg else 0]
-    conv_turns = count_turns(conv_a.messages)
     t = datetime.now()  # FIXME
+    reaction_data = (
+        # Conversations
+        conversations.model_dump()
+        | {
+            # Session
+            "session_hash": session_hash,
+            "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
+            "ip": str(get_ip(request)),
+            # FIXME add?
+            # "country_portal": locale,
+            # "cohorts": cohorts_comma_separated,
+            # Conversation
+            "model_pos": reaction.bot,
+            "refers_to_model": conv.model_name,
+            "refers_to_conv_id": conv.conv_id,
+            "system_prompt": conv.system_msg,
+            "response_content": conv.messages[msg_index].content,
+            "question_content": conv.messages[msg_index - 1].content,
+            # Liked/disliked message data
+            "msg_index": msg_index,
+            "msg_rank": (  # rank begins at zero
+                msg_index // 2
+            ),  # FIXME change in msg_index computing, need to reflect (used in peren code)
+            "chatbot_index": msg_index,  # FIXME legacy? changes in msg_index to reflect?
+            "question_id": f"{conversations.conversation_pair_id}-{msg_index // 2}",
+            # Reaction
+            "liked": reaction.liked is True,
+            "disliked": reaction.liked is False,
+            "comment": reaction.comment,
+        }
+        | {
+            # Reaction
+            key: key in reaction.prefs
+            for key in REACTIONS
+        }
+    )
 
-    conv_pair_id = conv_a.conv_id + "-" + conv_b.conv_id
-    refers_to_model = current_conversation.model_name
+    # Language model pairs specific
+    for pos in {"a", "b"}:
+        _conv = reaction_data.pop(f"conversation_{pos}")
+        for data_key, db_key in [
+            ("model_name", "model_{}_name"),
+            ("conv_id", "conv_{}_id"),
+            ("messages", "conversation_{}"),
+        ]:
+            reaction_data[db_key.format(pos)] = _conv[data_key]
 
-    # rank begins at zero # FIXME change in msg_index computing, need to reflect (used in peren code)
-    msg_rank = msg_index // 2
-    question_id = conv_pair_id + "-" + str(msg_rank)
-
-    data = {
-        # id
-        # "timestamp": t,
-        "model_a_name": conv_a.model_name,
-        "model_b_name": conv_b.model_name,
-        "refers_to_model": refers_to_model,  # (model name)
-        "msg_index": msg_index,
-        "opening_msg": opening_msg,
-        "conversation_a": json.dumps(conversation_a_messages),
-        "conversation_b": json.dumps(conversation_b_messages),
-        "model_pos": reaction.bot,
-        # conversation can be longer if like is on older messages
-        "conv_turns": conv_turns,
-        "system_prompt": current_conversation.system_msg,
-        "conversation_pair_id": conv_pair_id,
-        "conv_a_id": conv_a.conv_id,
-        "conv_b_id": conv_b.conv_id,
-        "session_hash": session_hash,
-        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
-        "refers_to_conv_id": current_conversation.conv_id,
-        # Warning: IP is a PII
-        "ip": str(get_ip(request)),
-        "comment": reaction.comment,
-        "response_content": response_content,
-        "question_content": question_content,
-        "liked": reaction.liked is True,
-        "disliked": reaction.liked is False,
-        "useful": "useful" in reaction.prefs,
-        "complete": "complete" in reaction.prefs,
-        "creative": "creative" in reaction.prefs,
-        "clear_formatting": "clear-formatting" in reaction.prefs,
-        "incorrect": "incorrect" in reaction.prefs,
-        "superficial": "superficial" in reaction.prefs,
-        "instructions_not_followed": "instructions-not-followed" in reaction.prefs,
-        # Not asked:
-        "chatbot_index": msg_index,  # chatbot_index, FIXME legacy? changes in msg_index to reflect?
-        "msg_rank": msg_rank,  # FIXME used in peren pipeline, what should it be?
-        "model_pair_name": json.dumps(model_pair_name),
-        "question_id": question_id,
-    }
+    reaction_record = ReactionRecord(**reaction_data)
+    db_data = reaction_record.model_dump()
 
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
     reaction_log_path = settings.LOGDIR / reaction_log_filename
     with reaction_log_path.open(mode="a") as fout:
-        fout.write(json.dumps(data) + "\n")
-    logger.info(f"saved_reaction: {json.dumps(data)}", extra={"request": request})
+        fout.write(json.dumps(db_data) + "\n")
+    logger.info(f"saved_reaction: {json.dumps(db_data)}", extra={"request": request})
 
-    upsert_reaction_to_db(data=data, request=request)
-
-    return data
+    return upsert_reaction_to_db(db_data, request=request)
 
 
 class ConversationMessageRecord(BaseModel):
