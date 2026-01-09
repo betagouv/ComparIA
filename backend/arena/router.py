@@ -441,6 +441,8 @@ async def vote(
             vote=vote_data,
             session_hash=session_hash,
             request=request,
+            locale="fr",  # FIXME
+            cohorts_comma_separated="",  # FIXME
         )
         logger.info(f"[VOTE] Saved to database: {vote_record['conversation_pair_id']}")
     except Exception as e:
