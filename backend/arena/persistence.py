@@ -31,13 +31,12 @@ from backend.arena.models import (
 )
 from backend.arena.utils import (
     count_turns,
-    get_matomo_tracker_from_cookies,
     is_unedited_prompt,
     messages_to_dict_list,
     sum_tokens,
 )
 from backend.config import CountryCode, SelectionMode, settings
-from backend.utils.user import get_ip
+from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 if TYPE_CHECKING:
     from pydantic import SerializerFunctionWrapHandler

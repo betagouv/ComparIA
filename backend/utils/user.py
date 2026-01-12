@@ -1,4 +1,8 @@
+from logging import getLogger
+
 from fastapi import Request
+
+logger = getLogger("languia")
 
 
 def get_ip(request: Request) -> str:
@@ -34,3 +38,24 @@ def get_ip(request: Request) -> str:
         ip = ip.split(",")[0].strip()
 
     return ip
+
+
+def get_matomo_tracker_from_cookies(cookies: dict[str, str]) -> str | None:
+    """
+    Extract Matomo/Piwik visitor ID from cookies.
+
+    Used for anonymous visitor tracking (if enabled by user).
+
+    Args:
+        cookies: Request cookies dict
+
+    Returns:
+        str: Matomo visitor ID, or None if not found
+    """
+    # Matomo cookies start with "_pk_id."
+    for key, value in cookies.items():
+        if key.startswith("_pk_id."):
+            logger.debug(f"Found matomo cookie: {key}: {value}")
+            return value
+
+    return None
