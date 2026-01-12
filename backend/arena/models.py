@@ -213,7 +213,7 @@ class Conversations(BaseModel):
         # Check if the exact message exists in the category's prompt list
         return self.opening_msg in prompts_table[self.category]
 
-    def store_to_session(self, session_hash: str) -> None:
+    def store_to_session(self) -> None:
         """
         Store conversation pair to Redis.
         """
@@ -221,7 +221,7 @@ class Conversations(BaseModel):
 
         data = self.model_dump()
 
-        store_session_conversations(session_hash, data)
+        store_session_conversations(self.session_hash, data)
 
     @staticmethod
     def from_session(session_hash: str) -> "Conversations":

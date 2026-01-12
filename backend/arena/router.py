@@ -130,8 +130,10 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         visitor_id=get_matomo_tracker_from_cookies(request.cookies),
     )
 
-    # Store conversations in Redis
-    conversations.store_to_session(session_hash)
+    # Store Conversations to redis/db/logs
+    conversations.store_to_session()
+    # FIXME do we really want to store the conversations to db already?
+    record_conversations(conversations)
 
     # Stream responses
     async def event_stream():
@@ -144,25 +146,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         async for chunk in stream_both_responses(conversations, request):
             yield chunk
 
-        # After streaming completes, archive conversation to Redis and database
-        conversations.store_to_session(session_hash)
-
-        try:
-            conversation_record = record_conversations(
-                conversations=conversations,
-                session_hash=session_hash,
-                request=request,
-                locale="fr",  # FIXME
-                cohorts_comma_separated="",  # FIXME
-            )
-            logger.info(
-                f"[ADD_FIRST_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
-            )
-        except Exception as e:
-            # Log error but don't fail the streaming
-            logger.error(
-                f"[ADD_FIRST_TEXT] Error archiving conversation: {e}", exc_info=True
-            )
+        # After streaming completes, store Conversations to redis/db/logs
+        conversations.store_to_session()
+        record_conversations(conversations)
 
     return create_sse_response(event_stream())
 
@@ -209,31 +195,19 @@ async def add_text(
     conversations.conversation_a.messages.append(user_message)
     conversations.conversation_b.messages.append(user_message)
 
-    # Update in Redis
-    conversations.store_to_session(session_hash)
+    # Store Conversations to redis/db/logs
+    conversations.store_to_session()
+    # FIXME do we really want to store the conversations to db already?
+    record_conversations(conversations)
 
     # Stream responses
     async def event_stream():
         async for chunk in stream_both_responses(conversations, request):
             yield chunk
 
-        # After streaming completes, archive conversation to Redis and database
-        conversations.store_to_session(session_hash)
-
-        try:
-            conversation_record = record_conversations(
-                conversations=conversations,
-                session_hash=session_hash,
-                request=request,
-                locale="fr",  # FIXME
-                cohorts_comma_separated="",  # FIXME
-            )
-            logger.info(
-                f"[ADD_TEXT] Archived conversation: {conversation_record['conversation_pair_id']}"
-            )
-        except Exception as e:
-            # Log error but don't fail the streaming
-            logger.error(f"[ADD_TEXT] Error archiving conversation: {e}", exc_info=True)
+        # After streaming completes, store Conversations to redis/db/logs
+        conversations.store_to_session()
+        record_conversations(conversations)
 
     return create_sse_response(event_stream())
 
@@ -283,31 +257,19 @@ async def retry(
             "Il n'est pas possible de réessayer, veuillez recharger la page."
         )
 
-    # Update in Redis
-    conversations.store_to_session(session_hash)
+    # Store Conversations to redis/db/logs
+    conversations.store_to_session()
+    # FIXME do we really want to store the conversations to db already?
+    record_conversations(conversations)
 
     # Re-stream responses
     async def event_stream():
         async for chunk in stream_both_responses(conversations, request):
             yield chunk
 
-        # After streaming completes, archive conversation to Redis and database
-        conversations.store_to_session(session_hash)
-
-        try:
-            conversation_record = record_conversations(
-                conversations=conversations,
-                session_hash=session_hash,
-                request=request,
-                locale="fr",  # FIXME
-                cohorts_comma_separated="",  # FIXME
-            )
-            logger.info(
-                f"[RETRY] Archived conversation: {conversation_record['conversation_pair_id']}"
-            )
-        except Exception as e:
-            # Log error but don't fail the streaming
-            logger.error(f"[RETRY] Error archiving conversation: {e}", exc_info=True)
+        # After streaming completes, store Conversations to redis/db/logs
+        conversations.store_to_session()
+        record_conversations(conversations)
 
     return create_sse_response(event_stream())
 

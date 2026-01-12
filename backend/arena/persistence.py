@@ -83,7 +83,7 @@ def db(
 
     except psycopg2.Error as e:
         logger.error(f"[DB] Error couldn't {action} data: {e}", exc_info=True)
-        raise
+        # FIXME Previous code never raise db error, raise it?
 
 
 def save_vote_to_db(data: dict) -> dict:
@@ -320,7 +320,7 @@ class VoteRecord(BaseModel):
     visitor_id: str | None
     ip: str  # FIXME | None? cf get_ip()
     country_portal: CountryPortal
-    cohorts: str  # FIXME | None?
+    cohorts: str
 
     # Conversations
     selected_category: Annotated[str | None, Field(validation_alias="category")]
@@ -522,7 +522,7 @@ class ReactionRecord(BaseModel):
 
     # FIXME add?
     # country_portal: CountryPortal
-    # cohorts: str  # FIXME | None?
+    # cohorts: str
 
 
 def record_reaction(
@@ -681,7 +681,7 @@ class ConversationsRecord(BaseModel):
     visitor_id: str | None
     ip: str  # FIXME | None? cf get_ip()
     country_portal: CountryPortal
-    cohorts: str  # FIXME | None?
+    cohorts: str
 
     # Conversations
     selected_category: Annotated[str | None, Field(validation_alias="category")]
@@ -725,10 +725,6 @@ class ConversationsRecord(BaseModel):
 
 def record_conversations(
     conversations: Conversations,
-    session_hash: str,
-    request: Request,
-    locale: str,
-    cohorts_comma_separated: str,
 ) -> dict:
     """
     Record or update the conversation pair to database and JSON log files after each turn.
@@ -745,14 +741,7 @@ def record_conversations(
     """
 
     t = datetime.now()  # FIXME
-    convs_data = conversations.model_dump() | {
-        # Session
-        "session_hash": session_hash,
-        "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
-        "ip": str(get_ip(request)),
-        "country_portal": locale,
-        "cohorts": cohorts_comma_separated,
-    }
+    convs_data = conversations.model_dump()
 
     # Language model pairs specific
     for pos in {"a", "b"}:
@@ -769,7 +758,7 @@ def record_conversations(
     convs_record = ConversationsRecord(**convs_data)
 
     logger.debug(
-        f"[COHORT] record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts_comma_separated={convs_record.cohorts}, type={type(convs_record.cohorts)}"
+        f"[COHORT] record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts={convs_record.cohorts}, type={type(convs_record.cohorts)}"
     )
 
     db_data = convs_record.model_dump()
