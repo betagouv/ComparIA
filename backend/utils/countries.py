@@ -1,18 +1,25 @@
 import logging
 from typing import cast
 
-from backend.config import COUNTRY_CODES, DEFAULT_COUNTRY_CODE, CountryCode, settings
+from backend.config import (
+    COUNTRY_PORTALS,
+    DEFAULT_COUNTRY_PORTAL,
+    CountryPortal,
+    settings,
+)
 
 logger = logging.getLogger("languia")
 
 
-def get_country_code(code: str | None = DEFAULT_COUNTRY_CODE) -> CountryCode:
+def get_country_portal(code: str | None = DEFAULT_COUNTRY_PORTAL) -> CountryPortal:
     return (
-        DEFAULT_COUNTRY_CODE if code not in COUNTRY_CODES else cast(CountryCode, code)
+        DEFAULT_COUNTRY_PORTAL
+        if code not in COUNTRY_PORTALS
+        else cast(CountryPortal, code)
     )
 
 
-def get_country_portal_count(country_code: CountryCode, ttl: int = 120) -> int:
+def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
 
