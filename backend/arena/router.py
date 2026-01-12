@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
@@ -75,6 +76,20 @@ def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) ->
             status_code=status.HTTP_400_BAD_REQUEST, detail="Missing session hash"
         )
     return session_hash
+
+
+def get_conversations(session_hash: str = Depends(get_session_hash)) -> Conversations:
+    try:
+        return Conversations.from_session(session_hash)
+    except Exception as e:
+        # FIXME raise different errors depending on problem
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Conversations '{session_hash}' couldn't be found or parsed: {str(e)}",
+        )
+
+
+ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
 
 
 class AddFirstTextBody(BaseModel):
@@ -167,16 +182,16 @@ class AddTextBody(BaseModel):
 @router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
 async def add_text(
     args: AddTextBody,
+    conversations: ConversationsAnno,
     request: Request,
-    session_hash: str = Depends(get_session_hash),
 ):
     """
     Add a follow-up message to an existing conversation.
 
     Args:
         args: Request body with message content
+        conversations: Conversations from session_hash
         request: FastAPI request for logging
-        session_hash: Session identifier from X-Session-Hash header
 
     Returns:
         StreamingResponse: SSE stream with both model responses
@@ -185,15 +200,9 @@ async def add_text(
         HTTPException: If session not found or rate limiting triggered
     """
     logger.info(
-        f"[ADD_TEXT] session={session_hash}, message_len={len(args.message)}",
+        f"[ADD_TEXT] session={conversations.session_hash}, message_len={len(args.message)}",
         extra={"request": request},
     )
-
-    # Retrieve conversations from Redis
-    try:
-        conversations = Conversations.from_session(session_hash)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
 
     # Add user message to both conversations
     user_message = UserMessage(content=args.message)
@@ -219,8 +228,8 @@ async def add_text(
 
 @router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
+    conversations: ConversationsAnno,
     request: Request,
-    session_hash: str = Depends(get_session_hash),
 ):
     """
     Retry generating the last bot response.
@@ -228,8 +237,8 @@ async def retry(
     Removes the last assistant messages and re-generates them.
 
     Args:
+        conversations: Conversations from session_hash
         request: FastAPI request for logging
-        session_hash: Session identifier from X-Session-Hash header
 
     Returns:
         StreamingResponse: SSE stream with new model responses
@@ -237,13 +246,9 @@ async def retry(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    logger.info(f"[RETRY] session={session_hash}", extra={"request": request})
-
-    # Retrieve conversations
-    try:
-        conversations = Conversations.from_session(session_hash)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    logger.info(
+        f"[RETRY] session={conversations.session_hash}", extra={"request": request}
+    )
 
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
@@ -282,16 +287,16 @@ async def retry(
 @router.post("/react")
 async def react(
     react_data: ReactRequest,
+    conversations: ConversationsAnno,
     request: Request,
-    session_hash: str = Depends(get_session_hash),
 ):
     """
     Update reaction (like/dislike) for a specific message.
 
     Args:
         react_data: Request body with chatbot messages and reaction_json (Gradio format)
+        conversations: Conversations from session_hash
         request: FastAPI request for logging
-        session_hash: Session identifier from X-Session-Hash header
 
     Returns:
         dict: Success status with reaction data
@@ -305,15 +310,9 @@ async def react(
     )
 
     logger.info(
-        f"[REACT] session={session_hash}, reaction={react_data.reaction_json}",
+        f"[REACT] session={conversations.session_hash}, reaction={react_data.reaction_json}",
         extra={"request": request},
     )
-
-    # Retrieve conversations
-    try:
-        conversations = Conversations.from_session(session_hash)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
 
     # Extract reaction index and data
     reaction_index = react_data.reaction_json.index
@@ -363,9 +362,9 @@ async def react(
 
 @router.post("/vote")
 async def vote(
-    request: Request,
     vote_data: VoteRequest,
-    session_hash: str = Depends(get_session_hash),
+    conversations: ConversationsAnno,
+    request: Request,
 ):
     """
     Submit a vote after conversation and reveal model identities.
@@ -373,9 +372,9 @@ async def vote(
     Saves the vote to database and returns reveal data.
 
     Args:
-        request: FastAPI request for logging
         vote_data: Request body with Gradio-format vote data
-        session_hash: Session identifier from X-Session-Hash header
+        conversations: Conversations from session_hash
+        request: FastAPI request for logging
 
     Returns:
         dict: Reveal data with model names, metadata, and environmental stats
@@ -387,15 +386,9 @@ async def vote(
     from backend.config import settings
 
     logger.info(
-        f"[VOTE] session={session_hash}, chosen={vote_data.which_model_radio_output}",
+        f"[VOTE] session={conversations.session_hash}, chosen={vote_data.chosen}",
         extra={"request": request},
     )
-
-    # Retrieve conversations
-    try:
-        conversations = Conversations.from_session(session_hash)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
 
     # Get IP for logging
     ip = get_ip(request)
