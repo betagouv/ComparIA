@@ -14,7 +14,7 @@ from backend.logger import (
     configure_uvicorn_logging,
 )
 from backend.sentry import init_sentry
-from backend.utils.countries import get_country_code, get_country_portal_count
+from backend.utils.countries import get_country_portal, get_country_portal_count
 
 app = FastAPI()
 
@@ -48,11 +48,11 @@ app.include_router(arena_router)
 
 @app.get("/counter")
 async def get_counter(c: str | None = None):
-    country_code = get_country_code(c)
+    country_portal = get_country_portal(c)
 
     return {
-        "count": get_country_portal_count(country_code),
-        "objective": OBJECTIVES[country_code],
+        "count": get_country_portal_count(country_portal),
+        "objective": OBJECTIVES[country_portal],
     }
 
 

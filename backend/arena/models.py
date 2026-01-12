@@ -19,7 +19,7 @@ from pydantic import (
     model_validator,
 )
 
-from backend.config import CountryCode, CustomModelsSelection, SelectionMode
+from backend.config import CustomModelsSelection, SelectionMode
 from backend.language_models.models import Endpoint, LanguageModel
 
 if TYPE_CHECKING:
