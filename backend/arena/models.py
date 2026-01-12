@@ -6,7 +6,8 @@ Defines all data structures for:
 """
 
 from datetime import datetime
-from typing import Annotated, Any, Literal, Union, get_args
+from functools import cached_property
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Union, get_args
 from uuid import uuid4
 
 from pydantic import (
@@ -21,11 +22,13 @@ from pydantic import (
 from backend.config import CountryCode, CustomModelsSelection, SelectionMode
 from backend.language_models.models import Endpoint, LanguageModel
 
+if TYPE_CHECKING:
+    from backend.arena.router import AddFirstTextBody
+
 MessageRole = Literal["user", "assistant", "system"]
 BotPos = Literal["a", "b"]
 
 
-# New message hierarchy from commit 6b42a0964b34
 class BaseMessage(BaseModel):
     """
     Base message class with strict typing.
@@ -35,6 +38,9 @@ class BaseMessage(BaseModel):
 
     role: MessageRole
     content: str
+
+    # use assignment validation since messages are updated gradually
+    model_config = ConfigDict(validate_assignment=True)
 
 
 class SystemMessage(BaseMessage):
@@ -68,9 +74,6 @@ class AssistantMessage(BaseMessage):
     metadata: AssistantMessageMetadata
     reaction: Union["ReactionData", None] = None
 
-    # use assignment validation since messages are updated gradually
-    model_config = ConfigDict(validate_assignment=True)
-
 
 # Union type for any message
 AnyMessage = SystemMessage | UserMessage | AssistantMessage
@@ -87,7 +90,6 @@ class Conversation(BaseModel):
 
     conv_id: str = Field(default_factory=lambda: str(uuid4()).replace("-", ""))
     model_name: str
-    endpoint: Endpoint
     messages: list[AnyMessage]
 
     @property
@@ -116,16 +118,24 @@ class Conversation(BaseModel):
             if isinstance(msg, AssistantMessage) and msg.metadata.output_tokens
         )
 
+    @cached_property
+    def llm(self) -> LanguageModel:
+        from backend.language_models.data import get_models
 
-def create_conversation(llm: LanguageModel, user_msg: UserMessage) -> Conversation:
+        return get_models().enabled[self.model_name]
+
+    @cached_property
+    def endpoint(self) -> Endpoint:
+        return self.llm.endpoint
+
+def create_conversation(llm_id: str, user_msg: UserMessage) -> Conversation:
     """Create a single conversation with system prompt if configured."""
-    messages: list[AnyMessage] = (
-        [SystemMessage(content=llm.system_prompt), user_msg]
-        if llm.system_prompt
-        else [user_msg]
-    )
+    conv = Conversation(model_name=llm_id, messages=[])
+    if conv.llm.system_prompt:
+        conv.messages.append(SystemMessage(content=conv.llm.system_prompt))
+    conv.messages.append(user_msg)
 
-    return Conversation(model_name=llm.id, endpoint=llm.endpoint, messages=messages)
+    return conv
 
 
 # New Conversations model (paired conversations for arena)
@@ -215,24 +225,22 @@ class Conversations(BaseModel):
 
 
 def create_conversations(
-    llm_a: LanguageModel,
-    llm_b: LanguageModel,
-    user_prompt: str,
-    mode: SelectionMode,
-    custom_models_selection: CustomModelsSelection,
-    category: str | None = None,
+    llm_id_a: str,
+    llm_id_b: str,
+    args: "AddFirstTextBody",
+    category: str | None,
 ) -> Conversations:
     """Create paired conversations for arena comparison."""
-    user_msg = UserMessage(content=user_prompt)
-    conv_a = create_conversation(llm_a, user_msg)
-    conv_b = create_conversation(llm_b, user_msg)
+    user_msg = UserMessage(content=args.prompt_value)
+    conv_a = create_conversation(llm_id_a, user_msg)
+    conv_b = create_conversation(llm_id_b, user_msg)
 
     return Conversations(
+        mode=args.mode,
+        custom_models_selection=args.custom_models_selection,
+        category=category,
         conversation_a=conv_a,
         conversation_b=conv_b,
-        mode=mode,
-        custom_models_selection=custom_models_selection,
-        category=category,
     )
 
 
