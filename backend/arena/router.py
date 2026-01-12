@@ -19,10 +19,6 @@ from backend.arena.session import (
     update_session_conversations,
 )
 from backend.arena.streaming import create_sse_response, stream_both_responses
-from backend.arena.utils import (
-    deserialize_conversation_from_redis,
-    serialize_conversation_for_redis,
-)
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
