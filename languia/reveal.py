@@ -312,6 +312,13 @@ def get_llm_impact(
     if_electricity_mix_adpe = electricity_mix.adpe    # Abiotic Depletion Potential
     if_electricity_mix_pe = electricity_mix.pe        # Primary Energy
     if_electricity_mix_gwp = electricity_mix.gwp      # Global Warming Potential (CO2)
+    if_electricity_mix_wue = electricity_mix.wue      # Water Consumption Factor (L/kWh)
+
+    # Data center efficiency metrics (from ecologits 0.9.1 methodology)
+    # PUE = 1.15 (average of major providers: Google 1.09, Anthropic 1.09-1.14, Mistral 1.16, OpenAI 1.20)
+    # WUE = 1.8 L/kWh (required parameter, not displayed to users)
+    datacenter_pue = 1.15
+    datacenter_wue = 1.8
 
     # Calculate impact using ecologits library
     impact = compute_llm_impacts(
@@ -321,6 +328,9 @@ def get_llm_impact(
         if_electricity_mix_adpe=if_electricity_mix_adpe,
         if_electricity_mix_pe=if_electricity_mix_pe,
         if_electricity_mix_gwp=if_electricity_mix_gwp,
+        if_electricity_mix_wue=if_electricity_mix_wue,
+        datacenter_pue=datacenter_pue,
+        datacenter_wue=datacenter_wue,
         request_latency=request_latency,
     )
     return impact

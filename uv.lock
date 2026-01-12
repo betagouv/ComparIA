@@ -271,19 +271,16 @@ wheels = [
 
 [[package]]
 name = "ecologits"
-version = "0.8.2"
+version = "0.9.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "httpx" },
     { name = "packaging" },
     { name = "pydantic" },
-    { name = "requests" },
-    { name = "tqdm" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6b/9c/f709b1b82022e2535cf3a7c9189be099bec452cea048d9f12e833d319e97/ecologits-0.8.2.tar.gz", hash = "sha256:f723ecdbe4c95a8b2f023a29c4d975295eacbf862c9c98bd408d21cd995b4b84", size = 36212, upload-time = "2025-08-16T18:29:43.074Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/f5/4ca8aa8db5e3e3cf8648dc5e1988411f20df0c348335693436e984e15c20/ecologits-0.9.1.tar.gz", hash = "sha256:3d2246938d13ce111a720afdf0b581ea104ecacf644c478f1ab5d3548e8bb9dd", size = 35453, upload-time = "2025-11-13T08:43:56.205Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/31/1b0c39a1a624998b6275a04e01fb58fea26e7c30f42dc6d2ffcaa34217d9/ecologits-0.8.2-py3-none-any.whl", hash = "sha256:8953b3c1470a99793a3c6554771e0be060e1bb8e5856d1bc76ab76f5e92e1698", size = 45287, upload-time = "2025-08-16T18:29:40.796Z" },
+    { url = "https://files.pythonhosted.org/packages/72/00/125226c87d1595456d1be59d21773afa5051beed015ae502c4dff94b6151/ecologits-0.9.1-py3-none-any.whl", hash = "sha256:7e7e56112e1fd584207f137fb4d4f1ed117d59bc55f49687e534c12828957ecc", size = 44819, upload-time = "2025-11-13T08:43:55.305Z" },
 ]
 
 [[package]]
@@ -988,7 +985,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ecologits", specifier = "==0.8.2" },
+    { name = "ecologits", specifier = "==0.9.1" },
     { name = "fastapi", specifier = ">=0.118.0" },
     { name = "google-auth", specifier = ">=2.40.1" },
     { name = "google-cloud-aiplatform", specifier = ">=1.93.0" },

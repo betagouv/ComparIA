@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "ecologits==0.8.2",
+    "ecologits==0.9.1",
     "gradio==5.48.0",
     "litellm==1.77.5",
     "langfuse>=3.6.0",

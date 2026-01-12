@@ -1,24 +1,24 @@
 {
-  "timestamp": 1764131045.0,
+  "timestamp": 1765254353.0,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 981,
-        "mean_win_prob": 0.4698895254627368,
-        "n_match": 1032,
-        "rank": 56,
-        "rank_p2_5": 48,
-        "rank_p97_5": 66,
-        "score_p2_5": 962,
-        "score_p97_5": 1001,
+        "elo": 978,
+        "mean_win_prob": 0.4674738467302873,
+        "n_match": 1365,
+        "rank": 58,
+        "rank_p2_5": 51,
+        "rank_p97_5": 67,
+        "score_p2_5": 963,
+        "score_p97_5": 993,
         "trust_range": [
-          8,
-          10
+          7,
+          9
         ],
-        "win_rate": 0.41951503394762363
+        "win_rate": 0.42614369501466276
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -35,15 +35,15 @@
       "organisation": "Swiss AI",
       "params": 70,
       "prefs": {
-        "clear_formatting": 31,
-        "complete": 47,
-        "creative": 5,
-        "incorrect": 35,
-        "instructions_not_followed": 20,
-        "positive_prefs_ratio": 0.5982905982905983,
-        "superficial": 39,
-        "total_prefs": 234,
-        "useful": 57
+        "clear_formatting": 60,
+        "complete": 71,
+        "creative": 16,
+        "incorrect": 57,
+        "instructions_not_followed": 34,
+        "positive_prefs_ratio": 0.61,
+        "superficial": 65,
+        "total_prefs": 400,
+        "useful": 97
       },
       "pricey": false,
       "quantization": null,
@@ -54,26 +54,26 @@
       "simple_name": "Apertus 70B Instruct",
       "status": "enabled",
       "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "Apertus-8B-Instruct-2509": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 964,
-        "mean_win_prob": 0.44618453540238057,
+        "elo": 962,
+        "mean_win_prob": 0.44504113076710716,
         "n_match": 86,
-        "rank": 66,
-        "rank_p2_5": 41,
-        "rank_p97_5": 77,
-        "score_p2_5": 910,
-        "score_p97_5": 1019,
+        "rank": 67,
+        "rank_p2_5": 42,
+        "rank_p97_5": 80,
+        "score_p2_5": 903,
+        "score_p97_5": 1018,
         "trust_range": [
           25,
-          11
+          13
         ],
-        "win_rate": 0.46869047619047627
+        "win_rate": 0.46869047619047616
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -105,7 +105,7 @@
       "simple_name": "Apertus 8B Instruct",
       "status": "archived",
       "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "aya-23-8b": {
       "active_params": null,
@@ -132,26 +132,26 @@
       "simple_name": "Aya 23 8B",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "aya-expanse-32b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 998,
-        "mean_win_prob": 0.49316001958060335,
+        "elo": 994,
+        "mean_win_prob": 0.4893942804580825,
         "n_match": 5113,
-        "rank": 49,
-        "rank_p2_5": 46,
-        "rank_p97_5": 53,
-        "score_p2_5": 987,
-        "score_p97_5": 1012,
+        "rank": 50,
+        "rank_p2_5": 48,
+        "rank_p97_5": 55,
+        "score_p2_5": 985,
+        "score_p97_5": 1002,
         "trust_range": [
-          3,
-          4
+          2,
+          5
         ],
-        "win_rate": 0.4625171132407587
+        "win_rate": 0.46251711324075884
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -187,21 +187,21 @@
       "simple_name": "Aya Expanse 32B",
       "status": "archived",
       "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "aya-expanse-8b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 980,
-        "mean_win_prob": 0.4678420146234273,
+        "elo": 975,
+        "mean_win_prob": 0.46378385292345536,
         "n_match": 1302,
-        "rank": 57,
-        "rank_p2_5": 50,
-        "rank_p97_5": 66,
-        "score_p2_5": 961,
-        "score_p97_5": 998,
+        "rank": 59,
+        "rank_p2_5": 52,
+        "rank_p97_5": 68,
+        "score_p2_5": 959,
+        "score_p97_5": 991,
         "trust_range": [
           7,
           9
@@ -238,7 +238,7 @@
       "simple_name": "Aya Expanse 8B",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "Aya23-35B": {
       "active_params": null,
@@ -265,24 +265,24 @@
       "simple_name": "Aya23-35B",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 7556.949999999999
+      "wh_per_million_token": 233.66828857881447
     },
     "c4ai-command-r-08-2024": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 936,
-        "mean_win_prob": 0.40841784490157684,
+        "elo": 931,
+        "mean_win_prob": 0.4039025963229872,
         "n_match": 5959,
-        "rank": 73,
-        "rank_p2_5": 71,
-        "rank_p97_5": 77,
-        "score_p2_5": 925,
-        "score_p97_5": 949,
+        "rank": 78,
+        "rank_p2_5": 74,
+        "rank_p97_5": 80,
+        "score_p2_5": 923,
+        "score_p97_5": 940,
         "trust_range": [
-          2,
-          4
+          4,
+          2
         ],
         "win_rate": 0.42968786709179396
       },
@@ -316,7 +316,7 @@
       "simple_name": "Command R",
       "status": "disabled",
       "url": null,
-      "wh_per_million_token": 7556.949999999999
+      "wh_per_million_token": 233.66828857881447
     },
     "chocolatine-14b-instruct-dpo-v1.2": {
       "active_params": null,
@@ -343,24 +343,24 @@
       "simple_name": "Chocolatine 14B",
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 92.41483814323534
     },
     "chocolatine-14b-instruct-dpo-v1.2-q4": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 755,
-        "mean_win_prob": 0.202412752167643,
+        "elo": 753,
+        "mean_win_prob": 0.20060324894704706,
         "n_match": 309,
-        "rank": 85,
-        "rank_p2_5": 84,
-        "rank_p97_5": 87,
-        "score_p2_5": 712,
-        "score_p97_5": 799,
+        "rank": 88,
+        "rank_p2_5": 87,
+        "rank_p97_5": 89,
+        "score_p2_5": 704,
+        "score_p97_5": 792,
         "trust_range": [
           1,
-          2
+          1
         ],
         "win_rate": 0.2402265372168285
       },
@@ -394,7 +394,7 @@
       "simple_name": "Chocolatine 14B",
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 92.41483814323534
     },
     "chocolatine-2-14b-instruct-v2.0.3": {
       "active_params": null,
@@ -421,24 +421,24 @@
       "simple_name": "Chocolatine 2 14B",
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 92.41483814323534
     },
     "chocolatine-2-14b-instruct-v2.0.3-q8": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 824,
-        "mean_win_prob": 0.27175371884348054,
+        "elo": 820,
+        "mean_win_prob": 0.26729942630085524,
         "n_match": 1796,
-        "rank": 83,
-        "rank_p2_5": 83,
-        "rank_p97_5": 85,
-        "score_p2_5": 807,
-        "score_p97_5": 843,
+        "rank": 86,
+        "rank_p2_5": 86,
+        "rank_p97_5": 87,
+        "score_p2_5": 804,
+        "score_p97_5": 837,
         "trust_range": [
           0,
-          2
+          1
         ],
         "win_rate": 0.3317316258351893
       },
@@ -472,26 +472,26 @@
       "simple_name": "Chocolatine 2 14B",
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 84.2750694278447
     },
     "claude-3-5-sonnet-v2": {
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 977,
-        "mean_win_prob": 0.46452807824310993,
+        "elo": 973,
+        "mean_win_prob": 0.4611286311057055,
         "n_match": 5683,
-        "rank": 60,
-        "rank_p2_5": 55,
-        "rank_p97_5": 63,
-        "score_p2_5": 967,
-        "score_p97_5": 991,
+        "rank": 62,
+        "rank_p2_5": 57,
+        "rank_p97_5": 66,
+        "score_p2_5": 964,
+        "score_p97_5": 982,
         "trust_range": [
           5,
-          3
+          4
         ],
-        "win_rate": 0.4921080415273624
+        "win_rate": 0.4921080415273623
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -523,24 +523,24 @@
       "simple_name": "Claude 3.5 Sonnet v2",
       "status": "archived",
       "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "claude-3-7-sonnet": {
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1057,
-        "mean_win_prob": 0.5741811262809435,
+        "elo": 1052,
+        "mean_win_prob": 0.5697027405246008,
         "n_match": 3907,
-        "rank": 25,
-        "rank_p2_5": 21,
-        "rank_p97_5": 30,
-        "score_p2_5": 1045,
-        "score_p97_5": 1070,
+        "rank": 28,
+        "rank_p2_5": 22,
+        "rank_p97_5": 31,
+        "score_p2_5": 1042,
+        "score_p97_5": 1062,
         "trust_range": [
-          4,
-          5
+          6,
+          3
         ],
         "win_rate": 0.524225748656258
       },
@@ -574,26 +574,26 @@
       "simple_name": "Claude 3.7 Sonnet",
       "status": "archived",
       "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "claude-4-5-sonnet": {
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1076,
-        "mean_win_prob": 0.5995658277507352,
-        "n_match": 2480,
-        "rank": 16,
-        "rank_p2_5": 11,
-        "rank_p97_5": 22,
-        "score_p2_5": 1062,
-        "score_p97_5": 1093,
+        "elo": 1067,
+        "mean_win_prob": 0.5902285418192071,
+        "n_match": 3531,
+        "rank": 17,
+        "rank_p2_5": 15,
+        "rank_p97_5": 25,
+        "score_p2_5": 1057,
+        "score_p97_5": 1076,
         "trust_range": [
-          5,
-          6
+          2,
+          8
         ],
-        "win_rate": 0.5426432606941082
+        "win_rate": 0.5309093484419264
       },
       "distribution": "api-only",
       "endpoint": {
@@ -610,15 +610,15 @@
       "organisation": "Anthropic",
       "params": 440,
       "prefs": {
-        "clear_formatting": 123,
-        "complete": 132,
-        "creative": 43,
-        "incorrect": 36,
-        "instructions_not_followed": 20,
-        "positive_prefs_ratio": 0.8453427065026362,
-        "superficial": 32,
-        "total_prefs": 569,
-        "useful": 183
+        "clear_formatting": 211,
+        "complete": 227,
+        "creative": 72,
+        "incorrect": 66,
+        "instructions_not_followed": 41,
+        "positive_prefs_ratio": 0.8256704980842912,
+        "superficial": 75,
+        "total_prefs": 1044,
+        "useful": 352
       },
       "pricey": false,
       "quantization": null,
@@ -629,24 +629,24 @@
       "simple_name": "Claude 4.5 Sonnet",
       "status": "enabled",
       "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "claude-4-sonnet": {
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1070,
-        "mean_win_prob": 0.5919062389693509,
+        "elo": 1065,
+        "mean_win_prob": 0.5876885334459893,
         "n_match": 2540,
         "rank": 20,
-        "rank_p2_5": 14,
-        "rank_p97_5": 25,
-        "score_p2_5": 1056,
-        "score_p97_5": 1086,
+        "rank_p2_5": 15,
+        "rank_p97_5": 26,
+        "score_p2_5": 1054,
+        "score_p97_5": 1076,
         "trust_range": [
-          6,
-          5
+          5,
+          6
         ],
         "win_rate": 0.5356400157542339
       },
@@ -684,26 +684,26 @@
       "simple_name": "Claude 4 Sonnet",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "command-a": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 1066,
-        "mean_win_prob": 0.5859832823958055,
-        "n_match": 5862,
-        "rank": 22,
-        "rank_p2_5": 17,
-        "rank_p97_5": 26,
-        "score_p2_5": 1056,
-        "score_p97_5": 1078,
+        "elo": 1060,
+        "mean_win_prob": 0.5802376292952407,
+        "n_match": 6381,
+        "rank": 23,
+        "rank_p2_5": 18,
+        "rank_p97_5": 28,
+        "score_p2_5": 1052,
+        "score_p97_5": 1067,
         "trust_range": [
           5,
-          4
+          5
         ],
-        "win_rate": 0.5582019788468099
+        "win_rate": 0.5551339915373765
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -720,15 +720,15 @@
       "organisation": "Cohere",
       "params": 111,
       "prefs": {
-        "clear_formatting": 985,
-        "complete": 1046,
-        "creative": 262,
-        "incorrect": 264,
-        "instructions_not_followed": 99,
-        "positive_prefs_ratio": 0.8413555992141454,
-        "superficial": 283,
-        "total_prefs": 4072,
-        "useful": 1133
+        "clear_formatting": 1026,
+        "complete": 1086,
+        "creative": 280,
+        "incorrect": 294,
+        "instructions_not_followed": 111,
+        "positive_prefs_ratio": 0.8327526132404182,
+        "superficial": 315,
+        "total_prefs": 4305,
+        "useful": 1193
       },
       "pricey": false,
       "quantization": null,
@@ -739,7 +739,7 @@
       "simple_name": "Command A",
       "status": "enabled",
       "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
-      "wh_per_million_token": 18222.536666666667
+      "wh_per_million_token": 820.8351042260225
     },
     "command-r-plus": {
       "active_params": null,
@@ -766,26 +766,26 @@
       "simple_name": "Command R+",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 17240.18
+      "wh_per_million_token": 788.2760293644599
     },
     "deepseek-chat-v3.1": {
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1085,
-        "mean_win_prob": 0.6115454094181124,
-        "n_match": 856,
-        "rank": 14,
-        "rank_p2_5": 6,
-        "rank_p97_5": 21,
-        "score_p2_5": 1067,
-        "score_p97_5": 1106,
+        "elo": 1078,
+        "mean_win_prob": 0.6050746754221238,
+        "n_match": 1065,
+        "rank": 15,
+        "rank_p2_5": 8,
+        "rank_p97_5": 23,
+        "score_p2_5": 1060,
+        "score_p97_5": 1093,
         "trust_range": [
-          8,
-          7
+          7,
+          8
         ],
-        "win_rate": 0.5063732394366197
+        "win_rate": 0.5132988721804511
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -802,15 +802,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 49,
-        "complete": 66,
-        "creative": 26,
-        "incorrect": 21,
-        "instructions_not_followed": 9,
-        "positive_prefs_ratio": 0.8225806451612904,
-        "superficial": 14,
-        "total_prefs": 248,
-        "useful": 63
+        "clear_formatting": 63,
+        "complete": 81,
+        "creative": 31,
+        "incorrect": 33,
+        "instructions_not_followed": 11,
+        "positive_prefs_ratio": 0.8006329113924051,
+        "superficial": 19,
+        "total_prefs": 316,
+        "useful": 78
       },
       "pricey": false,
       "quantization": null,
@@ -821,24 +821,24 @@
       "simple_name": "DeepSeek v3.1",
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3813.1133598017464
     },
     "deepseek-r1": {
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1034,
-        "mean_win_prob": 0.5426696104547338,
+        "elo": 1028,
+        "mean_win_prob": 0.5367746313562477,
         "n_match": 3510,
-        "rank": 37,
-        "rank_p2_5": 30,
-        "rank_p97_5": 39,
-        "score_p2_5": 1022,
-        "score_p97_5": 1047,
+        "rank": 39,
+        "rank_p2_5": 32,
+        "rank_p97_5": 42,
+        "score_p2_5": 1018,
+        "score_p97_5": 1038,
         "trust_range": [
           7,
-          2
+          3
         ],
         "win_rate": 0.5313019943019943
       },
@@ -876,26 +876,26 @@
       "simple_name": "DeepSeek R1",
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3813.1133598017464
     },
     "deepseek-r1-0528": {
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1078,
-        "mean_win_prob": 0.6027996712751523,
-        "n_match": 608,
-        "rank": 15,
-        "rank_p2_5": 8,
-        "rank_p97_5": 25,
-        "score_p2_5": 1055,
-        "score_p97_5": 1102,
+        "elo": 1056,
+        "mean_win_prob": 0.5755761341414355,
+        "n_match": 754,
+        "rank": 26,
+        "rank_p2_5": 15,
+        "rank_p97_5": 33,
+        "score_p2_5": 1038,
+        "score_p97_5": 1075,
         "trust_range": [
-          7,
-          10
+          11,
+          7
         ],
-        "win_rate": 0.5484297520661157
+        "win_rate": 0.5394820717131474
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -912,15 +912,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 19,
-        "complete": 32,
-        "creative": 14,
-        "incorrect": 11,
-        "instructions_not_followed": 3,
-        "positive_prefs_ratio": 0.8103448275862069,
-        "superficial": 8,
-        "total_prefs": 116,
-        "useful": 29
+        "clear_formatting": 23,
+        "complete": 38,
+        "creative": 15,
+        "incorrect": 16,
+        "instructions_not_followed": 5,
+        "positive_prefs_ratio": 0.782312925170068,
+        "superficial": 11,
+        "total_prefs": 147,
+        "useful": 39
       },
       "pricey": false,
       "quantization": null,
@@ -931,24 +931,24 @@
       "simple_name": "DeepSeek R1 0528",
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3813.1133598017464
     },
     "deepseek-r1-distill-llama-70b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 954,
-        "mean_win_prob": 0.43280720599252986,
+        "elo": 948,
+        "mean_win_prob": 0.42660055952720255,
         "n_match": 2981,
-        "rank": 71,
-        "rank_p2_5": 65,
-        "rank_p97_5": 72,
-        "score_p2_5": 941,
-        "score_p97_5": 968,
+        "rank": 74,
+        "rank_p2_5": 68,
+        "rank_p97_5": 76,
+        "score_p2_5": 937,
+        "score_p97_5": 959,
         "trust_range": [
           6,
-          1
+          2
         ],
         "win_rate": 0.4396947333109695
       },
@@ -986,26 +986,26 @@
       "simple_name": "DeepSeek R1 Llama 70B",
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "deepseek-v3-0324": {
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1100,
-        "mean_win_prob": 0.6309382578283439,
+        "elo": 1095,
+        "mean_win_prob": 0.6275481788104972,
         "n_match": 4385,
         "rank": 6,
-        "rank_p2_5": 5,
+        "rank_p2_5": 4,
         "rank_p97_5": 11,
-        "score_p2_5": 1088,
-        "score_p97_5": 1114,
+        "score_p2_5": 1086,
+        "score_p97_5": 1104,
         "trust_range": [
-          1,
+          2,
           5
         ],
-        "win_rate": 0.5851128848346636
+        "win_rate": 0.5851128848346637
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1041,24 +1041,24 @@
       "simple_name": "DeepSeek V3",
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3813.1133598017464
     },
     "deepseek-v3-chat": {
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1086,
-        "mean_win_prob": 0.6124410175031708,
+        "elo": 1082,
+        "mean_win_prob": 0.6097024402704819,
         "n_match": 5388,
-        "rank": 13,
+        "rank": 12,
         "rank_p2_5": 9,
         "rank_p97_5": 17,
-        "score_p2_5": 1074,
-        "score_p97_5": 1099,
+        "score_p2_5": 1073,
+        "score_p97_5": 1090,
         "trust_range": [
-          4,
-          4
+          3,
+          5
         ],
         "win_rate": 0.6141481069042317
       },
@@ -1092,23 +1092,23 @@
       "simple_name": "DeepSeek v3",
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3813.1133598017464
     },
     "gemini-1.5-pro": {
       "active_params": 220,
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1037,
-        "mean_win_prob": 0.5473547015311243,
+        "elo": 1033,
+        "mean_win_prob": 0.5441527989167146,
         "n_match": 7387,
-        "rank": 34,
-        "rank_p2_5": 29,
-        "rank_p97_5": 38,
-        "score_p2_5": 1027,
-        "score_p97_5": 1050,
+        "rank": 35,
+        "rank_p2_5": 31,
+        "rank_p97_5": 39,
+        "score_p2_5": 1025,
+        "score_p97_5": 1042,
         "trust_range": [
-          5,
+          4,
           4
         ],
         "win_rate": 0.5830743197509137
@@ -1143,23 +1143,23 @@
       "simple_name": "Gemini 1.5 Pro",
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
-      "wh_per_million_token": 167596.16666666666
+      "wh_per_million_token": 10622.611302277115
     },
     "gemini-2.0-flash": {
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1107,
-        "mean_win_prob": 0.6403745299223749,
+        "elo": 1103,
+        "mean_win_prob": 0.6380788360935652,
         "n_match": 8684,
-        "rank": 5,
+        "rank": 4,
         "rank_p2_5": 3,
-        "rank_p97_5": 8,
-        "score_p2_5": 1097,
-        "score_p97_5": 1120,
+        "rank_p97_5": 7,
+        "score_p2_5": 1096,
+        "score_p97_5": 1110,
         "trust_range": [
-          2,
+          1,
           3
         ],
         "win_rate": 0.6317699216950714
@@ -1194,26 +1194,26 @@
       "simple_name": "Gemini 2.0 Flash",
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "gemini-2.5-flash": {
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1113,
-        "mean_win_prob": 0.6476499702395127,
-        "n_match": 2452,
+        "elo": 1108,
+        "mean_win_prob": 0.6442288547907358,
+        "n_match": 3064,
         "rank": 3,
         "rank_p2_5": 2,
-        "rank_p97_5": 8,
-        "score_p2_5": 1098,
-        "score_p97_5": 1128,
+        "rank_p97_5": 7,
+        "score_p2_5": 1097,
+        "score_p97_5": 1119,
         "trust_range": [
           1,
-          5
+          4
         ],
-        "win_rate": 0.5896164830681355
+        "win_rate": 0.5878485145282403
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1230,15 +1230,15 @@
       "organisation": "Google",
       "params": 440,
       "prefs": {
-        "clear_formatting": 183,
-        "complete": 262,
-        "creative": 71,
-        "incorrect": 57,
-        "instructions_not_followed": 12,
-        "positive_prefs_ratio": 0.8719512195121951,
-        "superficial": 36,
-        "total_prefs": 820,
-        "useful": 199
+        "clear_formatting": 247,
+        "complete": 336,
+        "creative": 95,
+        "incorrect": 74,
+        "instructions_not_followed": 18,
+        "positive_prefs_ratio": 0.8677007299270073,
+        "superficial": 53,
+        "total_prefs": 1096,
+        "useful": 273
       },
       "pricey": false,
       "quantization": null,
@@ -1249,26 +1249,26 @@
       "simple_name": "Gemini 2.5 Flash",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "gemini-3-pro-preview": {
       "active_params": 45,
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1028,
-        "mean_win_prob": 0.5344543981164698,
-        "n_match": 13,
-        "rank": 38,
-        "rank_p2_5": 1,
-        "rank_p97_5": 82,
-        "score_p2_5": 851,
-        "score_p97_5": 1188,
+        "elo": 1094,
+        "mean_win_prob": 0.6262328869399598,
+        "n_match": 687,
+        "rank": 7,
+        "rank_p2_5": 3,
+        "rank_p97_5": 16,
+        "score_p2_5": 1072,
+        "score_p97_5": 1117,
         "trust_range": [
-          37,
-          44
+          4,
+          9
         ],
-        "win_rate": 0.2
+        "win_rate": 0.5335568513119533
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1284,6 +1284,17 @@
       "new": true,
       "organisation": "Google",
       "params": 750,
+      "prefs": {
+        "clear_formatting": 73,
+        "complete": 81,
+        "creative": 36,
+        "incorrect": 18,
+        "instructions_not_followed": 8,
+        "positive_prefs_ratio": 0.8629283489096573,
+        "superficial": 18,
+        "total_prefs": 321,
+        "useful": 87
+      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1293,7 +1304,7 @@
       "simple_name": "Gemini 3 Pro",
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
-      "wh_per_million_token": 53761.899999999994
+      "wh_per_million_token": 4110.7963299646035
     },
     "gemma-2-27b-it": {
       "active_params": null,
@@ -1320,23 +1331,23 @@
       "simple_name": "Gemma 2 27B",
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
-      "wh_per_million_token": 6434.256666666666
+      "wh_per_million_token": 107.53155147181795
     },
     "gemma-2-27b-it-q8": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1007,
-        "mean_win_prob": 0.5057487704653598,
+        "elo": 1002,
+        "mean_win_prob": 0.5012468672105524,
         "n_match": 762,
-        "rank": 47,
-        "rank_p2_5": 37,
-        "rank_p97_5": 57,
-        "score_p2_5": 982,
-        "score_p97_5": 1032,
+        "rank": 49,
+        "rank_p2_5": 38,
+        "rank_p97_5": 59,
+        "score_p2_5": 980,
+        "score_p97_5": 1026,
         "trust_range": [
-          10,
+          11,
           10
         ],
         "win_rate": 0.5826115485564304
@@ -1371,7 +1382,7 @@
       "simple_name": "Gemma 2 27B",
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
-      "wh_per_million_token": 6434.256666666666
+      "wh_per_million_token": 107.53155147181795
     },
     "gemma-2-2b-it": {
       "active_params": null,
@@ -1398,21 +1409,21 @@
       "simple_name": "Gemma 2 2B",
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-2b-it",
-      "wh_per_million_token": 2925.84
+      "wh_per_million_token": 78.46094891685138
     },
     "gemma-2-9b-it": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 959,
-        "mean_win_prob": 0.4389020809507277,
+        "elo": 955,
+        "mean_win_prob": 0.4353072130612997,
         "n_match": 5115,
-        "rank": 68,
-        "rank_p2_5": 64,
-        "rank_p97_5": 71,
-        "score_p2_5": 947,
-        "score_p97_5": 971,
+        "rank": 70,
+        "rank_p2_5": 66,
+        "rank_p97_5": 73,
+        "score_p2_5": 946,
+        "score_p97_5": 964,
         "trust_range": [
           4,
           3
@@ -1449,26 +1460,26 @@
       "simple_name": "Gemma 2 9B",
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-9b-it",
-      "wh_per_million_token": 3908.1966666666667
+      "wh_per_million_token": 86.60071763224201
     },
     "gemma-3-12b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1073,
-        "mean_win_prob": 0.5955105011924244,
-        "n_match": 5902,
-        "rank": 17,
-        "rank_p2_5": 14,
-        "rank_p97_5": 23,
-        "score_p2_5": 1063,
-        "score_p97_5": 1085,
+        "elo": 1067,
+        "mean_win_prob": 0.5896907281320573,
+        "n_match": 6490,
+        "rank": 18,
+        "rank_p2_5": 15,
+        "rank_p97_5": 24,
+        "score_p2_5": 1059,
+        "score_p97_5": 1074,
         "trust_range": [
           3,
           6
         ],
-        "win_rate": 0.5664689935615046
+        "win_rate": 0.5626548536209554
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1485,15 +1496,15 @@
       "organisation": "Google",
       "params": 12,
       "prefs": {
-        "clear_formatting": 865,
-        "complete": 1191,
-        "creative": 305,
-        "incorrect": 329,
-        "instructions_not_followed": 138,
-        "positive_prefs_ratio": 0.8240605173255247,
-        "superficial": 254,
-        "total_prefs": 4098,
-        "useful": 1016
+        "clear_formatting": 923,
+        "complete": 1266,
+        "creative": 323,
+        "incorrect": 363,
+        "instructions_not_followed": 149,
+        "positive_prefs_ratio": 0.8189066059225513,
+        "superficial": 283,
+        "total_prefs": 4390,
+        "useful": 1083
       },
       "pricey": false,
       "quantization": null,
@@ -1504,26 +1515,26 @@
       "simple_name": "Gemma 3 12B",
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-12b-it",
-      "wh_per_million_token": 4329.206666666666
+      "wh_per_million_token": 90.08918993883802
     },
     "gemma-3-27b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1094,
-        "mean_win_prob": 0.6228183568336086,
-        "n_match": 6298,
-        "rank": 9,
-        "rank_p2_5": 6,
-        "rank_p97_5": 13,
-        "score_p2_5": 1083,
-        "score_p97_5": 1106,
+        "elo": 1087,
+        "mean_win_prob": 0.6174454839519377,
+        "n_match": 6864,
+        "rank": 10,
+        "rank_p2_5": 7,
+        "rank_p97_5": 14,
+        "score_p2_5": 1080,
+        "score_p97_5": 1094,
         "trust_range": [
           3,
           4
         ],
-        "win_rate": 0.5808939345824071
+        "win_rate": 0.5778001165501165
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1540,15 +1551,15 @@
       "organisation": "Google",
       "params": 27,
       "prefs": {
-        "clear_formatting": 1038,
-        "complete": 1404,
-        "creative": 413,
-        "incorrect": 309,
-        "instructions_not_followed": 101,
-        "positive_prefs_ratio": 0.8676877260157413,
-        "superficial": 212,
-        "total_prefs": 4701,
-        "useful": 1224
+        "clear_formatting": 1082,
+        "complete": 1475,
+        "creative": 430,
+        "incorrect": 346,
+        "instructions_not_followed": 113,
+        "positive_prefs_ratio": 0.8608818200120797,
+        "superficial": 232,
+        "total_prefs": 4967,
+        "useful": 1289
       },
       "pricey": false,
       "quantization": null,
@@ -1559,26 +1570,26 @@
       "simple_name": "Gemma 3 27B",
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-27b-it",
-      "wh_per_million_token": 6434.256666666666
+      "wh_per_million_token": 107.53155147181795
     },
     "gemma-3-4b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1048,
-        "mean_win_prob": 0.56140342861683,
-        "n_match": 6937,
-        "rank": 28,
-        "rank_p2_5": 26,
-        "rank_p97_5": 33,
-        "score_p2_5": 1037,
-        "score_p97_5": 1060,
+        "elo": 1042,
+        "mean_win_prob": 0.5561147774234354,
+        "n_match": 7509,
+        "rank": 31,
+        "rank_p2_5": 28,
+        "rank_p97_5": 34,
+        "score_p2_5": 1035,
+        "score_p97_5": 1049,
         "trust_range": [
-          2,
-          5
+          3,
+          3
         ],
-        "win_rate": 0.5260083609629523
+        "win_rate": 0.5238793447862565
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1595,15 +1606,15 @@
       "organisation": "Google",
       "params": 4,
       "prefs": {
-        "clear_formatting": 964,
-        "complete": 1210,
-        "creative": 333,
-        "incorrect": 539,
-        "instructions_not_followed": 187,
-        "positive_prefs_ratio": 0.7880446682723888,
-        "superficial": 242,
-        "total_prefs": 4567,
-        "useful": 1092
+        "clear_formatting": 1014,
+        "complete": 1270,
+        "creative": 346,
+        "incorrect": 583,
+        "instructions_not_followed": 203,
+        "positive_prefs_ratio": 0.7823748448489863,
+        "superficial": 266,
+        "total_prefs": 4834,
+        "useful": 1152
       },
       "pricey": false,
       "quantization": null,
@@ -1614,26 +1625,26 @@
       "simple_name": "Gemma 3 4B",
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-4b-it",
-      "wh_per_million_token": 3206.5133333333333
+      "wh_per_million_token": 80.78659712124872
     },
     "gemma-3n-e4b-it": {
       "active_params": 4,
       "arch": "matformer",
       "commercial_use": true,
       "data": {
-        "elo": 1034,
-        "mean_win_prob": 0.5428666196589524,
-        "n_match": 2279,
+        "elo": 1033,
+        "mean_win_prob": 0.5437274296958292,
+        "n_match": 2822,
         "rank": 36,
         "rank_p2_5": 30,
         "rank_p97_5": 40,
-        "score_p2_5": 1020,
-        "score_p97_5": 1049,
+        "score_p2_5": 1022,
+        "score_p97_5": 1044,
         "trust_range": [
           6,
           4
         ],
-        "win_rate": 0.4947608600263273
+        "win_rate": 0.4914280652019844
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1650,15 +1661,15 @@
       "organisation": "Google",
       "params": 8,
       "prefs": {
-        "clear_formatting": 126,
-        "complete": 177,
-        "creative": 47,
-        "incorrect": 70,
-        "instructions_not_followed": 32,
-        "positive_prefs_ratio": 0.7610759493670886,
-        "superficial": 49,
-        "total_prefs": 632,
-        "useful": 131
+        "clear_formatting": 177,
+        "complete": 235,
+        "creative": 67,
+        "incorrect": 96,
+        "instructions_not_followed": 42,
+        "positive_prefs_ratio": 0.7634529147982063,
+        "superficial": 73,
+        "total_prefs": 892,
+        "useful": 202
       },
       "pricey": false,
       "quantization": null,
@@ -1669,26 +1680,26 @@
       "simple_name": "Gemma 3n 4B",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3206.5133333333333
+      "wh_per_million_token": 80.78659712124872
     },
     "glm-4.5": {
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1070,
-        "mean_win_prob": 0.5920048474152976,
-        "n_match": 1126,
-        "rank": 19,
-        "rank_p2_5": 12,
-        "rank_p97_5": 26,
-        "score_p2_5": 1053,
-        "score_p97_5": 1091,
+        "elo": 1073,
+        "mean_win_prob": 0.5987167892361306,
+        "n_match": 1603,
+        "rank": 16,
+        "rank_p2_5": 10,
+        "rank_p97_5": 23,
+        "score_p2_5": 1059,
+        "score_p97_5": 1087,
         "trust_range": [
-          7,
+          6,
           7
         ],
-        "win_rate": 0.550088888888889
+        "win_rate": 0.5520911360799001
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1705,15 +1716,15 @@
       "organisation": "Zhipu",
       "params": 355,
       "prefs": {
-        "clear_formatting": 86,
-        "complete": 117,
-        "creative": 32,
-        "incorrect": 22,
-        "instructions_not_followed": 10,
-        "positive_prefs_ratio": 0.8763157894736842,
-        "superficial": 15,
-        "total_prefs": 380,
-        "useful": 98
+        "clear_formatting": 125,
+        "complete": 171,
+        "creative": 48,
+        "incorrect": 32,
+        "instructions_not_followed": 21,
+        "positive_prefs_ratio": 0.849912739965096,
+        "superficial": 33,
+        "total_prefs": 573,
+        "useful": 143
       },
       "pricey": false,
       "quantization": null,
@@ -1724,26 +1735,26 @@
       "simple_name": "GLM 4.5",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 21407.82
+      "wh_per_million_token": 1813.53075172498
     },
     "glm-4.6": {
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1040,
-        "mean_win_prob": 0.551118712297955,
-        "n_match": 973,
+        "elo": 1036,
+        "mean_win_prob": 0.5481826891535179,
+        "n_match": 1428,
         "rank": 32,
-        "rank_p2_5": 25,
+        "rank_p2_5": 27,
         "rank_p97_5": 40,
-        "score_p2_5": 1019,
-        "score_p97_5": 1060,
+        "score_p2_5": 1021,
+        "score_p97_5": 1053,
         "trust_range": [
-          7,
+          5,
           8
         ],
-        "win_rate": 0.5045407636738906
+        "win_rate": 0.5016537649542576
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1760,15 +1771,15 @@
       "organisation": "Zhipu",
       "params": 357,
       "prefs": {
-        "clear_formatting": 37,
-        "complete": 73,
-        "creative": 22,
-        "incorrect": 15,
-        "instructions_not_followed": 9,
-        "positive_prefs_ratio": 0.8513513513513513,
-        "superficial": 9,
-        "total_prefs": 222,
-        "useful": 57
+        "clear_formatting": 74,
+        "complete": 120,
+        "creative": 39,
+        "incorrect": 26,
+        "instructions_not_followed": 17,
+        "positive_prefs_ratio": 0.8162291169451074,
+        "superficial": 34,
+        "total_prefs": 419,
+        "useful": 109
       },
       "pricey": false,
       "quantization": null,
@@ -1779,7 +1790,7 @@
       "simple_name": "GLM 4.6",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 21407.82
+      "wh_per_million_token": 1813.53075172498
     },
     "gpt-3.5-turbo-0301": {
       "active_params": null,
@@ -1806,23 +1817,23 @@
       "simple_name": "GPT-3.5",
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
-      "wh_per_million_token": 10363.683333333332
+      "wh_per_million_token": 280.18125266676105
     },
     "gpt-4.1-mini": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1039,
-        "mean_win_prob": 0.5493618435505639,
+        "elo": 1034,
+        "mean_win_prob": 0.545023250359379,
         "n_match": 7173,
-        "rank": 33,
-        "rank_p2_5": 29,
-        "rank_p97_5": 37,
-        "score_p2_5": 1029,
-        "score_p97_5": 1052,
+        "rank": 34,
+        "rank_p2_5": 31,
+        "rank_p97_5": 38,
+        "score_p2_5": 1027,
+        "score_p97_5": 1041,
         "trust_range": [
-          4,
+          3,
           4
         ],
         "win_rate": 0.515105285176405
@@ -1861,26 +1872,26 @@
       "simple_name": "GPT-4.1 Mini",
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
-      "wh_per_million_token": 13170.416666666666
+      "wh_per_million_token": 653.388433509415
     },
     "gpt-4.1-nano": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 985,
-        "mean_win_prob": 0.47490583045404344,
+        "elo": 980,
+        "mean_win_prob": 0.47023561850893025,
         "n_match": 5717,
-        "rank": 55,
-        "rank_p2_5": 51,
-        "rank_p97_5": 60,
-        "score_p2_5": 975,
-        "score_p97_5": 998,
+        "rank": 57,
+        "rank_p2_5": 54,
+        "rank_p97_5": 62,
+        "score_p2_5": 973,
+        "score_p97_5": 988,
         "trust_range": [
-          4,
+          3,
           5
         ],
-        "win_rate": 0.4674846947699842
+        "win_rate": 0.4674846947699843
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1916,21 +1927,21 @@
       "simple_name": "GPT 4.1 Nano",
       "status": "archived",
       "url": "https://openai.com/index/gpt-4-1/",
-      "wh_per_million_token": 5872.909999999999
+      "wh_per_million_token": 102.8802550630233
     },
     "gpt-4o-2024-08-06": {
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 968,
-        "mean_win_prob": 0.4521683281356197,
+        "elo": 964,
+        "mean_win_prob": 0.4480086834786368,
         "n_match": 5896,
-        "rank": 63,
-        "rank_p2_5": 59,
-        "rank_p97_5": 67,
-        "score_p2_5": 957,
-        "score_p97_5": 981,
+        "rank": 66,
+        "rank_p2_5": 62,
+        "rank_p97_5": 70,
+        "score_p2_5": 955,
+        "score_p97_5": 973,
         "trust_range": [
           4,
           4
@@ -1967,24 +1978,24 @@
       "simple_name": "GPT-4o",
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4o",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3767.075243418733
     },
     "gpt-4o-mini-2024-07-18": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 988,
-        "mean_win_prob": 0.4793598093945357,
+        "elo": 984,
+        "mean_win_prob": 0.47547489983506513,
         "n_match": 6990,
-        "rank": 54,
-        "rank_p2_5": 49,
-        "rank_p97_5": 58,
-        "score_p2_5": 978,
-        "score_p97_5": 1001,
+        "rank": 56,
+        "rank_p2_5": 51,
+        "rank_p97_5": 61,
+        "score_p2_5": 976,
+        "score_p97_5": 992,
         "trust_range": [
           5,
-          4
+          5
         ],
         "win_rate": 0.49947067238912735
       },
@@ -2018,26 +2029,26 @@
       "simple_name": "GPT-4o mini",
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
-      "wh_per_million_token": 5171.2266666666665
+      "wh_per_million_token": 97.06613455202998
     },
     "gpt-5": {
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1016,
-        "mean_win_prob": 0.5177225399481482,
-        "n_match": 3078,
-        "rank": 42,
-        "rank_p2_5": 38,
-        "rank_p97_5": 47,
-        "score_p2_5": 1003,
-        "score_p97_5": 1030,
+        "elo": 1003,
+        "mean_win_prob": 0.5022554456259027,
+        "n_match": 3564,
+        "rank": 48,
+        "rank_p2_5": 44,
+        "rank_p97_5": 52,
+        "score_p2_5": 993,
+        "score_p97_5": 1013,
         "trust_range": [
           4,
-          5
+          4
         ],
-        "win_rate": 0.46313617159571013
+        "win_rate": 0.45610721302273366
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2054,15 +2065,15 @@
       "organisation": "OpenAI",
       "params": 300,
       "prefs": {
-        "clear_formatting": 56,
-        "complete": 127,
-        "creative": 44,
-        "incorrect": 25,
-        "instructions_not_followed": 26,
-        "positive_prefs_ratio": 0.7813953488372093,
-        "superficial": 43,
-        "total_prefs": 430,
-        "useful": 109
+        "clear_formatting": 63,
+        "complete": 146,
+        "creative": 48,
+        "incorrect": 27,
+        "instructions_not_followed": 31,
+        "positive_prefs_ratio": 0.776,
+        "superficial": 54,
+        "total_prefs": 500,
+        "useful": 131
       },
       "pricey": false,
       "quantization": null,
@@ -2073,7 +2084,7 @@
       "simple_name": "GPT 5",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 2967.0522611060533
     },
     "gpt-5-mini": {
       "active_params": null,
@@ -2081,18 +2092,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1015,
-        "mean_win_prob": 0.5168323500026357,
-        "n_match": 1588,
-        "rank": 43,
-        "rank_p2_5": 37,
+        "mean_win_prob": 0.5181816302672998,
+        "n_match": 2254,
+        "rank": 42,
+        "rank_p2_5": 38,
         "rank_p97_5": 48,
-        "score_p2_5": 998,
-        "score_p97_5": 1033,
+        "score_p2_5": 1003,
+        "score_p97_5": 1027,
         "trust_range": [
-          6,
-          5
+          4,
+          6
         ],
-        "win_rate": 0.4734826498422713
+        "win_rate": 0.47244562805148693
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2109,15 +2120,15 @@
       "organisation": "OpenAI",
       "params": 47,
       "prefs": {
-        "clear_formatting": 47,
-        "complete": 102,
-        "creative": 24,
-        "incorrect": 23,
-        "instructions_not_followed": 24,
-        "positive_prefs_ratio": 0.7678018575851393,
-        "superficial": 28,
-        "total_prefs": 323,
-        "useful": 75
+        "clear_formatting": 83,
+        "complete": 158,
+        "creative": 45,
+        "incorrect": 35,
+        "instructions_not_followed": 37,
+        "positive_prefs_ratio": 0.7545126353790613,
+        "superficial": 64,
+        "total_prefs": 554,
+        "useful": 132
       },
       "pricey": false,
       "quantization": null,
@@ -2128,26 +2139,26 @@
       "simple_name": "GPT 5 Mini",
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-mini",
-      "wh_per_million_token": 9240.99
+      "wh_per_million_token": 261.5760670315824
     },
     "gpt-5-nano": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 958,
-        "mean_win_prob": 0.438413976980206,
-        "n_match": 1305,
-        "rank": 69,
-        "rank_p2_5": 60,
-        "rank_p97_5": 72,
-        "score_p2_5": 940,
-        "score_p97_5": 977,
+        "elo": 950,
+        "mean_win_prob": 0.4293196385283253,
+        "n_match": 1871,
+        "rank": 73,
+        "rank_p2_5": 66,
+        "rank_p97_5": 76,
+        "score_p2_5": 936,
+        "score_p97_5": 965,
         "trust_range": [
-          9,
+          7,
           3
         ],
-        "win_rate": 0.3908665644171779
+        "win_rate": 0.39220737573490116
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2164,15 +2175,15 @@
       "organisation": "OpenAI",
       "params": 11,
       "prefs": {
-        "clear_formatting": 29,
-        "complete": 48,
-        "creative": 15,
-        "incorrect": 16,
-        "instructions_not_followed": 22,
-        "positive_prefs_ratio": 0.6868686868686869,
-        "superficial": 24,
-        "total_prefs": 198,
-        "useful": 44
+        "clear_formatting": 55,
+        "complete": 90,
+        "creative": 27,
+        "incorrect": 36,
+        "instructions_not_followed": 49,
+        "positive_prefs_ratio": 0.676923076923077,
+        "superficial": 41,
+        "total_prefs": 390,
+        "useful": 92
       },
       "pricey": false,
       "quantization": null,
@@ -2183,26 +2194,26 @@
       "simple_name": "GPT 5 Nano",
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-nano",
-      "wh_per_million_token": 4188.87
+      "wh_per_million_token": 88.92636583663935
     },
     "gpt-5.1": {
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1088,
-        "mean_win_prob": 0.6150908817603039,
-        "n_match": 298,
-        "rank": 12,
-        "rank_p2_5": 3,
-        "rank_p97_5": 26,
-        "score_p2_5": 1052,
-        "score_p97_5": 1120,
+        "elo": 1086,
+        "mean_win_prob": 0.616194625666883,
+        "n_match": 1138,
+        "rank": 11,
+        "rank_p2_5": 4,
+        "rank_p97_5": 18,
+        "score_p2_5": 1070,
+        "score_p97_5": 1104,
         "trust_range": [
-          9,
-          14
+          7,
+          7
         ],
-        "win_rate": 0.593030303030303
+        "win_rate": 0.5648636763412489
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2219,15 +2230,15 @@
       "organisation": "OpenAI",
       "params": 300,
       "prefs": {
-        "clear_formatting": 17,
-        "complete": 18,
-        "creative": 3,
-        "incorrect": 2,
-        "instructions_not_followed": 1,
-        "positive_prefs_ratio": 0.8928571428571429,
-        "superficial": 3,
-        "total_prefs": 56,
-        "useful": 12
+        "clear_formatting": 100,
+        "complete": 124,
+        "creative": 33,
+        "incorrect": 21,
+        "instructions_not_followed": 9,
+        "positive_prefs_ratio": 0.875,
+        "superficial": 23,
+        "total_prefs": 424,
+        "useful": 114
       },
       "pricey": false,
       "quantization": null,
@@ -2238,26 +2249,26 @@
       "simple_name": "GPT 5.1",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 2967.0522611060533
     },
     "gpt-oss-120b": {
       "active_params": 5.1,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1095,
-        "mean_win_prob": 0.6249913017941814,
-        "n_match": 890,
-        "rank": 7,
+        "elo": 1087,
+        "mean_win_prob": 0.617577066674744,
+        "n_match": 988,
+        "rank": 9,
         "rank_p2_5": 4,
-        "rank_p97_5": 16,
-        "score_p2_5": 1072,
-        "score_p97_5": 1116,
+        "rank_p97_5": 17,
+        "score_p2_5": 1069,
+        "score_p97_5": 1105,
         "trust_range": [
-          3,
-          9
+          5,
+          8
         ],
-        "win_rate": 0.571354401805869
+        "win_rate": 0.5667617107942973
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2274,15 +2285,15 @@
       "organisation": "OpenAI",
       "params": 117,
       "prefs": {
-        "clear_formatting": 115,
-        "complete": 172,
-        "creative": 49,
-        "incorrect": 47,
-        "instructions_not_followed": 23,
-        "positive_prefs_ratio": 0.8246268656716418,
-        "superficial": 24,
-        "total_prefs": 536,
-        "useful": 106
+        "clear_formatting": 126,
+        "complete": 189,
+        "creative": 57,
+        "incorrect": 55,
+        "instructions_not_followed": 24,
+        "positive_prefs_ratio": 0.8207705192629816,
+        "superficial": 28,
+        "total_prefs": 597,
+        "useful": 118
       },
       "pricey": false,
       "quantization": null,
@@ -2293,26 +2304,26 @@
       "simple_name": "GPT OSS-120B",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3346.8500000000004
+      "wh_per_million_token": 327.7976848937895
     },
     "gpt-oss-20b": {
       "active_params": 3.6,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1036,
-        "mean_win_prob": 0.5459295741155128,
-        "n_match": 1231,
-        "rank": 35,
-        "rank_p2_5": 28,
-        "rank_p97_5": 40,
-        "score_p2_5": 1019,
-        "score_p97_5": 1055,
+        "elo": 1031,
+        "mean_win_prob": 0.5409075298745962,
+        "n_match": 1310,
+        "rank": 38,
+        "rank_p2_5": 30,
+        "rank_p97_5": 42,
+        "score_p2_5": 1017,
+        "score_p97_5": 1046,
         "trust_range": [
-          7,
-          5
+          8,
+          4
         ],
-        "win_rate": 0.5008964955175224
+        "win_rate": 0.4939969372128637
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2329,15 +2340,15 @@
       "organisation": "OpenAI",
       "params": 21,
       "prefs": {
-        "clear_formatting": 100,
-        "complete": 107,
-        "creative": 33,
-        "incorrect": 29,
-        "instructions_not_followed": 21,
-        "positive_prefs_ratio": 0.7960199004975125,
-        "superficial": 32,
-        "total_prefs": 402,
-        "useful": 80
+        "clear_formatting": 109,
+        "complete": 114,
+        "creative": 38,
+        "incorrect": 35,
+        "instructions_not_followed": 26,
+        "positive_prefs_ratio": 0.7865168539325843,
+        "superficial": 34,
+        "total_prefs": 445,
+        "useful": 89
       },
       "pricey": false,
       "quantization": null,
@@ -2348,26 +2359,26 @@
       "simple_name": "GPT OSS-20B",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 79.62377301905003
     },
     "grok-3-mini-beta": {
       "active_params": 22,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1071,
-        "mean_win_prob": 0.593166859330881,
+        "elo": 1066,
+        "mean_win_prob": 0.5883723754755354,
         "n_match": 1537,
-        "rank": 18,
-        "rank_p2_5": 12,
-        "rank_p97_5": 26,
-        "score_p2_5": 1055,
-        "score_p97_5": 1089,
+        "rank": 19,
+        "rank_p2_5": 13,
+        "rank_p97_5": 28,
+        "score_p2_5": 1049,
+        "score_p97_5": 1080,
         "trust_range": [
           6,
-          8
+          9
         ],
-        "win_rate": 0.5305338541666667
+        "win_rate": 0.5305338541666668
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2403,26 +2414,26 @@
       "simple_name": "Grok 3 Mini",
       "status": "archived",
       "url": "https://x.ai/news/grok-3",
-      "wh_per_million_token": 11465.146666666666
+      "wh_per_million_token": 813.7394476865971
     },
     "grok-4-fast": {
       "active_params": 121,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1064,
-        "mean_win_prob": 0.5838177386045795,
-        "n_match": 1834,
-        "rank": 23,
-        "rank_p2_5": 15,
+        "elo": 1061,
+        "mean_win_prob": 0.582749131168603,
+        "n_match": 2359,
+        "rank": 21,
+        "rank_p2_5": 16,
         "rank_p97_5": 28,
         "score_p2_5": 1049,
-        "score_p97_5": 1082,
+        "score_p97_5": 1073,
         "trust_range": [
-          8,
-          5
+          5,
+          7
         ],
-        "win_rate": 0.5259443231441048
+        "win_rate": 0.5263937208315655
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2439,15 +2450,15 @@
       "organisation": "xAI",
       "params": 1700,
       "prefs": {
-        "clear_formatting": 66,
-        "complete": 93,
-        "creative": 20,
-        "incorrect": 32,
-        "instructions_not_followed": 7,
-        "positive_prefs_ratio": 0.8378378378378378,
-        "superficial": 21,
-        "total_prefs": 370,
-        "useful": 131
+        "clear_formatting": 119,
+        "complete": 157,
+        "creative": 46,
+        "incorrect": 54,
+        "instructions_not_followed": 20,
+        "positive_prefs_ratio": 0.8190327613104524,
+        "superficial": 42,
+        "total_prefs": 641,
+        "useful": 203
       },
       "pricey": false,
       "quantization": null,
@@ -2458,26 +2469,26 @@
       "simple_name": "Grok 4 Fast",
       "status": "enabled",
       "url": "https://x.ai/news/grok-4-fast",
-      "wh_per_million_token": 255136.7433333333
+      "wh_per_million_token": 13877.569093023505
     },
     "grok-4.1-fast": {
       "active_params": 121,
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1094,
-        "mean_win_prob": 0.622885796472421,
-        "n_match": 38,
-        "rank": 8,
-        "rank_p2_5": 1,
-        "rank_p97_5": 48,
-        "score_p2_5": 1002,
-        "score_p97_5": 1187,
+        "elo": 1079,
+        "mean_win_prob": 0.6069364989296978,
+        "n_match": 538,
+        "rank": 14,
+        "rank_p2_5": 4,
+        "rank_p97_5": 26,
+        "score_p2_5": 1054,
+        "score_p97_5": 1103,
         "trust_range": [
-          7,
-          40
+          10,
+          12
         ],
-        "win_rate": 0.6108333333333333
+        "win_rate": 0.5550185873605948
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2494,15 +2505,15 @@
       "organisation": "xAI",
       "params": 1700,
       "prefs": {
-        "clear_formatting": 0,
-        "complete": 0,
-        "creative": 0,
-        "incorrect": 0,
-        "instructions_not_followed": 0,
-        "positive_prefs_ratio": 1.0,
-        "superficial": 0,
-        "total_prefs": 1,
-        "useful": 1
+        "clear_formatting": 45,
+        "complete": 57,
+        "creative": 16,
+        "incorrect": 17,
+        "instructions_not_followed": 5,
+        "positive_prefs_ratio": 0.819047619047619,
+        "superficial": 16,
+        "total_prefs": 210,
+        "useful": 54
       },
       "pricey": false,
       "quantization": null,
@@ -2513,26 +2524,26 @@
       "simple_name": "Grok 4.1 Fast",
       "status": "enabled",
       "url": "https://x.ai/news/grok-4-1-fast",
-      "wh_per_million_token": 255136.7433333333
+      "wh_per_million_token": 13877.569093023505
     },
     "hermes-3-llama-3.1-405b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 948,
-        "mean_win_prob": 0.4240212706407704,
+        "elo": 943,
+        "mean_win_prob": 0.42022544051385075,
         "n_match": 6735,
-        "rank": 72,
-        "rank_p2_5": 68,
-        "rank_p97_5": 73,
-        "score_p2_5": 938,
-        "score_p97_5": 960,
+        "rank": 75,
+        "rank_p2_5": 70,
+        "rank_p97_5": 76,
+        "score_p2_5": 936,
+        "score_p97_5": 952,
         "trust_range": [
-          4,
+          5,
           1
         ],
-        "win_rate": 0.466347438752784
+        "win_rate": 0.46634743875278395
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2564,26 +2575,26 @@
       "simple_name": "Hermes 3 405B",
       "status": "disabled",
       "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
-      "wh_per_million_token": 237926.06666666665
+      "wh_per_million_token": 8753.264993646599
     },
     "hermes-4-70b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 933,
-        "mean_win_prob": 0.40421530579513626,
-        "n_match": 1351,
-        "rank": 75,
-        "rank_p2_5": 70,
-        "rank_p97_5": 78,
-        "score_p2_5": 914,
-        "score_p97_5": 951,
+        "elo": 935,
+        "mean_win_prob": 0.4092812429737181,
+        "n_match": 1851,
+        "rank": 76,
+        "rank_p2_5": 72,
+        "rank_p97_5": 80,
+        "score_p2_5": 919,
+        "score_p97_5": 949,
         "trust_range": [
-          5,
-          3
+          4,
+          4
         ],
-        "win_rate": 0.373765752409192
+        "win_rate": 0.37784324324324325
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2600,15 +2611,15 @@
       "organisation": "Nous",
       "params": 70,
       "prefs": {
-        "clear_formatting": 33,
-        "complete": 28,
-        "creative": 12,
-        "incorrect": 34,
-        "instructions_not_followed": 24,
-        "positive_prefs_ratio": 0.5307017543859649,
-        "superficial": 49,
-        "total_prefs": 228,
-        "useful": 48
+        "clear_formatting": 58,
+        "complete": 49,
+        "creative": 25,
+        "incorrect": 68,
+        "instructions_not_followed": 38,
+        "positive_prefs_ratio": 0.5348837209302325,
+        "superficial": 94,
+        "total_prefs": 430,
+        "useful": 98
       },
       "pricey": false,
       "quantization": null,
@@ -2619,26 +2630,26 @@
       "simple_name": "Hermes 4 70B",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "jamba-1.5-large": {
       "active_params": 94,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 980,
-        "mean_win_prob": 0.46769531318452606,
+        "elo": 975,
+        "mean_win_prob": 0.4627454724786986,
         "n_match": 172,
-        "rank": 58,
-        "rank_p2_5": 38,
-        "rank_p97_5": 75,
-        "score_p2_5": 929,
-        "score_p97_5": 1025,
+        "rank": 60,
+        "rank_p2_5": 40,
+        "rank_p97_5": 79,
+        "score_p2_5": 926,
+        "score_p97_5": 1021,
         "trust_range": [
           20,
-          17
+          19
         ],
-        "win_rate": 0.5449418604651162
+        "win_rate": 0.5449418604651163
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2670,26 +2681,26 @@
       "simple_name": "Jamba 1.5 Large",
       "status": "archived",
       "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 2967.0522611060533
     },
     "kimi-k2": {
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1059,
-        "mean_win_prob": 0.5765770923281459,
-        "n_match": 522,
+        "elo": 1058,
+        "mean_win_prob": 0.5778803241766014,
+        "n_match": 581,
         "rank": 24,
-        "rank_p2_5": 15,
-        "rank_p97_5": 35,
-        "score_p2_5": 1034,
-        "score_p97_5": 1085,
+        "rank_p2_5": 14,
+        "rank_p97_5": 34,
+        "score_p2_5": 1035,
+        "score_p97_5": 1080,
         "trust_range": [
-          9,
-          11
+          10,
+          10
         ],
-        "win_rate": 0.49446808510638296
+        "win_rate": 0.4913715277777777
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2706,15 +2717,15 @@
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 42,
-        "complete": 55,
-        "creative": 22,
-        "incorrect": 21,
-        "instructions_not_followed": 2,
-        "positive_prefs_ratio": 0.8291814946619217,
-        "superficial": 25,
-        "total_prefs": 281,
-        "useful": 114
+        "clear_formatting": 45,
+        "complete": 62,
+        "creative": 24,
+        "incorrect": 23,
+        "instructions_not_followed": 3,
+        "positive_prefs_ratio": 0.8274760383386581,
+        "superficial": 28,
+        "total_prefs": 313,
+        "useful": 128
       },
       "pricey": false,
       "quantization": null,
@@ -2725,26 +2736,26 @@
       "simple_name": "Kimi K2",
       "status": "enabled",
       "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3627.06150344996
     },
     "kimi-k2-thinking": {
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1171,
-        "mean_win_prob": 0.7183311520242905,
-        "n_match": 9,
-        "rank": 1,
-        "rank_p2_5": 1,
-        "rank_p97_5": 22,
-        "score_p2_5": 1065,
-        "score_p97_5": 1324,
+        "elo": 1057,
+        "mean_win_prob": 0.5764340834634951,
+        "n_match": 88,
+        "rank": 25,
+        "rank_p2_5": 3,
+        "rank_p97_5": 48,
+        "score_p2_5": 1003,
+        "score_p97_5": 1109,
         "trust_range": [
-          0,
-          21
+          22,
+          23
         ],
-        "win_rate": 0.375
+        "win_rate": 0.45411764705882357
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2761,15 +2772,15 @@
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 3,
-        "complete": 4,
-        "creative": 1,
-        "incorrect": 0,
-        "instructions_not_followed": 0,
-        "positive_prefs_ratio": 1.0,
-        "superficial": 0,
-        "total_prefs": 14,
-        "useful": 6
+        "clear_formatting": 9,
+        "complete": 13,
+        "creative": 6,
+        "incorrect": 8,
+        "instructions_not_followed": 8,
+        "positive_prefs_ratio": 0.6896551724137931,
+        "superficial": 2,
+        "total_prefs": 58,
+        "useful": 12
       },
       "pricey": false,
       "quantization": null,
@@ -2780,26 +2791,26 @@
       "simple_name": "Kimi K2 Thinking",
       "status": "enabled",
       "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3627.06150344996
     },
     "lfm-40b": {
       "active_params": 12,
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 887,
-        "mean_win_prob": 0.3459629109970086,
+        "elo": 883,
+        "mean_win_prob": 0.34178145390436954,
         "n_match": 3578,
-        "rank": 79,
-        "rank_p2_5": 77,
-        "rank_p97_5": 80,
-        "score_p2_5": 874,
-        "score_p97_5": 903,
+        "rank": 82,
+        "rank_p2_5": 81,
+        "rank_p97_5": 82,
+        "score_p2_5": 872,
+        "score_p97_5": 894,
         "trust_range": [
-          2,
-          1
+          1,
+          0
         ],
-        "win_rate": 0.41629681386249306
+        "win_rate": 0.416296813862493
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -2831,26 +2842,26 @@
       "simple_name": "LFM 40B",
       "status": "archived",
       "url": "https://www.liquid.ai/liquid-foundation-models",
-      "wh_per_million_token": 4329.206666666666
+      "wh_per_million_token": 180.17837987767604
     },
     "lfm2-8b-a1b": {
       "active_params": 1.5,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1043,
-        "mean_win_prob": 0.5555222513089504,
-        "n_match": 28,
-        "rank": 30,
-        "rank_p2_5": 2,
-        "rank_p97_5": 76,
-        "score_p2_5": 929,
-        "score_p97_5": 1165,
+        "elo": 1013,
+        "mean_win_prob": 0.5155430463553515,
+        "n_match": 624,
+        "rank": 43,
+        "rank_p2_5": 33,
+        "rank_p97_5": 52,
+        "score_p2_5": 991,
+        "score_p97_5": 1037,
         "trust_range": [
-          28,
-          46
+          10,
+          9
         ],
-        "win_rate": 0.4782608695652174
+        "win_rate": 0.4758333333333334
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2867,15 +2878,15 @@
       "organisation": "Liquid",
       "params": 8,
       "prefs": {
-        "clear_formatting": 0,
-        "complete": 0,
-        "creative": 0,
-        "incorrect": 0,
-        "instructions_not_followed": 0,
-        "positive_prefs_ratio": 0.6666666666666666,
-        "superficial": 1,
-        "total_prefs": 3,
-        "useful": 2
+        "clear_formatting": 47,
+        "complete": 34,
+        "creative": 12,
+        "incorrect": 55,
+        "instructions_not_followed": 17,
+        "positive_prefs_ratio": 0.5766129032258065,
+        "superficial": 33,
+        "total_prefs": 248,
+        "useful": 50
       },
       "pricey": false,
       "quantization": null,
@@ -2886,23 +2897,23 @@
       "simple_name": "LFM 2 8B A1B",
       "status": "enabled",
       "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
-      "wh_per_million_token": 2785.5033333333336
+      "wh_per_million_token": 77.29812481465271
     },
     "llama-3.1-405b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 963,
-        "mean_win_prob": 0.44522468044359353,
+        "elo": 959,
+        "mean_win_prob": 0.4412892839211592,
         "n_match": 9973,
-        "rank": 67,
-        "rank_p2_5": 62,
-        "rank_p97_5": 69,
-        "score_p2_5": 953,
-        "score_p97_5": 975,
+        "rank": 69,
+        "rank_p2_5": 65,
+        "rank_p97_5": 71,
+        "score_p2_5": 952,
+        "score_p97_5": 966,
         "trust_range": [
-          5,
+          4,
           2
         ],
         "win_rate": 0.4950747166783672
@@ -2941,24 +2952,24 @@
       "simple_name": "Llama 3.1 405B",
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
-      "wh_per_million_token": 237926.06666666665
+      "wh_per_million_token": 8753.264993646599
     },
     "llama-3.1-70b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 979,
-        "mean_win_prob": 0.46647605639240497,
+        "elo": 974,
+        "mean_win_prob": 0.4623216106397487,
         "n_match": 5583,
-        "rank": 59,
-        "rank_p2_5": 54,
-        "rank_p97_5": 63,
-        "score_p2_5": 967,
-        "score_p97_5": 991,
+        "rank": 61,
+        "rank_p2_5": 57,
+        "rank_p97_5": 66,
+        "score_p2_5": 965,
+        "score_p97_5": 983,
         "trust_range": [
-          5,
-          4
+          4,
+          5
         ],
         "win_rate": 0.530445996775927
       },
@@ -2992,26 +3003,26 @@
       "simple_name": "Llama 3.1 70B",
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "llama-3.1-8b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 935,
-        "mean_win_prob": 0.4074728852430371,
-        "n_match": 9790,
-        "rank": 74,
-        "rank_p2_5": 71,
-        "rank_p97_5": 77,
-        "score_p2_5": 926,
-        "score_p97_5": 947,
+        "elo": 934,
+        "mean_win_prob": 0.4072852330250823,
+        "n_match": 10219,
+        "rank": 77,
+        "rank_p2_5": 74,
+        "rank_p97_5": 79,
+        "score_p2_5": 927,
+        "score_p97_5": 941,
         "trust_range": [
           3,
-          3
+          2
         ],
-        "win_rate": 0.4414525025536261
+        "win_rate": 0.4425648302182209
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3028,15 +3039,15 @@
       "organisation": "Meta",
       "params": 8,
       "prefs": {
-        "clear_formatting": 1142,
-        "complete": 995,
-        "creative": 369,
-        "incorrect": 1010,
-        "instructions_not_followed": 397,
-        "positive_prefs_ratio": 0.6297572435395458,
-        "superficial": 957,
-        "total_prefs": 6385,
-        "useful": 1515
+        "clear_formatting": 1151,
+        "complete": 1009,
+        "creative": 372,
+        "incorrect": 1039,
+        "instructions_not_followed": 401,
+        "positive_prefs_ratio": 0.6277812113720643,
+        "superficial": 969,
+        "total_prefs": 6472,
+        "useful": 1531
       },
       "pricey": false,
       "quantization": null,
@@ -3047,24 +3058,24 @@
       "simple_name": "Llama 3.1 8B",
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "llama-3.1-nemotron-70b-instruct": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1052,
-        "mean_win_prob": 0.5667478919541155,
+        "elo": 1047,
+        "mean_win_prob": 0.5629381597528949,
         "n_match": 6709,
-        "rank": 27,
-        "rank_p2_5": 24,
-        "rank_p97_5": 31,
-        "score_p2_5": 1042,
-        "score_p97_5": 1065,
+        "rank": 30,
+        "rank_p2_5": 26,
+        "rank_p97_5": 33,
+        "score_p2_5": 1040,
+        "score_p97_5": 1055,
         "trust_range": [
-          3,
-          4
+          4,
+          3
         ],
         "win_rate": 0.5452863107664778
       },
@@ -3102,26 +3113,26 @@
       "simple_name": "Nemotron Llama 3.1 70B",
       "status": "archived",
       "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "llama-3.3-70b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 990,
-        "mean_win_prob": 0.4813813542974932,
-        "n_match": 7945,
-        "rank": 52,
-        "rank_p2_5": 49,
-        "rank_p97_5": 58,
-        "score_p2_5": 979,
-        "score_p97_5": 1002,
+        "elo": 987,
+        "mean_win_prob": 0.48022657131657936,
+        "n_match": 8380,
+        "rank": 54,
+        "rank_p2_5": 51,
+        "rank_p97_5": 59,
+        "score_p2_5": 980,
+        "score_p97_5": 994,
         "trust_range": [
           3,
-          6
+          5
         ],
-        "win_rate": 0.4750094410876133
+        "win_rate": 0.4753419262441819
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3138,15 +3149,15 @@
       "organisation": "Meta",
       "params": 70,
       "prefs": {
-        "clear_formatting": 1021,
-        "complete": 1076,
-        "creative": 275,
-        "incorrect": 431,
-        "instructions_not_followed": 141,
-        "positive_prefs_ratio": 0.7627187627187627,
-        "superficial": 594,
-        "total_prefs": 4914,
-        "useful": 1376
+        "clear_formatting": 1052,
+        "complete": 1117,
+        "creative": 287,
+        "incorrect": 448,
+        "instructions_not_followed": 144,
+        "positive_prefs_ratio": 0.7623547942508367,
+        "superficial": 615,
+        "total_prefs": 5079,
+        "useful": 1416
       },
       "pricey": false,
       "quantization": null,
@@ -3157,26 +3168,26 @@
       "simple_name": "Llama 3.3 70B",
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "llama-4-scout": {
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1018,
-        "mean_win_prob": 0.5205677269856235,
-        "n_match": 4450,
-        "rank": 41,
-        "rank_p2_5": 37,
-        "rank_p97_5": 46,
-        "score_p2_5": 1007,
-        "score_p97_5": 1032,
+        "elo": 1012,
+        "mean_win_prob": 0.5152048966633165,
+        "n_match": 4975,
+        "rank": 44,
+        "rank_p2_5": 40,
+        "rank_p97_5": 48,
+        "score_p2_5": 1004,
+        "score_p97_5": 1020,
         "trust_range": [
           4,
-          5
+          4
         ],
-        "win_rate": 0.4949898808185294
+        "win_rate": 0.49095075376884423
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3193,15 +3204,15 @@
       "organisation": "Meta",
       "params": 109,
       "prefs": {
-        "clear_formatting": 545,
-        "complete": 600,
-        "creative": 174,
-        "incorrect": 231,
-        "instructions_not_followed": 79,
-        "positive_prefs_ratio": 0.7630769230769231,
-        "superficial": 306,
-        "total_prefs": 2600,
-        "useful": 665
+        "clear_formatting": 581,
+        "complete": 638,
+        "creative": 184,
+        "incorrect": 253,
+        "instructions_not_followed": 88,
+        "positive_prefs_ratio": 0.759656652360515,
+        "superficial": 331,
+        "total_prefs": 2796,
+        "useful": 721
       },
       "pricey": false,
       "quantization": null,
@@ -3212,26 +3223,26 @@
       "simple_name": "Llama 4 Scout",
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
-      "wh_per_million_token": 5030.889999999999
+      "wh_per_million_token": 383.6132417993253
     },
     "llama-maverick": {
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1011,
-        "mean_win_prob": 0.5110271327495479,
-        "n_match": 1640,
+        "elo": 1008,
+        "mean_win_prob": 0.5087963370613582,
+        "n_match": 2226,
         "rank": 46,
-        "rank_p2_5": 39,
+        "rank_p2_5": 41,
         "rank_p97_5": 50,
-        "score_p2_5": 994,
-        "score_p97_5": 1028,
+        "score_p2_5": 996,
+        "score_p97_5": 1020,
         "trust_range": [
-          7,
+          5,
           4
         ],
-        "win_rate": 0.4932967032967033
+        "win_rate": 0.4789038634321653
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3248,15 +3259,15 @@
       "organisation": "Meta",
       "params": 400,
       "prefs": {
-        "clear_formatting": 56,
-        "complete": 69,
-        "creative": 16,
-        "incorrect": 25,
-        "instructions_not_followed": 11,
-        "positive_prefs_ratio": 0.7111801242236024,
-        "superficial": 57,
-        "total_prefs": 322,
-        "useful": 88
+        "clear_formatting": 103,
+        "complete": 113,
+        "creative": 33,
+        "incorrect": 52,
+        "instructions_not_followed": 25,
+        "positive_prefs_ratio": 0.7137809187279152,
+        "superficial": 85,
+        "total_prefs": 566,
+        "useful": 155
       },
       "pricey": false,
       "quantization": null,
@@ -3267,7 +3278,7 @@
       "simple_name": "Llama 4 Maverick",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 15092.669999999998
+      "wh_per_million_token": 1534.4529671973012
     },
     "magistral-medium": {
       "active_params": null,
@@ -3275,18 +3286,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1091,
-        "mean_win_prob": 0.6198847888217095,
-        "n_match": 1757,
-        "rank": 10,
-        "rank_p2_5": 6,
-        "rank_p97_5": 16,
-        "score_p2_5": 1076,
-        "score_p97_5": 1108,
+        "mean_win_prob": 0.6216865219341065,
+        "n_match": 2201,
+        "rank": 8,
+        "rank_p2_5": 5,
+        "rank_p97_5": 14,
+        "score_p2_5": 1078,
+        "score_p97_5": 1103,
         "trust_range": [
-          4,
+          3,
           6
         ],
-        "win_rate": 0.5766533864541833
+        "win_rate": 0.5804043616537937
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3303,15 +3314,15 @@
       "organisation": "Mistral AI",
       "params": 95,
       "prefs": {
-        "clear_formatting": 70,
-        "complete": 111,
-        "creative": 31,
-        "incorrect": 37,
+        "clear_formatting": 104,
+        "complete": 150,
+        "creative": 41,
+        "incorrect": 50,
         "instructions_not_followed": 3,
-        "positive_prefs_ratio": 0.8422459893048129,
-        "superficial": 19,
-        "total_prefs": 374,
-        "useful": 103
+        "positive_prefs_ratio": 0.8448275862068966,
+        "superficial": 28,
+        "total_prefs": 522,
+        "useful": 146
       },
       "pricey": false,
       "quantization": null,
@@ -3322,26 +3333,26 @@
       "simple_name": "Magistral Medium",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 15977.149999999998
+      "wh_per_million_token": 746.414361685308
     },
     "magistral-small-2506": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1056,
-        "mean_win_prob": 0.5722733822878725,
-        "n_match": 2553,
-        "rank": 26,
-        "rank_p2_5": 21,
+        "elo": 1051,
+        "mean_win_prob": 0.5689476237217335,
+        "n_match": 3144,
+        "rank": 29,
+        "rank_p2_5": 22,
         "rank_p97_5": 31,
-        "score_p2_5": 1042,
-        "score_p97_5": 1071,
+        "score_p2_5": 1040,
+        "score_p97_5": 1062,
         "trust_range": [
-          5,
-          5
+          7,
+          2
         ],
-        "win_rate": 0.5179310344827586
+        "win_rate": 0.5215781100859052
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3358,15 +3369,15 @@
       "organisation": "Mistral AI",
       "params": 24,
       "prefs": {
-        "clear_formatting": 139,
-        "complete": 161,
-        "creative": 44,
-        "incorrect": 71,
-        "instructions_not_followed": 24,
-        "positive_prefs_ratio": 0.7731811697574893,
-        "superficial": 64,
-        "total_prefs": 701,
-        "useful": 198
+        "clear_formatting": 181,
+        "complete": 198,
+        "creative": 53,
+        "incorrect": 88,
+        "instructions_not_followed": 32,
+        "positive_prefs_ratio": 0.7698412698412699,
+        "superficial": 83,
+        "total_prefs": 882,
+        "useful": 247
       },
       "pricey": false,
       "quantization": null,
@@ -3377,7 +3388,7 @@
       "simple_name": "Magistral Small",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 104.04307916522195
     },
     "Meta-Llama-3-70B-Instruct": {
       "active_params": null,
@@ -3404,7 +3415,7 @@
       "simple_name": "Llama 3 70B",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 630.1319514654417
     },
     "Meta-Llama-3-8B-Instruct": {
       "active_params": null,
@@ -3431,26 +3442,26 @@
       "simple_name": "Llama 3 8B",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "minimax-m2": {
       "active_params": 10,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 966,
-        "mean_win_prob": 0.4491966870102278,
-        "n_match": 196,
-        "rank": 64,
-        "rank_p2_5": 48,
-        "rank_p97_5": 76,
-        "score_p2_5": 926,
-        "score_p97_5": 1005,
+        "elo": 972,
+        "mean_win_prob": 0.4596568571069835,
+        "n_match": 655,
+        "rank": 63,
+        "rank_p2_5": 51,
+        "rank_p97_5": 72,
+        "score_p2_5": 948,
+        "score_p97_5": 996,
         "trust_range": [
-          16,
-          12
+          12,
+          9
         ],
-        "win_rate": 0.3159487179487179
+        "win_rate": 0.404104134762634
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3467,15 +3478,15 @@
       "organisation": "MiniMax",
       "params": 230,
       "prefs": {
-        "clear_formatting": 4,
-        "complete": 10,
-        "creative": 1,
-        "incorrect": 5,
-        "instructions_not_followed": 4,
-        "positive_prefs_ratio": 0.66,
-        "superficial": 8,
-        "total_prefs": 50,
-        "useful": 18
+        "clear_formatting": 31,
+        "complete": 53,
+        "creative": 14,
+        "incorrect": 29,
+        "instructions_not_followed": 14,
+        "positive_prefs_ratio": 0.6736401673640168,
+        "superficial": 35,
+        "total_prefs": 239,
+        "useful": 63
       },
       "pricey": false,
       "quantization": null,
@@ -3486,21 +3497,21 @@
       "simple_name": "MiniMax M2",
       "status": "enabled",
       "url": "https://www.minimax.io/news/minimax-m2",
-      "wh_per_million_token": 8097.066666666667
+      "wh_per_million_token": 702.1083338755255
     },
     "ministral-8b-instruct-2410": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 970,
-        "mean_win_prob": 0.4538951844366856,
+        "elo": 965,
+        "mean_win_prob": 0.449853744093609,
         "n_match": 9278,
-        "rank": 62,
-        "rank_p2_5": 59,
-        "rank_p97_5": 66,
-        "score_p2_5": 960,
-        "score_p97_5": 982,
+        "rank": 65,
+        "rank_p2_5": 62,
+        "rank_p97_5": 69,
+        "score_p2_5": 958,
+        "score_p97_5": 972,
         "trust_range": [
           3,
           4
@@ -3537,24 +3548,24 @@
       "simple_name": "Ministral",
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "mistral-large-2411": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 1026,
-        "mean_win_prob": 0.5310862237565296,
+        "elo": 1021,
+        "mean_win_prob": 0.5276581564300465,
         "n_match": 8829,
-        "rank": 39,
-        "rank_p2_5": 35,
-        "rank_p97_5": 41,
-        "score_p2_5": 1016,
-        "score_p97_5": 1038,
+        "rank": 40,
+        "rank_p2_5": 37,
+        "rank_p97_5": 43,
+        "score_p2_5": 1014,
+        "score_p97_5": 1028,
         "trust_range": [
-          4,
-          2
+          3,
+          3
         ],
         "win_rate": 0.527441386340469
       },
@@ -3588,26 +3599,26 @@
       "simple_name": "Mistral Large 2",
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
-      "wh_per_million_token": 19906.576666666668
+      "wh_per_million_token": 876.6506611315581
     },
     "mistral-medium-2508": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1090,
-        "mean_win_prob": 0.6186566242626815,
-        "n_match": 1235,
-        "rank": 11,
-        "rank_p2_5": 6,
-        "rank_p97_5": 17,
-        "score_p2_5": 1074,
-        "score_p97_5": 1110,
+        "elo": 1080,
+        "mean_win_prob": 0.6077069814658759,
+        "n_match": 1920,
+        "rank": 13,
+        "rank_p2_5": 8,
+        "rank_p97_5": 18,
+        "score_p2_5": 1068,
+        "score_p97_5": 1093,
         "trust_range": [
           5,
-          6
+          5
         ],
-        "win_rate": 0.5665990259740259
+        "win_rate": 0.5526197916666666
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3624,15 +3635,15 @@
       "organisation": "Mistral AI",
       "params": 123,
       "prefs": {
-        "clear_formatting": 75,
-        "complete": 78,
-        "creative": 14,
-        "incorrect": 29,
-        "instructions_not_followed": 8,
-        "positive_prefs_ratio": 0.8528528528528528,
-        "superficial": 12,
-        "total_prefs": 333,
-        "useful": 117
+        "clear_formatting": 150,
+        "complete": 154,
+        "creative": 32,
+        "incorrect": 46,
+        "instructions_not_followed": 19,
+        "positive_prefs_ratio": 0.8522727272727273,
+        "superficial": 39,
+        "total_prefs": 704,
+        "useful": 264
       },
       "pricey": false,
       "quantization": null,
@@ -3643,26 +3654,26 @@
       "simple_name": "Mistral Medium 2508",
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-medium-3",
-      "wh_per_million_token": 19906.576666666668
+      "wh_per_million_token": 876.6506611315581
     },
     "mistral-medium-3.1": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1146,
-        "mean_win_prob": 0.688882223390123,
-        "n_match": 1852,
-        "rank": 2,
+        "elo": 1137,
+        "mean_win_prob": 0.6812404469964893,
+        "n_match": 2491,
+        "rank": 1,
         "rank_p2_5": 1,
-        "rank_p97_5": 3,
-        "score_p2_5": 1131,
-        "score_p97_5": 1163,
+        "rank_p97_5": 2,
+        "score_p2_5": 1126,
+        "score_p97_5": 1151,
         "trust_range": [
-          1,
+          0,
           1
         ],
-        "win_rate": 0.6171756756756758
+        "win_rate": 0.6043953394937726
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3679,15 +3690,15 @@
       "organisation": "Mistral AI",
       "params": 95,
       "prefs": {
-        "clear_formatting": 114,
-        "complete": 165,
-        "creative": 43,
-        "incorrect": 35,
-        "instructions_not_followed": 9,
-        "positive_prefs_ratio": 0.8824742268041237,
-        "superficial": 13,
-        "total_prefs": 485,
-        "useful": 106
+        "clear_formatting": 186,
+        "complete": 269,
+        "creative": 78,
+        "incorrect": 59,
+        "instructions_not_followed": 25,
+        "positive_prefs_ratio": 0.8654761904761905,
+        "superficial": 29,
+        "total_prefs": 840,
+        "useful": 194
       },
       "pricey": false,
       "quantization": null,
@@ -3698,21 +3709,21 @@
       "simple_name": "Mistral Medium 3.1",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 15977.149999999998
+      "wh_per_million_token": 746.414361685308
     },
     "mistral-nemo-2407": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 857,
-        "mean_win_prob": 0.3093254096055386,
+        "elo": 853,
+        "mean_win_prob": 0.3051747290749978,
         "n_match": 6251,
-        "rank": 81,
-        "rank_p2_5": 80,
-        "rank_p97_5": 82,
-        "score_p2_5": 847,
-        "score_p97_5": 870,
+        "rank": 84,
+        "rank_p2_5": 83,
+        "rank_p97_5": 85,
+        "score_p2_5": 845,
+        "score_p97_5": 863,
         "trust_range": [
           1,
           1
@@ -3749,26 +3760,26 @@
       "simple_name": "Mistral Nemo",
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
-      "wh_per_million_token": 4329.206666666666
+      "wh_per_million_token": 90.08918993883802
     },
     "mistral-saba": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1022,
-        "mean_win_prob": 0.5257522471320063,
+        "elo": 1017,
+        "mean_win_prob": 0.5217361942594363,
         "n_match": 4934,
-        "rank": 40,
-        "rank_p2_5": 36,
-        "rank_p97_5": 43,
-        "score_p2_5": 1012,
-        "score_p97_5": 1035,
+        "rank": 41,
+        "rank_p2_5": 39,
+        "rank_p97_5": 46,
+        "score_p2_5": 1009,
+        "score_p97_5": 1025,
         "trust_range": [
-          4,
-          3
+          2,
+          5
         ],
-        "win_rate": 0.4829677680924386
+        "win_rate": 0.4829677680924387
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3804,24 +3815,24 @@
       "simple_name": "Mistral Saba",
       "status": "archived",
       "url": "https://mistral.ai/news/mistral-saba",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 104.04307916522195
     },
     "mistral-small-24b-instruct-2501": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 992,
-        "mean_win_prob": 0.48532799805640603,
+        "elo": 988,
+        "mean_win_prob": 0.48138262304162166,
         "n_match": 3318,
-        "rank": 51,
-        "rank_p2_5": 47,
-        "rank_p97_5": 57,
-        "score_p2_5": 981,
-        "score_p97_5": 1005,
+        "rank": 52,
+        "rank_p2_5": 49,
+        "rank_p97_5": 60,
+        "score_p2_5": 977,
+        "score_p97_5": 998,
         "trust_range": [
-          4,
-          6
+          3,
+          8
         ],
         "win_rate": 0.4952350813743219
       },
@@ -3855,26 +3866,26 @@
       "simple_name": "Mistral Small 3",
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 104.04307916522195
     },
     "mistral-small-2506": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1067,
-        "mean_win_prob": 0.586996535071098,
-        "n_match": 2155,
-        "rank": 21,
-        "rank_p2_5": 15,
-        "rank_p97_5": 26,
-        "score_p2_5": 1053,
-        "score_p97_5": 1082,
+        "elo": 1060,
+        "mean_win_prob": 0.5813645541807736,
+        "n_match": 2954,
+        "rank": 22,
+        "rank_p2_5": 17,
+        "rank_p97_5": 28,
+        "score_p2_5": 1050,
+        "score_p97_5": 1070,
         "trust_range": [
-          6,
-          5
+          5,
+          6
         ],
-        "win_rate": 0.5415313225058005
+        "win_rate": 0.5370412999322952
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3891,15 +3902,15 @@
       "organisation": "Mistral AI",
       "params": 24,
       "prefs": {
-        "clear_formatting": 91,
-        "complete": 121,
-        "creative": 33,
-        "incorrect": 63,
-        "instructions_not_followed": 8,
-        "positive_prefs_ratio": 0.7811158798283262,
-        "superficial": 31,
-        "total_prefs": 466,
-        "useful": 119
+        "clear_formatting": 161,
+        "complete": 180,
+        "creative": 48,
+        "incorrect": 98,
+        "instructions_not_followed": 17,
+        "positive_prefs_ratio": 0.7724317295188556,
+        "superficial": 60,
+        "total_prefs": 769,
+        "useful": 205
       },
       "pricey": false,
       "quantization": null,
@@ -3910,24 +3921,24 @@
       "simple_name": "Mistral Small 3.2",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 104.04307916522195
     },
     "mistral-small-3.1-24b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1013,
-        "mean_win_prob": 0.5135828081921219,
+        "elo": 1008,
+        "mean_win_prob": 0.5095079590389807,
         "n_match": 5079,
-        "rank": 44,
-        "rank_p2_5": 40,
-        "rank_p97_5": 48,
-        "score_p2_5": 1003,
-        "score_p97_5": 1027,
+        "rank": 45,
+        "rank_p2_5": 42,
+        "rank_p97_5": 50,
+        "score_p2_5": 999,
+        "score_p97_5": 1016,
         "trust_range": [
-          4,
-          4
+          3,
+          5
         ],
         "win_rate": 0.4945107304587517
       },
@@ -3961,7 +3972,7 @@
       "simple_name": "Mistral Small 3.1 24B",
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 104.04307916522195
     },
     "mistral-small-3.2-24b": {
       "active_params": null,
@@ -3988,21 +3999,21 @@
       "simple_name": "Mistral Small 3.2 24B",
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 104.04307916522195
     },
     "mixtral-8x22b-instruct-v0.1": {
       "active_params": 44,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 847,
-        "mean_win_prob": 0.29711177949722894,
+        "elo": 843,
+        "mean_win_prob": 0.2929520625333005,
         "n_match": 5455,
-        "rank": 82,
-        "rank_p2_5": 81,
-        "rank_p97_5": 83,
-        "score_p2_5": 835,
-        "score_p97_5": 861,
+        "rank": 85,
+        "rank_p2_5": 84,
+        "rank_p97_5": 86,
+        "score_p2_5": 833,
+        "score_p97_5": 853,
         "trust_range": [
           1,
           1
@@ -4039,24 +4050,24 @@
       "simple_name": "Mixtral 8x22B",
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
-      "wh_per_million_token": 17639.96
+      "wh_per_million_token": 1018.3964896735615
     },
     "mixtral-8x7b-instruct-v0.1": {
       "active_params": 14,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 890,
-        "mean_win_prob": 0.3491411350761286,
+        "elo": 886,
+        "mean_win_prob": 0.34483128277256164,
         "n_match": 2560,
-        "rank": 78,
-        "rank_p2_5": 77,
-        "rank_p97_5": 80,
-        "score_p2_5": 875,
-        "score_p97_5": 906,
+        "rank": 81,
+        "rank_p2_5": 80,
+        "rank_p97_5": 82,
+        "score_p2_5": 872,
+        "score_p97_5": 899,
         "trust_range": [
           1,
-          2
+          1
         ],
         "win_rate": 0.43488671874999996
       },
@@ -4090,24 +4101,24 @@
       "simple_name": "Mixtral-8x7B",
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 184.8296762864707
     },
     "o3-mini": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 989,
-        "mean_win_prob": 0.4808968904325321,
+        "elo": 984,
+        "mean_win_prob": 0.47625355083866355,
         "n_match": 1619,
-        "rank": 53,
-        "rank_p2_5": 46,
-        "rank_p97_5": 61,
-        "score_p2_5": 973,
-        "score_p97_5": 1006,
+        "rank": 55,
+        "rank_p2_5": 49,
+        "rank_p97_5": 64,
+        "score_p2_5": 968,
+        "score_p97_5": 999,
         "trust_range": [
-          7,
-          8
+          6,
+          9
         ],
         "win_rate": 0.51142063001853
       },
@@ -4141,26 +4152,26 @@
       "simple_name": "o3-mini",
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o3-mini",
-      "wh_per_million_token": 5171.2266666666665
+      "wh_per_million_token": 97.06613455202998
     },
     "o4-mini": {
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1012,
-        "mean_win_prob": 0.5119132376227988,
-        "n_match": 2746,
-        "rank": 45,
-        "rank_p2_5": 39,
-        "rank_p97_5": 49,
-        "score_p2_5": 999,
-        "score_p97_5": 1028,
+        "elo": 1006,
+        "mean_win_prob": 0.5062167439926156,
+        "n_match": 2791,
+        "rank": 47,
+        "rank_p2_5": 42,
+        "rank_p97_5": 51,
+        "score_p2_5": 995,
+        "score_p97_5": 1017,
         "trust_range": [
-          6,
+          5,
           4
         ],
-        "win_rate": 0.4710495626822157
+        "win_rate": 0.47113978494623654
       },
       "distribution": "api-only",
       "endpoint": {
@@ -4177,15 +4188,15 @@
       "organisation": "OpenAI",
       "params": 18,
       "prefs": {
-        "clear_formatting": 283,
-        "complete": 369,
+        "clear_formatting": 285,
+        "complete": 371,
         "creative": 111,
-        "incorrect": 131,
+        "incorrect": 132,
         "instructions_not_followed": 45,
-        "positive_prefs_ratio": 0.7697368421052632,
-        "superficial": 209,
-        "total_prefs": 1672,
-        "useful": 524
+        "positive_prefs_ratio": 0.7696428571428572,
+        "superficial": 210,
+        "total_prefs": 1680,
+        "useful": 526
       },
       "pricey": false,
       "quantization": null,
@@ -4196,7 +4207,7 @@
       "simple_name": "o4 mini",
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/o4-mini",
-      "wh_per_million_token": 5171.2266666666665
+      "wh_per_million_token": 97.06613455202998
     },
     "olmo-2-0325-32b": {
       "active_params": null,
@@ -4223,26 +4234,26 @@
       "simple_name": "OLMo-2 32B",
       "status": "archived",
       "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "olmo-3-32b-think": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 747,
-        "mean_win_prob": 0.19496889534629605,
-        "n_match": 3,
-        "rank": 86,
-        "rank_p2_5": 39,
-        "rank_p97_5": 87,
-        "score_p2_5": -123,
-        "score_p97_5": 1021,
+        "elo": 951,
+        "mean_win_prob": 0.4308939896841228,
+        "n_match": 58,
+        "rank": 71,
+        "rank_p2_5": 42,
+        "rank_p97_5": 82,
+        "score_p2_5": 876,
+        "score_p97_5": 1018,
         "trust_range": [
-          47,
-          1
+          29,
+          11
         ],
-        "win_rate": 0.0
+        "win_rate": 0.4001754385964913
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4260,14 +4271,14 @@
       "params": 32,
       "prefs": {
         "clear_formatting": 0,
-        "complete": 0,
-        "creative": 0,
-        "incorrect": 1,
-        "instructions_not_followed": 2,
-        "positive_prefs_ratio": 0.0,
-        "superficial": 1,
-        "total_prefs": 4,
-        "useful": 0
+        "complete": 1,
+        "creative": 1,
+        "incorrect": 3,
+        "instructions_not_followed": 4,
+        "positive_prefs_ratio": 0.4,
+        "superficial": 2,
+        "total_prefs": 15,
+        "useful": 4
       },
       "pricey": false,
       "quantization": null,
@@ -4278,7 +4289,7 @@
       "simple_name": "Olmo 3 32B Think",
       "status": "enabled",
       "url": "https://allenai.org/blog/olmo2-32b",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "phi-3-mini-4k": {
       "active_params": null,
@@ -4305,7 +4316,7 @@
       "simple_name": "Phi-3-Mini",
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 79.62377301905003
     },
     "Phi-3-small-8k-Instruct": {
       "active_params": null,
@@ -4332,24 +4343,24 @@
       "simple_name": "Phi-3-small-8k-Instruct",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 84.2750694278447
     },
     "phi-3.5-mini-instruct": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 867,
-        "mean_win_prob": 0.3203805107817397,
+        "elo": 863,
+        "mean_win_prob": 0.31681560897809846,
         "n_match": 2535,
-        "rank": 80,
-        "rank_p2_5": 79,
-        "rank_p97_5": 82,
-        "score_p2_5": 850,
-        "score_p97_5": 882,
+        "rank": 83,
+        "rank_p2_5": 82,
+        "rank_p97_5": 84,
+        "score_p2_5": 848,
+        "score_p97_5": 878,
         "trust_range": [
           1,
-          2
+          1
         ],
         "win_rate": 0.4021104536489152
       },
@@ -4383,26 +4394,26 @@
       "simple_name": "Phi-3.5-mini",
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 79.62377301905003
     },
     "phi-4": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 973,
-        "mean_win_prob": 0.45833532718397235,
-        "n_match": 9395,
-        "rank": 61,
-        "rank_p2_5": 58,
-        "rank_p97_5": 65,
-        "score_p2_5": 964,
-        "score_p97_5": 985,
+        "elo": 969,
+        "mean_win_prob": 0.4550540143310999,
+        "n_match": 9776,
+        "rank": 64,
+        "rank_p2_5": 60,
+        "rank_p97_5": 67,
+        "score_p2_5": 963,
+        "score_p97_5": 975,
         "trust_range": [
-          3,
-          4
+          4,
+          3
         ],
-        "win_rate": 0.47082818820523736
+        "win_rate": 0.4694895140664962
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4419,15 +4430,15 @@
       "organisation": "Microsoft",
       "params": 14,
       "prefs": {
-        "clear_formatting": 1291,
-        "complete": 1166,
-        "creative": 333,
-        "incorrect": 690,
-        "instructions_not_followed": 242,
-        "positive_prefs_ratio": 0.724365314869766,
-        "superficial": 740,
-        "total_prefs": 6066,
-        "useful": 1604
+        "clear_formatting": 1303,
+        "complete": 1186,
+        "creative": 336,
+        "incorrect": 724,
+        "instructions_not_followed": 251,
+        "positive_prefs_ratio": 0.7197926789763525,
+        "superficial": 755,
+        "total_prefs": 6174,
+        "useful": 1619
       },
       "pricey": false,
       "quantization": null,
@@ -4438,26 +4449,26 @@
       "simple_name": "Phi-4",
       "status": "enabled",
       "url": "https://huggingface.co/microsoft/Phi-4",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 92.41483814323534
     },
     "qwen-3-8b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 995,
-        "mean_win_prob": 0.48848952886643904,
-        "n_match": 1089,
-        "rank": 50,
-        "rank_p2_5": 44,
-        "rank_p97_5": 60,
-        "score_p2_5": 975,
-        "score_p97_5": 1016,
+        "elo": 987,
+        "mean_win_prob": 0.4805482644414227,
+        "n_match": 1615,
+        "rank": 53,
+        "rank_p2_5": 49,
+        "rank_p97_5": 62,
+        "score_p2_5": 973,
+        "score_p97_5": 1002,
         "trust_range": [
-          6,
-          10
+          4,
+          9
         ],
-        "win_rate": 0.4532047750229569
+        "win_rate": 0.44024767801857584
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4474,15 +4485,15 @@
       "organisation": "Alibaba",
       "params": 8,
       "prefs": {
-        "clear_formatting": 36,
-        "complete": 55,
-        "creative": 12,
-        "incorrect": 37,
-        "instructions_not_followed": 10,
-        "positive_prefs_ratio": 0.6889952153110048,
-        "superficial": 18,
-        "total_prefs": 209,
-        "useful": 41
+        "clear_formatting": 60,
+        "complete": 97,
+        "creative": 23,
+        "incorrect": 73,
+        "instructions_not_followed": 30,
+        "positive_prefs_ratio": 0.6565656565656566,
+        "superficial": 33,
+        "total_prefs": 396,
+        "useful": 80
       },
       "pricey": false,
       "quantization": null,
@@ -4493,7 +4504,7 @@
       "simple_name": "Qwen 3 8B",
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 85.43789353004335
     },
     "Qwen1.5-32B-Chat": {
       "active_params": null,
@@ -4520,7 +4531,7 @@
       "simple_name": "Qwen1.5-32B",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "Qwen2-57B-A14B-Instruct": {
       "active_params": 14,
@@ -4547,7 +4558,7 @@
       "simple_name": "Qwen2-57B-A14B-Instruct",
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 184.8296762864707
     },
     "Qwen2-72b-instruct": {
       "active_params": null,
@@ -4574,23 +4585,23 @@
       "simple_name": "Qwen2-72b-instruct",
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct",
-      "wh_per_million_token": 12749.406666666668
+      "wh_per_million_token": 639.4345442830311
     },
     "qwen2-7b-instruct": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 733,
-        "mean_win_prob": 0.18317166834307042,
+        "elo": 730,
+        "mean_win_prob": 0.1802887521592747,
         "n_match": 80,
-        "rank": 87,
-        "rank_p2_5": 84,
-        "rank_p97_5": 87,
-        "score_p2_5": 634,
-        "score_p97_5": 812,
+        "rank": 89,
+        "rank_p2_5": 87,
+        "rank_p97_5": 89,
+        "score_p2_5": 637,
+        "score_p97_5": 810,
         "trust_range": [
-          3,
+          2,
           0
         ],
         "win_rate": 0.2525
@@ -4625,23 +4636,23 @@
       "simple_name": "Qwen2-7B",
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 84.2750694278447
     },
     "qwen2.5-32b-instruct": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 966,
-        "mean_win_prob": 0.4491427916580291,
+        "elo": 960,
+        "mean_win_prob": 0.4432233888781637,
         "n_match": 142,
-        "rank": 65,
-        "rank_p2_5": 39,
-        "rank_p97_5": 77,
-        "score_p2_5": 912,
-        "score_p97_5": 1024,
+        "rank": 68,
+        "rank_p2_5": 44,
+        "rank_p97_5": 80,
+        "score_p2_5": 909,
+        "score_p97_5": 1013,
         "trust_range": [
-          26,
+          24,
           12
         ],
         "win_rate": 0.5557042253521126
@@ -4676,21 +4687,21 @@
       "simple_name": "Qwen2.5-32B",
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "qwen2.5-7b-instruct": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 932,
-        "mean_win_prob": 0.4035116821624208,
+        "elo": 928,
+        "mean_win_prob": 0.39974503424729824,
         "n_match": 1417,
-        "rank": 77,
-        "rank_p2_5": 70,
-        "rank_p97_5": 78,
-        "score_p2_5": 913,
-        "score_p97_5": 953,
+        "rank": 79,
+        "rank_p2_5": 72,
+        "rank_p97_5": 80,
+        "score_p2_5": 909,
+        "score_p97_5": 946,
         "trust_range": [
           7,
           1
@@ -4727,26 +4738,26 @@
       "simple_name": "Qwen2.5-7B",
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 84.2750694278447
     },
     "qwen2.5-coder-32b-instruct": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 932,
-        "mean_win_prob": 0.4035473217984619,
+        "elo": 928,
+        "mean_win_prob": 0.39936015745743275,
         "n_match": 7299,
-        "rank": 76,
-        "rank_p2_5": 72,
-        "rank_p97_5": 77,
-        "score_p2_5": 923,
-        "score_p97_5": 945,
+        "rank": 80,
+        "rank_p2_5": 76,
+        "rank_p97_5": 80,
+        "score_p2_5": 921,
+        "score_p97_5": 936,
         "trust_range": [
           4,
-          1
+          0
         ],
-        "win_rate": 0.4378942320865872
+        "win_rate": 0.43789423208658723
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -4778,26 +4789,26 @@
       "simple_name": "Qwen 2.5 Coder 32B",
       "status": "disabled",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "qwen3-30b-a3b": {
       "active_params": 3.3,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1000,
-        "mean_win_prob": 0.49569023441226895,
-        "n_match": 1558,
-        "rank": 48,
-        "rank_p2_5": 43,
-        "rank_p97_5": 56,
-        "score_p2_5": 983,
-        "score_p97_5": 1018,
+        "elo": 988,
+        "mean_win_prob": 0.4815842430325177,
+        "n_match": 2101,
+        "rank": 51,
+        "rank_p2_5": 49,
+        "rank_p97_5": 61,
+        "score_p2_5": 975,
+        "score_p97_5": 1000,
         "trust_range": [
-          5,
-          8
+          2,
+          10
         ],
-        "win_rate": 0.45365446371226714
+        "win_rate": 0.4529285714285714
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4814,15 +4825,15 @@
       "organisation": "Alibaba",
       "params": 30,
       "prefs": {
-        "clear_formatting": 48,
-        "complete": 98,
-        "creative": 25,
-        "incorrect": 47,
-        "instructions_not_followed": 16,
-        "positive_prefs_ratio": 0.717948717948718,
-        "superficial": 36,
-        "total_prefs": 351,
-        "useful": 81
+        "clear_formatting": 89,
+        "complete": 140,
+        "creative": 38,
+        "incorrect": 79,
+        "instructions_not_followed": 28,
+        "positive_prefs_ratio": 0.6994633273703041,
+        "superficial": 61,
+        "total_prefs": 559,
+        "useful": 124
       },
       "pricey": false,
       "quantization": null,
@@ -4833,26 +4844,26 @@
       "simple_name": "Qwen 3 30B A3B",
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 79.62377301905003
     },
     "qwen3-32b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1043,
-        "mean_win_prob": 0.5554101127307471,
-        "n_match": 1016,
-        "rank": 31,
-        "rank_p2_5": 25,
-        "rank_p97_5": 38,
-        "score_p2_5": 1025,
-        "score_p97_5": 1062,
+        "elo": 1033,
+        "mean_win_prob": 0.5434242560508654,
+        "n_match": 1092,
+        "rank": 37,
+        "rank_p2_5": 28,
+        "rank_p97_5": 42,
+        "score_p2_5": 1016,
+        "score_p97_5": 1050,
         "trust_range": [
-          6,
-          7
+          9,
+          5
         ],
-        "win_rate": 0.546304347826087
+        "win_rate": 0.5366636029411764
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4869,15 +4880,15 @@
       "organisation": "Alibaba",
       "params": 32,
       "prefs": {
-        "clear_formatting": 175,
-        "complete": 207,
-        "creative": 65,
-        "incorrect": 89,
-        "instructions_not_followed": 38,
-        "positive_prefs_ratio": 0.7844638949671773,
-        "superficial": 70,
-        "total_prefs": 914,
-        "useful": 270
+        "clear_formatting": 184,
+        "complete": 215,
+        "creative": 70,
+        "incorrect": 98,
+        "instructions_not_followed": 42,
+        "positive_prefs_ratio": 0.7761658031088083,
+        "superficial": 76,
+        "total_prefs": 965,
+        "useful": 280
       },
       "pricey": false,
       "quantization": null,
@@ -4888,26 +4899,26 @@
       "simple_name": "Qwen 3 32B",
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-32B",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "Qwen3-Coder-480B-A35B-Instruct": {
       "active_params": 35,
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1046,
-        "mean_win_prob": 0.5593183537288451,
-        "n_match": 311,
-        "rank": 29,
-        "rank_p2_5": 17,
-        "rank_p97_5": 43,
-        "score_p2_5": 1013,
-        "score_p97_5": 1077,
+        "elo": 1036,
+        "mean_win_prob": 0.548101409758411,
+        "n_match": 371,
+        "rank": 33,
+        "rank_p2_5": 22,
+        "rank_p97_5": 46,
+        "score_p2_5": 1006,
+        "score_p97_5": 1063,
         "trust_range": [
-          12,
-          14
+          11,
+          13
         ],
-        "win_rate": 0.548474025974026
+        "win_rate": 0.5497010869565218
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4924,15 +4935,15 @@
       "organisation": "Alibaba",
       "params": 480,
       "prefs": {
-        "clear_formatting": 17,
-        "complete": 17,
-        "creative": 9,
-        "incorrect": 12,
-        "instructions_not_followed": 3,
-        "positive_prefs_ratio": 0.735632183908046,
-        "superficial": 8,
-        "total_prefs": 87,
-        "useful": 21
+        "clear_formatting": 20,
+        "complete": 22,
+        "creative": 11,
+        "incorrect": 16,
+        "instructions_not_followed": 6,
+        "positive_prefs_ratio": 0.6982758620689655,
+        "superficial": 13,
+        "total_prefs": 116,
+        "useful": 28
       },
       "pricey": false,
       "quantization": null,
@@ -4943,26 +4954,26 @@
       "simple_name": "Qwen3 Coder 480B A35B",
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
-      "wh_per_million_token": 30227.799999999996
+      "wh_per_million_token": 1869.3463086305158
     },
     "qwen3-max-2025-09-23": {
       "active_params": 32,
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1111,
-        "mean_win_prob": 0.645637149235712,
-        "n_match": 1230,
-        "rank": 4,
+        "elo": 1101,
+        "mean_win_prob": 0.6348247921489537,
+        "n_match": 1783,
+        "rank": 5,
         "rank_p2_5": 2,
-        "rank_p97_5": 9,
-        "score_p2_5": 1094,
-        "score_p97_5": 1132,
+        "rank_p97_5": 10,
+        "score_p2_5": 1087,
+        "score_p97_5": 1114,
         "trust_range": [
-          2,
+          3,
           5
         ],
-        "win_rate": 0.6010089503661514
+        "win_rate": 0.5798989898989898
       },
       "distribution": "api-only",
       "endpoint": {
@@ -4979,15 +4990,15 @@
       "organisation": "Alibaba",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 71,
-        "complete": 90,
-        "creative": 21,
-        "incorrect": 34,
-        "instructions_not_followed": 8,
-        "positive_prefs_ratio": 0.8250825082508251,
-        "superficial": 11,
-        "total_prefs": 303,
-        "useful": 68
+        "clear_formatting": 130,
+        "complete": 150,
+        "creative": 40,
+        "incorrect": 60,
+        "instructions_not_followed": 18,
+        "positive_prefs_ratio": 0.8148148148148148,
+        "superficial": 27,
+        "total_prefs": 567,
+        "useful": 142
       },
       "pricey": false,
       "quantization": null,
@@ -4998,24 +5009,24 @@
       "simple_name": "Qwen 3 Max",
       "status": "enabled",
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3627.06150344996
     },
     "qwq-32b": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 957,
-        "mean_win_prob": 0.43628885946706675,
+        "elo": 951,
+        "mean_win_prob": 0.4305731507829632,
         "n_match": 1566,
-        "rank": 70,
-        "rank_p2_5": 63,
-        "rank_p97_5": 72,
-        "score_p2_5": 939,
-        "score_p97_5": 974,
+        "rank": 72,
+        "rank_p2_5": 65,
+        "rank_p97_5": 76,
+        "score_p2_5": 937,
+        "score_p97_5": 967,
         "trust_range": [
           7,
-          2
+          4
         ],
         "win_rate": 0.4485997442455243
       },
@@ -5053,24 +5064,24 @@
       "simple_name": "qwq 32B",
       "status": "archived",
       "url": "https://huggingface.co/Qwen/QwQ-32B",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 113.34567198281125
     },
     "Yi-1.5-9B-Chat": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 771,
-        "mean_win_prob": 0.2170815004104922,
+        "elo": 764,
+        "mean_win_prob": 0.2104545676127253,
         "n_match": 65,
-        "rank": 84,
-        "rank_p2_5": 81,
-        "rank_p97_5": 87,
-        "score_p2_5": 674,
-        "score_p97_5": 859,
+        "rank": 87,
+        "rank_p2_5": 84,
+        "rank_p97_5": 89,
+        "score_p2_5": 670,
+        "score_p97_5": 853,
         "trust_range": [
           3,
-          3
+          2
         ],
         "win_rate": 0.32599999999999996
       },
@@ -5104,7 +5115,7 @@
       "simple_name": "Yi-1.5 9B",
       "status": "archived",
       "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat",
-      "wh_per_million_token": 3908.1966666666667
+      "wh_per_million_token": 86.60071763224201
     }
   }
 }
