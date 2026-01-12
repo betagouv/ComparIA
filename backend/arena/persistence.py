@@ -23,6 +23,9 @@ from fastapi import Request
 from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer, model_serializer
 
 from backend.arena.models import (
+    NEGATIVE_REACTIONS,
+    POSITIVE_REACTIONS,
+    REACTIONS,
     BotPos,
     Conversations,
     MessageRole,
@@ -45,6 +48,10 @@ logger = logging.getLogger("languia")
 
 JSONSerializer = PlainSerializer(lambda v: json.dumps(v))
 JSONModelSerializer = WrapSerializer(lambda v, handler: json.dumps(handler(v)))
+
+
+def is_not(v: Any) -> bool:
+    return not v
 
 
 @contextmanager
@@ -364,9 +371,6 @@ class VoteRecord(BaseModel):
     # archived: bool = False
 
 
-from backend.arena.models import NEGATIVE_REACTIONS, POSITIVE_REACTIONS, REACTIONS
-
-
 def record_vote(
     conversations: Conversations,
     vote: VoteRequest,
@@ -442,9 +446,7 @@ def record_vote(
             vote_data[db_key.format(pos)] = conv[data_key]
 
     vote_record = VoteRecord(**vote_data)
-    print("VOTE RECORD", vote_record)
-    db_data = vote_record.model_dump()
-    print("VOTE RECORD DUMP", db_data)
+    db_data = vote_record.model_dump(mode="json")
 
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
     vote_log_path = settings.LOGDIR / vote_log_filename
@@ -614,7 +616,7 @@ def record_reaction(
             reaction_data[db_key.format(pos)] = _conv[data_key]
 
     reaction_record = ReactionRecord(**reaction_data)
-    db_data = reaction_record.model_dump()
+    db_data = reaction_record.model_dump(mode="json")
 
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
     reaction_log_path = settings.LOGDIR / reaction_log_filename
@@ -627,38 +629,16 @@ def record_reaction(
 
 class ConversationMessageRecord(BaseModel):
     class MessageMetadata(BaseModel):
-        generation_id: str | None
-        output_tokens: int | None
-        duration: float | None
-
-        # FIXME remove in favor of Field(exclude_if=lambda v: v is None)
-        @model_serializer(mode="wrap")
-        def serialize_model(self, handler: "SerializerFunctionWrapHandler") -> str:
-            serialized = handler(self)
-
-            if self.generation_id is None:
-                serialized.pop("generation_id")
-            if self.duration in (None, 0):
-                serialized.pop("duration")
-
-            return json.dumps(serialized)
+        generation_id: Annotated[str | None, Field(exclude_if=is_not)]
+        output_tokens: int | None  # FIXME required?
+        duration: Annotated[float | None, Field(exclude_if=is_not)]
 
     role: MessageRole
     content: str
-    reasoning_content: Annotated[str | None, Field(validation_alias="reasoning")] = None
-    metadata: MessageMetadata | None = None
-
-    # FIXME remove in favor of Field(exclude_if=lambda v: v is None)
-    @model_serializer(mode="wrap")
-    def serialize_model(self, handler: "SerializerFunctionWrapHandler") -> str:
-        serialized = handler(self)
-
-        if not self.reasoning_content:
-            serialized.pop("reasoning_content")
-        if not self.metadata:
-            serialized.pop("metadata")
-
-        return serialized
+    reasoning_content: Annotated[
+        str | None, Field(validation_alias="reasoning", exclude_if=is_not)
+    ] = None
+    metadata: Annotated[MessageMetadata | None, Field(exclude_if=is_not)] = None
 
 
 class ConversationsRecord(BaseModel):
@@ -761,7 +741,7 @@ def record_conversations(
         f"[COHORT] record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts={convs_record.cohorts}, type={type(convs_record.cohorts)}"
     )
 
-    db_data = convs_record.model_dump()
+    db_data = convs_record.model_dump(mode="json")
 
     conv_log_path = settings.LOGDIR / f"conv-{convs_record.conversation_pair_id}.json"
     # Always rewrite the file
