@@ -19,7 +19,7 @@ from pydantic import (
     model_validator,
 )
 
-from backend.config import CustomModelsSelection, SelectionMode
+from backend.config import CountryPortal, CustomModelsSelection, SelectionMode
 from backend.language_models.models import Endpoint, LanguageModel
 
 if TYPE_CHECKING:
@@ -286,7 +286,9 @@ NEGATIVE_REACTIONS: tuple[NegativeReaction, ...] = get_args(NegativeReaction)
 REACTIONS = POSITIVE_REACTIONS + NEGATIVE_REACTIONS
 
 
-class ReactionData(BaseModel):
+class ReactRequest(BaseModel):
+    """Request body for updating message reactions."""
+
     bot: BotPos
     index: int
     value: str
@@ -295,10 +297,8 @@ class ReactionData(BaseModel):
     comment: str | None
 
 
-class ReactRequest(BaseModel):
-    """Request body for updating message reactions."""
-
-    reaction_json: ReactionData
+class ReactionData(ReactRequest):
+    liked: bool
 
 
 class VoteRequest(BaseModel):

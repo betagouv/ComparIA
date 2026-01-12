@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, TypedDict
 
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
@@ -7,12 +7,18 @@ from pydantic import BaseModel, Field
 from backend.arena.models import (
     AssistantMessage,
     Conversations,
+    ReactionData,
     ReactRequest,
     UserMessage,
     VoteRequest,
     create_conversations,
 )
-from backend.arena.persistence import record_conversations, record_reaction, record_vote
+from backend.arena.persistence import (
+    delete_reaction,
+    record_conversations,
+    record_reaction,
+    record_vote,
+)
 from backend.arena.session import (
     create_session,
     retrieve_session_conversations,
@@ -284,79 +290,79 @@ async def retry(
     return create_sse_response(event_stream())
 
 
+ReactReturnType = TypedDict("ReactReturnType", {"reaction": ReactionData | None})
+
+
 @router.post("/react")
 async def react(
-    react_data: ReactRequest,
+    react_request: ReactRequest,
     conversations: ConversationsAnno,
     request: Request,
-):
+) -> ReactReturnType:
     """
     Update reaction (like/dislike) for a specific message.
 
     Args:
-        react_data: Request body with chatbot messages and reaction_json (Gradio format)
+        react_request: Request body with reaction data
         conversations: Conversations from session_hash
         request: FastAPI request for logging
 
     Returns:
-        dict: Success status with reaction data
+        dict: reaction data
 
     Raises:
         HTTPException: If session not found
     """
-    from backend.arena.session import (
-        retrieve_session_conversations,
-        update_session_conversations,
-    )
 
     logger.info(
-        f"[REACT] session={conversations.session_hash}, reaction={react_data.reaction_json}",
+        f"[REACT] session={conversations.session_hash}, reaction={react_request.model_dump()}",
         extra={"request": request},
     )
 
-    # Extract reaction index and data
-    reaction_index = react_data.reaction_json.index
-    reaction_bot = react_data.reaction_json.bot
-    if reaction_index is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing reaction index"
-        )
-
-    # Store reaction metadata on the corresponding message
-    # The reaction index corresponds to the bot message
-    # We need to find the assistant message at position (reaction_index * 2 + 1)
     conv = (
         conversations.conversation_a
-        if reaction_bot == "a"
+        if react_request.bot == "a"
         else conversations.conversation_b
     )
 
-    # FIXME try
-    msg_index = reaction_index if not conv.has_system_msg else reaction_index + 1
-    message = conv.messages[msg_index]
-    message.reaction = react_data.reaction_json
+    # Get real message index from front which is the message index without counting system message
+    msg_index = (
+        react_request.index if not conv.has_system_msg else react_request.index + 1
+    )
+    message = conv.messages[msg_index] if len(conv.messages) > msg_index else None
 
-    # Update in Redis
-    conversations.store_to_session(session_hash)
-
-    # Save reaction to database
-    try:
-        reaction_record = record_reaction(
-            conversations=conversations,
-            reaction=react_data.reaction_json,
-            msg_index=msg_index,
-            request=request,
+    if not message or not isinstance(message, AssistantMessage):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Assistant message not found"
         )
-        logger.info(f"[REACT] Saved to database: {reaction_record}")
-    except Exception as e:
-        # Log error but don't fail the request
-        logger.error(f"[REACT] Error saving to database: {e}", exc_info=True)
 
-    return {
-        "success": True,
-        "index": reaction_index,
-        "reaction": react_data.reaction_json,
-    }
+    if react_request.liked is None:
+        # A reaction has been undone, remove it from its message and db
+        message.reaction = None
+        # Store conversations with removed reaction
+        conversations.store_to_session()
+        # Delete db reaction
+        delete_reaction(conv, msg_index)
+
+        return {"reaction": None}
+
+    # Build final reaction data
+    # FIXME replace reaction.index with msg_index?
+    reaction_data = ReactionData.model_validate(react_request, from_attributes=True)
+
+    message.reaction = reaction_data
+    # Store conversations with updated reaction to redis
+    conversations.store_to_session()
+    # Store reaction to db/logs
+    reaction_record = record_reaction(
+        conversations=conversations,
+        reaction=reaction_data,
+        msg_index=msg_index,
+        chatbot_index=react_request.index,
+        request=request,
+    )
+
+    return {"reaction": reaction_data}
 
 
 @router.post("/vote")
