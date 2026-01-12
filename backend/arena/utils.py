@@ -54,27 +54,6 @@ def get_chosen_model(which_model_radio):
     return chosen_model
 
 
-def get_matomo_tracker_from_cookies(cookies):
-    """
-    Extract Matomo/Piwik visitor ID from cookies.
-
-    Used for anonymous visitor tracking (if enabled by user).
-
-    Args:
-        cookies: Request cookies dict
-
-    Returns:
-        str: Matomo visitor ID, or None if not found
-    """
-    logger = logging.getLogger("languia")
-    # Matomo cookies start with "_pk_id."
-    for key, value in cookies.items():
-        if key.startswith("_pk_id."):
-            logger.debug(f"Found matomo cookie: {key}: {value}")
-            return value
-    return None
-
-
 def get_chosen_model_name(which_model_radio, conversations):
     """
     Get the actual model name from the chosen option.
