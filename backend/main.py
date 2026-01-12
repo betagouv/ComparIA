@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
@@ -108,7 +108,8 @@ async def frontend_logs(request: Request):
     except Exception as e:
         logger.error(f"Error receiving frontend log: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Failed to process frontend log: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process frontend log: {str(e)}",
         )
 
 
