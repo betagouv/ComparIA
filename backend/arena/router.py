@@ -28,6 +28,7 @@ from backend.config import (
 from backend.errors import Errors
 from backend.language_models.data import get_models
 from backend.session import is_ratelimited
+from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip
 
 logger = logging.getLogger("languia")
@@ -75,6 +76,7 @@ class AddFirstTextBody(BaseModel):
     prompt_value: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
     mode: SelectionMode = DEFAULT_SELECTION_MODE
     custom_models_selection: CustomModelsSelection = None
+    country_portal: CountryPortalAnno
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
 
