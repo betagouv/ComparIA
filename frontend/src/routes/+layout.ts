@@ -4,12 +4,9 @@ import { getLocale } from '$lib/i18n/runtime'
 import type { APIData } from '$lib/models'
 
 export async function load() {
-  // Get the current locale using the runtime function
-  const locale = getLocale()
-
-  // Query votes depending on locale - only da or fr are valid for counter
-  const counterLocale = locale === 'da' ? 'da' : 'fr'
-  const votes = await api.get<VotesData>(`/counter?c=${counterLocale}`)
+  // Query votes depending on locale
+  // Will return specific counter if locale is a country_portal else the default
+  const votes = await api.get<VotesData>(`/counter?country_portal=${getLocale()}`)
 
   const data = await api.get<APIData>('/models')
 

@@ -5,6 +5,7 @@
  */
 
 import { fastapiClient } from '$lib/fastapi-client'
+import { getLocale } from '$lib/i18n/runtime'
 import { logger } from '$lib/logger'
 import { COHORT_STORAGE_KEY } from './stores/cohortStore.svelte'
 
@@ -64,6 +65,7 @@ export const arenaApi = {
       prompt_value: prompt,
       mode,
       custom_models_selection: customModels || null,
+      country_portal: getLocale(),
       cohorts
     })
   },

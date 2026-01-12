@@ -1,5 +1,7 @@
 import logging
-from typing import cast
+from typing import Annotated, cast
+
+from pydantic import BeforeValidator
 
 from backend.config import (
     COUNTRY_PORTALS,
@@ -17,6 +19,9 @@ def get_country_portal(code: str | None = DEFAULT_COUNTRY_PORTAL) -> CountryPort
         if code not in COUNTRY_PORTALS
         else cast(CountryPortal, code)
     )
+
+
+CountryPortalAnno = Annotated[CountryPortal, BeforeValidator(get_country_portal)]
 
 
 def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
