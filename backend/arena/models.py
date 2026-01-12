@@ -147,20 +147,31 @@ class Conversations(BaseModel):
 
     Args:
         session_hash: Unique session identifier
-        conv_a: First conversation state (dict with messages, model_name, etc.)
-        conv_b: Second conversation state (dict with messages, model_name, etc.)
+        ip: User'ip (WARNING: PII)
+        visitor_id: Matomo/Piwik visitor ID from cookies.
+        country_portal: Related country specific dataset ('da' for example)
+        cohorts: Comma separated list str of cohorts, to be excluded from datasets if not empty str
         mode: Model selection mode (e.g., "random", "big-vs-small")
+        custom_models_selection: Possible tuple of user selected llm ids
         category: Prompt category (e.g., "writing", "coding")
-
-
+        conversation_a: First conversation state (dict with messages, model_name, etc.)
+        conversation_b: Second conversation state (dict with messages, model_name, etc.)
     """
 
     created_at: Annotated[datetime, PlainSerializer(lambda v: v.isoformat())] = Field(
         default_factory=datetime.now
     )
+    # Session
+    session_hash: str
+    ip: str  # WARNING: PII
+    visitor_id: str | None
+    country_portal: CountryPortal
+    cohorts: str
+    # Prompt data
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
     category: str | None = None
+    # Data
     conversation_a: Conversation
     conversation_b: Conversation
 
@@ -229,6 +240,9 @@ def create_conversations(
     llm_id_b: str,
     args: "AddFirstTextBody",
     category: str | None,
+    session_hash: str,
+    ip: str,
+    visitor_id: str | None,
 ) -> Conversations:
     """Create paired conversations for arena comparison."""
     user_msg = UserMessage(content=args.prompt_value)
@@ -236,6 +250,11 @@ def create_conversations(
     conv_b = create_conversation(llm_id_b, user_msg)
 
     return Conversations(
+        session_hash=session_hash,
+        ip=ip,
+        visitor_id=visitor_id,
+        country_portal=args.country_portal,
+        cohorts=args.cohorts,
         mode=args.mode,
         custom_models_selection=args.custom_models_selection,
         category=category,
