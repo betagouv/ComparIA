@@ -284,16 +284,12 @@ export async function retryAskChatBots() {
 }
 
 export async function updateReaction(reaction: APIReactionData) {
-  const data = {
-    reaction_json: reaction
-  }
-
   // Use fastapiClient which handles full backend URL
   const { fastapiClient } = await import('./fastapi-client')
   await fastapiClient.request('/arena/react', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(reaction)
   })
 }
 
