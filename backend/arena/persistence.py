@@ -518,6 +518,19 @@ class ReactionRecord(BaseModel):
     # cohorts: str
 
 
+def delete_reaction(
+    conv: Conversation,
+    msg_index: int,
+) -> dict:
+    delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
+    # FIXME also remove log file?
+
+    return {
+        "msg_index": msg_index,
+        "refers_to_conv_id": conv.conv_id,
+    }
+
+
 def record_reaction(
     conversations: Conversations,
     reaction: ReactionData,
@@ -548,14 +561,6 @@ def record_reaction(
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
     conv = conv_a if reaction.bot == "a" else conv_b
-
-    # a reaction has been undone and none replaced it
-    if reaction.liked is None:
-        delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
-        return {
-            "msg_index": msg_index,
-            "refers_to_conv_id": conv.conv_id,
-        }
 
     t = datetime.now()  # FIXME
     reaction_data = (
