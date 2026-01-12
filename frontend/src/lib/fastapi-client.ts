@@ -60,7 +60,6 @@ export type SSEEvent = SSEInitEvent | SSEUpdateEvent | SSEChunkEvent | SSEDoneEv
 export class FastAPIClient {
   private baseUrl: string
   private sessionHash: string | null = null
-  private cohortsSent: boolean = false
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -97,51 +96,6 @@ export class FastAPIClient {
     this.sessionHash = hash
     if (typeof window !== 'undefined' && window.sessionStorage) {
       sessionStorage.setItem('arena-session-hash', hash)
-    }
-  }
-
-  /**
-   * Send cohort information to backend
-   */
-  async sendCurrentCohortsToBackend(): Promise<void> {
-    logger.debug(
-      `[COHORT] sendCurrentCohortsToBackend called cohortsSent=${this.cohortsSent} hasSessionHash=${!!this.sessionHash}`
-    )
-
-    if (this.cohortsSent || !this.sessionHash) {
-      logger.debug('[COHORT] Skipping send - already sent or no session hash')
-      return
-    }
-
-    // Get cohort from sessionStorage
-    const cohortsCommaSeparated: string =
-      typeof window !== 'undefined' ? (sessionStorage.getItem('comparia-cohorts') ?? '') : ''
-
-    logger.debug(`[COHORT] Got from sessionStorage cohorts ${cohortsCommaSeparated}`)
-
-    if (cohortsCommaSeparated) {
-      try {
-        const response = await fetch(this.getUrl('/cohorts'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            session_hash: this.sessionHash,
-            cohorts: cohortsCommaSeparated
-          })
-        })
-
-        if (response.ok) {
-          this.cohortsSent = true
-          logger.debug(`[COHORT] Successfully sent to backend cohorts ${cohortsCommaSeparated}`)
-        } else {
-          const errorText = await response.text()
-          logger.error(`[COHORT] Failed to send cohorts: ${response.status} ${errorText}`)
-        }
-      } catch (error) {
-        logger.error(`[COHORT] Error sending cohorts: ${(error as Error).message}`)
-      }
     }
   }
 
@@ -247,7 +201,6 @@ export class FastAPIClient {
               if (data.type === 'init' && 'session_hash' in data) {
                 // Store session hash from first event
                 this.setSessionHash(data.session_hash)
-                await this.sendCurrentCohortsToBackend()
               } else if (data.type === 'error') {
                 const errorMsg = 'error' in data ? data.error : 'Unknown error'
                 logger.error(`SSE error: ${errorMsg}`)

@@ -4,7 +4,9 @@
  * Provides typed methods for all arena endpoints.
  */
 
-import { fastapiClient } from './fastapi-client'
+import { fastapiClient } from '$lib/fastapi-client'
+import { logger } from '$lib/logger'
+import { COHORT_STORAGE_KEY } from './stores/cohortStore.svelte'
 
 /**
  * Selection mode for model pairing
@@ -14,7 +16,6 @@ export type SelectionMode = 'random' | 'big-vs-small' | 'small-models' | 'custom
 /**
  * Arena-specific types
  */
-
 
 export interface ChatUpdate {
   type: 'init' | 'update' | 'chunk' | 'done' | 'error'
@@ -41,7 +42,6 @@ export interface RevealData {
  * Arena API methods
  */
 export const arenaApi = {
-
   /**
    * Send first message and stream responses from both models
    */
@@ -50,10 +50,21 @@ export const arenaApi = {
     mode: SelectionMode,
     customModels?: [string, string]
   ): AsyncGenerator<ChatUpdate> {
+    const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
+    if (cohorts === null) {
+      logger.error(
+        `[COHORT] cohorts is None and it should not happen, maybe cohorts detection has not been called.`
+      )
+    }
+    if (cohorts) {
+      logger.debug(`[COHORT] call to '/arena/add_first_text' with found cohorts: '${cohorts}'`)
+    }
+
     yield* fastapiClient.stream<ChatUpdate>('/arena/add_first_text', {
       prompt_value: prompt,
       mode,
-      custom_models_selection: customModels || null
+      custom_models_selection: customModels || null,
+      cohorts
     })
   },
 

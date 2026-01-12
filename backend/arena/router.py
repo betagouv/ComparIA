@@ -75,6 +75,8 @@ class AddFirstTextBody(BaseModel):
     prompt_value: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
     mode: SelectionMode = DEFAULT_SELECTION_MODE
     custom_models_selection: CustomModelsSelection = None
+    # We force cohorts not to be None to make sure cohorts detection has been called on frontend
+    cohorts: str
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])

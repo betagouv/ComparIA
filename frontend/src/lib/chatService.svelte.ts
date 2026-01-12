@@ -194,11 +194,7 @@ export async function runChatBots(args: APIModeAndPromptData) {
     arena.chat.step = 1
 
     // Stream from FastAPI endpoint
-    for await (const event of arenaApi.addFirstText(
-      args.prompt_value,
-      args.mode,
-      customModels
-    )) {
+    for await (const event of arenaApi.addFirstText(args.prompt_value, args.mode, customModels)) {
       if (event.type === 'init') {
         // Session initialized, continue streaming
         arena.chat.status = 'generating'

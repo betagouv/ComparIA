@@ -1,6 +1,7 @@
 // Simplified frontend logger that sends minimal structured logs to backend
 // Only sends level and message, with optional context for backend processing
 
+import { browser } from '$app/environment'
 import { env } from '$env/dynamic/public'
 
 // Simple logger that sends logs to backend with minimal structure
@@ -30,7 +31,7 @@ export const logger = {
   // Send log to backend with level and message
   async sendLog(level: string, message: string): Promise<void> {
     // Try to send to backend
-    if (typeof window !== 'undefined') {
+    if (browser) {
       try {
         const { api } = await import('$lib/api')
         // Send even without session_hash for debugging
