@@ -96,8 +96,8 @@ class Conversation(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def system_msg(self) -> SystemMessage | None:
-        return self.messages[0] if isinstance(self.messages[0], SystemMessage) else None
+    def system_msg(self) -> str | None:
+        return self.messages[0].content if self.has_system_msg else None
 
     # FIXME this replace sum_tokens
     @computed_field  # type: ignore[prop-decorator]
