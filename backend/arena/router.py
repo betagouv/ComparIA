@@ -29,7 +29,7 @@ from backend.errors import Errors
 from backend.language_models.data import get_models
 from backend.session import is_ratelimited
 from backend.utils.countries import CountryPortalAnno
-from backend.utils.user import get_ip
+from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 logger = logging.getLogger("languia")
 
@@ -124,8 +124,11 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         llm_id_a=model_a_id,
         llm_id_b=model_b_id,
         args=args,
-        category=None,
-    )  # FIXME category?
+        category=None,  # FIXME category?
+        session_hash=session_hash,
+        ip=get_ip(request),
+        visitor_id=get_matomo_tracker_from_cookies(request.cookies),
+    )
 
     # Store conversations in Redis
     conversations.store_to_session(session_hash)
