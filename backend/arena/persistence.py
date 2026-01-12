@@ -520,8 +520,17 @@ class ReactionRecord(BaseModel):
 
 def delete_reaction(
     conv: Conversation,
-    msg_index: int,
+    msg_index: int,  # FIXME normalize msg_index with `record_reaction`
 ) -> dict:
+    """
+    Delete a single message's reaction when the user removes feedback (like == None).
+
+    Args:
+        msg_index: explicit assistant index of message (counting system message) FIXME
+
+     Returns:
+        dict: delete result
+    """
     delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
     # FIXME also remove log file?
 
@@ -535,6 +544,7 @@ def record_reaction(
     conversations: Conversations,
     reaction: ReactionData,
     msg_index: int,
+    chatbot_index: int,
     request: Request,
 ) -> dict:
     """
@@ -542,18 +552,18 @@ def record_reaction(
 
     Handles individual reactions to specific bot responses. Uses UPSERT logic
     to allow users to change reactions without creating duplicates.
-    Also handles deleting reactions when user removes feedback.
 
     Args:
         conversations: Conversations
         reaction: ReactionData
+        msg_index: explicit assistant index of message (counting system message) FIXME
+        chatbot_index: assistant index of message (without counting system message) FIXME
         request:  FastAPI Request for IP and cookies
 
     Returns:
-        dict: The saved reaction record, or delete result if reaction was cleared
+        dict: The saved reaction record
 
     Special Handling:
-        - reaction="none": Deletes reaction from database (undo)
         - Uses UPSERT to allow reaction changes
         - Handles system prompt offsets in message indexing
     """
@@ -577,10 +587,10 @@ def record_reaction(
             # Liked/disliked message data
             "msg_index": msg_index,
             "msg_rank": (  # rank begins at zero
-                msg_index // 2
-            ),  # FIXME change in msg_index computing, need to reflect (used in peren code)
-            "chatbot_index": msg_index,  # FIXME legacy? changes in msg_index to reflect?
-            "question_id": f"{conversations.conversation_pair_id}-{msg_index // 2}",
+                chatbot_index // 2
+            ),  # FIXME chatbot index is index without counting system msg? So this is the one to use to compute rank?
+            "chatbot_index": chatbot_index,  # FIXME chatbot index is index without counting system msg?
+            "question_id": f"{conversations.conversation_pair_id}-{chatbot_index // 2}",
             # Reaction
             "liked": reaction.liked is True,
             "disliked": reaction.liked is False,
@@ -612,7 +622,7 @@ def record_reaction(
         fout.write(json.dumps(db_data) + "\n")
     logger.info(f"saved_reaction: {json.dumps(db_data)}", extra={"request": request})
 
-    return upsert_reaction_to_db(db_data, request=request)
+    return upsert_reaction_to_db(db_data)
 
 
 class ConversationMessageRecord(BaseModel):
