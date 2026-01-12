@@ -345,7 +345,6 @@ async def react(
             conversations=conversations,
             reaction=react_data.reaction_json,
             msg_index=msg_index,
-            session_hash=session_hash,
             request=request,
         )
         logger.info(f"[REACT] Saved to database: {reaction_record}")
@@ -395,15 +394,12 @@ async def vote(
 
     # Save vote to database with all preferences
     try:
-        vote_record = record_vote(
+        record_vote(
             conversations=conversations,
             vote=vote_data,
-            session_hash=session_hash,
             request=request,
-            locale="fr",  # FIXME
-            cohorts_comma_separated="",  # FIXME
         )
-        logger.info(f"[VOTE] Saved to database: {vote_record['conversation_pair_id']}")
+        logger.info(f"[VOTE] Saved to database: {conversations.conversation_pair_id}")
     except Exception as e:
         # Log error but don't fail the request
         logger.error(f"[VOTE] Error saving to database: {e}", exc_info=True)
