@@ -35,7 +35,7 @@ from backend.arena.utils import (
     messages_to_dict_list,
     sum_tokens,
 )
-from backend.config import CountryCode, SelectionMode, settings
+from backend.config import CountryPortal, SelectionMode, settings
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 if TYPE_CHECKING:
@@ -319,7 +319,7 @@ class VoteRecord(BaseModel):
     session_hash: str
     visitor_id: str | None
     ip: str  # FIXME | None? cf get_ip()
-    country_portal: CountryCode
+    country_portal: CountryPortal
     cohorts: str  # FIXME | None?
 
     # Conversations
@@ -521,7 +521,7 @@ class ReactionRecord(BaseModel):
     # archived: bool = False
 
     # FIXME add?
-    # country_portal: CountryCode
+    # country_portal: CountryPortal
     # cohorts: str  # FIXME | None?
 
 
@@ -680,7 +680,7 @@ class ConversationsRecord(BaseModel):
     session_hash: str
     visitor_id: str | None
     ip: str  # FIXME | None? cf get_ip()
-    country_portal: CountryCode
+    country_portal: CountryPortal
     cohorts: str  # FIXME | None?
 
     # Conversations

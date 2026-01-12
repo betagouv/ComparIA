@@ -45,13 +45,13 @@ os.makedirs(settings.LOGDIR, exist_ok=True)
 # Structure: total timeout, read, write, connect (all in seconds)
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
-# Available country codes
-CountryCode = Literal["fr", "da"]
-COUNTRY_CODES: tuple[CountryCode, ...] = get_args(CountryCode)
-DEFAULT_COUNTRY_CODE: CountryCode = "fr"
+# Available country portals
+CountryPortal = Literal["fr", "da"]
+COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
+DEFAULT_COUNTRY_PORTAL: CountryPortal = "fr"
 
 # Per-country objectives for data collection (rows to collect)
-OBJECTIVES: dict[CountryCode, int] = {"fr": 250_000, "da": 10_000}
+OBJECTIVES: dict[CountryPortal, int] = {"fr": 250_000, "da": 10_000}
 
 # Language model selection modes
 SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
