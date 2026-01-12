@@ -119,17 +119,11 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     # Create new session
     session_hash = create_session()
 
-    # Get LanguageModel objects from IDs
-    llm_a = models.all[model_a_id]
-    llm_b = models.all[model_b_id]
-
     # Initialize conversations using Pydantic models
     conversations = create_conversations(
-        llm_a,
-        llm_b,
-        args.prompt_value,
-        args.mode,
-        args.custom_models_selection,
+        llm_id_a=model_a_id,
+        llm_id_b=model_b_id,
+        args=args,
         category=None,
     )  # FIXME category?
 
