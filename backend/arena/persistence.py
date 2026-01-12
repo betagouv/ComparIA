@@ -137,7 +137,7 @@ def save_vote_to_db(data: dict) -> dict:
     return data
 
 
-def upsert_reaction_to_db(data: dict, request: Request) -> dict:
+def upsert_reaction_to_db(data: dict) -> dict:
     """
     UPSERT a reaction to the database.
 
@@ -145,7 +145,6 @@ def upsert_reaction_to_db(data: dict, request: Request) -> dict:
 
     Args:
         data: Reaction data dict (see record_reaction for fields)
-        request: FastApi Request
 
     Returns:
         dict: The saved reaction data
@@ -374,11 +373,8 @@ class VoteRecord(BaseModel):
 def record_vote(
     conversations: Conversations,
     vote: VoteRequest,
-    session_hash: str,
     request: Request,
-    locale: str,
-    cohorts_comma_separated: str,
-):
+) -> dict:
     """
     Record a vote to the database with all metadata.
 
@@ -413,11 +409,6 @@ def record_vote(
 
     vote_data = conversations.model_dump() | {
         "timestamp": str(t),
-        "session_hash": session_hash,
-        "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
-        "ip": str(get_ip(request)),
-        "country_portal": locale,
-        "cohorts": cohorts_comma_separated,
         # Vote
         "chosen_model_name": chosen_model_name,
         "both_equal": chosen_model_name is None,
@@ -448,7 +439,7 @@ def record_vote(
     vote_record = VoteRecord(**vote_data)
     db_data = vote_record.model_dump(mode="json")
 
-    vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
+    vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{conversations.session_hash}.json"
     vote_log_path = settings.LOGDIR / vote_log_filename
     with vote_log_path.open(mode="a") as fout:
         vote_string = chosen_model_name or "both_equal"
@@ -531,9 +522,8 @@ def record_reaction(
     conversations: Conversations,
     reaction: ReactionData,
     msg_index: int,
-    session_hash: str,
     request: Request,
-):
+) -> dict:
     """
     Record a single message reaction (like/dislike + preferences).
 
@@ -572,13 +562,6 @@ def record_reaction(
         # Conversations
         conversations.model_dump()
         | {
-            # Session
-            "session_hash": session_hash,
-            "visitor_id": get_matomo_tracker_from_cookies(request.cookies),
-            "ip": str(get_ip(request)),
-            # FIXME add?
-            # "country_portal": locale,
-            # "cohorts": cohorts_comma_separated,
             # Conversation
             "model_pos": reaction.bot,
             "refers_to_model": conv.model_name,
@@ -618,7 +601,7 @@ def record_reaction(
     reaction_record = ReactionRecord(**reaction_data)
     db_data = reaction_record.model_dump(mode="json")
 
-    reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{session_hash}.json"
+    reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{conversations.session_hash}.json"
     reaction_log_path = settings.LOGDIR / reaction_log_filename
     with reaction_log_path.open(mode="a") as fout:
         fout.write(json.dumps(db_data) + "\n")
