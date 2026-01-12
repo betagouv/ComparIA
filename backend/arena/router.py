@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from backend.arena.models import (
@@ -51,7 +51,10 @@ def assert_not_rate_limited(request: Request) -> None:
             f"Too much text submitted to pricey models for ip {ip}",
             extra={"request": request},
         )
-        raise HTTPException(status_code=429, detail=Errors.RATE_LIMITED.name)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=Errors.RATE_LIMITED.name,
+        )
 
 
 def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) -> str:
@@ -68,7 +71,9 @@ def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) ->
         HTTPException: If session hash is missing or invalid
     """
     if not session_hash or len(session_hash) == 0:
-        raise HTTPException(status_code=400, detail="Missing session hash")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing session hash"
+        )
     return session_hash
 
 
@@ -314,7 +319,9 @@ async def react(
     reaction_index = react_data.reaction_json.index
     reaction_bot = react_data.reaction_json.bot
     if reaction_index is None:
-        raise HTTPException(status_code=400, detail="Missing reaction index")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing reaction index"
+        )
 
     # Store reaction metadata on the corresponding message
     # The reaction index corresponds to the bot message
