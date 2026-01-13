@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, cast
+from typing import Annotated, Awaitable, cast
 
 from pydantic import BeforeValidator
 
@@ -38,17 +38,18 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
     import psycopg2
     from psycopg2 import sql
 
-    from backend.session import r
+    from backend.session import get_redis_client
 
     cache_key = f"{country_code}_count"
     # Try Redis first
-    if r:
-        try:
-            count = r.get(cache_key)
-            if count is not None:
-                return int(count)
-        except Exception as e:
-            logger.debug(f"cache miss for {country_code} count from Redis: {e}")
+    client = get_redis_client()
+    try:
+        count = client.get(cache_key)
+        assert not isinstance(count, Awaitable)
+        if count is not None:
+            return int(count)
+    except Exception as e:
+        logger.debug(f"cache miss for {country_code} count from Redis: {e}")
 
     # Fallback to Postgres
     if not settings.COMPARIA_DB_URI:
@@ -78,11 +79,10 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
 
-        if r:
-            try:
-                r.setex(cache_key, ttl, result)
-            except Exception as e:
-                logger.error(f"Error setting {country_code} count in Redis: {e}")
+        try:
+            client.setex(cache_key, ttl, result)
+        except Exception as e:
+            logger.error(f"Error setting {country_code} count in Redis: {e}")
 
         return result
     except Exception as e:
