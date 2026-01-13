@@ -13,7 +13,7 @@ Functions:
 
 import logging
 
-from backend.arena.models import BotChoice, Conversations, RevealData
+from backend.arena.models import BotChoice, BotPos, Conversations, RevealData
 from backend.arena.utils import sum_tokens
 from backend.language_models.utils import (
     calculate_lightbulb_consumption,
