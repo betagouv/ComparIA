@@ -7,26 +7,30 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 
 import json
 import logging
-import os
-from typing import Generator
+from typing import TYPE_CHECKING, Generator
 
 import litellm
 
-from backend.config import GLOBAL_TIMEOUT
+from backend.config import GLOBAL_TIMEOUT, settings
 from backend.errors import ContextTooLongError
 
+if TYPE_CHECKING:
+    from backend.language_models.models import Endpoint
+
+logger = logging.getLogger("languia")
+
 # Load Google Cloud credentials for Vertex AI if available
-if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-    with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "r") as file:
+vertex_credentials_json: str | None = None
+if settings.GOOGLE_APPLICATION_CREDENTIALS:
+    with open(settings.GOOGLE_APPLICATION_CREDENTIALS, "r") as file:
         vertex_credentials = json.load(file)
         vertex_credentials_json = json.dumps(vertex_credentials)
 else:
-    logger = logging.getLogger("languia")
     logger.warning("No Google creds detected!")
     vertex_credentials_json = None
 
 
-def get_api_key(endpoint):
+def get_api_key(endpoint: "Endpoint") -> str | None:
     """
     Get the appropriate API key for an endpoint.
 
@@ -44,17 +48,12 @@ def get_api_key(endpoint):
     # Albert is French government LLM
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
 
-    # Handle both dict and Pydantic Endpoint object
-    api_base = (
-        endpoint.api_base if hasattr(endpoint, "api_base") else endpoint.get("api_base")
-    )
-
     # "api_type": "huggingface/cohere" doesn't work, using the openai api type and api_base="https://router.huggingface.co/cohere/compatibility/v1/"
-    if api_base and "albert.api.etalab.gouv.fr" in api_base:
-        return os.getenv("ALBERT_KEY")
+    if endpoint.api_base and "albert.api.etalab.gouv.fr" in endpoint.api_base:
+        return settings.ALBERT_KEY
     # HuggingFace Inference API
-    if api_base and "huggingface.co" in api_base:
-        return os.getenv("HF_INFERENCE_KEY")
+    if endpoint.api_base and "huggingface.co" in endpoint.api_base:
+        return settings.HF_INFERENCE_KEY
     # OpenRouter and Vertex AI are handled by LiteLLM reading env variables directly
     # OPENROUTER_API_KEY and Google credentials are checked automatically
     # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
@@ -104,15 +103,12 @@ def litellm_stream_iter(
     #     litellm._turn_on_debug()
 
     # Configure Sentry error tracking if available
-    if os.getenv("SENTRY_DSN"):
+    if settings.SENTRY_DSN:
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
         litellm.failure_callback.append("sentry")
 
     # Set Vertex AI location for Google Cloud models
-    if vertex_ai_location:
-        litellm.vertex_location = vertex_ai_location
-    else:
-        litellm.vertex_location = os.getenv("VERTEXAI_LOCATION", None)
+    litellm.vertex_location = vertex_ai_location or settings.VERTEXAI_LOCATION
 
     # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
@@ -120,12 +116,6 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-
-    # Check for mock response environment variable (useful for testing/demo)
-    mock_response = os.getenv("MOCK_RESPONSE")
-    if mock_response:
-        logger = logging.getLogger("languia")
-        logger.warning(f"MOCK_RESPONSE enabled")
 
     # Build parameters for LiteLLM API call
     kwargs = {
@@ -145,7 +135,8 @@ def litellm_stream_iter(
     }
 
     # Use mock response for testing if enabled
-    if mock_response:
+    if settings.MOCK_RESPONSE:
+        logger.warning(f"MOCK_RESPONSE enabled")
         kwargs["mock_response"] = (
             "This is a fake response that didn't contact the LLM api."
         )
@@ -171,7 +162,6 @@ def litellm_stream_iter(
     # Initialize accumulators for streaming response
     text = ""
     reasoning = ""
-    logger = logging.getLogger("languia")
 
     # Data dict to accumulate response metadata
     data = dict()
