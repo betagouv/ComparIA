@@ -26,6 +26,36 @@ from backend.language_models.utils import (
 logger = logging.getLogger("languia")
 
 
+def get_chosen_llm(conversations: Conversations) -> BotChoice | None:
+    if conversations.vote:
+        return conversations.vote.chosen_llm
+
+    reactions: dict[BotPos, dict[int, bool]] = {
+        "a": {r.index: r.liked for r in conversations.conversation_a.reactions},
+        "b": {r.index: r.liked for r in conversations.conversation_b.reactions},
+    }
+
+    indexes: set[int] = set([*reactions["a"].keys(), *reactions["b"].keys()])
+
+    if not indexes:
+        # No reactions
+        return None
+
+    scores = {"a": 0, "b": 0}
+    for index in indexes:
+        for pos in ("a", "b"):
+            liked = reactions[pos].get(index, None)
+            if liked is not None:
+                scores[pos] += 1 if liked else -1
+
+    if scores["a"] > scores["b"]:
+        return "a"
+    elif scores["b"] > scores["a"]:
+        return "b"
+    else:
+        return "both_equal"
+
+
 def get_reveal_data(
     conversations: Conversations, chosen_model: BotChoice
 ) -> RevealData:

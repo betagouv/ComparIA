@@ -120,6 +120,14 @@ class Conversation(BaseModel):
             if isinstance(msg, AssistantMessage) and msg.metadata.output_tokens
         )
 
+    @property
+    def reactions(self) -> list["ReactionData"]:
+        return [
+            msg.reaction
+            for msg in self.messages
+            if isinstance(msg, AssistantMessage) and msg.reaction
+        ]
+
     @cached_property
     def llm(self) -> LanguageModel:
         from backend.language_models.data import get_models
@@ -129,6 +137,7 @@ class Conversation(BaseModel):
     @cached_property
     def endpoint(self) -> Endpoint:
         return self.llm.endpoint
+
 
 def create_conversation(llm_id: str, user_msg: UserMessage) -> Conversation:
     """Create a single conversation with system prompt if configured."""
