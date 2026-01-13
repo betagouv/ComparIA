@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from backend.arena.router import router as arena_router
-from backend.config import OBJECTIVES, settings
+from backend.config import OBJECTIVES
 from backend.language_models.router import router as models_router
 from backend.logger import (
     configure_frontend_logger,
