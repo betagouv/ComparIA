@@ -288,12 +288,13 @@ def create_conversations(
 
 
 # Request/Response models for FastAPI endpoints
+PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
 
 class AddFirstTextBody(BaseModel):
     """Request body for add_first_text endpoint."""
 
-    prompt_value: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
+    prompt_value: str = PromptField
     mode: SelectionMode = DEFAULT_SELECTION_MODE
     custom_models_selection: CustomModelsSelection = None
     country_portal: CountryPortalAnno
@@ -304,7 +305,7 @@ class AddFirstTextBody(BaseModel):
 class AddTextBody(BaseModel):
     """Request body for add_text endpoint."""
 
-    message: str = Field(min_length=1)
+    message: str = PromptField
 
 
 PositiveReaction = Literal["useful", "complete", "creative", "clear_formatting"]
