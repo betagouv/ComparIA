@@ -174,6 +174,7 @@ class Conversations(BaseModel):
     # Data
     conversation_a: Conversation
     conversation_b: Conversation
+    vote: Union["VoteRequest", None] = None
 
     @computed_field  # type: ignore[prop-decorator]
     @property

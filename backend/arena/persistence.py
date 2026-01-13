@@ -397,35 +397,29 @@ def record_vote(
         5. Write to JSON log file
         6. Call save_vote_to_db() for database persistence
     """
-    from backend.arena.utils import get_chosen_model, get_chosen_model_name
 
     t = datetime.now()
 
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
-    chosen_model_name = get_chosen_model_name(
-        vote.which_model_radio_output, [conv_a, conv_b]
+    chosen_model_name = (
+        None
+        if vote.chosen_llm == "both_equal"
+        else getattr(conversations, f"conversation_{vote.chosen_llm}").model_name
     )
 
     vote_data = conversations.model_dump() | {
         "timestamp": str(t),
         # Vote
         "chosen_model_name": chosen_model_name,
-        "both_equal": chosen_model_name is None,
+        "both_equal": vote.chosen_llm == "both_equal",
     }
 
     for pos in {"a", "b"}:
         # Vote
-        vote_data[f"conv_comments_{pos}"] = getattr(vote, f"comments_{pos}_output")
-        for pkey in POSITIVE_REACTIONS:
-            vote_data[f"conv_{pkey}_{pos}"] = pkey in getattr(
-                vote, f"positive_{pos}_output"
-            )
-
-        for nkey in NEGATIVE_REACTIONS:
-            vote_data[f"conv_{nkey}_{pos}"] = nkey in getattr(
-                vote, f"negative_{pos}_output"
-            )
+        vote_data[f"conv_comments_{pos}"] = getattr(vote, f"comment_{pos}")
+        for key in REACTIONS:
+            vote_data[f"conv_{key}_{pos}"] = key in getattr(vote, f"prefs_{pos}")
 
         # Language model pairs specific
         conv = vote_data.pop(f"conversation_{pos}")
@@ -445,11 +439,9 @@ def record_vote(
         vote_string = chosen_model_name or "both_equal"
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": db_data})
         for pos in {"a", "b"}:
-            prefs = getattr(vote, f"positive_{pos}_output") + getattr(
-                vote, f"negative_{pos}_output"
-            )
+            prefs = getattr(vote, f"prefs_{pos}")
             logger.info(f"preferences_{pos}: {prefs}", extra={"request": request})
-            if comment := getattr(vote, f"positive_{pos}_output"):
+            if comment := getattr(vote, f"comment_{pos}"):
                 logger.info(
                     f"commentaires_{pos}: {comment}", extra={"request": request}
                 )
