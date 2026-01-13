@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { APIVoteData } from '$lib/chatService.svelte'
+  import type { BotChoice } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
 
   export interface VoteAreaProps {
-    value?: APIVoteData['chosen_llm']
+    value?: BotChoice
     disabled?: boolean
   }
 
@@ -32,7 +32,7 @@
           class="sr-only"
         />
         <label
-          class="cg-border px-3 py-4 font-medium md:flex-row md:justify-center md:rounded-[56px]! flex h-full flex-col items-center justify-center text-center"
+          class="cg-border md:rounded-[56px]! px-3 py-4 font-medium md:flex-row md:justify-center flex h-full flex-col items-center justify-center text-center"
           for="radio-{value}"
         >
           {#if value === 'both_equal'}
