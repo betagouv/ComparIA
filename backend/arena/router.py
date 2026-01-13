@@ -34,7 +34,6 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.errors import Errors
 from backend.language_models.data import get_models
 from backend.session import is_ratelimited
 from backend.utils.countries import CountryPortalAnno
@@ -62,7 +61,7 @@ def assert_not_rate_limited(request: Request) -> None:
         )
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=Errors.RATE_LIMITED.name,
+            detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
         )
 
 
