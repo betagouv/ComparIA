@@ -367,7 +367,7 @@ async def react(
 
 @router.post("/vote")
 async def vote(
-    vote_data: VoteRequest,
+    vote_request: VoteRequest,
     conversations: ConversationsAnno,
     request: Request,
 ):
@@ -377,7 +377,7 @@ async def vote(
     Saves the vote to database and returns reveal data.
 
     Args:
-        vote_data: Request body with Gradio-format vote data
+        vote_request: Request body with vote data
         conversations: Conversations from session_hash
         request: FastAPI request for logging
 
@@ -385,35 +385,32 @@ async def vote(
         dict: Reveal data with model names, metadata, and environmental stats
 
     Raises:
-        HTTPException: If session not found or database error
+        HTTPException: If session not found
     """
     from backend.arena.session import retrieve_session_conversations
     from backend.config import settings
 
     logger.info(
-        f"[VOTE] session={conversations.session_hash}, chosen={vote_data.chosen}",
+        f"[VOTE] session={conversations.session_hash}, chosen={vote_request.chosen_llm}",
         extra={"request": request},
     )
 
-    # Get IP for logging
-    ip = get_ip(request)
+    # FIXME not sure it is usefull to save vote to Conversations
+    conversations.vote = vote_request
+    # Store conversations with updated vote to redis
+    conversations.store_to_session()
 
-    # Save vote to database with all preferences
-    try:
-        record_vote(
-            conversations=conversations,
-            vote=vote_data,
-            request=request,
-        )
-        logger.info(f"[VOTE] Saved to database: {conversations.conversation_pair_id}")
-    except Exception as e:
-        # Log error but don't fail the request
-        logger.error(f"[VOTE] Error saving to database: {e}", exc_info=True)
+    # Save vote to database with prefs and comments
+    record_vote(
+        conversations=conversations,
+        vote=vote_request,
+        request=request,
+    )
 
     # Build reveal data with environmental impact
     from backend.arena.reveal import build_reveal_dict
 
-    reveal_data = build_reveal_dict(conversations, vote_data.which_model_radio_output)
+    reveal_data = build_reveal_dict(conversations, vote_request.chosen_llm)
 
     return reveal_data
 
