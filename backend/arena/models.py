@@ -7,7 +7,7 @@ Defines all data structures for:
 
 from datetime import datetime
 from functools import cached_property
-from typing import Annotated, Any, Literal, TypedDict, Union, get_args
+from typing import Annotated, Literal, TypedDict, Union, get_args
 from uuid import uuid4
 
 from pydantic import (
@@ -16,7 +16,6 @@ from pydantic import (
     Field,
     PlainSerializer,
     computed_field,
-    model_validator,
 )
 
 from backend.config import (

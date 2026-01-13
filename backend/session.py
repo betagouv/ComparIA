@@ -6,13 +6,12 @@ and provides session state management.
 """
 
 import logging
-import os
 from functools import lru_cache
 
 import redis
 from pydantic import BaseModel
 
-from backend.config import RATELIMIT_PRICEY_MODELS_INPUT, settings
+from backend.config import settings
 
 logger = logging.getLogger("languia")
 

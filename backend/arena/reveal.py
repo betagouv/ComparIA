@@ -14,13 +14,7 @@ Functions:
 import logging
 
 from backend.arena.models import BotChoice, BotPos, Conversations, RevealData
-from backend.language_models.utils import (
-    calculate_lightbulb_consumption,
-    calculate_streaming_hours,
-    convert_range_to_value,
-    get_llm_consumption,
-    get_llm_impact,
-)
+from backend.language_models.utils import get_llm_consumption
 
 logger = logging.getLogger("languia")
 
