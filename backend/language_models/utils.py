@@ -224,7 +224,7 @@ def get_llm_consumption(
     llm: Union["Model", "LanguageModel"],
     tokens: int,
     request_latency: float | None = None,
-) -> Consumption | None:
+) -> Consumption:
     """
     Calculates environmental impact (energy, CO2 emissions)
 
@@ -239,7 +239,7 @@ def get_llm_consumption(
     impact = get_llm_impact(llm, tokens, request_latency)
 
     if impact is None:
-        # FIXME impact None? raise Exception?
+        # FIXME impact None? raise Exception? Should not happen with full llm data
         return None
 
     # Extract and normalize energy and CO2 values (handles value ranges)
