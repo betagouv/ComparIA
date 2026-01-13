@@ -20,7 +20,8 @@ from backend.arena.models import (
     SystemMessage,
     UserMessage,
 )
-from backend.arena.utils import EmptyResponseError, get_api_key
+from backend.arena.utils import get_api_key
+from backend.errors import EmptyResponseError
 
 logger = logging.getLogger("languia")
 

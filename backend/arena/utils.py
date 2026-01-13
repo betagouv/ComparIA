@@ -18,25 +18,6 @@ from backend.utils.user import get_ip
 logger = logging.getLogger("languia")
 
 
-class ContextTooLongError(ValueError):
-    """Raised when the context window of a model is exceeded."""
-
-    def __str__(self):
-        return "Context too long."
-
-
-class EmptyResponseError(RuntimeError):
-    """Raised when a model API returns an empty response."""
-
-    def __init__(self, response=None, *args: object) -> None:
-        super().__init__(*args)
-        self.response = response
-
-    def __str__(self):
-        msg = "Empty response"
-        return msg
-
-
 def get_api_key(endpoint):
     """
     Get the appropriate API key for an endpoint.
