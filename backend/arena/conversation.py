@@ -12,7 +12,7 @@ import time
 
 from litellm.litellm_core_utils.token_counter import token_counter
 
-from backend.arena.litellm import litellm_stream_iter
+from backend.arena.litellm import get_api_key, litellm_stream_iter
 from backend.arena.models import (
     AnyMessage,
     AssistantMessage,
@@ -20,7 +20,6 @@ from backend.arena.models import (
     SystemMessage,
     UserMessage,
 )
-from backend.arena.utils import get_api_key
 from backend.errors import EmptyResponseError
 
 logger = logging.getLogger("languia")
