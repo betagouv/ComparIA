@@ -9,11 +9,11 @@ from backend.arena.models import (
     AddTextBody,
     AssistantMessage,
     Conversations,
+    ReactionBody,
     ReactionData,
-    ReactRequest,
     RevealData,
     UserMessage,
-    VoteRequest,
+    VoteBody,
     create_conversations,
 )
 from backend.arena.persistence import (
@@ -276,7 +276,7 @@ ReactReturnType = TypedDict("ReactReturnType", {"reaction": ReactionData | None}
 
 @router.post("/react")
 async def react(
-    react_request: ReactRequest,
+    reaction_body: ReactionBody,
     conversations: ConversationsAnno,
     request: Request,
 ) -> ReactReturnType:
@@ -284,7 +284,7 @@ async def react(
     Update reaction (like/dislike) for a specific message.
 
     Args:
-        react_request: Request body with reaction data
+        reaction_body: Request body with reaction data
         conversations: Conversations from session_hash
         request: FastAPI request for logging
 
@@ -296,19 +296,19 @@ async def react(
     """
 
     logger.info(
-        f"[REACT] session={conversations.session_hash}, reaction={react_request.model_dump()}",
+        f"[REACT] session={conversations.session_hash}, reaction={reaction_body.model_dump()}",
         extra={"request": request},
     )
 
     conv = (
         conversations.conversation_a
-        if react_request.bot == "a"
+        if reaction_body.bot == "a"
         else conversations.conversation_b
     )
 
     # Get real message index from front which is the message index without counting system message
     msg_index = (
-        react_request.index if not conv.has_system_msg else react_request.index + 1
+        reaction_body.index if not conv.has_system_msg else reaction_body.index + 1
     )
     message = conv.messages[msg_index] if len(conv.messages) > msg_index else None
 
@@ -317,7 +317,7 @@ async def react(
             status_code=status.HTTP_404_NOT_FOUND, detail="Assistant message not found"
         )
 
-    if react_request.liked is None:
+    if reaction_body.liked is None:
         # A reaction has been undone, remove it from its message and db
         message.reaction = None
         # Store conversations with removed reaction
@@ -329,26 +329,26 @@ async def react(
 
     # Build final reaction data
     # FIXME replace reaction.index with msg_index?
-    reaction_data = ReactionData.model_validate(react_request, from_attributes=True)
+    reaction = ReactionData.model_validate(reaction_body, from_attributes=True)
 
-    message.reaction = reaction_data
+    message.reaction = reaction
     # Store conversations with updated reaction to redis
     conversations.store_to_session()
     # Store reaction to db/logs
     reaction_record = record_reaction(
         conversations=conversations,
-        reaction=reaction_data,
+        reaction=reaction,
         msg_index=msg_index,
-        chatbot_index=react_request.index,
+        chatbot_index=reaction_body.index,
         request=request,
     )
 
-    return {"reaction": reaction_data}
+    return {"reaction": reaction}
 
 
 @router.post("/vote")
 async def vote(
-    vote_request: VoteRequest,
+    vote_body: VoteBody,
     conversations: ConversationsAnno,
     request: Request,
 ) -> RevealData:
@@ -358,7 +358,7 @@ async def vote(
     Saves the vote to database and returns reveal data.
 
     Args:
-        vote_request: Request body with vote data
+        vote_body: Request body with vote data
         conversations: Conversations from session_hash
         request: FastAPI request for logging
 
@@ -372,24 +372,24 @@ async def vote(
     from backend.config import settings
 
     logger.info(
-        f"[VOTE] session={conversations.session_hash}, chosen={vote_request.chosen_llm}",
+        f"[VOTE] session={conversations.session_hash}, chosen={vote_body.chosen_llm}",
         extra={"request": request},
     )
 
     # FIXME not sure it is usefull to save vote to Conversations
-    conversations.vote = vote_request
+    conversations.vote = vote_body
     # Store conversations with updated vote to redis
     conversations.store_to_session()
 
     # Save vote to database with prefs and comments
     record_vote(
         conversations=conversations,
-        vote=vote_request,
+        vote=vote_body,
         request=request,
     )
 
     # Return computed reveal data with environmental impact
-    return get_reveal_data(conversations, vote_request.chosen_llm)
+    return get_reveal_data(conversations, vote_body.chosen_llm)
 
 
 @router.get("/reveal")

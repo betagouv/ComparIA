@@ -188,7 +188,7 @@ class Conversations(BaseModel):
     # Data
     conversation_a: Conversation
     conversation_b: Conversation
-    vote: Union["VoteRequest", None] = None
+    vote: Union["VoteBody", None] = None
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -314,7 +314,7 @@ NEGATIVE_REACTIONS: tuple[NegativeReaction, ...] = get_args(NegativeReaction)
 REACTIONS = POSITIVE_REACTIONS + NEGATIVE_REACTIONS
 
 
-class ReactRequest(BaseModel):
+class ReactionBody(BaseModel):
     """Request body for updating message reactions."""
 
     bot: BotPos
@@ -325,11 +325,11 @@ class ReactRequest(BaseModel):
     comment: str | None
 
 
-class ReactionData(ReactRequest):
+class ReactionData(ReactionBody):
     liked: bool
 
 
-class VoteRequest(BaseModel):
+class VoteBody(BaseModel):
     """Request body for submitting a vote after conversation."""
 
     chosen_llm: BotChoice
