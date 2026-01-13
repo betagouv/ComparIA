@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, TypedDict, Union
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
@@ -200,3 +200,61 @@ def calculate_streaming_hours(
         return int(streaming_hours * 60), "min"
     else:
         return int(streaming_hours * 60 * 60), "s"
+
+
+class ValueAndUnit(TypedDict):
+    value: int | float
+    unit: str
+
+
+class Consumption(TypedDict):
+    # Energy metrics
+    kwh: int | float
+    # Environmental metrics (CO2)
+    co2: int | float
+    # Token usage
+    tokens: int
+    # Video streaming equivalent (user-friendly CO2 comparison)
+    streaming: ValueAndUnit
+    # LED lightbulb equivalent (user-friendly energy comparison)
+    lightbulb: ValueAndUnit
+
+
+def get_llm_consumption(
+    llm: Union["Model", "LanguageModel"],
+    tokens: int,
+    request_latency: float | None = None,
+) -> Consumption | None:
+    """
+    Calculates environmental impact (energy, CO2 emissions)
+
+    Args:
+        llm: Model or LanguageModel with 'params' and optional 'active_params' (MoE)
+        token_count: Total output tokens generated
+        request_latency: Time taken for inference (optional, for more accurate calculations)
+
+    Returns:
+
+    """
+    impact = get_llm_impact(llm, tokens, request_latency)
+
+    if impact is None:
+        # FIXME impact None? raise Exception?
+        return None
+
+    # Extract and normalize energy and CO2 values (handles value ranges)
+    kwh = convert_range_to_value(impact.energy.value)
+    co2 = convert_range_to_value(impact.gwp.value)
+
+    # Convert energy to LED lightbulb comparison (5W LED light)
+    lightbulb, lightbulb_unit = calculate_lightbulb_consumption(kwh)
+    # Convert CO2 to video streaming comparison
+    streaming, streaming_unit = calculate_streaming_hours(co2)
+
+    return {
+        "kwh": kwh,
+        "co2": co2,
+        "tokens": tokens,
+        "lightbulb": {"value": lightbulb, "unit": lightbulb_unit},
+        "streaming": {"value": streaming, "unit": streaming_unit},
+    }
