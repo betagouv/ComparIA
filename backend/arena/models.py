@@ -7,7 +7,7 @@ Defines all data structures for:
 
 from datetime import datetime
 from functools import cached_property
-from typing import TYPE_CHECKING, Annotated, Any, Literal, Union, get_args
+from typing import TYPE_CHECKING, Annotated, Any, Literal, TypedDict, Union, get_args
 from uuid import uuid4
 
 from pydantic import (
@@ -21,12 +21,14 @@ from pydantic import (
 
 from backend.config import CountryPortal, CustomModelsSelection, SelectionMode
 from backend.language_models.models import Endpoint, LanguageModel
+from backend.language_models.utils import Consumption
 
 if TYPE_CHECKING:
     from backend.arena.router import AddFirstTextBody
 
 MessageRole = Literal["user", "assistant", "system"]
 BotPos = Literal["a", "b"]
+BotChoice = BotPos | Literal["both_equal"]
 
 
 class BaseMessage(BaseModel):
@@ -305,17 +307,20 @@ class ReactionData(ReactRequest):
 class VoteRequest(BaseModel):
     """Request body for submitting a vote after conversation."""
 
-    chosen_llm: BotPos | Literal["both_equal"]
+    chosen_llm: BotChoice
     prefs_a: list[PositiveReaction | NegativeReaction] = []
     prefs_b: list[PositiveReaction | NegativeReaction] = []
     comment_a: str
     comment_b: str
 
 
-class RevealData(BaseModel):
-    """Response data revealing model identities after vote."""
+class RevealModelData(TypedDict):
+    llm: LanguageModel
+    conso: Consumption
 
-    model_a: str
-    model_b: str
-    model_a_metadata: dict[str, Any]
-    model_b_metadata: dict[str, Any]
+
+class RevealData(TypedDict):
+    b64: str
+    chosen_llm: BotChoice
+    a: RevealModelData
+    b: RevealModelData
