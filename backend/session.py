@@ -7,7 +7,7 @@ and provides session state management.
 
 import logging
 import os
-from typing import List
+from functools import lru_cache
 
 import redis
 from pydantic import BaseModel
@@ -16,22 +16,24 @@ from backend.config import RATELIMIT_PRICEY_MODELS_INPUT, settings
 
 logger = logging.getLogger("languia")
 
-try:
-    # Redis connection configuration
-    redis_host = settings.COMPARIA_REDIS_HOST
-    # Alternative: redis_host = os.environ("COMPARIA_REDIS_HOST", 'languia-redis')
 
-    # Initialize Redis client (decode_responses=True returns strings instead of bytes)
-    r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
+@lru_cache
+def get_redis_client() -> redis.Redis:
+    try:
+        # Initialize Redis client
+        client = redis.Redis(
+            host=settings.COMPARIA_REDIS_HOST,
+            port=6379,
+            decode_responses=True,  # returns strings instead of bytes
+        )
 
-    # Fail if we don't have a working redis
-    response = r.ping()
-    if not r.ping():
-        logger.error(f"Erreur de connection au redis - {response}")
-        # FIXME raise?
+        # Fail if we don't have a working redis
+        if not (response := client.ping()):
+            raise Exception(f"{response}")
 
-except Exception as e:
-    raise Exception(f"Redis Connection Error {e}")
+        return client
+    except Exception as e:
+        raise Exception(f"Redis Connection Error: {e}")
 
 
 class CohortRequest(BaseModel):
