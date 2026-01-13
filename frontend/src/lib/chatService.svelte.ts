@@ -26,6 +26,7 @@ export type ModeInfos = {
 
 type APIMessageRole = 'system' | 'user' | 'assistant'
 export type Bot = 'a' | 'b'
+export type BotChoice = Bot | 'both_equal'
 
 interface APIChatMessageMetadata<Role extends APIMessageRole = APIMessageRole> {
   bot: Role extends 'assistant' ? Bot : null
@@ -79,7 +80,7 @@ export type OnReactionFn = (reaction: APIReactionData) => void
 // VOTE
 
 export interface APIVoteData {
-  chosen_llm: 'a' | 'b' | 'both_equal'
+  chosen_llm: BotChoice
   prefs_a: APIReactionPref[]
   prefs_b: APIReactionPref[]
   comment_a: string
@@ -92,7 +93,7 @@ interface VoteDetails {
   comment: string
 }
 export interface VoteData {
-  selected?: APIVoteData['chosen_llm']
+  selected?: BotChoice
   a: VoteDetails
   b: VoteDetails
 }
@@ -101,40 +102,32 @@ export interface VoteData {
 
 type DurationUnit = 'j' | 'h' | 'min' | 's'
 
-export interface APIRevealData {
-  b64: string
-  model_a: APIBotModel
-  model_b: APIBotModel
-  chosen_model: 'model-a' | 'model-b' | null
-  model_a_kwh: number
-  model_b_kwh: number
-  model_a_co2: number
-  model_b_co2: number
-  model_a_tokens: number
-  model_b_tokens: number
-  streaming_a: number
-  streaming_a_unit: DurationUnit
-  streaming_b: number
-  streaming_b_unit: DurationUnit
-  lightbulb_a: number
-  lightbulb_a_unit: DurationUnit
-  lightbulb_b: number
-  lightbulb_b_unit: DurationUnit
-}
-
-interface RevealModelData {
-  model: BotModel
-  side: 'model-a' | 'model-b'
+interface APIConsoData {
   kwh: number
   co2: number
   tokens: number
-  lightbulb: number
-  lightbulbUnit: string
-  streaming: number
-  streamingUnit: string
+  streaming: { value: number; unit: DurationUnit }
+  lightbulb: { value: number; unit: DurationUnit }
+}
+
+interface APIRevealModelData {
+  llm: APIBotModel
+  conso: APIConsoData
+}
+
+export interface APIRevealData {
+  b64: string
+  chosen_model: BotChoice
+  a: APIRevealModelData
+  b: APIRevealModelData
+}
+
+interface RevealModelData extends APIConsoData {
+  model: BotModel
+  pos: Bot
 }
 export interface RevealData {
-  selected: APIVoteData['chosen_llm']
+  selected: BotChoice
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
 }
@@ -316,17 +309,12 @@ export async function postVoteGetReveal(vote: Required<VoteData>) {
 
 function parseAPIRevealData(data: APIRevealData): RevealData {
   return {
-    selected: data.chosen_model ?? 'both-equal',
-    modelsData: (['a', 'b'] as const).map((model) => ({
-      model: parseModel(data[`model_${model}`]),
-      side: `model-${model}`,
-      kwh: data[`model_${model}_kwh`],
-      co2: data[`model_${model}_co2`] * 1000,
-      tokens: data[`model_${model}_tokens`],
-      lightbulb: data[`lightbulb_${model}`],
-      lightbulbUnit: data[`lightbulb_${model}_unit`],
-      streaming: data[`streaming_${model}`],
-      streamingUnit: data[`streaming_${model}_unit`]
+    selected: data.chosen_model ?? 'both_equal',
+    modelsData: (['a', 'b'] as const).map((pos) => ({
+      model: parseModel(data[pos].llm),
+      pos,
+      ...data[pos].conso,
+      co2: data[pos].conso.co2 * 1000 // FIXME *1000?
     })),
     shareB64Data: data.b64
   }
