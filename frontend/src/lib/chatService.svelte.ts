@@ -117,7 +117,7 @@ interface APIRevealModelData {
 
 export interface APIRevealData {
   b64: string
-  chosen_model: BotChoice
+  chosen_llm: BotChoice
   a: APIRevealModelData
   b: APIRevealModelData
 }
@@ -309,7 +309,7 @@ export async function postVoteGetReveal(vote: Required<VoteData>) {
 
 function parseAPIRevealData(data: APIRevealData): RevealData {
   return {
-    selected: data.chosen_model ?? 'both_equal',
+    selected: data.chosen_llm,
     modelsData: (['a', 'b'] as const).map((pos) => ({
       model: parseModel(data[pos].llm),
       pos,
@@ -321,15 +321,10 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
 }
 
 export async function getReveal(): Promise<RevealData> {
-  const sessionHash = arenaApi.getSessionHash()
-  if (!sessionHash) {
-    throw new Error('No session hash available')
-  }
-
   // Use fastapiClient which handles full backend URL
   const { fastapiClient } = await import('./fastapi-client')
 
-  const revealData = await fastapiClient.request<APIRevealData>(`/arena/reveal/${sessionHash}`, {
+  const revealData = await fastapiClient.request<APIRevealData>(`/arena/reveal`, {
     method: 'GET'
   })
 

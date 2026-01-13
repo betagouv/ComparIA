@@ -413,7 +413,7 @@ async def vote(
     return get_reveal_data(conversations, vote_request.chosen_llm)
 
 
-@router.get("/reveal/{session_hash}")
+@router.get("/reveal")
 async def reveal(conversations: ConversationsAnno, request: Request) -> RevealData:
     """
     Get reveal data for a session (model identities and metadata).
