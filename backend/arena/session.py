@@ -84,37 +84,7 @@ def retrieve_session_conversations(
         raise
 
 
-# FIXME RM?
-def update_session_conversations(
-    session_hash: str,
-    conv_a: dict,
-    conv_b: dict,
-    mode: str | None = None,
-    category: str | None = None,
-) -> None:
-    """
-    Update existing session conversations and metadata.
-
-    Args:
-        session_hash: Unique session identifier
-        conv_a: Updated first conversation state
-        conv_b: Updated second conversation state
-        mode: Model selection mode (optional, preserves existing if None)
-        category: Prompt category (optional, preserves existing if None)
-    """
-    # If mode/category not provided, preserve existing values
-    if mode is None or category is None:
-        try:
-            _, _, existing_metadata = retrieve_session_conversations(session_hash)
-            mode = mode or existing_metadata.get("mode")
-            category = category or existing_metadata.get("category")
-        except ValueError:
-            # Session doesn't exist yet, use provided values
-            pass
-
-    store_session_conversations(session_hash, conv_a, conv_b, mode, category)
-
-
+# FIXME unused?
 def delete_session(session_hash: str) -> bool:
     """
     Delete a session from Redis.
