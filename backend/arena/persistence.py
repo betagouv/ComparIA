@@ -31,7 +31,7 @@ from backend.arena.models import (
     Conversations,
     MessageRole,
     ReactionData,
-    VoteRequest,
+    VoteBody,
 )
 from backend.config import CountryPortal, SelectionMode, settings
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
@@ -367,7 +367,7 @@ class VoteRecord(BaseModel):
 
 def record_vote(
     conversations: Conversations,
-    vote: VoteRequest,
+    vote: VoteBody,
     request: Request,
 ) -> dict:
     """
@@ -378,7 +378,7 @@ def record_vote(
 
     Args:
         conversations: Conversations object with both conversation_a and conversation_b
-        vote_data: VoteRequest with user's vote choices
+        vote: VoteBody with user's vote choices
         request: FastAPI Request for IP and cookies
 
     Returns:
@@ -613,6 +613,11 @@ def record_reaction(
 
 
 class ConversationMessageRecord(BaseModel):
+    """
+    Model to parse AnyMessage, clean and filter out message's empty metadata
+    for db/logs.
+    """
+
     class MessageMetadata(BaseModel):
         generation_id: Annotated[str | None, Field(exclude_if=is_not)]
         output_tokens: int | None  # FIXME required?
