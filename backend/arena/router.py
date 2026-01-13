@@ -20,7 +20,7 @@ from backend.arena.persistence import (
     record_reaction,
     record_vote,
 )
-from backend.arena.reveal import get_reveal_data
+from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.session import (
     create_session,
     retrieve_session_conversations,
@@ -414,12 +414,12 @@ async def vote(
 
 
 @router.get("/reveal/{session_hash}")
-async def reveal(session_hash: str, request: Request) -> RevealData:
+async def reveal(conversations: ConversationsAnno, request: Request) -> RevealData:
     """
     Get reveal data for a session (model identities and metadata).
 
     Args:
-        session_hash: Session identifier from path
+        conversations: Conversations from session_hash
         request: FastAPI request for logging
 
     Returns:
@@ -428,13 +428,17 @@ async def reveal(session_hash: str, request: Request) -> RevealData:
     Raises:
         HTTPException: If session not found
     """
-    logger.info(f"[REVEAL] session={session_hash}", extra={"request": request})
+    logger.info(
+        f"[REVEAL] session={conversations.session_hash}", extra={"request": request}
+    )
 
-    # Retrieve conversations
-    try:
-        conversations = Conversations.from_session(session_hash)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    chosen_llm = get_chosen_llm(conversations)
+
+    if chosen_llm is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No reaction or vote found, can't access reveal",
+        )
 
     # Return computed reveal data with environmental impact
-    return get_reveal_data(conversations, "both_equal")
+    return get_reveal_data(conversations, chosen_llm)
