@@ -11,20 +11,15 @@ This module handles:
 
 import json
 import logging
-import os
 from contextlib import contextmanager
 from datetime import datetime
-from logging import getLogger
-from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Any, Iterator
+from typing import Annotated, Any, Iterator
 
 import psycopg2
 from fastapi import Request
-from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer, model_serializer
+from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer
 
 from backend.arena.models import (
-    NEGATIVE_REACTIONS,
-    POSITIVE_REACTIONS,
     REACTIONS,
     BotPos,
     Conversation,
@@ -34,10 +29,6 @@ from backend.arena.models import (
     VoteBody,
 )
 from backend.config import CountryPortal, SelectionMode, settings
-from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
-
-if TYPE_CHECKING:
-    from pydantic import SerializerFunctionWrapHandler
 
 logger = logging.getLogger("languia")
 

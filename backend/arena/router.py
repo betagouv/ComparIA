@@ -1,8 +1,7 @@
 import logging
 from typing import Annotated, TypedDict
 
-from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from backend.arena.models import (
     AddFirstTextBody,
@@ -26,9 +25,6 @@ from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.session import (
     create_session,
     is_ratelimited,
-    retrieve_session_conversations,
-    store_session_conversations,
-    update_session_conversations,
 )
 from backend.arena.streaming import create_sse_response, stream_both_responses
 from backend.language_models.data import get_models
