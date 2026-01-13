@@ -39,47 +39,6 @@ class CohortRequest(BaseModel):
     cohorts: str
 
 
-def increment_input_chars(ip: str, input_chars: int) -> bool:
-    """
-    Track input character count per IP address for rate limiting.
-
-    Increments a counter in Redis for the given IP and sets expiry to 2 hours.
-    This prevents users from overloading expensive model APIs.
-
-    Args:
-        ip: User's IP address
-        input_chars: Number of input characters to add to counter
-
-    Returns:
-        bool: False if Redis not configured, True otherwise
-    """
-    if not redis_host:
-        return False
-    # Increment counter under key "ip:{ip}"
-    r.incrby(f"ip:{ip}", input_chars)
-    # Set counter to expire in 2 hours (3600 * 2 seconds)
-    r.expire(f"ip:{ip}", 3600 * 2)
-    return True
-
-
-def is_ratelimited(ip: str) -> bool:
-    """
-    Check if an IP address has exceeded rate limit for expensive models.
-
-    Args:
-        ip: User's IP address
-
-    Returns:
-        bool: True if IP has exceeded limit (2x RATELIMIT_PRICEY_MODELS_INPUT), False otherwise
-    """
-    counter = r.get(f"ip:{ip}")
-    # Rate limit is 2x the configured limit for pricey models
-    if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
-        return True
-    else:
-        return False
-
-
 def store_cohorts_redis(session_hash: str, cohorts_comma_separated: str) -> bool:
     """
     Stocke dans Redis une indication de ne pas suivre pour une session donnée.
