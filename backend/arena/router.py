@@ -5,6 +5,8 @@ from fastapi import APIRouter, Body, Depends, Header, HTTPException, Request, st
 from pydantic import BaseModel, Field
 
 from backend.arena.models import (
+    AddFirstTextBody,
+    AddTextBody,
     AssistantMessage,
     Conversations,
     ReactionData,
@@ -28,15 +30,8 @@ from backend.arena.session import (
     update_session_conversations,
 )
 from backend.arena.streaming import create_sse_response, stream_both_responses
-from backend.config import (
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-    DEFAULT_SELECTION_MODE,
-    CustomModelsSelection,
-    SelectionMode,
-)
 from backend.language_models.data import get_models
 from backend.session import is_ratelimited
-from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 logger = logging.getLogger("languia")
@@ -97,15 +92,6 @@ def get_conversations(session_hash: str = Depends(get_session_hash)) -> Conversa
 
 
 ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
-
-
-class AddFirstTextBody(BaseModel):
-    prompt_value: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
-    mode: SelectionMode = DEFAULT_SELECTION_MODE
-    custom_models_selection: CustomModelsSelection = None
-    country_portal: CountryPortalAnno
-    # We force cohorts not to be None to make sure cohorts detection has been called on frontend
-    cohorts: str
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
@@ -178,12 +164,6 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         record_conversations(conversations)
 
     return create_sse_response(event_stream())
-
-
-class AddTextBody(BaseModel):
-    """Request body for add_text endpoint."""
-
-    message: str = Field(min_length=1)
 
 
 @router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
