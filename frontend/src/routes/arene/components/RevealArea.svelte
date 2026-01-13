@@ -27,7 +27,7 @@
 
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid">
-    {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
+    {#each modelsData as { model, pos, kwh, co2, tokens, lightbulb, streaming } (pos)}
       {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
@@ -38,7 +38,7 @@
           <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
             <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
-            {#if selected === side}
+            {#if selected === pos}
               <div
                 class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px]"
               >
@@ -57,13 +57,13 @@
 
         <h6 class="mb-5! text-base! mt-auto!">
           {m['reveal.impacts.title']()}
-          <Tooltip id="impact-{side}" text={m['reveal.impacts.tooltip']()} />
+          <Tooltip id="impact-{pos}" text={m['reveal.impacts.tooltip']()} />
         </h6>
         <div class="flex">
           <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
             <div class="md:w-full relative">
               <MiniCard
-                id="params-{side}"
+                id="params-{pos}"
                 value={model.params}
                 desc={m['reveal.impacts.size.label']()}
                 tooltip={m['models.openWeight.tooltips.params']()}
@@ -95,7 +95,7 @@
             <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
 
             <MiniCard
-              id="tokens-{side}"
+              id="tokens-{pos}"
               value={tokens}
               units={m['reveal.impacts.tokens.tokens']()}
               desc={m['reveal.impacts.tokens.label']()}
@@ -108,7 +108,7 @@
             <strong class="m-auto">≈</strong>
 
             <MiniCard
-              id="energy-{side}"
+              id="energy-{pos}"
               value={wh.toFixed(wh < 2 ? 2 : 0)}
               units="Wh"
               desc={m['reveal.impacts.energy.label']()}
@@ -123,7 +123,7 @@
         <h6 class="mt-9! mb-5! text-base! md:mt-14!">{m['reveal.equivalent.title']()}</h6>
         <div class="gap-2 grid grid-cols-3">
           <MiniCard
-            id="co2-{side}"
+            id="co2-{pos}"
             value={co2.toFixed(co2 < 2 ? 2 : 0)}
             units="g"
             desc={m['reveal.equivalent.co2.label']()}
@@ -133,9 +133,9 @@
           />
 
           <MiniCard
-            id="ampoule-{side}"
-            value={lightbulb}
-            units={lightbulbUnit}
+            id="ampoule-{pos}"
+            value={lightbulb.value}
+            units={lightbulb.unit}
             desc={m['reveal.equivalent.lightbulb.label']()}
             icon="i-ri-lightbulb-fill"
             iconClass="text-yellow"
@@ -143,9 +143,9 @@
           />
 
           <MiniCard
-            id="videos-{side}"
-            value={streaming}
-            units={streamingUnit}
+            id="videos-{pos}"
+            value={streaming.value}
+            units={streaming.unit}
             desc={m['reveal.equivalent.streaming.label']()}
             icon="i-ri-youtube-fill"
             iconClass="text-error"
