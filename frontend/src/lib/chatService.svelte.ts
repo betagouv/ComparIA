@@ -79,13 +79,11 @@ export type OnReactionFn = (reaction: APIReactionData) => void
 // VOTE
 
 export interface APIVoteData {
-  which_model_radio_output: 'model-a' | 'model-b' | 'both-equal'
-  positive_a_output: APIReactionPref[]
-  positive_b_output: APIReactionPref[]
-  negative_a_output: APIReactionPref[]
-  negative_b_output: APIReactionPref[]
-  comments_a_output: string
-  comments_b_output: string
+  chosen_llm: 'a' | 'b' | 'both_equal'
+  prefs_a: APIReactionPref[]
+  prefs_b: APIReactionPref[]
+  comment_a: string
+  comment_b: string
 }
 
 interface VoteDetails {
@@ -94,7 +92,7 @@ interface VoteDetails {
   comment: string
 }
 export interface VoteData {
-  selected?: APIVoteData['which_model_radio_output']
+  selected?: APIVoteData['chosen_llm']
   a: VoteDetails
   b: VoteDetails
 }
@@ -136,7 +134,7 @@ interface RevealModelData {
   streamingUnit: string
 }
 export interface RevealData {
-  selected: APIVoteData['which_model_radio_output']
+  selected: APIVoteData['chosen_llm']
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
 }
@@ -295,13 +293,11 @@ export async function updateReaction(reaction: APIReactionData) {
 
 export async function postVoteGetReveal(vote: Required<VoteData>) {
   const data = {
-    which_model_radio_output: vote.selected,
-    positive_a_output: vote.a.like,
-    positive_b_output: vote.b.like,
-    negative_a_output: vote.a.dislike,
-    negative_b_output: vote.b.dislike,
-    comments_a_output: vote.a.comment,
-    comments_b_output: vote.b.comment
+    chosen_llm: vote.selected,
+    prefs_a: [...vote.a.like, ...vote.a.dislike],
+    prefs_b: [...vote.b.like, ...vote.b.dislike],
+    comment_a: vote.a.comment,
+    comment_b: vote.b.comment
   } satisfies APIVoteData
 
   // Use fastapiClient which handles full backend URL

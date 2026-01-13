@@ -120,6 +120,7 @@
     bind:value={selection}
     choices={reaction.choices}
     multiple
+    {disabled}
     containerClass="flex flex-wrap gap-3"
     choiceClass="px-2 py-1 md:px-3 text-[14px]! rounded-full! font-medium! text-grey! has-checked:text-primary! border-1! m-0!"
     onChange={onSelectionChange}
