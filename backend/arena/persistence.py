@@ -33,12 +33,6 @@ from backend.arena.models import (
     ReactionData,
     VoteRequest,
 )
-from backend.arena.utils import (
-    count_turns,
-    is_unedited_prompt,
-    messages_to_dict_list,
-    sum_tokens,
-)
 from backend.config import CountryPortal, SelectionMode, settings
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
