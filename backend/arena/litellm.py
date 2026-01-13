@@ -12,8 +12,8 @@ from typing import Generator
 
 import litellm
 
-from backend.arena.utils import ContextTooLongError
 from backend.config import GLOBAL_TIMEOUT
+from backend.errors import ContextTooLongError
 
 # Load Google Cloud credentials for Vertex AI if available
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
