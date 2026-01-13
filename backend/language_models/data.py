@@ -3,7 +3,6 @@ import logging
 from functools import lru_cache
 from typing import Any
 
-import json5
 import numpy as np
 from pydantic import BaseModel, computed_field, field_validator
 

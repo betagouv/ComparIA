@@ -17,8 +17,6 @@ from backend.arena.models import (
     AnyMessage,
     AssistantMessage,
     Conversation,
-    SystemMessage,
-    UserMessage,
 )
 from backend.errors import EmptyResponseError
 
