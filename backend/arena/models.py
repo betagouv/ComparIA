@@ -7,7 +7,7 @@ Defines all data structures for:
 
 from datetime import datetime
 from functools import cached_property
-from typing import TYPE_CHECKING, Annotated, Any, Literal, TypedDict, Union, get_args
+from typing import Annotated, Any, Literal, TypedDict, Union, get_args
 from uuid import uuid4
 
 from pydantic import (
@@ -19,12 +19,16 @@ from pydantic import (
     model_validator,
 )
 
-from backend.config import CountryPortal, CustomModelsSelection, SelectionMode
+from backend.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    DEFAULT_SELECTION_MODE,
+    CountryPortal,
+    CustomModelsSelection,
+    SelectionMode,
+)
 from backend.language_models.models import Endpoint, LanguageModel
 from backend.language_models.utils import Consumption
-
-if TYPE_CHECKING:
-    from backend.arena.router import AddFirstTextBody
+from backend.utils.countries import CountryPortalAnno
 
 MessageRole = Literal["user", "assistant", "system"]
 BotPos = Literal["a", "b"]
@@ -286,17 +290,21 @@ def create_conversations(
 # Request/Response models for FastAPI endpoints
 
 
-class AddTextRequest(BaseModel):
-    """Request body for adding a message to an existing conversation."""
+class AddFirstTextBody(BaseModel):
+    """Request body for add_first_text endpoint."""
 
-    session_hash: str
+    prompt_value: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
+    mode: SelectionMode = DEFAULT_SELECTION_MODE
+    custom_models_selection: CustomModelsSelection = None
+    country_portal: CountryPortalAnno
+    # We force cohorts not to be None to make sure cohorts detection has been called on frontend
+    cohorts: str
+
+
+class AddTextBody(BaseModel):
+    """Request body for add_text endpoint."""
+
     message: str = Field(min_length=1)
-
-
-class RetryRequest(BaseModel):
-    """Request body for retrying the last bot response."""
-
-    session_hash: str
 
 
 PositiveReaction = Literal["useful", "complete", "creative", "clear_formatting"]
