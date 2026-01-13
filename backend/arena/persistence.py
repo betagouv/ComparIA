@@ -27,6 +27,7 @@ from backend.arena.models import (
     POSITIVE_REACTIONS,
     REACTIONS,
     BotPos,
+    Conversation,
     Conversations,
     MessageRole,
     ReactionData,
