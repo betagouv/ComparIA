@@ -140,3 +140,42 @@ def delete_session(session_hash: str) -> bool:
     except Exception as e:
         logger.error(f"[SESSION] Error deleting session: {e}")
         return False
+
+
+def increment_input_chars(ip: str, input_chars: int) -> bool:
+    """
+    Track input character count per IP address for rate limiting.
+
+    Increments a counter in Redis for the given IP and sets expiry to 2 hours.
+    This prevents users from overloading expensive model APIs.
+
+    Args:
+        ip: User's IP address
+        input_chars: Number of input characters to add to counter
+
+    Returns:
+        bool: False if Redis not configured, True otherwise
+    """
+    if not redis_host:
+        return False
+    # Increment counter under key "ip:{ip}"
+    r.incrby(f"ip:{ip}", input_chars)
+    # Set counter to expire in 2 hours (3600 * 2 seconds)
+
+
+def is_ratelimited(ip: str) -> bool:
+    """
+    Check if an IP address has exceeded rate limit for expensive models.
+
+    Args:
+        ip: User's IP address
+
+    Returns:
+        bool: True if IP has exceeded limit (2x RATELIMIT_PRICEY_MODELS_INPUT), False otherwise
+    """
+    counter = r.get(f"ip:{ip}")
+    # Rate limit is 2x the configured limit for pricey models
+    if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
+        return True
+    else:
+        return False
