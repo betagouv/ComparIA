@@ -93,6 +93,8 @@ def get_conversations(session_hash: str = Depends(get_session_hash)) -> Conversa
 
 ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
 
+# FIXME log conversation session data (ip, portal, cohorts, conv id) in routes?
+
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
 async def add_first_text(args: AddFirstTextBody, request: Request):
@@ -102,7 +104,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     This is the main handler for the send button click. It:
     1. Creates a new session
     2. Selects two models to compare based on mode
-    3. Initializes conversations for both models
+    3. Initializes Conversations for both models
     4. Streams responses from both models in parallel
 
     Args:
@@ -115,9 +117,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     Raises:
         HTTPException: If rate limiting triggered or validation fails
     """
-    logger.info("chose mode: " + args.mode, extra={"request": request})
     logger.info(
-        "custom_models_selection: " + str(args.custom_models_selection),
+        f"'/add_first_text' called with: {args.model_dump_json()}",
         extra={"request": request},
     )
 
@@ -143,9 +144,14 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
         visitor_id=get_matomo_tracker_from_cookies(request.cookies),
     )
 
+    logger.info(
+        f"conv_pair_id: {conversations.conversation_pair_id}",
+        extra={"request": request},
+    )
+
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
-    # FIXME do we really want to store the conversations to db already?
+    # Record for questions only dataset and stats on ppl abandoning before generation completion
     record_conversations(conversations)
 
     # Stream responses
@@ -187,7 +193,7 @@ async def add_text(
         HTTPException: If session not found or rate limiting triggered
     """
     logger.info(
-        f"[ADD_TEXT] session={conversations.session_hash}, message_len={len(args.message)}",
+        f"'/add_text' session={conversations.session_hash} called with: {args.model_dump_json()}",
         extra={"request": request},
     )
 
@@ -198,7 +204,7 @@ async def add_text(
 
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
-    # FIXME do we really want to store the conversations to db already?
+    # Record for questions only dataset and stats on ppl abandoning before generation completion
     record_conversations(conversations)
 
     # Stream responses
@@ -234,7 +240,7 @@ async def retry(
         HTTPException: If session not found or rate limiting triggered
     """
     logger.info(
-        f"[RETRY] session={conversations.session_hash}", extra={"request": request}
+        f"'/retry' session={conversations.session_hash}", extra={"request": request}
     )
 
     conv_a = conversations.conversation_a
@@ -250,13 +256,14 @@ async def retry(
         isinstance(conv_a.messages[-1], UserMessage)
         and isinstance(conv_b.messages[-1], UserMessage)
     ):
-        raise Exception(
-            "Il n'est pas possible de réessayer, veuillez recharger la page."
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
         )
 
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
-    # FIXME do we really want to store the conversations to db already?
+    # Record for questions only dataset and stats on ppl abandoning before generation completion
     record_conversations(conversations)
 
     # Re-stream responses
@@ -294,9 +301,8 @@ async def react(
     Raises:
         HTTPException: If session not found
     """
-
     logger.info(
-        f"[REACT] session={conversations.session_hash}, reaction={reaction_body.model_dump()}",
+        f"'/react' session={conversations.session_hash} called with: {reaction_body.model_dump_json()}",
         extra={"request": request},
     )
 
@@ -368,15 +374,11 @@ async def vote(
     Raises:
         HTTPException: If session not found
     """
-    from backend.arena.session import retrieve_session_conversations
-    from backend.config import settings
-
     logger.info(
-        f"[VOTE] session={conversations.session_hash}, chosen={vote_body.chosen_llm}",
+        f"'/vote' session={conversations.session_hash} called with: {vote_body.model_dump_json()}",
         extra={"request": request},
     )
 
-    # FIXME not sure it is usefull to save vote to Conversations
     conversations.vote = vote_body
     # Store conversations with updated vote to redis
     conversations.store_to_session()
