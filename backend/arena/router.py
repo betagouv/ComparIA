@@ -9,6 +9,7 @@ from backend.arena.models import (
     Conversations,
     ReactionData,
     ReactRequest,
+    RevealData,
     UserMessage,
     VoteRequest,
     create_conversations,
@@ -19,6 +20,7 @@ from backend.arena.persistence import (
     record_reaction,
     record_vote,
 )
+from backend.arena.reveal import get_reveal_data
 from backend.arena.session import (
     create_session,
     retrieve_session_conversations,
@@ -370,7 +372,7 @@ async def vote(
     vote_request: VoteRequest,
     conversations: ConversationsAnno,
     request: Request,
-):
+) -> RevealData:
     """
     Submit a vote after conversation and reveal model identities.
 
@@ -407,16 +409,12 @@ async def vote(
         request=request,
     )
 
-    # Build reveal data with environmental impact
-    from backend.arena.reveal import build_reveal_dict
-
-    reveal_data = build_reveal_dict(conversations, vote_request.chosen_llm)
-
-    return reveal_data
+    # Return computed reveal data with environmental impact
+    return get_reveal_data(conversations, vote_request.chosen_llm)
 
 
 @router.get("/reveal/{session_hash}")
-async def reveal(session_hash: str, request: Request):
+async def reveal(session_hash: str, request: Request) -> RevealData:
     """
     Get reveal data for a session (model identities and metadata).
 
@@ -438,10 +436,5 @@ async def reveal(session_hash: str, request: Request):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    # Build reveal data with environmental impact
-    from backend.arena.reveal import build_reveal_dict
-
-    # No chosen model for direct reveal (user just wants to see models without voting)
-    reveal_data = build_reveal_dict(conversations, "both-equal")
-
-    return reveal_data
+    # Return computed reveal data with environmental impact
+    return get_reveal_data(conversations, "both_equal")
