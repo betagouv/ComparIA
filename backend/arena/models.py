@@ -243,7 +243,7 @@ class Conversations(BaseModel):
         """
         from backend.arena.session import store_session_conversations
 
-        data = self.model_dump()
+        data = self.model_dump(exclude_computed_fields=True)
 
         store_session_conversations(self.session_hash, data)
 
