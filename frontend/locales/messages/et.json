@@ -186,11 +186,11 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p>Jah, compar:AI rahvusvahelistamine on käimas. Alustame laienemist kolme pilootriiki: Leetu, Rootsi ja Taani. See esimene etapp võimaldab meil lähenemist testida ning kasutajaliidest erinevate Euroopa keeleliste ja kultuuriliste kontekstidega kohandada. Edaspidi võib ring laieneda ka teistele Euroopa keeltele, lähtudes nende pilootriikide tagasisidest. Eesmärk on järk-järgult üles ehitada tõeline Euroopa digitaalne ühisvara vestlusliku tehisaru inimhindamiseks, mille koostööpõhise juhtimismudeli panevad paika osalevad riigid. </p>",
+                    "desc": "<p>Jah, compar:AI rahvusvahelistamine on käimas. Alustame laienemist kolme pilootriiki: Leetu, Rootsi ja Taani. See esimene etapp võimaldab meil lähenemist testida ning kasutajaliidest erinevate Euroopa keeleliste ja kultuuriliste kontekstidega kohandada. Edaspidi võib ring laieneda ka teistele Euroopa keeltele, lähtudes nende pilootriikide tagasisidest. Eesmärk on järk-järgult üles ehitada tõeline Euroopa digitaalne ühisvara keelemudelite inimhindamiseks, mille koostööpõhise juhtimismudeli panevad paika osalevad riigid. </p>",
                     "title": "Compar:AI keskendus algselt prantsuse keelele: kas on kavas lisada ka teisi Euroopa keeli?"
                 },
                 "2": {
-                    "desc": "<p>Euroopa vestluslike tehisintellekti mudelite võrdlemiseks mõeldud platvormi arendamine pakub mitmeid konkreetseid eeliseid. See võimaldab koguda Euroopa kasutajate tegelikke vajadusi peegeldavaid eelistuste andmeid, parandades seeläbi kasutajaskonna jaoks mudelite vastuste asjakohasust. Andmekogumite avaldamine tagab Euroopa keelte ja kultuuride parema esindatuse, mis on sageli inglise keele domineerimise tõttu globaalsetes andmestikes ja hindamistes alaesindatud. Samuti tagab see vastavuse Euroopa regulatsioonidele (GDPR, tehisintellekti määrus) ning integreerib hindamiskriteeriume, mis on kooskõlas Euroopa prioriteetidega, nagu keskkonnamõju vähendamine ja algoritmide läbipaistvus. Lisaks soodustab see konkurentsivõimelise ja autonoomse Euroopa tehisintellekti ökosüsteemi kujunemist.</p>",
+                    "desc": "<p>Keelemudelite võrdlemiseks mõeldud Euroopa platvormi arendamine pakub mitmeid konkreetseid eeliseid. See võimaldab koostada Euroopa kasutajate tegelikke vajadusi peegeldavaid eelistusandmestikke ja parandada seeläbi kasutajaskonna jaoks mudelite vastuste asjakohasust. Andmekogumite avaldamine tagab parema esindatuse Euroopa keeltele ja kultuuridele, mis on sageli inglise keele domineerimise tõttu globaalsetes andmestikes ja hindamistes alaesindatud. Samuti tagab see vastavuse Euroopa regulatsioonidele (GDPR, tehisintellekti määrus) ning integreerib hindamiskriteeriume, mis on kooskõlas Euroopa prioriteetidega, nagu keskkonnamõju vähendamine ja algoritmide läbipaistvus. Lisaks soodustab see konkurentsivõimelise ja autonoomse Euroopa tehisaru ökosüsteemi kujunemist.</p>",
                     "title": "Millised on spetsiaalselt Euroopa eelistusandmete kogumise platvormi eelised?"
                 }
             },
@@ -225,23 +225,23 @@
                     "title": "Kas mudelid saavad oma allikatele viidata?"
                 },
                 "2": {
-                    "desc": "<p>Kas oled küsinud: „Anna mulle uusima trendika juustukoogi retsept ja too välja oma allikad“ ning jäänud vastustes pettuma? See on täiesti normaalne…</p> <p><strong>„Toored“ vestluslikud tehisintellekti mudelid ei suuda vastata küsimustele kõige värskemate uudiste kohta.</strong> Neid treenitakse staatilistel andmestikel ning nad ei saa veebiga suhelda ega linke avada. Neil puudub võime end maailmas reaalajas toimuvate sündmustega ajakohastada. Mudelile kättesaadav teave on piiratud selle viimase treenimise kuupäevaga.</p> <p>Seetõttu tugineb mudel hiljutiste uudissündmuste kohta küsimuste esitamisel aegunud teabele, millega kaasneb ebatäpsete vastuste genereerimise oht.</p> <p>Perplexity, Copiloti või ChatGPT puhul on nn „toored“ vestluslikud tehisintellekti mudelid ühendatud teiste süsteemiplokkidega, mis võimaldavad neil internetiga ühenduda ja reaalajas teabele ligi pääseda. Neid nimetatakse vestlusrobotiteks.</p>",
+                    "desc": "<p>Kas oled küsinud: „Anna mulle hetkel kõige populaarsema juustukoogi retsept ja too välja oma allikad“ ning jäänud vastustes pettuma? See on täiesti normaalne.</p> <p><strong>Lihtsad, lisafunktsioonideta keelemudelid ei suuda vastata uusima info kohta käivatele küsimustele.</strong> Need on treenitud staatilistel andmestikel ning ei saa veebiga suhelda ega linke avada. Seesugustel mudelitel puudub võime end maailmas reaalajas toimuvate sündmustega ajakohastada. Mudelile kättesaadav teave on piiratud mudeli viimase treenimise kuupäevaga.</p> <p>Seetõttu tugineb mudel aegunud teabele, millega kaasneb ebatäpsete vastuste genereerimise oht.</p> <p>Perplexity, Copiloti või ChatGPT puhul on keelemudelid ühendatud teiste süsteemiplokkidega, mis võimaldavad mudelitel internetiga ühenduda ja reaalajas teabele ligi pääseda. Neid nimetatakse vestlusrobotiteks.</p>",
                     "title": "Kas mudel saab vastata, kui küsin küsimuse hiljutiste uudiste kohta?"
                 },
                 "3": {
                     "desc": "<p>Kui lisad päringusse URL-i, ei saa keelemudel seda otseselt avada. Keelemudelid töötlevad päringu teksti, kuid neil puudub võime veebiga suhelda või linke avada. Neid treenitakse kindlal tekstipõhisel andmestikul ning mudelite vastused põhinevad nende treeningandmetel. Küsimuse esitamisel kasutavad mudelid vastuse loomiseks oma treeningut, kuid need ei saa juurde pääseda uuele veebiteabele, kui see pole nende jaoks ümbritseva süsteemi kaudu võimalikuks tehtud.</p> <p>Analoogiana võib ette kujutada üliõpilast, kes sooritab eksamit ilma internetiühenduseta. Ta saab vastamiseks kasutada oma omandatud teadmisi, kuid ei saa täiendava teabe saamiseks veebilehti külastada.</p>",
-                    "title": "Kas mudel saab päringusse lisatud URL-ile ligi pääseda?"
+                    "title": "Kas mudel saab päringusse lisatud URL-i avada?"
                 },
                 "4": {
                     "desc": "<p>Mudelid võivad mõnikord oma <strong>piiratud kontekstiakna ja nn <i>nõel heinakuhjas</i> probleemi</strong> tõttu vestluse järje kaotada. See aken tähistab varasema teabe hulka, mida mudel suudab meeles pidada ning toimib lühiajalise mäluna. Mida väiksem on aken, seda tõenäolisem on, et mudel unustab vestluse olulised osad ning vastused on ebajärjekindlad. Pikad või keerukad vestlused võivad kontekstiakna kiiresti küllastada, mistõttu ebajärjekindluse risk kasvab.</p> <p>Analoogiana võib ette kujutada inimest, kes mäletab vaid vestluse viimast viit lauset. Kui vestlus on lühike, suudab ta järge pidada. Kui vestlus muutub aga pikaks, unustab ta olulise teabe, mistõttu tema vastused muutuvad ebajärjekindlaks. Samamoodi võib väikese kontekstiaknaga keelemudel suure infohulga vahetamisel vestluse järje kaotada, olulised üksikasjad märkamata jätta ja anda vastuseid, mis ei ole enam mõtestatud.</p>",
-                    "title": "Miks mõned mudelid vestluse järje kiiresti kaotavad?"
+                    "title": "Miks mõned mudelid kiiresti vestluse järje kaotavad?"
                 },
                 "5": {
-                    "desc": "<p>Viipade sõnastus mõjutab vastuseid märkimisväärselt. Keelemudeli kasutamisel parimate tulemuste saamiseks on oluline osata <em>viipamise</em> kunsti, st päringute või juhiste sõnastamist. <strong>Selgus on võtmetähtsusega</strong>:</p><ul><li>Kasuta lihtsat ja otsest keelt, väldi liiga pikki või keerukaid küsimusi. Täpsemate vastuste saamiseks jaga päringud mitmeks lihtsamaks küsimuseks.</li><li><strong>Määratle vajaduse korral konkreetsed vormingunõuded</strong>: kui vajad vastust kindlas vormingus (loend, tabel, kokkuvõte jne), täpsusta seda viibas. Lisaks võid kirjeldada järgitavaid samme ja soovitud kvaliteedikriteeriume.</li><li><strong>Määra mudeli roll</strong>: näiteks alusta vastuse tooni ja vaatenurga suunamiseks viipa sõnadega „Tegutse nagu ekspert …“ või „Kujuta ette, et oled õpetaja …“.</li><li><strong>Esita küsimused kontekstis</strong>: vajaduse korral lisa asjakohaseid näiteid, mis aitavad mudelit suunata.</li><li><strong>Soosi arutlemist</strong>: kasuta mõttekäigu ahelal (<em>chain-of-thought prompting</em>) põhinevat viipamist, et paluda mudelil oma mõttekäiku selgitada. See muudab vastused paremaks.</li></ul><p>Vestlusmudelid on varieeruva sõnastuse osas tundlikud: lihtne keel, lühikesed küsimused ja vajaduse korral ümber sõnastamine aitavad mudelit asjakohaste vastusteni suunata. Kõige tõhusama sõnastuse leidmiseks katseta ja täiusta oma viipasid.</p>",
+                    "desc": "<p>Viipade sõnastus mõjutab vastuseid märkimisväärselt. Parimate tulemuste saamiseks on oluline osata <em>viipamise</em> kunsti, st päringute või juhiste sõnastamist. <strong>Selgus on võtmetähtsusega</strong>:</p><ul><li>Kasuta lihtsat ja otsest keelt, väldi liiga pikki või keerukaid küsimusi. Täpsemate vastuste saamiseks jaga päringud mitmeks lihtsamaks küsimuseks.</li><li><strong>Määratle vajaduse korral konkreetsed vormingunõuded</strong> – kui vajad vastust kindlas vormingus (loend, tabel, kokkuvõte jne), täpsusta seda viibas. Lisaks võid kirjeldada järgitavaid samme ja soovitud kvaliteedikriteeriume.</li><li><strong>Määra mudeli roll</strong> – näiteks alusta vastuse tooni ja vaatenurga suunamiseks viipa sõnadega „Tegutse nagu ekspert …“ või „Kujuta ette, et oled õpetaja …“.</li><li><strong>Esita küsimused kontekstis</strong> – vajaduse korral lisa asjakohaseid näiteid, mis aitavad mudelit suunata.</li><li><strong>Soosi arutlemist</strong> – kasuta mõttekäigu ahelal (<em>chain-of-thought prompting</em>) põhinevat viipamist, et paluda mudelil oma mõttekäiku selgitada. See muudab vastused paremaks.</li></ul><p>Vestlusmudelid on varieeruva sõnastuse osas tundlikud. Keelemudelit aitab asjakohaste vastusteni suunata lihtne keel, lühikesed küsimused ja vajaduse korral viiba ümber sõnastamine. Kõige tõhusama sõnastuse leidmiseks katseta erinevaid viipasid ja proovi neid täiustada.</p>",
                     "title": "Mis on viipade kirjutamise parimad tavad?"
                 },
                 "6": {
-                    "desc": "<p>Tavalised keelemudelid vastavad otse, ennustades tõenäosuste alusel tookeneid (sõnu), samas kui otsingumootor pakub linke ja allikaid, mida kasutaja iseseisvalt uurida saab.</p>",
+                    "desc": "<p>Ilma täiendavate funktsioonideta keelemudelid vastavad otse, ennustades tõenäosuste alusel tookeneid (sõnu), samas kui otsingumootor pakub linke ja allikaid, mida kasutaja iseseisvalt uurida saab.</p>",
                     "title": "Mis vahe on sellel, kas esitan küsimuse keelemudelile või teen Google’i otsingu?"
                 }
             },
@@ -250,7 +250,7 @@
     },
     "footer": {
         "backHome": "Tagasi avalehele - baromeeter.ai",
-        "dpg": "Teenus on Digital Public Goods Alliance'i poolt digitaalse avaliku hüvena tunnustatud.",
+        "dpg": "Teenus on Digital Public Goods Alliance'i poolt digitaalse avaliku hüvena tunnustatud",
         "helpUs": "Aita meil platvormi paremaks muuta!",
         "license": {
             "linkTitle": "Etalab litsents - uues aknas",
@@ -264,7 +264,7 @@
             "sources": "Lähtekood",
             "tos": "Kasutustingimused"
         },
-        "writeUs": "Probleemide või tagasiside osas kirjutage meile <a {formLinkProps}>selle vormi kaudu</a> – loeme iga sõnumit.<br />Aitäh!"
+        "writeUs": "Probleemide või tagasiside osas kirjuta meile <a {formLinkProps}>selle vormi kaudu</a> – loeme iga sõnumit.<br />Aitäh!"
     },
     "general": {
         "a11y": {
@@ -338,7 +338,7 @@
             "defsUser": "<em>Kasutaja</em> viitab igale füüsilisele isikule, kes platvormi kasutab ja selle teenustest kasu saab.",
             "descDatasets": "Need andmestikud tehakse kättesaadavaks avatud litsentsi alusel, eelkõige teadusuuringutes kasutamise soodustamiseks.",
             "descTitle": "3. Platvormi kirjeldus",
-            "descUse": "Kasutaja esitab küsimuse kindlas keeles ja saab vastused kahelt anonüümselt suurelt keelemudelilt. Seejärel hääletab ta mudeli poolt, mille vastust ta eelistab, ning pärast seda kuvatakse mudelite nimed. See osaluslik tootmissüsteem, mis on inspireeritud platvormist „<a {linkProps}>chatbot arena</a>“ (LMarena), võimaldab luua inimeste eelistuste andmestikke reaalsete kasutusülesannete jaoks prantsuse keeles, mida saab kasutada mudelite joondamiseks.",
+            "descUse": "Kasutaja esitab küsimuse kindlas keeles ja saab vastused kahelt anonüümselt suurelt keelemudelilt. Seejärel hääletab ta mudeli poolt, mille vastust ta eelistab, ning pärast seda kuvatakse mudelite nimed. See osaluslik ühisloomesüsteem, mis on inspireeritud platvormist „<a {linkProps}>chatbot arena</a>“ (LMarena), võimaldab luua inimeste eelistuste andmestikke reaalsete kasutusülesannete jaoks prantsuse keeles, mida saab kasutada mudelite joondamiseks.",
             "dispoDesc": "Platvorm on kättesaadav, välja arvatud vääramatu jõu või väljaandjast sõltumatute sündmuste korral.",
             "dispoResp": "Sellega seoses ei saa väljaandjat pidada vastutavaks mis tahes liiki kahjude või kaotuste eest, mis võivad tuleneda teenuse talitlushäirest või kättesaamatusest. Sellised olukorrad ei anna õigust rahalisele hüvitisele.",
             "dispoRight": "Väljaandja jätab endale õiguse peatada, katkestada või piirata ilma eelneva etteteatamiseta juurdepääsu kõigile teenustele või nende osadele, eelkõige hooldus- ja uuendustöödeks, mis on vajalikud teenuse ja sellega seotud seadmete nõuetekohaseks toimimiseks, või mis tahes muul põhjusel, sealhulgas tehnilistel põhjustel.",
@@ -381,7 +381,7 @@
                 "desc": "Tihe arhitektuur viitab närvivõrgu tüübile, kus iga ühe kihi neuron on ühendatud kõigi järgmise kihi neuronitega. See võimaldab kõigil kihi parameetritel väljundi arvutamisse panustada."
             },
             "matformer": {
-                "desc": "Kujuta ette Vene puunukke (matrjoškad → matrjoška-transformer → Matformer): iga plokk sisaldab mitut pesastatud kasvava suurusega alam-mudelit, mis jagavad samu parameetreid. See võimaldab iga päringu puhul valida sobiva mahuga mudeli vastavalt saadaolevale mälule või lubatud latentsusele, ilma et oleks vaja erinevaid mudeleid eraldi ümber treenida.",
+                "desc": "Kujuta ette Vene puunukke (matrjoškad → matrjoška-transformer → Matformer): iga plokk sisaldab mitut pesastatud kasvava suurusega alam-mudelit, mis jagavad samu parameetreid. See võimaldab iga päringu puhul valida sobiva mahuga mudeli vastavalt saadaolevale mälule või lubatud latentsusele, ilma et erinevaid mudeleid oleks vaja eraldi ümber treenida.",
                 "name": "Matformer",
                 "title": "Matformeri arhitektuur"
             },
@@ -399,7 +399,7 @@
         "licenses": {
             "os": {
                 "Apache 2.0": {
-                    "license_desc": "<p>See litsents võimaldab mudelit vabalt kasutada, muuta ja levitada, sealhulgas ärilistel eesmärkidel. Lisaks kasutusvabadusele tagab see õiguskaitse, sisaldades patendiloa klauslit, mis toimib kindlustusena – kui kasutate seda mudelit, nõustuvad mudelisse panustajad mitte esitama teie vastu hagi projektiga seotud patentide rikkumise tõttu. See vastastikune kaitse aitab vältida õiguslikke vaidlusi kasutajate ja arendajate vahel. Muudetud versioonide levitamisel tuleb olulised muudatused selgelt asjakohaste teadetega märkida, et tagada kasutajatele läbipaistvus.</p>"
+                    "license_desc": "<p>See litsents võimaldab mudelit vabalt kasutada, muuta ja levitada, sealhulgas ärilistel eesmärkidel. Lisaks kasutusvabadusele tagab see õiguskaitse, sisaldades patendiloa klauslit, mis toimib kindlustusena – kui kasutad seda mudelit, nõustuvad mudelisse panustajad mitte esitama sinu vastu hagi projektiga seotud patentide rikkumise tõttu. See vastastikune kaitse aitab vältida õiguslikke vaidlusi kasutajate ja arendajate vahel. Muudetud versioonide levitamisel tuleb olulised muudatused selgelt asjakohaste teadetega märkida, et tagada kasutajatele läbipaistvus.</p>"
                 },
                 "CC-BY-NC-4.0": {
                     "license_desc": "<p>See litsents võimaldab sisu vabalt jagada ja kohandada tingimusel, et autorile viidatakse, kuid keelab igasuguse ärilise kasutuse. See pakub paindlikkust mitteärilisteks kasutusviisideks, kaitstes samal ajal autori õigusi.</p>",
@@ -421,11 +421,11 @@
                 },
                 "Llama 3.1": {
                     "commercial_use_specificities": "alla 700 miljoni kasutaja",
-                    "license_desc": "<p>See litsents võimaldab koodi vabalt kasutada, reprodutseerida, muuta ja levitada koos autorile viitamisega, kuid seab piirangud kasutusele, mis ületab 700 miljonit igakuist kasutajat. Koodi või genereeritud sisu taaskasutamine tuletatud mudelite treenimiseks või täiustamiseks on lubatud tingimusel, et kuvatakse märge „built with llama“ ning mis tahes levitamisel sisaldub nimes sõna „Llama“.</p>"
+                    "license_desc": "<p>See litsents võimaldab koodi vabalt kasutada, reprodutseerida, muuta ja levitada koos autorile viitamisega, kuid seab piirangud kasutusele, mis ületab 700 miljonit igakuist kasutajat. Koodi või genereeritud sisu taaskasutamine tuletatud mudelite treenimiseks või täiustamiseks on lubatud tingimusel, et kuvatakse märge <i>built with llama</i> ning mis tahes levitamisel sisaldub nimes sõna <i>Llama</i>.</p>"
                 },
                 "Llama 3.3": {
                     "commercial_use_specificities": "alla 700 miljoni kasutaja",
-                    "license_desc": "<p>See <strong>mittevälistav, ülemaailmne ja autoritasuta</strong> litsents võimaldab Llama 3.3 koodi ja materjale vabalt kasutada, reprodutseerida, muuta ja levitada koos autorile viitamisega. Märkimisväärselt lubab see ka taaskasutust tuletatud mudelite täiustamiseks, kuid seab piirangud väga suuremahulistele ärilistele kasutusviisidele.</p>"
+                    "license_desc": "<p>See <strong>ülemaailmne ja autoritasuta lihtlitsents </strong> võimaldab Llama 3.3 koodi ja materjale vabalt kasutada, reprodutseerida, muuta ning levitada koos autorile viitamisega. Märkimisväärselt lubab see ka taaskasutust tuletatud mudelite täiustamiseks, kuid seab piirangud väga suuremahulistele ärilistele kasutusviisidele.</p>"
                 },
                 "Llama 4": {
                     "commercial_use_specificities": "alla 700 miljoni kasutaja\n",
@@ -455,16 +455,16 @@
                     "reuse_specificities": "välja arvatud teiste mudelite treenimiseks Vertex AI platvormil"
                 },
                 "Liquid": {
-                    "license_desc": "See mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Liquid AI ja partnerite platvormidel; tasu arvestatakse kas tookenipõhiselt või reserveeritud taristu alusel."
+                    "license_desc": "See mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi Liquid AI ja partnerite platvormidel. Tasu arvestatakse kas tookenipõhiselt või reserveeritud taristu alusel."
                 },
                 "Mistral AI": {
-                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb ligi Mistrali API, Amazon SageMakeri ja mitme teise taristupakkuja kaudu; tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb ligi Mistrali API, Amazon SageMakeri ja mitme teise taristupakkuja kaudu. Tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
                 },
                 "OpenAI": {
-                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi OpenAI platvormidel või Microsoft Azure’i teenuste kaudu; tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb API kaudu ligi OpenAI platvormidel või Microsoft Azure’i teenuste kaudu. Tasumine toimub kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
                 },
                 "xAI": {
-                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb ligi X-i ja xAI kaudu; tasu arvestatakse kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
+                    "license_desc": "Mudel on kättesaadav tasulise litsentsi alusel ning sellele pääseb ligi X-i ja xAI kaudu. Tasu arvestatakse kasutuspõhiselt vastavalt töödeldud tookenite arvule või reserveeritud taristule."
                 }
             }
         },
@@ -477,7 +477,7 @@
             "Apertus 8B Instruct": {
                 "desc": "<p>Väike, avatud parameetritega ja reprodutseeritav mudel, mille on välja töötanud Šveitsi institutsioonide konsortsium. Selle parameetrid ja treeningkood on avaldatud lubava litsentsi alusel. Mudelit treeniti enam kui 1 800 keeles rohkem kui 15 triljoni tookeni põhjal. Treening toimus Luganos asuvas CSCS Alpsi superarvutis, mida toidab süsinikuneutraalne hüdroenergia.</p>",
                 "fyi": "<p>Mudelit treeniti Luganos asuval Alpsi superarvutil, kasutades enam kui 10 miljonit GPU-tundi, mida toitis süsinikuneutraalne hüdroenergia. Mudel eeltreeniti 15 triljoni tookeni põhjal, mis hõlmasid enam kui 1 800 keelt, sealhulgas märkimisväärses osas alaesindatud keeli.</p>\n<p>Apertus põhineb 131 000 kirjet hõlmaval baittasemel BPE-tokenisaatoril, mis on tuletatud Mistral AI „tekken“ tokenisaatorist ning optimeeritud mitmekeelsuse, koodi ja matemaatiliste avaldiste jaoks. Arhitektuur ühendab mitu uuendust: laiendatud baasiga <i>rotary positional embeddings</i> (RoPE ja NTK-teadliku häälestusega pikkade kontekstide jaoks, <i>grouped query attention</i> (GQA) parema mälutõhususe saavutamiseks, QK-Norm normaliseerimise treeningu stabiliseerimiseks ning xIELU aktiveerimisfunktsiooni, mis parandab MLP jõudlust.</p>\n<p>Mudeli lõplik täiustamine põhineb joondusalgoritmil nimega QRPO (Quantile Reward-Preferring Optimization), mis on alternatiiv klassikalisele RLHF-ile ja kasutab absoluutseid tasusignaale stabiilsema ning inimeste eelistustega paremini kooskõlas oleva õppimise saavutamiseks. Kuigi see ei konkureeri otseselt kõige arenenumate kommertsmudelitega, paistab Apertus silma oma läbipaistvuse taseme poolest.</p>",
-                "size_desc": "<p>8 miljardi parameetriga on see mudel üks väiksemaid. Seda saab kasutada võimsas arvutis lokaalselt, mis tagab andmete konfidentsiaalsuse, või majutada serveris, mis on varustatud ühe graafikakaardiga, mis piirab taristukulusid. Selle 65 536 tookeni suurune kontekstiaken võimaldab töödelda üsna pikki dokumente.</p>"
+                "size_desc": "<p>8 miljardi parameetriga on see mudel üks väiksemaid. Seda saab kasutada võimsas arvutis lokaalselt, mis tagab andmete konfidentsiaalsuse, või majutada serveris, mis on varustatud ühe graafikakaardiga. Seega on taristukulud väiksemad. Selle 65 536 tookeni suurune kontekstiaken võimaldab töödelda üsna pikki dokumente.</p>"
             },
             "Aya 23 8B": {
                 "desc": "<p>Väike mitmekeelne keelemudel, mis on treenitud suurel hulgal tavaliselt alaesindatud keelte peal.</p>",
@@ -487,7 +487,7 @@
             "Aya Expanse 32B": {
                 "desc": "<p>Keskmise suurusega mitmekeelne mudel, mis on treenitud teksti genereerimiseks 23 keeles.</p>",
                 "fyi": "<p>Selle mudeli treeninud Kanada ettevõte Cohere asutati 2019. aastal endiste Google Braini teadlaste poolt, kelle hulka kuulus Aidan Gomez, kes on kuulsa artikli „Attention Is All You Need“ kaasautor. See artikkel muutis põhjalikult kaasaegse tehisaru arengut. Ettevõtte peamine eripära seisneb selles, et see keskendub eelkõige ettevõtetele suunatud generatiivsele tehisarule, eriti reguleeritud sektorites nagu rahandus, tervishoid, tootmine ja energeetika, samuti avalikus sektoris. Cohere on ka mitmekeels lähenemise teerajaja ning haldab avatud innovatsiooni toetamiseks mittetulunduslikku uurimislaborit.</p>\n<p>See mudel on loodud pakkuma head võimekust kõikides 23 keeles, mis selle treeningkorpusesse kuuluvad.</p>",
-                "size_desc": "<p>32 miljardi parameetriga peetakse seda mudelit keskmise suurusega mudeliks. Seda saab majutada serveris, mis on varustatud ühe võimsa graafikakaardiga, mis aitab hoida taristukulusid madalal.</p>\n<p>Selle kontekstiaken ulatub kuni 130 000 tookenini, mis on kasulik pikkade dokumentide analüüsimiseks.</p>"
+                "size_desc": "<p>32 miljardi parameetriga peetakse seda mudelit keskmise suurusega mudeliks. Seda saab majutada serveris, mis on varustatud ühe võimsa graafikakaardiga. See aitab taristukulud madalana hoida.</p>\n<p>Selle kontekstiaken ulatub kuni 130 000 tookenini, mis on kasulik pikkade dokumentide analüüsimiseks.</p>"
             },
             "Aya Expanse 8B": {
                 "desc": "<p>Väike mitmekeelne mudel, Aya seeria teine iteratsioon. See on treenitud suure hulga alaesindatud keelte peal.</p>",
@@ -497,7 +497,7 @@
             "Aya23-35B": {
                 "desc": "<p>Keskmise suurusega mitmekeelne mudel, mis on suures osas treenitud tavaliselt alaesindatud keelte peal.</p>",
                 "fyi": "<p>Cohere’i Aya 23 35B on Command R perekonda kuuluv keskmise suurusega mudel, mis on mitmekeelsel korpusel spetsiaalselt treenitud.</p>",
-                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel: need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
+                "size_desc": "<p>Keskmise suurusega mudelid pakuvad head tasakaalu keerukuse, kulu ja jõudluse vahel. Need on oluliselt vähem ressursimahukad kui suured mudelid, kuid suudavad siiski toime tulla keerukate ülesannetega, nagu sentimentide analüüs või arutlemine.</p>"
             },
             "Chocolatine 14B": {
                 "desc": "<p>Microsofti Phi-3 Medium mudelil põhinev mudel on spetsialiseeritud prantsuse keelele.</p>",
@@ -510,37 +510,37 @@
                 "size_desc": "<p>Väikest mudelit on suuremate mudelitega võrreldes lihtsam ja odavam käitada. Samal ajal pakub see paljude ülesannete jaoks, nagu kokkuvõtete tegemine, tõlkimine jms, piisavat jõudlust.</p>"
             },
             "Claude 3.5 Sonnet v2": {
-                "desc": "<p>Väga tõhus koodiga töötamisel, mudel on loodud Claude 3 järeltreeningu käigus toimunud täiustuste tulemusena.</p>",
+                "desc": "<p>Väga tõhus koodiga töötamisel, mudel on loodud Claude 3 järeltreeningu käigus tehtud täiustuste tulemusena.</p>",
                 "fyi": "<p>Claude 3.5 perekonna parim mudel, mis on spetsialiseerunud kirjanduslike tekstide genereerimisele ja loomulikumale toonile. Versioon v2 ilmus 2024 oktoobris.</p>",
                 "size_desc": "<p>Need mudelid, millel on sadu miljardeid parameetreid, on jõudluse ja täpsuse poolest kõige keerukamad ja arenenumad. Nende mudelite kasutuselevõtuks vajalikud arvutus- ja mäluresursid on sedavõrd suured, et need on mõeldud kõige arenenumate rakenduste ja väga spetsialiseeritud keskkondade jaoks.</p>"
             },
             "Claude 3.7 Sonnet": {
-                "desc": "<p>Väga suur, multimodaalne ja mitmekeelne mudel, mis on tõhus koodi genereerimisel ning pakub kahte vastuserežiimi: kasutaja saab valida põhjalikumate vastuste jaoks arutlusrežiimi või lõppvastuse koheseks genereerimiseks kiire režiimi.</p>",
-                "fyi": "<p>Claude 4 Opus on Claude 4 perekonna kõige arenenum mudel. See on optimeeritud maksimaalse jõudluse ja keerukate ülesannete jaoks, mis nõuavad pikaajalist ja järjepidevat arutlemist: näiteks suudab see töötada pika kestvusega ülesannetega (Anthropicu väitel iseseisvalt kuni seitse tundi). Teisalt on Opuse kasutamine kallim, vastamine aeglasem ning see nõuab rohkem ressursse.</p>\n<p>Mudel pakub kahte kasutusrežiimi: keerukate probleemide jaoks arutlusrežiimi samm-sammulise arutlemisega ning otseste vastuste jaoks kiiret režiimi. Erinevalt teistest mudelitest ei ole arutlusrežiimi treenitud peamiselt matemaatiliste andmete põhjal, vaid see on kohandatud igapäevasteks kasutusjuhtudeks.</p>",
+                "desc": "<p>Väga suur, multimodaalne ja mitmekeelne mudel, mis on tõhus koodi kirjutamises ning pakub kahte vastuserežiimi. Kasutaja saab valida põhjalikumate vastuste jaoks arutlusrežiimi või lõppvastuse koheseks genereerimiseks kiire režiimi.</p>",
+                "fyi": "<p>Claude 4 Opus on Claude 4 perekonna kõige arenenum mudel. See on optimeeritud maksimaalse jõudluse ja keerukate ülesannete jaoks, mis nõuavad pikaajalist ja järjepidevat arutlemist. Näiteks suudab see töötada pika kestvusega ülesannetega (Anthropicu väitel iseseisvalt kuni seitse tundi). Teisalt on Opuse kasutamine kallim, see vastab aeglasemalt ning nõuab rohkem ressursse.</p>\n<p>Mudel pakub kahte režiimi. Keerukate probleemide jaoks saab kasutada samm-sammulise arutlemisega arutlusrežiimi ning vahetute vastuste jaoks kiiret režiimi. Erinevalt teistest mudelitest ei ole arutlusrežiimi treenitud peamiselt matemaatiliste andmete peal, vaid see on kohandatud igapäevasteks kasutusjuhtudeks.</p>",
                 "size_desc": "<p>Mudeli täpne suurus ei ole teada. Tõendid viitavad sellele, et tegemist on väga suure mudeliga, mille käitamiseks on vaja mitme võimsa graafikakaardiga servereid. Olemasolevad hinnangud põhinevad kaudsetel näitajatel, nagu järelduskulud ja vastamise latentsus. Mudelil on kuni 200 000 tookeni suurune kontekstiaken, mis sobib pikkade dokumentide või koodihoidlate analüüsimiseks.</p>"
             },
             "Claude 4 Sonnet": {
                 "desc": "<p>Väga suur multimodaalne ja mitmekeelne mudel, mis on koodi käsitlemisel väga võimas. Kasutaja või arendaja saab selle mudeli kasutamisel valida mitme arutlustaseme vahel.</p>",
-                "fyi": "<p>Claude 4 Sonnet on Claude 4 Opuse kompaktsem versioon, mis on optimeeritud kiiruse, tõhususe ja parema kättesaadavuse jaoks. See on veidi vähem tõhus ülesannetes, mis nõuavad keerukat mitmeetapilist arutlemist. Samas on see oluliselt soodsam, kiirem ja energiatõhusam kui Opus 4.</p>\n<p>Mudel pakub võimalust valida arutlemise intensiivsus. Erinevalt teistest mudelitest ei ole arutlusrežiimi treenitud peamiselt matemaatiliste andmete põhjal, vaid see on treenitud eelkõige reaalse elu kasutusjuhtude jaoks.</p>",
+                "fyi": "<p>Claude 4 Sonnet on Claude 4 Opuse kompaktsem versioon, mida on optimeeritud kiiruse, tõhususe ja parema kättesaadavuse jaoks. See on veidi vähem tõhus ülesannetes, mis nõuavad keerukat mitmeetapilist arutlemist. Samas on see oluliselt soodsam, kiirem ja energiatõhusam kui Opus 4.</p>\n<p>Mudel pakub võimalust valida arutlemise intensiivsus. Erinevalt teistest mudelitest ei ole arutlusrežiimi treenitud peamiselt matemaatiliste andmete põhjal, vaid see on treenitud eelkõige päriseluliste kasutusjuhtude jaoks.</p>",
                 "size_desc": "<p>Täpne suurus ei ole teada. Tõendid viitavad sellele, et tegemist on väga suure mudeliga, mille käitamiseks on vaja mitme võimsa graafikakaardiga servereid. Olemasolevad hinnangud põhinevad kaudsetel näitajatel, nagu järelduskulud ja vastamise latentsus. Mudelil on kuni 1 000 000 tookeni suurune kontekstiaken, mis sobib väga pikkade dokumentide või koodihoidlate analüüsimiseks.</p>"
             },
             "Claude 4.5 Sonnet": {
                 "desc": "<p>Väga suur multimodaalne ja mitmekeelne mudel, mis on äärmiselt võimas koodi kirjutamises, arutlemises ja matemaatikas. Kasutajad või arendajad saavad selle mudeli kasutamisel valida mitme arutlustaseme vahel.</p>",
-                "fyi": "<p>Claude Sonnet 4.5 on Sonnet 4 otsene edasiarendus. Versioon .5 viitab olulistele muudatustele, mis viidi sisse järeltreeningu käigus ning mis tõid märkimisväärseid parandusi arutlemises, matemaatikas ja eelkõige arvutite praktilises kasutamises. Avaldamise hetkel peeti seda maailma parimaks mudeliks koodi kirjutamisel ning see paistis silma pikkade ja keerukate mitmeetapiliste ülesannete lahendamisel. Selle sooritus sellistes võrdluskatsetes nagu SWE-bench Verified ja OSWorld näitas selget edasiminekut võrreldes varasemate versioonidega, sealhulgas võimet säilitada fookust sama probleemi juures enam kui kolmkümmend tundi.</p>",
+                "fyi": "<p>Claude Sonnet 4.5 on Sonnet 4 otsene edasiarendus. Versiooni number .5 viitab olulistele muudatustele, mis viidi sisse järeltreeningu käigus ning mis tõid kaasa märkimisväärseid edusamme arutlemises, matemaatikas ja eelkõige arvutite praktilises kasutamises. Avaldamise hetkel peeti seda maailma parimaks koodi kirjutamise mudeliks ning see paistis silma pikkade ja keerukate mitmeetapiliste ülesannete lahendamisega. Selle sooritus sellistes võrdluskatsetes nagu SWE-bench Verified ja OSWorld näitas selget edasiminekut võrreldes varasemate versioonidega, sealhulgas võimet säilitada sama probleemi juures fookust enam kui kolmkümmend tundi.</p>",
                 "size_desc": "<p>Täpne suurus ei ole teada. Olemasolevad allikad viitavad sellele, et tegemist on väga suure mudeliga, mille käitamiseks on vaja mitme võimsa graafikakaardiga servereid. Suuruse ja energiatarbimise hinnangud põhinevad kaudsetel vihjetel, nagu järelduskulud ja täheldatud latentsus. Claude Sonnet 4.5 kontekstiaken ulatub kuni 1 000 000 tookenini, mis sobib tervete koodihoidlate või väga mahukate dokumentide analüüsimiseks.</p>"
             },
             "Command A": {
-                "desc": "<p>Suur mudel, mis on tõhus programmeerimisel, tööriistade kasutamisel ja RAG (<i>Retrieval Augmented Generation</i>) rakendustes.</p>",
+                "desc": "<p>Suur mudel, mis on tõhus programmeerimises, tööriistade kasutamises ja RAG (<i>Retrieval Augmented Generation</i>) rakendustes.</p>",
                 "fyi": "<p>Cohere, selle mudeli taga olev Kanada ettevõte, asutati 2019. aastal endiste Google Braini teadlaste poolt, kelle hulka kuulus Aidan Gomez, kes on kuulsa artikli <a href=\"https://arxiv.org/abs/1706.03762\">„Attention Is All You Need”</a> kaasautor. See 2017. aastal avaldatud töö oli tehisaru valdkonnas revolutsioonilise mõjuga. Ettevõte paistab silma ettevõtetele suunatud generatiivsele tehisintellektile keskendumisega, eriti reguleeritud sektorites nagu rahandus, tervishoid, tootmine ja energeetika, aga ka avalikus sektoris. Cohere on samuti mitmekeelsete lähenemiste teerajaja ning haldab avatud innovatsiooni toetamiseks mittetulunduslikku teaduslaborit.</p>\n<p>See mudel on loodud töötama enam kui 23 keeles ning seda on lihtne ettevõtete infosüsteemidesse integreerida. See on üks väheseid mudeleid, mida levitatakse <strong>CC-BY-NC 4.0 litsentsi</strong> alusel, mis võimaldab jagamist ja muutmist, kuid keelab igasuguse ärilise kasutuse. See litsentsivalik peegeldab Cohere’i soovi panustada teadusuuringutesse ja avatud lähtekoodiga kogukonda, säilitades samal ajal kontrolli ärilise kasutuse üle, et oma ärimudelit kaitsta… See välistab näiteks mudeli integreerimise ettevõtte poolt klientidele müüdavatesse toodetesse või teenustesse, kuid lubab akadeemilist kasutust, testimist või sisemisi projekte, tingimusel et need jäävad mitteärilisse raamistikku.</p>",
                 "size_desc": "<p>111 miljardi parameetriga peetakse seda mudelit suureks. Selle majutamiseks on vaja vähemalt kahte võimsat graafikakaarti, mis toob kaasa märkimisväärsed käituskulud.</p>\n<p>Selle kontekstiaken ulatub kuni 256 000 tookenini, mis sobib suurte dokumendikogumite või koodibaaside analüüsimiseks.</p>"
             },
             "Command R": {
                 "desc": "<p>Keskmise suurusega mudel, mis on optimeeritud kokkuvõtete tegemiseks, üldistele küsimustele vastamiseks, tööriistade kasutamiseks ning on tõhus RAG süsteemides.</p>",
                 "fyi": "<p>Cohere, selle mudeli taga olev Kanada ettevõte, asutati 2019. aastal endiste Google Braini teadlaste poolt, kelle hulka kuulus Aidan Gomez, kes on kuulsa artikli „Attention Is All You Need” kaasautor. See 2017. aastal avaldatud töö oli tehisaru valdkonnas revolutsioonilise mõjuga. Ettevõte paistab silma ettevõtetele suunatud generatiivsele tehisintellektile keskendumisega, eriti reguleeritud sektorites nagu rahandus, tervishoid, tootmine ja energeetika, aga ka avalikus sektoris. Cohere on samuti mitmekeelsete lähenemiste teerajaja ning haldab avatud innovatsiooni toetamiseks mittetulunduslikku teaduslaborit.</p>\n<p>Seda mudelit on hinnatud enam kui 10 keeles. Selle kontekstiaken ulatub kuni 128 000 tookenini, mis aitab analüüsida pikki dokumente. Järgmises mudeliversioonis (Command A) on see kontekstiaken kaks korda suurem.</p>",
-                "size_desc": "<p>35 miljardi parameetriga on see mudel keskmise suurusega. Seda saab majutada serveris, mis on varustatud ühe võimsa graafikakaardiga, mis aitab hoida taristukulusid madalal.</p>"
+                "size_desc": "<p>35 miljardi parameetriga on see mudel keskmise suurusega. Seda saab majutada serveris, mis on varustatud ühe võimsa graafikakaardiga. Seega on võimalik hoida taristukulusid madalal.</p>"
             },
             "Command R+": {
-                "desc": "<p>Mitmekeelne mudel, mis on spetsiaalselt treenitud 10 keeles ja kohandatud ärilisteks kasutusjuhtudeks.</p>",
+                "desc": "<p>Mitmekeelne mudel, mis on spetsiaalselt 10 keeles treenitud ja ärilisteks kasutusjuhtudeks kohandatud.</p>",
                 "fyi": "<p>Cohere’i Command R perekonna nn suur vend. See keelemudel on mõeldud professionaalseks kasutamiseks ning loodud spetsiaalselt infootsingu ülesannete jaoks.</p>",
                 "size_desc": "<p>Suured mudelid nõuavad märkimisväärseid ressursse, kuid pakuvad parimat jõudlust keerukate ülesannete jaoks, nagu loovkirjutamine, dialoogimodelleerimine ja rakendused, mis nõuavad konteksti äärmiselt põhjalikku mõistmist.</p>"
             },
@@ -586,12 +586,12 @@
             },
             "GLM 4.5": {
                 "desc": "<p>Suuremahuline koodile spetsialiseerunud mudel, mille lõi Zhipu AI – Hiina tehisintellekti mudelite arendaja, mis asutati 2019. aastal Tsinghua ülikooli professorite poolt ning mida toetavad suured tegijad nagu Alibaba ja Tencent. Mudelil on kaks vastamisrežiimi: kasutaja saab valida põhjalikumate vastuste jaoks arutlusrežiimi, või koheste lõplike vastuste genereerimiseks kiirrežiimi.</p>",
-                "fyi": "<p>Mudelil on head AI agendi omadused, mis võimaldab sellel usaldusväärseid funktsioonikutseid teha. Sellel on silmapaistvad programmeerimisoskused, mis võimaldavad mudelil luua terviklikke veebirakendusi ja genereerida artefakte, mis on ühefaililised programmid, mida saab kasutada vestlusagentide kasutajaliidestes. Treenimiseks loodi spetsiaalne stiimulõppe taristu nimega Slime, mis on mõeldud jõudluse optimeerimiseks keerukates ja agendipõhistes ülesannetes. See haldab tõhusalt pikki töövooge  ning on seega võimeline täitma pikaajalisi ülesandeid, kasutades oma tööriistu maksimaalselt ning säilitades algusest lõpuni järjepidevuse .</p>",
+                "fyi": "<p>Mudelil on head AI agendi omadused, mis võimaldab sellel usaldusväärseid funktsioonikutseid teha. Sellel on silmapaistvad programmeerimisoskused, mis võimaldavad mudelil luua terviklikke veebirakendusi ja genereerida artefakte, mis on ühefaililised programmid, mida saab kasutada vestlusagentide kasutajaliidestes. Treenimiseks loodi spetsiaalne stiimulõppe taristu nimega Slime, mis on mõeldud jõudluse optimeerimiseks keerukates ja agendipõhistes ülesannetes. See haldab tõhusalt pikki töövooge ning on seega võimeline täitma pikaajalisi ülesandeid, kasutades oma tööriistu maksimaalselt ning säilitades algusest lõpuni järjepidevuse .</p>",
                 "size_desc": "<p>355 miljardi parameetriga peetakse seda mudelit väga suureks. Tänu ekspertide segu MoE arhitektuurile on see tõhusam kui samas suurusjärgus mudelid, mis aktiveerivad korraga kõik parameetrid, kuid selle majutamiseks on siiski vaja mitme väga võimsa graafikakaardiga serverit. Selle kontekstiaken ulatub kuni 128 000 tookenini, mis võimaldab töödelda üsna pikki dokumente.</p>"
             },
             "GLM 4.6": {
                 "desc": "<p>Suuremahuline koodile spetsialiseerunud mudel, mille lõi Zhipu AI – Hiina tehisaru mudelite arendaja, mis asutati 2019. aastal Tsinghua ülikooli professorite poolt ning mida toetavad suured tegijad nagu Alibaba ja Tencent. See uuendus suurendab kontekstiakna suurust, parandab koodiga seotud jõudlust, on paremini kooskõlas inimeste eelistustega ning on võimekam AI agendil põhinevate kasutusjuhtude ja tööriistade kasutamise jaoks.</p>",
-                "fyi": "<p>Mudelil on head AI agendi omadused, mis võimaldab sellel usaldusväärseid funktsioonikutseid teha. Sellel on silmapaistvad programmeerimisoskused, mis võimaldavad mudelil luua terviklikke veebirakendusi ja genereerida artefakte, mis on ühefaililised programmid, mida saab kasutada vestlusagentide kasutajaliidestes. Treenimiseks loodi spetsiaalne stiimulõppe taristu nimega Slime, mis on mõeldud jõudluse optimeerimiseks keerukates ja agendipõhistes ülesannetes. See haldab tõhusalt pikki töövooge  ning on seega võimeline täitma pikaajalisi ülesandeid, kasutades oma tööriistu maksimaalselt ning säilitades algusest lõpuni järjepidevuse .</p>",
+                "fyi": "<p>Mudelil on head AI agendi omadused, mis võimaldab sellel usaldusväärseid funktsioonikutseid teha. Sellel on silmapaistvad programmeerimisoskused, mis võimaldavad mudelil luua terviklikke veebirakendusi ja genereerida artefakte, mis on ühefaililised programmid, mida saab kasutada vestlusagentide kasutajaliidestes. Treenimiseks loodi spetsiaalne stiimulõppe taristu nimega Slime, mis on mõeldud jõudluse optimeerimiseks keerukates ja agendipõhistes ülesannetes. See haldab tõhusalt pikki töövooge ning on seega võimeline täitma pikaajalisi ülesandeid, kasutades oma tööriistu maksimaalselt ning säilitades algusest lõpuni järjepidevuse .</p>",
                 "size_desc": "<p>357 miljardi parameetriga kuulub see mudel väga suurte mudelite kategooriasse. Tänu MoE arhitektuurile on see tõhusam kui mõned teised samas suurusjärgus mudelid, kuid selle majutamiseks on siiski vaja mitme väga võimsa graafikakaardiga serverit. Selle kontekstiaken ulatub kuni 200 000 tookenini, mis võimaldab töödelda väga pikki dokumente.</p>"
             },
             "GLM 4.7": {
@@ -680,7 +680,7 @@
                 "size_desc": "<p>Mudeli täpset suurust ei ole avalikustatud, kuid see põhineb mixture-of-experts (MoE) arhitektuuril. See arhitektuur aktiveerib iga tookeni puhul ainult parameetrite alamhulga, vähendades seeläbi vajalikku arvutusvõimsust. Mudeli kontekstiaken ulatub kuni 1 miljoni tookenini. Mudel on ligikaudu 9 korda soodsam kui Gemini 3 Pro. Keskkonnamõju sõltub valitud arutlustasemest: põhjalikum arutlemine genereerib rohkem tookeneid ja tarbib seetõttu rohkem ressursse.</p>"
             },
             "Gemini 3 Pro": {
-                "desc": "<p>Suur, algselt multimodaalne ja mitmekeelne mudel. See integreerib täiustatud arutlusvõimekuse („Deep Think“), mida saab keerukate ülesannete jaoks (matemaatika, loogika, koodi kirjutamine) selle kiiremast tavapärasest genereerimisvõimekusest nõudmisel eraldi aktiveerida. Mudel toetab loomupäraselt teksti, koodi, heli, pilte, videot ja 3D-sisu.</p>",
+                "desc": "<p>Suur, algselt multimodaalne ja mitmekeelne mudel. Sellesse on integreeritud täiustatud arutlusvõimekus (<i>Deep Think</i>), mida saab keerukate ülesannete jaoks (matemaatika, loogika, koodi kirjutamine) nõudmisel eraldi aktiveerida. Mudel toetab loomupäraselt teksti, koodi, heli, pilte, videot ja 3D-sisu.</p>",
                 "fyi": "<p>Mudel treeniti taristul, mis koosnes üksnes TPU-dest (<i>Tensor Processing Unit</i>). Avaldamise hetkel demonstreeris mudel märkimisväärset edasiminekut testandmestike Humanity’s Last Exam, ARC-AGI-2 ja MathArena Apex lahendamises. Mudel on optimeeritud agendipõhiseks kasutuseks: seda on treenitud simuleerima planeerimist, tööriistade kasutamist, koodi käivitamist ja eneseparandamist programmeerimiskeskkondades. Selle multimodaalset mõistmisvõimet on täiustatud nii, et video- ja helikodeerimiseks vajalike tookenite arv on oluliselt vähenenud.</p>",
                 "size_desc": "<p>Mudeli täpset suurust ei ole avalikustatud, kuid see põhineb <i>mixture-of-experts</i> (MoE) arhitektuuril. See arhitektuur aktiveerib iga sisendtookeni puhul ainult osa parameetritest, nõudes genereerimiseks vähem arvutusvõimsust. Mudeli kontekstiaken ulatub kuni 1 miljoni tookenini, mis sobib suurte dokumendikogumite, sealhulgas tervete koodihoidlate ja videofailide analüüsimiseks.</p>"
             },
@@ -721,7 +721,7 @@
             },
             "Grok 3 Mini": {
                 "desc": "<p>Grok 3 mudeli lihtsam versioon, mis vähendab kulusid, säilitades samas paljude ülesannete jaoks hea jõudluse. See suudab enne lõppvastuse esitamist läbida arutlusfaasi.</p>",
-                "fyi": "<p>Grok 3 Mini on Grok 3 väiksem versioon: see on võimekustelt sellele väga lähedane, kuid samas kiirem ja odavam kasutada. \nMudel pakub kahte režiimi: mõtlemisrežiimi samm-sammulise arutlusega keerukate probleemide jaoks ning kiiret režiimi koheste vastuste jaoks.  \nSelle kontekstiaken ulatub kuni 131 000 tookenini, mis teeb selle sobivaks pikkade dokumentide analüüsimiseks.</p>",
+                "fyi": "<p>Grok 3 Mini on Grok 3 väiksem versioon. See on võimekuselt Grok 3 mudeliga väga sarnane, kuid samas on see soodsam ja kiirem. \nMudel pakub kahte režiimi: mõtlemisrežiimi samm-sammulise arutlusega keerukate probleemide jaoks ning kiiret režiimi koheste vastuste jaoks. \nSelle kontekstiaken ulatub kuni 131 000 tookenini, mis teeb selle pikkade dokumentide analüüsimise jaoks sobivaks.</p>",
                 "size_desc": "<p>Mudeli täpne suurus ei ole teada. Vaatamata oma nimele on Grok 3 Mini tõenäoliselt väga suur mudel, mille käitamiseks on vaja mitut võimsat graafikakaarti. Lisaks sisaldab see valikulist arutlusfaasi, mis toob kaasa pikemad genereerimisajad ja seega suurema energiatarbimise. Oletatav <i>mixture-of-experts</i> (MoE) arhitektuur aktiveerib siiski iga tookeni puhul vaid osa parameetritest, piirates seeläbi energiakulu. Kättesaadavad hinnangud põhinevad kaudsetel näitajatel, nagu järeldusarvutuse kulud ja vastamise latentsus.</p>"
             },
             "Grok 4 Fast": {
@@ -739,7 +739,8 @@
                 "size_desc": "<p>405 miljardi parameetriga peetakse seda mudelit väga suureks. Selle käitamiseks on vaja serverit, mis on varustatud mitme võimsa graafikakaardiga, mis toob kaasa märkimisväärsed tegevuskulud.</p>"
             },
             "Hermes 4 70B": {
-                "desc": "<p>Suur mudel, mis on Llama 3.1 70B põhjal ümbertreenitud ning kohandatud kasutajate stiililistele soovidele ja juhistele paremini vastama.</p>"
+                "desc": "<p>Suur mudel, mis on Llama 3.1 70B põhjal ümbertreenitud ning kohandatud kasutajate stiililistele soovidele ja juhistele paremini vastama.</p>",
+                "size_desc": "<p>Hermes 4-70B on väga suur mudel, mille käitamiseks on vaja vähemalt ühte võimsat graafikakaarti.</p>\n<p>Kontekstiaken ulatub arutlusrežiimis 40 960 tookenini ja muude ülesannete puhul 32 768 tookenini, kusjuures selles kasutati peenhäälestusmehhanisme, mis õpetavad mõtlemisjada ligikaudu 30 000 tokeni juures sulgema.</p>"
             },
             "Jamba 1.5 Large": {
                 "desc": "<p>2024. aasta augustis välja antud AI21 ettevõtte mudel on eriline hübriidtüüpi mudel, mille arhitektuur on SSM-i ja MoE segu. Seesuguse arhitektuuri eesmärk on parameetrite arvu maksimaalselt ära kasutada.</p>",
@@ -762,6 +763,7 @@
             },
             "Llama 3 70B": {
                 "desc": "<p>2024. aasta aprillis välja antud mudel on treenitud enam kui 15 triljoni tookeni peal, kuid toetab suhteliselt väikest, 8 000 tookeni suurust konteksti.</p>",
+                "fyi": "<p>2024. aasta aprillis välja antud mudel treeniti enam kui 15 triljoni tookeni peal ning seejärel spetsialiseeriti see dialoogi jaoks. Selleks kasutati instruktsiooniandmestikke ja inimeste loodud annotatsioone. See toetab 8 000 tookeni suurust konteksti.</p>",
                 "size_desc": "<p>Suured mudelid nõuavad märkimisväärseid ressursse, kuid pakuvad parimat jõudlust keerukate ülesannete jaoks, nagu loovkirjutamine, dialoogimodelleerimine ja rakendused, mis nõuavad konteksti äärmiselt põhjalikku mõistmist.</p>"
             },
             "Llama 3 8B": {
@@ -873,7 +875,7 @@
             },
             "Nemotron Llama 3.1 70B": {
                 "desc": "<p>Suur mudel on treenitud Llama 3.1 70B baasil. See ümbertreenitud (peenhäälestatud) versioon kaldub vastuseid üksikasjalikumalt lahti seletama ja pakub struktureeritumaid vastuseid.</p>",
-                "fyi": "<p>See mudel põhineb Llama 3.1 70B ümbertreenimisel, mistõttu kajastub lähte­mudel ka selle nimes. See toob kaasa parandusi, mis on saavutatud tänu  inimtagasisidega stiimulõppele (RLHF) ja REINFORCE’i algoritmile: mudel katsetab erinevaid vastuseid, saab tagasisidet ning kohandab seejärel järk-järgult oma valikuid, et kasutaja ootustele paremini vastata. Seda protsessi kasutatakse sageli siis, kui mudel peab kohanema inimeste eelistustega või optimeerima oma vastuseid kindlate kriteeriumide alusel.</p>",
+                "fyi": "<p>See mudel põhineb Llama 3.1 70B ümbertreenimisel, mistõttu kajastub lähte­mudel ka selle nimes. See toob kaasa parandusi, mis on saavutatud tänu inimtagasisidega stiimulõppele (RLHF) ja REINFORCE’i algoritmile: mudel katsetab erinevaid vastuseid, saab tagasisidet ning kohandab seejärel järk-järgult oma valikuid, et kasutaja ootustele paremini vastata. Seda protsessi kasutatakse sageli siis, kui mudel peab kohanema inimeste eelistustega või optimeerima oma vastuseid kindlate kriteeriumide alusel.</p>",
                 "size_desc": "<p>70 miljardi parameetriga kuulub see mudel suurte mudelite kategooriasse. Selle käitamiseks on vaja mitut võimsat graafikakaarti, mis toob kaasa märkimisväärsed tegevuskulud.</p>"
             },
             "OLMo-2 32B": {
@@ -958,7 +960,7 @@
             "Qwen3 Coder 480B A35B": {
                 "desc": "<p>Väga suur mudel, mis on spetsialiseerunud koodi kirjutamisele, tervete koodihoidlate analüüsimisele ja mitmeetapiliste probleemide lahendamisele. See versioon on eriti tugev tööriistade kasutamises ning suudab enne lõppvastuse esitamist simuleerida arutlusfaasi.</p>",
                 "fyi": "<p>See mudel eelõpetati 7,5 triljoni tookeni põhjal (millest 70% moodustab kood) ning kasutab arenenud järeltreeningu protsessi: Code RL-i (<i>Hard to Solve, Easy to Verify</i>), et võimendada korrektset koodi täitmist, ning Agent RL-i (<i>long-horizon </i> stiimulõpe), et optimeerida mitmevooruliste tarkvaraülesannete lahendamist, kasutades massiivselt paralleelset keskkonda (20 000 paralleelset simulatsiooni Alibaba Cloudis).</p>",
-                "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct on väga suur mudel, mille käitamiseks on vaja mitut graafikakaarti. <i>Mixture-of-experts</i> (MoE) arhitektuur võimaldab siiski aktiveerida vaid murdosa parameetritest (35 miljardit 480 miljardist), mis vähendab märkimisväärselt keskkonnamõju ja kulusid võrreldes samaväärse mudeliga, mis aktiveerib kõik parameetrid.  \nMudeli kontekstiaken ulatub algselt 256 000 tookenini ning seda saab ekstrapoleerimistehnikate (YaRN) abil laiendada kuni 1 miljoni tookenini, mis teeb selle suurte koodibaaside analüüsimiseks ideaalseks.</p>"
+                "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct on väga suur mudel, mille käitamiseks on vaja mitut graafikakaarti. <i>Mixture-of-experts</i> (MoE) arhitektuur võimaldab siiski aktiveerida vaid murdosa parameetritest (35 miljardit 480 miljardist), mis vähendab märkimisväärselt keskkonnamõju ja kulusid võrreldes samaväärse mudeliga, mis aktiveerib kõik parameetrid. \nMudeli kontekstiaken ulatub algselt 256 000 tookenini ning seda saab ekstrapoleerimistehnikate (YaRN) abil laiendada kuni 1 miljoni tookenini, mis teeb selle suurte koodibaaside analüüsimiseks ideaalseks.</p>"
             },
             "Yi-1.5 9B": {
                 "desc": "<p>Yi 1.5 on Hiina ettevõtte 01-ai mudel, mis on spetsialiseerunud koodi kirjutamisele, matemaatikale, arutlemisele ja juhiste järgimisele ning millel on tugev keelest aru saamise võime.</p>",
@@ -987,7 +989,7 @@
             "newDiscussion": "Uus vestlus",
             "step": "Samm",
             "stepOne": {
-                "description": "Pööra tähelepanu nii sisule kui ka vormile ning hinda seejärel iga vastust.",
+                "description": "Pööra tähelepanu nii sisule kui ka vormile, seejärel hinda igat vastust.",
                 "title": "Mis sa sellest vastusest arvad?"
             },
             "stepTwo": {
@@ -1064,7 +1066,7 @@
             }
         },
         "usage": {
-            "desc": "Tööriist on mõeldud ka tehisaru ekspertidele ja haridustöötajatele konkreetsemate kasutusjuhtumite jaoks.",
+            "desc": "Tööriist on mõeldud ka tehisaru ekspertidele ja haridustöötajatele konkreetsemate kasutusjuhtumite jaoks",
             "educate": {
                 "desc": "Kasuta baromeeter.ai-d haridusliku tööriistana, et tehisaru teemasid oma sihtrühmaga arutada",
                 "title": "Hari ja tõsta teadlikkust"
@@ -1075,7 +1077,7 @@
             },
             "title": "baromeeter.ai konkreetsed kasutusjuhtumid",
             "use": {
-                "desc": "Arendajad, teadlased ja mudelite avaldajad – tutvuge baromeeter.ai andmestikega, et mudeleid väheste ressurssidega keeltes täiustada.",
+                "desc": "Arendajad, teadlased ja mudelite avaldajad – tutvuge baromeeter.ai andmestikega, et mudeleid väheste ressurssidega keeltes täiustada",
                 "title": "Rakenda andmeid"
             }
         },
@@ -1568,6 +1570,7 @@
                 "billions": "{count} miljardit",
                 "cols": {
                     "arch": "Arhitektuur",
+                    "elo": "B-T <br> rahuloluskoor",
                     "license": "Litsents",
                     "n_match": "Hääli kokku",
                     "name": "Mudel",
@@ -1676,7 +1679,7 @@
             "selectedLabel": "Ei meeldi (valitud)"
         },
         "introA": "Mudelite nimede nägemiseks pead andma oma hääle.",
-        "introB": "See võimaldab meil baromeeter.ai andmestikke paremaks muuta, mis omakorda aitab väheste ressurssidega keelte jaoks tulevasi tehisintellekti mudeleid täiustada.",
+        "introB": "See võimaldab meil baromeeter.ai andmestikke paremaks muuta, mis omakorda aitab väheste ressurssidega keelte jaoks tulevasi tehisintellekti mudeleid täiustada",
         "like": {
             "label": "Mulle meeldib",
             "selectedLabel": "Mulle meeldib (valitud)"
@@ -1686,7 +1689,7 @@
             "placeholder": "Mudeli {model} vastused on ...",
             "question": "Kuidas sa selle vastuseid kirjeldaksid?"
         },
-        "title": "Missugust keelemudelit sa eelistad",
+        "title": "Missugust keelemudelit sa eelistad?",
         "yours": "Sinu hääl"
     },
     "welcome": {
@@ -1698,7 +1701,7 @@
             "desc": "Baromeeter.ai vestlusi ja eelistusi kasutatakse anonüümselt, et luua Euroopa keeli ja nende kasutusviise esindavaid andmestikke, eesmärgiga vähendada kultuurilist kallutatust ja pakkuda tulevikus kaasavamaid tehisintellekti mudeleid.",
             "moreInfos": "Loe projekti kohta lisaks."
         },
-        "use": "Ära kasuta platvormi funktsioone ebaseaduslikel või kahjustavatel eesmärkidel"
+        "use": "Ära kasuta platvormi funktsioone ebaseaduslikel või kahjustavatel eesmärkidel."
     },
     "words": {
         "NA": "N/A",
