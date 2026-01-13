@@ -103,7 +103,6 @@ class Conversation(BaseModel):
     def system_msg(self) -> str | None:
         return self.messages[0].content if self.has_system_msg else None
 
-    # FIXME this replace sum_tokens
     @computed_field  # type: ignore[prop-decorator]
     @property
     def tokens(self) -> int:
@@ -217,6 +216,15 @@ class Conversations(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def is_unedited_prompt(self) -> bool:
+        """
+        Check if the user's opening message is from a suggested prompt.
+
+        Used to identify whether the user wrote custom text or used a predefined prompt.
+
+        Returns:
+            bool: True if message matches a suggested prompt, False otherwise
+        """
+        # FIXME legacy?
         if not self.category:
             return False
 
