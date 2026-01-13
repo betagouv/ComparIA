@@ -8,17 +8,27 @@ Functions:
 - convert_range_to_value: Normalize impact ranges to single values
 - calculate_lightbulb_consumption: Energy equivalent in LED light hours
 - calculate_streaming_hours: CO2 equivalent in video streaming hours
-- build_reveal_dict: Main function generating reveal screen data
+- get_reveal_data: Main function generating reveal screen data
 """
 
 import logging
 
-from backend.arena.models import Conversations
+from backend.arena.models import BotChoice, Conversations, RevealData
 from backend.arena.utils import sum_tokens
-from backend.language_models.utils import convert_range_to_value, get_llm_impact
+from backend.language_models.utils import (
+    calculate_lightbulb_consumption,
+    calculate_streaming_hours,
+    convert_range_to_value,
+    get_llm_consumption,
+    get_llm_impact,
+)
+
+logger = logging.getLogger("languia")
 
 
-def build_reveal_dict(conversations: Conversations, chosen_model: str):
+def get_reveal_data(
+    conversations: Conversations, chosen_model: BotChoice
+) -> RevealData:
     """
     Build reveal screen data with model comparison and environmental impact metrics.
 
@@ -28,7 +38,7 @@ def build_reveal_dict(conversations: Conversations, chosen_model: str):
 
     Args:
         conversations: Conversations model
-        chosen_model: User's choice ("model-a", "model-b", or "both-equal")
+        chosen_model: User's choice ("a", "b", or "both_equal")
 
     Returns:
         dict: Reveal data containing:
@@ -57,8 +67,6 @@ def build_reveal_dict(conversations: Conversations, chosen_model: str):
     models = get_models().all
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
-
-    logger = logging.getLogger("languia")
 
     # Load complete model metadata from config
     model_a = models[conv_a.model_name]
