@@ -18,69 +18,6 @@ from backend.arena.utils import sum_tokens
 from backend.language_models.utils import convert_range_to_value, get_llm_impact
 
 
-def calculate_lightbulb_consumption(impact_energy_value):
-    """
-    Calculates the energy consumption of a 5W LED light and determines the most sensible time unit.
-
-    Args:
-      impact_energy_value: Energy consumption in kilowatt-hours (kWh).
-
-    Returns:
-      A tuple containing:
-        - An integer representing the consumption time.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
-    """
-    # Calculate consumption time using Wh
-    watthours = impact_energy_value * 1000
-    consumption_hours = watthours / 5
-    consumption_days = watthours / (5 * 24)
-    consumption_minutes = watthours * 60 / (5)
-    consumption_seconds = watthours * 60 * 60 / (5)
-
-    # Determine the most sensible unit based on magnitude
-    if consumption_days >= 1:
-        return int(consumption_days), "j"
-    elif consumption_hours >= 1:
-        return int(consumption_hours), "h"
-    elif consumption_minutes >= 1:
-        return int(consumption_minutes), "min"
-    else:
-        return int(consumption_seconds), "s"
-
-
-def calculate_streaming_hours(impact_gwp_value_or_range):
-    """
-    Calculates equivalent streaming hours and determines a sensible time unit.
-
-    Args:
-      impact_gwp_value: CO2 emissions in kilograms.
-
-    Returns:
-      A tuple containing:
-        - An integer representing the streaming hours.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
-    """
-
-    if hasattr(impact_gwp_value_or_range, "min"):
-        impact_gwp_value = (
-            impact_gwp_value_or_range.min + impact_gwp_value_or_range.max
-        ) / 2
-    else:
-        impact_gwp_value = impact_gwp_value_or_range
-    # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
-    streaming_hours = (impact_gwp_value * 10000) / 317
-
-    # Determine sensible unit based on magnitude
-    if streaming_hours >= 24:  # 1 day in hours
-        return int(streaming_hours / 24), "j"
-    elif streaming_hours >= 1:
-        return int(streaming_hours), "h"
-    elif streaming_hours * 60 >= 1:
-        return int(streaming_hours * 60), "min"
-    else:
-        return int(streaming_hours * 60 * 60), "s"
-
-
 def build_reveal_dict(conversations: Conversations, chosen_model: str):
     """
     Build reveal screen data with model comparison and environmental impact metrics.
