@@ -140,7 +140,9 @@ def get_llm_impact(
     )
 
 
-def calculate_lightbulb_consumption(impact_energy_value):
+def calculate_lightbulb_consumption(
+    impact_energy_value_or_range: ValueOrRange,
+) -> tuple[int | float, str]:
     """
     Calculates the energy consumption of a 5W LED light and determines the most sensible time unit.
 
@@ -152,6 +154,7 @@ def calculate_lightbulb_consumption(impact_energy_value):
         - An integer representing the consumption time.
         - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
     """
+    impact_energy_value = convert_range_to_value(impact_energy_value_or_range)
     # Calculate consumption time using Wh
     watthours = impact_energy_value * 1000
     consumption_hours = watthours / 5
@@ -170,7 +173,9 @@ def calculate_lightbulb_consumption(impact_energy_value):
         return int(consumption_seconds), "s"
 
 
-def calculate_streaming_hours(impact_gwp_value_or_range):
+def calculate_streaming_hours(
+    impact_gwp_value_or_range: ValueOrRange,
+) -> tuple[int | float, str]:
     """
     Calculates equivalent streaming hours and determines a sensible time unit.
 
@@ -182,13 +187,7 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
         - An integer representing the streaming hours.
         - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
     """
-
-    if hasattr(impact_gwp_value_or_range, "min"):
-        impact_gwp_value = (
-            impact_gwp_value_or_range.min + impact_gwp_value_or_range.max
-        ) / 2
-    else:
-        impact_gwp_value = impact_gwp_value_or_range
+    impact_gwp_value = convert_range_to_value(impact_gwp_value_or_range)
     # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
     streaming_hours = (impact_gwp_value * 10000) / 317
 
