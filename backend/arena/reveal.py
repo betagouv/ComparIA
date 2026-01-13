@@ -14,7 +14,6 @@ Functions:
 import logging
 
 from backend.arena.models import BotChoice, BotPos, Conversations, RevealData
-from backend.arena.utils import sum_tokens
 from backend.language_models.utils import (
     calculate_lightbulb_consumption,
     calculate_streaming_hours,
@@ -27,6 +26,15 @@ logger = logging.getLogger("languia")
 
 
 def get_chosen_llm(conversations: Conversations) -> BotChoice | None:
+    """
+    Guess the chosen LLM based on vote or reaction data.
+
+    Args:
+        conversations: Conversations
+
+    Returns:
+        BotChoice | None: the computed choice or None if no vote or reactions is found
+    """
     if conversations.vote:
         return conversations.vote.chosen_llm
 
