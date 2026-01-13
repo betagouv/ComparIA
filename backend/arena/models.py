@@ -304,13 +304,11 @@ class ReactionData(ReactRequest):
 class VoteRequest(BaseModel):
     """Request body for submitting a vote after conversation."""
 
-    which_model_radio_output: str  # "model-a", "model-b", or "both-equal"
-    positive_a_output: list[PositiveReaction] = Field(default_factory=list)
-    positive_b_output: list[PositiveReaction] = Field(default_factory=list)
-    negative_a_output: list[NegativeReaction] = Field(default_factory=list)
-    negative_b_output: list[NegativeReaction] = Field(default_factory=list)
-    comments_a_output: str = ""
-    comments_b_output: str = ""
+    chosen_llm: BotPos | Literal["both_equal"]
+    prefs_a: list[PositiveReaction | NegativeReaction] = []
+    prefs_b: list[PositiveReaction | NegativeReaction] = []
+    comment_a: str
+    comment_b: str
 
 
 class RevealData(BaseModel):
