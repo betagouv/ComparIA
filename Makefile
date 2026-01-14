@@ -159,15 +159,15 @@ ranking-test: ## Run ranking_methods project tests
 	@echo "Testing ranking_methods project..."
 	cd utils/ranking_methods && poetry run pytest tests/
 
-ranking-pipeline: ## Execute the ranking pipeline (see notebooks for more options)
+compute-rankings: ## Execute the ranking pipeline (see notebooks for more options)
 	@echo "To use the ranking pipeline, see:"
 	@echo "  - utils/ranking_methods/notebooks/pipeline.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/rankers.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/frugal.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/graph.ipynb"
 	
-	@echo "Running ranking pipeline..."
-	$(UV) run python -m utils.models.build_peren_model_list
+	@echo "Compute rankings..."
+	$(UV) run python -m utils.models.build_simplified_llm_list_ranking
 	cd utils/ranking_methods/src && poetry run python -m rank_comparia.export
 	cp utils/ranking_methods/src/output/ml_final_data.json utils/models/generated-models-extra-data.json
 	@$(MAKE) models-build
