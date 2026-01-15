@@ -9,15 +9,12 @@ Uses Pydantic Conversation model update and validation during streaming.
 
 import logging
 import time
+from typing import AsyncGenerator
 
 from litellm.litellm_core_utils.token_counter import token_counter
 
 from backend.arena.litellm import get_api_key, litellm_stream_iter
-from backend.arena.models import (
-    AnyMessage,
-    AssistantMessage,
-    Conversation,
-)
+from backend.arena.models import AnyMessage, AssistantMessage, Conversation
 from backend.errors import EmptyResponseError
 
 logger = logging.getLogger("languia")
@@ -31,7 +28,7 @@ def update_last_message(
     generation_id=None,
     duration=0,
     reasoning=None,
-) -> list[AnyMessage]:
+) -> None:
     """
     Update or create the last message in a conversation with model response data.
 
@@ -63,7 +60,7 @@ def update_last_message(
         messages.append(
             AssistantMessage(content=text, metadata=metadata, reasoning=reasoning)
         )
-        return messages
+        return
 
     # Update existing message with streaming chunks
     last_message = messages[-1]
@@ -72,8 +69,6 @@ def update_last_message(
     if reasoning is not None:
         last_message.reasoning = reasoning
 
-    return messages
-
 
 async def bot_response_async(
     position,
@@ -81,7 +76,7 @@ async def bot_response_async(
     ip: str,
     temperature=0.7,
     max_new_tokens=4096,
-):
+) -> AsyncGenerator[list[AnyMessage]]:
     """
     Stream a response from an AI model asynchronously.
 
@@ -96,7 +91,7 @@ async def bot_response_async(
         max_new_tokens: Maximum tokens to generate (default 4096)
 
     Yields:
-        Updated Conversation (Pydantic) as response chunks arrive
+        Updated message list as response chunks arrive
 
     Raises:
         Exception: If model endpoint is not configured
@@ -186,7 +181,7 @@ async def bot_response_async(
                 generation_id=generation_id,
                 reasoning=reasoning,
             )
-            yield state
+            yield state.messages
 
     # Log generation ID for API debugging
     if generation_id:
@@ -228,4 +223,4 @@ async def bot_response_async(
         reasoning=reasoning,
     )
 
-    yield state
+    yield state.messages
