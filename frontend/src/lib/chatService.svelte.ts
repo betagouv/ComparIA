@@ -1,8 +1,9 @@
-import { arenaApi } from '$lib/arena-api'
+import { api, type AnySSEEvent } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
+import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
-import type { LoadingStatus } from '@gradio/statustracker'
+import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -24,38 +25,46 @@ export type ModeInfos = {
 
 // CHAT
 
-type APIMessageRole = 'system' | 'user' | 'assistant'
 export type Bot = 'a' | 'b'
 export type BotChoice = Bot | 'both_equal'
 
-interface APIChatMessageMetadata<Role extends APIMessageRole = APIMessageRole> {
-  bot: Role extends 'assistant' ? Bot : null
-  duration: number | null
-  generation_id: Role extends 'assistant' ? string : null
-}
+export type LLMPos = 'a' | 'b'
+export type ChatStatus = 'pending' | 'error' | 'complete' | 'generating'
 
-export interface APIChatMessage<Role extends APIMessageRole = APIMessageRole> {
-  role: Role
-  error: string | null
-  metadata: APIChatMessageMetadata<Role>
+export interface UserMessage {
+  role: 'user'
   content: string
-  reasoning: Role extends 'assistant' ? string | '' : null
+  error: { round_index: number; pos: Bot; content: string } | null
 }
+export interface AssistantMessage {
+  role: 'assistant'
+  pos: Bot
+  metadata: {
+    bot: Bot
+    duration: number | null
+    generation_id: string
+  }
+  content: string
+  reasoning: string | ''
 
-export interface ChatMessage<Role extends APIMessageRole = APIMessageRole>
-  extends APIChatMessage<Role> {
+  generating?: boolean
+}
+export type AnyMessage = UserMessage | AssistantMessage
+
+interface Chat {
+  messages: AnyMessage[]
+  status: ChatStatus
+  // error: string | null
+}
+export interface ChatRound {
+  user: UserMessage
+  a?: AssistantMessage
+  b?: AssistantMessage
   index: number
-  isLast: boolean
-}
-
-export type GroupedChatMessages = {
-  user: ChatMessage<'user'>
-  bots: [ChatMessage<'assistant'>, ChatMessage<'assistant'>]
 }
 
 // REACTIONS
 
-// TODO use underscore everywhere ?
 export const APIPositiveReactions = ['useful', 'complete', 'creative', 'clear_formatting'] as const
 export const APINegativeReactions = [
   'incorrect',
@@ -154,54 +163,78 @@ export const arena = $state<{
   mode?: Mode
   chat: {
     step?: 1 | 2
-    status: LoadingStatus['status']
-    messages: APIChatMessage[]
-    root: string
+    status: ChatStatus
+    a: Chat
+    b: Chat
+    error: string | null
   }
 }>({
   currentScreen: 'prompt',
   chat: {
     step: 1,
     status: 'pending',
-    messages: [],
-    root: '/' // FIXME or '/arene'
+    a: { status: 'pending', messages: [] },
+    b: { status: 'pending', messages: [] },
+    error: null
   }
 })
 
 // API CALLS
 
+function onSSEEvent(event: AnySSEEvent) {
+  if (event.type === 'init') {
+    arena.chat.status = 'pending'
+  } else if (event.type === 'error') {
+    arena.chat.error = event.error
+    arena.chat.status = 'error'
+  } else if (event.type === 'chunk') {
+    arena.chat[event.pos].messages = event.messages
+    arena.chat[event.pos].status = 'generating'
+    arena.chat.status = 'generating' // ??
+  } else if (event.type === 'complete') {
+    if (event.pos) {
+      arena.chat[event.pos].status = 'complete'
+    } else {
+      arena.chat.status = 'complete'
+    }
+  }
+}
+
 export async function runChatBots(args: APIModeAndPromptData) {
   arena.chat.status = 'pending'
+  arena.chat.error = null
 
   try {
     // Use new FastAPI client
     const customModels =
       args.mode === 'custom' && args.custom_models_selection.length === 2
         ? (args.custom_models_selection as [string, string])
-        : undefined
+        : null
+    const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
+    if (cohorts === null) {
+      console.error(
+        `[COHORT] cohorts is None and it should not happen, maybe cohorts detection has not been called.`
+      )
+    }
+    if (cohorts) {
+      console.debug(`[COHORT] call to '/arena/add_first_text' with found cohorts: '${cohorts}'`)
+    }
 
     arena.currentScreen = 'chat'
     arena.mode = args.mode
     arena.chat.step = 1
 
+    const stream = api.stream('/arena/add_first_text', {
+      prompt_value: args.prompt_value,
+      mode: args.mode,
+      custom_models_selection: customModels,
+      country_portal: getLocale(),
+      cohorts
+    })
+
     // Stream from FastAPI endpoint
-    for await (const event of arenaApi.addFirstText(args.prompt_value, args.mode, customModels)) {
-      if (event.type === 'init') {
-        // Session initialized, continue streaming
-        arena.chat.status = 'generating'
-      } else if (event.type === 'update' && event.a && event.b) {
-        // Merge messages from both models
-        arena.chat.status = 'generating'
-        // Combine messages from both sides
-        const messagesA = event.a.messages || []
-        const messagesB = event.b.messages || []
-        // Interleave or merge as needed - for now just concatenate unique messages
-        arena.chat.messages = mergeMessages(messagesA, messagesB)
-      } else if (event.type === 'chunk' && event.messages) {
-        // Single chunk update
-        arena.chat.status = 'generating'
-        arena.chat.messages = event.messages
-      }
+    for await (const event of stream) {
+      onSSEEvent(event)
     }
 
     arena.chat.status = 'complete'
@@ -213,34 +246,15 @@ export async function runChatBots(args: APIModeAndPromptData) {
   return arena.chat.status
 }
 
-/**
- * Merge messages from both models into a single array.
- * Messages are deduplicated by role and content.
- */
-function mergeMessages(messagesA: any[], messagesB: any[]): APIChatMessage[] {
-  return messagesA
-    .map((m, i) => {
-      if (m.role === 'user') return m
-      return [m, messagesB[i]]
-    })
-    .flat()
-}
-
 export async function askChatBots(text: string) {
   arena.chat.status = 'pending'
-
+  arena.chat.error = null
   try {
     // Stream from FastAPI endpoint
-    for await (const event of arenaApi.addText(text)) {
-      if (event.type === 'update' && event.a && event.b) {
-        arena.chat.status = 'generating'
-        const messagesA = event.a.messages || []
-        const messagesB = event.b.messages || []
-        arena.chat.messages = mergeMessages(messagesA, messagesB)
-      } else if (event.type === 'chunk' && event.messages) {
-        arena.chat.status = 'generating'
-        arena.chat.messages = event.messages
-      }
+    for await (const event of api.stream('/arena/add_text', {
+      message: text
+    })) {
+      onSSEEvent(event)
     }
 
     arena.chat.status = 'complete'
@@ -252,19 +266,11 @@ export async function askChatBots(text: string) {
 
 export async function retryAskChatBots() {
   arena.chat.status = 'pending'
-
+  arena.chat.error = null
   try {
     // Stream from FastAPI endpoint
-    for await (const event of arenaApi.retry()) {
-      if (event.type === 'update' && event.a && event.b) {
-        arena.chat.status = 'generating'
-        const messagesA = event.a.messages || []
-        const messagesB = event.b.messages || []
-        arena.chat.messages = mergeMessages(messagesA, messagesB)
-      } else if (event.type === 'chunk' && event.messages) {
-        arena.chat.status = 'generating'
-        arena.chat.messages = event.messages
-      }
+    for await (const event of api.stream('/arena/retry', {})) {
+      onSSEEvent(event)
     }
 
     arena.chat.status = 'complete'
@@ -275,9 +281,7 @@ export async function retryAskChatBots() {
 }
 
 export async function updateReaction(reaction: APIReactionData) {
-  // Use fastapiClient which handles full backend URL
-  const { fastapiClient } = await import('./fastapi-client')
-  await fastapiClient.request('/arena/react', {
+  await api.request('/arena/react', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(reaction)
@@ -293,10 +297,7 @@ export async function postVoteGetReveal(vote: Required<VoteData>) {
     comment_b: vote.b.comment
   } satisfies APIVoteData
 
-  // Use fastapiClient which handles full backend URL
-  const { fastapiClient } = await import('./fastapi-client')
-
-  const revealData = await fastapiClient.request<APIRevealData>('/arena/vote', {
+  const revealData = await api.request<APIRevealData>('/arena/vote', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -321,10 +322,7 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
 }
 
 export async function getReveal(): Promise<RevealData> {
-  // Use fastapiClient which handles full backend URL
-  const { fastapiClient } = await import('./fastapi-client')
-
-  const revealData = await fastapiClient.request<APIRevealData>(`/arena/reveal`, {
+  const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
     method: 'GET'
   })
 
