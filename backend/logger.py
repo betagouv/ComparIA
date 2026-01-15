@@ -13,23 +13,6 @@ from backend.config import settings
 from backend.utils.user import get_ip
 
 
-class FrontendLogRequest(BaseModel):
-    """
-    Single frontend log sent to backend (simplified format).
-
-    Fields:
-        level: Log level (info, warn, error, debug)
-        message: Log message text
-        session_hash: User session identifier
-        user_agent: Browser user agent string
-    """
-
-    level: str
-    message: str
-    session_hash: str | None = None
-    user_agent: str | None = None
-
-
 class JSONFormatter(logging.Formatter):
     """
     Custom logging formatter that outputs structured JSON.
@@ -295,43 +278,3 @@ def configure_uvicorn_logging() -> None:
         if settings.COMPARIA_DB_URI and settings.enable_postgres_handler:
             postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
             uvicorn_logger.addHandler(postgres_handler)
-
-
-def configure_frontend_logger() -> None:
-    # Configurer le logger frontend pour utiliser les mêmes handlers
-    default_logger = logging.getLogger("languia")
-    frontend_logger = logging.getLogger("frontend")
-    frontend_logger.setLevel(logging.DEBUG if settings.LANGUIA_DEBUG else logging.INFO)
-    for handler in default_logger.handlers:
-        frontend_logger.addHandler(handler)
-
-
-# FIXME not used?
-class FrontendLogEntry(BaseModel):
-    """
-    Single log entry from frontend (simplified format).
-
-    Fields:
-        level: Log level (info, warn, error, debug)
-        message: Log message text
-    """
-
-    level: str
-    message: str
-
-
-class FrontendLogRequest(BaseModel):
-    """
-    Single frontend log sent to backend (simplified format).
-
-    Fields:
-        level: Log level (info, warn, error, debug)
-        message: Log message text
-        session_hash: User session identifier
-        user_agent: Browser user agent string
-    """
-
-    level: str
-    message: str
-    session_hash: str | None = None
-    user_agent: str | None = None
