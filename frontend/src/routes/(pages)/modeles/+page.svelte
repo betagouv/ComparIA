@@ -130,10 +130,19 @@
 
     // Remove hash from URL when modal is closed
     const modalElement = document.getElementById('modal-model')
+    const handleModalConceal = () => {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+
     if (modalElement) {
-      modalElement.addEventListener('dsfr.conceal', () => {
-        window.history.replaceState(null, '', window.location.pathname)
-      })
+      modalElement.addEventListener('dsfr.conceal', handleModalConceal)
+    }
+
+    // Cleanup: remove event listener when component is destroyed
+    return () => {
+      if (modalElement) {
+        modalElement.removeEventListener('dsfr.conceal', handleModalConceal)
+      }
     }
   })
 </script>
