@@ -10,13 +10,7 @@ from functools import cached_property
 from typing import Annotated, Literal, TypedDict, Union, get_args
 from uuid import uuid4
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    PlainSerializer,
-    computed_field,
-)
+from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, computed_field
 
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -31,7 +25,13 @@ from backend.utils.countries import CountryPortalAnno
 
 MessageRole = Literal["user", "assistant", "system"]
 BotPos = Literal["a", "b"]
+BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 BotChoice = BotPos | Literal["both_equal"]
+
+
+class ErrorDetails(BaseModel):
+    message: str
+    pos: BotPos | None = None
 
 
 class BaseMessage(BaseModel):
@@ -74,7 +74,6 @@ class AssistantMessage(BaseMessage):
         duration: float | None = None
 
     role: Literal["assistant"] = "assistant"
-    error: str | None = None
     reasoning: str | None = None
     metadata: AssistantMessageMetadata
     reaction: Union["ReactionData", None] = None
@@ -188,6 +187,7 @@ class Conversations(BaseModel):
     conversation_a: Conversation
     conversation_b: Conversation
     vote: Union["VoteBody", None] = None
+    error: ErrorDetails | None = None
 
     @computed_field  # type: ignore[prop-decorator]
     @property
