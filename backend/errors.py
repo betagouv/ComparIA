@@ -1,5 +1,6 @@
-from enum import StrEnum
+from backend.arena.models import BotPos
 
+# from enum import StrEnum
 # TODO raise errors with error keys and add i18n on front
 # class Errors(StrEnum):
 #     RATE_LIMITED = "rate_limited"  # "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits."
@@ -22,3 +23,18 @@ class EmptyResponseError(RuntimeError):
     def __str__(self):
         msg = "Empty response"
         return msg
+
+
+class ChatError(RuntimeError):
+    """Raised when an error occurs during chat."""
+
+    message: str
+    pos: BotPos
+
+    def __init__(self, message: str, pos: BotPos) -> None:
+        super().__init__(message)
+        self.message = message
+        self.pos = pos
+
+    def __str__(self):
+        return self.message
