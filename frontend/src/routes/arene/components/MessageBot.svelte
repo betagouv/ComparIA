@@ -3,30 +3,23 @@
   import { Icon } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import Pending from '$components/Pending.svelte'
-  import type { APIReactionData, ChatMessage, OnReactionFn } from '$lib/chatService.svelte'
+  import type { APIReactionData, AssistantMessage, OnReactionFn } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { LikeDislike, LikePanel } from '.'
 
   export type MessageBotProps = {
-    message: ChatMessage<'assistant'>
+    message: AssistantMessage
     index: number
-    generating?: boolean
     disabled?: boolean
     onReactionChange: OnReactionFn
   }
 
-  let {
-    message,
-    index,
-    generating = false,
-    disabled = false,
-    onReactionChange
-  }: MessageBotProps = $props()
+  let { message, index, disabled = false, onReactionChange }: MessageBotProps = $props()
 
   const bot = message.metadata.bot
   const reaction = $state<APIReactionData>({
-    index: index,
+    index: index * 2 + 1,
     bot: message.metadata.bot,
     liked: null,
     prefs: [],
@@ -36,6 +29,7 @@
 
   function onLikedChanged() {
     reaction.prefs = []
+    // FIXME reset comment?
     dispatchOnReactionChange()
   }
 
@@ -68,7 +62,7 @@
                 aria-controls="reasoning-{message.metadata.generation_id}"
               >
                 <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
-                {#if message.content === '' && generating}
+                {#if message.content === '' && message.generating}
                   {m['chatbot.reasoning.inProgress']()}
                 {:else}
                   {m['chatbot.reasoning.finished']()}
@@ -89,7 +83,7 @@
 
       <Markdown message={message.content} chatbot />
 
-      {#if generating && message.isLast}
+      {#if message.generating}
         <Pending message={m['chatbot.loading']()} />
       {/if}
     </div>
@@ -100,7 +94,7 @@
       <div class="gap-2 ms-auto flex">
         <LikeDislike
           bind:liked={reaction.liked}
-          disabled={generating || disabled}
+          disabled={message.generating || disabled}
           onChange={onLikedChanged}
         />
       </div>
