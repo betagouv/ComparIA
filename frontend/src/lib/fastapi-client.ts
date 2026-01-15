@@ -8,7 +8,6 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.svelte'
 import { useToast } from '$lib/helpers/useToast.svelte'
-import { logger } from '$lib/logger'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -127,7 +126,7 @@ export class FastAPIClient {
       if (!response.ok) {
         const errorText = await response.text()
         const message = `Error ${response.status} [${options.method || 'GET'}](${path}): "${errorText}"`
-        logger.error(`HTTP request failed: ${response.status} ${url} ${errorText}`)
+        console.error(`HTTP request failed: ${response.status} ${url} ${errorText}`)
 
         // Show toast for user-facing errors
         if (response.status === 429) {
@@ -141,7 +140,7 @@ export class FastAPIClient {
 
       return response.json()
     } catch (error) {
-      logger.error(`Request to ${path} failed: ${(error as Error).message}`)
+      console.error(`Request to ${path} failed: ${(error as Error).message}`)
       throw error
     }
   }
@@ -152,7 +151,7 @@ export class FastAPIClient {
   async *stream(path: string, body: any): AsyncGenerator<AnySSEEvent> {
     const url = this.getUrl(path)
 
-    logger.debug(`Streaming from ${path}`)
+    console.debug(`Streaming from ${path}`)
 
     try {
       // Add session hash header if available
@@ -171,7 +170,7 @@ export class FastAPIClient {
 
       if (!response.ok) {
         const errorText = await response.text()
-        logger.error(`Stream request failed: ${response.status} ${url} ${errorText}`)
+        console.error(`Stream request failed: ${response.status} ${url} ${errorText}`)
 
         if (response.status === 429) {
           useToast('Rate limited', 10000, 'error')
@@ -212,25 +211,25 @@ export class FastAPIClient {
               } else if (data.type === 'error') {
                 // FIXME throw? probably not, errors are handle in chat
                 // const errorMsg = 'error' in data ? data.error : 'Unknown error'
-                // logger.error(`SSE error: ${errorMsg}`)
+                // console.error(`SSE error: ${errorMsg}`)
                 // useToast(errorMsg, 10000, 'error')
                 // throw new Error(errorMsg)
               } else if (data.type === 'done') {
                 // Stream complete
-                logger.debug('SSE stream completed')
+                console.debug('SSE stream completed')
                 return
               }
 
               // Yield the parsed event
               yield data as AnySSEEvent
             } catch (_parseError) {
-              logger.error(`Failed to parse SSE data: ${dataStr}`)
+              console.error(`Failed to parse SSE data: ${dataStr}`)
             }
           }
         }
       }
     } catch (error) {
-      logger.error(`Stream from ${path} failed: ${(error as Error).message}`)
+      console.error(`Stream from ${path} failed: ${(error as Error).message}`)
       throw error
     }
   }
