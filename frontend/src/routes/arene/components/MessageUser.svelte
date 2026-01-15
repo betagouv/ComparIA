@@ -1,10 +1,10 @@
 <script lang="ts">
   import Markdown from '$components/markdown/MarkdownCode.svelte'
-  import type { ChatMessage } from '$lib/chatService.svelte'
+  import type { UserMessage } from '$lib/chatService.svelte'
   import { onMount } from 'svelte'
 
   export type MessageUserProps = {
-    message: ChatMessage<'user'>
+    message: UserMessage
     size: number
   }
 
