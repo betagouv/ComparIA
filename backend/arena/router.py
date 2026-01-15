@@ -1,7 +1,8 @@
 import logging
-from typing import Annotated, TypedDict
+from typing import Annotated, AsyncGenerator, TypedDict
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi.responses import StreamingResponse
 
 from backend.arena.models import (
     AddFirstTextBody,
@@ -22,11 +23,8 @@ from backend.arena.persistence import (
     record_vote,
 )
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
-from backend.arena.session import (
-    create_session,
-    is_ratelimited,
-)
-from backend.arena.streaming import create_sse_response, stream_both_responses
+from backend.arena.session import create_session, is_ratelimited
+from backend.arena.streaming import create_sse_response, stream_comparison_messages
 from backend.language_models.data import get_models
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
@@ -93,7 +91,7 @@ ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
-async def add_first_text(args: AddFirstTextBody, request: Request):
+async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
     """
     Process user's first message and initiate model comparison.
 
@@ -151,14 +149,14 @@ async def add_first_text(args: AddFirstTextBody, request: Request):
     record_conversations(conversations)
 
     # Stream responses
-    async def event_stream():
+    async def event_stream() -> AsyncGenerator[str]:
         # Send session hash first
         import json
 
         yield f"data: {json.dumps({'type': 'init', 'session_hash': session_hash})}\n\n"
 
         # Stream both model responses
-        async for chunk in stream_both_responses(conversations, request):
+        async for chunk in stream_comparison_messages(conversations, request):
             yield chunk
 
         # After streaming completes, store Conversations to redis/db/logs
@@ -173,7 +171,7 @@ async def add_text(
     args: AddTextBody,
     conversations: ConversationsAnno,
     request: Request,
-):
+) -> StreamingResponse:
     """
     Add a follow-up message to an existing conversation.
 
@@ -204,8 +202,8 @@ async def add_text(
     record_conversations(conversations)
 
     # Stream responses
-    async def event_stream():
-        async for chunk in stream_both_responses(conversations, request):
+    async def event_stream() -> AsyncGenerator[str]:
+        async for chunk in stream_comparison_messages(conversations, request):
             yield chunk
 
         # After streaming completes, store Conversations to redis/db/logs
@@ -219,7 +217,7 @@ async def add_text(
 async def retry(
     conversations: ConversationsAnno,
     request: Request,
-):
+) -> StreamingResponse:
     """
     Retry generating the last bot response.
 
@@ -241,11 +239,11 @@ async def retry(
 
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
+
     # Remove last assistant messages
-    if isinstance(conv_a.messages[-1], AssistantMessage) and isinstance(
-        conv_b.messages[-1], AssistantMessage
-    ):
+    if isinstance(conv_a.messages[-1], AssistantMessage):
         conv_a.messages = conv_a.messages[:-1]
+    if isinstance(conv_b.messages[-1], AssistantMessage):
         conv_b.messages = conv_b.messages[:-1]
 
     if not (
@@ -263,8 +261,8 @@ async def retry(
     record_conversations(conversations)
 
     # Re-stream responses
-    async def event_stream():
-        async for chunk in stream_both_responses(conversations, request):
+    async def event_stream() -> AsyncGenerator[str]:
+        async for chunk in stream_comparison_messages(conversations, request):
             yield chunk
 
         # After streaming completes, store Conversations to redis/db/logs

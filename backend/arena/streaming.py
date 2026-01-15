@@ -6,23 +6,77 @@ Handles real-time streaming of model responses to the frontend using SSE protoco
 
 import json
 import logging
-from typing import Any, AsyncIterator
+import traceback
+from typing import Any, AsyncGenerator, Literal, TypedDict
 
+import sentry_sdk
+from fastapi import Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
-from backend.arena.models import BotPos, Conversation, Conversations
+from backend.arena.models import (
+    BOT_POS,
+    AnyMessage,
+    BotPos,
+    Conversation,
+    Conversations,
+    ErrorDetails,
+)
+from backend.config import settings
+from backend.errors import ChatError
 
 logger = logging.getLogger("languia")
 
 
-async def stream_bot_response(
-    position: BotPos, conv: Conversation, request: Any
-) -> AsyncIterator[str]:
+class PydanticModelEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Any:
+        if isinstance(o, BaseModel):
+            return o.model_dump(mode="json")
+
+        return super().default(o)
+
+
+def format_sse_event(data: Any) -> str:
+    """
+    Format event for sse streaming with custom json encoder to parse pydantic models
+    """
+    return f"data: {json.dumps(data, cls=PydanticModelEncoder)}\n\n"
+
+
+class SSEEventInit(TypedDict):
+    type: Literal["init"]
+    pos: BotPos
+    session_hash: str
+
+
+class SSEEventComplete(TypedDict):
+    type: Literal["complete"]
+    pos: BotPos
+
+
+class SSEEventChunk(TypedDict):
+    type: Literal["chunk"]
+    pos: BotPos
+    messages: list[AnyMessage]
+
+
+class SSEEventError(TypedDict):
+    type: Literal["error"]
+    pos: BotPos
+    error: str
+
+
+AnySSEEvent = SSEEventInit | SSEEventChunk | SSEEventComplete | SSEEventError
+
+
+async def stream_conversation_messages(
+    pos: BotPos, conv: Conversation, request: Request
+) -> AsyncGenerator[AnySSEEvent]:
     """
     Stream a single bot response using Server-Sent Events format.
 
     Args:
-        position: Which model position ("a" or "b")
+        pos: Which model position ("a" or "b")
         conv_state: Conversation state dict with messages and model info
         request: FastAPI Request object for logging
 
@@ -32,7 +86,7 @@ async def stream_bot_response(
     SSE Format:
         data: {"type": "chunk", "messages": [...]}
 
-        data: {"type": "done"}
+        data: {"type": "complete"}
 
         data: {"type": "error", "error": "error message"}
     """
@@ -44,25 +98,54 @@ async def stream_bot_response(
         ip = get_ip(request)
 
         # Stream responses from bot_response_async generator
-        async for updated_state in bot_response_async(position, conv, ip):
+        async for messages in bot_response_async(pos, conv, ip):
             # Serialize Pydantic messages to dicts for JSON response
-            messages = [msg.model_dump() for msg in updated_state.messages]
 
-            chunk = {"type": "chunk", "messages": messages}
-            yield f"data: {json.dumps(chunk)}\n\n"
+            yield {"type": "chunk", "pos": pos, "messages": messages}
 
-        # Signal completion
-        yield f'data: {{"type": "done"}}\n\n'
+        yield {"type": "complete", "pos": pos}
+
+        logger.info(
+            f"response_modele_{pos} ({conv.model_name}): {str(conv.messages[-1].content)}",
+            extra={"request": request},
+        )
 
     except Exception as e:
-        logger.error(f"[STREAMING] Error in stream_bot_response: {e}", exc_info=True)
-        error_chunk = {"type": "error", "error": str(e)}
-        yield f"data: {json.dumps(error_chunk)}\n\n"
+        error_message = str(e)
+
+        if settings.SENTRY_DSN:
+            # TODO: only capture model name to sort more easily in sentry
+            sentry_sdk.capture_exception(e)
+
+        error_reason = f"error_during_convo: {conv.model_name}, {conv.llm.endpoint.api_type}, {error_message}"
+
+        try:
+            import requests
+
+            requests.post(
+                f"{settings.LANGUIA_CONTROLLER_URL}/models/{conv.model_name}/error",
+                json={"error": error_reason},
+                timeout=1,
+            )
+        except:
+            pass
+
+        logger.exception(
+            error_reason,
+            extra={
+                "request": request,
+                "error": error_message,
+                "stacktrace": traceback.format_exc(),
+            },
+            exc_info=True,
+        )
+
+        raise ChatError(message=error_message, pos=pos)
 
 
-async def stream_both_responses(
+async def stream_comparison_messages(
     conversations: Conversations, request: Any
-) -> AsyncIterator[str]:
+) -> AsyncGenerator[str]:
     """
     Stream both model responses in parallel using Server-Sent Events.
 
@@ -80,7 +163,7 @@ async def stream_both_responses(
     SSE Event Format:
         data: {"type": "update", "a": {...}, "b": {...}}
 
-        data: {"type": "done"}
+        data: {"type": "complete"}
 
         data: {"type": "error", "error": "..."}
     """
@@ -88,113 +171,67 @@ async def stream_both_responses(
 
     try:
         # Create async generators for both models
-        gen_a = stream_bot_response("a", conversations.conversation_a, request)
-        gen_b = stream_bot_response("b", conversations.conversation_b, request)
-
+        generators: dict[BotPos, AsyncGenerator[AnySSEEvent]] = {
+            "a": stream_conversation_messages(
+                "a", conversations.conversation_a, request
+            ),
+            "b": stream_conversation_messages(
+                "b", conversations.conversation_b, request
+            ),
+        }
         # Track state from both generators
-        last_a = None
-        last_b = None
-        done_a = False
-        done_b = False
+        complete: dict[BotPos, bool] = {"a": False, "b": False}
 
         # Consume both generators in parallel
-        while not (done_a and done_b):
+        while not (complete["a"] and complete["b"]):
             # Collect pending tasks
-            tasks = []
-
-            if not done_a:
-                tasks.append(asyncio.create_task(_safe_next(gen_a, "a")))
-            if not done_b:
-                tasks.append(asyncio.create_task(_safe_next(gen_b, "b")))
+            tasks = [
+                asyncio.create_task(anext(generators[pos]))
+                for pos in BOT_POS
+                if not complete[pos]
+            ]
 
             if not tasks:
                 break
 
             # Wait for next chunk from either model
-            done, pending = await asyncio.wait(
+            completed, pending = await asyncio.wait(
                 tasks, return_when=asyncio.FIRST_COMPLETED
             )
 
             # Process completed chunks
-            has_update = False
-            for task in done:
-                result = task.result()
+            for task in completed:
+                event = task.result()
 
-                if result["source"] == "a":
-                    if result["done"]:
-                        done_a = True
-                    elif result["data"] and result["data"].get("type") == "chunk":
-                        # Only update if it's a chunk event, not a "done" event
-                        last_a = result["data"]
-                        has_update = True
-                else:  # source == "b"
-                    if result["done"]:
-                        done_b = True
-                    elif result["data"] and result["data"].get("type") == "chunk":
-                        # Only update if it's a chunk event, not a "done" event
-                        last_b = result["data"]
-                        has_update = True
+                for pos in BOT_POS:
+                    if event["type"] == "complete":
+                        complete[event["pos"]] = True
 
-            # Yield combined state if we have updates (but not for individual "done" events)
-            if has_update and (last_a or last_b):
-                combined = {
-                    "type": "update",
-                    "a": last_a if last_a else {"type": "waiting"},
-                    "b": last_b if last_b else {"type": "waiting"},
-                }
-                yield f"data: {json.dumps(combined)}\n\n"
+                yield format_sse_event(event)
 
         # Signal completion
-        yield f'data: {{"type": "done"}}\n\n'
-
+        yield format_sse_event({"type": "complete"})
+    except ChatError as e:
+        # Specific chat error
+        # Error logging is done in `stream_conversation_messages()`
+        conversations.error = ErrorDetails(message=e.message, pos=e.pos)
+        yield format_sse_event({"type": "error", "error": e.message, "pos": e.pos})
     except Exception as e:
-        logger.error(f"[STREAMING] Error in stream_both_responses: {e}", exc_info=True)
-        error_chunk = {"type": "error", "error": str(e)}
-        yield f"data: {json.dumps(error_chunk)}\n\n"
+        # General error
+        # FIXME log to controller?
+        conversations.error = ErrorDetails(message=str(e))
+        logger.error(
+            f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
+        )
+        yield format_sse_event({"type": "error", "error": str(e)})
 
 
-async def _safe_next(generator: AsyncIterator[str], source: str) -> dict:
-    """
-    Safely consume next item from an async generator.
-
-    Args:
-        generator: AsyncIterator to consume from
-        source: Identifier for this generator ("a" or "b")
-
-    Returns:
-        dict with keys:
-            - source: str - Generator identifier
-            - done: bool - Whether generator is exhausted
-            - data: str | None - Next value (if not done)
-    """
-    try:
-        value = await generator.__anext__()
-        # Parse SSE data line
-        if value.startswith("data: "):
-            data_str = value[6:].strip()
-            if data_str:
-                data = json.loads(data_str)
-                return {"source": source, "done": False, "data": data}
-
-        return {"source": source, "done": False, "data": None}
-
-    except StopAsyncIteration:
-        return {"source": source, "done": True, "data": None}
-    except Exception as e:
-        logger.error(f"[STREAMING] Error in _safe_next for {source}: {e}")
-        return {
-            "source": source,
-            "done": True,
-            "data": {"type": "error", "error": str(e)},
-        }
-
-
-def create_sse_response(generator: AsyncIterator[str]) -> StreamingResponse:
+def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:
     """
     Create a FastAPI StreamingResponse configured for Server-Sent Events.
 
     Args:
-        generator: AsyncIterator yielding SSE-formatted strings
+        generator: AsyncGenerator yielding SSE-formatted strings
 
     Returns:
         StreamingResponse configured with proper SSE headers
