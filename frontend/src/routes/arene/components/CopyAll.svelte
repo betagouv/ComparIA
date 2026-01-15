@@ -1,10 +1,10 @@
 <script lang="ts">
   import IconButton from '$components/IconButton.svelte'
-  import type { ChatMessage } from '$lib/chatService.svelte'
+  import type { AnyMessage } from '$lib/chatService.svelte'
   import { copyToClipboard } from '$lib/utils/commons'
   import { onDestroy } from 'svelte'
 
-  let { value }: { value: ChatMessage[] } = $props()
+  let { value }: { value: AnyMessage[] } = $props()
 
   let copied = $state(false)
   let timer: number

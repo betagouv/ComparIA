@@ -85,14 +85,7 @@
 <svelte:window onresize={onResize} />
 
 <div style="--footer-size: {footerSize}px;" class="flex grow flex-col">
-  <ChatBot
-    disabled={chatbotDisabled}
-    pending={arena.chat.status === 'pending'}
-    generating={arena.chat.status === 'generating'}
-    {onReactionChange}
-    {onRetry}
-    {onVote}
-  />
+  <ChatBot disabled={chatbotDisabled} {onReactionChange} {onRetry} {onVote} />
 
   {#if step === 'vote' || (step === 'reveal' && canVote)}
     <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
@@ -105,7 +98,7 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="bottom-0 gap-3 bg-very-light-grey px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
+      class="bg-very-light-grey bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
     >
       {#if step === 'chat'}
         <div class="gap-3 md:flex-row flex w-full flex-col">

@@ -6,6 +6,7 @@
 
 import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
+import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.svelte'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { logger } from '$lib/logger'
 
@@ -27,6 +28,12 @@ function getBackendUrl(): string {
 /**
  * SSE event types from backend
  */
+type SSEEventInit = { type: 'init'; session_hash: string }
+type SSEEventChunk = { type: 'chunk'; pos: LLMPos; messages: Array<UserMessage | AssistantMessage> }
+type SSEEventError = { type: 'error'; error: string; pos?: LLMPos } //; chat: APIChat }
+type SSEEventComplete = { type: 'complete'; pos?: LLMPos }
+export type AnySSEEvent = SSEEventInit | SSEEventError | SSEEventChunk | SSEEventComplete
+
 interface SSEInitEvent {
   type: 'init'
   session_hash: string
@@ -142,7 +149,7 @@ export class FastAPIClient {
   /**
    * Stream responses using Server-Sent Events (SSE)
    */
-  async *stream<T = SSEEvent>(path: string, body: any): AsyncGenerator<T> {
+  async *stream(path: string, body: any): AsyncGenerator<AnySSEEvent> {
     const url = this.getUrl(path)
 
     logger.debug(`Streaming from ${path}`)
@@ -169,7 +176,8 @@ export class FastAPIClient {
         if (response.status === 429) {
           useToast('Rate limited', 10000, 'error')
         } else {
-          useToast(errorText, 10000, 'error')
+          // FIXME not sure to log the error
+          // useToast(errorText, 10000, 'error')
         }
 
         throw new Error(`HTTP ${response.status}: ${errorText}`)
@@ -202,10 +210,11 @@ export class FastAPIClient {
                 // Store session hash from first event
                 this.setSessionHash(data.session_hash)
               } else if (data.type === 'error') {
-                const errorMsg = 'error' in data ? data.error : 'Unknown error'
-                logger.error(`SSE error: ${errorMsg}`)
-                useToast(errorMsg, 10000, 'error')
-                throw new Error(errorMsg)
+                // FIXME throw? probably not, errors are handle in chat
+                // const errorMsg = 'error' in data ? data.error : 'Unknown error'
+                // logger.error(`SSE error: ${errorMsg}`)
+                // useToast(errorMsg, 10000, 'error')
+                // throw new Error(errorMsg)
               } else if (data.type === 'done') {
                 // Stream complete
                 logger.debug('SSE stream completed')
@@ -213,7 +222,7 @@ export class FastAPIClient {
               }
 
               // Yield the parsed event
-              yield data as T
+              yield data as AnySSEEvent
             } catch (_parseError) {
               logger.error(`Failed to parse SSE data: ${dataStr}`)
             }
@@ -230,4 +239,4 @@ export class FastAPIClient {
 /**
  * Global FastAPI client instance
  */
-export const fastapiClient = new FastAPIClient(getBackendUrl())
+export const api = new FastAPIClient(getBackendUrl())

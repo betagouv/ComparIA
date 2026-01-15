@@ -1,20 +1,14 @@
 <script lang="ts">
-  import type { ChatMessage, OnReactionFn } from '$lib/chatService.svelte'
+  import type { ChatRound, OnReactionFn } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { MessageBot, MessageUser } from '.'
 
   let {
-    user,
-    bots,
-    index,
-    generating,
+    round,
     disabled,
     onReactionChange
   }: {
-    user: ChatMessage<'user'>
-    bots: [ChatMessage<'assistant'>, ChatMessage<'assistant'>]
-    index: number
-    generating: boolean
+    round: ChatRound
     disabled: boolean
     onReactionChange: OnReactionFn
   } = $props()
@@ -23,15 +17,16 @@
 </script>
 
 <div
-  class="grouped-messages px-4 not-last:mb-15 md:px-8 xl:px-16"
+  class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16"
   style="--message-size: {userMessageSize}px;"
   {@attach scrollTo}
 >
-  <MessageUser bind:size={userMessageSize} message={user} />
+  <MessageUser bind:size={userMessageSize} message={round.user} />
 
   <div class="gap-10 md:grid-cols-2 md:gap-6 grid">
-    {#each bots as botMessage, j (j)}
-      <MessageBot message={botMessage} {index} {generating} {disabled} {onReactionChange} />
-    {/each}
+    {#if round.a && round.b}
+      <MessageBot message={round.a} index={round.index} {disabled} {onReactionChange} />
+      <MessageBot message={round.b} index={round.index} {disabled} {onReactionChange} />
+    {/if}
   </div>
 </div>
