@@ -23,7 +23,7 @@ from backend.arena.persistence import (
     record_vote,
 )
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
-from backend.arena.session import create_session, is_ratelimited
+from backend.arena.session import create_session, increment_input_chars, is_ratelimited
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
 from backend.language_models.data import get_models
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
@@ -159,6 +159,11 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         async for chunk in stream_comparison_messages(conversations, request):
             yield chunk
 
+        # Increment input chars for pricey llms
+        for conv in [conversations.conversation_a, conversations.conversation_b]:
+            if conv.llm.pricey:
+                increment_input_chars(get_ip(request), len(args.prompt_value))
+
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
         record_conversations(conversations)
@@ -205,6 +210,11 @@ async def add_text(
     async def event_stream() -> AsyncGenerator[str]:
         async for chunk in stream_comparison_messages(conversations, request):
             yield chunk
+
+        # Increment input chars for pricey llms
+        for conv in [conversations.conversation_a, conversations.conversation_b]:
+            if conv.llm.pricey:
+                increment_input_chars(get_ip(request), len(args.message))
 
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
@@ -259,11 +269,17 @@ async def retry(
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
     record_conversations(conversations)
+    last_user_msg = conv_a.messages[-1].content
 
     # Re-stream responses
     async def event_stream() -> AsyncGenerator[str]:
         async for chunk in stream_comparison_messages(conversations, request):
             yield chunk
+
+        # Increment input chars for pricey llms
+        for conv in [conversations.conversation_a, conversations.conversation_b]:
+            if conv.llm.pricey:
+                increment_input_chars(get_ip(request), len(last_user_msg))
 
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
@@ -306,7 +322,7 @@ async def react(
         else conversations.conversation_b
     )
 
-    # Get real message index from front which is the message index without counting system message
+    # Get real message index from front which is the assistant message index without counting system message
     msg_index = (
         reaction_body.index if not conv.has_system_msg else reaction_body.index + 1
     )
