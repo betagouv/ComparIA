@@ -104,17 +104,27 @@ export interface VoteData {
 
 // REVEAL
 
-type DurationUnit = 'j' | 'h' | 'min' | 's'
+type DurationUnit = 'j' | 'h' | 'min' | 's' | 'ms'
+
+type CO2Unit = 'g' | 'mg'
+
+type EnergyUnit = 'Wh' | 'mWh'
 
 export interface APIRevealData {
   b64: string
   model_a: APIBotModel
   model_b: APIBotModel
   chosen_model: 'model-a' | 'model-b' | null
+  model_a_energy: number
+  model_a_energy_unit: EnergyUnit
+  model_b_energy: number
+  model_b_energy_unit: EnergyUnit
   model_a_kwh: number
   model_b_kwh: number
   model_a_co2: number
+  model_a_co2_unit: CO2Unit
   model_b_co2: number
+  model_b_co2_unit: CO2Unit
   model_a_tokens: number
   model_b_tokens: number
   streaming_a: number
@@ -130,8 +140,11 @@ export interface APIRevealData {
 interface RevealModelData {
   model: BotModel
   side: 'model-a' | 'model-b'
+  energy: number
+  energyUnit: string
   kwh: number
   co2: number
+  co2Unit: string
   tokens: number
   lightbulb: number
   lightbulbUnit: string
@@ -290,8 +303,11 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
     modelsData: (['a', 'b'] as const).map((model) => ({
       model: parseModel(data[`model_${model}`]),
       side: `model-${model}`,
+      energy: data[`model_${model}_energy`],
+      energyUnit: data[`model_${model}_energy_unit`],
       kwh: data[`model_${model}_kwh`],
-      co2: data[`model_${model}_co2`] * 1000,
+      co2: data[`model_${model}_co2`],
+      co2Unit: data[`model_${model}_co2_unit`],
       tokens: data[`model_${model}_tokens`],
       lightbulb: data[`lightbulb_${model}`],
       lightbulbUnit: data[`lightbulb_${model}_unit`],

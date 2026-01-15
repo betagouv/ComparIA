@@ -27,11 +27,10 @@
 
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="grid gap-5 lg:grid-cols-2 lg:gap-6">
-    {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
+    {#each modelsData as { model, side, energy, energyUnit, kwh, co2, co2Unit, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
       {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
-      {@const wh = kwh * 1000}
 
       <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
         <div>
@@ -109,8 +108,8 @@
 
             <MiniCard
               id="energy-{side}"
-              value={wh.toFixed(wh < 2 ? 2 : 0)}
-              units="Wh"
+              value={energy.toFixed(energy < 2 ? 2 : 0)}
+              units={energyUnit}
               desc={m['reveal.impacts.energy.label']()}
               icon="flashlight-fill"
               iconClass="text-info"
@@ -125,7 +124,7 @@
           <MiniCard
             id="co2-{side}"
             value={co2.toFixed(co2 < 2 ? 2 : 0)}
-            units="g"
+            units={co2Unit}
             desc={m['reveal.equivalent.co2.label']()}
             icon="cloudy-2-fill"
             iconClass="text-(--grey-975-75-active)"

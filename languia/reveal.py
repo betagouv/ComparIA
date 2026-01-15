@@ -48,8 +48,8 @@ def calculate_lightbulb_consumption(impact_energy_value):
 
     Returns:
       A tuple containing:
-        - An integer representing the consumption time.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
+        - A number representing the consumption time.
+        - A string representing the most sensible time unit ('j', 'h', 'min', 's', or 'ms').
     """
     # Calculate consumption time using Wh
     watthours = impact_energy_value * 1000
@@ -65,8 +65,74 @@ def calculate_lightbulb_consumption(impact_energy_value):
         return int(consumption_hours), "h"
     elif consumption_minutes >= 1:
         return int(consumption_minutes), "min"
-    else:
+    elif consumption_seconds >= 1:
         return int(consumption_seconds), "s"
+    else:
+        # For very small values, use milliseconds
+        consumption_milliseconds = watthours * 60 * 60 * 1000 / 5
+        return round(consumption_milliseconds, 2), "ms"
+
+
+def calculate_energy_with_unit(impact_energy_value_or_range):
+    """
+    Calculates energy consumption and determines the most sensible unit.
+
+    Args:
+      impact_energy_value_or_range: Energy consumption in kilowatt-hours (kWh).
+
+    Returns:
+      A tuple containing:
+        - A float representing the energy value.
+        - A string representing the most sensible unit ('Wh' or 'mWh').
+    """
+    if hasattr(impact_energy_value_or_range, "min"):
+        impact_energy_value = (
+            impact_energy_value_or_range.min + impact_energy_value_or_range.max
+        ) / 2
+    else:
+        impact_energy_value = impact_energy_value_or_range
+
+    # Convert to watt-hours
+    energy_wh = impact_energy_value * 1000
+
+    # Determine sensible unit based on magnitude
+    if energy_wh >= 1:
+        return energy_wh, "Wh"
+    else:
+        # Convert to milliwatt-hours for very small values
+        energy_mwh = energy_wh * 1000
+        return energy_mwh, "mWh"
+
+
+def calculate_co2_with_unit(impact_gwp_value_or_range):
+    """
+    Calculates CO2 emissions and determines the most sensible unit.
+
+    Args:
+      impact_gwp_value_or_range: CO2 emissions in kilograms.
+
+    Returns:
+      A tuple containing:
+        - A float representing the CO2 value.
+        - A string representing the most sensible unit ('kg', 'g', or 'mg').
+    """
+    if hasattr(impact_gwp_value_or_range, "min"):
+        impact_gwp_value = (
+            impact_gwp_value_or_range.min + impact_gwp_value_or_range.max
+        ) / 2
+    else:
+        impact_gwp_value = impact_gwp_value_or_range
+
+    # Convert to grams
+    co2_grams = impact_gwp_value * 1000
+
+    # Determine sensible unit based on magnitude
+    if co2_grams >= 1:
+        return co2_grams, "g"
+    else:
+        # Convert to milligrams for very small values
+        co2_milligrams = co2_grams * 1000
+        return co2_milligrams, "mg"
 
 
 def calculate_streaming_hours(impact_gwp_value_or_range):
@@ -78,8 +144,8 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
 
     Returns:
       A tuple containing:
-        - An integer representing the streaming hours.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
+        - A number representing the streaming time.
+        - A string representing the most sensible time unit ('j', 'h', 'min', 's', or 'ms').
     """
 
     if hasattr(impact_gwp_value_or_range, "min"):
@@ -98,8 +164,11 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
         return int(streaming_hours), "h"
     elif streaming_hours * 60 >= 1:
         return int(streaming_hours * 60), "min"
-    else:
+    elif streaming_hours * 60 * 60 >= 1:
         return int(streaming_hours * 60 * 60), "s"
+    else:
+        # For very small values, use milliseconds
+        return round(streaming_hours * 60 * 60 * 1000, 2), "ms"
 
 
 def build_reveal_dict(conv_a, conv_b, chosen_model):
@@ -159,19 +228,25 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
     model_a_impact = get_llm_impact(model_a, conv_a.model_name, model_a_tokens, None)
     model_b_impact = get_llm_impact(model_b, conv_b.model_name, model_b_tokens, None)
 
-    # Extract and normalize energy and CO2 values (handles value ranges)
+    # Convert energy to appropriate unit (Wh or mWh) with dynamic unit selection
+    model_a_energy, model_a_energy_unit = calculate_energy_with_unit(model_a_impact.energy.value)
+    model_b_energy, model_b_energy_unit = calculate_energy_with_unit(model_b_impact.energy.value)
+
+    # Convert CO2 to appropriate unit (g or mg) with dynamic unit selection
+    model_a_co2, model_a_co2_unit = calculate_co2_with_unit(model_a_impact.gwp.value)
+    model_b_co2, model_b_co2_unit = calculate_co2_with_unit(model_b_impact.gwp.value)
+
+    # Keep kWh for backward compatibility with lightbulb calculation
     model_a_kwh = convert_range_to_value(model_a_impact.energy.value)
     model_b_kwh = convert_range_to_value(model_b_impact.energy.value)
-    model_a_co2 = convert_range_to_value(model_a_impact.gwp.value)
-    model_b_co2 = convert_range_to_value(model_b_impact.gwp.value)
 
     # Convert energy to LED lightbulb comparison (5W LED light)
     lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(model_a_kwh)
     lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(model_b_kwh)
 
     # Convert CO2 to video streaming comparison
-    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_co2)
-    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_co2)
+    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_impact.gwp.value)
+    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_impact.gwp.value)
 
     import base64, json
 
@@ -199,12 +274,19 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         model_a=model_a,  # Full model A metadata
         model_b=model_b,  # Full model B metadata
         chosen_model=chosen_model,  # User's preference
-        # Energy metrics
+        # Energy metrics with dynamic units (Wh or mWh)
+        model_a_energy=model_a_energy,
+        model_a_energy_unit=model_a_energy_unit,
+        model_b_energy=model_b_energy,
+        model_b_energy_unit=model_b_energy_unit,
+        # Deprecated: kept for backward compatibility
         model_a_kwh=model_a_kwh,
         model_b_kwh=model_b_kwh,
-        # Environmental metrics (CO2)
+        # Environmental metrics (CO2) with dynamic units
         model_a_co2=model_a_co2,
+        model_a_co2_unit=model_a_co2_unit,
         model_b_co2=model_b_co2,
+        model_b_co2_unit=model_b_co2_unit,
         # Token usage
         model_a_tokens=model_a_tokens,
         model_b_tokens=model_b_tokens,
