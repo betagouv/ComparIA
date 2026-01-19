@@ -316,6 +316,12 @@ async def react(
         extra={"request": request},
     )
 
+    if conversations.vote:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't react: Conversations has vote",
+        )
+
     conv = (
         conversations.conversation_a
         if reaction_body.bot == "a"
@@ -388,6 +394,17 @@ async def vote(
         f"'/vote' session={conversations.session_hash} called with: {vote_body.model_dump_json()}",
         extra={"request": request},
     )
+
+    if conversations.vote:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't vote: Conversations has vote",
+        )
+    if conversations.conversation_a.reactions or conversations.conversation_a.reactions:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't vote: Conversation has reactions",
+        )
 
     conversations.vote = vote_body
     # Store conversations with updated vote to redis
