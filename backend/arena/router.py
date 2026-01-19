@@ -76,13 +76,22 @@ def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) ->
 
 def get_conversations(session_hash: str = Depends(get_session_hash)) -> Conversations:
     try:
-        return Conversations.from_session(session_hash)
+        conversations = Conversations.from_session(session_hash)
     except Exception as e:
         # FIXME raise different errors depending on problem
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Conversations '{session_hash}' couldn't be found or parsed: {str(e)}",
         )
+
+    # For any arena view, raise error if chat responses are not yet finished
+    if conversations.is_streaming:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Veuillez attendre la fin de la réponse des modèles.",
+        )
+
+    return conversations
 
 
 ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
@@ -143,6 +152,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         extra={"request": request},
     )
 
+    conversations.is_streaming = True
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
@@ -164,6 +174,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
             if conv.llm.pricey:
                 increment_input_chars(get_ip(request), len(args.prompt_value))
 
+        conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
         record_conversations(conversations)
@@ -201,6 +212,7 @@ async def add_text(
     conversations.conversation_a.messages.append(user_message)
     conversations.conversation_b.messages.append(user_message)
 
+    conversations.is_streaming = True
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
@@ -216,6 +228,7 @@ async def add_text(
             if conv.llm.pricey:
                 increment_input_chars(get_ip(request), len(args.message))
 
+        conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
         record_conversations(conversations)
@@ -265,6 +278,7 @@ async def retry(
             detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
         )
 
+    conversations.is_streaming = True
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
@@ -281,6 +295,7 @@ async def retry(
             if conv.llm.pricey:
                 increment_input_chars(get_ip(request), len(last_user_msg))
 
+        conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
         record_conversations(conversations)
