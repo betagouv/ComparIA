@@ -188,6 +188,8 @@ class Conversations(BaseModel):
     conversation_b: Conversation
     vote: Union["VoteBody", None] = None
     error: ErrorDetails | None = None
+    # Status
+    is_streaming: bool = False
 
     @computed_field  # type: ignore[prop-decorator]
     @property
