@@ -106,6 +106,7 @@ async def stream_conversation_messages(
         error_message = str(e)
 
         if settings.SENTRY_DSN:
+            # Error is silenced to be sent thru sse message, send it to sentry manually
             # TODO: only capture model name to sort more easily in sentry
             sentry_sdk.capture_exception(e)
 
@@ -210,6 +211,10 @@ async def stream_comparison_messages(
         yield format_sse_event({"type": "error", "error": e.message, "pos": e.pos})
     except Exception as e:
         # General error
+        if settings.SENTRY_DSN:
+            # Error is silenced to be sent thru sse message, send it to sentry manually
+            sentry_sdk.capture_exception(e)
+
         # FIXME log to controller?
         conversations.error = ErrorDetails(message=str(e))
         logger.error(
