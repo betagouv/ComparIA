@@ -14,6 +14,7 @@ from backend.arena.models import (
     RevealData,
     UserMessage,
     VoteBody,
+    create_conversation,
     create_conversations,
 )
 from backend.arena.persistence import (
@@ -277,13 +278,54 @@ async def retry(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
         )
+    last_user_msg = conv_a.messages[-1]
+
+    # If conversations has not yet trully started
+    if conversations.error and last_user_msg.content == conversations.opening_msg:
+        # if error is from a specific model, reroll it
+        if pos := conversations.error.pos:
+            models = get_models()
+            failing_model_id = conv_a.model_name if pos == "a" else conv_b
+
+            if selection := conversations.custom_models_selection:
+                # Reset custom_models_selection
+                conversations.custom_models_selection = tuple(
+                    model_id for model_id in selection if model_id != failing_model_id
+                )
+                # FIXME warn user that its selection is not taken into account
+
+            # Repick a model ids excluding current ones
+            new_model_id, _ = models.pick_two(
+                conversations.mode,
+                # custom_selection=conversations.custom_models_selection,
+                unavailable_models=[conv_a.model_name, conv_b.model_name],
+            )
+            logger.info(
+                f"reinitializing conv {pos} w/ new model: {new_model_id}",
+                extra={"request": request},
+            )
+            # Reset conversation with new model
+            setattr(
+                conversations,
+                f"conversation_{pos}",
+                create_conversation(new_model_id, last_user_msg),
+            )
+            logger.info(
+                f"new conv {pos} id: {(conv_a if pos == "a" else conv_b).conv_id}",
+                extra={"request": request},
+            )
+
+    conversations.error = None
 
     conversations.is_streaming = True
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
     record_conversations(conversations)
-    last_user_msg = conv_a.messages[-1].content
+
+    logger.info(
+        f"retry with user message: {last_user_msg.content}", extra={"request": request}
+    )
 
     # Re-stream responses
     async def event_stream() -> AsyncGenerator[str]:
@@ -293,7 +335,7 @@ async def retry(
         # Increment input chars for pricey llms
         for conv in [conversations.conversation_a, conversations.conversation_b]:
             if conv.llm.pricey:
-                increment_input_chars(get_ip(request), len(last_user_msg))
+                increment_input_chars(get_ip(request), len(last_user_msg.content))
 
         conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
