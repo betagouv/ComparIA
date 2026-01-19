@@ -264,6 +264,7 @@
             "accessibility": "Accessibility: non-compliant",
             "legal": "Legal notice",
             "privacy": "Privacy policy",
+            "rgesn": "Eco-design",
             "sources": "Source code",
             "tos": "Terms of use"
         },
@@ -340,6 +341,97 @@
             "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
             "privacyTitle": "Do we process personal data?",
             "title": "Privacy policy"
+        },
+        "rgesn": {
+            "1": {
+                "1": "The compar:IA website provides easy and free access to a wide variety of conversational AI models, raising public awareness of the various challenges of generative AI: diversity, bias, and environmental impact. Furthermore, the datasets of questions and preferences compiled are shared as open source under the MIT/Etalab 2.0 license.",
+                "2": "The target users of the Compar:IA service were identified by conducting user interviews and a preliminary phase of needs investigation.",
+                "3": "Thus, all citizens are concerned as potential users, but particularly teachers, pupils, students, workshop facilitators, AI trainers, as well as researchers (computer science, AI, humanities and social sciences) and companies interested in analyzing or using open-source shared datasets. Accordingly, the digital service meets their needs through the following features: testing and comparing models for free, and using open-source shared data.",
+                "4": "The compar:IA service is part of an eco-design approach aimed at reducing environmental impacts. To this end, this declaration was drafted within the framework of the implementation of the General Eco-design Framework for Digital Services (RGESN, version 2024). The RGESN, produced by Arcep and Arcom, in collaboration with ADEME, DINUM, CNIL, and Inria, is available on the <a {linkProps}>Arcep website</a>.",
+                "title": "Purpose of this service"
+            },
+            "2": {
+                "1": "Eco-design of digital services is an approach aimed at reducing and limiting the environmental impacts of a service from its design phase and throughout its life cycle.",
+                "2": {
+                    "1": "Designing more sustainable digital services to extend the lifespan of devices;",
+                    "2": "Promote an approach based on environmental sobriety in response to user attention capture strategies, in line with international environmental objectives;",
+                    "3": "Reduce the IT resources used, optimize data traffic and the use of digital infrastructure;",
+                    "4": "Increase the level of transparency on the environmental footprint of the digital service.",
+                    "title": "Its implementation pursues four main objectives:"
+                },
+                "3": {
+                    "1": "Limit the size of a page",
+                    "2": "Limit the complexity of a page",
+                    "3": "Limit the number of server requests",
+                    "4": "Limit the energy consumption required to host the service",
+                    "title": "In practical terms, eco-design translates into a set of best practices to be followed before, during, and after the creation or improvement of a service, enabling, in particular:"
+                },
+                "4": "This is a process of continuous and collective improvement.",
+                "title": "What is eco-design?"
+            },
+            "3": {
+                "1": {
+                    "1": "Simplifying the user experience: navigation paths are optimized and centered around the essential features of the Compar:IA service (arena of models to test, datasets, ranking) with regular user testing.",
+                    "2": "Raising awareness among users about the ecological footprint of the service: highlighting energy impact indicators on questions asked to AI; promoting \"frugal\" uses, with a mode dedicated to querying \"small\" conversational AI models whose environmental impact is smaller.",
+                    "3": "Use of State Design System (DSFR) interface components: they are accessible and their footprint is minimal.",
+                    "4": "The most intuitive navigation possible to reduce the time spent finding information.",
+                    "5": "Mobile-first design: all content is viewable on mobile devices. The site adapts to all screen sizes.",
+                    "6": "Exclusion of video integration on the site.",
+                    "title": "The main challenge is to ensure that the compar:IA service works on the oldest possible user devices, under varying connectivity conditions. Several measures were implemented during the design phase, including:"
+                },
+                "title": "Strategy implemented and objectives regarding the reduction or limitation of environmental impacts"
+            },
+            "4": {
+                "1": "The self-assessment, conducted between May and October 2025 by the product team (two people were responsible for reviewing and validating all criteria), covered all pages of the site. The tools used to evaluate certain technical indicators were the browser's developer tools' \"network\" inspector, the <a {greenitLinkProps}>Green IT Analysis</a> extension, and the <a {ecoindexLinkProps}>EcoIndex</a> tool.",
+                "title": "RGESN Diagnosis"
+            },
+            "5": {
+                "1": {
+                    "1": "Progress score in the implementation of the RGESN, as of 10/12/2025: 89%",
+                    "title": "The self-diagnosis gives a compliance rate with the <a {linkProps}>RGESN</a> (general ecodesign reference) of 89%."
+                },
+                "2": "The digital service compar:IA aims to improve this progress score to reach 95% by 2027.",
+                "3": {
+                    "1": "Strategy: 100%",
+                    "2": "Specifications: 78%",
+                    "3": "Architecture: 100%",
+                    "4": "User Experience and Interface (UX/UI): 100%",
+                    "5": "Contents: 67%",
+                    "6": "Frontend: 82%",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90%",
+                    "9": "Algorithms: 100%",
+                    "title": "Score by theme:"
+                },
+                "4": {
+                    "date": "December 10, 2025",
+                    "title": "RGESN Audit Table"
+                },
+                "title": "Score in the implementation of the framework"
+            },
+            "6": {
+                "1": "The site is designed to be accessible for any mobile device dating from 2017 or later.",
+                "2": "Minimum connection required for comfortable access and use of the service: 3G on mobile and 512 Kbps on fixed connection.",
+                "3": "The site is designed for different screen sizes (minimum 320 pixels wide).",
+                "4": "The site is not accessible via the Internet Explorer browser. ",
+                "title": "Minimum requirements to access the site"
+            },
+            "7": {
+                "1": "Design the service with a design review and a code review, one of the objectives of which is to reduce the environmental impacts of each feature (criterion 2.1)",
+                "2": "Implement data retention periods for the purpose of deletion or archiving: regular deletion of logs in the \"S3\" file server and the database (Postgres) in particular.",
+                "3": {
+                    "1": "Maximum number of server requests per screen: 40",
+                    "2": "Maximum resource size per screen: 600 KB",
+                    "title": "To adhere to a maximum weight and a limit on the number of requests per screen (criterion 6.1):"
+                },
+                "4": "Convert the illustrations to WebP, AVIF, JPEG XL or a more efficient image format for raster images (criterion 5.1).",
+                "5": "Allow the possibility to interrupt inference (loading of responses) during model comparison.",
+                "6": "EcoIndex analysis scores demonstrate a significant discrepancy in impact measurements, with some pages receiving scores of up to E or F (relatively large page weight, complexity, and number of requests); the challenge now is to understand these results more precisely on a case-by-case basis, despite the good practices implemented, in order to identify further improvements.",
+                "desc": "Several improvements have been or are still being identified, including:",
+                "title": "Improvements identified"
+            },
+            "desc": "published on December 11, 2025",
+            "title": "Ecodesign statement"
         },
         "tos": {
             "contactDesc": "For any questions about the service, you can write to <a {linkProps}>{contactLink}</a>.",
@@ -429,6 +521,9 @@
                 "Jamba Open Model": {
                     "commercial_use_specificities": "below $50 million in annual revenue",
                     "license_desc": "<p> This license allows free use, reproduction, modification, and distribution of the code with attribution, but imposes restrictions for organizations exceeding $50 million in annual revenue. </p>"
+                },
+                "LFM 1.0": {
+                    "license_desc": "<p> This worldwide, free, and non-exclusive license allows the use, modification, and redistribution of the model and its derivatives, including the reuse of outputs to train other models. It remains permissive but limits commercial use to organizations with annual revenues below $10 million; beyond this threshold, usage is no longer covered. </p>"
                 },
                 "Llama 3 Community": {
                     "commercial_use_specificities": "under 700 million users",
@@ -579,6 +674,11 @@
                 "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture, with 671 billion parameters but only activating 37 billion per generated token. It is well suited for tool calling, generating structured output (JSON), and code generation. </p>",
                 "size_desc": "<p> DeepSeek V3 is a very large model, requiring multiple graphics cards to run. The Mixture of Experts (MoE) architecture, however, allows only a portion of the parameters to be used for generating the next token, reducing the footprint compared to a dense model of the same size. </p>\n <p> The context window reaches 163,000 tokens, which is useful for analyzing long documents. </p>"
             },
+            "DeepSeek V3.2": {
+                "desc": "<p> A very large model designed for complex tasks: agentic orchestration, code generation, and analysis of long documents. This version is particularly strong in tool usage and can simulate a reasoning phase before providing the final answer. </p>",
+                "fyi": "<p> For this version, the API cost and computational requirements are reduced by approximately 50% or more for long contexts. This improvement is based on \"DeepSeek Sparse Attention (DSA),\" a fine-grained sparse attention mechanism that selectively calculates attention to decrease complexity over long sequences while preserving the essential context. </p>\n <p> The model was trained prioritizing reasoning abilities and agentic uses. </p>",
+                "size_desc": "<p> DeepSeek V3.2 is a very large model, requiring multiple graphics cards to run. However, the Mixture of Experts (MoE) architecture allows only a portion of the parameters to be activated, reducing the footprint compared to a dense model of the same size. The context window reaches 163,000 tokens, which is useful for analyzing very long documents or codebases. </p>"
+            },
             "DeepSeek v3": {
                 "desc": "<p> Released in December 2024, the DeepSeek V3 model features a Mixture-of-Experts architecture that allows it to be very large while reducing inference costs. </p>",
                 "fyi": "<p> Released in December 2024, this flagship model from the Chinese company DeepSeek features a Mixture-of-Experts architecture that allows it to be very large while reducing inference costs. </p>",
@@ -589,14 +689,24 @@
                 "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture, with 671 billion parameters but only activating 37 billion per generated token. It is efficient for tool calls, generating structured output (JSON), and code generation. Training uses FP8 microscaling, which reduces computational and memory costs while maintaining accuracy. The model was trained in two phases: first on sequences of 32,000 tokens, then extended to 163,000 tokens, allowing for better stability and increased performance on very long contexts. </p>",
                 "size_desc": "<p> DeepSeek V3.1 is a very large model, requiring multiple graphics cards to run. The Mixture of Experts (MoE) architecture, however, allows only a portion of the parameters to be enabled, reducing the footprint compared to a dense model of the same size. </p>\n <p> The context window now reaches 163,000 tokens, up from 128,000 in the previous version, which improves the parsing of very long documents. </p>"
             },
+            "EuroLLM 22B Instruct": {
+                "desc": "<p> A multilingual model designed specifically for European linguistic diversity, with strong multilingual translation and comprehension capabilities. </p>",
+                "fyi": "<p> EuroLLM-22B is a model created by a consortium comprising Sorbonne University, Paris-Saclay University, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam, and Naver Labs. It was trained with the primary objective of balanced coverage of European languages. It covers the 24 official languages of the European Union as well as 11 additional languages. Training was performed on approximately 4 trillion tokens, using 400 Nvidia H100 GPUs on the MareNostrum 5 supercomputer, operated by the Barcelona Supercomputing Center. The project received European institutional support through Horizon Europe and EuroHPC, within the framework of an \"extreme-scale\" computing allocation. </p>\n <p> The training data combines web data, multilingual parallel data (en–xx and xx–en), and carefully selected high-quality datasets, with a strong emphasis on balance between European languages. The model performs particularly well for multilingual translation tasks. </p>",
+                "size_desc": "<p> With 22 billion parameters, this model falls into the category of medium-sized models. Its use requires a very powerful personal computer or, more generally, a server with at least one high-performance graphics card. The context window contains 32,000 tokens. </p>"
+            },
             "GLM 4.5": {
-                "desc": "<p> A very large model created by Zhipu AI, a Chinese AI model maker founded in 2019 by professors at Tsinghua University and backed by major players like Alibaba and Tencent. The model has two response modes: a reasoning mode, for more in-depth answers, or a quick mode, to generate the final answer right-away. </p>",
+                "desc": "<p> A large model specialised in code created by Zhipu AI, a Chinese AI model maker founded in 2019 by professors at Tsinghua University and backed by major players like Alibaba and Tencent. The model has two response modes: a reasoning mode, for more in-depth answers, or a quick mode, to generate the final answer right-away. </p>",
                 "fyi": "<p> This model has good agentic capabilities, allowing it to make function calls with reliably. It offers solid coding performance, thus allowing the model to create complete web applications and generate artefacts, which are single-file programs that can be used within the interfaces of conversational agents. For training, a specific reinforcement learning infrastructure, named Slime, was designed to optimize performance on complex and agentic tasks by efficiently managing long workflows - thus the model is able to long-running tasks - making the best use of its tools and remaining consistent from start to finish. </p>",
                 "size_desc": "<p> With 355 billion parameters, this model is considered very large. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than dense models of similar size, but it still requires a server with several very powerful graphics cards to host. Its context window goes up to 128,000 tokens, which allows it to process fairly long documents. </p>"
             },
             "GLM 4.6": {
-                "desc": "<p> An updated version of the GLM 4.5 model created by Zhipu AI, GLM 4.6 increases the size of the context window, improves its performance in code, aligns more with human preferences, and is more capable in agentic/tool use cases. </p>",
+                "desc": "<p> A large model specialized in code created by Zhipu AI, a Chinese AI model developer founded in 2019 by professors from Tsinghua University and backed by major players like Alibaba and Tencent. This update increases the context window size, improves its code performance, aligns more closely with human preferences, and is more capable in agent-based/tool-based use cases. </p>",
                 "fyi": "<p> This model has good agentic capabilities, allowing it to make function calls with high reliability. Its coding performance is high, and the model has a good ability to create complete web applications and generate artifacts, which are single-file programs that can be used within the interfaces of conversational agents. For training, a specific reinforcement learning framework, called slime, was designed to optimize performance on complex and agentic tasks by efficiently handling long workflows - the model is able to handle complex and long-running tasks, such as creating an application from scratch, making the best use of its tools and remaining consistent from start to finish. </p>",
+                "size_desc": "<p> With 357 billion parameters, this model falls into the very large model category. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than some other models of similar size, but it still requires a server with several very powerful graphics cards to host it. Its context window goes up to 200,000 tokens, which allows it to process very long documents. </p>"
+            },
+            "GLM 4.7": {
+                "desc": "<p> A large, specialized code model created by Zhipu AI, a Chinese AI model developer founded in 2019 by professors from Tsinghua University and backed by major players like Alibaba and Tencent. This update improves its code performance (especially for web interfaces), interacts better with AI-assisted coding environments, and generally performs better in agentic contexts. </p>",
+                "fyi": "<p> This model has good agentic capabilities, allowing it to make function calls with high reliability. Its coding performance is high, and the model has a good ability to create applications and interfaces. For training, a specific reinforcement learning infrastructure, named Slime, was designed to optimize performance on complex and agentic tasks by efficiently managing long workflows—the model is capable of handling complex and lengthy tasks, such as creating an application from start to finish, making the best use of its tools and remaining consistent from beginning to end. </p>",
                 "size_desc": "<p> With 357 billion parameters, this model falls into the very large model category. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than some other models of similar size, but it still requires a server with several very powerful graphics cards to host it. Its context window goes up to 200,000 tokens, which allows it to process very long documents. </p>"
             },
             "GPT 4.1 Nano": {
@@ -623,6 +733,11 @@
                 "desc": "<p> Second iteration of the GPT 5 family, with a style deemed (by the publisher) more natural, with better results in code and agent tasks. The model has the unique feature of adjusting its reasoning time according to the difficulty. </p>",
                 "fyi": "<p> The arrival of this new iteration brings automatic routing between two modes. For simple requests, the model chooses a quick response. For more complex tasks, it switches to a mode that requires reasoning before responding. This logic avoids wasting time on easy requests while maintaining true depth when needed. </p>\n <p> The first release of the GPT 5 family provoked a lot of negative reactions regarding its writing style. Many users found the model less warm than GPT 4o. This iteration aims to return to a warmer style. </p>\n <p> This new version also marks progress in coding and mathematics, which is confirmed by benchmarks such as SWE Bench for coding and AIME for mathematical skills. </p>",
                 "size_desc": "<p> The model sizes behind the GPT-5.1 system are not known. The architecture is likely based on a \"mixture of experts\" (MoE), meaning that only a subset of parameters are activated for each query. This allows for greater energy efficiency and high performance. Available estimates of model sizes rely on publicly available information and indirect indicators such as inference costs and response latency. </p>"
+            },
+            "GPT 5.2": {
+                "desc": "<p> Third iteration of GPT 5, with special attention paid to its usefulness in professional tasks. </p>",
+                "fyi": "<p> The model has been presented as reaching, or even exceeding, the performance level of human experts on the GDPval benchmark, which evaluates well-defined digital professional tasks. It offers different levels of reasoning effort configurable by the user or developer, allowing for trade-offs between cost, latency, and quality of responses depending on the complexity of the task. GPT 5.2 also stands out for its ability to retrieve precise information within very large contexts, including when such information is scarce and scattered across long corpora (needle in the haystack). </p>",
+                "size_desc": "<p> The model sizes behind the GPT-5.2 system are not known. The architecture is likely based on a \"mixture of experts\" (MoE), meaning that only a subset of parameters are enabled for each query. This allows for greater energy efficiency and high performance. Available estimates of model sizes rely on publicly available information and indirect indicators such as inference costs and response latency. </p>"
             },
             "GPT OSS-120B": {
                 "desc": "<p> The larger of OpenAI's first two open-weight models since GPT-2. Designed in response to the rise of open source players like Meta (LLaMA) and Mistral, it is a powerful reasoning model, particularly on complex tasks and in \"agentic\" environments. </p>",
@@ -668,6 +783,11 @@
                 "desc": "<p> Large multimodal and multilingual model with two response modalities: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to generate the final answer directly. </p>",
                 "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture and has been distilled by keeping only an approximation of the predictions of the teacher model - Gemini 2.5 Pro. It has been trained on a TPUv5p architecture incorporating advances such as the ability to continue training automatically even in the event of training errors, data corruption, or memory issues. </p>\n <p> Gemini 2.5 Flash supports contexts of up to 1 million tokens and three hours of video content. Optimized vision processing allows for approximately three times longer video to be processed in the same context window: only 66 visual tokens are needed to generate a frame, compared to 258 previously. This model also enables native audio generation for dialogue and speech synthesis. </p>",
                 "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring multiple powerful graphics cards to run. However, the Mixture of Experts (MoE) architecture only activates a portion of the parameters to predict each new token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. Its context window extends up to 1 million tokens, which allows it to process very large document corpora. </p>"
+            },
+            "Gemini 3 Flash": {
+                "desc": "<p> Large, native, multimodal, and multilingual model, distilled from Gemini 3 Pro. It incorporates an advanced reasoning capability (\"Deep Think\") that can be activated on demand, with a reasoning level configurable by the user or developer. The model natively supports text, code, audio, images, video, and PDFs. </p>",
+                "fyi": "<p> The model was trained on an infrastructure composed solely of TPUs (Tensor Processing Units). Gemini 3 Flash can process large volumes of multimodal content per prompt: up to 900 images, 900 PDFs of 900 pages each, videos from 45 minutes to 1 hour, and up to 8.4 hours of audio. At the time of its release, Gemini 3 Flash proved to be very powerful while being approximately nine times less expensive than Gemini 3 Pro. </p>",
+                "size_desc": "<p> The exact size of the model is not disclosed, but it is based on a mixture of experts (MoE) architecture. This architecture activates only a subset of parameters for each token, thus reducing the required computing power. Its context window extends to 1 million tokens. The model is approximately 9 times less expensive than Gemini 3 Pro. The environmental impact varies depending on the level of reasoning chosen: deeper reasoning generates more tokens and therefore consumes more resources. </p>"
             },
             "Gemini 3 Pro": {
                 "desc": "<p> Large, natively multimodal, and multilingual model. It integrates an advanced reasoning capability (\"Deep Think\") that can be activated on demand for complex tasks (mathematics, logic, coding), separate from its faster, standard generation capability. The model natively supports text, code, audio, images, video, and 3D. </p>",
@@ -819,13 +939,18 @@
                 "fyi": "<p> This model uses a grouped query attention (GQA) method to limit the analyzed text at each generation step and gain speed and memory: computation times are reduced without impacting quality. The attention mechanism is improved by applying windows of different sizes, which allows handling large contexts (up to 128,000 tokens) while remaining lightweight. The large tokenizer (V3-Tekken) better compresses languages and code, which improves its performance on multilingual tasks. </p>",
                 "size_desc": "<p> With its 8 billion parameters, this model is considered small. It can be deployed locally on a fairly powerful computer, ensuring data confidentiality, or hosted on a server with a single graphics card to limit infrastructure costs. </p>"
             },
+            "Mistral 3 Large": {
+                "desc": "<p> A very large, semi-open, multimodal model that performs well in multilingual code and contexts. </p>",
+                "fyi": "<p> This model was trained on 3,000 Nvidia H200 GPUs. It directly competes with semi-open Chinese models. At launch, it is competitive with DeepSeek V3.1, Kimi K2, GLM 4.6, and other benchmarks in terms of code and general use cases. </p>",
+                "size_desc": "<p> With 675 billion parameters, this model falls into the category of very large models. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than dense models of similar size, but it still requires a server with several very powerful graphics cards to host. This model activates 41 billion parameters per token generation. Its context window can hold up to 256,000 tokens, allowing it to process very long documents. </p>"
+            },
             "Mistral Large 2": {
                 "desc": "<p> Large model designed to handle complex questions and tasks: for example, code generation, tool use, long document analysis, or specific-domain language understanding. </p>",
                 "fyi": "<p> This model was trained with a high proportion of code data (over 80 programming languages) and mathematics, which improves its ability to solve complex problems and use tools. </p>",
                 "size_desc": "<p> With 123 billion parameters, this model is considered large. It requires a server equipped with at least one powerful graphics card, which implies a significant operating cost. It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
             "Mistral Medium 3.1": {
-                "desc": "<p> A medium-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It is particularly useful for programming or reasoning tasks, such as mathematics. </p>",
+                "desc": "<p> A mid-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It became particularly attractive after an update in August 2025 with significant improvements in overall performance, an \"improved\" tone, and better ability to search for information on the Internet. </p>",
                 "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
                 "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
@@ -1343,6 +1468,7 @@
                 "desc": "The arena is now available to their citizens in national languages, with a core mission: build preference datasets to improve future AI model performance in low-resource languages.",
                 "title": "The arena <span {props}>goes European</span>!"
             },
+            "screenshotAlt": "Screenshot of the arena, with the initial question, the two model responses, and the voting buttons.",
             "tabLabel": "The arena",
             "title": "The arena enables the creation of <span {props}>preference datasets</span> focused on <span {props}>real-world usage</span> in <span {props}>European languages</span>."
         },
@@ -1404,12 +1530,43 @@
                             "title": "Scaling at the European level"
                         },
                         "2": {
-                            "date": "September 2025"
+                            "date": "September 2025",
+                            "desc": "Creation of a new workshop format open to all audiences, to discover the inner workings of generative AI and reflect on its environmental impact, and publication of the facilitation kit associated with the \"AI Duels\" extension.",
+                            "title": "Launch of <a {linkProps}>“AI Duels”</a>"
+                        },
+                        "3": {
+                            "desc": "Built in partnership with the Digital Regulation Expertise Center (PEReN), the arena ranking is based on all votes and reactions collected since the service was opened to the public in October 2024.",
+                            "title": "Publication of the <a {linkProps}>French ranking</a>"
+                        },
+                        "4": {
+                            "desc": "Denmark joins the adventure by offering the arena in its national language with a dedicated domain name.",
+                            "title": "Opening the arena <a {linkProps}>in Danish</a>"
+                        },
+                        "5": {
+                            "desc": "The service is recognized as a digital public good by the Digital Public Goods Alliance",
+                            "title": "compar:AI recognized as a <a {linkProps}>Digital Public Good</a>"
+                        },
+                        "6": {
+                            "date": "November 2025",
+                            "desc": "With over 500,000 unique conversations since the launch of compar:IA.",
+                            "title": "Goal of 200,000 votes reached!"
                         }
-                    }
+                    },
+                    "tag": "Internationalization"
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "January-March 2024",
+                            "desc": "Interviews with stakeholders in the ecosystem and initial hypotheses for a solution to the problem: \"How to facilitate access to data in French for training language models?\".",
+                            "title": "Investigation phase"
+                        }
+                    },
+                    "tag": "Investigation"
                 }
             },
-            "tabLabel": "Project history"
+            "tabLabel": "Key Dates",
+            "title": "The arena's milestones"
         },
         "partners": {
             "academy": {
@@ -1483,7 +1640,7 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Explore the graph that puts a model's satisfaction score (y-axis) into perspective with its energy consumption (x-axis).",
+            "desc": "This graph represents the satisfaction score (Bradley Terry score) for each model as a function of the estimated average energy consumption per 1000 tokens. Energy consumption is estimated using the Ecologits methodology and is based on two parameters: the size of the models (number of parameters) and their architecture. For proprietary models, this information is either not provided or only partially available. Therefore, they are excluded from the graph below.",
             "tabLabel": "Energy focus",
             "title": "Are the most popular models energy efficient?",
             "views": {
@@ -1506,6 +1663,33 @@
                     "xLabel": "Average consumption per 1000 tokens (Wh)",
                     "yLabel": "Bradley-Terry Score (BT)"
                 },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong> Higher a model is located on the graph </strong> the higher its Bradley-Terry satisfaction score. <strong> further to the left a model is located on the graph </strong> the less energy it consumes compared to other models.",
+                            "2": "<strong> At the top left </strong> are the models that are popular and consume less energy compared to other models.",
+                            "3": "Beyond size, architecture has an impact on the average energy consumption of models: for example, with a similar size, the Llama 3 405B model (dense architecture, 405 billion parameters) consumes 10 times more energy on average than the GLM 4.5 model (MOE architecture, 355 billion parameters and 32 billion active parameters)."
+                        },
+                        "subTitle": "Examples of how to read the graph",
+                        "title": "How to find the right balance between perceived performance and energy efficiency?"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "The estimation of energy consumption for model inference relies on the Ecologits methodology, which takes into account the size and architecture of the models. However, this information is not made public by model developers for proprietary models.",
+                            "2": "We have therefore decided not to integrate proprietary models into the graph until the information contributing used for the calculation of energy consumption is transparent."
+                        },
+                        "title": "Why are the proprietary models not displayed on the graph?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "The arena uses the methodology developed by Ecologits (GenAI Impact) to provide an estimate of the energy footprint associated with inferring conversational generative AI models. This estimate allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-friendly AI models.",
+                            "2": "Ecologits applies the principles of life cycle assessment (LCA) in accordance with ISO 14044, focusing for the moment on the impact of inference (i.e., the use of models to answer queries) and the <strong> manufacturing of graphics cards </strong> (resource extraction, manufacturing and transport).",
+                            "3": "The model's power consumption is estimated by taking into account various parameters such as the size and architecture of the AI model used, the location of the servers where the models are deployed, and the number of output tokens. The calculation of the global warming potential indicator, expressed in CO2 equivalent, is derived from the measurement of the model's power consumption.",
+                            "4": "It is important to note that methodologies for assessing the environmental impact of AI are still under development."
+                        },
+                        "title": "How is the energy impact of the models calculated?"
+                    }
+                },
                 "table": {
                     "title": "Chart data in table form"
                 }
@@ -1514,7 +1698,7 @@
         "methodo": {
             "desc": {
                 "1": "Since 2024, thousands of users have used the arena to compare the responses of different models, generating hundreds of thousands of votes. Simply counting the number of wins is not enough to establish a ranking. A fair system must be statistically robust, adjust after each matchup, and truly reflect the value of the performances achieved.",
-                "2": "It is with this in mind that a <strong>ranking based on the Bradley-Terry model</strong> was established, developed in collaboration with the <strong>French Center of expertise for digital platform regulation (PEReN) teams</strong>, based on all the votes and reactions collected on the platform. To learn more, see our <a {linkProps}>methodological notebook</a>."
+                "2": "It is with this in mind that a <strong>ranking based on the Bradley-Terry model</strong> was established, developed in collaboration with the <strong>French Center of expertise for digital platform regulation (<a {perenLinkProps}>PEReN</a>) teams</strong>, based on all the votes and reactions collected on the platform. To learn more, see our <a {lnotebookLinkProps}>methodological notebook</a>."
             },
             "impacts": {
                 "elo": {
@@ -1588,7 +1772,7 @@
             "title": "How are user preferences distributed?"
         },
         "ranking": {
-            "desc": "Thank you for your contributions! Your votes contribute to a Bradley-Terry (BT) ranking, which we make transparent to you.<br>This Bradley-Terry (BT) satisfaction score is built in partnership with the <a {linkProps}>French Center of expertise for digital platform regulation (PEReN)</a> and is based on your votes and your reactions of approval and disapproval.",
+            "desc": "Thank you for your contributions!<br> The <strong>arena ranking</strong> is based on all votes and reactions from the <strong>blind comparison</strong> of the models, collected since the service opened to the public in October 2024.<br>Developed in partnership with the Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), the model ranking is based on the <strong>satisfaction score</strong> calculated using the <strong>Bradley Terry</strong> statistical model, a widely used method for converting binary votes into a probabilistic ranking.<br> The compar:IA ranking is not intended to be an official recommendation or to evaluate the technical performance of the models. It reflects the <strong>subjective preferences</strong> of the platform's users and not the factual accuracy or veracity of the responses.",
             "tabLabel": "Leaderboard"
         },
         "table": {
@@ -1596,7 +1780,7 @@
                 "billions": "{count} billion",
                 "cols": {
                     "arch": "Architecture",
-                    "consumption_wh": "Energy<br>(1000 tokens)",
+                    "consumption_wh": "Average energy<br>(per 1000 tokens)",
                     "elo": "BT score <br> of satisfaction",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -1610,6 +1794,7 @@
                 "estimation": "(estimate)",
                 "tooltips": {
                     "arch": "The architecture of an LLM model refers to the design principles that define how the components of a neural network are arranged and interact to transform input data into predictive outputs, including the activation mode of parameters (dense vs. sparse), the specialization of components, and the information processing mechanisms (transformers, convolutional networks, hybrid architectures).",
+                    "consumption_wh": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a request and generate the corresponding response. Model energy consumption depends on the model's size and architecture. We have chosen to display proprietary models for which we do not have transparent information about their size and architecture in gray as \"unanalyzed\" (N/A).",
                     "elo": "Estimated statistical score based on the Bradley-Terry model, reflecting the probability that one model is preferred over another. This score is calculated from all user votes and reactions. For more information, visit the methodology tab.",
                     "rank": "Rank assigned based on Bradley-Terry satisfaction score",
                     "size": "Model size in billions of parameters, categorized into five classes. For proprietary models, this size is not reported.",
@@ -1655,15 +1840,19 @@
                 "label": "model size",
                 "quantized": "(quantized)"
             },
-            "title": "Energy consumption of the chat",
+            "title": "Estimated energy consumption of the chat",
             "tokens": {
                 "label": "text size",
                 "tokens": "tokens",
                 "tooltip": "AI analyzes and generates sentences from words or parts of words of approximately four letters; this unit of text is called a token. The longer a text, the greater the number of tokens."
-            }
+            },
+            "tooltip": "Estimate based on model size, architecture, and generated response length."
         },
         "thanks": {
             "cta": "Access the rankings",
+            "desc": "Discover how your preference compares to the overall ranking of models in the arena.",
+            "graphAlt": "Overview of the graph representing the score and electricity consumption of the models",
+            "rankingAlt": "Overview of the ranking in table format",
             "title": "Thank you for your contribution!"
         }
     },
@@ -1689,6 +1878,7 @@
             "problem": "The initial challenge",
             "product": "About us",
             "ranking": "Leaderboard",
+            "rgesn": "Ecodesign statement",
             "share": "My results"
         }
     },
