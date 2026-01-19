@@ -11,8 +11,8 @@ from typing import Any, AsyncGenerator, Literal, TypedDict
 
 import sentry_sdk
 from fastapi import Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
 from backend.arena.models import (
     BOT_POS,
@@ -28,19 +28,11 @@ from backend.errors import ChatError
 logger = logging.getLogger("languia")
 
 
-class PydanticModelEncoder(json.JSONEncoder):
-    def default(self, o: Any) -> Any:
-        if isinstance(o, BaseModel):
-            return o.model_dump(mode="json")
-
-        return super().default(o)
-
-
 def format_sse_event(data: Any) -> str:
     """
-    Format event for sse streaming with custom json encoder to parse pydantic models
+    Format event for sse streaming with fastapi json encoder.
     """
-    return f"data: {json.dumps(data, cls=PydanticModelEncoder)}\n\n"
+    return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
 class SSEEventInit(TypedDict):
