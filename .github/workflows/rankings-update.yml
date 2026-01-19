@@ -30,7 +30,10 @@ jobs:
           cache-dependency-glob: "uv.lock"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra ranking
+
+      - name: Compute rankings from HuggingFace
+        run: uv run python -m utils.ranking.compute_rankings
 
       - name: Run build_models script
         run: uv run python -m utils.models.build_models
