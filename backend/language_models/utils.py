@@ -1,4 +1,3 @@
-import logging
 from typing import TYPE_CHECKING, TypedDict, Union
 
 from ecologits.impacts import Impacts
@@ -7,8 +6,6 @@ from ecologits.utils.range_value import RangeValue, ValueOrRange
 
 if TYPE_CHECKING:
     from backend.language_models.models import LanguageModel, Model
-
-logger = logging.getLogger("languia")
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:

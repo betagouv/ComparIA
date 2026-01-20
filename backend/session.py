@@ -5,14 +5,11 @@ This module handles per-IP rate limiting to prevent abuse of expensive model API
 and provides session state management.
 """
 
-import logging
 from functools import lru_cache
 
 import redis
 
 from backend.config import settings
-
-logger = logging.getLogger("languia")
 
 
 @lru_cache

@@ -68,7 +68,7 @@ def litellm_stream_iter(
     max_new_tokens,
     api_base=None,
     api_key=None,
-    ip=None,
+    request=None,
     api_version=None,
     vertex_ai_location=None,
     include_reasoning=False,
@@ -173,7 +173,7 @@ def litellm_stream_iter(
             data["generation_id"] = chunk.id
             logger.debug(
                 f"generation_id: {chunk.id} for api {api_base} and model {model_name}",
-                extra={"ip": ip},
+                extra={"request": request},
             )
         # Extract token count from streaming completion (if available)
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
@@ -181,7 +181,7 @@ def litellm_stream_iter(
             logger.debug(
                 f"reported output tokens for api {api_base} and model {model_name}: "
                 + str(data["output_tokens"]),
-                extra={"ip": ip},
+                extra={"request": request},
             )
         # Process content chunks
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
@@ -212,7 +212,9 @@ def litellm_stream_iter(
                     break
                 elif chunk.choices[0].finish_reason == "length":
                     # Model hit max tokens limit
-                    logger.error("context_too_long: " + str(chunk), extra={"ip": ip})
+                    logger.error(
+                        "context_too_long: " + str(chunk), extra={"request": request}
+                    )
                     raise ContextTooLongError
 
             # Yield partial results for streaming to frontend

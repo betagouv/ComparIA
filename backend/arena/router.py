@@ -297,7 +297,6 @@ async def retry(
             # Repick a model ids excluding current ones
             new_model_id, _ = models.pick_two(
                 conversations.mode,
-                # custom_selection=conversations.custom_models_selection,
                 unavailable_models=[conv_a.model_name, conv_b.model_name],
             )
             logger.info(
