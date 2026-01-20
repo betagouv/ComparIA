@@ -18,7 +18,7 @@ ENV PATH="/app/.venv/bin:/root/.local/bin/:$PATH"
 
 # Copier seulement le nécessaire pour le runtime
 COPY --from=builder /app/.venv /app/.venv
-COPY controller.py main.py /app/
+COPY controller.py backend/main.py /app/
 COPY utils /app/utils
 COPY templates /app/templates
 COPY languia /app/languia
