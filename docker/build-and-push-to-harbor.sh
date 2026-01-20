@@ -22,7 +22,7 @@ docker buildx create --name comparia-builder --use --bootstrap 2>/dev/null || do
 docker buildx inspect --bootstrap
 
 echo "Build des images avec docker bake..."
-docker buildx bake -f docker/docker-bake.yml --push
+docker buildx bake -f docker/docker-bake.yml
 
 echo "Images buildées et poussées avec succès !"
 echo "Backend: $HARBOR_REGISTRY/$HARBOR_PROJECT/languia:$GIT_COMMIT"

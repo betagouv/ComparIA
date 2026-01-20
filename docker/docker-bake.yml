@@ -12,6 +12,9 @@ services:
         tags:
           - ${HARBOR_REGISTRY:-55h10w99.gra7.container-registry.ovh.net}/${HARBOR_PROJECT:-atnum}/languia:${GIT_COMMIT}
           - ${HARBOR_REGISTRY:-55h10w99.gra7.container-registry.ovh.net}/${HARBOR_PROJECT:-atnum}/languia:${BRANCH_NAME}
+        output:
+          - type=registry # push to harbor server
+          - type=docker # and keep locally
 
   frontend:
     build:
@@ -26,3 +29,6 @@ services:
         tags:
           - ${HARBOR_REGISTRY:-55h10w99.gra7.container-registry.ovh.net}/${HARBOR_PROJECT:-atnum}/languia-front:${GIT_COMMIT}
           - ${HARBOR_REGISTRY:-55h10w99.gra7.container-registry.ovh.net}/${HARBOR_PROJECT:-atnum}/languia-front:${BRANCH_NAME}
+        output:
+          - type=registry # push to harbor server
+          - type=docker # and keep locally
