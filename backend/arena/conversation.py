@@ -11,6 +11,7 @@ import logging
 import time
 from typing import AsyncGenerator
 
+from fastapi import Request
 from litellm.litellm_core_utils.token_counter import token_counter
 
 from backend.arena.litellm import get_api_key, litellm_stream_iter
@@ -73,7 +74,7 @@ def update_last_message(
 async def bot_response_async(
     position,
     state: Conversation,
-    ip: str,
+    request: Request,
     temperature=0.7,
     max_new_tokens=4096,
 ) -> AsyncGenerator[list[AnyMessage]]:
@@ -101,7 +102,7 @@ async def bot_response_async(
     if not state.endpoint:
         logger.critical(
             f"No endpoint for model: {state.model_name}",
-            extra={"ip": ip},
+            extra={"request": request},
         )
         raise Exception(f"No endpoint for model: {state.model_name}")
 
@@ -111,7 +112,7 @@ async def bot_response_async(
     endpoint_name = endpoint.api_id if hasattr(endpoint, "api_id") else state.model_name
     logger.info(
         f"using endpoint {endpoint_name} for {state.model_name}",
-        extra={"ip": ip},
+        extra={"request": request},
     )
     # Check if this model supports extended reasoning (like o1)
     include_reasoning = (
@@ -149,7 +150,7 @@ async def bot_response_async(
         api_base=api_base,
         api_version=api_version,
         max_new_tokens=max_new_tokens,
-        ip=ip,
+        request=request,
         vertex_ai_location=vertex_ai_location,
         include_reasoning=include_reasoning,
     )
@@ -187,13 +188,15 @@ async def bot_response_async(
     if generation_id:
         logger.info(
             f"generation_id: {generation_id} for {litellm_model_name}",
-            extra={"ip": ip},
+            extra={"request": request},
         )
 
     # Calculate total generation duration
     stop_tstamp = time.time()
     duration = stop_tstamp - start_tstamp
-    logger.debug(f"duration for {generation_id}: {str(duration)}", extra={"ip": ip})
+    logger.debug(
+        f"duration for {generation_id}: {str(duration)}", extra={"request": request}
+    )
 
     # Extract final response text and reasoning from last chunk
     output = data.get("text")
@@ -203,7 +206,7 @@ async def bot_response_async(
         logger.error(
             f"reponse_vide: {state.model_name}, data: {str(data)}",
             exc_info=True,
-            extra={"ip": ip},
+            extra={"request": request},
         )
         raise EmptyResponseError(
             f"No answer from API {endpoint_name} for model {state.model_name}"
