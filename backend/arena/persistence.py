@@ -719,7 +719,7 @@ def record_conversations(
     convs_record = ConversationsRecord(**convs_data)
 
     logger.debug(
-        f"[COHORT] record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts={convs_record.cohorts}, type={type(convs_record.cohorts)}"
+        f"record_conversations - conv_pair_id={convs_record.conversation_pair_id}, cohorts={convs_record.cohorts}, type={type(convs_record.cohorts)}"
     )
 
     db_data = convs_record.model_dump(mode="json")

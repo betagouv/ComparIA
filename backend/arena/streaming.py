@@ -83,16 +83,10 @@ async def stream_conversation_messages(
         data: {"type": "error", "error": "error message"}
     """
     from backend.arena.conversation import bot_response_async
-    from backend.utils.user import get_ip
 
     try:
-        # Get IP from request for logging
-        ip = get_ip(request)
-
         # Stream responses from bot_response_async generator
-        async for messages in bot_response_async(pos, conv, ip):
-            # Serialize Pydantic messages to dicts for JSON response
-
+        async for messages in bot_response_async(pos, conv, request):
             yield {"type": "chunk", "pos": pos, "messages": messages}
 
         yield {"type": "complete", "pos": pos}
