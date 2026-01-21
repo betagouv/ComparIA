@@ -62,7 +62,7 @@ docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
 
 docker-app-down: ## Stop only app services (frontend + backend), keep infra
 	@echo "Stopping app services..."
-	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend pgadmin
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend
 
 docker-app-logs: ## Show logs for frontend and backend containers
 	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml logs -f frontend backend
