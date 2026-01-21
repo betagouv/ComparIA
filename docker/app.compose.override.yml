@@ -5,24 +5,21 @@ services:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.front
+      # command: ["node", "build"] # CMD du dockerfile frontend
     depends_on:
       - backend
     environment:
+      PORT: "80"
       # URL for server-side rendering (inside Docker network)
       PUBLIC_API_LOCAL_URL: "http://backend:80"
       # URL for client-side browser requests (exposed to host)
-      PUBLIC_API_URL: "http://localhost:3000"
+      PUBLIC_API_URL: "http://localhost:5173"
     ports:
-      - "3000:3000"
-    # Dev config
-    volumes:
-      - ../frontend:/app
-      - /app/node_modules # Exclude node_modules from host mount
-    command: ["npx", "vite", "dev", "--host", "--port", "3000"]
+      - "5173:80"
 
   backend:
-    env_file: ./.env
-    environment:
+    env_file: ../.env
+    environment: #
       LOGDIR: /data
       # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
       COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
@@ -38,28 +35,21 @@ services:
     image: languia:latest
     ports:
       - "8001:80"
-    volumes:
-      - ../data:/data
-      # Dev config - mount everything except .venv
-      - ../:/app
-      - /app/.venv # Exclude .venv from host mount (use container's .venv)
+    # volumes: # en docker l'app est censée etre stateless
+    #   - ../data:/data
     command:
-      ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+      [
+        "uv",
+        "run",
+        "uvicorn",
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "80",
+        "--timeout-graceful-shutdown",
+        "60",
+      ]
     depends_on:
       - postgres
       - redis
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "127.0.0.1:5050:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    depends_on:
-      - postgres
-
-volumes:
-  pgadmin-data:
