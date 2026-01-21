@@ -24,7 +24,7 @@
   <MessageUser bind:size={userMessageSize} message={round.user} />
 
   <div class="gap-10 md:grid-cols-2 md:gap-6 grid">
-    {#if round.a && round.b}
+    {#if round.a && round.b && round.showMessages}
       <MessageBot message={round.a} index={round.index} {disabled} {onReactionChange} />
       <MessageBot message={round.b} index={round.index} {disabled} {onReactionChange} />
     {/if}
