@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis docker-app-up docker-app-down
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis docker-app-up docker-app-down docker-app-logs
 
 # Variables
 PYTHON := python3
@@ -51,11 +51,14 @@ redis: ## Launch Redis using docker compose
 docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
 	@$(MAKE) db-generate-init
 	@echo "Starting full app with Docker..."
-	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml up -d
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml up -d --build
 
 docker-app-down: ## Stop only app services (frontend + backend), keep infra
 	@echo "Stopping app services..."
 	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend pgadmin
+
+docker-app-logs: ## Show logs for frontend and backend containers
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml logs -f frontend backend
 
 dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA with Postgres and Redis..."
