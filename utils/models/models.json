@@ -1828,5 +1828,29 @@
         "fyi": "EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l’Union européenne ainsi que 11 langues supplémentaires. L’entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d’un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d’une allocation de calcul « extreme-scale ».\n\nLes données d’entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l’équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue."
       }
     ]
+  },
+  {
+    "name": "IBM",
+    "icon_path": "ibm.png",
+    "models": [
+      {
+        "simple_name": "Granite 4.0-H-Small",
+        "license": "Apache 2.0",
+        "id": "granite-4.0-h-small",
+        "release_date": "10/2025",
+        "params": 32,
+        "active_params": 9,
+        "arch": "moe",
+        "url": "https://www.ibm.com/fr-fr/new/announcements/ibm-granite-4-0-hyper-efficient-high-performance-hybrid-models",
+        "desc": "Modèle hybride Mamba-2 et Transformer, conçu pour un usage en entreprise et optimisé pour les besoins professionnels.",
+        "size_desc": "Grâce à son architecture mêlant Mamba-2 et Transformers, le modèle utilise beaucoup moins de mémoire et fonctionne plus vite sur les tâches avec long contexte ou en lots. On observe une réduction de mémoire de plus de 70 pour cent et une vitesse d’inférence pouvant aller jusqu’à deux fois celle de modèles de taille comparable basés uniquement sur des Transformers. Il peut gérer jusqu’à 128k jetons de contexte, ce qui le rend adapté à l’analyse de longs documents.",
+        "fyi": "Granite 4 remplace presque toutes les couches Transformer par des couches Mamba-2, un type de modèle dit à états spatiaux. Il utilise neuf couches Mamba pour une couche Transformer. Les couches Mamba gèrent l’augmentation de la longueur de contexte de façon linéaire, alors que les Transformers classiques ont un coût de calcul qui augmente beaucoup plus vite (on parle de blocage quadratique, car le temps et la mémoire nécessaires explosent quand le texte devient long). Avec Mamba, cette limite est largement réduite, ce qui rend le modèle plus efficace pour traiter de grandes quantités de texte.",
+        "new": true,
+        "endpoint": {
+          "api_type": "Replicate",
+          "api_model_id": "ibm-granite/granite-4.0-h-small"
+        }
+      }
+    ]
   }
 ]
