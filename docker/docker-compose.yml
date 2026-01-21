@@ -52,18 +52,6 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "127.0.0.1:5050:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    depends_on:
-      - postgres
-
   redis:
     image: redis
     ports:
@@ -71,4 +59,3 @@ services:
 
 volumes:
   db-data:
-  pgadmin-data:
