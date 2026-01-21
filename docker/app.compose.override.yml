@@ -5,48 +5,61 @@ services:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.front
-      args:
-        # URL for client-side browser requests (compiled at build time)
-        PUBLIC_API_URL: "http://localhost:8001"
     depends_on:
       - backend
     environment:
-      PORT: "80"
       # URL for server-side rendering (inside Docker network)
       PUBLIC_API_LOCAL_URL: "http://backend:80"
-      # URL for client-side browser requests (runtime)
-      PUBLIC_API_URL: "http://localhost:8001"
+      # URL for client-side browser requests (exposed to host)
+      PUBLIC_API_URL: "http://localhost:3000"
     ports:
-      - "5173:80"
+      - "3000:3000"
+    # Dev config
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules # Exclude node_modules from host mount
+    command: ["npx", "vite", "dev", "--host", "--port", "3000"]
 
   backend:
-    env_file: ../.env
+    env_file: ./.env
     environment:
       LOGDIR: /data
       # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
       COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
       COMPARIA_REDIS_HOST: redis
-      GOOGLE_APPLICATION_CREDENTIALS: /app/google_creds.json
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      # args:
+      #   GIT_COMMIT: ${GIT_COMMIT:-}
+      #   PUBLIC_API_URL: ${PUBLIC_API_URL:-}
+      #   MATOMO_ID: ${MATOMO_ID:-}
+      #   MATOMO_URL: ${MATOMO_URL:-}
+    image: languia:latest
     ports:
       - "8001:80"
     volumes:
-      - ../google_creds.json:/app/google_creds.json:ro
+      - ../data:/data
+      # Dev config - mount everything except .venv
+      - ../:/app
+      - /app/.venv # Exclude .venv from host mount (use container's .venv)
     command:
-      [
-        "uv",
-        "run",
-        "uvicorn",
-        "backend.main:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "80",
-        "--timeout-graceful-shutdown",
-        "60",
-      ]
+      ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     depends_on:
       - postgres
       - redis
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+volumes:
+  pgadmin-data:
