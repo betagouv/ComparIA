@@ -32,10 +32,9 @@ services:
       #   PUBLIC_API_URL: ${PUBLIC_API_URL:-}
       #   MATOMO_ID: ${MATOMO_ID:-}
       #   MATOMO_URL: ${MATOMO_URL:-}
-    image: languia:latest
     ports:
       - "8001:80"
-    # volumes: # en docker l'app est censée etre stateless
+    # volumes: # avec docker l'app est censée etre stateless (comme dans kube)
     #   - ../data:/data
     command:
       [
