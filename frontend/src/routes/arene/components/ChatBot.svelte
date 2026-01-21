@@ -35,6 +35,7 @@
         user: userMessage,
         a: isLast && msgA ? { ...msgA, generating: a.status === 'generating' } : msgA,
         b: isLast && msgB ? { ...msgB, generating: b.status === 'generating' } : msgB,
+        showMessages: isLast ? a.status !== 'error' && b.status !== 'error' : true,
         index: i
       }
     })
@@ -59,7 +60,7 @@
   {/if}
 
   {#if errorString}
-    <div class="fr-container">
+    <div class={['fr-container', { 'mt-10': rounds.length < 2 }]}>
       <div class="cg-border pe-13 lg:max-w-1/2 gap-4 bg-white p-4 pb-7 m-auto flex">
         <Icon icon="warning-fill" class="text-error" />
         <div>
