@@ -1,45 +1,6 @@
+# Base compose with infrastructure services only (postgres, redis)
+# For full stack, use: docker compose -f docker-compose.yml -f app.compose.override.yml up
 services:
-  # backend:
-  #   env_file: .env
-  #   environment:
-  #     LOGDIR: /data
-  #     # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
-  #     COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
-  #     COMPARIA_REDIS_HOST: redis
-  #   build:
-  #     context: ..
-  #     dockerfile: docker/Dockerfile
-  #   image: languia:latest
-  #   ports:
-  #     - "8001:80"
-  #   volumes:
-  #     - ../data:/data
-  #     # Dev config - mount everything except .venv
-  #     - ../:/app
-  #     - /app/.venv  # Exclude .venv from host mount (use container's .venv)
-  #   command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
-  #   # depends_on:
-  #   #   - postgres
-
-  # frontend:
-  #   build:
-  #     context: ../frontend
-  #     dockerfile: ../docker/Dockerfile.front
-  #   # For runtime access in +page.server.ts via same hostname
-  #   network_mode: host
-  #   depends_on:
-  #     - backend
-  #   environment:
-  #     PUBLIC_API_URL: "http://127.0.0.1:8001"
-  #     PUBLIC_API_LOCAL_URL: "http://comparia:80"
-  #   # ports:
-  #   # - 3000:3000
-  #   # Dev config
-  #   volumes:
-  #     - ../frontend:/app
-  #     - /app/node_modules  # Exclude node_modules from host mount
-  #   command: ["npx", "vite", "dev", "--host", "--port", "3000"]
-
   postgres:
     image: postgres:16
     environment:
