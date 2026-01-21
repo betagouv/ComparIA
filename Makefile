@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend db-generate-init db  db-prd-local dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis models-doc 
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down clean redis models-doc 
 
 # Variables
 PYTHON := python3
@@ -54,6 +54,15 @@ db-prd-local:
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
 	cd docker && docker compose up redis -d
+
+docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
+	@$(MAKE) db-generate-init
+	@echo "Starting full app with Docker..."
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml up -d
+
+docker-app-down: ## Stop only app services (frontend + backend), keep infra
+	@echo "Stopping app services..."
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend pgadmin
 
 dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA with Postgres and Redis..."
@@ -122,29 +131,6 @@ dev-full-reset-data:
 	@cd docker && docker down -v
 	@$(MAKE) dev-full
 
-
-
-# db-schema-init: ## Initialize database schema
-# 	@echo "Initializing database schema..."
-# 	@if [ -z "$$DATABASE_URI" ]; then \
-# 		echo "Error: DATABASE_URI is not defined"; \
-# 		exit 1; \
-# 	fi
-# 	@echo "Executing SQL scripts in utils/schemas/..."
-# 	psql $$DATABASE_URI -f utils/schemas/conversations.sql
-# 	psql $$DATABASE_URI -f utils/schemas/votes.sql
-# 	psql $$DATABASE_URI -f utils/schemas/reactions.sql
-# 	psql $$DATABASE_URI -f utils/schemas/logs.sql
-
-# db-migrate: ## Apply database migrations
-# 	@echo "Applying migrations..."
-# 	@if [ -z "$$DATABASE_URI" ]; then \
-# 		echo "Error: DATABASE_URI is not defined"; \
-# 		exit 1; \
-# 	fi
-# 	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
-# 	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
-
 # Models utilities
 models-build: ## Build/generate model files from JSON sources
 	@echo "Generating models..."
@@ -211,3 +197,29 @@ check-requirements: ## Check that required tools are installed
 	@command -v $(NPM) >/dev/null 2>&1 || { echo "npm is required but not installed."; exit 1; }
 	@command -v $(UV) >/dev/null 2>&1 || { echo "uv is not installed. Run 'make install-backend' to install it."; }
 	@echo "All prerequisites are installed ✓"
+
+
+
+###### Old
+
+
+# db-schema-init: ## Initialize database schema
+# 	@echo "Initializing database schema..."
+# 	@if [ -z "$$DATABASE_URI" ]; then \
+# 		echo "Error: DATABASE_URI is not defined"; \
+# 		exit 1; \
+# 	fi
+# 	@echo "Executing SQL scripts in utils/schemas/..."
+# 	psql $$DATABASE_URI -f utils/schemas/conversations.sql
+# 	psql $$DATABASE_URI -f utils/schemas/votes.sql
+# 	psql $$DATABASE_URI -f utils/schemas/reactions.sql
+# 	psql $$DATABASE_URI -f utils/schemas/logs.sql
+
+# db-migrate: ## Apply database migrations
+# 	@echo "Applying migrations..."
+# 	@if [ -z "$$DATABASE_URI" ]; then \
+# 		echo "Error: DATABASE_URI is not defined"; \
+# 		exit 1; \
+# 	fi
+# 	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
+# 	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
