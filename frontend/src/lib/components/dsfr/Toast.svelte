@@ -29,7 +29,6 @@
 >
   <div class="{variant === 'error' ? 'bg-error' : 'bg-primary'} p-2 flex flex-col justify-center">
     <Icon
-      block
       icon={variant === 'error' ? 'error-fill' : 'i-ri-checkbox-circle-line'}
       size="xs"
       class="text-white"

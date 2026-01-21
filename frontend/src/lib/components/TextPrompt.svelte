@@ -9,6 +9,7 @@
     hideLabel?: boolean
     maxRows?: number
     lineHeightPx?: number
+    error?: string
     autofocus?: boolean
     autoscroll?: boolean
     el?: HTMLTextAreaElement
@@ -24,6 +25,7 @@
     rows = 1,
     maxRows = 4,
     lineHeightPx = 16 * 1.5,
+    error = $bindable(),
     autofocus = false,
     autoscroll = false,
     el = $bindable(),
@@ -46,14 +48,15 @@
     if (autoscroll) el.scrollTo(0, el.scrollHeight)
   }
 
-  const onkeypress = (e: KeyboardEvent) => {
+  const onkeydown = (e: KeyboardEvent) => {
+    error = undefined
     if (e.key === 'Enter' && !e.shiftKey) {
       onSubmit(value)
     }
   }
 </script>
 
-<div class="fr-input-group {classNames}">
+<div class={['fr-input-group', classNames, { 'fr-input-group--error': !!error }]}>
   <label for={id} class={['fr-label', { 'hidden!': hideLabel }]}>{label}</label>
   <textarea
     {id}
@@ -63,10 +66,16 @@
     {rows}
     class="fr-input cg-border rounded-t-md! bg-white! md:min-h-10! rounded-b-none! border-solid!"
     {...nativeTextAreaProps}
-    {onkeypress}
+    aria-describedby="messages-{id}"
+    {onkeydown}
     {@attach updateAuto}
     {@attach updateRows}
   ></textarea>
+  <div class="fr-messages-group" id="messages-{id}" aria-live="polite">
+    {#if error}
+      <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
+    {/if}
+  </div>
 </div>
 
 <style lang="postcss">
