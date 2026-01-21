@@ -1,4 +1,4 @@
-import { api, type AnySSEEvent } from '$lib/fastapi-client'
+import { api, ValidationError, type AnySSEEvent } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
@@ -60,6 +60,7 @@ export interface ChatRound {
   user: UserMessage
   a?: AssistantMessage
   b?: AssistantMessage
+  showMessages: boolean
   index: number
 }
 
@@ -187,10 +188,13 @@ function onSSEEvent(event: AnySSEEvent) {
   } else if (event.type === 'error') {
     arena.chat.error = event.error
     arena.chat.status = 'error'
+    if (event.pos) {
+      arena.chat[event.pos].status = 'error'
+    }
   } else if (event.type === 'chunk') {
     arena.chat[event.pos].messages = event.messages
     arena.chat[event.pos].status = 'generating'
-    arena.chat.status = 'generating' // ??
+    arena.chat.status = 'generating'
   } else if (event.type === 'complete') {
     if (event.pos) {
       arena.chat[event.pos].status = 'complete'
@@ -200,7 +204,7 @@ function onSSEEvent(event: AnySSEEvent) {
   }
 }
 
-export async function runChatBots(args: APIModeAndPromptData) {
+export async function runChatBots(args: APIModeAndPromptData): Promise<string | undefined> {
   arena.chat.status = 'pending'
   arena.chat.error = null
 
@@ -220,10 +224,6 @@ export async function runChatBots(args: APIModeAndPromptData) {
       console.debug(`[COHORT] call to '/arena/add_first_text' with found cohorts: '${cohorts}'`)
     }
 
-    arena.currentScreen = 'chat'
-    arena.mode = args.mode
-    arena.chat.step = 1
-
     const stream = api.stream('/arena/add_first_text', {
       prompt_value: args.prompt_value,
       mode: args.mode,
@@ -234,19 +234,34 @@ export async function runChatBots(args: APIModeAndPromptData) {
 
     // Stream from FastAPI endpoint
     for await (const event of stream) {
+      if (arena.currentScreen !== 'chat') {
+        arena.currentScreen = 'chat'
+        arena.mode = args.mode
+        arena.chat.step = 1
+      }
       onSSEEvent(event)
     }
 
-    arena.chat.status = 'complete'
+    arena.chat.status = arena.chat.status = [
+      arena.chat.status,
+      arena.chat.a.status,
+      arena.chat.b.status
+    ].some((status) => status === 'error')
+      ? 'error'
+      : 'complete'
   } catch (error) {
-    console.error('Error:', error)
+    if (error instanceof ValidationError) {
+      arena.chat.status = 'complete'
+      return error.message
+    }
     arena.chat.status = 'error'
+    throw error
   }
 
   return arena.chat.status
 }
 
-export async function askChatBots(text: string) {
+export async function askChatBots(text: string): Promise<string | undefined> {
   arena.chat.status = 'pending'
   arena.chat.error = null
   try {
@@ -257,14 +272,24 @@ export async function askChatBots(text: string) {
       onSSEEvent(event)
     }
 
-    arena.chat.status = 'complete'
+    arena.chat.status = arena.chat.status = [
+      arena.chat.status,
+      arena.chat.a.status,
+      arena.chat.b.status
+    ].some((status) => status === 'error')
+      ? 'error'
+      : 'complete'
   } catch (error) {
-    console.error('Error:', error)
+    if (error instanceof ValidationError) {
+      arena.chat.status = 'complete'
+      return error.message
+    }
     arena.chat.status = 'error'
+    throw error
   }
 }
 
-export async function retryAskChatBots() {
+export async function retryAskChatBots(): Promise<string | undefined> {
   arena.chat.status = 'pending'
   arena.chat.error = null
   try {
@@ -273,10 +298,20 @@ export async function retryAskChatBots() {
       onSSEEvent(event)
     }
 
-    arena.chat.status = 'complete'
+    arena.chat.status = arena.chat.status = [
+      arena.chat.status,
+      arena.chat.a.status,
+      arena.chat.b.status
+    ].some((status) => status === 'error')
+      ? 'error'
+      : 'complete'
   } catch (error) {
-    console.error('Error:', error)
+    if (error instanceof ValidationError) {
+      arena.chat.status = 'complete'
+      return error.message
+    }
     arena.chat.status = 'error'
+    throw error
   }
 }
 

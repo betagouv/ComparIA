@@ -16,6 +16,7 @@
 
   let step = $state<'chat' | 'vote' | 'reveal'>('chat')
   let prompt = $state('')
+  let promptError = $state<string>()
   let canVote = $state<boolean | null>(true)
   let voteData = $state<VoteData>({
     selected: undefined,
@@ -53,8 +54,12 @@
 
   async function onPromptSubmit() {
     window.scrollTo(0, document.body.scrollHeight)
-    await askChatBots(prompt)
-    prompt = ''
+    const validationError = await askChatBots(prompt)
+    if (validationError) {
+      promptError = validationError
+    } else {
+      prompt = ''
+    }
   }
 
   async function onRevealModels() {
@@ -107,6 +112,7 @@
             bind:value={prompt}
             label={m['chatbot.continuePrompt']()}
             placeholder={m['chatbot.continuePrompt']()}
+            error={promptError}
             hideLabel
             rows={1}
             maxRows={4}

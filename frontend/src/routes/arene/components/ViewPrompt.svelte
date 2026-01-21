@@ -2,19 +2,19 @@
   import { Button } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
+  import { runChatBots } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
   import { tick } from 'svelte'
   import { GuidedPromptSuggestions, ModelSelector } from '.'
 
-  let { onSubmit }: { onSubmit: (args: APIModeAndPromptData) => void } = $props()
-
   let promptEl = $state<HTMLTextAreaElement>()
   let disabled = $state(false)
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
   let prompt = $state('')
+  let promptError = $state<string>()
   // const prompt = useLocalStorage('prompt', '', (parsed) => {
   //   if (parsed !== '') {
   //     tick().then(() => {
@@ -49,13 +49,17 @@
     }
   }
 
-  function dispatchSubmit(): void {
+  async function dispatchSubmit(): void {
     disabled = true
-    onSubmit({
+    const validationError = await runChatBots({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
       prompt_value: prompt
     })
+    if (validationError) {
+      promptError = validationError
+      disabled = false
+    }
   }
 
   function handlePromptSelected(
@@ -114,7 +118,7 @@
     <h3 class="mb-0! text-center">
       {m['arenaHome.title']()}
     </h3>
-    <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pt-12 md:pb-20 grid">
+    <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pb-20 md:pt-12 grid">
       <div class="md:order-none md:col-span-full order-1">
         <TextPrompt
           id="initial-prompt"
@@ -122,6 +126,7 @@
           bind:value={prompt}
           label={m['arenaHome.prompt.label']()}
           placeholder={m['arenaHome.prompt.placeholder']()}
+          bind:error={promptError}
           {disabled}
           hideLabel
           rows={4}
@@ -139,8 +144,8 @@
       <Button
         type="submit"
         text={m['words.send']()}
-        disabled={prompt == '' || disabled}
-        class="md:order-none md:w-auto! order-2 w-full! min-w-[130px] place-self-end"
+        disabled={prompt == '' || !!promptError || disabled}
+        class="md:w-auto! md:order-none order-2 w-full! min-w-[130px] place-self-end"
         onclick={() => dispatchSubmit()}
       />
     </div>
