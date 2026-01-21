@@ -5,7 +5,7 @@
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { getModelsWithDataContext, type Archs } from '$lib/models'
+  import { getModelsContext, getModelsWithDataContext, type Archs } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -29,7 +29,8 @@
     onDownloadData,
     hideTotal = false,
     raw = false,
-    filterProprietary = false
+    filterProprietary = false,
+    useStyleControl = false
   }: {
     id: string
     initialOrderCol?: ColKind
@@ -39,15 +40,54 @@
     hideTotal?: boolean
     raw?: boolean
     filterProprietary?: boolean
+    useStyleControl?: boolean
   } = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
 
   const votesData = getVotesContext()
   const totalVotes = $derived(NumberFormater.format(votesData.count))
-  const { lastUpdateDate, models: data } = getModelsWithDataContext()
+  const modelsContext = getModelsWithDataContext()
+  const { lastUpdateDate } = modelsContext
+
   let selectedModel = $state<string>()
-  const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
+  const selectedModelData = $derived(modelsContext.models.find((m) => m.id === selectedModel))
+
+  // Transform data based on style control toggle
+  // When enabled, use style_controlled values (no trust_range filter for style-controlled)
+  const data = $derived.by(() => {
+    if (!useStyleControl) {
+      return modelsContext.models
+    }
+
+    // For style control, we need to start from ALL models and filter differently
+    const allModels = getModelsContext().models
+
+    // Filter for models with style_controlled data (no trust_range check for style-controlled)
+    const filtered = allModels.filter((model) => {
+      if (!model.data?.style_controlled) return false
+      if (!model.prefs) return false
+      return true
+    })
+
+    return filtered.map((model) => {
+      const sc = model.data!.style_controlled!
+
+      return {
+        ...model,
+        data: {
+          ...model.data,
+          elo: sc.elo,
+          rank: sc.rank,
+          score_p2_5: sc.score_p2_5,
+          score_p97_5: sc.score_p97_5,
+          rank_p2_5: sc.rank_p2_5,
+          rank_p97_5: sc.rank_p97_5,
+          trust_range: sc.trust_range
+        }
+      }
+    })
+  })
 
   const cols = (
     [
@@ -84,6 +124,8 @@
   })
 
   const rows = $derived.by(() => {
+    // Explicit dependency to ensure reactivity when style control toggles
+    const _ = useStyleControl
     const models = data
       .filter((m) => {
         if (filterProprietary) return m.license !== 'proprietary'
@@ -108,6 +150,8 @@
   })
 
   const sortedRows = $derived.by(() => {
+    // Include useStyleControl to force re-sort when toggled
+    const _ = useStyleControl
     const _search = search.toLowerCase()
 
     return rows

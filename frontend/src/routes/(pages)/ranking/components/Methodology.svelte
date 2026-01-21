@@ -62,7 +62,8 @@
           href: 'https://colab.research.google.com/drive/1j5AfStT3h-IK8V6FSJY9CLAYr_1SvYw7#scrollTo=LgXO1k5Tp0pq',
           class: 'text-primary!'
         }),
-        perenLinkProps: externalLinkProps('https://www.peren.gouv.fr/')
+        perenLinkProps: externalLinkProps('https://www.peren.gouv.fr/'),
+        linkProps: ''
       })
     )}
   </p>
@@ -177,6 +178,46 @@
           {@html sanitize(m['ranking.methodo.impacts.elo.desc.1']())}
         </p>
       </div>
+    </div>
+  </section>
+
+  <section class="mt-16">
+    <h3 class="fr-h6 mb-4!">{m['ranking.methodo.styleControl.title']()}</h3>
+
+    <div class="cg-border bg-white p-7 pb-8">
+      <h4 class="text-lg!">{m['ranking.methodo.styleControl.what.title']()}</h4>
+      <p class="font-[14px] mb-6">
+        {@html sanitize(m['ranking.methodo.styleControl.what.desc']())}
+      </p>
+
+      <h4 class="text-lg!">{m['ranking.methodo.styleControl.how.title']()}</h4>
+      <p class="font-[14px]">{m['ranking.methodo.styleControl.features']()}</p>
+      <ul class="m-0! mb-6 p-0! list-none!">
+        {#each ['1', '2', '3'] as const as i (i)}
+          <li class="p-0! not-last:mb-3 flex">
+            <Icon icon="i-ri-arrow-right-s-line" block class="me-1 text-primary" />
+            <span>{@html sanitize(m[`ranking.methodo.styleControl.how.${i}`]())}</span>
+          </li>
+        {/each}
+      </ul>
+
+      <h4 class="text-lg!">{m['ranking.methodo.styleControl.why.title']()}</h4>
+      <p class="font-[14px] mb-6">
+        {@html sanitize(m['ranking.methodo.styleControl.why.desc']())}
+      </p>
+
+      <h4 class="text-lg!">{m['ranking.methodo.styleControl.caveats.title']()}</h4>
+      <p class="font-[14px] mb-0!">
+        {@html sanitize(m['ranking.methodo.styleControl.caveats.desc']())}
+      </p>
+
+      <p class="mt-6 mb-0! font-[14px]">
+        {@html sanitize(
+          m['ranking.methodo.styleControl.reference']({
+            lmsysLinkProps: externalLinkProps('https://lmsys.org/blog/2024-08-17-style-control/')
+          })
+        )}
+      </p>
     </div>
   </section>
 </div>

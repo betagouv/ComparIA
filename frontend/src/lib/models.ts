@@ -14,6 +14,16 @@ export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
 
+interface StyleControlledData {
+  elo: number
+  score_p2_5: number
+  score_p97_5: number
+  rank: number
+  rank_p2_5: number
+  rank_p97_5: number
+  trust_range: [number, number]
+}
+
 interface DatasetData {
   elo: number
   score_p2_5: number
@@ -25,6 +35,7 @@ interface DatasetData {
   mean_win_prob: number
   win_rate: number
   trust_range: [number, number]
+  style_controlled?: StyleControlledData
 }
 
 interface PreferencesData {
@@ -171,7 +182,7 @@ export function getModelsWithDataContext() {
       models.filter((m) => {
         if (m.data == null) return false
         if (m.prefs == null) return false
-        if (m.data.trust_range[0] > 10 || m.data.trust_range[1] > 10) return false
+        if (m.data.trust_range[0] > 20 || m.data.trust_range[1] > 20) return false
         return true
       }) as BotModelWithData[]
     )

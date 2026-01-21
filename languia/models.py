@@ -111,6 +111,31 @@ class Endpoint(BaseModel):
 RoundInt = Annotated[int | float, AfterValidator(lambda n: round(n))]
 
 
+class StyleControlledData(BaseModel):
+    """
+    Style-controlled ranking data.
+
+    Contains rankings adjusted for user preferences toward longer,
+    better-formatted responses (more headers, lists, bold text).
+    This helps separate "perceived quality" from "content quality".
+    """
+    elo: RoundInt = Field(validation_alias="median")
+    score_p2_5: RoundInt = Field(validation_alias="p2.5")
+    score_p97_5: RoundInt = Field(validation_alias="p97.5")
+    rank: int
+    rank_p2_5: int = Field(validation_alias="rank_p2.5")
+    rank_p97_5: int = Field(validation_alias="rank_p97.5")
+
+    @computed_field
+    @property
+    def trust_range(self) -> list[int, int]:
+        """Confidence interval: [lower bound, upper bound] for ranking."""
+        return [
+            self.rank - self.rank_p2_5,
+            self.rank_p97_5 - self.rank,
+        ]
+
+
 class DatasetData(BaseModel):
     """
     Ranking/evaluation data from benchmark datasets.
@@ -136,6 +161,7 @@ class DatasetData(BaseModel):
     n_match: int
     mean_win_prob: float
     win_rate: float
+    style_controlled: StyleControlledData | None = None
 
     @computed_field
     @property

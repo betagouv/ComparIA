@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { Tabs } from '$components/dsfr'
+  import { Tabs, Toggle, Tooltip } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsWithDataContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, RankingTable } from './components'
+
+  // Shared toggle state for style control (used in both ranking and energy tabs)
+  let useStyleControl = $state(false)
 
   const tabs = (
     [
@@ -117,10 +120,10 @@
   <div class="fr-container">
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
-    <Tabs {tabs} noBorders kind="nav">
+    <Tabs {tabs} label={m['ranking.title']()} noBorders kind="nav">
       {#snippet tab({ id })}
         {#if id === 'ranking'}
-          <p class="mb-12! text-dark-grey text-[14px]!">
+          <p class="mb-8! text-dark-grey text-[14px]!">
             {@html sanitize(
               m['ranking.ranking.desc']({
                 linkProps: externalLinkProps('https://www.peren.gouv.fr/')
@@ -128,9 +131,25 @@
             )}
           </p>
 
-          <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
+          <div class="mb-6 flex items-center gap-2">
+            <Toggle
+              id="style-control"
+              bind:value={useStyleControl}
+              label={m['ranking.styleControl.label']()}
+              variant="primary"
+            />
+            <Tooltip id="style-control-tooltip" size="sm">
+              {m['ranking.styleControl.tooltip']()}
+            </Tooltip>
+          </div>
+
+          <RankingTable
+            id="ranking-table"
+            onDownloadData={() => onDownloadData('ranking')}
+            {useStyleControl}
+          />
         {:else if id === 'energy'}
-          <Energy onDownloadData={() => onDownloadData('energy')} />
+          <Energy onDownloadData={() => onDownloadData('energy')} {useStyleControl} />
           <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
         {:else if id === 'methodo'}

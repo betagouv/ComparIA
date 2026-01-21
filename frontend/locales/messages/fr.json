@@ -1845,7 +1845,30 @@
                 }
             },
             "tabLabel": "Méthodologie",
-            "title": "Comment choisir la méthode de classement des modèles ?"
+            "title": "Comment choisir la méthode de classement des modèles ?",
+            "styleControl": {
+                "title": "Contrôle du style",
+                "what": {
+                    "title": "Qu'est-ce que le contrôle du style ?",
+                    "desc": "Les utilisateurs peuvent préférer des réponses plus longues et mieux formatées (avec des listes, des titres, du texte en gras), indépendamment de la qualité du contenu. Le contrôle du style permet de compenser ces préférences pour mieux refléter la qualité du contenu plutôt que la présentation."
+                },
+                "how": {
+                    "title": "Comment ça marche ?",
+                    "1": "<strong>Bradley-Terry standard</strong> : les modèles s'affrontent en tête-à-tête, les probabilités de victoire sont estimées",
+                    "2": "<strong>Bradley-Terry avec contrôle du style</strong> : des covariables de style sont ajoutées au modèle",
+                    "3": "Les coefficients captent le biais de préférence de style, les scores des modèles sont ajustés en conséquence"
+                },
+                "features": "Caractéristiques contrôlées : longueur (nombre de tokens), titres markdown, listes, texte en gras.",
+                "why": {
+                    "title": "Pourquoi c'est important ?",
+                    "desc": "Certains modèles peuvent être mieux classés grâce à leur mise en forme plutôt qu'à leurs réponses de meilleure qualité. La vue avec contrôle du style montre quels modèles ont un contenu de qualité indépendamment de leur formatage."
+                },
+                "caveats": {
+                    "title": "Limites d'interprétation",
+                    "desc": "Le style peut être corrélé à la qualité réelle (une meilleure mise en forme peut refléter une meilleure communication). Il ne s'agit pas d'une mesure de qualité « absolue », mais d'une vue alternative. Les deux classements sont valides selon ce que vous privilégiez."
+                },
+                "reference": "Pour en savoir plus, consultez l'article de LMSYS sur le <a {lmsysLinkProps}>contrôle du style</a>."
+            }
         },
         "preferences": {
             "desc": "Quand vous votez, vous pouvez qualifier votre préférence selon différentes catégories positives et négatives. Comparez leur répartition d’un modèle à l’autre.",
@@ -1879,6 +1902,10 @@
         "ranking": {
             "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions issus de la <strong>comparaison à l'aveugle </strong> des modèles et collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
             "tabLabel": "Classement"
+        },
+        "styleControl": {
+            "label": "Contrôle du style",
+            "tooltip": "Le contrôle du style ajuste les scores pour compenser les préférences des utilisateurs envers les réponses plus longues et mieux formatées (listes, titres, gras). Cela permet de mieux refléter la qualité du contenu plutôt que le style de présentation."
         },
         "table": {
             "data": {
