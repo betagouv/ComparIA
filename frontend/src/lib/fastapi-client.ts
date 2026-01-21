@@ -3,11 +3,9 @@
  *
  * Replaces Gradio client with native HTTP/SSE implementation.
  */
-
 import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.svelte'
-import { useToast } from '$lib/helpers/useToast.svelte'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -60,6 +58,18 @@ interface SSEErrorEvent {
 
 export type SSEEvent = SSEInitEvent | SSEUpdateEvent | SSEChunkEvent | SSEDoneEvent | SSEErrorEvent
 
+export class InternalError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
+
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
+
 /**
  * FastAPI client class
  */
@@ -95,6 +105,30 @@ export class FastAPIClient {
     return null
   }
 
+  async parseErrorResponse(
+    response: Response,
+    path: string,
+    method: RequestInit['method'] = 'GET'
+  ): Promise<Error> {
+    const message = `Error ${response.status} [${method}](${path}): `
+    try {
+      // Try to get json response
+      const detail = (await response.json()).detail
+
+      if (response.status === 422) {
+        return new ValidationError(detail[0].msg)
+      } else if (response.status === 429) {
+        return new ValidationError(detail)
+      } else {
+        return new InternalError(message + detail)
+      }
+    } catch {
+      // Not json try to get text, consider it unknown
+      const content = await response.text()
+      return new Error(message + content)
+    }
+  }
+
   /**
    * Set session hash and store in sessionStorage
    */
@@ -124,18 +158,7 @@ export class FastAPIClient {
       })
 
       if (!response.ok) {
-        const errorText = await response.text()
-        const message = `Error ${response.status} [${options.method || 'GET'}](${path}): "${errorText}"`
-        console.error(`HTTP request failed: ${response.status} ${url} ${errorText}`)
-
-        // Show toast for user-facing errors
-        if (response.status === 429) {
-          useToast('Rate limited', 10000, 'error')
-        } else {
-          useToast(errorText || message, 10000, 'error')
-        }
-
-        throw new Error(message)
+        throw await this.parseErrorResponse(response, path, options.method)
       }
 
       return response.json()
@@ -169,17 +192,7 @@ export class FastAPIClient {
       })
 
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error(`Stream request failed: ${response.status} ${url} ${errorText}`)
-
-        if (response.status === 429) {
-          useToast('Rate limited', 10000, 'error')
-        } else {
-          // FIXME not sure to log the error
-          // useToast(errorText, 10000, 'error')
-        }
-
-        throw new Error(`HTTP ${response.status}: ${errorText}`)
+        throw await this.parseErrorResponse(response, path, 'POST')
       }
 
       // Read SSE stream
