@@ -25,7 +25,8 @@ WORKDIR /app
 # Copier le venv et le code
 COPY --from=builder /app/.venv /app/.venv
 COPY pyproject.toml uv.lock ./
-COPY controller.py backend/main.py /app/
+COPY controller.py /app/
+COPY backend /app/backend
 COPY utils /app/utils
 COPY templates /app/templates
 COPY languia /app/languia
@@ -36,4 +37,4 @@ EXPOSE 80
 ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uv", "run", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "80"]
