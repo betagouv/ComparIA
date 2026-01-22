@@ -19,8 +19,8 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.language_models.models import Endpoint, LanguageModel
-from backend.language_models.utils import Consumption
+from backend.llms.models import Endpoint, LanguageModel
+from backend.llms.utils import Consumption
 from backend.utils.countries import CountryPortalAnno
 
 MessageRole = Literal["user", "assistant", "system"]
@@ -135,7 +135,7 @@ class Conversation(BaseModel):
 
     @cached_property
     def llm(self) -> LanguageModel:
-        from backend.language_models.data import get_models
+        from backend.llms.data import get_models
 
         return get_models().enabled[self.model_name]
 

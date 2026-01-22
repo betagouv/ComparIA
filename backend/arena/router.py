@@ -26,7 +26,7 @@ from backend.arena.persistence import (
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.session import create_session, increment_input_chars, is_ratelimited
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
-from backend.language_models.data import get_models
+from backend.llms.data import get_models
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 logger = logging.getLogger("languia")

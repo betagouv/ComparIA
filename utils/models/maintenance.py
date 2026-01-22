@@ -1,6 +1,6 @@
 from datetime import date
 
-from backend.language_models.models import Archs, Licenses, RawOrgas
+from backend.llms.models import Archs, Licenses, RawOrgas
 from utils.models.build_models import (
     ARCHS_PATH,
     LICENSES_PATH,
