@@ -48,6 +48,7 @@ docker/.env
 # Secrets
 model-info-file.json
 register-api-endpoint-file*.json
+google_creds.json
 docker/.env
 .env
 languia-*.json
