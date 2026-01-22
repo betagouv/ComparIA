@@ -21,23 +21,19 @@ services:
 
   backend:
     env_file: ../.env
-    environment: #
+    environment:
       LOGDIR: /data
       # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
       COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
       COMPARIA_REDIS_HOST: redis
+      GOOGLE_APPLICATION_CREDENTIALS: /app/google_creds.json
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      # args:
-      #   GIT_COMMIT: ${GIT_COMMIT:-}
-      #   PUBLIC_API_URL: ${PUBLIC_API_URL:-}
-      #   MATOMO_ID: ${MATOMO_ID:-}
-      #   MATOMO_URL: ${MATOMO_URL:-}
     ports:
       - "8001:80"
-    # volumes: # avec docker l'app est censée etre stateless (comme dans kube)
-    #   - ../data:/data
+    volumes:
+      - ../google_creds.json:/app/google_creds.json:ro
     command:
       [
         "uv",
