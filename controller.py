@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from backend.language_models.data import get_models
+from backend.llms.data import get_models
 
 templates = Jinja2Templates(directory="templates")
 

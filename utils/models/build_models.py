@@ -9,7 +9,7 @@ import requests
 from pydantic import ValidationError
 from rich.logging import RichHandler
 
-from backend.language_models.models import (
+from backend.llms.models import (
     Archs,
     DatasetData,
     Licenses,
