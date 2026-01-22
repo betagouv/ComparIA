@@ -1,3 +1,4 @@
+# FIXME Legacy: to remove (used to be a migration)
 import json
 
 import litellm

@@ -229,7 +229,7 @@ class Conversations(BaseModel):
         Returns:
             bool: True if message matches a suggested prompt, False otherwise
         """
-        # FIXME legacy?
+        # FIXME legacy remove
         if not self.category:
             return False
 
