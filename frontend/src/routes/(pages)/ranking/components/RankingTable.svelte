@@ -63,10 +63,13 @@
     // For style control, we need to start from ALL models and filter differently
     const allModels = getModelsContext().models
 
-    // Filter for models with style_controlled data (no trust_range check for style-controlled)
+    // Filter for models with style_controlled data
     const filtered = allModels.filter((model) => {
       if (!model.data?.style_controlled) return false
       if (!model.prefs) return false
+      // Apply same trust_range filter as standard rankings
+      const sc = model.data.style_controlled
+      if (sc.trust_range[0] > 10 || sc.trust_range[1] > 10) return false
       return true
     })
 

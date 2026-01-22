@@ -182,7 +182,7 @@ export function getModelsWithDataContext() {
       models.filter((m) => {
         if (m.data == null) return false
         if (m.prefs == null) return false
-        if (m.data.trust_range[0] > 20 || m.data.trust_range[1] > 20) return false
+        if (m.data.trust_range[0] > 10 || m.data.trust_range[1] > 10) return false
         return true
       }) as BotModelWithData[]
     )
