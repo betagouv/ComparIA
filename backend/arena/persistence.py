@@ -662,6 +662,14 @@ class ConversationMessageRecord(BaseModel):
     metadata: Annotated[MessageMetadata | None, Field(exclude_if=is_not)] = None
 
 
+# TODO some field could be postprocessed or removed:
+# - conv_turns
+# - total_conv_a_output_tokens
+# - total_conv_b_output_tokens
+# - opening_msg
+# And legacy:
+# - selected_category
+# - is_unedited_prompt
 class ConversationsRecord(BaseModel):
     """
     Database/logs record for a paired conversation comparison.
@@ -680,7 +688,7 @@ class ConversationsRecord(BaseModel):
     # Session
     session_hash: str
     visitor_id: str | None
-    ip: str  # FIXME | None? cf get_ip()
+    ip: str
     country_portal: CountryPortal
     cohorts: str
 
@@ -689,12 +697,12 @@ class ConversationsRecord(BaseModel):
     mode: SelectionMode
     custom_models_selection: Annotated[
         list[str] | None, JSONSerializer
-    ]  # FIXME, not sure what serialization is needed
+    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     conv_turns: int
     conversation_pair_id: str
     model_pair_name: Annotated[
         list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed
+    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     opening_msg: str
     is_unedited_prompt: bool
 
@@ -721,7 +729,9 @@ class ConversationsRecord(BaseModel):
     # contains_pii: bool | None = None
     # conversation_a_pii_removed: Any = None  # JSONB
     # conversation_b_pii_removed: Any = None  # JSONB
+
     # TODO: add 'interrupted' bool field?
+    # TODO: add `error: boolean` or `error_message: str`, `conv_a|b_error: str`?
 
 
 def record_conversations(
