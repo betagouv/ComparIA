@@ -18,8 +18,8 @@ function getBackendUrl(): string {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
     return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else {
-    // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    // Client-side: use public URL if defined, otherwise same origin (reverse proxy)
+    return publicEnv.PUBLIC_API_URL || window.location.origin || 'http://localhost:8001'
   }
 }
 
