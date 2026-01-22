@@ -1,7 +1,7 @@
 import glob
 import json
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 CURRENT_FOLDER = Path(__file__).parent
 LOCALES_FOLDER = CURRENT_FOLDER / "messages"

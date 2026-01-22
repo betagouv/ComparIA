@@ -125,7 +125,6 @@ def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[A
 def connect_to_db(COMPARIA_DB_URI):
 
     from sqlalchemy import create_engine
-    from sqlalchemy.exc import OperationalError
 
     if not COMPARIA_DB_URI:
         log.error(
