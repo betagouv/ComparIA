@@ -5,15 +5,17 @@ services:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.front
-      # command: ["node", "build"] # CMD du dockerfile frontend
+      args:
+        # URL for client-side browser requests (compiled at build time)
+        PUBLIC_API_URL: "http://localhost:8001"
     depends_on:
       - backend
     environment:
       PORT: "80"
       # URL for server-side rendering (inside Docker network)
       PUBLIC_API_LOCAL_URL: "http://backend:80"
-      # URL for client-side browser requests (exposed to host)
-      PUBLIC_API_URL: "http://localhost:5173"
+      # URL for client-side browser requests (runtime)
+      PUBLIC_API_URL: "http://localhost:8001"
     ports:
       - "5173:80"
 
