@@ -550,7 +550,6 @@ def delete_reaction(
         dict: delete result
     """
     delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
-    # FIXME also remove log file?
 
     return {
         "msg_index": msg_index,
@@ -562,7 +561,6 @@ def record_reaction(
     conversations: Conversations,
     reaction: ReactionData,
     msg_index: int,
-    chatbot_index: int,
     request: Request,
 ) -> dict:
     """
@@ -573,9 +571,8 @@ def record_reaction(
 
     Args:
         conversations: Conversations
-        reaction: ReactionData
+        reaction: ReactionData with index not counting system message
         msg_index: explicit assistant index of message (counting system message) FIXME
-        chatbot_index: assistant index of message (without counting system message) FIXME
         request:  FastAPI Request for IP and cookies
 
     Returns:
@@ -603,12 +600,12 @@ def record_reaction(
             "response_content": conv.messages[msg_index].content,
             "question_content": conv.messages[msg_index - 1].content,
             # Liked/disliked message data
-            "msg_index": msg_index,
-            "msg_rank": (  # rank begins at zero
-                chatbot_index // 2
-            ),  # FIXME chatbot index is index without counting system msg? So this is the one to use to compute rank?
-            "chatbot_index": chatbot_index,  # FIXME chatbot index is index without counting system msg?
-            "question_id": f"{conversations.conversation_pair_id}-{chatbot_index // 2}",
+            "msg_index": msg_index,  # Counting system message
+            "msg_rank": (
+                reaction.index // 2  # Rank begins at zero (not counting system message)
+            ),
+            "chatbot_index": reaction.index,  # FIXME legacy to remove index from old front chatbot index
+            "question_id": f"{conversations.conversation_pair_id}-{reaction.index // 2}",
             # Reaction
             "liked": reaction.liked is True,
             "disliked": reaction.liked is False,
