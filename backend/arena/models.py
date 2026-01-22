@@ -60,6 +60,15 @@ class UserMessage(BaseMessage):
     role: Literal["user"] = "user"
 
 
+class AssistantMessageMetadata(BaseModel):
+    generation_id: str
+    bot: BotPos
+    # Added on chunk with 'usage' or computed after response
+    output_tokens: int | None = None
+    # Computed after response
+    duration: float | None = None
+
+
 class AssistantMessage(BaseMessage):
     """
     Assistant response message with required metadata.
@@ -67,14 +76,9 @@ class AssistantMessage(BaseMessage):
     Metadata must include generation_id, bot, and output_tokens.
     """
 
-    class AssistantMessageMetadata(BaseModel):
-        generation_id: str
-        bot: BotPos
-        output_tokens: int | None = None  # FIXME required?
-        duration: float | None = None
-
     role: Literal["assistant"] = "assistant"
-    reasoning: str | None = None
+    content: str = ""
+    reasoning: str = ""
     metadata: AssistantMessageMetadata
     reaction: Union["ReactionData", None] = None
 
@@ -134,10 +138,6 @@ class Conversation(BaseModel):
         from backend.language_models.data import get_models
 
         return get_models().enabled[self.model_name]
-
-    @cached_property
-    def endpoint(self) -> Endpoint:
-        return self.llm.endpoint
 
 
 def create_conversation(llm_id: str, user_msg: UserMessage) -> Conversation:
