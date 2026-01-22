@@ -51,7 +51,7 @@
         <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
-      {#if message.reasoning != ''}
+      {#if message.reasoning.trim() !== ''}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
             <h3 class="fr-accordion__title ms-1!">

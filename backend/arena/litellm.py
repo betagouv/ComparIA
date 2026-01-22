@@ -7,7 +7,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 
 import json
 import logging
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Generator, TypedDict, Union, cast
 
 import litellm
 
@@ -15,6 +15,9 @@ from backend.config import GLOBAL_TIMEOUT, settings
 from backend.errors import ContextTooLongError
 
 if TYPE_CHECKING:
+    from fastapi import Request
+
+    from backend.arena.models import AnyMessage
     from backend.language_models.models import Endpoint
 
 logger = logging.getLogger("languia")
@@ -61,19 +64,23 @@ def get_api_key(endpoint: "Endpoint") -> str | None:
     return None
 
 
+class LLMResponse(TypedDict):
+    generation_id: str
+    reasoning: str
+    content: str
+    output_tokens: int | None
+
+
 def litellm_stream_iter(
-    model_name,
-    messages,
-    temperature,
-    max_new_tokens,
-    api_base=None,
-    api_key=None,
-    request=None,
-    api_version=None,
-    vertex_ai_location=None,
-    include_reasoning=False,
-    enable_reasoning=False,
-) -> Generator:
+    model_name: str,
+    endpoint: "Endpoint",
+    messages: list["AnyMessage"],
+    temperature: float,
+    max_new_tokens: int,
+    request: Union["Request", None] = None,
+    include_reasoning: bool = False,  # FIXME Legacy ?
+    enable_reasoning: bool = False,  # FIXME Legacy ?
+) -> Generator[LLMResponse]:
     """
     Stream responses from an LLM API using LiteLLM.
 
@@ -81,21 +88,28 @@ def litellm_stream_iter(
     manages streaming responses, and processes tokens and metadata.
 
     Args:
-        model_name: Model identifier in LiteLLM format (e.g., "openai/gpt-4")
-        messages: List of message dicts with role/content
+        model_name: Model id
+        endpoint: Model Endpoint data
+        messages: List of messages to be serialized for llm call
         temperature: Sampling temperature for response diversity
         max_new_tokens: Maximum tokens to generate
-        api_base: Optional API base URL override
-        api_key: API key for the provider
-        ip: Client IP address for logging context
-        api_version: Optional API version (e.g., for Azure)
-        vertex_ai_location: Google Vertex AI region
+        request: FastAPI request for logging
         include_reasoning: Whether to include reasoning in response
         enable_reasoning: Whether to enable reasoning mode
 
     Yields:
-        Dict containing: text, reasoning, output_tokens, generation_id
+        Dict containing: content, reasoning, output_tokens, generation_id
     """
+
+    # Build LiteLLM model identifier (e.g., "openai/gpt-4", "google/gemini-pro")
+    litellm_model_name = f"{endpoint.api_type}/{endpoint.api_model_id}"
+    # Retrieve API key from environment or config
+    api_key = get_api_key(endpoint)
+
+    logger.info(
+        f"using endpoint {litellm_model_name} for {model_name}: {endpoint.model_dump(mode="json")}",
+        extra={"request": request},
+    )
 
     # Debug mode can be enabled but is very verbose for streaming
     # from backend.config import debug
@@ -108,7 +122,7 @@ def litellm_stream_iter(
         litellm.failure_callback.append("sentry")
 
     # Set Vertex AI location for Google Cloud models
-    litellm.vertex_location = vertex_ai_location or settings.VERTEXAI_LOCATION
+    litellm.vertex_location = endpoint.vertex_ai_location or settings.VERTEXAI_LOCATION
 
     # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
@@ -119,14 +133,15 @@ def litellm_stream_iter(
 
     # Build parameters for LiteLLM API call
     kwargs = {
-        "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
         "stream_timeout": 30,
-        "base_url": api_base,
+        "api_version": endpoint.api_version,
+        "base_url": endpoint.api_base,
         "api_key": api_key,
         # max_retries can be added if needed
-        "model": model_name,
-        "messages": messages,
+        "model": litellm_model_name,
+        # Only pass supported message args 'role' and 'content'
+        "messages": [msg.model_dump(include={"role", "content"}) for msg in messages],
         "temperature": temperature,
         "max_tokens": max_new_tokens,
         "stream": True,  # Enable streaming for real-time responses
@@ -142,7 +157,7 @@ def litellm_stream_iter(
         )
 
     # Request token usage reporting (except for Aya which doesn't support it)
-    if "c4ai-aya-expanse-32b" not in model_name:
+    if "c4ai-aya-expanse-32b" not in litellm_model_name:
         kwargs["stream_options"] = {"include_usage": True}
 
     # Enable extended reasoning (e.g., o1 models)
@@ -154,70 +169,65 @@ def litellm_stream_iter(
         kwargs["enable_reasoning"] = True
 
     # Make the API call through LiteLLM
-    res = litellm.completion(**kwargs)
+    response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
 
     # OpenRouter specific params could be added here
     # transforms = [""], route= ""
 
-    # Initialize accumulators for streaming response
-    text = ""
-    reasoning = ""
-
     # Data dict to accumulate response metadata
-    data = dict()
+    data: LLMResponse = {
+        "generation_id": "",
+        "reasoning": "",
+        "content": "",
+        "output_tokens": None,
+    }
 
     # Process streaming chunks from the API
-    for chunk in res:
+    for chunk in response:
         # Extract generation ID for tracking/debugging
-        if hasattr(chunk, "id"):
+        if not data["generation_id"] and chunk.id:
             data["generation_id"] = chunk.id
             logger.debug(
-                f"generation_id: {chunk.id} for api {api_base} and model {model_name}",
+                f"Response stream started for '{litellm_model_name}' with generation_id='{chunk.id}'",
                 extra={"request": request},
             )
         # Extract token count from streaming completion (if available)
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
-                f"reported output tokens for api {api_base} and model {model_name}: "
-                + str(data["output_tokens"]),
+                f"reported output tokens for api {endpoint.api_base} and model {litellm_model_name}: {data["output_tokens"]}",
                 extra={"request": request},
             )
         # Process content chunks
-        if hasattr(chunk, "choices") and len(chunk.choices) > 0:
-            # Extract delta content and reasoning from chunk
-            if hasattr(chunk.choices[0], "delta"):
-                reasoning_delta = ""
-                # Get the text content of this chunk
-                if hasattr(chunk.choices[0].delta, "content"):
-                    content = chunk.choices[0].delta.content or ""
-                else:
-                    content = ""
-                # Get reasoning content (for reasoning models)
-                if hasattr(chunk.choices[0].delta, "reasoning"):
-                    reasoning_delta = chunk.choices[0].delta.reasoning or ""
-            else:
-                content = ""
+        if len(chunk.choices) > 0:
+            choice = cast(litellm.types.utils.StreamingChoices, chunk.choices[0])
 
             # Accumulate text and reasoning across chunks
-            text += content
-            reasoning += reasoning_delta
-            data["reasoning"] = reasoning
-            data["text"] = text
+            if delta := choice.get("delta"):
+                # Get the text content of this chunk
+                if content := choice.delta.get("content"):
+                    data["content"] += content
+                # Get reasoning content (for reasoning models)
+                if reasoning := delta.get("reasoning"):
+                    data["reasoning"] += reasoning
 
             # Check for generation completion signal
-            if hasattr(chunk.choices[0], "finish_reason"):
-                if chunk.choices[0].finish_reason == "stop":
-                    data["text"] = text
-                    break
-                elif chunk.choices[0].finish_reason == "length":
-                    # Model hit max tokens limit
-                    logger.error(
-                        "context_too_long: " + str(chunk), extra={"request": request}
-                    )
-                    raise ContextTooLongError
+            if choice.finish_reason == "stop":
+                break
+            elif choice.finish_reason == "length":
+                # Model hit max tokens limit
+                logger.error(
+                    "context_too_long: " + str(chunk), extra={"request": request}
+                )
+                raise ContextTooLongError
 
             # Yield partial results for streaming to frontend
             yield data
+
+    logger.debug(
+        f"Response stream ended for '{litellm_model_name}' with generation_id='{chunk.id}'",
+        extra={"request": request},
+    )
+
     # Final yield after loop completes
     yield data
