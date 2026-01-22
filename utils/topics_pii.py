@@ -1,12 +1,16 @@
-import psycopg2
 import json
+import os
+import time
+from concurrent.futures import ThreadPoolExecutor
+from enum import Enum
+from typing import List, Optional, Tuple
+
+import psycopg2
 import vertexai
 from vertexai.generative_models import GenerativeModel
-from typing import Optional, List, Tuple
-import os
-from enum import Enum
-from concurrent.futures import ThreadPoolExecutor
-import time
+
+# Used in kubernetes (cron job)
+# FIXME: change model for cheeper model? (still gemini)
 
 
 class Config:
@@ -173,6 +177,7 @@ def process_conversation(conversation, analyzer, db_params):
                     conversation_a, conversation_b, conversation_pair_id
                 )
             )
+            # If llm call worked, insert metadata in db
             if contains_pii is not None:
                 print(f"Data to be inserted for {conversation_pair_id}:")
                 print(f"  Short Summary: {short_summary}")

@@ -1,3 +1,4 @@
+-- FIXME rework visitor_id (remove ip-map hash) visitor_id: cookie or null
 INSERT INTO ip_map (ip_address)
 SELECT DISTINCT ip
 FROM conversations

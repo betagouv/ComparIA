@@ -106,6 +106,7 @@ async def stream_conversation_messages(
 
         error_reason = f"error_during_convo: {conv.model_name}, {conv.llm.endpoint.api_type}, {error_message}"
 
+        # TODO ContextLengthError: do not log to controller?
         try:
             import requests
 
@@ -209,7 +210,6 @@ async def stream_comparison_messages(
             # Error is silenced to be sent thru sse message, send it to sentry manually
             sentry_sdk.capture_exception(e)
 
-        # FIXME log to controller?
         conversations.error = ErrorDetails(message=str(e))
         logger.error(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
