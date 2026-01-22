@@ -148,6 +148,20 @@
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
     <Tabs {tabs} label={m['ranking.title']()} noBorders kind="nav">
+      {#snippet headerRight()}
+        <div class="style-control-toggle flex items-center gap-3 flex-nowrap">
+          <Toggle
+            id="style-control"
+            bind:value={useStyleControl}
+            label={m['ranking.styleControl.label']()}
+            variant="primary"
+            hideCheckLabel
+          />
+          <Tooltip id="style-control-tooltip" size="sm">
+            {m['ranking.styleControl.tooltip']()}
+          </Tooltip>
+        </div>
+      {/snippet}
       {#snippet tab({ id })}
         {#if id === 'ranking'}
           <p class="mb-8! text-dark-grey text-[14px]!">
@@ -157,18 +171,6 @@
               })
             )}
           </p>
-
-          <div class="mb-6 flex items-center gap-2">
-            <Toggle
-              id="style-control"
-              bind:value={useStyleControl}
-              label={m['ranking.styleControl.label']()}
-              variant="primary"
-            />
-            <Tooltip id="style-control-tooltip" size="sm">
-              {m['ranking.styleControl.tooltip']()}
-            </Tooltip>
-          </div>
 
           <RankingTable
             id="ranking-table"
@@ -186,3 +188,14 @@
     </Tabs>
   </div>
 </main>
+
+<style lang="postcss">
+  .style-control-toggle {
+    :global(.fr-toggle__label) {
+      font-weight: 700;
+      font-size: 1rem;
+      white-space: nowrap;
+      padding-right: 3.5rem;
+    }
+  }
+</style>
