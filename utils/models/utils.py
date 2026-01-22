@@ -1,7 +1,8 @@
-import json5, json
+import json
 from pathlib import Path
 from typing import Any
 
+import json5
 
 Obj = dict[str, Any]
 
