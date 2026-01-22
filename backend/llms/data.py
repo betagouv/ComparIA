@@ -13,7 +13,7 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.language_models.models import LanguageModel
+from backend.llms.models import LanguageModel
 
 logger = logging.getLogger("languia")
 

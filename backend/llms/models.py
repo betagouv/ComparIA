@@ -34,7 +34,7 @@ from pydantic import (
 from pydantic_core import PydanticCustomError
 
 from backend.config import FRONTEND_PATH, ROOT_PATH
-from backend.language_models.utils import convert_range_to_value, get_llm_impact
+from backend.llms.utils import convert_range_to_value, get_llm_impact
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories

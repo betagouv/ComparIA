@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from backend.language_models.data import get_models
+from backend.llms.data import get_models
 
 router = APIRouter(
     prefix="/models",
