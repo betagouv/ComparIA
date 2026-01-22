@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from fastapi import Request
 
     from backend.arena.models import AnyMessage
-    from backend.language_models.models import Endpoint
+    from backend.llms.models import Endpoint
 
 logger = logging.getLogger("languia")
 

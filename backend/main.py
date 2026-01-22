@@ -4,7 +4,7 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from backend.arena.router import router as arena_router
 from backend.config import OBJECTIVES
-from backend.language_models.router import router as models_router
+from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
 from backend.utils.countries import CountryPortalAnno, get_country_portal_count
