@@ -454,6 +454,28 @@ def record_vote(
     return save_vote_to_db(db_data)
 
 
+# TODO since we can postprocess data from Conversations we could remove:
+# - visitor_id
+# - ip
+# - model_pair_name
+# - opening_msg
+# - model_a_name
+# - model_b_name
+# - conv_a_id
+# - conv_b_id
+# - conversation_a
+# - conversation_b
+# Also based on refers_to_conv_id and msg_index we can postprocess:
+# - model_pos
+# - refers_to_model
+# - system_prompt
+# - response_content
+# - question_content
+# Also not sure that `question_id` is usefull
+# And legacy:
+# - chatbot_index
+# - selected_category
+# - is_unedited_prompt
 class ReactionRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
@@ -462,14 +484,14 @@ class ReactionRecord(BaseModel):
     # Session
     session_hash: str
     visitor_id: str | None
-    ip: str  # FIXME | None? cf get_ip()
+    ip: str
 
     # Conversations
-    conv_turns: int
+    conv_turns: int  # TODO rename to current_conv_turn_when_reacting?
     conversation_pair_id: str
     model_pair_name: Annotated[
         list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed
+    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     opening_msg: str
 
     # Language model pairs specific
