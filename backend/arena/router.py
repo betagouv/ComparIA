@@ -417,7 +417,6 @@ async def react(
         conversations=conversations,
         reaction=reaction,
         msg_index=msg_index,
-        chatbot_index=reaction_body.index,
         request=request,
     )
 
