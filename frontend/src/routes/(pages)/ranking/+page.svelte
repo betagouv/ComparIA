@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { Tabs } from '$components/dsfr'
+  import { Tabs, Toggle, Tooltip } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsWithDataContext } from '$lib/models'
+  import { getModelsContext, getModelsWithDataContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, RankingTable } from './components'
+
+  // Shared toggle state for style control (used in both ranking and energy tabs)
+  let useStyleControl = $state(false)
 
   const tabs = (
     [
@@ -22,6 +25,32 @@
   const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
+    // Transform data based on style control toggle (match RankingTable logic)
+    const exportData = useStyleControl
+      ? getModelsContext()
+          .models.filter((model) => {
+            if (!model.data?.style_controlled) return false
+            if (!model.prefs) return false
+            return true
+          })
+          .map((model) => {
+            const sc = model.data!.style_controlled!
+            return {
+              ...model,
+              data: {
+                ...model.data,
+                elo: sc.elo,
+                rank: sc.rank,
+                score_p2_5: sc.score_p2_5,
+                score_p97_5: sc.score_p97_5,
+                rank_p2_5: sc.rank_p2_5,
+                rank_p97_5: sc.rank_p97_5,
+                trust_range: sc.trust_range
+              }
+            }
+          })
+      : modelsData
+
     const csvCols = [
       { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
@@ -43,7 +72,7 @@
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
       cols.map((col) => col.label).join(','),
-      ...modelsData
+      ...exportData
         .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
         .map((m) => {
           return cols
@@ -70,7 +99,8 @@
         })
     ].join('\n')
 
-    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
+    const suffix = useStyleControl ? '-style_controlled' : ''
+    downloadTextFile(data, `comparia_model-${kind}${suffix}-${lastUpdateDate}-license_Etalab_2_0`)
   }
 
   // function onDownloadPrefsData() {
@@ -117,10 +147,24 @@
   <div class="fr-container">
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
-    <Tabs {tabs} noBorders kind="nav">
+    <Tabs {tabs} label={m['ranking.title']()} noBorders kind="nav">
+      {#snippet headerRight()}
+        <div class="style-control-toggle flex items-center gap-3 flex-nowrap">
+          <Toggle
+            id="style-control"
+            bind:value={useStyleControl}
+            label={m['ranking.styleControl.label']()}
+            variant="primary"
+            hideCheckLabel
+          />
+          <Tooltip id="style-control-tooltip" size="sm">
+            {m['ranking.styleControl.tooltip']()}
+          </Tooltip>
+        </div>
+      {/snippet}
       {#snippet tab({ id })}
         {#if id === 'ranking'}
-          <p class="mb-12! text-dark-grey text-[14px]!">
+          <p class="mb-8! text-dark-grey text-[14px]!">
             {@html sanitize(
               m['ranking.ranking.desc']({
                 linkProps: externalLinkProps('https://www.peren.gouv.fr/')
@@ -128,9 +172,13 @@
             )}
           </p>
 
-          <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
+          <RankingTable
+            id="ranking-table"
+            onDownloadData={() => onDownloadData('ranking')}
+            {useStyleControl}
+          />
         {:else if id === 'energy'}
-          <Energy onDownloadData={() => onDownloadData('energy')} />
+          <Energy onDownloadData={() => onDownloadData('energy')} {useStyleControl} />
           <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
         {:else if id === 'methodo'}
@@ -140,3 +188,14 @@
     </Tabs>
   </div>
 </main>
+
+<style lang="postcss">
+  .style-control-toggle {
+    :global(.fr-toggle__label) {
+      font-weight: 700;
+      font-size: 1rem;
+      white-space: nowrap;
+      padding-right: 3.5rem;
+    }
+  }
+</style>

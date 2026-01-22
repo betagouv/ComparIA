@@ -14,6 +14,7 @@
     panelClass = '',
     kind = 'tab',
     tab,
+    headerRight,
     ...props
   }: {
     tabs: Readonly<T[]>
@@ -23,6 +24,7 @@
     panelClass?: ClassValue
     kind?: 'tab' | 'nav'
     tab?: Snippet<[T]>
+    headerRight?: Snippet
   } & SvelteHTMLElements['div'] = $props()
 
   let currentTabId = $state(initialId)
@@ -51,21 +53,28 @@
     props.class
   ]}
 >
-  <ul class={['fr-tabs__list', { 'px-0!': kind === 'nav' }]} role="tablist" aria-label={label}>
-    {#each items as item, i (i)}
-      <li role="presentation" class="whitespace-nowrap">
-        {#if item.href}
-          <a {...item.props} href={item.href}>
-            {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
-          </a>
-        {:else}
-          <button {...item.props} type="button">
-            {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
-          </button>
-        {/if}
-      </li>
-    {/each}
-  </ul>
+  <div class="tabs-header">
+    <ul class={['fr-tabs__list', { 'px-0!': kind === 'nav' }]} role="tablist" aria-label={label}>
+      {#each items as item, i (i)}
+        <li role="presentation" class="whitespace-nowrap">
+          {#if item.href}
+            <a {...item.props} href={item.href}>
+              {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
+            </a>
+          {:else}
+            <button {...item.props} type="button">
+              {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
+            </button>
+          {/if}
+        </li>
+      {/each}
+    </ul>
+    {#if headerRight}
+      <div class="tabs-header-right">
+        {@render headerRight()}
+      </div>
+    {/if}
+  </div>
   {#each tabs as item, i (i)}
     <div
       id={`tab-${item.id}-panel`}
@@ -89,6 +98,44 @@
 
 <style lang="postcss">
   @reference "$css/app.css";
+
+  .fr-tabs {
+    overflow: visible !important;
+  }
+
+  .tabs-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    overflow: visible;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    > .fr-tabs__list {
+      order: 1;
+      flex-shrink: 0;
+      flex-grow: 0;
+      width: auto !important;
+    }
+
+    > .tabs-header-right {
+      order: 2;
+
+      @media (min-width: 768px) {
+        margin-left: auto;
+      }
+    }
+  }
+
+  .tabs-header-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
 
   .fr-tabs__list {
     button,

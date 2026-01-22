@@ -4,7 +4,13 @@
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
-  let { onDownloadData }: { onDownloadData: () => void } = $props()
+  let {
+    onDownloadData,
+    useStyleControl = false
+  }: {
+    onDownloadData: () => void
+    useStyleControl?: boolean
+  } = $props()
 </script>
 
 <div id="ranking-energy">
@@ -24,7 +30,7 @@
         <p class="text-sm! text-grey!">{m['ranking.energy.views.graph.desc']()}</p>
       </div>
 
-      <EnergyGraph />
+      <EnergyGraph {useStyleControl} />
     </section>
 
     <div class="gap-8 md:flex-row flex flex-col">
@@ -87,6 +93,7 @@
         raw
         filterProprietary
         {onDownloadData}
+        {useStyleControl}
       />
     </section>
   </div>

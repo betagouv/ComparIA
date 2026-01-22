@@ -4,20 +4,57 @@
   import { ARCHS } from '$lib/generated/models'
   import { m } from '$lib/i18n/messages'
   import type { Archs, ConsoSizes, Sizes } from '$lib/models'
-  import { CONSO_SIZES, getModelsWithDataContext, SIZES } from '$lib/models'
+  import { CONSO_SIZES, getModelsContext, getModelsWithDataContext, SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
   import { onMount } from 'svelte'
 
+  let { useStyleControl = false }: { useStyleControl?: boolean } = $props()
+
   type ModelGraphData = (typeof models)[number]
 
-  const { models: data } = getModelsWithDataContext()
+  const modelsContext = getModelsWithDataContext()
+
+  // Transform data based on style control toggle
+  // When enabled, use style_controlled values (no trust_range filter for style-controlled)
+  const data = $derived.by(() => {
+    if (!useStyleControl) return modelsContext.models
+
+    // For style control, start from ALL models and filter based on style_controlled criteria
+    const allModels = getModelsContext().models
+
+    const filtered = allModels.filter((model) => {
+      if (!model.data?.style_controlled) return false
+      if (!model.prefs) return false
+      return true
+    })
+
+    return filtered.map((model) => {
+      const sc = model.data!.style_controlled!
+
+      return {
+        ...model,
+        data: {
+          ...model.data,
+          elo: sc.elo,
+          rank: sc.rank,
+          score_p2_5: sc.score_p2_5,
+          score_p97_5: sc.score_p97_5,
+          rank_p2_5: sc.rank_p2_5,
+          rank_p97_5: sc.rank_p97_5,
+          trust_range: sc.trust_range
+        }
+      }
+    })
+  })
 
   const dotSizes = { XS: 5, S: 7, M: 9, L: 11, XL: 13 } as const
 
-  const models = $derived(
-    data
+  // Explicit dependency to ensure reactivity when style control toggles
+  const models = $derived.by(() => {
+    const _ = useStyleControl
+    return data
       .filter((m) => m.license !== 'proprietary')
       .sort((a, b) => sortIfDefined(a, b, 'params'))
       .map((m) => {
@@ -35,7 +72,7 @@
                 : ('L' as const)
         }
       })
-  )
+  })
 
   let search = $state('')
   let sizes = $state<Sizes[]>([])
@@ -87,10 +124,12 @@
 
   const minMaxX = $derived.by(() => {
     const [min, max] = extent(filteredModels, (m) => m.x) as [number, number]
+    if (min === undefined || max === undefined) return [0, 100] as const
     return [min - 5, max + 15] as const
   })
   const minMaxY = $derived.by(() => {
     const [min, max] = extent(filteredModels, (m) => m.y) as [number, number]
+    if (min === undefined || max === undefined) return [0, 1000] as const
     return [min - 5, max + 35] as const
   })
   const xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
