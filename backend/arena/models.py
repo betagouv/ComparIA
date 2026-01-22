@@ -19,7 +19,7 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.models import Endpoint, LanguageModel
+from backend.llms.models import LanguageModel
 from backend.llms.utils import Consumption
 from backend.utils.countries import CountryPortalAnno
 

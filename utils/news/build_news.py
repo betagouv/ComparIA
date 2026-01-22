@@ -1,13 +1,11 @@
-from rich import print
-from datetime import datetime
 import glob
-import json
+from datetime import datetime
 from pathlib import Path
-from pydantic import BaseModel, RootModel, field_serializer
 from typing import Literal
 
-from utils.models.utils import read_json, write_json
+from pydantic import BaseModel, RootModel, field_serializer
 
+from utils.models.utils import read_json, write_json
 
 CURRENT_FOLDER = Path(__file__).parent
 FRONTEND_EXPORT_PATH = (
