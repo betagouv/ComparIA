@@ -647,9 +647,15 @@ class ConversationMessageRecord(BaseModel):
     """
 
     class MessageMetadata(BaseModel):
-        generation_id: str
-        output_tokens: int
-        duration: float
+        generation_id: (
+            str | None
+        )  # FIXME could make it required if failed message is deleted before recording
+        output_tokens: (
+            int | None
+        )  # FIXME could make it required if failed message is deleted before recording
+        duration: (
+            float | None
+        )  # FIXME could make it required if failed message is deleted before recording
 
     role: MessageRole
     content: str
