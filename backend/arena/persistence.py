@@ -302,6 +302,24 @@ def upsert_conv_to_db(data: dict) -> dict:
 # ============================================================================
 
 
+# TODO since we can postprocess data from Conversations we could remove:
+# - timestamp (let the db put a default)
+# - visitor_id
+# - ip
+# - country_portal
+# - cohorts
+# - model_pair_name
+# - opening_msg
+# - model_a_name
+# - model_b_name
+# - system_prompt_a
+# - system_prompt_b
+# - conversation_a
+# - conversation_b
+# - also probably conv_turns since vote can only happen at the end of the Conversations
+# and legacy:
+# - selected_category
+# - is_unedited_prompt
 class VoteRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
@@ -310,7 +328,7 @@ class VoteRecord(BaseModel):
     # Session
     session_hash: str
     visitor_id: str | None
-    ip: str  # FIXME | None? cf get_ip()
+    ip: str
     country_portal: CountryPortal
     cohorts: str
 
@@ -320,7 +338,7 @@ class VoteRecord(BaseModel):
     conversation_pair_id: str
     model_pair_name: Annotated[
         list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed
+    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     opening_msg: str
     is_unedited_prompt: bool
 
