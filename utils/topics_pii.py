@@ -345,6 +345,6 @@ def process_conversations(db_params, analyzer: Config):
             conn.close()
 
 
-db_params = os.getenv("DATABASE_URI")
+db_params = os.getenv("COMPARIA_DB_URI")
 analyzer = Config()
 process_conversations(db_params, analyzer)

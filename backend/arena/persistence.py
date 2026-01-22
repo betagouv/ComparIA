@@ -67,7 +67,7 @@ def db(
     try:
         logger.debug(f"[DB] Try to {action} data")
 
-        with psycopg2.connect(settings.DATABASE_URI) as conn:
+        with psycopg2.connect(settings.COMPARIA_DB_URI) as conn:
             with conn.cursor() as cursor:
                 data_keys = list(data.keys())
                 field_keys = ", ".join(data_keys)

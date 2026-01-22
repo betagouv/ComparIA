@@ -148,10 +148,10 @@ models-doc: ## Build/generate llm doc and JSON schemas
 	$(UV) run python -m utils.models.schemas.build_doc
 
 # Dataset utilities
-dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and DATABASE_URI)
+dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
-	@if [ -z "$$DATABASE_URI" ]; then \
-		echo "Error: DATABASE_URI is not defined"; \
+	@if [ -z "$$COMPARIA_DB_URI" ]; then \
+		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
 	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
