@@ -132,6 +132,9 @@
         return true
       })
       .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
+
+    if (models.length === 0) return []
+
     const highestElo = models[0].data.elo!
     const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
     const highestConso = models.reduce((a, m) => (m.consumption_wh > a ? m.consumption_wh : a), 0)

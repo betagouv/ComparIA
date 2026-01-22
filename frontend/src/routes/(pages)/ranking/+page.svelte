@@ -2,7 +2,7 @@
   import { Tabs, Toggle, Tooltip } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsWithDataContext } from '$lib/models'
+  import { getModelsContext, getModelsWithDataContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, RankingTable } from './components'
@@ -25,6 +25,32 @@
   const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
+    // Transform data based on style control toggle (match RankingTable logic)
+    const exportData = useStyleControl
+      ? getModelsContext()
+          .models.filter((model) => {
+            if (!model.data?.style_controlled) return false
+            if (!model.prefs) return false
+            return true
+          })
+          .map((model) => {
+            const sc = model.data!.style_controlled!
+            return {
+              ...model,
+              data: {
+                ...model.data,
+                elo: sc.elo,
+                rank: sc.rank,
+                score_p2_5: sc.score_p2_5,
+                score_p97_5: sc.score_p97_5,
+                rank_p2_5: sc.rank_p2_5,
+                rank_p97_5: sc.rank_p97_5,
+                trust_range: sc.trust_range
+              }
+            }
+          })
+      : modelsData
+
     const csvCols = [
       { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
@@ -46,7 +72,7 @@
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
       cols.map((col) => col.label).join(','),
-      ...modelsData
+      ...exportData
         .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
         .map((m) => {
           return cols
@@ -73,7 +99,8 @@
         })
     ].join('\n')
 
-    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
+    const suffix = useStyleControl ? '-style_controlled' : ''
+    downloadTextFile(data, `comparia_model-${kind}${suffix}-${lastUpdateDate}-license_Etalab_2_0`)
   }
 
   // function onDownloadPrefsData() {

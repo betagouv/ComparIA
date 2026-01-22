@@ -124,10 +124,12 @@
 
   const minMaxX = $derived.by(() => {
     const [min, max] = extent(filteredModels, (m) => m.x) as [number, number]
+    if (min === undefined || max === undefined) return [0, 100] as const
     return [min - 5, max + 15] as const
   })
   const minMaxY = $derived.by(() => {
     const [min, max] = extent(filteredModels, (m) => m.y) as [number, number]
+    if (min === undefined || max === undefined) return [0, 1000] as const
     return [min - 5, max + 35] as const
   })
   const xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))

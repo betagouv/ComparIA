@@ -406,27 +406,56 @@ def compute_preferences(votes: pl.DataFrame) -> pl.DataFrame:
 # Style-Controlled Bradley-Terry Functions
 # =============================================================================
 
-def prepare_style_battles(votes: pl.DataFrame, conversations: pl.DataFrame) -> pl.DataFrame:
+def prepare_style_battles(votes: pl.DataFrame, reactions: pl.DataFrame, conversations: pl.DataFrame) -> pl.DataFrame:
     """
     Prepare battles with style features for style-controlled ranking.
-    Joins votes with conversations to extract style features from response text.
+    Joins votes and reactions with conversations to extract style features from response text.
     """
     print("Preparing style battles...")
 
-    # Get battles from votes (only votes, not reactions, since we need conversation text)
-    battles = votes.filter(
+    # Get battles from votes
+    vote_battles = votes.filter(
         (pl.col("both_equal") == False) &
         (pl.col("chosen_model_name").is_not_null())
     ).select([
         "conversation_pair_id",
-        "model_a_name",
-        "model_b_name",
-        "chosen_model_name"
+        pl.col("model_a_name").alias("model_a"),
+        pl.col("model_b_name").alias("model_b"),
+        pl.col("chosen_model_name")
     ])
 
+    # Get battles from reactions
+    reaction_battles = reactions.filter(
+        (pl.col("liked") == True) | (pl.col("disliked") == True)
+    ).select([
+        "conversation_pair_id",
+        pl.col("model_a_name").alias("model_a"),
+        pl.col("model_b_name").alias("model_b"),
+        pl.when(
+            (pl.col("liked") == True) & (pl.col("refers_to_model") == pl.col("model_a_name"))
+        ).then(pl.col("model_a_name"))
+        .when(
+            (pl.col("liked") == True) & (pl.col("refers_to_model") == pl.col("model_b_name"))
+        ).then(pl.col("model_b_name"))
+        .when(
+            (pl.col("disliked") == True) & (pl.col("refers_to_model") == pl.col("model_a_name"))
+        ).then(pl.col("model_b_name"))  # Dislike A = vote for B
+        .when(
+            (pl.col("disliked") == True) & (pl.col("refers_to_model") == pl.col("model_b_name"))
+        ).then(pl.col("model_a_name"))  # Dislike B = vote for A
+        .otherwise(pl.lit(None))
+        .alias("chosen_model_name")
+    ]).filter(pl.col("chosen_model_name").is_not_null())
+
+    # Combine all battles
+    all_battles = pl.concat([vote_battles, reaction_battles])
+
+    print(f"  {len(vote_battles)} battles from votes")
+    print(f"  {len(reaction_battles)} battles from reactions")
+
     # Join with conversations to get conversation text
-    # conversation_pair_id should match between votes and conversations
-    battles_with_conv = battles.join(
+    # Only battles with matching conversation_pair_id will be included
+    battles_with_conv = all_battles.join(
         conversations.select([
             "conversation_pair_id",
             "conversation_a",
@@ -436,7 +465,7 @@ def prepare_style_battles(votes: pl.DataFrame, conversations: pl.DataFrame) -> p
         how="inner"
     )
 
-    print(f"  {len(battles_with_conv)} battles with conversation data")
+    print(f"  {len(battles_with_conv)} battles with conversation data (from votes + reactions)")
 
     # Extract style features
     records = []
@@ -463,11 +492,11 @@ def prepare_style_battles(votes: pl.DataFrame, conversations: pl.DataFrame) -> p
         features_b = extract_style_features(text_b)
 
         # Determine winner
-        winner = "model_a" if row["chosen_model_name"] == row["model_a_name"] else "model_b"
+        winner = "model_a" if row["chosen_model_name"] == row["model_a"] else "model_b"
 
         records.append({
-            "model_a": row["model_a_name"],
-            "model_b": row["model_b_name"],
+            "model_a": row["model_a"],
+            "model_b": row["model_b"],
             "winner": winner,
             **{f"{k}_a": v for k, v in features_a.items()},
             **{f"{k}_b": v for k, v in features_b.items()}
@@ -544,9 +573,13 @@ def fit_style_controlled_bt(
     model_scores = coefficients[:p]
     style_coefs = coefficients[p:]
 
+    # Normalize model scores to have mean 0 (for identifiability in Bradley-Terry)
+    # This ensures scores are centered around BT_INIT_RATING like standard rankings
+    model_scores_normalized = model_scores - np.mean(model_scores)
+
     # Convert to rating scale
     ratings = {
-        model: BT_SCALE * model_scores[i] + BT_INIT_RATING
+        model: BT_SCALE * model_scores_normalized[i] + BT_INIT_RATING
         for model, i in model_to_idx.items()
     }
 
@@ -555,17 +588,19 @@ def fit_style_controlled_bt(
 
 def compute_style_controlled_rankings(
     votes: pl.DataFrame,
+    reactions: pl.DataFrame,
     conversations: pl.DataFrame
 ) -> pl.DataFrame:
     """
     Compute style-controlled Bradley-Terry rankings with bootstrap confidence intervals.
+    Uses both votes and reactions (where conversation data is available).
 
     Returns DataFrame with columns: model_name, median, p2.5, p97.5, rank, rank_p2.5, rank_p97.5
     """
     print("Computing style-controlled rankings...")
 
     # Prepare battles with style features
-    battles = prepare_style_battles(votes, conversations)
+    battles = prepare_style_battles(votes, reactions, conversations)
 
     if len(battles) == 0:
         print("  No battles with style features found!")
@@ -643,8 +678,8 @@ def main():
     win_rates = compute_win_rates(all_battles)
     mean_win_probs = compute_mean_win_prob(rankings)
 
-    # Style-controlled rankings
-    style_rankings = compute_style_controlled_rankings(votes, conversations)
+    # Style-controlled rankings (using votes + reactions)
+    style_rankings = compute_style_controlled_rankings(votes, reactions, conversations)
 
     # Join all data
     print("Joining data...")
