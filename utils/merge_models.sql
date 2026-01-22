@@ -1,3 +1,4 @@
+-- Allow migration of old model names (rename model with old name to new name)
 UPDATE "public"."conversations"
 SET
     -- Replace either old name with the new name in model_a_name
