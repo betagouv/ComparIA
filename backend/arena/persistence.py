@@ -650,9 +650,9 @@ class ConversationMessageRecord(BaseModel):
     """
 
     class MessageMetadata(BaseModel):
-        generation_id: Annotated[str | None, Field(exclude_if=is_not)]
-        output_tokens: int | None  # FIXME required?
-        duration: Annotated[float | None, Field(exclude_if=is_not)]
+        generation_id: str
+        output_tokens: int
+        duration: float
 
     role: MessageRole
     content: str
