@@ -5,7 +5,7 @@ from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
 if TYPE_CHECKING:
-    from backend.language_models.models import LanguageModel, Model
+    from backend.llms.models import LanguageModel, Model
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
