@@ -209,11 +209,6 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
   arena.chat.error = null
 
   try {
-    // Use new FastAPI client
-    const customModels =
-      args.mode === 'custom' && args.custom_models_selection.length === 2
-        ? (args.custom_models_selection as [string, string])
-        : null
     const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
     if (cohorts === null) {
       console.error(
@@ -227,7 +222,7 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
     const stream = api.stream('/arena/add_first_text', {
       prompt_value: args.prompt_value,
       mode: args.mode,
-      custom_models_selection: customModels,
+      custom_models_selection: args.custom_models_selection,
       country_portal: getLocale(),
       cohorts
     })
