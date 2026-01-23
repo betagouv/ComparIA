@@ -415,6 +415,19 @@ class LanguageModel(BaseModel):
         return None
 
 
+class LanguageModeArchived(LanguageModel):
+    status: Literal["archived"]
+
+
+class LanguageModelEnabled(LanguageModel):
+    """
+    Enabled LLM for proper typing with required Endpoint
+    """
+
+    status: Literal["enabled"]
+    endpoint: Endpoint
+
+
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
     name: str

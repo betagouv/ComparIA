@@ -19,7 +19,8 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.models import LanguageModel
+from backend.llms.data import get_models
+from backend.llms.models import LanguageModel, LanguageModelEnabled
 from backend.llms.utils import Consumption
 from backend.utils.countries import CountryPortalAnno
 
@@ -134,10 +135,20 @@ class Conversation(BaseModel):
         ]
 
     @cached_property
-    def llm(self) -> LanguageModel:
-        from backend.llms.data import get_models
+    def llm(self) -> LanguageModelEnabled:
+        """
+        Enabled LLM definition with endpoint
 
-        return get_models().enabled[self.model_name]
+        Raises:
+            ValueError: if LLM definition or LLM Endpoint is not found
+        """
+        # Should not happen but just in case Conversation is created with a non enabled LLM
+        try:
+            return get_models().enabled[self.model_name]
+        except KeyError as exc:
+            raise ValueError(
+                f"No LLM definition or endpoint found for model: {self.model_name}"
+            )
 
 
 def create_conversation(llm_id: str, user_msg: UserMessage) -> Conversation:
