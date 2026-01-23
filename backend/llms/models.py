@@ -363,7 +363,7 @@ class LanguageModel(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     new: bool
-    status: Literal["archived", "enabled"]
+    status: Literal["archived", "enabled", "disabled"]
     id: str
     simple_name: str
     license: str
