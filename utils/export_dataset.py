@@ -30,6 +30,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
+from backend.llms.models import LanguageModel
 from backend.llms.utils import get_active_params, get_total_params
 
 # Add the parent directory to the Python path to resolve the 'languia' module
@@ -189,8 +190,11 @@ def calculate_kwh(model_name, tokens):
     """
     if tokens is None:
         return None
-    wh_per_million = MODELS_DATA.get(model_name.lower(), {}).get(
-        "wh_per_million_token", 0
+
+    wh_per_million = (
+        MODELS_DATA[model_name.lower()].wh_per_million_token
+        if model_name.lower() in MODELS_DATA
+        else 0
     )
     return (wh_per_million / 1_000_000) * tokens / 1_000
 
@@ -206,9 +210,15 @@ def load_models_data():
             models_data = json.load(f)
             # Access the nested "models" key in the JSON structure
             if "models" in models_data:
-                MODELS_DATA = {k.lower(): v for k, v in models_data["models"].items()}
+                MODELS_DATA = {
+                    k.lower(): LanguageModel.model_validate(v)
+                    for k, v in models_data["models"].items()
+                }
             else:
-                MODELS_DATA = {k.lower(): v for k, v in models_data.items()}
+                MODELS_DATA = {
+                    k.lower(): LanguageModel.model_validate(v)
+                    for k, v in models_data.items()
+                }
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")
     except json.JSONDecodeError:
@@ -258,28 +268,28 @@ def fetch_and_transform_data(conn, table_name, query=None):
             # Add parameter counts (total and active) - only for models that exist in MODELS_DATA
             dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
                 lambda x: (
-                    get_total_params(MODELS_DATA.get(x.lower(), {}))
+                    get_total_params(MODELS_DATA[x.lower()])
                     if x.lower() in MODELS_DATA
                     else None
                 )
             )
             dataframe["model_b_total_params"] = dataframe["model_b_name"].apply(
                 lambda x: (
-                    get_total_params(MODELS_DATA.get(x.lower(), {}))
+                    get_total_params(MODELS_DATA[x.lower()])
                     if x.lower() in MODELS_DATA
                     else None
                 )
             )
             dataframe["model_a_active_params"] = dataframe["model_a_name"].apply(
                 lambda x: (
-                    get_active_params(MODELS_DATA.get(x.lower(), {}))
+                    get_active_params(MODELS_DATA[x.lower()])
                     if x.lower() in MODELS_DATA
                     else None
                 )
             )
             dataframe["model_b_active_params"] = dataframe["model_b_name"].apply(
                 lambda x: (
-                    get_active_params(MODELS_DATA.get(x.lower(), {}))
+                    get_active_params(MODELS_DATA[x.lower()])
                     if x.lower() in MODELS_DATA
                     else None
                 )
