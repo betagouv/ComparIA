@@ -333,14 +333,14 @@ class VoteRecord(BaseModel):
     cohorts: str
 
     # Conversations
-    selected_category: Annotated[str | None, Field(validation_alias="category")]
     conv_turns: int
     conversation_pair_id: str
     model_pair_name: Annotated[
         list[str], JSONSerializer
     ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     opening_msg: str
-    is_unedited_prompt: bool
+    selected_category: str | None = None  # FIXME legacy autofill with None for now
+    is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
 
     # Language model pairs specific
     model_a_name: str
@@ -474,8 +474,6 @@ def record_vote(
 # Also not sure that `question_id` is usefull
 # And legacy:
 # - chatbot_index
-# - selected_category
-# - is_unedited_prompt
 class ReactionRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
@@ -696,7 +694,6 @@ class ConversationsRecord(BaseModel):
     cohorts: str
 
     # Conversations
-    selected_category: Annotated[str | None, Field(validation_alias="category")]
     mode: SelectionMode
     custom_models_selection: Annotated[
         list[str] | None, JSONSerializer
@@ -707,7 +704,8 @@ class ConversationsRecord(BaseModel):
         list[str], JSONSerializer
     ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     opening_msg: str
-    is_unedited_prompt: bool
+    selected_category: str | None = None  # FIXME legacy autofill with None for now
+    is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
 
     # Language model pairs specific
     model_a_name: str
