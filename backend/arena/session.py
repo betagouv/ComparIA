@@ -57,8 +57,7 @@ def retrieve_session_conversations(
         session_hash: Unique session identifier
 
     Returns:
-        Tuple[dict, dict, dict]: (conv_a, conv_b, metadata)
-            where metadata contains {"mode": str, "category": str, "created_at": str}
+        Conversations serialized data
 
     Raises:
         ValueError: If session not found or expired

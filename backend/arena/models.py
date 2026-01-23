@@ -176,7 +176,6 @@ class Conversations(BaseModel):
         cohorts: Comma separated list str of cohorts, to be excluded from datasets if not empty str
         mode: Model selection mode (e.g., "random", "big-vs-small")
         custom_models_selection: Possible tuple of user selected llm ids
-        category: Prompt category (e.g., "writing", "coding")
         conversation_a: First conversation state (dict with messages, model_name, etc.)
         conversation_b: Second conversation state (dict with messages, model_name, etc.)
     """
@@ -193,7 +192,6 @@ class Conversations(BaseModel):
     # Prompt data
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
-    category: str | None = None
     # Data
     conversation_a: Conversation
     conversation_b: Conversation
@@ -229,26 +227,6 @@ class Conversations(BaseModel):
         conv = self.conversation_a
         return conv.messages[1 if conv.has_system_msg else 0].content
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def is_unedited_prompt(self) -> bool:
-        """
-        Check if the user's opening message is from a suggested prompt.
-
-        Used to identify whether the user wrote custom text or used a predefined prompt.
-
-        Returns:
-            bool: True if message matches a suggested prompt, False otherwise
-        """
-        # FIXME legacy remove
-        if not self.category:
-            return False
-
-        from backend.config import prompts_table
-
-        # Check if the exact message exists in the category's prompt list
-        return self.opening_msg in prompts_table[self.category]
-
     def store_to_session(self) -> None:
         """
         Store conversation pair to Redis.
@@ -275,7 +253,6 @@ def create_conversations(
     llm_id_a: str,
     llm_id_b: str,
     args: "AddFirstTextBody",
-    category: str | None,
     session_hash: str,
     ip: str,
     visitor_id: str | None,
@@ -293,7 +270,6 @@ def create_conversations(
         cohorts=args.cohorts,
         mode=args.mode,
         custom_models_selection=args.custom_models_selection,
-        category=category,
         conversation_a=conv_a,
         conversation_b=conv_b,
     )

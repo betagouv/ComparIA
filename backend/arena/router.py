@@ -142,7 +142,6 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         llm_id_a=model_a_id,
         llm_id_b=model_b_id,
         args=args,
-        category=None,  # FIXME category?
         session_hash=session_hash,
         ip=get_ip(request),
         visitor_id=get_matomo_tracker_from_cookies(request.cookies),
