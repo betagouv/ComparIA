@@ -287,17 +287,16 @@ async def retry(
             failing_model_id = conv_a.model_name if pos == "a" else conv_b
 
             if selection := conversations.custom_models_selection:
-                # Reset custom_models_selection
+                # Filter failing model from custom_models_selection
+                new_selection = tuple(
+                    model_id for model_id in selection if model_id != failing_model_id
+                )
                 conversations.custom_models_selection = (
-                    tuple(
-                        model_id
-                        for model_id in selection
-                        if model_id != failing_model_id
-                    )
-                    if len(selection <= 2)
-                    else None
+                    (new_selection[0],) if new_selection else None
                 )
                 # FIXME warn user that its selection is not taken into account
+            else:
+                conversations.custom_models_selection = None
 
             # Repick a model ids excluding current ones
             new_model_id, _ = models.pick_two(
