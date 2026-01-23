@@ -79,9 +79,19 @@ build-frontend: ## Build the frontend for production
 	@echo "Building frontend..."
 	cd frontend && $(NPM) run build
 
+lint-python: ## Check python code
+	@echo "Checking python code..."
+	uv run mypy .
+
 lint-frontend: ## Check frontend code
 	@echo "Checking frontend code..."
 	cd frontend && $(NPM) run lint
+
+format-python: ## Format python code
+	@echo "Formatting python code..."
+	uv run autoflake .
+	uv run isort .
+	uv run black .
 
 format-frontend: ## Format frontend code
 	@echo "Formatting frontend code..."
