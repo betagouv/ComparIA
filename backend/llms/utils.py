@@ -75,7 +75,7 @@ def get_llm_impact(
     model: Union["Model", "LanguageModel"],
     token_count: int,
     request_latency: float | None,
-) -> Impacts | None:
+) -> Impacts:
     """
     Calculate environmental impact (energy, CO2) for LLM inference.
 
@@ -89,7 +89,6 @@ def get_llm_impact(
 
     Returns:
         Impact object with .energy.value and .gwp.value (CO2) attributes
-        Returns None if model parameters are missing
 
     Impact Metrics:
         - energy: Electricity consumption in kWh
@@ -117,22 +116,18 @@ def get_llm_impact(
     electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
 
     if electricity_mix is None:
-        # FIXME raise error?
-        return None
-
-    # Extract electricity mix components for impact calculation
-    if_electricity_mix_adpe = electricity_mix.adpe  # Abiotic Depletion Potential
-    if_electricity_mix_pe = electricity_mix.pe  # Primary Energy
-    if_electricity_mix_gwp = electricity_mix.gwp  # Global Warming Potential (CO2)
+        raise ValueError(
+            f"ecologits: no electricity_mix for zone '{electricity_mix_zone}' found."
+        )
 
     # Calculate impact using ecologits library
     return compute_llm_impacts(
         model_active_parameter_count=model_active_parameter_count,
         model_total_parameter_count=model_total_parameter_count,
         output_token_count=token_count,
-        if_electricity_mix_adpe=if_electricity_mix_adpe,
-        if_electricity_mix_pe=if_electricity_mix_pe,
-        if_electricity_mix_gwp=if_electricity_mix_gwp,
+        if_electricity_mix_adpe=electricity_mix.adpe,  # Abiotic Depletion Potential
+        if_electricity_mix_pe=electricity_mix.pe,  # Primary Energy
+        if_electricity_mix_gwp=electricity_mix.gwp,  # Global Warming Potential (CO2)
         request_latency=request_latency,
     )
 
@@ -234,10 +229,6 @@ def get_llm_consumption(
 
     """
     impact = get_llm_impact(llm, tokens, request_latency)
-
-    if impact is None:
-        # FIXME impact None? raise Exception? Should not happen with full llm data
-        return None
 
     # Extract and normalize energy and CO2 values (handles value ranges)
     kwh = convert_range_to_value(impact.energy.value)

@@ -347,13 +347,9 @@ class Model(RawModel):
     @property
     def wh_per_million_token(self) -> int | float:
         impact = get_llm_impact(self, 1_000_000, None)
+        energy_kwh = convert_range_to_value(impact.energy.value)
 
-        if impact:
-            energy_kwh = convert_range_to_value(impact.energy.value)
-            return energy_kwh * 1000
-
-        # FIXME return None?
-        return 0
+        return energy_kwh * 1000
 
 
 class LanguageModel(BaseModel):
