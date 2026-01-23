@@ -58,6 +58,7 @@ litellm_config.yml
 results-output/
 venv.bak
 cache/
+.mypy_cache
 
 # Agentic stuffs
 CLAUDE.md
