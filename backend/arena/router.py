@@ -288,8 +288,14 @@ async def retry(
 
             if selection := conversations.custom_models_selection:
                 # Reset custom_models_selection
-                conversations.custom_models_selection = tuple(
-                    model_id for model_id in selection if model_id != failing_model_id
+                conversations.custom_models_selection = (
+                    tuple(
+                        model_id
+                        for model_id in selection
+                        if model_id != failing_model_id
+                    )
+                    if len(selection <= 2)
+                    else None
                 )
                 # FIXME warn user that its selection is not taken into account
 
