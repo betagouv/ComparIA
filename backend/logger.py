@@ -4,8 +4,10 @@ import logging
 import os
 import sys
 from logging.handlers import WatchedFileHandler
+from typing import Any
 
-import psycopg2  # type: ignore
+import psycopg2
+from fastapi import Request
 from psycopg2 import sql
 
 from backend.config import settings
@@ -32,10 +34,10 @@ class JSONFormatter(logging.Formatter):
         """
         msg = super().format(record)
 
-        log_data = {"message": msg}
+        log_data: dict[str, dict | str | None] = {"message": msg}
 
         # Extract request context if available
-        if hasattr(record, "request"):
+        if hasattr(record, "request") and isinstance(record.request, Request):
             try:
                 log_data["query_params"] = dict(record.request.query_params)
                 log_data["path_params"] = dict(record.request.path_params)
@@ -59,6 +61,9 @@ class PostgresHandler(logging.Handler):
     Connects to database and stores log entries for centralized logging.
     Maintains persistent connection with auto-reconnection.
     """
+
+    dsn: str
+    connection: Any
 
     def __init__(self, dsn: str) -> None:
         """
