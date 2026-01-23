@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from backend.arena.router import router as arena_router
 from backend.config import OBJECTIVES
@@ -44,7 +43,3 @@ async def get_counter(country_portal: CountryPortalAnno):
         "count": get_country_portal_count(country_portal),
         "objective": OBJECTIVES[country_portal],
     }
-
-
-# FIXME remove? https://github.com/getsentry/sentry-python/issues/4003
-app = SentryAsgiMiddleware(app)
