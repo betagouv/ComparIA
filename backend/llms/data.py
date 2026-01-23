@@ -1,10 +1,10 @@
 import json
 import logging
 from functools import lru_cache
-from typing import Any
+from typing import Annotated, Any
 
 import numpy as np
-from pydantic import BaseModel, computed_field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
@@ -13,14 +13,20 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.models import LanguageModel
+from backend.llms.models import LanguageModeArchived, LanguageModelEnabled
 
 logger = logging.getLogger("languia")
 
 
 class LanguageModels(BaseModel):
     data_timestamp: float
-    all: dict[str, LanguageModel]
+    all: dict[
+        str,
+        Annotated[
+            LanguageModelEnabled | LanguageModeArchived,
+            Field(discriminator="status"),
+        ],
+    ]
 
     @field_validator("all", mode="before")
     @classmethod
@@ -31,14 +37,14 @@ class LanguageModels(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def enabled(self) -> dict[str, LanguageModel]:
+    def enabled(self) -> dict[str, LanguageModelEnabled]:
         """
         Filter to only enabled models (removes disabled or deprecated models)
         """
         return {
             model.id: model
             for model in self.all.values()
-            if model.status == "enabled" and model.endpoint
+            if isinstance(model, LanguageModelEnabled)
         }
 
     @computed_field  # type: ignore[prop-decorator]

@@ -50,17 +50,8 @@ async def bot_response_async(
         Updated message list as response chunks arrive
 
     Raises:
-        Exception: If model endpoint is not configured
         EmptyResponseError: If model returns empty response
     """
-    # Validate that the model has a configured endpoint
-    if not state.llm.endpoint:
-        logger.critical(
-            f"No endpoint for model: {state.model_name}",
-            extra={"request": request},
-        )
-        raise Exception(f"No endpoint for model: {state.model_name}")
-
     # Add new partial AssistantMessage to chat
     metadata = AssistantMessageMetadata(generation_id="", bot=position)
     current_msg = AssistantMessage(metadata=metadata)
