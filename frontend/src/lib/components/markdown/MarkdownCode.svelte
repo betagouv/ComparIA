@@ -1,17 +1,16 @@
 <script lang="ts">
   // This is the base MarkdownCode component from gradio migrated to svelte 5
   // https://github.com/gradio-app/gradio/tree/main/js/markdown-code
-  import { sanitize } from '@gradio/sanitize'
+  // TODO could be reworked
   import { tick } from 'svelte'
   import { standardHtmlAndSvgTags } from './html-tags'
   import './prism.css'
-  import { copy, create_marked } from './utils'
+  import { copy, create_marked, sanitize } from './utils'
 
   let {
     message,
     chatbot = false,
     sanitize_html = true,
-    latex_delimiters = [],
     render_markdown = true,
     line_breaks = true,
     header_links = false,
@@ -22,7 +21,6 @@
     message: string
     chatbot?: boolean
     sanitize_html?: boolean
-    latex_delimiters?: { left: string; right: string; display: boolean }[]
     render_markdown?: boolean
     line_breaks?: boolean
     header_links?: boolean
@@ -32,28 +30,12 @@
   } = $props()
 
   let el = $state<HTMLElement>()
-  let katex_loaded = $state(false)
   const html = $derived(message && message.trim() ? process_message(message) : '')
 
   const marked = create_marked({
     header_links,
     line_breaks,
-    latex_delimiters: latex_delimiters || []
   })
-
-  function has_math_syntax(text: string): boolean {
-    if (!latex_delimiters || latex_delimiters.length === 0) {
-      return false
-    }
-
-    return latex_delimiters.some(
-      (delimiter) => text.includes(delimiter.left) && text.includes(delimiter.right)
-    )
-  }
-
-  function escapeRegExp(string: string): string {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  }
 
   function escapeTags(content: string, tagsToEscape: string[] | boolean): string {
     if (tagsToEscape === true) {
@@ -91,58 +73,20 @@
   function process_message(value: string): string {
     let parsedValue = value
     if (render_markdown) {
-      const latexBlocks: string[] = []
-      latex_delimiters.forEach((delimiter, _index) => {
-        const leftDelimiter = escapeRegExp(delimiter.left)
-        const rightDelimiter = escapeRegExp(delimiter.right)
-        const regex = new RegExp(`${leftDelimiter}([\\s\\S]+?)${rightDelimiter}`, 'g')
-        parsedValue = parsedValue.replace(regex, (match, _p1) => {
-          latexBlocks.push(match)
-          return `%%%LATEX_BLOCK_${latexBlocks.length - 1}%%%`
-        })
-      })
-
       parsedValue = marked.parse(parsedValue) as string
-
-      parsedValue = parsedValue.replace(
-        /%%%LATEX_BLOCK_(\d+)%%%/g,
-        (_match, p1) => latexBlocks[parseInt(p1, 10)]
-      )
     }
 
     if (allow_tags) {
       parsedValue = escapeTags(parsedValue, allow_tags)
     }
 
-    if (sanitize_html && sanitize) {
-      // FIXME use custom sanitize when removing gradio
-      parsedValue = sanitize(parsedValue, '/')
+    if (sanitize_html) {
+      parsedValue = sanitize(parsedValue)
     }
     return parsedValue
   }
 
-  async function render_html(value: string): Promise<void> {
-    if (latex_delimiters.length > 0 && value && has_math_syntax(value)) {
-      if (!katex_loaded) {
-        await Promise.all([
-          import('katex/dist/katex.min.css'),
-          import('katex/contrib/auto-render')
-        ]).then(([, { default: render_math_in_element }]) => {
-          katex_loaded = true
-          render_math_in_element(el!, {
-            delimiters: latex_delimiters,
-            throwOnError: false
-          })
-        })
-      } else {
-        const { default: render_math_in_element } = await import('katex/contrib/auto-render')
-        render_math_in_element(el!, {
-          delimiters: latex_delimiters,
-          throwOnError: false
-        })
-      }
-    }
-
+  async function render_html(): Promise<void> {
     if (el) {
       const mermaidDivs = el.querySelectorAll('.mermaid')
       if (mermaidDivs.length > 0) {
@@ -163,7 +107,7 @@
 
   $effect(() => {
     if (el && document.body.contains(el)) {
-      render_html(message)
+      render_html()
     } else {
       console.error('Element is not in the DOM')
     }
