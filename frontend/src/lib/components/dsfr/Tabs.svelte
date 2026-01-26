@@ -105,6 +105,10 @@
       height: unset !important;
       min-height: unset !important;
     }
+
+    &::before {
+      background-color: transparent;
+    }
   }
 
   .fr-nav__link {
