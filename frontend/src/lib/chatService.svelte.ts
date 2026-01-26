@@ -104,11 +104,31 @@ export interface VoteData {
 
 // REVEAL
 
-type DurationUnit = 'j' | 'h' | 'min' | 's' | 'ms'
-
-type CO2Unit = 'g' | 'mg'
-
 type EnergyUnit = 'Wh' | 'mWh'
+
+// Equivalence types for scaled impact comparisons
+export type EquivalenceType =
+  | 'country_electricity'
+  | 'city_power'
+  | 'european_homes'
+  | 'nuclear_reactors'
+  | 'solar_farm_area'
+  | 'wind_turbines'
+  | 'car_earth_trips'
+  | 'paris_nyc_flights'
+
+// Single equivalence with values for both models
+export interface APIEquivalence {
+  type: EquivalenceType
+  model_a_value: number
+  model_b_value: number
+}
+
+export interface Equivalence {
+  type: EquivalenceType
+  modelAValue: number
+  modelBValue: number
+}
 
 export interface APIRevealData {
   b64: string
@@ -119,22 +139,10 @@ export interface APIRevealData {
   model_a_energy_unit: EnergyUnit
   model_b_energy: number
   model_b_energy_unit: EnergyUnit
-  model_a_kwh: number
-  model_b_kwh: number
-  model_a_co2: number
-  model_a_co2_unit: CO2Unit
-  model_b_co2: number
-  model_b_co2_unit: CO2Unit
   model_a_tokens: number
   model_b_tokens: number
-  streaming_a: number
-  streaming_a_unit: DurationUnit
-  streaming_b: number
-  streaming_b_unit: DurationUnit
-  lightbulb_a: number
-  lightbulb_a_unit: DurationUnit
-  lightbulb_b: number
-  lightbulb_b_unit: DurationUnit
+  // All meaningful scaled equivalences (frontend can cycle through them)
+  equivalences: APIEquivalence[]
 }
 
 interface RevealModelData {
@@ -142,19 +150,14 @@ interface RevealModelData {
   side: 'model-a' | 'model-b'
   energy: number
   energyUnit: string
-  kwh: number
-  co2: number
-  co2Unit: string
   tokens: number
-  lightbulb: number
-  lightbulbUnit: string
-  streaming: number
-  streamingUnit: string
 }
+
 export interface RevealData {
   selected: APIVoteData['which_model_radio_output']
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
+  equivalences: Equivalence[]
 }
 
 // DATA
@@ -305,16 +308,14 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
       side: `model-${model}`,
       energy: data[`model_${model}_energy`],
       energyUnit: data[`model_${model}_energy_unit`],
-      kwh: data[`model_${model}_kwh`],
-      co2: data[`model_${model}_co2`],
-      co2Unit: data[`model_${model}_co2_unit`],
-      tokens: data[`model_${model}_tokens`],
-      lightbulb: data[`lightbulb_${model}`],
-      lightbulbUnit: data[`lightbulb_${model}_unit`],
-      streaming: data[`streaming_${model}`],
-      streamingUnit: data[`streaming_${model}_unit`]
+      tokens: data[`model_${model}_tokens`]
     })),
-    shareB64Data: data.b64
+    shareB64Data: data.b64,
+    equivalences: data.equivalences.map((eq) => ({
+      type: eq.type,
+      modelAValue: eq.model_a_value,
+      modelBValue: eq.model_b_value
+    }))
   }
 }
 
