@@ -13,19 +13,16 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.models import LanguageModeArchived, LanguageModelEnabled
+from backend.llms.models import LLMDataArchived, LLMDataEnabled
 
 logger = logging.getLogger("languia")
 
 
-class LanguageModels(BaseModel):
+class LLMsData(BaseModel):
     data_timestamp: float
     all: dict[
         str,
-        Annotated[
-            LanguageModelEnabled | LanguageModeArchived,
-            Field(discriminator="status"),
-        ],
+        Annotated[LLMDataEnabled | LLMDataArchived, Field(discriminator="status")],
     ]
 
     @field_validator("all", mode="before")
@@ -37,14 +34,14 @@ class LanguageModels(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def enabled(self) -> dict[str, LanguageModelEnabled]:
+    def enabled(self) -> dict[str, LLMDataEnabled]:
         """
         Filter to only enabled models (removes disabled or deprecated models)
         """
         return {
             model.id: model
             for model in self.all.values()
-            if isinstance(model, LanguageModelEnabled)
+            if isinstance(model, LLMDataEnabled)
         }
 
     @computed_field  # type: ignore[prop-decorator]
@@ -203,11 +200,11 @@ class LanguageModels(BaseModel):
 
 
 @lru_cache
-def get_models() -> LanguageModels:
+def get_llms_data() -> LLMsData:
     """
     Load model definitions from generated configuration.
     File contains metadata: params, pricing, reasoning capability, licenses, etc.
     """
     data = json.loads(MODELS_DATA_PATH.read_text())
 
-    return LanguageModels(data_timestamp=data["timestamp"], all=data["models"])
+    return LLMsData(data_timestamp=data["timestamp"], all=data["models"])

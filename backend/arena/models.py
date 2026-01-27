@@ -19,8 +19,8 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.data import get_models
-from backend.llms.models import LanguageModel, LanguageModelEnabled
+from backend.llms.data import get_llms_data
+from backend.llms.models import LLMData, LLMDataEnabled
 from backend.llms.utils import Consumption
 from backend.utils.countries import CountryPortalAnno
 
@@ -135,7 +135,7 @@ class Conversation(BaseModel):
         ]
 
     @cached_property
-    def llm(self) -> LanguageModelEnabled:
+    def llm(self) -> LLMDataEnabled:
         """
         Enabled LLM definition with endpoint
 
@@ -144,7 +144,7 @@ class Conversation(BaseModel):
         """
         # Should not happen but just in case Conversation is created with a non enabled LLM
         try:
-            return get_models().enabled[self.model_name]
+            return get_llms_data().enabled[self.model_name]
         except KeyError as exc:
             raise ValueError(
                 f"No LLM definition or endpoint found for model: {self.model_name}"
@@ -329,7 +329,7 @@ class VoteBody(BaseModel):
 
 
 class RevealModelData(TypedDict):
-    llm: LanguageModel
+    llm: LLMData
     conso: Consumption
 
 

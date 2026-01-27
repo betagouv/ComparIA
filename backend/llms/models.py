@@ -352,7 +352,7 @@ class Model(RawModel):
         return energy_kwh * 1000
 
 
-class LanguageModel(BaseModel):
+class LLMData(BaseModel):
     """
     Final language model definition.
 
@@ -411,11 +411,11 @@ class LanguageModel(BaseModel):
         return None
 
 
-class LanguageModeArchived(LanguageModel):
+class LLMDataArchived(LLMData):
     status: Literal["archived"]
 
 
-class LanguageModelEnabled(LanguageModel):
+class LLMDataEnabled(LLMData):
     """
     Enabled LLM for proper typing with required Endpoint
     """
