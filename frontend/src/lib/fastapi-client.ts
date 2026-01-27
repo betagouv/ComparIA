@@ -3,22 +3,20 @@
  *
  * Replaces Gradio client with native HTTP/SSE implementation.
  */
-import { browser, dev } from '$app/environment'
+
+import { browser } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.svelte'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
-  const ssr = !browser // browser false if SSR
-
-  if (dev) {
-    return 'http://localhost:8001'
-  } else if (ssr) {
+  const ssr = !browser // browser false if SSR because the app runs in nodejs
+  if (ssr) {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
-    return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return publicEnv.PUBLIC_API_LOCAL_URL || 'http://localhost:8001'
   } else {
     // Client-side: use public URL if defined, otherwise same origin (reverse proxy)
-    return publicEnv.PUBLIC_API_URL || window.location.origin || 'http://localhost:8001'
+    return publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   }
 }
 
