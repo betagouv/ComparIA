@@ -29,8 +29,8 @@ function getBackendUrl(): string {
     console.log('[DEBUG] Using SSR URL:', url)
     return url
   } else {
-    // Client-side: use public URL if defined, otherwise same origin (reverse proxy)
-    const url = window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    // Client-side: ALWAYS use window.location.origin to guarantee same protocol (HTTP/HTTPS)
+    const url = window.location.origin
     console.log('[DEBUG] Using client URL:', url)
     return url
   }
