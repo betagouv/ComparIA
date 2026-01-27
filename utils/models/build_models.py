@@ -7,7 +7,6 @@ from typing import Any
 import markdown
 import requests
 from pydantic import ValidationError
-from rich.logging import RichHandler
 
 from backend.llms.models import (
     Archs,
@@ -17,6 +16,7 @@ from backend.llms.models import (
     PreferencesData,
     RawOrgas,
 )
+from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import (
     FRONTEND_GENERATED_DIR,
     FRONTEND_MAIN_I18N_FILE,
@@ -28,10 +28,7 @@ from utils.utils import (
     write_json,
 )
 
-logging.basicConfig(
-    level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
-)
-log = logging.getLogger("models")
+logger = configure_logger(logging.getLogger("llms"))
 
 CURRENT_DIR = Path(__file__).parent
 LICENSES_FILE = CURRENT_DIR / "licenses.json"
@@ -50,23 +47,10 @@ I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
 
 
-def log_errors(errors: dict[str, list[Obj]]) -> None:
-    for name, errs in errors.items():
-        log.error(
-            f"Error in {name}:\n"
-            + "\n".join(
-                [
-                    f"- {err['key']}: [type={err['type']}] {err['msg']} (input={err['input'] if err['type'] != 'missing' else None})"
-                    for err in errs
-                ]
-            )
-        )
-
-
 def validate_licenses(raw_licenses: Any) -> list[Any]:
     try:
         licenses = Licenses(raw_licenses).model_dump(exclude_none=True)
-        log.info("No errors in 'licenses.json'!")
+        logger.info("No errors in 'licenses.json'!")
         return licenses
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
@@ -77,7 +61,7 @@ def validate_licenses(raw_licenses: Any) -> list[Any]:
                 errors[name] = []
             errors[name].append({"key": err["loc"][1], **err})
 
-        log_errors(errors)
+        log_pydantic_parsed_errors(logger, errors)
 
         raise Exception("Errors in 'licenses.json', exiting...")
 
@@ -85,7 +69,7 @@ def validate_licenses(raw_licenses: Any) -> list[Any]:
 def validate_archs(raw_archs: Any) -> list[Any]:
     try:
         archs = Archs(raw_archs).model_dump()
-        log.info("No errors in 'archs.json'!")
+        logger.info("No errors in 'archs.json'!")
         return archs
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
@@ -96,7 +80,7 @@ def validate_archs(raw_archs: Any) -> list[Any]:
                 errors[name] = []
             errors[name].append({"key": err["loc"][1], **err})
 
-        log_errors(errors)
+        log_pydantic_parsed_errors(logger, errors)
 
         raise Exception("Errors in 'archs.json', exiting...")
 
@@ -104,7 +88,7 @@ def validate_archs(raw_archs: Any) -> list[Any]:
 def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[Any]:
     try:
         orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump()
-        log.info("No errors in 'models.json'!")
+        logger.info("No errors in 'models.json'!")
         return orgas
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
@@ -122,7 +106,7 @@ def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[A
                 errors[name] = []
             errors[name].append({"key": key, **err})
 
-        log_errors(errors)
+        log_pydantic_parsed_errors(logger, errors)
 
         raise Exception("Errors in 'models.json', exiting...")
 
@@ -132,14 +116,14 @@ def connect_to_db(COMPARIA_DB_URI):
     from sqlalchemy import create_engine
 
     if not COMPARIA_DB_URI:
-        log.error(
+        logger.error(
             "Cannot connect to the database: no $COMPARIA_DB_URI configuration provided."
         )
 
     try:
         engine = create_engine(COMPARIA_DB_URI)
     except Exception as e:
-        log.error(f"Failed to create database engine: {e}")
+        logger.error(f"Failed to create database engine: {e}")
         return {}
 
 
@@ -156,7 +140,7 @@ def fetch_distinct_model_ids(engine, models_data):
             model_ids = df["model_id"].dropna().unique().tolist()
 
             if not model_ids:
-                log.warning("No model IDs found in the database.")
+                logger.warning("No model IDs found in the database.")
                 return {}
 
             missing_models = []
@@ -167,12 +151,14 @@ def fetch_distinct_model_ids(engine, models_data):
                     )
 
             if missing_models:
-                log.warning("Pre-check found missing models in generated-models.json:")
+                logger.warning(
+                    "Pre-check found missing models in generated-models.json:"
+                )
                 for model in missing_models:
-                    log.warning(f"- {model}")
+                    logger.warning(f"- {model}")
             return [model_id.lower() for model_id in model_ids]
     except Exception as e:
-        log.error(f"Failed to fetch distinct model IDs: {e}")
+        logger.error(f"Failed to fetch distinct model IDs: {e}")
         return []
 
 
@@ -193,7 +179,7 @@ def main() -> None:
         dumped_licenses = validate_licenses(raw_licenses)
         dumped_archs = validate_archs(raw_archs)
     except Exception as err:
-        log.error(str(err))
+        logger.error(str(err))
         sys.exit(1)
 
     # Filter out some models based on attr `status`
@@ -201,7 +187,7 @@ def main() -> None:
         filtered_models = []
         for model in orga["models"]:
             if model.get("status", None) == "missing_data":
-                log.warning(
+                logger.warning(
                     f"Model '{model["simple_name"]}' is deactivated (reason={model["status"]})"
                 )
             else:
@@ -218,7 +204,7 @@ def main() -> None:
     try:
         dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
     except Exception as err:
-        log.error(str(err))
+        logger.error(str(err))
         sys.exit(1)
 
     # Then use the full Orgas builder
@@ -365,17 +351,17 @@ def main() -> None:
     missing_info_events.sort(key=lambda x: (x["status"] != "enabled", x["id"]))
 
     for event in missing_info_events:
-        log.warning(
+        logger.warning(
             f"Model '{event['id']}' (status: {event['status']}): {event['reason']}"
         )
     # Integrate translatable content to frontend locales
-    log.info(f"Saving '{FRONTEND_MAIN_I18N_FILE.relative_to(ROOT_DIR)}'...")
+    logger.info(f"Saving '{FRONTEND_MAIN_I18N_FILE.relative_to(ROOT_DIR)}'...")
     frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
     frontend_i18n["generated"] = sort_dict(i18n)
     write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
 
     # Save generated models
-    log.info(f"Saving '{LLMS_GENERATED_DATA_FILE.relative_to(ROOT_DIR)}'...")
+    logger.info(f"Saving '{LLMS_GENERATED_DATA_FILE.relative_to(ROOT_DIR)}'...")
     write_json(
         LLMS_GENERATED_DATA_FILE,
         {
@@ -395,7 +381,7 @@ export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in 
 """
     )
 
-    log.info("Generation is successfull!")
+    logger.info("Generation is successfull!")
 
 
 def fetch_ranking_results(url) -> dict:
@@ -406,7 +392,7 @@ def fetch_ranking_results(url) -> dict:
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        log.error(f"Failed to fetch ranking results from repo: {e}")
+        logger.error(f"Failed to fetch ranking results from repo: {e}")
         # Return empty data structure if fetch fails
         return {"models": [], "timestamp": None}
 
