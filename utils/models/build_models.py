@@ -309,13 +309,11 @@ def main() -> None:
             f"Model '{event['id']}' (status: {event['status']}): {event['reason']}"
         )
     # Integrate translatable content to frontend locales
-    logger.info(f"Saving '{FRONTEND_MAIN_I18N_FILE.relative_to(ROOT_DIR)}'...")
     frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
     frontend_i18n["generated"] = sort_dict(i18n)
     write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
 
     # Save generated models
-    logger.info(f"Saving '{LLMS_GENERATED_DATA_FILE.relative_to(ROOT_DIR)}'...")
     write_json(
         LLMS_GENERATED_DATA_FILE,
         {
