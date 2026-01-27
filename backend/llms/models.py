@@ -25,7 +25,6 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    RootModel,
     ValidationInfo,
     computed_field,
     field_validator,
@@ -34,7 +33,6 @@ from pydantic import (
 from pydantic_core import PydanticCustomError
 
 from backend.llms.utils import convert_range_to_value, get_llm_impact
-from utils.utils import FRONTEND_DIR, ROOT_DIR
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
@@ -374,76 +372,3 @@ class LLMDataEnabled(LLMData):
 
     status: Literal["enabled"]
     endpoint: Endpoint
-
-
-# Model to validate organisations data from 'utils/models/models.json'
-class RawOrganisation(BaseModel):
-    name: str
-    icon_path: str | None = None  # FIXME required?
-    proprietary_license_desc: str | None = None
-    proprietary_reuse: bool = False
-    proprietary_commercial_use: bool | None = None
-    proprietary_reuse_specificities: str | None = None
-    proprietary_commercial_use_specificities: str | None = None
-    models: list[RawModel] | list[Model]
-
-    @field_validator("icon_path", mode="after")
-    @classmethod
-    def check_icon_exists(cls, value: str) -> str:
-        file_path = FRONTEND_DIR / "static" / "orgs" / "ai" / value
-        if "." in value and not file_path.exists():
-            raise PydanticCustomError(
-                "file_missing",
-                f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_DIR)}' doesn't exists.",
-            )
-
-        return value
-
-
-# Model used to generated 'utils/models/generated-models.json'
-class Organisation(RawOrganisation):
-    models: list[Model]
-
-    @field_validator("models", mode="before")
-    @classmethod
-    def enhance_models(cls, value: Any, info: ValidationInfo) -> list[RawModel]:
-        assert info.context is not None
-        assert info.context["data"] is not None
-        assert info.context["licenses"] is not None
-
-        for model in value:
-            # forward organisation data
-            model["organisation"] = info.data.get("name")
-            model["icon_path"] = info.data.get("icon_path")
-
-            # forward/inject license data
-            if model["license"] not in info.context["licenses"]:
-                raise PydanticCustomError(
-                    "license_missing",
-                    f"license is defined but license data is missing in 'licenses.json' for license '{model["license"]}'",
-                )
-
-            for k, v in info.context["licenses"][model["license"]].items():
-                model[k] = v
-
-            if model["license"] == "proprietary":
-                model["reuse"] = info.data["proprietary_reuse"]
-                model["commercial_use"] = info.data["proprietary_commercial_use"]
-
-            # inject ranking/prefs data
-            data = info.context["data"].get(model["id"])
-
-            if data:
-                model["data"] = data
-
-                PREFS_KEYS = list(PreferencesData.model_fields.keys())
-                prefs = {key: data.pop(key) for key in PREFS_KEYS}
-                if prefs:
-                    model["prefs"] = prefs
-
-        return value
-
-
-Licenses = RootModel[list[License]]
-RawOrgas = RootModel[list[RawOrganisation]]
-Orgas = RootModel[list[Organisation]]
