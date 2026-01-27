@@ -6,6 +6,15 @@ import json5
 
 Obj = dict[str, Any]
 
+UTILS_DIR = Path(__file__).parent
+ROOT_DIR = UTILS_DIR.parent
+# LLMs data
+LLMS_GENERATED_DATA_FILE = UTILS_DIR / "models" / "generated-models.json"
+# Frontend
+FRONTEND_DIR = ROOT_DIR / "frontend"
+FRONTEND_MAIN_I18N_FILE = FRONTEND_DIR / "locales" / "messages" / "fr.json"
+FRONTEND_GENERATED_DIR = FRONTEND_DIR / "src" / "lib" / "generated"
+
 
 def read_json(path: Path) -> Any:
     return json5.loads(path.read_text())

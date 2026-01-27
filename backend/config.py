@@ -5,11 +5,8 @@ from typing import Literal, get_args
 from httpx import Timeout
 from pydantic_settings import BaseSettings
 
-BACKEND_PATH = Path(__file__).parent
-ROOT_PATH = BACKEND_PATH.parent
-FRONTEND_PATH = ROOT_PATH / "frontend"
-
-MODELS_DATA_PATH = ROOT_PATH / "utils" / "models" / "generated-models.json"
+BACKEND_DIR = Path(__file__).parent
+ROOT_DIR = BACKEND_DIR.parent
 
 
 class Settings(BaseSettings):
@@ -18,7 +15,7 @@ class Settings(BaseSettings):
     COMPARIA_REDIS_HOST: str = "localhost"
     MOCK_RESPONSE: bool = False
     DATABASE_URI: str | None = None
-    LOGDIR: Path = ROOT_PATH / "data"
+    LOGDIR: Path = ROOT_DIR / "data"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None

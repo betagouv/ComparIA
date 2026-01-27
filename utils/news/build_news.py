@@ -5,21 +5,14 @@ from typing import Literal
 
 from pydantic import BaseModel, RootModel, field_serializer
 
-from utils.utils import read_json, write_json
+from utils.utils import FRONTEND_GENERATED_DIR, read_json, write_json
 
-CURRENT_FOLDER = Path(__file__).parent
-FRONTEND_EXPORT_PATH = (
-    CURRENT_FOLDER.parent.parent
-    / "frontend"
-    / "src"
-    / "lib"
-    / "generated"
-    / "news.json"
-)
+CURRENT_DIR = Path(__file__).parent
+FRONTEND_EXPORT_FILE = FRONTEND_GENERATED_DIR / "news.json"
 
 LOCALE_FILES = {
     path.split("/")[-1].replace(".json", ""): Path(path)
-    for path in glob.glob(str(CURRENT_FOLDER) + "/*.json")
+    for path in glob.glob(str(CURRENT_DIR) + "/*.json")
 }
 ALL_LOCALES = set(LOCALE_FILES.keys())
 
@@ -52,7 +45,7 @@ def main():
     # }
 
     write_json(
-        FRONTEND_EXPORT_PATH,
+        FRONTEND_EXPORT_FILE,
         NewsList(read_json(LOCALE_FILES["fr"])).model_dump(exclude_none=True),
     )
 

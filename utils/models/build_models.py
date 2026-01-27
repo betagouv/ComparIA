@@ -17,25 +17,30 @@ from backend.llms.models import (
     PreferencesData,
     RawOrgas,
 )
-from utils.utils import Obj, read_json, sort_dict, write_json
+from utils.utils import (
+    FRONTEND_GENERATED_DIR,
+    FRONTEND_MAIN_I18N_FILE,
+    LLMS_GENERATED_DATA_FILE,
+    ROOT_DIR,
+    Obj,
+    read_json,
+    sort_dict,
+    write_json,
+)
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
 )
 log = logging.getLogger("models")
 
-CURRENT_FOLDER = Path(__file__).parent
-ROOT_PATH = CURRENT_FOLDER.parent.parent
-FRONTEND_FOLDER = ROOT_PATH / "frontend"
-LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
-ARCHS_PATH = CURRENT_FOLDER / "archs.json"
-MODELS_PATH = CURRENT_FOLDER / "models.json"
-MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
-MODELS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
-MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
-GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
-I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
-TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated" / "models.ts"
+CURRENT_DIR = Path(__file__).parent
+LICENSES_FILE = CURRENT_DIR / "licenses.json"
+ARCHS_FILE = CURRENT_DIR / "archs.json"
+LLMS_RAW_DATA_FILE = CURRENT_DIR / "models.json"
+LLMS_EXTRA_DATA_FILE = CURRENT_DIR / "generated-models-extra-data.json"
+LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
+LLMS_PREFERENCES_FILE = CURRENT_DIR / "generated-preferences.json"
+TS_DATA_FILE = FRONTEND_GENERATED_DIR / "models.ts"
 I18N_OS_LICENSE_KEYS = [
     "license_desc",
     "reuse_specificities",
@@ -173,15 +178,15 @@ def fetch_distinct_model_ids(engine, models_data):
 
 def main() -> None:
     # Fetch the latest dataset results from ranking pipelinerepo
-    new_extra_data = fetch_ranking_results(MODELS_EXTRA_DATA_URL)
+    new_extra_data = fetch_ranking_results(LLMS_EXTRA_DATA_URL)
 
     if new_extra_data.get("models") and len(new_extra_data.get("models")) > 0:
-        write_json(MODELS_EXTRA_DATA_PATH, new_extra_data)
+        write_json(LLMS_EXTRA_DATA_FILE, new_extra_data)
 
-    raw_licenses = read_json(LICENSES_PATH)
-    raw_archs = read_json(ARCHS_PATH)
-    raw_orgas = read_json(MODELS_PATH)
-    raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
+    raw_licenses = read_json(LICENSES_FILE)
+    raw_archs = read_json(ARCHS_FILE)
+    raw_orgas = read_json(LLMS_RAW_DATA_FILE)
+    raw_extra_data = read_json(LLMS_EXTRA_DATA_FILE)
     raw_models_data = {m["model_name"]: m for m in raw_extra_data["models"]}
 
     try:
@@ -242,7 +247,7 @@ def main() -> None:
     }
 
     if os.getenv("COMPARIA_DB_URI"):
-        existing_generated_models = read_json(GENERATED_MODELS_PATH)
+        existing_generated_models = read_json(LLMS_GENERATED_DATA_FILE)
         engine = connect_to_db(os.getenv("COMPARIA_DB_URI"))
         fetch_distinct_model_ids(engine, existing_generated_models)
 
@@ -364,15 +369,15 @@ def main() -> None:
             f"Model '{event['id']}' (status: {event['status']}): {event['reason']}"
         )
     # Integrate translatable content to frontend locales
-    log.info(f"Saving '{I18N_PATH.relative_to(ROOT_PATH)}'...")
-    frontend_i18n = read_json(I18N_PATH)
+    log.info(f"Saving '{FRONTEND_MAIN_I18N_FILE.relative_to(ROOT_DIR)}'...")
+    frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
     frontend_i18n["generated"] = sort_dict(i18n)
-    write_json(I18N_PATH, frontend_i18n, indent=4)
+    write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
 
     # Save generated models
-    log.info(f"Saving '{GENERATED_MODELS_PATH.relative_to(ROOT_PATH)}'...")
+    log.info(f"Saving '{LLMS_GENERATED_DATA_FILE.relative_to(ROOT_DIR)}'...")
     write_json(
-        GENERATED_MODELS_PATH,
+        LLMS_GENERATED_DATA_FILE,
         {
             "timestamp": raw_extra_data["timestamp"],
             "models": sort_dict(generated_models),
@@ -380,7 +385,7 @@ def main() -> None:
     )
 
     # FIXME add ARCHS
-    TS_DATA_PATH.write_text(
+    TS_DATA_FILE.write_text(
         f"""export const LICENSES = {[l for l in context["licenses"].keys()]} as const
 export const ARCHS = {[a for a in context["archs"]]} as const
 export const MAYBE_ARCHS = {[f"maybe-{a}" for a in context["archs"] if a != 'na']} as const

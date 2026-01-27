@@ -38,8 +38,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
-
-MODELS_JSON_PATH = os.path.join(
+# FIXME import path from 'utils.utils'
+LLMS_GENERATED_DATA_FILE = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "models", "generated-models.json"
 )
 MODELS_DATA = {}
@@ -206,7 +206,7 @@ def load_models_data():
     """
     global MODELS_DATA
     try:
-        with open(MODELS_JSON_PATH, "r") as f:
+        with open(LLMS_GENERATED_DATA_FILE, "r") as f:
             models_data = json.load(f)
             # Access the nested "models" key in the JSON structure
             if "models" in models_data:
@@ -219,9 +219,9 @@ def load_models_data():
                     k.lower(): LLMData.model_validate(v) for k, v in models_data.items()
                 }
     except FileNotFoundError:
-        logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")
+        logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
     except json.JSONDecodeError:
-        logger.error(f"Error decoding JSON from: {MODELS_JSON_PATH}")
+        logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
 
 
 def fetch_and_transform_data(conn, table_name, query=None):

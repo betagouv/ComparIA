@@ -8,12 +8,12 @@ from pydantic import BaseModel, Field, computed_field, field_validator
 
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
-    MODELS_DATA_PATH,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
     CustomModelsSelection,
     SelectionMode,
 )
 from backend.llms.models import LLMDataArchived, LLMDataEnabled
+from utils.utils import LLMS_GENERATED_DATA_FILE
 
 logger = logging.getLogger("languia")
 
@@ -205,6 +205,6 @@ def get_llms_data() -> LLMsData:
     Load model definitions from generated configuration.
     File contains metadata: params, pricing, reasoning capability, licenses, etc.
     """
-    data = json.loads(MODELS_DATA_PATH.read_text())
+    data = json.loads(LLMS_GENERATED_DATA_FILE.read_text())
 
     return LLMsData(data_timestamp=data["timestamp"], all=data["models"])
