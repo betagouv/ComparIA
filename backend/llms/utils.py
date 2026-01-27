@@ -5,7 +5,7 @@ from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
 if TYPE_CHECKING:
-    from backend.llms.models import LanguageModel, Model
+    from backend.llms.models import LLMData, Model
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
@@ -28,14 +28,14 @@ def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
         return value_or_range
 
 
-def get_total_params(model: Union["Model", "LanguageModel"]) -> int:
+def get_total_params(model: Union["Model", "LLMData"]) -> int:
     """
     Get the total number of parameters for a model.
 
     Accounts for q8 quantization which reduces effective parameters by half.
 
     Args:
-        model: Model or LanguageModel with 'params' and optional 'quantization'
+        model: Model or LLMData with 'params' and optional 'quantization'
 
     Returns:
         int: Total parameters, or None if params not available
@@ -47,7 +47,7 @@ def get_total_params(model: Union["Model", "LanguageModel"]) -> int:
         return int(model.params)
 
 
-def get_active_params(model: Union["Model", "LanguageModel"]) -> int:
+def get_active_params(model: Union["Model", "LLMData"]) -> int:
     """
     Get the number of active parameters for a model.
 
@@ -55,7 +55,7 @@ def get_active_params(model: Union["Model", "LanguageModel"]) -> int:
     Active params represent how many parameters are used for each token.
 
     Args:
-        model: Model or LanguageModel
+        model: Model or LLMData
 
     Returns:
         int: Active parameters, or total params if not available
@@ -72,7 +72,7 @@ def get_active_params(model: Union["Model", "LanguageModel"]) -> int:
 
 
 def get_llm_impact(
-    model: Union["Model", "LanguageModel"],
+    model: Union["Model", "LLMData"],
     token_count: int,
     request_latency: float | None,
 ) -> Impacts:
@@ -83,7 +83,7 @@ def get_llm_impact(
     Currently not all models are in ecologits' database, so this uses estimated parameters instead.
 
     Args:
-        model: Model or LanguageModel with 'params' and optional 'active_params' (MoE)
+        model: Model or LLMData with 'params' and optional 'active_params' (MoE)
         token_count: Total output tokens generated
         request_latency: Time taken for inference (optional, for more accurate calculations)
 
@@ -213,7 +213,7 @@ class Consumption(TypedDict):
 
 
 def get_llm_consumption(
-    llm: Union["Model", "LanguageModel"],
+    llm: Union["Model", "LLMData"],
     tokens: int,
     request_latency: float | None = None,
 ) -> Consumption:
@@ -221,7 +221,7 @@ def get_llm_consumption(
     Calculates environmental impact (energy, CO2 emissions)
 
     Args:
-        llm: Model or LanguageModel with 'params' and optional 'active_params' (MoE)
+        llm: Model or LLMData with 'params' and optional 'active_params' (MoE)
         token_count: Total output tokens generated
         request_latency: Time taken for inference (optional, for more accurate calculations)
 

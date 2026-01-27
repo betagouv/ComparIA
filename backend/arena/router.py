@@ -26,7 +26,7 @@ from backend.arena.persistence import (
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.session import create_session, increment_input_chars, is_ratelimited
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
-from backend.llms.data import get_models
+from backend.llms.data import get_llms_data
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 logger = logging.getLogger("languia")
@@ -127,7 +127,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     )
 
     # Select models
-    models = get_models()
+    models = get_llms_data()
     model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
 
     logger.info(
@@ -283,7 +283,7 @@ async def retry(
     if conversations.error and last_user_msg.content == conversations.opening_msg:
         # if error is from a specific model, reroll it
         if pos := conversations.error.pos:
-            models = get_models()
+            models = get_llms_data()
             failing_model_id = conv_a.model_name if pos == "a" else conv_b
 
             if selection := conversations.custom_models_selection:

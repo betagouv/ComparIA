@@ -30,7 +30,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
-from backend.llms.models import LanguageModel
+from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 
 # Add the parent directory to the Python path to resolve the 'languia' module
@@ -211,13 +211,12 @@ def load_models_data():
             # Access the nested "models" key in the JSON structure
             if "models" in models_data:
                 MODELS_DATA = {
-                    k.lower(): LanguageModel.model_validate(v)
+                    k.lower(): LLMData.model_validate(v)
                     for k, v in models_data["models"].items()
                 }
             else:
                 MODELS_DATA = {
-                    k.lower(): LanguageModel.model_validate(v)
-                    for k, v in models_data.items()
+                    k.lower(): LLMData.model_validate(v) for k, v in models_data.items()
                 }
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")

@@ -74,8 +74,8 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
         dict: RevealData containing:
             - b64: Base64-encoded JSON summary (compact storage/transmission)
             - chosen_llm: User's model preference ("a", "b" or None)
-            - a: llm 'a' data (see `LanguageModel`) and conso (see `Consumption`)
-            - b: llm 'b' data (see `LanguageModel`) and conso (see `Consumption`)
+            - a: llm 'a' data (see `LLMData`) and conso (see `Consumption`)
+            - b: llm 'b' data (see `LLMData`) and conso (see `Consumption`)
 
     Process:
         1. Compute total output tokens for each conversation
