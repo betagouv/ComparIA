@@ -17,7 +17,7 @@ from backend.llms.models import (
     PreferencesData,
     RawOrgas,
 )
-from utils.models.utils import Obj, read_json, sort_dict, write_json
+from utils.utils import Obj, read_json, sort_dict, write_json
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]

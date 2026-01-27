@@ -2,7 +2,7 @@ from datetime import date
 
 from backend.llms.models import Archs, Licenses, RawOrgas
 from utils.models.build_models import ARCHS_PATH, LICENSES_PATH, MODELS_PATH
-from utils.models.utils import read_json, write_json
+from utils.utils import read_json, write_json
 
 
 def clean_models():

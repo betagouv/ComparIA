@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, RootModel
 
-from utils.models.utils import read_json
+from utils.utils import read_json
 
 CURRENT_FOLDER = Path(__file__).parent
 FRONTEND_EXPORT_PATH = (
