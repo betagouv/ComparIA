@@ -1,10 +1,11 @@
 from datetime import date
 
-from backend.llms.models import Licenses, RawOrgas
-from utils.models.build_models import LICENSES_FILE, LLMS_RAW_DATA_FILE
+from backend.llms.models import RawOrgas
+from utils.models.build_models import LLMS_RAW_DATA_FILE
 from utils.utils import read_json, write_json
 
 from .archs import get_archs
+from .licenses import get_licenses
 
 
 def clean_models():
@@ -14,10 +15,7 @@ def clean_models():
     # remove keys that are default values
 
     context = {
-        "licenses": {
-            l["license"]: l
-            for l in Licenses(read_json(LICENSES_FILE)).model_dump(exclude_none=True)
-        },
+        "licenses": {l["license"]: l for l in get_licenses()},
         "archs": {a.pop("id"): a for a in get_archs()},
     }
 
