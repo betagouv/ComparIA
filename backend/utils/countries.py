@@ -63,8 +63,7 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         conn = psycopg2.connect(settings.COMPARIA_DB_URI)
         cursor = conn.cursor()
         # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL(
-            """
+        query = sql.SQL("""
             SELECT
                 (SELECT COUNT(*) FROM votes v
                  JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
@@ -73,8 +72,7 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
                  JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
                  WHERE c.country_portal = %s)
             as total;
-        """
-        )
+        """)
         cursor.execute(query, (country_code, country_code))
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0

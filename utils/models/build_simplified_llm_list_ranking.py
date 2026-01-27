@@ -1,6 +1,8 @@
+import logging
+
 from pydantic import BaseModel, Field, RootModel
 
-from utils.models.build_models import log
+from utils.logger import configure_logger
 from utils.utils import (
     LLMS_GENERATED_DATA_FILE,
     ROOT_DIR,
@@ -8,6 +10,8 @@ from utils.utils import (
     read_json,
     write_json,
 )
+
+logger = configure_logger(logging.getLogger("llms:peren_model_list"))
 
 SIMPLIFIED_LLM_DATA_OUTPUT_PATH = (
     UTILS_DIR / "ranking_methods" / "data" / "models_data.json"
@@ -33,7 +37,7 @@ def main() -> None:
 
     write_json(SIMPLIFIED_LLM_DATA_OUTPUT_PATH, models, indent=2)
 
-    log.info(
+    logger.info(
         f"Generation of '{SIMPLIFIED_LLM_DATA_OUTPUT_PATH.relative_to(ROOT_DIR)}' is successfull!"
     )
 
