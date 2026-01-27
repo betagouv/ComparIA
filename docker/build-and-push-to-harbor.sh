@@ -17,6 +17,15 @@ export PUBLIC_API_URL="${PUBLIC_API_URL:-}"
 export MATOMO_ID="${MATOMO_ID:-}"
 export MATOMO_URL="${MATOMO_URL:-}"
 
+# DEBUG: Afficher les variables avant le build
+echo "=== BUILD ARGS ==="
+echo "PUBLIC_API_URL='$PUBLIC_API_URL'"
+echo "MATOMO_ID='$MATOMO_ID'"
+echo "MATOMO_URL='$MATOMO_URL'"
+echo "GIT_COMMIT='$GIT_COMMIT'"
+echo "BRANCH_NAME='$BRANCH_NAME'"
+echo "=================="
+
 # Setup buildx
 docker buildx create --name comparia-builder --use --bootstrap 2>/dev/null || docker buildx use comparia-builder
 docker buildx inspect --bootstrap

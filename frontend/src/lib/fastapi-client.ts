@@ -11,14 +11,28 @@ import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.sve
 function getBackendUrl(): string {
   const ssr = !browser // browser false if SSR
 
+  console.log('[DEBUG] getBackendUrl called', {
+    browser,
+    dev,
+    ssr,
+    PUBLIC_API_URL: publicEnv.PUBLIC_API_URL,
+    PUBLIC_API_LOCAL_URL: publicEnv.PUBLIC_API_LOCAL_URL,
+    'window.location.origin': browser ? window.location.origin : 'N/A (SSR)'
+  })
+
   if (dev) {
+    console.log('[DEBUG] Using dev URL: http://localhost:8001')
     return 'http://localhost:8001'
   } else if (ssr) {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
-    return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    const url = publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    console.log('[DEBUG] Using SSR URL:', url)
+    return url
   } else {
     // Client-side: use public URL if defined, otherwise same origin (reverse proxy)
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    const url = window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    console.log('[DEBUG] Using client URL:', url)
+    return url
   }
 }
 

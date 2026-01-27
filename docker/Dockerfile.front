@@ -9,6 +9,14 @@ COPY . .
 ARG PUBLIC_API_URL MATOMO_ID MATOMO_URL GIT_COMMIT
 ENV PUBLIC_API_URL=$PUBLIC_API_URL MATOMO_ID=$MATOMO_ID MATOMO_URL=$MATOMO_URL PUBLIC_GIT_COMMIT=$GIT_COMMIT
 
+# DEBUG: Afficher les variables d'environnement au build time
+RUN echo "=== BUILD TIME ENV VARS ===" && \
+    echo "PUBLIC_API_URL=$PUBLIC_API_URL" && \
+    echo "MATOMO_ID=$MATOMO_ID" && \
+    echo "MATOMO_URL=$MATOMO_URL" && \
+    echo "PUBLIC_GIT_COMMIT=$PUBLIC_GIT_COMMIT" && \
+    echo "=========================="
+
 RUN yarn build && yarn install --production --ignore-scripts
 
 FROM public.ecr.aws/docker/library/node:24.4-alpine AS runtime
