@@ -2,33 +2,24 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any
 
 import markdown
 import requests
-from pydantic import ValidationError
 
 from backend.llms.models import DatasetData, PreferencesData
-from utils.logger import configure_logger, log_pydantic_parsed_errors
+from utils.logger import configure_logger
 from utils.utils import (
     FRONTEND_GENERATED_DIR,
     FRONTEND_MAIN_I18N_FILE,
     LLMS_GENERATED_DATA_FILE,
-    ROOT_DIR,
-    Obj,
     read_json,
     sort_dict,
     write_json,
 )
 
 from .archs import get_archs
-from .licenses import LICENSES_FILE, get_licenses
-from .organisations import (
-    LLMS_RAW_DATA_FILE,
-    Orgas,
-    RawOrgas,
-    validate_orgas_and_models,
-)
+from .licenses import get_licenses
+from .organisations import LLMS_RAW_DATA_FILE, Orgas, validate_orgas_and_models
 
 logger = configure_logger(logging.getLogger("llms"))
 

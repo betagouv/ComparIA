@@ -104,12 +104,10 @@ class PostgresHandler(logging.Handler):
                 with self.connection.cursor() as cursor:
                     # del(record.__dict__["request"])
 
-                    insert_statement = sql.SQL(
-                        """
+                    insert_statement = sql.SQL("""
                         INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
                         VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
-                    """
-                    )
+                    """)
                     values = {
                         "time": record.asctime,
                         "level": record.levelname,
