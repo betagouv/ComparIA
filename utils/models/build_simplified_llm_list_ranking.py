@@ -6,7 +6,7 @@ from utils.models.build_models import (
     ROOT_PATH,
     log,
 )
-from utils.models.utils import read_json, write_json
+from utils.utils import read_json, write_json
 
 SIMPLIFIED_LLM_DATA_OUTPUT_PATH = (
     CURRENT_FOLDER.parent / "ranking_methods" / "data" / "models_data.json"
