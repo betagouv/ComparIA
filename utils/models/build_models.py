@@ -23,11 +23,16 @@ from utils.utils import (
 
 from .archs import get_archs
 from .licenses import LICENSES_FILE, get_licenses
+from .organisations import (
+    LLMS_RAW_DATA_FILE,
+    Orgas,
+    RawOrgas,
+    validate_orgas_and_models,
+)
 
 logger = configure_logger(logging.getLogger("llms"))
 
 CURRENT_DIR = Path(__file__).parent
-LLMS_RAW_DATA_FILE = CURRENT_DIR / "models.json"
 LLMS_EXTRA_DATA_FILE = CURRENT_DIR / "generated-models-extra-data.json"
 LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 LLMS_PREFERENCES_FILE = CURRENT_DIR / "generated-preferences.json"
@@ -39,32 +44,6 @@ I18N_OS_LICENSE_KEYS = [
 ]
 I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
-
-
-def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[Any]:
-    try:
-        orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump()
-        logger.info("No errors in 'models.json'!")
-        return orgas
-    except ValidationError as exc:
-        errors: dict[str, list[Obj]] = {}
-
-        for err in exc.errors():
-            orga = raw_orgas[err["loc"][0]]
-            if len(err["loc"]) <= 2:
-                name = f"organisation '{orga.get("name", err["loc"][0])}'"
-                key = err["loc"][1]
-            elif "models" in err["loc"]:
-                name = f"model '{orga["models"][err["loc"][2]]["id"]}'"
-                key = err["type"] if err["type"] == "endpoint" else err["loc"][3]
-
-            if name not in errors:
-                errors[name] = []
-            errors[name].append({"key": key, **err})
-
-        log_pydantic_parsed_errors(logger, errors)
-
-        raise Exception("Errors in 'models.json', exiting...")
 
 
 def connect_to_db(COMPARIA_DB_URI):

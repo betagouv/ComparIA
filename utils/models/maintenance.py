@@ -1,11 +1,11 @@
 from datetime import date
 
-from backend.llms.models import RawOrgas
 from utils.models.build_models import LLMS_RAW_DATA_FILE
 from utils.utils import read_json, write_json
 
 from .archs import get_archs
 from .licenses import get_licenses
+from .organisations import RawOrgas
 
 
 def clean_models():
