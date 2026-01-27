@@ -1,7 +1,6 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import (
-    BaseModel,
     Field,
     ValidationInfo,
     computed_field,
@@ -12,19 +11,18 @@ from pydantic_core import PydanticCustomError
 
 from backend.llms.models import (
     FRIENDLY_SIZE,
-    DatasetData,
     Distribution,
-    Endpoint,
     FriendlySize,
-    PreferencesData,
+    LLMDataBase,
+    LLMDataEnhanced,
 )
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 
 
-# Raw model definitions from 'utils/models/models.json'
-class RawModel(BaseModel):
+# Raw LLM model definitions from 'utils/models/models.json'
+class LLMDataRawBase(LLMDataBase):
     """
-    Individual LLM model definition (before enrichment).
+    Individual LLM raw model definition (before enrichment).
 
     Raw model data loaded from 'utils/models/models.json'.
     Contains basic model information (name, params, licensing).
@@ -51,26 +49,36 @@ class RawModel(BaseModel):
         pricey: Whether model has high API costs (triggers stricter rate limits)
     """
 
-    new: bool = False
-    status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
-        "enabled"
-    )
-    id: str
-    simple_name: str
-    license: str
-    fully_open_source: bool = False
-    release_date: str = Field(pattern=r"^[0-9]{02}/[0-9]{4}$")
-    arch: str
-    params: int | float
-    active_params: int | float | None = Field(default=None, validate_default=True)
-    reasoning: bool | Literal["hybrid"] = False
-    quantization: Literal["q4", "q8"] | None = None
-    url: str | None = None
-    endpoint: Endpoint | None = None
+    # LLMDataBase override
+    release_date: str = Field(pattern=r"^[0-9]{02}/[0-9]{4}$")  # as validator instead?
+    # Raw specific fields
     desc: str
     size_desc: str
     fyi: str
-    pricey: bool = False
+
+    @model_validator(mode="before")
+    @classmethod
+    def insert_defaults(cls, data: Any) -> Any:
+        """
+        Insert default values, that way we do not need to repeat types and
+        make sure we are based on `LLMDataEnhanced` types.
+        """
+        DEFAULTS = {
+            "new": False,
+            "status": "enabled",
+            "fully_open_source": False,
+            "active_params": None,
+            "reasoning": False,
+            "quantization": None,
+            "url": None,
+            "endpoint": None,
+            "pricey": False,
+        }
+        for key, value in DEFAULTS.items():
+            if not key in data:
+                data[key] = value
+
+        return data
 
     @field_validator("arch", mode="after")
     @classmethod
@@ -114,9 +122,9 @@ class RawModel(BaseModel):
 
 
 # Enriched model definition generated from RawModel + licenses + rankings + preferences
-class Model(RawModel):
+class LLMDataRaw(LLMDataEnhanced, LLMDataRawBase):
     """
-    Complete model definition with enriched metadata.
+    Complete LLM raw definition with enriched metadata.
 
     Inherits from RawModel and adds:
     - License data (distribution, reuse rights)
@@ -135,16 +143,24 @@ class Model(RawModel):
     """
 
     status: Literal["archived", "enabled", "disabled"] = "enabled"
-    # Merged from License
-    distribution: Distribution
-    reuse: bool
-    commercial_use: bool | None = None
-    # Merged from Organisation
-    organisation: str
-    icon_path: str | None = None  # FIXME required?
-    # Merged from extra-data
-    data: DatasetData | None = None
-    prefs: PreferencesData | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def insert_defaults(cls, data: Any) -> Any:
+        """
+        Insert default values, that way we do not need to repeat types and
+        make sure we are based on `LLMDataEnhanced` types.
+        """
+        DEFAULTS = {
+            "commercial_use": None,
+            "data": None,
+            "prefs": None,
+        }
+        for key, value in DEFAULTS.items():
+            if not key in data:
+                data[key] = value
+
+        return data
 
     @field_validator("distribution", mode="before")
     @classmethod
