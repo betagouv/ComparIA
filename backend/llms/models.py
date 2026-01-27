@@ -71,27 +71,6 @@ class License(BaseModel):
     commercial_use_specificities: str | None = None
 
 
-# Model architecture definitions
-class Arch(BaseModel):
-    """
-    Model architecture information.
-
-    Defines neural network architecture and properties.
-    Used to validate 'utils/models/archs.json'.
-
-    Attributes:
-        id: Architecture identifier (e.g., "transformer", "moe")
-        name: Short name
-        title: Display title
-        desc: Detailed description of the architecture
-    """
-
-    id: str
-    name: str
-    title: str
-    desc: str
-
-
 class Endpoint(BaseModel):
     """
     API endpoint configuration for model access.
@@ -493,6 +472,5 @@ class Organisation(RawOrganisation):
 
 
 Licenses = RootModel[list[License]]
-Archs = RootModel[list[Arch]]
 RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]

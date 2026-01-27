@@ -8,14 +8,7 @@ import markdown
 import requests
 from pydantic import ValidationError
 
-from backend.llms.models import (
-    Archs,
-    DatasetData,
-    Licenses,
-    Orgas,
-    PreferencesData,
-    RawOrgas,
-)
+from backend.llms.models import DatasetData, Licenses, Orgas, PreferencesData, RawOrgas
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import (
     FRONTEND_GENERATED_DIR,
@@ -28,11 +21,12 @@ from utils.utils import (
     write_json,
 )
 
+from .archs import get_archs
+
 logger = configure_logger(logging.getLogger("llms"))
 
 CURRENT_DIR = Path(__file__).parent
 LICENSES_FILE = CURRENT_DIR / "licenses.json"
-ARCHS_FILE = CURRENT_DIR / "archs.json"
 LLMS_RAW_DATA_FILE = CURRENT_DIR / "models.json"
 LLMS_EXTRA_DATA_FILE = CURRENT_DIR / "generated-models-extra-data.json"
 LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
@@ -64,25 +58,6 @@ def validate_licenses(raw_licenses: Any) -> list[Any]:
         log_pydantic_parsed_errors(logger, errors)
 
         raise Exception("Errors in 'licenses.json', exiting...")
-
-
-def validate_archs(raw_archs: Any) -> list[Any]:
-    try:
-        archs = Archs(raw_archs).model_dump()
-        logger.info("No errors in 'archs.json'!")
-        return archs
-    except ValidationError as exc:
-        errors: dict[str, list[Obj]] = {}
-
-        for err in exc.errors():
-            name = f"arch '{raw_archs[err["loc"][0]]["id"]}'"
-            if name not in errors:
-                errors[name] = []
-            errors[name].append({"key": err["loc"][1], **err})
-
-        log_pydantic_parsed_errors(logger, errors)
-
-        raise Exception("Errors in 'archs.json', exiting...")
 
 
 def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[Any]:
@@ -170,14 +145,13 @@ def main() -> None:
         write_json(LLMS_EXTRA_DATA_FILE, new_extra_data)
 
     raw_licenses = read_json(LICENSES_FILE)
-    raw_archs = read_json(ARCHS_FILE)
     raw_orgas = read_json(LLMS_RAW_DATA_FILE)
     raw_extra_data = read_json(LLMS_EXTRA_DATA_FILE)
     raw_models_data = {m["model_name"]: m for m in raw_extra_data["models"]}
 
     try:
         dumped_licenses = validate_licenses(raw_licenses)
-        dumped_archs = validate_archs(raw_archs)
+        dumped_archs = get_archs()
     except Exception as err:
         logger.error(str(err))
         sys.exit(1)

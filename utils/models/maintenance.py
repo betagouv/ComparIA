@@ -1,8 +1,10 @@
 from datetime import date
 
-from backend.llms.models import Archs, Licenses, RawOrgas
-from utils.models.build_models import ARCHS_FILE, LICENSES_FILE, LLMS_RAW_DATA_FILE
+from backend.llms.models import Licenses, RawOrgas
+from utils.models.build_models import LICENSES_FILE, LLMS_RAW_DATA_FILE
 from utils.utils import read_json, write_json
+
+from .archs import get_archs
 
 
 def clean_models():
@@ -16,7 +18,7 @@ def clean_models():
             l["license"]: l
             for l in Licenses(read_json(LICENSES_FILE)).model_dump(exclude_none=True)
         },
-        "archs": {a.pop("id"): a for a in Archs(read_json(ARCHS_FILE)).model_dump()},
+        "archs": {a.pop("id"): a for a in get_archs()},
     }
 
     raw_orgas = read_json(LLMS_RAW_DATA_FILE)
