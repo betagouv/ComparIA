@@ -8,7 +8,7 @@ import markdown
 import requests
 from pydantic import ValidationError
 
-from backend.llms.models import DatasetData, Orgas, PreferencesData, RawOrgas
+from backend.llms.models import DatasetData, PreferencesData
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import (
     FRONTEND_GENERATED_DIR,

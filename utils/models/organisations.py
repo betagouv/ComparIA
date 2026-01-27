@@ -11,9 +11,11 @@ from pydantic import (
 )
 from pydantic_core import PydanticCustomError
 
-from backend.llms.models import Model, PreferencesData, RawModel
+from backend.llms.models import PreferencesData
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import FRONTEND_DIR, ROOT_DIR
+
+from .llms import Model, RawModel
 
 logger = configure_logger(logging.getLogger("llms:organisations"))
 
