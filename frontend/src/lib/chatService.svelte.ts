@@ -116,6 +116,10 @@ export type EquivalenceType =
   | 'wind_turbines'
   | 'car_earth_trips'
   | 'paris_nyc_flights'
+  | 'forest_absorption'
+  | 'trees_planted'
+  | 'carbon_budget'
+  | 'tgv_paris_lyon'
 
 // Single equivalence with values for both models
 export interface APIEquivalence {

@@ -1796,6 +1796,7 @@
                 "premise": "Si tous les Français utilisaient ce prompt chaque jour pendant un an,",
                 "connectorEnergy": "cela nécessiterait autant d'énergie que :",
                 "connectorCo2": "cela émettrait autant de CO₂ que :",
+                "connectorAbsorption": "pour absorber ce CO₂, il faudrait :",
                 "refresh": "Voir une autre équivalence",
                 "references": {
                     "france": "la France",
@@ -1824,7 +1825,17 @@
                     "millionTrips": "millions de tours",
                     "flights": "vols",
                     "thousandFlights": "milliers de vols",
-                    "millionFlights": "millions de vols"
+                    "millionFlights": "millions de vols",
+                    "hectares": "hectares",
+                    "thousandHectares": "milliers d'hectares",
+                    "millionHectares": "millions d'hectares",
+                    "trees": "arbres",
+                    "millionTrees": "millions d'arbres",
+                    "billionTrees": "milliards d'arbres",
+                    "people": "Français",
+                    "millionPeople": "millions de Français",
+                    "journeys": "trajets",
+                    "millionJourneys": "millions de trajets"
                 },
                 "country_electricity": {
                     "label": "de l'électricité de {reference}",
@@ -1857,6 +1868,22 @@
                 "paris_nyc_flights": {
                     "label": "allers-retours Paris-NYC",
                     "tooltip": "Émissions de CO₂ équivalentes à des vols Paris-New York"
+                },
+                "forest_absorption": {
+                    "label": "de forêt absorbant le CO₂ pendant un an",
+                    "tooltip": "Surface de forêt tempérée mature nécessaire pour absorber ces émissions en un an (~8 tonnes CO₂/ha/an)"
+                },
+                "trees_planted": {
+                    "label": "poussant pendant 10 ans",
+                    "tooltip": "Nombre d'arbres qui devraient pousser pendant 10 ans pour absorber ces émissions (~15 kg CO₂/arbre/an)"
+                },
+                "carbon_budget": {
+                    "label": "— empreinte carbone annuelle",
+                    "tooltip": "Équivalent à l'empreinte carbone annuelle complète de ce nombre de Français (~9 tonnes/personne/an)"
+                },
+                "tgv_paris_lyon": {
+                    "label": "trajets TGV Paris-Lyon",
+                    "tooltip": "Émissions de CO₂ équivalentes à des trajets en TGV Paris-Lyon (~4 kg CO₂ par passager)"
                 }
             }
         },

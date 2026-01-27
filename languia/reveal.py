@@ -33,6 +33,10 @@ class EquivalenceType(Enum):
     WIND_TURBINES = "wind_turbines"
     CAR_EARTH_TRIPS = "car_earth_trips"
     PARIS_NYC_FLIGHTS = "paris_nyc_flights"
+    FOREST_ABSORPTION = "forest_absorption"
+    TREES_PLANTED = "trees_planted"
+    CARBON_BUDGET = "carbon_budget"
+    TGV_PARIS_LYON = "tgv_paris_lyon"
 
 
 # Reference data for scaled equivalences
@@ -78,6 +82,27 @@ EARTH_CIRCUMFERENCE_KM = 40_075
 
 # Paris-NYC round trip flight: ~1,000 kg CO2 per passenger (source: myclimate.org)
 PARIS_NYC_CO2_KG = 1000
+
+# Forest CO2 absorption: ~8 tonnes CO2/ha/year for mature temperate forest
+# Source: ONF (Office National des Forêts), INRAE
+FOREST_CO2_TONNES_PER_HA_YEAR = 8
+
+# Tree CO2 absorption: ~15 kg CO2/year average over 10 years (young tree)
+# Source: European Environment Agency
+TREE_CO2_KG_PER_10_YEARS = 150
+
+# Annual carbon footprint per person in kg CO2
+# Source: Ministère de la Transition Écologique
+CARBON_BUDGET_KG = {
+    "france": 9000,
+    "germany": 8000,
+    "denmark": 5500,
+    "sweden": 4500,
+}
+
+# TGV Paris-Lyon: ~4 kg CO2 per passenger (~500 km)
+# Source: SNCF environmental reports
+TGV_PARIS_LYON_CO2_KG = 4
 
 # Minimum threshold for meaningful display (values below this aren't intuitive)
 MIN_MEANINGFUL_VALUE = 1.0
@@ -248,6 +273,25 @@ def calculate_scaled_equivalence(energy_kwh: float, co2_kg: float, eq_type: Equi
         # Number of Paris-NYC round trip flights
         flights = scaled_co2_kg / PARIS_NYC_CO2_KG
         return {"value": flights}
+
+    elif eq_type == EquivalenceType.FOREST_ABSORPTION:
+        # Hectares of forest absorbing CO2 for one year
+        hectares = scaled_co2_tonnes / FOREST_CO2_TONNES_PER_HA_YEAR
+        return {"value": hectares}
+
+    elif eq_type == EquivalenceType.TREES_PLANTED:
+        # Trees growing for 10 years to absorb this CO2
+        trees = scaled_co2_kg / TREE_CO2_KG_PER_10_YEARS
+        return {"value": trees}
+
+    elif eq_type == EquivalenceType.CARBON_BUDGET:
+        # Return scaled CO2 in kg - frontend divides by locale's per-capita budget
+        return {"value": scaled_co2_kg}
+
+    elif eq_type == EquivalenceType.TGV_PARIS_LYON:
+        # Number of TGV Paris-Lyon journeys
+        journeys = scaled_co2_kg / TGV_PARIS_LYON_CO2_KG
+        return {"value": journeys}
 
     else:
         return {"value": 0}
