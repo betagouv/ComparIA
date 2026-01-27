@@ -134,18 +134,9 @@ class PreferencesData(BaseModel):
         return value
 
 
-class LLMData(BaseModel):
-    """
-    Final language model definition.
-
-    Populated with 'utils/models/generated-models.json' data.
-    It is immutable and no default values are defined so it expects complete data.
-    """
-
-    model_config = ConfigDict(frozen=True)
-
+class LLMDataBase(BaseModel):
     new: bool
-    status: Literal["archived", "enabled", "disabled"]
+    status: Literal["archived", "missing_data", "disabled", "enabled"]
     id: str
     simple_name: str
     license: str
@@ -159,13 +150,32 @@ class LLMData(BaseModel):
     url: str | None
     endpoint: Endpoint | None
     pricey: bool
+
+
+class LLMDataEnhanced(BaseModel):
+    # Merged from License
     distribution: Distribution
     reuse: bool
     commercial_use: bool | None
+    # Merged from Organisation
     organisation: str
     icon_path: str
+    # Merged from extra-data
     data: DatasetData | None
     prefs: PreferencesData | None
+
+
+class LLMData(LLMDataBase, LLMDataEnhanced):
+    """
+    Final LLM definition.
+
+    Populated with 'utils/models/generated-models.json' data.
+    It is immutable and no default values are defined so it expects complete data.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    status: Literal["archived", "enabled"]
     friendly_size: FriendlySize
     required_ram: int | float
     wh_per_million_token: int | float
