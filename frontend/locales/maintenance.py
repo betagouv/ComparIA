@@ -3,13 +3,13 @@ import json
 from pathlib import Path
 from typing import Any
 
-CURRENT_FOLDER = Path(__file__).parent
-LOCALES_FOLDER = CURRENT_FOLDER / "messages"
-FR_I18N_PATH = LOCALES_FOLDER / "fr.json"
+CURRENT_DIR = Path(__file__).parent
+LOCALES_DIR = CURRENT_DIR / "messages"
+FRONTEND_MAIN_I18N_FILE = LOCALES_DIR / "fr.json"
 
 LOCALE_FILES = {
     path.split("/")[-1].replace(".json", ""): path
-    for path in glob.glob(str(LOCALES_FOLDER) + "/*.json")
+    for path in glob.glob(str(LOCALES_DIR) + "/*.json")
 }
 ALL_LOCALES = set(LOCALE_FILES.keys())
 
@@ -70,7 +70,7 @@ def filter_data(data: dict[str, Any], stale_keys: set[str]) -> dict[str, Any]:
 
 def remove_stale_keys(ref_keys: set[str], locales: set[str]):
     for locale in locales:
-        LOCALE_FILE = LOCALES_FOLDER / f"{locale}.json"
+        LOCALE_FILE = LOCALES_DIR / f"{locale}.json"
         data = read_json(LOCALE_FILE)
         keys = get_flatten_keys(data)
         stale_keys = set(sorted(keys - ref_keys))
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     locales.discard("fr")
 
     # Remove fr.json no longer present keys in other locales files
-    fr_data = read_json(FR_I18N_PATH)
+    fr_data = read_json(FRONTEND_MAIN_I18N_FILE)
     remove_stale_keys(get_flatten_keys(fr_data), locales)
     # Also sort fr.json
-    write_json(FR_I18N_PATH, sort_dict(fr_data))
+    write_json(FRONTEND_MAIN_I18N_FILE, sort_dict(fr_data))

@@ -33,8 +33,8 @@ from pydantic import (
 )
 from pydantic_core import PydanticCustomError
 
-from backend.config import FRONTEND_PATH, ROOT_PATH
 from backend.llms.utils import convert_range_to_value, get_llm_impact
+from utils.utils import FRONTEND_DIR, ROOT_DIR
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
@@ -438,11 +438,11 @@ class RawOrganisation(BaseModel):
     @field_validator("icon_path", mode="after")
     @classmethod
     def check_icon_exists(cls, value: str) -> str:
-        file_path = FRONTEND_PATH / "static" / "orgs" / "ai" / value
+        file_path = FRONTEND_DIR / "static" / "orgs" / "ai" / value
         if "." in value and not file_path.exists():
             raise PydanticCustomError(
                 "file_missing",
-                f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_PATH)}' doesn't exists.",
+                f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_DIR)}' doesn't exists.",
             )
 
         return value
