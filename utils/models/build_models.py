@@ -26,7 +26,6 @@ logger = configure_logger(logging.getLogger("llms"))
 CURRENT_DIR = Path(__file__).parent
 LLMS_EXTRA_DATA_FILE = CURRENT_DIR / "generated-models-extra-data.json"
 LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
-LLMS_PREFERENCES_FILE = CURRENT_DIR / "generated-preferences.json"
 TS_DATA_FILE = FRONTEND_GENERATED_DIR / "models.ts"
 I18N_OS_LICENSE_KEYS = [
     "license_desc",
@@ -284,6 +283,7 @@ def main() -> None:
     write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
 
     # Save generated models
+
     write_json(
         LLMS_GENERATED_DATA_FILE,
         {
