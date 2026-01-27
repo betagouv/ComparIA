@@ -44,33 +44,6 @@ Distribution = Literal[
 FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
-# License definitions for models
-class License(BaseModel):
-    """
-    License metadata for a model.
-
-    Defines licensing terms, distribution restrictions, and permitted uses.
-    Used to validate 'utils/models/licenses.json'.
-
-    Attributes:
-        license: License identifier (e.g., "apache-2.0", "mit", "proprietary")
-        license_desc: Human-readable description of the license
-        distribution: How model is distributed (api-only, open-weights, fully-open-source)
-        reuse: Whether model can be reused/redistributed
-        commercial_use: Whether commercial use is permitted (None = unknown)
-        reuse_specificities: Additional reuse restrictions/notes
-        commercial_use_specificities: Additional commercial use restrictions/notes
-    """
-
-    license: str
-    license_desc: str
-    distribution: Distribution
-    reuse: bool
-    commercial_use: bool | None = None
-    reuse_specificities: str | None = None
-    commercial_use_specificities: str | None = None
-
-
 class Endpoint(BaseModel):
     """
     API endpoint configuration for model access.
