@@ -29,7 +29,6 @@ from pydantic import (
     field_validator,
 )
 
-
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
 Distribution = Literal[

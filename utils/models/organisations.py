@@ -15,7 +15,7 @@ from backend.llms.models import PreferencesData
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import FRONTEND_DIR, ROOT_DIR
 
-from .llms import Model, RawModel
+from .llms import LLMDataRaw, LLMDataRawBase
 
 logger = configure_logger(logging.getLogger("llms:organisations"))
 
@@ -31,7 +31,7 @@ class RawOrganisation(BaseModel):
     proprietary_commercial_use: bool | None = None
     proprietary_reuse_specificities: str | None = None
     proprietary_commercial_use_specificities: str | None = None
-    models: list[RawModel] | list[Model]
+    models: list[LLMDataRawBase] | list[LLMDataRaw]
 
     @field_validator("icon_path", mode="after")
     @classmethod
@@ -48,11 +48,11 @@ class RawOrganisation(BaseModel):
 
 # Model used to generated 'utils/models/generated-models.json'
 class Organisation(RawOrganisation):
-    models: list[Model]
+    models: list[LLMDataRaw]
 
     @field_validator("models", mode="before")
     @classmethod
-    def enhance_models(cls, value: Any, info: ValidationInfo) -> list[RawModel]:
+    def enhance_models(cls, value: Any, info: ValidationInfo) -> list[LLMDataRawBase]:
         assert info.context is not None
         assert info.context["data"] is not None
         assert info.context["licenses"] is not None
