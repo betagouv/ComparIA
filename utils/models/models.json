@@ -895,6 +895,24 @@
     "name": "Moonshot AI",
     "icon_path": "moonshot",
     "models": [
+        {
+        "id": "kimi-k2.5",
+        "simple_name": "Kimi K2.5",
+        "license": "MIT",
+        "release_date": "01/2026",
+        "arch": "moe",
+        "params": 1000,
+        "active_params": 32,
+        "reasoning": true,
+        "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "moonshotai/kimi-k2.5"
+        },
+        "desc": "Construit à partir de Kimi K2, l'éditeur à continué le pré-entraînement sur environ 15 billions de jetons supplémentaires, mêlant texte et données visuelles. L’éditeur met en avant sa multimodalité native ainsi que ses capacités agentiques, particulièrement adaptées à des tâches comme le développement logiciel.",
+        "size_desc": "Avec 1 billion de paramètres au total, dont environ 32 milliards activés pour chaque jeton généré, ce modèle fait partie des modèles de très grande taille. Son architecture de type mélange d’experts (MoE) permet toutefois une utilisation plus efficace des ressources que des modèles denses de taille comparable. Le modèle est par ailleurs quantifié nativement en INT4, une technique qui consiste à réduire la précision des poids afin de simplifier les calculs et de limiter le temps de calcul à l’inférence. Sa fenêtre de contexte peut atteindre 256 000 jetons, ce qui permet le traitement de documents très volumineux ou de bases de code étendues.",
+        "fyi": "Le modèle a été entraîné avec un mode spécifique appelé « Agent Swarm » (essaim d’agents). Dans ce mode d’orchestration, le problème n’est pas résolu de manière strictement séquentielle, mais découpé en plusieurs sous-tâches exécutées en parallèle par des sous-agents. Le modèle a appris au cours de son entraînement à agir comme un agent principal : il analyse la demande, décide combien de sous-agents lancer, leur assigne des objectifs, puis agrège leurs résultats. Cette capacité a été atteinte grâce à des méthodes d’apprentissage par renforcement multi-agent, où l’orchestrateur était récompensé lorsqu’il choisissait une bonne décomposition du problème et une coordination efficace entre agents, et pénalisé lorsqu’il adoptait un raisonnement trop linéaire ou redondant."
+      },
       {
         "id": "kimi-k2-thinking",
         "simple_name": "Kimi K2 Thinking",
