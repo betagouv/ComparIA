@@ -7,9 +7,24 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: languia
+    # command:
+    #   - postgres
+    #   - -c
+    #   - logging_collector=on
+    #   - -c
+    #   - log_directory=/var/log/postgresql
+    #   - -c
+    #   - log_filename=postgresql-%Y-%m-%d.log
+    #   - -c
+    #   - log_statement=all
+    #   - -c
+    #   - log_duration=on
+    #   - -c
+    #   - log_line_prefix=%t [%p] %u@%d [%a]
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./data/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - pglogs:/var/log/postgresql # Nouveau volume pour les logs
     ports:
       - "127.0.0.1:5432:5432"
 
@@ -20,3 +35,5 @@ services:
 
 volumes:
   db-data:
+  pglogs:
+d
