@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import markdown
-from pydantic import PlainSerializer
+from pydantic import FieldSerializationInfo, PlainSerializer
 
 from utils.logger import configure_logger
 
@@ -24,9 +24,12 @@ logger = configure_logger(logging.getLogger("utils"))
 
 # Serializers
 
-MarkdownSerializer = PlainSerializer(
-    lambda v: markdown.markdown(v), when_used="unless-none"
-)
+
+def to_markdown(v: str, info: FieldSerializationInfo) -> str:
+    return v if info.mode == "json" else markdown.markdown(v)
+
+
+MarkdownSerializer = PlainSerializer(to_markdown, when_used="unless-none")
 
 # Helpers
 
