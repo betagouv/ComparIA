@@ -77,7 +77,10 @@ def main(fetch_latest_dataset_results: bool = True) -> None:
         }
         dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
     except Exception as err:
-        logger.error(str(err))
+        if str(err).startswith("Errors in"):
+            logger.error(str(err))
+        else:
+            logger.exception(err)
         sys.exit(1)
 
     # Then use the full Orgas builder

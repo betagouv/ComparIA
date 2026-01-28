@@ -92,7 +92,7 @@ class LLMDataRawBase(LLMDataBase):
                 "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
             )
 
-        if info.data["license"] != "proprietary" and "maybe" in value:
+        if info.data.get("license") != "proprietary" and "maybe" in value:
             raise PydanticCustomError(
                 "wrong_arch",
                 f"Arch should not be 'maybe' since license is not 'proprietary'.",
@@ -105,7 +105,7 @@ class LLMDataRawBase(LLMDataBase):
     def check_active_params_is_defined_if_moe(
         cls, value: int | float | None, info: ValidationInfo
     ) -> int | float | None:
-        if "arch" in info.data and "moe" in info.data["arch"] and value is None:
+        if "arch" in info.data and "moe" in info.data.get("arch", "") and value is None:
             raise PydanticCustomError(
                 "missing_active_params",
                 f"Model's arch is '{info.data['arch']}' and requires 'active_params' to be defined.",

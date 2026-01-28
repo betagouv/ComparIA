@@ -41,7 +41,7 @@ class RawOrganisation(BaseModel):
     commercial_use_specificities: Annotated[
         str | None, Field(validation_alias="proprietary_commercial_use_specificities")
     ] = ""
-    models: list[LLMDataRawBase] | list[LLMDataRaw]
+    models: list[LLMDataRawBase]
 
     @field_validator("icon_path", mode="after")
     @classmethod
@@ -75,7 +75,7 @@ class RawOrganisation(BaseModel):
 
 # Model used to generated 'utils/models/generated-models.json'
 class Organisation(RawOrganisation):
-    models: list[LLMDataRaw]
+    models: list[LLMDataRaw]  # type: ignore
 
     @field_validator("models", mode="before")
     @classmethod
