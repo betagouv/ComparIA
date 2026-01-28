@@ -1,6 +1,5 @@
 import { api, ValidationError, type AnySSEEvent } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
-import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
@@ -223,7 +222,6 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
       prompt_value: args.prompt_value,
       mode: args.mode,
       custom_models_selection: args.custom_models_selection,
-      country_portal: getLocale(),
       cohorts
     })
 

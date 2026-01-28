@@ -27,6 +27,7 @@ from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.session import create_session, increment_input_chars, is_ratelimited
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
 from backend.llms.data import get_llms_data
+from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 
 logger = logging.getLogger("languia")
@@ -101,7 +102,9 @@ ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
-async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
+async def add_first_text(
+    args: AddFirstTextBody, country_portal: CountryPortalAnno, request: Request
+) -> StreamingResponse:
     """
     Process user's first message and initiate model comparison.
 
@@ -125,9 +128,10 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         f"'/add_first_text' called with: {args.model_dump_json()}",
         extra={"request": request},
     )
+    logger.info(f"country_portal: {country_portal}")
 
     # Select models
-    models = get_llms_data()
+    models = get_llms_data(country_portal)
     model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
 
     logger.info(
@@ -143,6 +147,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         llm_id_b=model_b_id,
         args=args,
         session_hash=session_hash,
+        country_portal=country_portal,
         ip=get_ip(request),
         visitor_id=get_matomo_tracker_from_cookies(request.cookies),
     )
@@ -283,7 +288,7 @@ async def retry(
     if conversations.error and last_user_msg.content == conversations.opening_msg:
         # if error is from a specific model, reroll it
         if pos := conversations.error.pos:
-            models = get_llms_data()
+            models = get_llms_data(conversations.country_portal)
             failing_model_id = conv_a.model_name if pos == "a" else conv_b
 
             if selection := conversations.custom_models_selection:
@@ -311,7 +316,9 @@ async def retry(
             setattr(
                 conversations,
                 f"conversation_{pos}",
-                create_conversation(new_model_id, last_user_msg),
+                create_conversation(
+                    new_model_id, conversations.country_portal, last_user_msg
+                ),
             )
             logger.info(
                 f"new conv {pos} id: {(conv_a if pos == "a" else conv_b).conv_id}",
