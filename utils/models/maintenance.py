@@ -1,11 +1,15 @@
+import logging
 from datetime import date
 
+from utils.logger import configure_logger
 from utils.models.build_models import LLMS_RAW_DATA_FILE
 from utils.utils import read_json, write_json
 
 from .archs import get_archs
 from .licenses import get_licenses
 from .organisations import RawOrgas
+
+logger = configure_logger(logging.getLogger("llms:maintenance"))
 
 
 def clean_models() -> None:
@@ -27,7 +31,7 @@ def clean_models() -> None:
         filtered_models = []
         for model in orga["models"]:
             if model.get("status", None) == "missing_data":
-                print(f"Warning: Missing model data for '{model["id"]}'")
+                logger.warning(f"Missing model data for '{model["id"]}'")
                 if not orga["name"] in filtered_out_models:
                     filtered_out_models[orga["name"]] = []
                 filtered_out_models[orga["name"]].append(model)
@@ -36,7 +40,7 @@ def clean_models() -> None:
         orga["models"] = filtered_models
 
     orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump(
-        exclude_defaults=True
+        exclude_defaults=True, mode="json"
     )
 
     for orga in orgas:
