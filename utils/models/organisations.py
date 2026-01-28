@@ -28,19 +28,11 @@ EXCLUDED_LLMS_STATUS = {"missing_data"}
 class RawOrganisation(BaseModel):
     name: str
     icon_path: str | None = None  # FIXME required?
-    license_desc: Annotated[
-        str | None, Field(validation_alias="proprietary_license_desc")
-    ] = ""
-    reuse: Annotated[bool, Field(validation_alias="proprietary_reuse")] = False
-    commercial_use: Annotated[
-        bool | None, Field(validation_alias="proprietary_commercial_use")
-    ] = None
-    reuse_specificities: Annotated[
-        str | None, Field(validation_alias="proprietary_reuse_specificities")
-    ] = ""
-    commercial_use_specificities: Annotated[
-        str | None, Field(validation_alias="proprietary_commercial_use_specificities")
-    ] = ""
+    proprietary_license_desc: str | None = ""
+    proprietary_reuse: bool = False
+    proprietary_commercial_use: bool | None = None
+    proprietary_reuse_specificities: str | None = ""
+    proprietary_commercial_use_specificities: str | None = ""
     models: list[LLMDataRawBase]
 
     @field_validator("icon_path", mode="after")
@@ -75,6 +67,19 @@ class RawOrganisation(BaseModel):
 
 # Model used to generated 'utils/models/generated-models.json'
 class Organisation(RawOrganisation):
+    license_desc: Annotated[
+        str | None, Field(validation_alias="proprietary_license_desc")
+    ] = ""
+    reuse: Annotated[bool, Field(validation_alias="proprietary_reuse")] = False
+    commercial_use: Annotated[
+        bool | None, Field(validation_alias="proprietary_commercial_use")
+    ] = None
+    reuse_specificities: Annotated[
+        str | None, Field(validation_alias="proprietary_reuse_specificities")
+    ] = ""
+    commercial_use_specificities: Annotated[
+        str | None, Field(validation_alias="proprietary_commercial_use_specificities")
+    ] = ""
     models: list[LLMDataRaw]  # type: ignore
 
     @field_validator("models", mode="before")
@@ -99,8 +104,8 @@ class Organisation(RawOrganisation):
             model |= info.context["licenses"][model["license"]]
 
             if model["license"] == "proprietary":
-                model["reuse"] = info.data["reuse"]
-                model["commercial_use"] = info.data["commercial_use"]
+                model["reuse"] = info.data["proprietary_reuse"]
+                model["commercial_use"] = info.data["proprietary_commercial_use"]
 
             # inject ranking/prefs data
             dataset_data = info.context["data"].get(model["id"])
