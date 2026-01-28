@@ -22,7 +22,6 @@ from backend.config import (
 from backend.llms.data import get_llms_data
 from backend.llms.models import LLMData, LLMDataEnabled
 from backend.llms.utils import Consumption
-from backend.utils.countries import CountryPortalAnno
 
 MessageRole = Literal["user", "assistant", "system"]
 BotPos = Literal["a", "b"]
@@ -99,6 +98,7 @@ class Conversation(BaseModel):
 
     conv_id: str = Field(default_factory=lambda: str(uuid4()).replace("-", ""))
     model_name: str
+    country_portal: CountryPortal
     messages: list[AnyMessage]
 
     @property
@@ -144,16 +144,18 @@ class Conversation(BaseModel):
         """
         # Should not happen but just in case Conversation is created with a non enabled LLM
         try:
-            return get_llms_data().enabled[self.model_name]
+            return get_llms_data(self.country_portal).enabled[self.model_name]
         except KeyError as exc:
             raise ValueError(
                 f"No LLM definition or endpoint found for model: {self.model_name}"
             )
 
 
-def create_conversation(llm_id: str, user_msg: UserMessage) -> Conversation:
+def create_conversation(
+    llm_id: str, country_portal: CountryPortal, user_msg: UserMessage
+) -> Conversation:
     """Create a single conversation with system prompt if configured."""
-    conv = Conversation(model_name=llm_id, messages=[])
+    conv = Conversation(model_name=llm_id, country_portal=country_portal, messages=[])
     if conv.llm.system_prompt:
         conv.messages.append(SystemMessage(content=conv.llm.system_prompt))
     conv.messages.append(user_msg)
@@ -254,19 +256,20 @@ def create_conversations(
     llm_id_b: str,
     args: "AddFirstTextBody",
     session_hash: str,
+    country_portal: CountryPortal,
     ip: str,
     visitor_id: str | None,
 ) -> Conversations:
     """Create paired conversations for arena comparison."""
     user_msg = UserMessage(content=args.prompt_value)
-    conv_a = create_conversation(llm_id_a, user_msg)
-    conv_b = create_conversation(llm_id_b, user_msg)
+    conv_a = create_conversation(llm_id_a, country_portal, user_msg)
+    conv_b = create_conversation(llm_id_b, country_portal, user_msg)
 
     return Conversations(
         session_hash=session_hash,
         ip=ip,
         visitor_id=visitor_id,
-        country_portal=args.country_portal,
+        country_portal=country_portal,
         cohorts=args.cohorts,
         mode=args.mode,
         custom_models_selection=args.custom_models_selection,
@@ -285,7 +288,6 @@ class AddFirstTextBody(BaseModel):
     prompt_value: str = PromptField
     mode: SelectionMode = DEFAULT_SELECTION_MODE
     custom_models_selection: CustomModelsSelection = None
-    country_portal: CountryPortalAnno
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
 
