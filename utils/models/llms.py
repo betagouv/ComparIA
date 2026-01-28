@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import (
     Field,
@@ -17,6 +17,7 @@ from backend.llms.models import (
     LLMDataEnhanced,
 )
 from backend.llms.utils import convert_range_to_value, get_llm_impact
+from utils.utils import MarkdownSerializer
 
 
 # Raw LLM model definitions from 'utils/models/models.json'
@@ -52,9 +53,9 @@ class LLMDataRawBase(LLMDataBase):
     # LLMDataBase override
     release_date: str = Field(pattern=r"^[0-9]{02}/[0-9]{4}$")  # as validator instead?
     # Raw specific fields
-    desc: str
-    size_desc: str
-    fyi: str
+    desc: Annotated[str, MarkdownSerializer]
+    size_desc: Annotated[str, MarkdownSerializer]
+    fyi: Annotated[str, MarkdownSerializer]
 
     @model_validator(mode="before")
     @classmethod

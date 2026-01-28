@@ -3,6 +3,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
+import markdown
+from pydantic import PlainSerializer
+
 from utils.logger import configure_logger
 
 Obj = dict[str, Any]
@@ -17,6 +20,14 @@ FRONTEND_MAIN_I18N_FILE = FRONTEND_DIR / "locales" / "messages" / "fr.json"
 FRONTEND_GENERATED_DIR = FRONTEND_DIR / "src" / "lib" / "generated"
 
 logger = configure_logger(logging.getLogger("utils"))
+
+# Serializers
+
+MarkdownSerializer = PlainSerializer(
+    lambda v: markdown.markdown(v), when_used="unless-none"
+)
+
+# Helpers
 
 
 def read_json(path: Path) -> Any:
