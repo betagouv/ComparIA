@@ -6,6 +6,7 @@
 import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.svelte'
+import { getLocale } from '$lib/i18n/runtime'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -151,6 +152,7 @@ export class FastAPIClient {
       if (this.sessionHash && !headers.has('X-Session-Hash')) {
         headers.set('X-Session-Hash', this.sessionHash)
       }
+      headers.set('X-Locale', getLocale())
 
       const response = await fetch(url, {
         ...options,
@@ -184,6 +186,7 @@ export class FastAPIClient {
       if (this.sessionHash) {
         headers['X-Session-Hash'] = this.sessionHash
       }
+      headers['X-Locale'] = getLocale()
 
       const response = await fetch(url, {
         method: 'POST',
