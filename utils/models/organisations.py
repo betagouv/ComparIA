@@ -96,8 +96,7 @@ class Organisation(RawOrganisation):
                     f"license is defined but license data is missing in 'licenses.json' for license '{model["license"]}'",
                 )
 
-            for k, v in info.context["licenses"][model["license"]].items():
-                model[k] = v
+            model |= info.context["licenses"][model["license"]]
 
             if model["license"] == "proprietary":
                 model["reuse"] = info.data["reuse"]
@@ -105,9 +104,9 @@ class Organisation(RawOrganisation):
 
             # inject ranking/prefs data
             dataset_data = info.context["data"].get(model["id"])
-            warning_infos = f"'{model["id"]}' (status: {model.get("status")})"
 
             if dataset_data:
+                warning_infos = f"'{model["id"]}' (status: {model.get("status")})"
                 model["data"] = dataset_data.data
                 if not dataset_data.data:
                     logger.warning(f"No ranking data for {warning_infos}")
@@ -115,8 +114,6 @@ class Organisation(RawOrganisation):
                 model["prefs"] = dataset_data.prefs
                 if not dataset_data.prefs:
                     logger.warning(f"No preferences data for {warning_infos}")
-            else:
-                logger.warning(f"No dataset data at all {warning_infos}")
 
         return value
 
