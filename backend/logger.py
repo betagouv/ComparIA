@@ -9,6 +9,7 @@ from typing import Any
 import psycopg2
 from fastapi import Request
 from psycopg2 import sql
+from rich.logging import RichHandler
 
 from backend.config import settings
 from backend.utils.user import get_ip
@@ -178,11 +179,10 @@ def configure_logger() -> logging.Logger:
     else:
         logger.setLevel(logging.INFO)
 
-    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler = RichHandler()
     # Use a more human-readable format for the console.
     console_formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        "%(name)s - %(funcName)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
