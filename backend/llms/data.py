@@ -4,11 +4,12 @@ from functools import lru_cache
 from typing import Annotated, Any
 
 import numpy as np
-from pydantic import BaseModel, Field, computed_field, field_validator
+from pydantic import BaseModel, Field, ValidationInfo, computed_field, field_validator
 
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
+    CountryPortal,
     CustomModelsSelection,
     SelectionMode,
 )
@@ -27,9 +28,23 @@ class LLMsData(BaseModel):
 
     @field_validator("all", mode="before")
     @classmethod
-    def filter_disabled(cls, values: Any) -> dict[str, Any]:
+    def filter_disabled(cls, values: Any, info: ValidationInfo) -> dict[str, Any]:
+        """
+        Filter out disabled LLMs.
+        Also remove LLMs that are only available in some portals
+        """
+        assert info.context is not None
+        country_portal: CountryPortal = info.context["country_portal"]
+        assert country_portal is not None
+
         return {
-            _id: model for _id, model in values.items() if model["status"] != "disabled"
+            _id: model
+            for _id, model in values.items()
+            if model["status"] != "disabled"
+            and (
+                not model["specific_portals"]
+                or country_portal in model["specific_portals"]
+            )
         }
 
     @computed_field  # type: ignore[prop-decorator]
@@ -200,11 +215,14 @@ class LLMsData(BaseModel):
 
 
 @lru_cache
-def get_llms_data() -> LLMsData:
+def get_llms_data(country_portal: CountryPortal) -> LLMsData:
     """
     Load model definitions from generated configuration.
     File contains metadata: params, pricing, reasoning capability, licenses, etc.
     """
     data = json.loads(LLMS_GENERATED_DATA_FILE.read_text())
 
-    return LLMsData(data_timestamp=data["timestamp"], all=data["models"])
+    return LLMsData.model_validate(
+        {"data_timestamp": data["timestamp"], "all": data["models"]},
+        context={"country_portal": country_portal},
+    )
