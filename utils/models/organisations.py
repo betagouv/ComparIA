@@ -1,9 +1,10 @@
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import (
     BaseModel,
+    Field,
     RootModel,
     ValidationError,
     ValidationInfo,
@@ -28,11 +29,19 @@ EXCLUDED_LLMS_STATUS = {"missing_data"}
 class RawOrganisation(BaseModel):
     name: str
     icon_path: str | None = None  # FIXME required?
-    proprietary_license_desc: str | None = None
-    proprietary_reuse: bool = False
-    proprietary_commercial_use: bool | None = None
-    proprietary_reuse_specificities: str | None = None
-    proprietary_commercial_use_specificities: str | None = None
+    license_desc: Annotated[
+        str | None, Field(validation_alias="proprietary_license_desc")
+    ] = ""
+    reuse: Annotated[bool, Field(validation_alias="proprietary_reuse")] = False
+    commercial_use: Annotated[
+        bool | None, Field(validation_alias="proprietary_commercial_use")
+    ] = None
+    reuse_specificities: Annotated[
+        str | None, Field(validation_alias="proprietary_reuse_specificities")
+    ] = ""
+    commercial_use_specificities: Annotated[
+        str | None, Field(validation_alias="proprietary_commercial_use_specificities")
+    ] = ""
     models: list[LLMDataRawBase] | list[LLMDataRaw]
 
     @field_validator("icon_path", mode="after")
@@ -92,8 +101,8 @@ class Organisation(RawOrganisation):
                 model[k] = v
 
             if model["license"] == "proprietary":
-                model["reuse"] = info.data["proprietary_reuse"]
-                model["commercial_use"] = info.data["proprietary_commercial_use"]
+                model["reuse"] = info.data["reuse"]
+                model["commercial_use"] = info.data["commercial_use"]
 
             # inject ranking/prefs data
             data = info.context["data"].get(model["id"])

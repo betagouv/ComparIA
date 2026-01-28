@@ -3,7 +3,6 @@ import os
 import sys
 from pathlib import Path
 
-import markdown
 import requests
 
 from backend.llms.models import DatasetData, PreferencesData
@@ -27,13 +26,12 @@ CURRENT_DIR = Path(__file__).parent
 LLMS_EXTRA_DATA_FILE = CURRENT_DIR / "generated-models-extra-data.json"
 LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 TS_DATA_FILE = FRONTEND_GENERATED_DIR / "models.ts"
-I18N_OS_LICENSE_KEYS = [
+I18N_OS_LICENSE_KEYS = {
     "license_desc",
     "reuse_specificities",
     "commercial_use_specificities",
-]
-I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
-I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
+}
+I18N_MODEL_KEYS = {"desc", "size_desc", "fyi"}
 
 
 def connect_to_db(COMPARIA_DB_URI):
@@ -99,14 +97,14 @@ def main() -> None:
     raw_models_data = {m["model_name"]: m for m in raw_extra_data["models"]}
 
     try:
-        dumped_licenses = get_licenses()
+        licenses = get_licenses()
         dumped_archs = get_archs()
     except Exception as err:
         logger.error(str(err))
         sys.exit(1)
 
     context = {
-        "licenses": {l["license"]: l for l in dumped_licenses},
+        "licenses": {l["license"]: l for l in licenses.model_dump()},
         "archs": {a.pop("id"): a for a in dumped_archs},
         "data": raw_models_data,
     }
@@ -127,16 +125,9 @@ def main() -> None:
         "archs": context["archs"],
         "licenses": {
             "os": {
-                l["license"]: {
-                    k: (
-                        (l[k] if k in l else "")
-                        if k != "license_desc"
-                        else markdown.markdown(l[k])
-                    )
-                    for k in I18N_OS_LICENSE_KEYS
-                }
-                for l in context["licenses"].values()
-                if l["license"] != "proprietary"
+                l.license: l.model_dump(include=I18N_OS_LICENSE_KEYS)
+                for l in licenses.root
+                if l.license != "proprietary"
             },
             "proprio": {},
         },
@@ -150,24 +141,22 @@ def main() -> None:
 
     for orga in orgas.root:
         # Retrieving i18n licenses descriptions
-        i18n["licenses"]["proprio"][orga.name] = {
-            k.replace("proprietary_", ""): v if v else ""
-            for k, v in orga.model_dump(include=I18N_PROPRIO_LICENSE_KEYS).items()
-        }
+        i18n["licenses"]["proprio"][orga.name] = orga.model_dump(
+            include=I18N_OS_LICENSE_KEYS
+        )
 
         for model in orga.models:
             # Retrieving i18n models descriptions
-            i18n["models"][model.simple_name] = {
-                k: markdown.markdown(v)
-                for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
-            }
+            i18n["models"][model.simple_name] = model.model_dump(
+                include=I18N_MODEL_KEYS
+            )
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
     # Check for missing data/prefs and log warnings
     missing_info_events = []
-    for model in orgas.root:
-        for m in model.models:
+    for orga in orgas.root:
+        for m in orga.models:
             missing_data_fields = []
             missing_prefs_fields = []
             reason_parts = []
