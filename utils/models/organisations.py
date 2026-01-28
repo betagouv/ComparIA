@@ -12,7 +12,6 @@ from pydantic import (
 )
 from pydantic_core import PydanticCustomError
 
-from backend.llms.models import PreferencesData
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import FRONTEND_DIR, ROOT_DIR
 
@@ -105,15 +104,19 @@ class Organisation(RawOrganisation):
                 model["commercial_use"] = info.data["commercial_use"]
 
             # inject ranking/prefs data
-            data = info.context["data"].get(model["id"])
+            dataset_data = info.context["data"].get(model["id"])
+            warning_infos = f"'{model["id"]}' (status: {model.get("status")})"
 
-            if data:
-                model["data"] = data
+            if dataset_data:
+                model["data"] = dataset_data.data
+                if not dataset_data.data:
+                    logger.warning(f"No ranking data for {warning_infos}")
 
-                PREFS_KEYS = list(PreferencesData.model_fields.keys())
-                prefs = {key: data.pop(key) for key in PREFS_KEYS}
-                if prefs:
-                    model["prefs"] = prefs
+                model["prefs"] = dataset_data.prefs
+                if not dataset_data.prefs:
+                    logger.warning(f"No preferences data for {warning_infos}")
+            else:
+                logger.warning(f"No dataset data at all {warning_infos}")
 
         return value
 

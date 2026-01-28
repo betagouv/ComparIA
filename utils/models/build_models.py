@@ -1,11 +1,9 @@
 import logging
 import os
 import sys
-from pathlib import Path
 
 import requests
 
-from backend.llms.models import DatasetData, PreferencesData
 from utils.logger import configure_logger
 from utils.utils import (
     FRONTEND_GENERATED_DIR,
@@ -17,13 +15,12 @@ from utils.utils import (
 )
 
 from .archs import get_archs
+from .dataset_data import LLMS_DATASET_DATA_FILE, get_dataset_data
 from .licenses import get_licenses
 from .organisations import LLMS_RAW_DATA_FILE, Orgas, validate_orgas_and_models
 
 logger = configure_logger(logging.getLogger("llms"))
 
-CURRENT_DIR = Path(__file__).parent
-LLMS_EXTRA_DATA_FILE = CURRENT_DIR / "generated-models-extra-data.json"
 LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 TS_DATA_FILE = FRONTEND_GENERATED_DIR / "models.ts"
 I18N_OS_LICENSE_KEYS = {
@@ -89,28 +86,22 @@ def main() -> None:
     # Fetch the latest dataset results from ranking pipelinerepo
     new_extra_data = fetch_ranking_results(LLMS_EXTRA_DATA_URL)
 
-    if new_extra_data.get("models") and len(new_extra_data.get("models")) > 0:
-        write_json(LLMS_EXTRA_DATA_FILE, new_extra_data)
+    if new_extra_data.get("models") and len(new_extra_data.get("models", [])) > 0:
+        write_json(LLMS_DATASET_DATA_FILE, new_extra_data)
 
     raw_orgas = read_json(LLMS_RAW_DATA_FILE)
-    raw_extra_data = read_json(LLMS_EXTRA_DATA_FILE)
-    raw_models_data = {m["model_name"]: m for m in raw_extra_data["models"]}
+    raw_dataset_data = read_json(LLMS_DATASET_DATA_FILE)
 
+    # First validate base data
     try:
         licenses = get_licenses()
         dumped_archs = get_archs()
-    except Exception as err:
-        logger.error(str(err))
-        sys.exit(1)
-
-    context = {
-        "licenses": {l["license"]: l for l in licenses.model_dump()},
-        "archs": {a.pop("id"): a for a in dumped_archs},
-        "data": raw_models_data,
-    }
-
-    # First validate with RawOrgas
-    try:
+        dataset_data = get_dataset_data(raw_dataset_data)
+        context = {
+            "licenses": {l["license"]: l for l in licenses.model_dump()},
+            "archs": {a.pop("id"): a for a in dumped_archs},
+            "data": dataset_data.models,
+        }
         dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
     except Exception as err:
         logger.error(str(err))
@@ -153,107 +144,6 @@ def main() -> None:
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
-    # Check for missing data/prefs and log warnings
-    missing_info_events = []
-    for orga in orgas.root:
-        for m in orga.models:
-            missing_data_fields = []
-            missing_prefs_fields = []
-            reason_parts = []
-
-            # Check if model exists in raw source data
-            model_in_source = m.id in raw_models_data
-
-            # Check if data is completely missing
-            if m.data is None:
-                if not model_in_source:
-                    reason_parts.append(
-                        f"model '{m.id}' not found in ml_final_data.json"
-                    )
-                else:
-                    # Model exists but data couldn't be built - check what's in source
-                    source_data = raw_models_data[m.id]
-                    missing_dataset_fields = []
-                    for field_name in DatasetData.model_fields.keys():
-                        if (
-                            field_name not in source_data
-                            or source_data.get(field_name) is None
-                        ):
-                            missing_dataset_fields.append(field_name)
-                    if missing_dataset_fields:
-                        reason_parts.append(
-                            f"missing data fields in source: {', '.join(missing_dataset_fields)}"
-                        )
-                    else:
-                        reason_parts.append(
-                            "data validation failed (check field types)"
-                        )
-            else:
-                # Check for missing fields within data
-                data_dict = m.data.model_dump() if hasattr(m.data, "model_dump") else {}
-                for field_name in DatasetData.model_fields.keys():
-                    if field_name not in data_dict or data_dict.get(field_name) is None:
-                        missing_data_fields.append(field_name)
-                if missing_data_fields:
-                    reason_parts.append(
-                        f"incomplete data fields: {', '.join(missing_data_fields)}"
-                    )
-
-            # Check if prefs is completely missing
-            if m.prefs is None:
-                if not model_in_source:
-                    # Already reported model not in source
-                    pass
-                else:
-                    # Model exists but prefs couldn't be built - check what's in source
-                    source_data = raw_models_data[m.id]
-                    missing_prefs_source_fields = []
-                    for field_name in PreferencesData.model_fields.keys():
-                        if (
-                            field_name not in source_data
-                            or source_data.get(field_name) is None
-                        ):
-                            missing_prefs_source_fields.append(field_name)
-                    if missing_prefs_source_fields:
-                        reason_parts.append(
-                            f"missing prefs fields in source: {', '.join(missing_prefs_source_fields)}"
-                        )
-                    else:
-                        reason_parts.append(
-                            "prefs validation failed (check field types)"
-                        )
-            else:
-                # Check for missing fields within prefs
-                prefs_dict = (
-                    m.prefs.model_dump() if hasattr(m.prefs, "model_dump") else {}
-                )
-                for field_name in PreferencesData.model_fields.keys():
-                    if (
-                        field_name not in prefs_dict
-                        or prefs_dict.get(field_name) is None
-                    ):
-                        missing_prefs_fields.append(field_name)
-                if missing_prefs_fields:
-                    reason_parts.append(
-                        f"incomplete prefs fields: {', '.join(missing_prefs_fields)}"
-                    )
-
-            if reason_parts:
-                missing_info_events.append(
-                    {
-                        "id": m.id,
-                        "status": m.status,
-                        "reason": " | ".join(reason_parts),
-                    }
-                )
-
-    # Sort: Enabled models first (False < True), then alphabetical by ID
-    missing_info_events.sort(key=lambda x: (x["status"] != "enabled", x["id"]))
-
-    for event in missing_info_events:
-        logger.warning(
-            f"Model '{event['id']}' (status: {event['status']}): {event['reason']}"
-        )
     # Integrate translatable content to frontend locales
     frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
     frontend_i18n["generated"] = sort_dict(i18n)
@@ -264,7 +154,7 @@ def main() -> None:
     write_json(
         LLMS_GENERATED_DATA_FILE,
         {
-            "timestamp": raw_extra_data["timestamp"],
+            "timestamp": dataset_data.timestamp,
             "models": sort_dict(generated_models),
         },
     )
