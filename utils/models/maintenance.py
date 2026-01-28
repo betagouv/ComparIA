@@ -15,7 +15,7 @@ def clean_models():
     # remove keys that are default values
 
     context = {
-        "licenses": {l["license"]: l for l in get_licenses()},
+        "licenses": {l.license: l for l in get_licenses().root},
         "archs": {a.pop("id"): a for a in get_archs()},
     }
 
