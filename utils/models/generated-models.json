@@ -52,6 +52,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Apertus 70B Instruct",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
       "wh_per_million_token": 12468.733333333334
@@ -103,6 +104,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Apertus 8B Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509",
       "wh_per_million_token": 3767.8599999999997
@@ -130,6 +132,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Aya 23 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -185,6 +188,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Aya Expanse 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
       "wh_per_million_token": 7135.939999999998
@@ -236,6 +240,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Aya Expanse 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -263,6 +268,7 @@
       "required_ram": 35,
       "reuse": true,
       "simple_name": "Aya23-35B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 7556.949999999999
@@ -314,6 +320,7 @@
       "required_ram": 35,
       "reuse": true,
       "simple_name": "Command R",
+      "specific_portals": null,
       "status": "disabled",
       "url": null,
       "wh_per_million_token": 7556.949999999999
@@ -341,6 +348,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2",
       "wh_per_million_token": 4609.88
@@ -392,6 +400,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
       "wh_per_million_token": 4609.88
@@ -419,6 +428,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 2 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
       "wh_per_million_token": 4609.88
@@ -470,6 +480,7 @@
       "required_ram": 28,
       "reuse": true,
       "simple_name": "Chocolatine 2 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
       "wh_per_million_token": 3627.5233333333335
@@ -521,6 +532,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 3.5 Sonnet v2",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
       "wh_per_million_token": 87485.15999999997
@@ -572,6 +584,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 3.7 Sonnet",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
       "wh_per_million_token": 87485.15999999997
@@ -627,6 +640,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 4.5 Sonnet",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
       "wh_per_million_token": 87485.15999999997
@@ -682,6 +696,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 4 Sonnet",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 87485.15999999997
@@ -737,6 +752,7 @@
       "required_ram": 111,
       "reuse": true,
       "simple_name": "Command A",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
       "wh_per_million_token": 18222.536666666667
@@ -764,6 +780,7 @@
       "required_ram": 104,
       "reuse": true,
       "simple_name": "Command R+",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 17240.18
@@ -819,6 +836,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek v3.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
       "wh_per_million_token": 47025.74
@@ -874,6 +892,7 @@
       "required_ram": 671,
       "reuse": true,
       "simple_name": "DeepSeek R1",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
       "wh_per_million_token": 47025.74
@@ -929,6 +948,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek R1 0528",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
       "wh_per_million_token": 47025.74
@@ -984,6 +1004,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "DeepSeek R1 Llama 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
       "wh_per_million_token": 12468.733333333334
@@ -1039,6 +1060,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek V3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
       "wh_per_million_token": 47025.74
@@ -1090,6 +1112,7 @@
       "required_ram": 671,
       "reuse": true,
       "simple_name": "DeepSeek v3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
       "wh_per_million_token": 47025.74
@@ -1145,6 +1168,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek V3.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek/deepseek-v3.2",
       "wh_per_million_token": 47025.74
@@ -1200,6 +1224,7 @@
       "required_ram": 22,
       "reuse": true,
       "simple_name": "EuroLLM 22B Instruct",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
       "wh_per_million_token": 5732.573333333333
@@ -1251,6 +1276,7 @@
       "required_ram": 600,
       "reuse": false,
       "simple_name": "Gemini 1.5 Pro",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
       "wh_per_million_token": 167596.16666666666
@@ -1302,6 +1328,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 2.0 Flash",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
       "wh_per_million_token": 87485.15999999997
@@ -1357,6 +1384,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 2.5 Flash",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 87485.15999999997
@@ -1412,6 +1440,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 3 Flash",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3-flash/",
       "wh_per_million_token": 87485.15999999997
@@ -1467,6 +1496,7 @@
       "required_ram": 750,
       "reuse": false,
       "simple_name": "Gemini 3 Pro",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
       "wh_per_million_token": 53761.899999999994
@@ -1494,6 +1524,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 2 27B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1545,6 +1576,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 2 27B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1572,6 +1604,7 @@
       "required_ram": 2,
       "reuse": true,
       "simple_name": "Gemma 2 2B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-2b-it",
       "wh_per_million_token": 2925.84
@@ -1623,6 +1656,7 @@
       "required_ram": 9,
       "reuse": true,
       "simple_name": "Gemma 2 9B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-9b-it",
       "wh_per_million_token": 3908.1966666666667
@@ -1678,6 +1712,7 @@
       "required_ram": 12,
       "reuse": true,
       "simple_name": "Gemma 3 12B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-12b-it",
       "wh_per_million_token": 4329.206666666666
@@ -1733,6 +1768,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 3 27B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1788,6 +1824,7 @@
       "required_ram": 4,
       "reuse": true,
       "simple_name": "Gemma 3 4B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-4b-it",
       "wh_per_million_token": 3206.5133333333333
@@ -1843,6 +1880,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Gemma 3n 4B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3206.5133333333333
@@ -1898,6 +1936,7 @@
       "required_ram": 355,
       "reuse": true,
       "simple_name": "GLM 4.5",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 21407.82
@@ -1953,6 +1992,7 @@
       "required_ram": 357,
       "reuse": true,
       "simple_name": "GLM 4.6",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 21407.82
@@ -2008,6 +2048,7 @@
       "required_ram": 357,
       "reuse": true,
       "simple_name": "GLM 4.7",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://z.ai/blog/glm-4.7",
       "wh_per_million_token": 21407.82
@@ -2035,6 +2076,7 @@
       "required_ram": 55,
       "reuse": false,
       "simple_name": "GPT-3.5",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
       "wh_per_million_token": 10363.683333333332
@@ -2090,6 +2132,7 @@
       "required_ram": 75,
       "reuse": false,
       "simple_name": "GPT-4.1 Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
       "wh_per_million_token": 13170.416666666666
@@ -2145,6 +2188,7 @@
       "required_ram": 23,
       "reuse": false,
       "simple_name": "GPT 4.1 Nano",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://openai.com/index/gpt-4-1/",
       "wh_per_million_token": 5872.909999999999
@@ -2196,6 +2240,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "GPT-4o",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4o",
       "wh_per_million_token": 87485.15999999997
@@ -2247,6 +2292,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "GPT-4o mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -2302,6 +2348,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2357,6 +2404,7 @@
       "required_ram": 47,
       "reuse": false,
       "simple_name": "GPT 5 Mini",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-mini",
       "wh_per_million_token": 9240.99
@@ -2412,6 +2460,7 @@
       "required_ram": 11,
       "reuse": false,
       "simple_name": "GPT 5 Nano",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-nano",
       "wh_per_million_token": 4188.87
@@ -2467,6 +2516,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2522,6 +2572,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2577,6 +2628,7 @@
       "required_ram": 117,
       "reuse": true,
       "simple_name": "GPT OSS-120B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3346.8500000000004
@@ -2632,6 +2684,7 @@
       "required_ram": 21,
       "reuse": true,
       "simple_name": "GPT OSS-20B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3066.1766666666667
@@ -2687,6 +2740,7 @@
       "required_ram": 180,
       "reuse": false,
       "simple_name": "Grok 3 Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-3",
       "wh_per_million_token": 11465.146666666666
@@ -2742,6 +2796,7 @@
       "required_ram": 1700,
       "reuse": false,
       "simple_name": "Grok 4 Fast",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-4-fast",
       "wh_per_million_token": 255136.7433333333
@@ -2797,6 +2852,7 @@
       "required_ram": 1700,
       "reuse": false,
       "simple_name": "Grok 4.1 Fast",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://x.ai/news/grok-4-1-fast",
       "wh_per_million_token": 255136.7433333333
@@ -2848,6 +2904,7 @@
       "required_ram": 405,
       "reuse": true,
       "simple_name": "Hermes 3 405B",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
       "wh_per_million_token": 237926.06666666665
@@ -2903,6 +2960,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Hermes 4 70B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 12468.733333333334
@@ -2954,6 +3012,7 @@
       "required_ram": 400,
       "reuse": true,
       "simple_name": "Jamba 1.5 Large",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
       "wh_per_million_token": 47510.43999999999
@@ -3009,6 +3068,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
       "wh_per_million_token": 57087.51999999998
@@ -3064,6 +3124,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2 Thinking",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
       "wh_per_million_token": 57087.51999999998
@@ -3115,6 +3176,7 @@
       "required_ram": 40,
       "reuse": false,
       "simple_name": "LFM 40B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.liquid.ai/liquid-foundation-models",
       "wh_per_million_token": 4329.206666666666
@@ -3170,6 +3232,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "LFM 2 8B A1B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
       "wh_per_million_token": 2785.5033333333336
@@ -3225,6 +3288,7 @@
       "required_ram": 405,
       "reuse": true,
       "simple_name": "Llama 3.1 405B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
       "wh_per_million_token": 237926.06666666665
@@ -3276,6 +3340,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Llama 3.1 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3331,6 +3396,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Llama 3.1 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
       "wh_per_million_token": 3767.8599999999997
@@ -3386,6 +3452,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Nemotron Llama 3.1 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3441,6 +3508,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Llama 3.3 70B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3496,6 +3564,7 @@
       "required_ram": 109,
       "reuse": true,
       "simple_name": "Llama 4 Scout",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
       "wh_per_million_token": 5030.889999999999
@@ -3551,6 +3620,7 @@
       "required_ram": 400,
       "reuse": true,
       "simple_name": "Llama 4 Maverick",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 15092.669999999998
@@ -3606,6 +3676,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Magistral Medium",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 19906.576666666668
@@ -3661,6 +3732,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Magistral Small",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 6013.246666666666
@@ -3688,6 +3760,7 @@
       "required_ram": 70,
       "reuse": false,
       "simple_name": "Llama 3 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 12468.733333333334
@@ -3715,6 +3788,7 @@
       "required_ram": 8,
       "reuse": false,
       "simple_name": "Llama 3 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -3770,6 +3844,7 @@
       "required_ram": 230,
       "reuse": true,
       "simple_name": "MiniMax M2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.minimax.io/news/minimax-m2",
       "wh_per_million_token": 8097.066666666667
@@ -3821,6 +3896,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Ministral",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
       "wh_per_million_token": 3767.8599999999997
@@ -3872,6 +3948,7 @@
       "required_ram": 123,
       "reuse": true,
       "simple_name": "Mistral Large 2",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
       "wh_per_million_token": 19906.576666666668
@@ -3927,6 +4004,7 @@
       "required_ram": 675,
       "reuse": true,
       "simple_name": "Mistral 3 Large",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-3",
       "wh_per_million_token": 50393.81999999999
@@ -3982,6 +4060,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Mistral Medium 3.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-medium-3.1",
       "wh_per_million_token": 19906.576666666668
@@ -4033,6 +4112,7 @@
       "required_ram": 12,
       "reuse": true,
       "simple_name": "Mistral Nemo",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
       "wh_per_million_token": 4329.206666666666
@@ -4088,6 +4168,7 @@
       "required_ram": 24,
       "reuse": false,
       "simple_name": "Mistral Saba",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://mistral.ai/news/mistral-saba",
       "wh_per_million_token": 6013.246666666666
@@ -4139,6 +4220,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
       "wh_per_million_token": 6013.246666666666
@@ -4194,6 +4276,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 6013.246666666666
@@ -4245,6 +4328,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.1 24B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
       "wh_per_million_token": 6013.246666666666
@@ -4272,6 +4356,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.2 24B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506",
       "wh_per_million_token": 6013.246666666666
@@ -4323,6 +4408,7 @@
       "required_ram": 176,
       "reuse": true,
       "simple_name": "Mixtral 8x22B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
       "wh_per_million_token": 17639.96
@@ -4374,6 +4460,7 @@
       "required_ram": 56,
       "reuse": true,
       "simple_name": "Mixtral-8x7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
       "wh_per_million_token": 4609.88
@@ -4425,6 +4512,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "o3-mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o3-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -4480,6 +4568,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "o4 mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o4-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -4507,6 +4596,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "OLMo-2 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -4562,6 +4652,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Olmo 3 32B Think",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://allenai.org/blog/olmo2-32b",
       "wh_per_million_token": 7135.939999999998
@@ -4589,6 +4680,7 @@
       "required_ram": 3.8,
       "reuse": true,
       "simple_name": "Phi-3-Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
       "wh_per_million_token": 3066.1766666666667
@@ -4616,6 +4708,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Phi-3-small-8k-Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3627.5233333333335
@@ -4667,6 +4760,7 @@
       "required_ram": 3.8,
       "reuse": true,
       "simple_name": "Phi-3.5-mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
       "wh_per_million_token": 3066.1766666666667
@@ -4722,6 +4816,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Phi-4",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-4",
       "wh_per_million_token": 4609.88
@@ -4777,6 +4872,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Qwen 3 8B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
       "wh_per_million_token": 3767.8599999999997
@@ -4804,6 +4900,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen1.5-32B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 7135.939999999998
@@ -4831,6 +4928,7 @@
       "required_ram": 57,
       "reuse": true,
       "simple_name": "Qwen2-57B-A14B-Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 4609.88
@@ -4858,6 +4956,7 @@
       "required_ram": 72,
       "reuse": true,
       "simple_name": "Qwen2-72b-instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct",
       "wh_per_million_token": 12749.406666666668
@@ -4909,6 +5008,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Qwen2-7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
       "wh_per_million_token": 3627.5233333333335
@@ -4960,6 +5060,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen2.5-32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -5011,6 +5112,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Qwen2.5-7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
       "wh_per_million_token": 3627.5233333333335
@@ -5062,6 +5164,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen 2.5 Coder 32B",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -5117,6 +5220,7 @@
       "required_ram": 30,
       "reuse": true,
       "simple_name": "Qwen 3 30B A3B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3066.1766666666667
@@ -5172,6 +5276,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen 3 32B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-32B",
       "wh_per_million_token": 7135.939999999998
@@ -5227,6 +5332,7 @@
       "required_ram": 480,
       "reuse": true,
       "simple_name": "Qwen3 Coder 480B A35B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
       "wh_per_million_token": 30227.799999999996
@@ -5282,6 +5388,7 @@
       "required_ram": 1000,
       "reuse": false,
       "simple_name": "Qwen 3 Max",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
       "wh_per_million_token": 57087.51999999998
@@ -5337,6 +5444,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "qwq 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/QwQ-32B",
       "wh_per_million_token": 7135.939999999998
@@ -5388,6 +5496,7 @@
       "required_ram": 9,
       "reuse": true,
       "simple_name": "Yi-1.5 9B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat",
       "wh_per_million_token": 3908.1966666666667
