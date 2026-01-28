@@ -33,6 +33,7 @@ dev = [
     "black>=26.1.0",
     "isort>=7.0.0",
     "mypy>=1.19.1",
+    "types-markdown>=3.10.0.20251106",
     "types-psycopg2>=2.9.21.20251012",
     "types-requests>=2.32.4.20260107",
 ]
