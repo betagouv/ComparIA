@@ -4,6 +4,7 @@ from pydantic import (
     Field,
     ValidationInfo,
     computed_field,
+    create_model,
     field_validator,
     model_validator,
 )
@@ -19,9 +20,22 @@ from backend.llms.models import (
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.utils import MarkdownSerializer
 
+LLM_DATA_RAW_BASE_DEFAULTS = {
+    "new": False,
+    "status": "enabled",
+    "fully_open_source": False,
+    "active_params": None,
+    "reasoning": False,
+    "quantization": None,
+    "url": None,
+    "endpoint": None,
+    "pricey": False,
+    "specific_portals": None,
+}
+
 
 # Raw LLM model definitions from 'utils/models/models.json'
-class LLMDataRawBase(LLMDataBase):
+class LLMDataRawBaseNoDefault(LLMDataBase):
     """
     Individual LLM raw model definition (before enrichment).
 
@@ -57,31 +71,6 @@ class LLMDataRawBase(LLMDataBase):
     size_desc: Annotated[str, MarkdownSerializer]
     fyi: Annotated[str, MarkdownSerializer]
 
-    @model_validator(mode="before")
-    @classmethod
-    def insert_defaults(cls, data: Any) -> Any:
-        """
-        Insert default values, that way we do not need to repeat types and
-        make sure we are based on `LLMDataEnhanced` types.
-        """
-        DEFAULTS = {
-            "new": False,
-            "status": "enabled",
-            "fully_open_source": False,
-            "active_params": None,
-            "reasoning": False,
-            "quantization": None,
-            "url": None,
-            "endpoint": None,
-            "pricey": False,
-            "specific_portals": None,
-        }
-        for key, value in DEFAULTS.items():
-            if not key in data:
-                data[key] = value
-
-        return data
-
     @field_validator("arch", mode="after")
     @classmethod
     def check_arch_exists(cls, value: str, info: ValidationInfo) -> str:
@@ -90,7 +79,8 @@ class LLMDataRawBase(LLMDataBase):
 
         if value.replace("maybe-", "") not in info.context["archs"]:
             raise PydanticCustomError(
-                "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
+                "missing_arch",
+                f"Missing arch '{value.replace("maybe-", "")}' infos in 'archs.json'.",
             )
 
         if info.data.get("license") != "proprietary" and "maybe" in value:
@@ -123,8 +113,25 @@ class LLMDataRawBase(LLMDataBase):
         return self
 
 
+# Insert default values, that way we do not need to repeat types and
+# make sure we are based on `LLMDataEnhanced` types.
+# We copy LLMDataRawBaseNoDefault and inject dynamicly defined defaults
+# We do this to be able to use model_dump(exclude_defaults=True) in maintenance.py
+LLMDataRawBase = create_model(
+    "LLMDataRawBase",
+    __base__=LLMDataRawBaseNoDefault,
+    **{
+        k: (anno, LLM_DATA_RAW_BASE_DEFAULTS[k])
+        for k, anno in (
+            LLMDataBase.__annotations__ | LLMDataRawBaseNoDefault.__annotations__
+        ).items()
+        if k not in LLM_DATA_RAW_BASE_DEFAULTS
+    },  # type: ignore
+)
+
+
 # Enriched model definition generated from RawModel + licenses + rankings + preferences
-class LLMDataRaw(LLMDataEnhanced, LLMDataRawBase):
+class LLMDataRaw(LLMDataEnhanced, LLMDataRawBase):  # type: ignore
     """
     Complete LLM raw definition with enriched metadata.
 
