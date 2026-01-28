@@ -54,7 +54,7 @@ class RankingData(BaseModel):
         return {m["model_name"]: m for m in value}
 
 
-def get_dataset_data(raw_dataset_data: Any):
+def get_dataset_data(raw_dataset_data: Any) -> RankingData:
     try:
         dataset_data = RankingData.model_validate(raw_dataset_data)
         logger.info(f"No errors in '{LLMS_DATASET_DATA_FILE.relative_to(ROOT_DIR)}'!")

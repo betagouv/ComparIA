@@ -8,7 +8,7 @@ from .licenses import get_licenses
 from .organisations import RawOrgas
 
 
-def clean_models():
+def clean_models() -> None:
     # Clean models.json
     # put 'missing_data' models first in list
     # reorder models based on date (most recent first)
@@ -20,7 +20,7 @@ def clean_models():
     }
 
     raw_orgas = read_json(LLMS_RAW_DATA_FILE)
-    filtered_out_models = {}
+    filtered_out_models: dict[str, list[dict]] = {}
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
