@@ -29,6 +29,8 @@ from pydantic import (
     field_validator,
 )
 
+from backend.config import CountryPortal
+
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
 Distribution = Literal[
@@ -149,6 +151,7 @@ class LLMDataBase(BaseModel):
     url: str | None
     endpoint: Endpoint | None
     pricey: bool
+    specific_portals: list[CountryPortal] | None
 
 
 class LLMDataEnhanced(BaseModel):

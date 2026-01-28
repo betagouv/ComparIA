@@ -74,6 +74,7 @@ class LLMDataRawBase(LLMDataBase):
             "url": None,
             "endpoint": None,
             "pricey": False,
+            "specific_portals": None,
         }
         for key, value in DEFAULTS.items():
             if not key in data:
