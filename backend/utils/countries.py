@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated, Awaitable, cast
 
-from pydantic import BeforeValidator
+from fastapi import Depends, Header, HTTPException, status
 
 from backend.config import (
     COUNTRY_PORTALS,
@@ -13,15 +13,32 @@ from backend.config import (
 logger = logging.getLogger("languia")
 
 
-def get_country_portal(code: str | None = DEFAULT_COUNTRY_PORTAL) -> CountryPortal:
+def country_portal_from_locale(locale: str = Header(..., alias="X-Locale")) -> str:
+    """
+    Dependency to extract and validate country portal from headers's locale.
+
+    Args:
+        locale: Session identifier from X-Locale header
+
+    Returns:
+        CountryPortal
+
+    Raises:
+        HTTPException: If locale is missing
+    """
+    if not locale:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing locale in headers"
+        )
+
     return (
         DEFAULT_COUNTRY_PORTAL
-        if code not in COUNTRY_PORTALS
-        else cast(CountryPortal, code)
+        if locale not in COUNTRY_PORTALS
+        else cast(CountryPortal, locale)
     )
 
 
-CountryPortalAnno = Annotated[CountryPortal, BeforeValidator(get_country_portal)]
+CountryPortalAnno = Annotated[CountryPortal, Depends(country_portal_from_locale)]
 
 
 def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
