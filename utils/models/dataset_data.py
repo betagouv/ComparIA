@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+import requests
 from pydantic import (
     BaseModel,
     ValidationError,
@@ -12,11 +13,12 @@ from pydantic import (
 
 from backend.llms.models import DatasetData, PreferencesData
 from utils.logger import configure_logger, log_pydantic_parsed_errors
-from utils.utils import ROOT_DIR
+from utils.utils import ROOT_DIR, write_json
 
 logger = configure_logger(logging.getLogger("llms:dataset_data"))
 
 LLMS_DATASET_DATA_FILE = Path(__file__).parent / "generated-models-extra-data.json"
+LLMS_DATASET_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 
 RANKING_KEYS = [
     (
@@ -78,3 +80,22 @@ def get_dataset_data(raw_dataset_data: Any):
     raise Exception(
         f"Errors in '{LLMS_DATASET_DATA_FILE.relative_to(ROOT_DIR)}', exiting..."
     )
+
+
+def fetch_and_save_ranking_results() -> None:
+    """
+    Fetch the latest dataset ranking results from GitHub Actions pipeline
+    and save it to 'generated-models-extra-data.json'.
+    """
+
+    try:
+        response = requests.get(LLMS_DATASET_DATA_URL)
+        response.raise_for_status()
+        results = response.json()
+        if results.get("models"):
+            write_json(LLMS_DATASET_DATA_FILE, results)
+
+    except requests.exceptions.RequestException as e:
+        logger.error(
+            f"Failed to fetch ranking results from repo: {e}, will use existing data."
+        )

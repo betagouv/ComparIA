@@ -2,8 +2,6 @@ import logging
 import os
 import sys
 
-import requests
-
 from utils.logger import configure_logger
 from utils.utils import (
     FRONTEND_GENERATED_DIR,
@@ -15,13 +13,16 @@ from utils.utils import (
 )
 
 from .archs import get_archs
-from .dataset_data import LLMS_DATASET_DATA_FILE, get_dataset_data
+from .dataset_data import (
+    LLMS_DATASET_DATA_FILE,
+    fetch_and_save_ranking_results,
+    get_dataset_data,
+)
 from .licenses import get_licenses
 from .organisations import LLMS_RAW_DATA_FILE, Orgas, validate_orgas_and_models
 
 logger = configure_logger(logging.getLogger("llms"))
 
-LLMS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 TS_DATA_FILE = FRONTEND_GENERATED_DIR / "models.ts"
 I18N_OS_LICENSE_KEYS = {
     "license_desc",
@@ -82,12 +83,10 @@ def fetch_distinct_model_ids(engine, models_data):
         return []
 
 
-def main() -> None:
+def main(fetch_latest_dataset_results: bool = True) -> None:
     # Fetch the latest dataset results from ranking pipelinerepo
-    new_extra_data = fetch_ranking_results(LLMS_EXTRA_DATA_URL)
-
-    if new_extra_data.get("models") and len(new_extra_data.get("models", [])) > 0:
-        write_json(LLMS_DATASET_DATA_FILE, new_extra_data)
+    if fetch_latest_dataset_results:
+        fetch_and_save_ranking_results()
 
     raw_orgas = read_json(LLMS_RAW_DATA_FILE)
     raw_dataset_data = read_json(LLMS_DATASET_DATA_FILE)
@@ -171,19 +170,6 @@ export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in 
     )
 
     logger.info("Generation is successfull!")
-
-
-def fetch_ranking_results(url) -> dict:
-    """Fetch the latest dataset ranking results from GitHub Actions pipeline."""
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to fetch ranking results from repo: {e}")
-        # Return empty data structure if fetch fails
-        return {"models": [], "timestamp": None}
 
 
 if __name__ == "__main__":
