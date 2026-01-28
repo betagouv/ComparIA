@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -54,3 +55,16 @@ def sort_dict(data: Obj, deep: bool = True) -> Obj:
     ]
 
     return dict(sorted(items, key=lambda i: i[0].lower()))
+
+
+def get_db_engine():
+    from sqlalchemy import create_engine
+
+    uri = os.getenv("COMPARIA_DB_URI")
+
+    if not uri:
+        raise Exception(
+            "Cannot connect to the database: no $COMPARIA_DB_URI configuration provided."
+        )
+
+    return create_engine(uri)
