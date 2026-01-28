@@ -14,10 +14,7 @@
         "rank_p97_5": 69,
         "score_p2_5": 963,
         "score_p97_5": 987,
-        "trust_range": [
-          7,
-          6
-        ],
+        "trust_range": [7, 6],
         "win_rate": 0.4106286484059273
       },
       "distribution": "fully-open-source",
@@ -52,6 +49,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Apertus 70B Instruct",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
       "wh_per_million_token": 12468.733333333334
@@ -69,10 +67,7 @@
         "rank_p97_5": 83,
         "score_p2_5": 904,
         "score_p97_5": 1015,
-        "trust_range": [
-          27,
-          11
-        ],
+        "trust_range": [27, 11],
         "win_rate": 0.46880952380952384
       },
       "distribution": "fully-open-source",
@@ -103,6 +98,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Apertus 8B Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509",
       "wh_per_million_token": 3767.8599999999997
@@ -130,6 +126,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Aya 23 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -147,10 +144,7 @@
         "rank_p97_5": 60,
         "score_p2_5": 982,
         "score_p97_5": 998,
-        "trust_range": [
-          2,
-          6
-        ],
+        "trust_range": [2, 6],
         "win_rate": 0.46256796401329947
       },
       "distribution": "open-weights",
@@ -185,6 +179,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Aya Expanse 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
       "wh_per_million_token": 7135.939999999998
@@ -202,10 +197,7 @@
         "rank_p97_5": 72,
         "score_p2_5": 954,
         "score_p97_5": 987,
-        "trust_range": [
-          8,
-          7
-        ],
+        "trust_range": [8, 7],
         "win_rate": 0.5014285714285714
       },
       "distribution": "open-weights",
@@ -236,6 +228,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Aya Expanse 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -263,6 +256,7 @@
       "required_ram": 35,
       "reuse": true,
       "simple_name": "Aya23-35B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 7556.949999999999
@@ -280,10 +274,7 @@
         "rank_p97_5": 83,
         "score_p2_5": 919,
         "score_p97_5": 936,
-        "trust_range": [
-          3,
-          2
-        ],
+        "trust_range": [3, 2],
         "win_rate": 0.42968786709179396
       },
       "distribution": "open-weights",
@@ -314,6 +305,7 @@
       "required_ram": 35,
       "reuse": true,
       "simple_name": "Command R",
+      "specific_portals": null,
       "status": "disabled",
       "url": null,
       "wh_per_million_token": 7556.949999999999
@@ -341,6 +333,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2",
       "wh_per_million_token": 4609.88
@@ -358,10 +351,7 @@
         "rank_p97_5": 93,
         "score_p2_5": 703,
         "score_p97_5": 789,
-        "trust_range": [
-          1,
-          1
-        ],
+        "trust_range": [1, 1],
         "win_rate": 0.2402265372168285
       },
       "distribution": "open-weights",
@@ -392,6 +382,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
       "wh_per_million_token": 4609.88
@@ -419,6 +410,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 2 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
       "wh_per_million_token": 4609.88
@@ -436,10 +428,7 @@
         "rank_p97_5": 91,
         "score_p2_5": 800,
         "score_p97_5": 833,
-        "trust_range": [
-          0,
-          1
-        ],
+        "trust_range": [0, 1],
         "win_rate": 0.3317316258351893
       },
       "distribution": "open-weights",
@@ -470,6 +459,7 @@
       "required_ram": 28,
       "reuse": true,
       "simple_name": "Chocolatine 2 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
       "wh_per_million_token": 3627.5233333333335
@@ -487,10 +477,7 @@
         "rank_p97_5": 70,
         "score_p2_5": 961,
         "score_p97_5": 979,
-        "trust_range": [
-          5,
-          3
-        ],
+        "trust_range": [5, 3],
         "win_rate": 0.4921080415273623
       },
       "distribution": "api-only",
@@ -521,6 +508,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 3.5 Sonnet v2",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
       "wh_per_million_token": 87485.15999999997
@@ -538,10 +526,7 @@
         "rank_p97_5": 35,
         "score_p2_5": 1038,
         "score_p97_5": 1058,
-        "trust_range": [
-          5,
-          3
-        ],
+        "trust_range": [5, 3],
         "win_rate": 0.524225748656258
       },
       "distribution": "api-only",
@@ -572,6 +557,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 3.7 Sonnet",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
       "wh_per_million_token": 87485.15999999997
@@ -589,10 +575,7 @@
         "rank_p97_5": 22,
         "score_p2_5": 1065,
         "score_p97_5": 1080,
-        "trust_range": [
-          4,
-          5
-        ],
+        "trust_range": [4, 5],
         "win_rate": 0.5363734115347019
       },
       "distribution": "api-only",
@@ -627,6 +610,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 4.5 Sonnet",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
       "wh_per_million_token": 87485.15999999997
@@ -644,10 +628,7 @@
         "rank_p97_5": 30,
         "score_p2_5": 1052,
         "score_p97_5": 1074,
-        "trust_range": [
-          7,
-          7
-        ],
+        "trust_range": [7, 7],
         "win_rate": 0.5355651831429696
       },
       "distribution": "api-only",
@@ -682,6 +663,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 4 Sonnet",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 87485.15999999997
@@ -699,10 +681,7 @@
         "rank_p97_5": 32,
         "score_p2_5": 1048,
         "score_p97_5": 1062,
-        "trust_range": [
-          5,
-          3
-        ],
+        "trust_range": [5, 3],
         "win_rate": 0.5440517353438191
       },
       "distribution": "open-weights",
@@ -737,6 +716,7 @@
       "required_ram": 111,
       "reuse": true,
       "simple_name": "Command A",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
       "wh_per_million_token": 18222.536666666667
@@ -764,6 +744,7 @@
       "required_ram": 104,
       "reuse": true,
       "simple_name": "Command R+",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 17240.18
@@ -781,10 +762,7 @@
         "rank_p97_5": 21,
         "score_p2_5": 1065,
         "score_p97_5": 1090,
-        "trust_range": [
-          2,
-          9
-        ],
+        "trust_range": [2, 9],
         "win_rate": 0.5211273666092943
       },
       "distribution": "open-weights",
@@ -819,6 +797,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek v3.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
       "wh_per_million_token": 47025.74
@@ -836,10 +815,7 @@
         "rank_p97_5": 45,
         "score_p2_5": 1014,
         "score_p97_5": 1035,
-        "trust_range": [
-          4,
-          5
-        ],
+        "trust_range": [4, 5],
         "win_rate": 0.5313019943019943
       },
       "distribution": "open-weights",
@@ -874,6 +850,7 @@
       "required_ram": 671,
       "reuse": true,
       "simple_name": "DeepSeek R1",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
       "wh_per_million_token": 47025.74
@@ -891,10 +868,7 @@
         "rank_p97_5": 33,
         "score_p2_5": 1042,
         "score_p97_5": 1068,
-        "trust_range": [
-          9,
-          5
-        ],
+        "trust_range": [9, 5],
         "win_rate": 0.5232596103212217
       },
       "distribution": "open-weights",
@@ -929,6 +903,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek R1 0528",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
       "wh_per_million_token": 47025.74
@@ -946,10 +921,7 @@
         "rank_p97_5": 79,
         "score_p2_5": 934,
         "score_p97_5": 956,
-        "trust_range": [
-          5,
-          2
-        ],
+        "trust_range": [5, 2],
         "win_rate": 0.4397953706809795
       },
       "distribution": "open-weights",
@@ -984,6 +956,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "DeepSeek R1 Llama 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
       "wh_per_million_token": 12468.733333333334
@@ -1001,10 +974,7 @@
         "rank_p97_5": 12,
         "score_p2_5": 1082,
         "score_p97_5": 1101,
-        "trust_range": [
-          2,
-          3
-        ],
+        "trust_range": [2, 3],
         "win_rate": 0.5851128848346637
       },
       "distribution": "open-weights",
@@ -1039,6 +1009,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek V3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
       "wh_per_million_token": 47025.74
@@ -1056,10 +1027,7 @@
         "rank_p97_5": 19,
         "score_p2_5": 1070,
         "score_p97_5": 1087,
-        "trust_range": [
-          3,
-          6
-        ],
+        "trust_range": [3, 6],
         "win_rate": 0.6141481069042317
       },
       "distribution": "open-weights",
@@ -1090,6 +1058,7 @@
       "required_ram": 671,
       "reuse": true,
       "simple_name": "DeepSeek v3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
       "wh_per_million_token": 47025.74
@@ -1107,10 +1076,7 @@
         "rank_p97_5": 25,
         "score_p2_5": 1061,
         "score_p97_5": 1088,
-        "trust_range": [
-          5,
-          10
-        ],
+        "trust_range": [5, 10],
         "win_rate": 0.5502265768524188
       },
       "distribution": "open-weights",
@@ -1145,6 +1111,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek V3.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek/deepseek-v3.2",
       "wh_per_million_token": 47025.74
@@ -1162,10 +1129,7 @@
         "rank_p97_5": 60,
         "score_p2_5": 983,
         "score_p97_5": 1046,
-        "trust_range": [
-          13,
-          15
-        ],
+        "trust_range": [13, 15],
         "win_rate": 0.45523121387283233
       },
       "distribution": "open-weights",
@@ -1200,6 +1164,7 @@
       "required_ram": 22,
       "reuse": true,
       "simple_name": "EuroLLM 22B Instruct",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
       "wh_per_million_token": 5732.573333333333
@@ -1217,10 +1182,7 @@
         "rank_p97_5": 41,
         "score_p2_5": 1022,
         "score_p97_5": 1037,
-        "trust_range": [
-          4,
-          2
-        ],
+        "trust_range": [4, 2],
         "win_rate": 0.5830743197509137
       },
       "distribution": "api-only",
@@ -1251,6 +1213,7 @@
       "required_ram": 600,
       "reuse": false,
       "simple_name": "Gemini 1.5 Pro",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
       "wh_per_million_token": 167596.16666666666
@@ -1268,10 +1231,7 @@
         "rank_p97_5": 9,
         "score_p2_5": 1093,
         "score_p97_5": 1107,
-        "trust_range": [
-          3,
-          1
-        ],
+        "trust_range": [3, 1],
         "win_rate": 0.6317699216950714
       },
       "distribution": "api-only",
@@ -1302,6 +1262,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 2.0 Flash",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
       "wh_per_million_token": 87485.15999999997
@@ -1319,10 +1280,7 @@
         "rank_p97_5": 8,
         "score_p2_5": 1097,
         "score_p97_5": 1115,
-        "trust_range": [
-          1,
-          3
-        ],
+        "trust_range": [1, 3],
         "win_rate": 0.5790065525258931
       },
       "distribution": "api-only",
@@ -1357,6 +1315,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 2.5 Flash",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 87485.15999999997
@@ -1374,10 +1333,7 @@
         "rank_p97_5": 4,
         "score_p2_5": 1110,
         "score_p97_5": 1146,
-        "trust_range": [
-          1,
-          2
-        ],
+        "trust_range": [1, 2],
         "win_rate": 0.5728057553956835
       },
       "distribution": "api-only",
@@ -1412,6 +1368,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 3 Flash",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3-flash/",
       "wh_per_million_token": 87485.15999999997
@@ -1429,10 +1386,7 @@
         "rank_p97_5": 9,
         "score_p2_5": 1090,
         "score_p97_5": 1112,
-        "trust_range": [
-          3,
-          2
-        ],
+        "trust_range": [3, 2],
         "win_rate": 0.554303664921466
       },
       "distribution": "api-only",
@@ -1467,6 +1421,7 @@
       "required_ram": 750,
       "reuse": false,
       "simple_name": "Gemini 3 Pro",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
       "wh_per_million_token": 53761.899999999994
@@ -1494,6 +1449,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 2 27B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1511,10 +1467,7 @@
         "rank_p97_5": 62,
         "score_p2_5": 977,
         "score_p97_5": 1025,
-        "trust_range": [
-          11,
-          11
-        ],
+        "trust_range": [11, 11],
         "win_rate": 0.5826115485564304
       },
       "distribution": "open-weights",
@@ -1545,6 +1498,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 2 27B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1572,6 +1526,7 @@
       "required_ram": 2,
       "reuse": true,
       "simple_name": "Gemma 2 2B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-2b-it",
       "wh_per_million_token": 2925.84
@@ -1589,10 +1544,7 @@
         "rank_p97_5": 76,
         "score_p2_5": 943,
         "score_p97_5": 960,
-        "trust_range": [
-          4,
-          2
-        ],
+        "trust_range": [4, 2],
         "win_rate": 0.5068660801564027
       },
       "distribution": "open-weights",
@@ -1623,6 +1575,7 @@
       "required_ram": 9,
       "reuse": true,
       "simple_name": "Gemma 2 9B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-9b-it",
       "wh_per_million_token": 3908.1966666666667
@@ -1640,10 +1593,7 @@
         "rank_p97_5": 27,
         "score_p2_5": 1057,
         "score_p97_5": 1070,
-        "trust_range": [
-          4,
-          5
-        ],
+        "trust_range": [4, 5],
         "win_rate": 0.5551329622758194
       },
       "distribution": "open-weights",
@@ -1678,6 +1628,7 @@
       "required_ram": 12,
       "reuse": true,
       "simple_name": "Gemma 3 12B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-12b-it",
       "wh_per_million_token": 4329.206666666666
@@ -1695,10 +1646,7 @@
         "rank_p97_5": 15,
         "score_p2_5": 1076,
         "score_p97_5": 1089,
-        "trust_range": [
-          1,
-          4
-        ],
+        "trust_range": [1, 4],
         "win_rate": 0.5698972889048131
       },
       "distribution": "open-weights",
@@ -1733,6 +1681,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 3 27B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1750,10 +1699,7 @@
         "rank_p97_5": 39,
         "score_p2_5": 1029,
         "score_p97_5": 1042,
-        "trust_range": [
-          2,
-          3
-        ],
+        "trust_range": [2, 3],
         "win_rate": 0.512464511902162
       },
       "distribution": "open-weights",
@@ -1788,6 +1734,7 @@
       "required_ram": 4,
       "reuse": true,
       "simple_name": "Gemma 3 4B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-4b-it",
       "wh_per_million_token": 3206.5133333333333
@@ -1805,10 +1752,7 @@
         "rank_p97_5": 41,
         "score_p2_5": 1023,
         "score_p97_5": 1041,
-        "trust_range": [
-          3,
-          4
-        ],
+        "trust_range": [3, 4],
         "win_rate": 0.4958663089649006
       },
       "distribution": "open-weights",
@@ -1843,6 +1787,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Gemma 3n 4B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3206.5133333333333
@@ -1860,10 +1805,7 @@
         "rank_p97_5": 25,
         "score_p2_5": 1060,
         "score_p97_5": 1084,
-        "trust_range": [
-          7,
-          7
-        ],
+        "trust_range": [7, 7],
         "win_rate": 0.5414882866329811
       },
       "distribution": "open-weights",
@@ -1898,6 +1840,7 @@
       "required_ram": 355,
       "reuse": true,
       "simple_name": "GLM 4.5",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 21407.82
@@ -1915,10 +1858,7 @@
         "rank_p97_5": 37,
         "score_p2_5": 1032,
         "score_p97_5": 1054,
-        "trust_range": [
-          6,
-          3
-        ],
+        "trust_range": [6, 3],
         "win_rate": 0.5038496756962991
       },
       "distribution": "open-weights",
@@ -1953,6 +1893,7 @@
       "required_ram": 357,
       "reuse": true,
       "simple_name": "GLM 4.6",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 21407.82
@@ -1970,10 +1911,7 @@
         "rank_p97_5": 45,
         "score_p2_5": 1013,
         "score_p97_5": 1058,
-        "trust_range": [
-          8,
-          10
-        ],
+        "trust_range": [8, 10],
         "win_rate": 0.47074468085106386
       },
       "distribution": "open-weights",
@@ -2008,6 +1946,7 @@
       "required_ram": 357,
       "reuse": true,
       "simple_name": "GLM 4.7",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://z.ai/blog/glm-4.7",
       "wh_per_million_token": 21407.82
@@ -2035,6 +1974,7 @@
       "required_ram": 55,
       "reuse": false,
       "simple_name": "GPT-3.5",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
       "wh_per_million_token": 10363.683333333332
@@ -2052,10 +1992,7 @@
         "rank_p97_5": 40,
         "score_p2_5": 1024,
         "score_p97_5": 1038,
-        "trust_range": [
-          3,
-          2
-        ],
+        "trust_range": [3, 2],
         "win_rate": 0.5152977269557941
       },
       "distribution": "api-only",
@@ -2090,6 +2027,7 @@
       "required_ram": 75,
       "reuse": false,
       "simple_name": "GPT-4.1 Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
       "wh_per_million_token": 13170.416666666666
@@ -2107,10 +2045,7 @@
         "rank_p97_5": 67,
         "score_p2_5": 969,
         "score_p97_5": 985,
-        "trust_range": [
-          3,
-          6
-        ],
+        "trust_range": [3, 6],
         "win_rate": 0.46743047052649994
       },
       "distribution": "api-only",
@@ -2145,6 +2080,7 @@
       "required_ram": 23,
       "reuse": false,
       "simple_name": "GPT 4.1 Nano",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://openai.com/index/gpt-4-1/",
       "wh_per_million_token": 5872.909999999999
@@ -2162,10 +2098,7 @@
         "rank_p97_5": 73,
         "score_p2_5": 953,
         "score_p97_5": 970,
-        "trust_range": [
-          4,
-          3
-        ],
+        "trust_range": [4, 3],
         "win_rate": 0.48863297150610585
       },
       "distribution": "api-only",
@@ -2196,6 +2129,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "GPT-4o",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4o",
       "wh_per_million_token": 87485.15999999997
@@ -2213,10 +2147,7 @@
         "rank_p97_5": 65,
         "score_p2_5": 973,
         "score_p97_5": 988,
-        "trust_range": [
-          4,
-          5
-        ],
+        "trust_range": [4, 5],
         "win_rate": 0.49947067238912735
       },
       "distribution": "api-only",
@@ -2247,6 +2178,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "GPT-4o mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -2264,10 +2196,7 @@
         "rank_p97_5": 55,
         "score_p2_5": 990,
         "score_p97_5": 1008,
-        "trust_range": [
-          4,
-          3
-        ],
+        "trust_range": [4, 3],
         "win_rate": 0.45334721499219155
       },
       "distribution": "api-only",
@@ -2302,6 +2231,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2319,10 +2249,7 @@
         "rank_p97_5": 50,
         "score_p2_5": 1003,
         "score_p97_5": 1022,
-        "trust_range": [
-          6,
-          3
-        ],
+        "trust_range": [6, 3],
         "win_rate": 0.47117060111949377
       },
       "distribution": "api-only",
@@ -2357,6 +2284,7 @@
       "required_ram": 47,
       "reuse": false,
       "simple_name": "GPT 5 Mini",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-mini",
       "wh_per_million_token": 9240.99
@@ -2374,10 +2302,7 @@
         "rank_p97_5": 78,
         "score_p2_5": 935,
         "score_p97_5": 956,
-        "trust_range": [
-          4,
-          2
-        ],
+        "trust_range": [4, 2],
         "win_rate": 0.3978708133971292
       },
       "distribution": "api-only",
@@ -2412,6 +2337,7 @@
       "required_ram": 11,
       "reuse": false,
       "simple_name": "GPT 5 Nano",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-nano",
       "wh_per_million_token": 4188.87
@@ -2429,10 +2355,7 @@
         "rank_p97_5": 23,
         "score_p2_5": 1063,
         "score_p97_5": 1084,
-        "trust_range": [
-          5,
-          7
-        ],
+        "trust_range": [5, 7],
         "win_rate": 0.5281573638197714
       },
       "distribution": "api-only",
@@ -2467,6 +2390,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2484,10 +2408,7 @@
         "rank_p97_5": 22,
         "score_p2_5": 1065,
         "score_p97_5": 1087,
-        "trust_range": [
-          4,
-          8
-        ],
+        "trust_range": [4, 8],
         "win_rate": 0.529467680608365
       },
       "distribution": "api-only",
@@ -2522,6 +2443,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2539,10 +2461,7 @@
         "rank_p97_5": 29,
         "score_p2_5": 1054,
         "score_p97_5": 1078,
-        "trust_range": [
-          7,
-          8
-        ],
+        "trust_range": [7, 8],
         "win_rate": 0.5258607714016933
       },
       "distribution": "open-weights",
@@ -2577,6 +2496,7 @@
       "required_ram": 117,
       "reuse": true,
       "simple_name": "GPT OSS-120B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3346.8500000000004
@@ -2594,10 +2514,7 @@
         "rank_p97_5": 50,
         "score_p2_5": 1002,
         "score_p97_5": 1024,
-        "trust_range": [
-          6,
-          4
-        ],
+        "trust_range": [6, 4],
         "win_rate": 0.4535828662930344
       },
       "distribution": "open-weights",
@@ -2632,6 +2549,7 @@
       "required_ram": 21,
       "reuse": true,
       "simple_name": "GPT OSS-20B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3066.1766666666667
@@ -2649,10 +2567,7 @@
         "rank_p97_5": 32,
         "score_p2_5": 1046,
         "score_p97_5": 1076,
-        "trust_range": [
-          10,
-          7
-        ],
+        "trust_range": [10, 7],
         "win_rate": 0.5305338541666667
       },
       "distribution": "api-only",
@@ -2687,6 +2602,7 @@
       "required_ram": 180,
       "reuse": false,
       "simple_name": "Grok 3 Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-3",
       "wh_per_million_token": 11465.146666666666
@@ -2704,10 +2620,7 @@
         "rank_p97_5": 30,
         "score_p2_5": 1052,
         "score_p97_5": 1074,
-        "trust_range": [
-          8,
-          6
-        ],
+        "trust_range": [8, 6],
         "win_rate": 0.5293971766501335
       },
       "distribution": "api-only",
@@ -2742,6 +2655,7 @@
       "required_ram": 1700,
       "reuse": false,
       "simple_name": "Grok 4 Fast",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-4-fast",
       "wh_per_million_token": 255136.7433333333
@@ -2759,10 +2673,7 @@
         "rank_p97_5": 27,
         "score_p2_5": 1057,
         "score_p97_5": 1081,
-        "trust_range": [
-          6,
-          8
-        ],
+        "trust_range": [6, 8],
         "win_rate": 0.532081350064907
       },
       "distribution": "api-only",
@@ -2797,6 +2708,7 @@
       "required_ram": 1700,
       "reuse": false,
       "simple_name": "Grok 4.1 Fast",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://x.ai/news/grok-4-1-fast",
       "wh_per_million_token": 255136.7433333333
@@ -2814,10 +2726,7 @@
         "rank_p97_5": 80,
         "score_p2_5": 932,
         "score_p97_5": 947,
-        "trust_range": [
-          4,
-          2
-        ],
+        "trust_range": [4, 2],
         "win_rate": 0.46634743875278395
       },
       "distribution": "open-weights",
@@ -2848,6 +2757,7 @@
       "required_ram": 405,
       "reuse": true,
       "simple_name": "Hermes 3 405B",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
       "wh_per_million_token": 237926.06666666665
@@ -2865,10 +2775,7 @@
         "rank_p97_5": 82,
         "score_p2_5": 923,
         "score_p97_5": 946,
-        "trust_range": [
-          4,
-          3
-        ],
+        "trust_range": [4, 3],
         "win_rate": 0.36948582729070534
       },
       "distribution": "open-weights",
@@ -2903,6 +2810,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Hermes 4 70B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 12468.733333333334
@@ -2920,10 +2828,7 @@
         "rank_p97_5": 82,
         "score_p2_5": 924,
         "score_p97_5": 1014,
-        "trust_range": [
-          20,
-          18
-        ],
+        "trust_range": [20, 18],
         "win_rate": 0.5449418604651163
       },
       "distribution": "open-weights",
@@ -2954,6 +2859,7 @@
       "required_ram": 400,
       "reuse": true,
       "simple_name": "Jamba 1.5 Large",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
       "wh_per_million_token": 47510.43999999999
@@ -2971,10 +2877,7 @@
         "rank_p97_5": 33,
         "score_p2_5": 1045,
         "score_p97_5": 1073,
-        "trust_range": [
-          9,
-          7
-        ],
+        "trust_range": [9, 7],
         "win_rate": 0.5203639846743295
       },
       "distribution": "open-weights",
@@ -3009,6 +2912,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
       "wh_per_million_token": 57087.51999999998
@@ -3026,10 +2930,7 @@
         "rank_p97_5": 30,
         "score_p2_5": 1051,
         "score_p97_5": 1084,
-        "trust_range": [
-          9,
-          10
-        ],
+        "trust_range": [9, 10],
         "win_rate": 0.5386802480070859
       },
       "distribution": "open-weights",
@@ -3064,6 +2965,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2 Thinking",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
       "wh_per_million_token": 57087.51999999998
@@ -3112,10 +3014,7 @@
         "rank_p97_5": 86,
         "score_p2_5": 869,
         "score_p97_5": 891,
-        "trust_range": [
-          1,
-          1
-        ],
+        "trust_range": [1, 1],
         "win_rate": 0.416296813862493
       },
       "distribution": "api-only",
@@ -3146,6 +3045,7 @@
       "required_ram": 40,
       "reuse": false,
       "simple_name": "LFM 40B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.liquid.ai/liquid-foundation-models",
       "wh_per_million_token": 4329.206666666666
@@ -3163,10 +3063,7 @@
         "rank_p97_5": 59,
         "score_p2_5": 984,
         "score_p97_5": 1008,
-        "trust_range": [
-          5,
-          6
-        ],
+        "trust_range": [5, 6],
         "win_rate": 0.46863615023474176
       },
       "distribution": "open-weights",
@@ -3201,6 +3098,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "LFM 2 8B A1B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
       "wh_per_million_token": 2785.5033333333336
@@ -3218,10 +3116,7 @@
         "rank_p97_5": 75,
         "score_p2_5": 949,
         "score_p97_5": 962,
-        "trust_range": [
-          4,
-          2
-        ],
+        "trust_range": [4, 2],
         "win_rate": 0.4950747166783672
       },
       "distribution": "open-weights",
@@ -3256,6 +3151,7 @@
       "required_ram": 405,
       "reuse": true,
       "simple_name": "Llama 3.1 405B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
       "wh_per_million_token": 237926.06666666665
@@ -3273,10 +3169,7 @@
         "rank_p97_5": 69,
         "score_p2_5": 962,
         "score_p97_5": 979,
-        "trust_range": [
-          4,
-          3
-        ],
+        "trust_range": [4, 3],
         "win_rate": 0.530445996775927
       },
       "distribution": "open-weights",
@@ -3307,6 +3200,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Llama 3.1 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3324,10 +3218,7 @@
         "rank_p97_5": 82,
         "score_p2_5": 926,
         "score_p97_5": 939,
-        "trust_range": [
-          3,
-          2
-        ],
+        "trust_range": [3, 2],
         "win_rate": 0.4424234009957871
       },
       "distribution": "open-weights",
@@ -3362,6 +3253,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Llama 3.1 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
       "wh_per_million_token": 3767.8599999999997
@@ -3379,10 +3271,7 @@
         "rank_p97_5": 36,
         "score_p2_5": 1036,
         "score_p97_5": 1051,
-        "trust_range": [
-          3,
-          3
-        ],
+        "trust_range": [3, 3],
         "win_rate": 0.5452863107664778
       },
       "distribution": "open-weights",
@@ -3417,6 +3306,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Nemotron Llama 3.1 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3434,10 +3324,7 @@
         "rank_p97_5": 62,
         "score_p2_5": 979,
         "score_p97_5": 992,
-        "trust_range": [
-          3,
-          5
-        ],
+        "trust_range": [3, 5],
         "win_rate": 0.4733588496948381
       },
       "distribution": "open-weights",
@@ -3472,6 +3359,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Llama 3.3 70B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3489,10 +3377,7 @@
         "rank_p97_5": 51,
         "score_p2_5": 1003,
         "score_p97_5": 1017,
-        "trust_range": [
-          5,
-          3
-        ],
+        "trust_range": [5, 3],
         "win_rate": 0.48567613991255465
       },
       "distribution": "open-weights",
@@ -3527,6 +3412,7 @@
       "required_ram": 109,
       "reuse": true,
       "simple_name": "Llama 4 Scout",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
       "wh_per_million_token": 5030.889999999999
@@ -3544,10 +3430,7 @@
         "rank_p97_5": 49,
         "score_p2_5": 1005,
         "score_p97_5": 1024,
-        "trust_range": [
-          3,
-          6
-        ],
+        "trust_range": [3, 6],
         "win_rate": 0.48111565739225315
       },
       "distribution": "open-weights",
@@ -3582,6 +3465,7 @@
       "required_ram": 400,
       "reuse": true,
       "simple_name": "Llama 4 Maverick",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 15092.669999999998
@@ -3599,10 +3483,7 @@
         "rank_p97_5": 14,
         "score_p2_5": 1077,
         "score_p97_5": 1102,
-        "trust_range": [
-          3,
-          4
-        ],
+        "trust_range": [3, 4],
         "win_rate": 0.5809968282736747
       },
       "distribution": "api-only",
@@ -3637,6 +3518,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Magistral Medium",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 19906.576666666668
@@ -3654,10 +3536,7 @@
         "rank_p97_5": 35,
         "score_p2_5": 1038,
         "score_p97_5": 1059,
-        "trust_range": [
-          5,
-          4
-        ],
+        "trust_range": [5, 4],
         "win_rate": 0.52184361093452
       },
       "distribution": "open-weights",
@@ -3692,6 +3571,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Magistral Small",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 6013.246666666666
@@ -3719,6 +3599,7 @@
       "required_ram": 70,
       "reuse": false,
       "simple_name": "Llama 3 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 12468.733333333334
@@ -3746,6 +3627,7 @@
       "required_ram": 8,
       "reuse": false,
       "simple_name": "Llama 3 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -3763,10 +3645,7 @@
         "rank_p97_5": 70,
         "score_p2_5": 962,
         "score_p97_5": 989,
-        "trust_range": [
-          6,
-          8
-        ],
+        "trust_range": [6, 8],
         "win_rate": 0.432394578313253
       },
       "distribution": "open-weights",
@@ -3801,6 +3680,7 @@
       "required_ram": 230,
       "reuse": true,
       "simple_name": "MiniMax M2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.minimax.io/news/minimax-m2",
       "wh_per_million_token": 8097.066666666667
@@ -3818,10 +3698,7 @@
         "rank_p97_5": 73,
         "score_p2_5": 956,
         "score_p97_5": 968,
-        "trust_range": [
-          3,
-          4
-        ],
+        "trust_range": [3, 4],
         "win_rate": 0.47576819407008086
       },
       "distribution": "open-weights",
@@ -3852,6 +3729,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Ministral",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
       "wh_per_million_token": 3767.8599999999997
@@ -3869,10 +3747,7 @@
         "rank_p97_5": 47,
         "score_p2_5": 1011,
         "score_p97_5": 1024,
-        "trust_range": [
-          2,
-          5
-        ],
+        "trust_range": [2, 5],
         "win_rate": 0.527441386340469
       },
       "distribution": "open-weights",
@@ -3903,6 +3778,7 @@
       "required_ram": 123,
       "reuse": true,
       "simple_name": "Mistral Large 2",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
       "wh_per_million_token": 19906.576666666668
@@ -3920,10 +3796,7 @@
         "rank_p97_5": 4,
         "score_p2_5": 1109,
         "score_p97_5": 1132,
-        "trust_range": [
-          2,
-          1
-        ],
+        "trust_range": [2, 1],
         "win_rate": 0.5632243848696291
       },
       "distribution": "open-weights",
@@ -3958,6 +3831,7 @@
       "required_ram": 675,
       "reuse": true,
       "simple_name": "Mistral 3 Large",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-3",
       "wh_per_million_token": 50393.81999999999
@@ -3975,10 +3849,7 @@
         "rank_p97_5": 4,
         "score_p2_5": 1110,
         "score_p97_5": 1126,
-        "trust_range": [
-          2,
-          0
-        ],
+        "trust_range": [2, 0],
         "win_rate": 0.5871405255426799
       },
       "distribution": "api-only",
@@ -4013,6 +3884,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Mistral Medium 3.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-medium-3.1",
       "wh_per_million_token": 19906.576666666668
@@ -4030,10 +3902,7 @@
         "rank_p97_5": 89,
         "score_p2_5": 842,
         "score_p97_5": 858,
-        "trust_range": [
-          1,
-          1
-        ],
+        "trust_range": [1, 1],
         "win_rate": 0.37482482802751566
       },
       "distribution": "open-weights",
@@ -4064,6 +3933,7 @@
       "required_ram": 12,
       "reuse": true,
       "simple_name": "Mistral Nemo",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
       "wh_per_million_token": 4329.206666666666
@@ -4081,10 +3951,7 @@
         "rank_p97_5": 49,
         "score_p2_5": 1006,
         "score_p97_5": 1022,
-        "trust_range": [
-          3,
-          5
-        ],
+        "trust_range": [3, 5],
         "win_rate": 0.48257855260490573
       },
       "distribution": "api-only",
@@ -4119,6 +3986,7 @@
       "required_ram": 24,
       "reuse": false,
       "simple_name": "Mistral Saba",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://mistral.ai/news/mistral-saba",
       "wh_per_million_token": 6013.246666666666
@@ -4136,10 +4004,7 @@
         "rank_p97_5": 64,
         "score_p2_5": 975,
         "score_p97_5": 995,
-        "trust_range": [
-          5,
-          6
-        ],
+        "trust_range": [5, 6],
         "win_rate": 0.4952350813743219
       },
       "distribution": "open-weights",
@@ -4170,6 +4035,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
       "wh_per_million_token": 6013.246666666666
@@ -4187,10 +4053,7 @@
         "rank_p97_5": 30,
         "score_p2_5": 1051,
         "score_p97_5": 1066,
-        "trust_range": [
-          6,
-          3
-        ],
+        "trust_range": [6, 3],
         "win_rate": 0.5255173752669384
       },
       "distribution": "open-weights",
@@ -4225,6 +4088,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 6013.246666666666
@@ -4242,10 +4106,7 @@
         "rank_p97_5": 53,
         "score_p2_5": 996,
         "score_p97_5": 1012,
-        "trust_range": [
-          4,
-          4
-        ],
+        "trust_range": [4, 4],
         "win_rate": 0.4945107304587517
       },
       "distribution": "open-weights",
@@ -4276,6 +4137,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.1 24B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
       "wh_per_million_token": 6013.246666666666
@@ -4303,6 +4165,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.2 24B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506",
       "wh_per_million_token": 6013.246666666666
@@ -4320,10 +4183,7 @@
         "rank_p97_5": 90,
         "score_p2_5": 830,
         "score_p97_5": 848,
-        "trust_range": [
-          1,
-          1
-        ],
+        "trust_range": [1, 1],
         "win_rate": 0.36710357470210814
       },
       "distribution": "open-weights",
@@ -4354,6 +4214,7 @@
       "required_ram": 176,
       "reuse": true,
       "simple_name": "Mixtral 8x22B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
       "wh_per_million_token": 17639.96
@@ -4371,10 +4232,7 @@
         "rank_p97_5": 86,
         "score_p2_5": 871,
         "score_p97_5": 896,
-        "trust_range": [
-          0,
-          2
-        ],
+        "trust_range": [0, 2],
         "win_rate": 0.43488671874999996
       },
       "distribution": "open-weights",
@@ -4405,6 +4263,7 @@
       "required_ram": 56,
       "reuse": true,
       "simple_name": "Mixtral-8x7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
       "wh_per_million_token": 4609.88
@@ -4422,10 +4281,7 @@
         "rank_p97_5": 68,
         "score_p2_5": 966,
         "score_p97_5": 995,
-        "trust_range": [
-          6,
-          9
-        ],
+        "trust_range": [6, 9],
         "win_rate": 0.51142063001853
       },
       "distribution": "api-only",
@@ -4456,6 +4312,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "o3-mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o3-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -4473,10 +4330,7 @@
         "rank_p97_5": 55,
         "score_p2_5": 991,
         "score_p97_5": 1013,
-        "trust_range": [
-          4,
-          5
-        ],
+        "trust_range": [4, 5],
         "win_rate": 0.4738494167550371
       },
       "distribution": "api-only",
@@ -4511,6 +4365,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "o4 mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o4-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -4538,6 +4393,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "OLMo-2 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -4555,10 +4411,7 @@
         "rank_p97_5": 87,
         "score_p2_5": 854,
         "score_p97_5": 893,
-        "trust_range": [
-          2,
-          1
-        ],
+        "trust_range": [2, 1],
         "win_rate": 0.3467907444668008
       },
       "distribution": "fully-open-source",
@@ -4593,6 +4446,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Olmo 3 32B Think",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://allenai.org/blog/olmo2-32b",
       "wh_per_million_token": 7135.939999999998
@@ -4620,6 +4474,7 @@
       "required_ram": 3.8,
       "reuse": true,
       "simple_name": "Phi-3-Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
       "wh_per_million_token": 3066.1766666666667
@@ -4647,6 +4502,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Phi-3-small-8k-Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3627.5233333333335
@@ -4664,10 +4520,7 @@
         "rank_p97_5": 88,
         "score_p2_5": 846,
         "score_p97_5": 873,
-        "trust_range": [
-          1,
-          1
-        ],
+        "trust_range": [1, 1],
         "win_rate": 0.4021104536489152
       },
       "distribution": "open-weights",
@@ -4698,6 +4551,7 @@
       "required_ram": 3.8,
       "reuse": true,
       "simple_name": "Phi-3.5-mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
       "wh_per_million_token": 3066.1766666666667
@@ -4715,10 +4569,7 @@
         "rank_p97_5": 71,
         "score_p2_5": 960,
         "score_p97_5": 972,
-        "trust_range": [
-          4,
-          3
-        ],
+        "trust_range": [4, 3],
         "win_rate": 0.46780074245008524
       },
       "distribution": "open-weights",
@@ -4753,6 +4604,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Phi-4",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-4",
       "wh_per_million_token": 4609.88
@@ -4770,10 +4622,7 @@
         "rank_p97_5": 62,
         "score_p2_5": 979,
         "score_p97_5": 998,
-        "trust_range": [
-          3,
-          7
-        ],
+        "trust_range": [3, 7],
         "win_rate": 0.4339146779993462
       },
       "distribution": "open-weights",
@@ -4808,6 +4657,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Qwen 3 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
       "wh_per_million_token": 3767.8599999999997
@@ -4835,6 +4685,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen1.5-32B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 7135.939999999998
@@ -4862,6 +4713,7 @@
       "required_ram": 57,
       "reuse": true,
       "simple_name": "Qwen2-57B-A14B-Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 4609.88
@@ -4889,6 +4741,7 @@
       "required_ram": 72,
       "reuse": true,
       "simple_name": "Qwen2-72b-instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct",
       "wh_per_million_token": 12749.406666666668
@@ -4906,10 +4759,7 @@
         "rank_p97_5": 93,
         "score_p2_5": 627,
         "score_p97_5": 806,
-        "trust_range": [
-          2,
-          0
-        ],
+        "trust_range": [2, 0],
         "win_rate": 0.2525
       },
       "distribution": "open-weights",
@@ -4940,6 +4790,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Qwen2-7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
       "wh_per_million_token": 3627.5233333333335
@@ -4957,10 +4808,7 @@
         "rank_p97_5": 83,
         "score_p2_5": 898,
         "score_p97_5": 1022,
-        "trust_range": [
-          30,
-          12
-        ],
+        "trust_range": [30, 12],
         "win_rate": 0.5557042253521126
       },
       "distribution": "open-weights",
@@ -4991,6 +4839,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen2.5-32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -5008,10 +4857,7 @@
         "rank_p97_5": 83,
         "score_p2_5": 907,
         "score_p97_5": 942,
-        "trust_range": [
-          6,
-          1
-        ],
+        "trust_range": [6, 1],
         "win_rate": 0.49383909668313336
       },
       "distribution": "open-weights",
@@ -5042,6 +4888,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Qwen2.5-7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
       "wh_per_million_token": 3627.5233333333335
@@ -5059,10 +4906,7 @@
         "rank_p97_5": 83,
         "score_p2_5": 918,
         "score_p97_5": 932,
-        "trust_range": [
-          4,
-          0
-        ],
+        "trust_range": [4, 0],
         "win_rate": 0.43789423208658723
       },
       "distribution": "open-weights",
@@ -5093,6 +4937,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen 2.5 Coder 32B",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -5110,10 +4955,7 @@
         "rank_p97_5": 62,
         "score_p2_5": 978,
         "score_p97_5": 998,
-        "trust_range": [
-          4,
-          6
-        ],
+        "trust_range": [4, 6],
         "win_rate": 0.45714640198511164
       },
       "distribution": "open-weights",
@@ -5148,6 +4990,7 @@
       "required_ram": 30,
       "reuse": true,
       "simple_name": "Qwen 3 30B A3B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3066.1766666666667
@@ -5165,10 +5008,7 @@
         "rank_p97_5": 48,
         "score_p2_5": 1008,
         "score_p97_5": 1032,
-        "trust_range": [
-          3,
-          7
-        ],
+        "trust_range": [3, 7],
         "win_rate": 0.5020269016697587
       },
       "distribution": "open-weights",
@@ -5203,6 +5043,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen 3 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-32B",
       "wh_per_million_token": 7135.939999999998
@@ -5220,10 +5061,7 @@
         "rank_p97_5": 36,
         "score_p2_5": 1034,
         "score_p97_5": 1064,
-        "trust_range": [
-          8,
-          6
-        ],
+        "trust_range": [8, 6],
         "win_rate": 0.5229573391178597
       },
       "distribution": "open-weights",
@@ -5258,6 +5096,7 @@
       "required_ram": 480,
       "reuse": true,
       "simple_name": "Qwen3 Coder 480B A35B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
       "wh_per_million_token": 30227.799999999996
@@ -5306,10 +5145,7 @@
         "rank_p97_5": 9,
         "score_p2_5": 1093,
         "score_p97_5": 1112,
-        "trust_range": [
-          2,
-          3
-        ],
+        "trust_range": [2, 3],
         "win_rate": 0.5737045381396846
       },
       "distribution": "api-only",
@@ -5344,6 +5180,7 @@
       "required_ram": 1000,
       "reuse": false,
       "simple_name": "Qwen 3 Max",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
       "wh_per_million_token": 57087.51999999998
@@ -5361,10 +5198,7 @@
         "rank_p97_5": 79,
         "score_p2_5": 932,
         "score_p97_5": 963,
-        "trust_range": [
-          6,
-          4
-        ],
+        "trust_range": [6, 4],
         "win_rate": 0.4485997442455243
       },
       "distribution": "open-weights",
@@ -5399,6 +5233,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "qwq 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/QwQ-32B",
       "wh_per_million_token": 7135.939999999998
@@ -5447,10 +5282,7 @@
         "rank_p97_5": 93,
         "score_p2_5": 664,
         "score_p97_5": 850,
-        "trust_range": [
-          3,
-          2
-        ],
+        "trust_range": [3, 2],
         "win_rate": 0.32599999999999996
       },
       "distribution": "open-weights",
@@ -5481,6 +5313,7 @@
       "required_ram": 9,
       "reuse": true,
       "simple_name": "Yi-1.5 9B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat",
       "wh_per_million_token": 3908.1966666666667
