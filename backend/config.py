@@ -55,8 +55,8 @@ SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
 SELECTION_MODES: tuple[SelectionMode, ...] = get_args(SelectionMode)
 DEFAULT_SELECTION_MODE: SelectionMode = "random"
 
-# Language model custom selection
-CustomModelsSelection = tuple[str] | tuple[str, str] | None
+# Language model custom selection (tuple of 0, 1, or 2 model IDs, or None)
+CustomModelsSelection = tuple[str, ...] | None
 
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
