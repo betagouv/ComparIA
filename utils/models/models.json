@@ -895,6 +895,24 @@
     "name": "Moonshot AI",
     "icon_path": "moonshot",
     "models": [
+        {
+        "id": "kimi-k2.5",
+        "simple_name": "Kimi K2.5",
+        "license": "MIT",
+        "release_date": "01/2026",
+        "arch": "moe",
+        "params": 1000,
+        "active_params": 32,
+        "reasoning": true,
+        "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "moonshotai/kimi-k2.5"
+        },
+        "desc": "- Construit sur la base de Kimi K2 mais en ayant continué le pré-entraînement sur 15 billions de jetons visuels et textuels de plus. L’éditeur du modèle met en avant sa multimodalité et sa capacité argentique, notamment utile pour du code.",
+        "size_desc": "Avec 1 billion de paramètres (dont 32 milliards actifs par jeton), ce modèle figure parmi les modèles de très grande taille. Son architecture de Mélange d'Experts (MoE) permet néanmoins une meilleure efficacité par rapport à certains modèles de taille comparable. De plus, il a été quantifié nativement au niveau INT4. Cette quantification, qui consiste à « arrondir » les poids du modèle à moins de chiffres pour simplifier les calculs, permet de réduire le temps d'inférence. La fenêtre de contexte atteint 256 000 jetons, offrant la capacité de traiter des documents très longs ou des bases de code importantes.",
+        "fyi": "Le modèle a été entraîné avec un mode spécifique appelé « Agent Swarm » (essaim d’agents). Dans ce mode d’orchestration, le problème n’est pas résolu de manière strictement séquentielle, mais découpé en plusieurs sous-tâches exécutées en parallèle par des sous-agents. Le modèle a appris au cours de son entraînement à agir comme un agent principal : il analyse la demande, décide combien de sous-agents lancer, leur assigne des objectifs, puis agrège leurs résultats. Cette capacité a été atteinte grâce à des méthodes d’apprentissage par renforcement multi-agent, où l’orchestrateur était récompensé lorsqu’il choisissait une bonne décomposition du problème et une coordination efficace entre agents, et pénalisé lorsqu’il adoptait un raisonnement trop linéaire ou redondant."
+      },
       {
         "id": "kimi-k2-thinking",
         "simple_name": "Kimi K2 Thinking",
