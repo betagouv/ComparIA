@@ -21,6 +21,8 @@ logger = configure_logger(logging.getLogger("llms:organisations"))
 
 LLMS_RAW_DATA_FILE = Path(__file__).parent / "models.json"
 
+EXCLUDED_LLMS_STATUS = {"missing_data"}
+
 
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
@@ -44,6 +46,23 @@ class RawOrganisation(BaseModel):
             )
 
         return value
+
+    @field_validator("models", mode="before")
+    @classmethod
+    def filter_excluded_llms_status(cls, models: list[Any]) -> list[Any]:
+        filtered_llms: list[Any] = []
+
+        for model in models:
+            # Filter out some models based on attr `status`
+            if model.get("status", None) in EXCLUDED_LLMS_STATUS:
+                logger.warning(
+                    f"LLM '{model["simple_name"]}' is excluded (reason={model["status"]})"
+                )
+                continue
+
+            filtered_llms.append(model)
+
+        return filtered_llms
 
 
 # Model used to generated 'utils/models/generated-models.json'

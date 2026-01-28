@@ -105,18 +105,6 @@ def main() -> None:
         logger.error(str(err))
         sys.exit(1)
 
-    # Filter out some models based on attr `status`
-    for orga in raw_orgas:
-        filtered_models = []
-        for model in orga["models"]:
-            if model.get("status", None) == "missing_data":
-                logger.warning(
-                    f"Model '{model["simple_name"]}' is deactivated (reason={model["status"]})"
-                )
-            else:
-                filtered_models.append(model)
-        orga["models"] = filtered_models
-
     context = {
         "licenses": {l["license"]: l for l in dumped_licenses},
         "archs": {a.pop("id"): a for a in dumped_archs},
