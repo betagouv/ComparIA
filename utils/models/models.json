@@ -354,6 +354,30 @@
     ]
   },
   {
+    "name": "Arcee",
+    "icon_path": "arcee",
+    "models": [
+      {
+        "new": true,
+        "id": "trinity-large-preview",
+        "simple_name": "Trinity Large",
+        "license": "Apache 2.0",
+        "release_date": "01/2026",
+        "arch": "moe",
+        "params": 398,
+        "active_params": 13,
+        "url": "https://huggingface.co/arcee-ai/Trinity-Large-Preview",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "arcee-ai/trinity-large-preview:free"
+        },
+        "desc": "Modèle semi-ouvert américain créé par Arcee AI, une startup de 30 personnes.",
+        "size_desc": "Avec 398 milliards de paramètres, Trinity Large est un modèle de très grande taille. Néanmoins, grâce à son architecture de mélange d'experts (MoE, Mixture of Experts) hautement optimisée, il n'active que 13 milliards de paramètres par jeton généré, ce qui réduit significativement l'empreinte énergétique et les coûts d'inférence comparé à un modèle dense équivalent. Sa fenêtre de contexte atteint 512 000 jetons, ce qui le rend particulièrement adapté à l'analyse de très longs documents ou de bases de code massives.",
+        "fyi": "Trinity Large a été conçu et entraîné entièrement aux États-Unis par Arcee AI, une startup de 30 personnes. Il a été entraîné sur 17 billions de jetons.\n\nL'entraînement complet s'est déroulé en 33 jours sur 2 048 GPUs Nvidia B300, pour un coût total d'environ 20 millions de dollars. L'architecture intègre des avancées comme l'attention \"gated\" et Muon."
+      }
+    ]
+  },
+  {
     "name": "xAI",
     "icon_path": "xai",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
@@ -896,6 +920,7 @@
     "icon_path": "moonshot",
     "models": [
         {
+        "new": true,
         "id": "kimi-k2.5",
         "simple_name": "Kimi K2.5",
         "license": "MIT",
