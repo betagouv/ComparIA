@@ -35,6 +35,12 @@ dependencies = [
 where = ["."]
 include = ["languia*", "utils*"]
 
+[project.optional-dependencies]
+ranking = [
+    "arena-rank>=0.1.1",
+    "datasets>=2.0.0",
+]
+
 [dependency-groups]
 dev = [
     "black>=25.11.0",

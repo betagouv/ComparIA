@@ -1,7 +1,6 @@
 import logging
 import markdown
 import os
-import requests
 import sys
 from pathlib import Path
 from pydantic import ValidationError
@@ -30,7 +29,6 @@ LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 ARCHS_PATH = CURRENT_FOLDER / "archs.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
-MODELS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
 I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
@@ -172,12 +170,6 @@ def fetch_distinct_model_ids(engine, models_data):
 
 
 def main() -> None:
-    # Fetch the latest dataset results from ranking pipelinerepo
-    new_extra_data = fetch_ranking_results(MODELS_EXTRA_DATA_URL)
-
-    if new_extra_data.get("models") and len(new_extra_data.get("models")) > 0:
-        write_json(MODELS_EXTRA_DATA_PATH, new_extra_data)
-
     raw_licenses = read_json(LICENSES_PATH)
     raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
@@ -368,19 +360,6 @@ export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in 
     )
 
     log.info("Generation is successfull!")
-
-
-def fetch_ranking_results(url) -> dict:
-    """Fetch the latest dataset ranking results from GitHub Actions pipeline."""
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        log.error(f"Failed to fetch ranking results from repo: {e}")
-        # Return empty data structure if fetch fails
-        return {"models": [], "timestamp": None}
 
 
 if __name__ == "__main__":
