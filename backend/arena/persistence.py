@@ -526,15 +526,12 @@ class ReactionRecord(BaseModel):
     # cohorts: str
 
 
-def delete_reaction(
-    conv: Conversation,
-    msg_index: int,  # FIXME normalize msg_index with `record_reaction`
-) -> dict:
+def delete_reaction(conv: Conversation, msg_index: int) -> dict:
     """
     Delete a single message's reaction when the user removes feedback (like == None).
 
     Args:
-        msg_index: explicit assistant index of message (counting system message) FIXME
+        msg_index: explicit assistant index of message (counting system message)
 
      Returns:
         dict: delete result
@@ -562,7 +559,7 @@ def record_reaction(
     Args:
         conversations: Conversations
         reaction: ReactionData with index not counting system message
-        msg_index: explicit assistant index of message (counting system message) FIXME
+        msg_index: explicit assistant index of message (counting system message)
         request:  FastAPI Request for IP and cookies
 
     Returns:
