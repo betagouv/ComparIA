@@ -692,9 +692,9 @@ class ConversationsRecord(BaseModel):
     ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
     conv_turns: int
     conversation_pair_id: str
-    model_pair_name: Annotated[
-        list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
+    model_pair_name: list[
+        str
+    ]  # FIXME, not sure what serialization is needed, in previous code it was raw array but in db shema it says 'TEXT', and in others 'JSONB'. Replace to string:string ?
     opening_msg: str
     selected_category: str | None = None  # FIXME legacy autofill with None for now
     is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
