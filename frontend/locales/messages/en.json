@@ -950,7 +950,7 @@
                 "size_desc": "<p> With 123 billion parameters, this model is considered large. It requires a server equipped with at least one powerful graphics card, which implies a significant operating cost. It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
             "Mistral Medium 3.1": {
-                "desc": "<p> A mid-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It became particularly attractive after an update in August 2025 with significant improvements in overall performance, an \"improved\" tone, and better ability to search for information on the Internet. </p>",
+                "desc": "<p> A medium-sized, multilingual, multimodal, and inexpensive model compared to other models offering similar performance. It became particularly attractive after an update in August 2025 with significant improvements to overall performance, an \"enhanced\" tone, and better internet search capabilities. </p>",
                 "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
                 "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
@@ -1112,7 +1112,7 @@
         }
     },
     "header": {
-        "banner": "Claude 4, GLM 4.5, GPT OSS and other new models join the arena...to be tested!",
+        "banner": "New models just joined the arena!",
         "chatbot": {
             "newDiscussion": "New chat",
             "step": "Step",
