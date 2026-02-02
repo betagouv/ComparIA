@@ -1,4 +1,5 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
+import { sentrySvelteKit } from '@sentry/sveltekit'
 import { sveltekit } from '@sveltejs/kit/vite'
 import { svelteTesting } from '@testing-library/svelte/vite'
 import UnoCSS from 'unocss/vite'
@@ -6,6 +7,12 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
+    sentrySvelteKit({
+      sourceMapsUploadOptions: {
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT
+      }
+    }),
     UnoCSS(),
     sveltekit(),
     paraglideVitePlugin({
