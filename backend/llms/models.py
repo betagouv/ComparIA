@@ -136,6 +136,14 @@ class PreferencesData(BaseModel):
 
 
 class LLMDataBase(BaseModel):
+    """
+    Individual LLM base model definition (before enrichment).
+
+    See `utils/models/llms.py`.
+
+    !Warning: Make sure to reflect changes to `LLMDataRawBase`
+    """
+
     new: bool
     status: Literal["archived", "missing_data", "disabled", "enabled"]
     id: str
@@ -155,6 +163,14 @@ class LLMDataBase(BaseModel):
 
 
 class LLMDataEnhanced(BaseModel):
+    """
+    Individual LLM enhanced model definition (after enrichment from Organisation).
+
+    See `utils/models/llms.py`.
+
+    !Warning: Make sure to reflect changes to `LLMDataRaw`
+    """
+
     # Merged from License
     distribution: Distribution
     reuse: bool
@@ -169,10 +185,11 @@ class LLMDataEnhanced(BaseModel):
 
 class LLMData(LLMDataBase, LLMDataEnhanced):
     """
-    Final LLM definition.
+    Final individual LLM model definition.
 
     Populated with 'utils/models/generated-models.json' data.
     It is immutable and no default values are defined so it expects complete data.
+    See `utils/models/llms.py`.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
