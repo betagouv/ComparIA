@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationError
 
 from backend.llms.models import Distribution
 from utils.logger import configure_logger, log_pydantic_parsed_errors
@@ -13,33 +13,43 @@ logger = configure_logger(logging.getLogger("llms:licenses"))
 LICENSES_FILE = Path(__file__).parent / "licenses.json"
 
 
-# License definitions for models
+descs = {
+    "license": "Human-readable License name (e.g. 'Apache 2.0' or 'MIT')",
+    "license_desc": "Description of the license",
+    "distribution": "How the LLM is distributed",
+    "reuse": "Whether the LLM can be reused/redistributed",
+    "commercial_use": "Whether commercial use is permitted (None = unknown)",
+    "reuse_specificities": "Additional reuse restrictions/notes",
+    "commercial_use_specificities": "Additional commercial use restrictions/notes",
+}
+
+
+# License definitions for LLMs
 class License(BaseModel):
     """
-    License metadata for a model.
+    License metadata for a LLM.
 
     Defines licensing terms, distribution restrictions, and permitted uses.
-    Used to validate 'utils/models/licenses.json'.
-
-    Attributes:
-        license: License identifier (e.g., "apache-2.0", "mit", "proprietary")
-        license_desc: Human-readable description of the license
-        distribution: How model is distributed (api-only, open-weights, fully-open-source)
-        reuse: Whether model can be reused/redistributed
-        commercial_use: Whether commercial use is permitted (None = unknown)
-        reuse_specificities: Additional reuse restrictions/notes
-        commercial_use_specificities: Additional commercial use restrictions/notes
+    Used to validate `utils/models/licenses.json`.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    license: str
-    license_desc: Annotated[str, MarkdownSerializer]
-    distribution: Distribution
-    reuse: bool
-    commercial_use: bool | None = None
-    reuse_specificities: str | None = ""
-    commercial_use_specificities: str | None = ""
+    license: Annotated[str, Field(description=descs["license"])]
+    license_desc: Annotated[
+        str, MarkdownSerializer, Field(description=descs["license_desc"])
+    ]
+    distribution: Annotated[Distribution, Field(description=descs["distribution"])]
+    reuse: Annotated[bool, Field(description=descs["reuse"])]
+    commercial_use: Annotated[
+        bool | None, Field(description=descs["commercial_use"])
+    ] = None
+    reuse_specificities: Annotated[
+        str | None, Field(description=descs["reuse_specificities"])
+    ] = ""
+    commercial_use_specificities: Annotated[
+        str | None, Field(description=descs["commercial_use_specificities"])
+    ] = ""
 
 
 Licenses = RootModel[list[License]]
