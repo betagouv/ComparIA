@@ -2,21 +2,10 @@ import { env } from '$env/dynamic/private'
 import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
-import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit'
-import { sequence } from '@sveltejs/kit/hooks'
 import type { Handle } from '@sveltejs/kit'
-import * as Sentry from '@sentry/sveltekit'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
-const SENTRY_FRONT_DSN = env.SENTRY_FRONT_DSN || ''
-
-if (SENTRY_FRONT_DSN) {
-  Sentry.init({
-    dsn: SENTRY_FRONT_DSN,
-    tracesSampleRate: 1.0
-  })
-}
 
 defineCustomServerStrategy('custom-url', {
   getLocale: (request) => {
@@ -53,6 +42,4 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
   })
 }
 
-export const handle: Handle = sequence(sentryHandle(), paraglideHandle)
-
-export const handleError = handleErrorWithSentry()
+export const handle: Handle = paraglideHandle

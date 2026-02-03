@@ -9,8 +9,6 @@
   import { getLocale, type Locale } from '$lib/i18n/runtime'
   import { externalLinkProps, propsToAttrs, sanitize } from '$lib/utils/commons'
   import type { HTMLImgAttributes } from 'svelte/elements'
-  import * as Sentry from '@sentry/sveltekit'
-  import { onMount } from 'svelte'
 
   const locale = getLocale()
   const i18nData = getI18nContext()
@@ -20,19 +18,6 @@
   let PUBLIC_GIT_COMMIT = $state<string | null>((env as any).PUBLIC_GIT_COMMIT ?? null)
 
   if (PUBLIC_GIT_COMMIT) console.log(`Git commit: ${PUBLIC_GIT_COMMIT}`)
-
-  // Sentry test trigger
-  onMount(() => {
-    if (typeof window !== 'undefined' && window.location.search.includes('sentry-test')) {
-      setTimeout(() => {
-        try {
-          throw new Error('SentryTestIssue: Frontend test exception for Sentry monitoring')
-        } catch (error) {
-          Sentry.captureException(error)
-        }
-      }, 100)
-    }
-  })
 
   $effect(() => {
     if (acceptTos.value) tosError = undefined
