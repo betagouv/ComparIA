@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationError
 
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import read_json
@@ -11,28 +11,29 @@ logger = configure_logger(logging.getLogger("llms:archs"))
 
 ARCHS_FILE = Path(__file__).parent / "archs.json"
 
+descs = {
+    "id": "Architecture identifier (e.g. 'dense', 'moe')",
+    "name": "Human-readable architecture name",
+    "title": "Human-readable architecture complete title ('Architecture {name}')",
+    "desc": "Detailed description of the architecture",
+}
 
-# Model architecture definitions
+
+# LLM architecture definitions
 class Arch(BaseModel):
     """
-    Model architecture information.
+    LLM architecture definition.
 
     Defines neural network architecture and properties.
-    Used to validate 'utils/models/arch/archs.json'.
-
-    Attributes:
-        id: Architecture identifier (e.g., "transformer", "moe")
-        name: Short name
-        title: Display title
-        desc: Detailed description of the architecture
+    Used to validate `utils/models/archs.json`.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    id: str
-    name: str
-    title: str
-    desc: str
+    id: Annotated[str, Field(description=descs["id"])]
+    name: Annotated[str, Field(description=descs["name"])]
+    title: Annotated[str, Field(description=descs["title"])]
+    desc: Annotated[str, Field(description=descs["desc"])]
 
 
 Archs = RootModel[list[Arch]]
