@@ -23,17 +23,40 @@ LLMS_RAW_DATA_FILE = Path(__file__).parent / "models.json"
 
 EXCLUDED_LLMS_STATUS = {"missing_data"}
 
+descs = {
+    "name": "Organisation's name",
+    "icon_path": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`",
+    "proprietary_license_desc": "Description of the optional organisation's proprietary license",
+    "proprietary_reuse": "Whether LLMs can be reused/redistributed according to this proprietary license",
+    "proprietary_commercial_use": "Whether commercial use is permitted with this proprietary license",
+    "proprietary_reuse_specificities": "Additional reuse restrictions/notes",
+    "proprietary_commercial_use_specificities": "Additional commercial use restrictions/notes",
+    "models": "list of this organisation's LLMs",
+}
+
 
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
-    name: str
-    icon_path: str | None = None  # FIXME required?
-    proprietary_license_desc: str | None = ""
-    proprietary_reuse: bool = False
-    proprietary_commercial_use: bool | None = None
-    proprietary_reuse_specificities: str | None = ""
-    proprietary_commercial_use_specificities: str | None = ""
-    models: list[LLMDataRawBase]
+    name: Annotated[str, Field(description=descs["name"])]
+    icon_path: Annotated[str | None, Field(description=descs["icon_path"])] = (
+        None  # FIXME required?
+    )
+    proprietary_license_desc: Annotated[
+        str | None, Field(description=descs["proprietary_license_desc"])
+    ] = ""
+    proprietary_reuse: Annotated[
+        bool, Field(description=descs["proprietary_reuse"])
+    ] = False
+    proprietary_commercial_use: Annotated[
+        bool | None, Field(description=descs["proprietary_commercial_use"])
+    ] = None
+    proprietary_reuse_specificities: Annotated[
+        str | None, Field(description=descs["proprietary_reuse_specificities"])
+    ] = ""
+    proprietary_commercial_use_specificities: Annotated[
+        str | None, Field(description=descs["proprietary_commercial_use_specificities"])
+    ] = ""
+    models: Annotated[list[LLMDataRawBase], Field(description=descs["models"])]
 
     @field_validator("icon_path", mode="after")
     @classmethod
