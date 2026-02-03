@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis models-doc
 
 # Variables
 PYTHON := python3
@@ -146,6 +146,10 @@ models-build: ## Build/generate model files from JSON sources
 models-maintenance: ## Run the models maintenance script
 	@echo "Models maintenance..."
 	$(UV) run python -m utils.models.maintenance
+
+models-doc: ## Build/generate llm doc and JSON schemas
+	@echo "Generating LLM specs documentation and JSON schemas..."
+	$(UV) run python -m utils.models.schemas.build_doc
 
 # Dataset utilities
 dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and DATABASE_URI)
