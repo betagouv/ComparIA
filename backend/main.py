@@ -17,6 +17,22 @@ logger.info("=" * 80)
 
 init_sentry()
 
+import sentry_sdk
+
+
+@app.on_event("startup")
+async def sentry_startup_test():
+    client = sentry_sdk.get_client()
+    if not client.is_active():
+        return
+    client.transport._worker._ensure_thread()
+    try:
+        raise Exception("SentryTestIssue: Backend startup test")
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+    sentry_sdk.flush(timeout=5)
+
+
 origins = [
     "http://localhost",
     "http://localhost:3000",
