@@ -1,11 +1,10 @@
 # Multi-stage build avec buildx optimisation
-FROM public.ecr.aws/docker/library/python:3.13-slim AS builder
+# Mettre à jour UV_VERSION si nécessaire
+ARG UV_VERSION=0.7.2
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
 
-# Install curl (needed for uv installer) and uv
-RUN apt-get update -y && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-ENV PATH="/root/.local/bin:$PATH"
+FROM public.ecr.aws/docker/library/python:3.13-slim AS builder
+COPY --from=uv /uv /usr/local/bin/uv
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
@@ -16,8 +15,7 @@ FROM public.ecr.aws/docker/library/python:3.13-slim AS runtime
 # Install runtime dependencies
 RUN apt-get update -y && apt-get install -y curl postgresql-client && rm -rf /var/lib/apt/lists/*
 
-# Copier uv depuis le builder
-COPY --from=builder /root/.local/bin/uv /usr/local/bin/uv
+COPY --from=uv /uv /usr/local/bin/uv
 
 ENV PATH="/app/.venv/bin:$PATH"
 WORKDIR /app
@@ -29,7 +27,6 @@ COPY controller.py /app/
 COPY backend /app/backend
 COPY utils /app/utils
 COPY templates /app/templates
-COPY languia /app/languia
 
 VOLUME /data
 EXPOSE 80
