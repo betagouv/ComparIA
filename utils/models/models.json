@@ -702,6 +702,25 @@
         "fyi": "Ce modèle a été entraîné sur 36 billions de jetons, soit presque le double de Qwen 2.5, et il est officiellement capable de répondre dans 100 langues."
       },
       {
+        "new": true,
+        "id": "qwen3-coder-next",
+        "simple_name": "Qwen3 Coder Next",
+        "license": "Apache 2.0",
+        "release_date": "02/2026",
+        "arch": "moe",
+        "params": 80,
+        "active_params": 3,
+        "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3-coder-next"
+        },
+        "desc": "Modèle conçu spécifiquement pour le code (notamment pour du développement local). Grâce à une architecture hybride combinant Gated DeltaNet, Gated Attention et MoE, il atteint des performances comparables à des modèles bien plus grands tout en n'activant que 3 milliards de paramètres sur 80 milliards au total.",
+        "size_desc": "Qwen3-Coder-Next utilise une architecture de mélange d'experts (MoE) ultra-sparse avec 512 experts, dont seulement 10 sont activés par jeton. Cette conception permet de faire fonctionner le modèle sur du matériel haut de gamme mais grand public (MacBook 64 Go, RTX 5090 ou AMD Radeon 7900 XTX) tout en conservant une fenêtre de contexte native de 256 000 jetons.",
+        "fyi": "Ce modèle a été entraîné sur plus de 800 000 tâches de code vérifiables via un processus d'apprentissage par renforcement. Il excelle dans le raisonnement sur des horizons longs, l'utilisation d'outils complexes et la récupération après des erreurs d'exécution."
+      },
+      {
+        "status": "archived",
         "id": "Qwen3-Coder-480B-A35B-Instruct",
         "simple_name": "Qwen3 Coder 480B A35B",
         "license": "Apache 2.0",
@@ -720,6 +739,7 @@
         "fyi": "Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud)."
       },
       {
+        "status": "archived",
         "id": "qwen-3-8b",
         "simple_name": "Qwen 3 8B",
         "license": "Apache 2.0",
@@ -783,6 +803,7 @@
         "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques."
       },
       {
+        "status": "archived",
         "id": "qwen3-32b",
         "simple_name": "Qwen 3 32B",
         "license": "Apache 2.0",
