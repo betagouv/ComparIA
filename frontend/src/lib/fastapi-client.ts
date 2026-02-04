@@ -112,9 +112,9 @@ export class FastAPIClient {
     method: RequestInit['method'] = 'GET'
   ): Promise<Error> {
     const message = `Error ${response.status} [${method}](${path}): `
+    const content = await response.text()
     try {
-      // Try to get json response
-      const detail = (await response.json()).detail
+      const detail = JSON.parse(content).detail
 
       if (response.status === 422) {
         return new ValidationError(detail[0].msg)
@@ -124,8 +124,6 @@ export class FastAPIClient {
         return new InternalError(message + detail)
       }
     } catch {
-      // Not json try to get text, consider it unknown
-      const content = await response.text()
       return new Error(message + content)
     }
   }
