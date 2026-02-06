@@ -125,7 +125,7 @@ LLMDataRawBase = create_model(
         for k, anno in (
             LLMDataBase.__annotations__ | LLMDataRawBaseNoDefault.__annotations__
         ).items()
-        if k not in LLM_DATA_RAW_BASE_DEFAULTS
+        if k in LLM_DATA_RAW_BASE_DEFAULTS
     },  # type: ignore
 )
 

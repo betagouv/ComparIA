@@ -1825,7 +1825,51 @@
         },
         "desc": "Modèle multilingue conçu spécifiquement pour la diversité linguistique européenne, avec de fortes capacités en traduction et compréhension multilingue.",
         "size_desc": "Avec 22 milliards de paramètres, ce modèle se situe dans la catégorie des modèles de taille intermédiaire. Son utilisation nécessite un ordinateur personnel très puissant ou, plus généralement, un serveur disposant d’au moins une carte graphique performante. La fenêtre de contexte atteint 32 000 jetons.",
-        "fyi": "EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l’Union européenne ainsi que 11 langues supplémentaires. L’entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d’un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d’une allocation de calcul « extreme-scale ».\n\nLes données d’entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l’équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue."
+        "fyi": "EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l'Union européenne ainsi que 11 langues supplémentaires. L'entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d'un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d'une allocation de calcul « extreme-scale ».\n\nLes données d'entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l'équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue."
+      }
+    ]
+  },
+  {
+    "name": "Ordbogen",
+    "icon_path": "ordbogen.ai-color.svg",
+    "proprietary_reuse": false,
+    "proprietary_commercial_use": false,
+    "models": [
+      {
+        "new": true,
+        "id": "odin-large",
+        "simple_name": "Odin Large",
+        "license": "proprietary",
+        "release_date": "12/2025",
+        "arch": "maybe-moe",
+        "params": 358,
+        "url": "https://www.ordbogen.ai/",
+        "specific_portals": ["da"],
+        "endpoint": {
+          "api_base": "https://api.ordbogen.ai/v1",
+          "api_model_id": "odin-large"
+        },
+        "desc": "The large version of the Odin models by the Danish company Ordbogen.com.",
+        "size_desc": "The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.",
+        "fyi": "This is the company's first model release which includes two models, where this is the largest of the two."
+      },
+      {
+        "new": true,
+        "id": "odin-medium",
+        "simple_name": "Odin Medium",
+        "license": "proprietary",
+        "release_date": "12/2025",
+        "arch": "maybe-moe",
+        "params": 358,
+        "url": "https://www.ordbogen.ai/",
+        "specific_portals": ["da"],
+        "endpoint": {
+          "api_base": "https://api.ordbogen.ai/v1",
+          "api_model_id": "odin-medium"
+        },
+        "desc": "The medium version of the Odin models by the Danish company Ordbogen.com.",
+        "size_desc": "The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.",
+        "fyi": "This is the company's first model release which includes two models, where this is the smallest of the two."
       }
     ]
   }

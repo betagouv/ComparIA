@@ -3,13 +3,14 @@ from pathlib import Path
 from typing import Literal, get_args
 
 from httpx import Timeout
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
 ROOT_DIR = BACKEND_DIR.parent
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=ROOT_DIR / ".env", env_file_encoding="utf-8")
     LANGUIA_DEBUG: bool = False
     LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
     COMPARIA_REDIS_HOST: str = "localhost"
@@ -27,6 +28,7 @@ class Settings(BaseSettings):
     VERTEXAI_LOCATION: str | None = None
     ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
+    ORDBOGEN_API_KEY: str | None = None
     HF_PUSH_DATASET_KEY: str = ""
     REPO_ORG: str = "ministere-culture"
 
