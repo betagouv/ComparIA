@@ -904,7 +904,7 @@
         "params": 1000,
         "active_params": 32,
         "reasoning": true,
-        "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
+        "url": "https://www.kimi.com/blog/kimi-k2-5.html",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "moonshotai/kimi-k2.5"
