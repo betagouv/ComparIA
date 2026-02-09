@@ -505,7 +505,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
-        {
+      {
         "new": true,
         "id": "gemini-3-flash-preview",
         "simple_name": "Gemini 3 Flash",
@@ -709,23 +709,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "id": "qwen3-max-2025-09-23",
-        "simple_name": "Qwen 3 Max",
-        "license": "proprietary",
-        "release_date": "09/2025",
-        "arch": "moe",
-        "params": 1000,
-        "active_params": 32,
-        "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "qwen/qwen3-max"
-        },
-        "desc": "Parmi les rares modèles propriétaires de Qwen, celui-ci est le plus grand et le plus puissant de la troisième génération. Il a été entraîné avec une attention particulière à l’usage en entreprise et aux cas d’utilisation agentiques.",
-        "size_desc": "La taille exacte n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Le modèle dispose d’une fenêtre de contexte allant jusqu’à 256 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
-        "fyi": "Ce modèle a été entraîné sur 36 billions de jetons, soit presque le double de Qwen 2.5, et il est officiellement capable de répondre dans 100 langues."
-      },
-      {
         "new": true,
         "id": "qwen3-coder-next",
         "simple_name": "Qwen3 Coder Next",
@@ -742,6 +725,23 @@
         "desc": "Modèle conçu spécifiquement pour le code (notamment pour du développement local). Grâce à une architecture hybride combinant Gated DeltaNet, Gated Attention et MoE, il atteint des performances comparables à des modèles bien plus grands tout en n'activant que 3 milliards de paramètres sur 80 milliards au total.",
         "size_desc": "Qwen3-Coder-Next utilise une architecture de mélange d'experts (MoE) ultra-sparse avec 512 experts, dont seulement 10 sont activés par jeton. Cette conception permet de faire fonctionner le modèle sur du matériel haut de gamme mais grand public (MacBook 64 Go, RTX 5090 ou AMD Radeon 7900 XTX) tout en conservant une fenêtre de contexte native de 256 000 jetons.",
         "fyi": "Ce modèle a été entraîné sur plus de 800 000 tâches de code vérifiables via un processus d'apprentissage par renforcement. Il excelle dans le raisonnement sur des horizons longs, l'utilisation d'outils complexes et la récupération après des erreurs d'exécution."
+      },
+      {
+        "id": "qwen3-max-2025-09-23",
+        "simple_name": "Qwen 3 Max",
+        "license": "proprietary",
+        "release_date": "09/2025",
+        "arch": "moe",
+        "params": 1000,
+        "active_params": 32,
+        "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3-max"
+        },
+        "desc": "Parmi les rares modèles propriétaires de Qwen, celui-ci est le plus grand et le plus puissant de la troisième génération. Il a été entraîné avec une attention particulière à l’usage en entreprise et aux cas d’utilisation agentiques.",
+        "size_desc": "La taille exacte n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Le modèle dispose d’une fenêtre de contexte allant jusqu’à 256 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
+        "fyi": "Ce modèle a été entraîné sur 36 billions de jetons, soit presque le double de Qwen 2.5, et il est officiellement capable de répondre dans 100 langues."
       },
       {
         "status": "archived",
@@ -940,7 +940,7 @@
     "name": "Moonshot AI",
     "icon_path": "moonshot",
     "models": [
-        {
+      {
         "new": true,
         "id": "kimi-k2.5",
         "simple_name": "Kimi K2.5",
@@ -1550,7 +1550,7 @@
     "name": "Zhipu",
     "icon_path": "zhipu-color",
     "models": [
-        {
+      {
         "id": "glm-4.7",
         "simple_name": "GLM 4.7",
         "license": "MIT",
@@ -1871,10 +1871,10 @@
         "fyi": "Modèle conçu spécifiquement pour des tâches agentiques (notamment du code), avec un entraînement pour respecter des protocoles stricts de contrôle d'agent (planification, appels d'outils, vérification)."
       }
     ]
-  }, 
+  },
   {
     "name": "EuroLLM",
-    "icon_path": "euroLLM.webp",  
+    "icon_path": "euroLLM.webp",
     "models": [
       {
         "new": true,
