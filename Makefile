@@ -8,6 +8,13 @@ BACKEND_PORT := 8001
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
 
+# si non défini (utiliser les valeurs de dev local avec docker compose)
+COMPARIA_DB_URI ?= postgresql://postgres:postgres@localhost:5432/languia
+COMPARIA_REDIS_HOST ?= localhost
+# Exporter pour les sous-commandes
+export COMPARIA_DB_URI
+export COMPARIA_REDIS_HOST
+
 help: ## Display this help
 	@echo "Available commands for compar:IA:"
 	@echo ""
@@ -27,17 +34,28 @@ install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
 	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
+# generate the file to init db in postgres docker
+db-generate-init: ## Generate docker/data/init-db.sql from schema files
+	@bash docker/generate-init-db.sh
+
+## Launch and init Postgres database using docker compose
+db:
+	@$(MAKE) db-generate-init
+	@echo "Starting PostgreSQL database..."
+	cd docker && docker compose up postgres -d
+
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
 	cd docker && docker compose up redis -d
 
-dev-redis: ## Launch backend and frontend with Redis (Ctrl+C to stop)
-	@echo "Launching compar:IA with Redis..."
+dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
+	@echo "Launching compar:IA with Postgres and Redis..."
 	@echo "Starting Redis..."
 	@cd docker && docker compose up redis -d || echo "Redis already running or failed to start"
+	@$(MAKE) db
 	@echo "Backend: http://localhost:$(BACKEND_PORT)"
 	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
-	@COMPARIA_REDIS_HOST=localhost $(MAKE) -j 2 dev-backend dev-frontend
+	@$(MAKE) -j 2 dev-backend dev-frontend
 
 dev: ## Launch backend and frontend without Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA..."
@@ -82,27 +100,33 @@ i18n-build-news: ## generate news files
 	@echo "Generating news files..."
 	$(UV) run python -m utils.news.build_news
 
-# Database utilities
-db-schema-init: ## Initialize database schema
-	@echo "Initializing database schema..."
-	@if [ -z "$$DATABASE_URI" ]; then \
-		echo "Error: DATABASE_URI is not defined"; \
-		exit 1; \
-	fi
-	@echo "Executing SQL scripts in utils/schemas/..."
-	psql $$DATABASE_URI -f utils/schemas/conversations.sql
-	psql $$DATABASE_URI -f utils/schemas/votes.sql
-	psql $$DATABASE_URI -f utils/schemas/reactions.sql
-	psql $$DATABASE_URI -f utils/schemas/logs.sql
+dev-full-reset-data:
+	@echo "Removing docker dev data (volumes)..."
+	@cd docker && docker down -v
+	@$(MAKE) dev-full
 
-db-migrate: ## Apply database migrations
-	@echo "Applying migrations..."
-	@if [ -z "$$DATABASE_URI" ]; then \
-		echo "Error: DATABASE_URI is not defined"; \
-		exit 1; \
-	fi
-	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
-	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
+
+
+# db-schema-init: ## Initialize database schema
+# 	@echo "Initializing database schema..."
+# 	@if [ -z "$$DATABASE_URI" ]; then \
+# 		echo "Error: DATABASE_URI is not defined"; \
+# 		exit 1; \
+# 	fi
+# 	@echo "Executing SQL scripts in utils/schemas/..."
+# 	psql $$DATABASE_URI -f utils/schemas/conversations.sql
+# 	psql $$DATABASE_URI -f utils/schemas/votes.sql
+# 	psql $$DATABASE_URI -f utils/schemas/reactions.sql
+# 	psql $$DATABASE_URI -f utils/schemas/logs.sql
+
+# db-migrate: ## Apply database migrations
+# 	@echo "Applying migrations..."
+# 	@if [ -z "$$DATABASE_URI" ]; then \
+# 		echo "Error: DATABASE_URI is not defined"; \
+# 		exit 1; \
+# 	fi
+# 	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
+# 	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
 
 # Models utilities
 models-build: ## Build/generate model files from JSON sources
@@ -135,15 +159,15 @@ ranking-test: ## Run ranking_methods project tests
 	@echo "Testing ranking_methods project..."
 	cd utils/ranking_methods && poetry run pytest tests/
 
-ranking-pipeline: ## Execute the ranking pipeline (see notebooks for more options)
+compute-rankings: ## Execute the ranking pipeline (see notebooks for more options)
 	@echo "To use the ranking pipeline, see:"
 	@echo "  - utils/ranking_methods/notebooks/pipeline.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/rankers.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/frugal.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/graph.ipynb"
 	
-	@echo "Running ranking pipeline..."
-	$(UV) run python -m utils.models.build_peren_model_list
+	@echo "Compute rankings..."
+	$(UV) run python -m utils.models.build_simplified_llm_list_ranking
 	cd utils/ranking_methods/src && poetry run python -m rank_comparia.export
 	cp utils/ranking_methods/src/output/ml_final_data.json utils/models/generated-models-extra-data.json
 	@$(MAKE) models-build

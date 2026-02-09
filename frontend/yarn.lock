@@ -878,10 +878,10 @@
   resolved "https://registry.npmjs.org/@lix-js/server-protocol-schema/-/server-protocol-schema-0.1.1.tgz"
   integrity sha512-jBeALB6prAbtr5q4vTuxnRZZv1M2rKe8iNqRQhFJ4Tv7150unEa0vKyz0hs8Gl3fUGsWaNJBh3J8++fpbrpRBQ==
 
-"@lobehub/icons-static-svg@^1.74.0":
-  version "1.74.0"
-  resolved "https://registry.yarnpkg.com/@lobehub/icons-static-svg/-/icons-static-svg-1.74.0.tgz#ee7a3625828cfb1c9b8eeac5a0697259cb04b16a"
-  integrity sha512-4eqHOeUoMov54Fj8uk9bdCa88Eo/VSzY7aEqcTfUWYJGt8BvO+A3wf6mgsMrQOCYaavPGMeYiAUGi9iY6owhOg==
+"@lobehub/icons-static-svg@^1.78.0":
+  version "1.78.0"
+  resolved "https://registry.yarnpkg.com/@lobehub/icons-static-svg/-/icons-static-svg-1.78.0.tgz#f0afd1e67443a1dcd6b8b0d9eb366a52d10d70dd"
+  integrity sha512-R6kiOK7vHTiJ/pStqvXaoAWfcrzwAoS1/XtkBYpRyyfe7WBjQqI33GwMRCWhZE9iOOtnCqW2JwE58ptm81gTLg==
 
 "@mermaid-js/parser@^0.6.2":
   version "0.6.2"

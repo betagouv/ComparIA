@@ -8,32 +8,32 @@ from utils.models.build_models import (
 )
 from utils.models.utils import read_json, write_json
 
-PEREN_MODELS_DATA_PATH = (
+SIMPLIFIED_LLM_DATA_OUTPUT_PATH = (
     CURRENT_FOLDER.parent / "ranking_methods" / "data" / "models_data.json"
 )
 
-
-class PerenModel(BaseModel):
+class SimplifiedLLM(BaseModel):
     name: str = Field(validation_alias="simple_name")
     model_name: str = Field(validation_alias="id")
     organization: str = Field(validation_alias="organisation")
     license: str
 
 
-PerenModelList = RootModel[list[PerenModel]]
+SimplifiedLLMList = RootModel[list[SimplifiedLLM]]
 
 
 def main() -> None:
     # Generate model list based on generated models to avoid errors (data is supposed to be valid)
     raw_models = [
-        model for model in read_json(GENERATED_MODELS_PATH)["models"].values()
+        model for model
+        in read_json(GENERATED_MODELS_PATH)["models"].values()
     ]
-    models = PerenModelList(raw_models).model_dump()
+    models = SimplifiedLLMList(raw_models).model_dump()
 
-    write_json(PEREN_MODELS_DATA_PATH, models, indent=2)
+    write_json(SIMPLIFIED_LLM_DATA_OUTPUT_PATH, models, indent=2)
 
     log.info(
-        f"Generation of '{PEREN_MODELS_DATA_PATH.relative_to(ROOT_PATH)}' is successfull!"
+        f"Generation of '{SIMPLIFIED_LLM_DATA_OUTPUT_PATH.relative_to(ROOT_PATH)}' is successfull!"
     )
 
 
