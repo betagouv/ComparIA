@@ -28,7 +28,7 @@ from languia.models import filter_enabled_models
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
 # Per-country objectives for data collection (rows to collect)
-OBJECTIVES = {"fr": 250_000, "da": 10_000}
+OBJECTIVES = {"fr": 300_000, "da": 10_000}
 
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
