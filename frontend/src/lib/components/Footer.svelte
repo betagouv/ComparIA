@@ -91,6 +91,16 @@
           </li>
         {/each}
         <li class="fr-footer__bottom-item">
+          <a
+            class="fr-footer__bottom-link"
+            href="http://metabase.comparia.beta.gouv.fr/public/dashboard/8d5418a6-40cb-4cdb-8384-101ee6cca0be"
+            target="_blank"
+            rel="noopener external"
+          >
+            Matrice d'impact
+          </a>
+        </li>
+        <li class="fr-footer__bottom-item">
           <ThemeSelector />
         </li>
       </ul>
