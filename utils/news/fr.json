@@ -1,8 +1,17 @@
 [
   {
     "kind": "resource",
+    "subKind": "blog",
+    "title": "Publication scientifique sur compar:IA",
+    "desc": "« compar:IA: The French Government's LLM arena to collect French-language human prompts and preference data »",
+    "imgSrc": "arXiv-comparia.png",
+    "date": "2026-02-10",
+    "href": "https://arxiv.org/abs/2602.06669"
+  },
+  {
+    "kind": "resource",
     "subKind": "comparia",
-    "title": "Atelier Duel de l’IA",
+    "title": "Atelier Duel de l'IA",
     "desc": "Sensibilisez votre public à l’impact environnemental de l’IA générative en organisant un Duel de l’IA dans votre établissement, association ou entreprise !",
     "imgSrc": "duel.jpg",
     "href": "/duel",
