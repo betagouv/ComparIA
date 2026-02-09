@@ -1,24 +1,24 @@
 {
-  "timestamp": 1769488026.0,
+  "timestamp": 1770179221.0,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 977,
-        "mean_win_prob": 0.4666358265452233,
-        "n_match": 2107,
-        "rank": 62,
+        "elo": 975,
+        "mean_win_prob": 0.4642485892877616,
+        "n_match": 2227,
+        "rank": 63,
         "rank_p2_5": 56,
         "rank_p97_5": 69,
-        "score_p2_5": 965,
-        "score_p97_5": 989,
+        "score_p2_5": 963,
+        "score_p97_5": 987,
         "trust_range": [
-          6,
-          7
+          7,
+          6
         ],
-        "win_rate": 0.4118841955386806
+        "win_rate": 0.4106286484059273
       },
       "distribution": "fully-open-source",
       "endpoint": {
@@ -35,15 +35,15 @@
       "organisation": "Swiss AI",
       "params": 70,
       "prefs": {
-        "clear_formatting": 122,
-        "complete": 136,
-        "creative": 41,
-        "incorrect": 108,
-        "instructions_not_followed": 67,
-        "positive_prefs_ratio": 0.6203931203931204,
-        "superficial": 134,
-        "total_prefs": 814,
-        "useful": 206
+        "clear_formatting": 134,
+        "complete": 146,
+        "creative": 42,
+        "incorrect": 115,
+        "instructions_not_followed": 68,
+        "positive_prefs_ratio": 0.6186726659167604,
+        "superficial": 156,
+        "total_prefs": 889,
+        "useful": 228
       },
       "pricey": false,
       "quantization": null,
@@ -61,17 +61,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 960,
-        "mean_win_prob": 0.4430266660493022,
+        "elo": 958,
+        "mean_win_prob": 0.44088117180683034,
         "n_match": 86,
-        "rank": 71,
+        "rank": 72,
         "rank_p2_5": 45,
         "rank_p97_5": 83,
-        "score_p2_5": 905,
-        "score_p97_5": 1014,
+        "score_p2_5": 904,
+        "score_p97_5": 1015,
         "trust_range": [
-          26,
-          12
+          27,
+          11
         ],
         "win_rate": 0.46880952380952384
       },
@@ -139,16 +139,16 @@
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 991,
-        "mean_win_prob": 0.48509989102912404,
+        "elo": 990,
+        "mean_win_prob": 0.48452064833220676,
         "n_match": 5113,
         "rank": 54,
-        "rank_p2_5": 51,
+        "rank_p2_5": 52,
         "rank_p97_5": 60,
         "score_p2_5": 982,
-        "score_p97_5": 999,
+        "score_p97_5": 998,
         "trust_range": [
-          3,
+          2,
           6
         ],
         "win_rate": 0.46256796401329947
@@ -194,16 +194,16 @@
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 972,
-        "mean_win_prob": 0.4597165791361126,
+        "elo": 971,
+        "mean_win_prob": 0.4582197942019967,
         "n_match": 1302,
         "rank": 65,
-        "rank_p2_5": 56,
+        "rank_p2_5": 57,
         "rank_p97_5": 72,
-        "score_p2_5": 956,
-        "score_p97_5": 989,
+        "score_p2_5": 954,
+        "score_p97_5": 987,
         "trust_range": [
-          9,
+          8,
           7
         ],
         "win_rate": 0.5014285714285714
@@ -273,12 +273,12 @@
       "commercial_use": false,
       "data": {
         "elo": 928,
-        "mean_win_prob": 0.400097034027319,
+        "mean_win_prob": 0.39960085178925336,
         "n_match": 5959,
         "rank": 81,
         "rank_p2_5": 78,
         "rank_p97_5": 83,
-        "score_p2_5": 920,
+        "score_p2_5": 919,
         "score_p97_5": 936,
         "trust_range": [
           3,
@@ -350,13 +350,13 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 749,
-        "mean_win_prob": 0.1973936366074995,
+        "elo": 747,
+        "mean_win_prob": 0.19561217453551033,
         "n_match": 309,
         "rank": 92,
         "rank_p2_5": 91,
         "rank_p97_5": 93,
-        "score_p2_5": 699,
+        "score_p2_5": 703,
         "score_p97_5": 789,
         "trust_range": [
           1,
@@ -429,13 +429,13 @@
       "commercial_use": true,
       "data": {
         "elo": 817,
-        "mean_win_prob": 0.2649180311939552,
+        "mean_win_prob": 0.2646214642043346,
         "n_match": 1796,
         "rank": 90,
         "rank_p2_5": 90,
         "rank_p97_5": 91,
-        "score_p2_5": 801,
-        "score_p97_5": 832,
+        "score_p2_5": 800,
+        "score_p97_5": 833,
         "trust_range": [
           0,
           1
@@ -480,13 +480,13 @@
       "commercial_use": null,
       "data": {
         "elo": 970,
-        "mean_win_prob": 0.4569334210568974,
+        "mean_win_prob": 0.4568320130896421,
         "n_match": 5683,
         "rank": 67,
         "rank_p2_5": 62,
         "rank_p97_5": 70,
-        "score_p2_5": 962,
-        "score_p97_5": 978,
+        "score_p2_5": 961,
+        "score_p97_5": 979,
         "trust_range": [
           5,
           3
@@ -530,17 +530,17 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1049,
-        "mean_win_prob": 0.5651430484108177,
+        "elo": 1048,
+        "mean_win_prob": 0.5646473093578714,
         "n_match": 3907,
-        "rank": 31,
-        "rank_p2_5": 26,
+        "rank": 32,
+        "rank_p2_5": 27,
         "rank_p97_5": 35,
-        "score_p2_5": 1039,
+        "score_p2_5": 1038,
         "score_p97_5": 1058,
         "trust_range": [
           5,
-          4
+          3
         ],
         "win_rate": 0.524225748656258
       },
@@ -581,19 +581,19 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1074,
-        "mean_win_prob": 0.5993922929103271,
-        "n_match": 5706,
-        "rank": 16,
-        "rank_p2_5": 12,
-        "rank_p97_5": 21,
-        "score_p2_5": 1067,
-        "score_p97_5": 1082,
+        "elo": 1072,
+        "mean_win_prob": 0.5968034272098997,
+        "n_match": 6138,
+        "rank": 17,
+        "rank_p2_5": 13,
+        "rank_p97_5": 22,
+        "score_p2_5": 1065,
+        "score_p97_5": 1080,
         "trust_range": [
           4,
           5
         ],
-        "win_rate": 0.5386890991938311
+        "win_rate": 0.5363734115347019
       },
       "distribution": "api-only",
       "endpoint": {
@@ -610,15 +610,15 @@
       "organisation": "Anthropic",
       "params": 440,
       "prefs": {
-        "clear_formatting": 548,
-        "complete": 812,
-        "creative": 489,
-        "incorrect": 139,
-        "instructions_not_followed": 82,
-        "positive_prefs_ratio": 0.8707076739325171,
-        "superficial": 212,
-        "total_prefs": 3349,
-        "useful": 1067
+        "clear_formatting": 623,
+        "complete": 870,
+        "creative": 512,
+        "incorrect": 161,
+        "instructions_not_followed": 92,
+        "positive_prefs_ratio": 0.8635869565217391,
+        "superficial": 249,
+        "total_prefs": 3680,
+        "useful": 1173
       },
       "pricey": false,
       "quantization": null,
@@ -637,16 +637,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1063,
-        "mean_win_prob": 0.5846022046494592,
+        "mean_win_prob": 0.5843548562485997,
         "n_match": 2540,
-        "rank": 22,
+        "rank": 23,
         "rank_p2_5": 16,
         "rank_p97_5": 30,
-        "score_p2_5": 1051,
+        "score_p2_5": 1052,
         "score_p97_5": 1074,
         "trust_range": [
-          6,
-          8
+          7,
+          7
         ],
         "win_rate": 0.5355651831429696
       },
@@ -692,18 +692,18 @@
       "commercial_use": false,
       "data": {
         "elo": 1055,
-        "mean_win_prob": 0.5742221131697753,
-        "n_match": 7493,
-        "rank": 28,
+        "mean_win_prob": 0.5733914065953097,
+        "n_match": 7693,
+        "rank": 29,
         "rank_p2_5": 24,
         "rank_p97_5": 32,
         "score_p2_5": 1048,
         "score_p97_5": 1062,
         "trust_range": [
-          4,
-          4
+          5,
+          3
         ],
-        "win_rate": 0.5449646336580809
+        "win_rate": 0.5440517353438191
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -720,15 +720,15 @@
       "organisation": "Cohere",
       "params": 111,
       "prefs": {
-        "clear_formatting": 1216,
-        "complete": 1311,
-        "creative": 346,
-        "incorrect": 348,
-        "instructions_not_followed": 132,
-        "positive_prefs_ratio": 0.8322431704501732,
-        "superficial": 392,
-        "total_prefs": 5198,
-        "useful": 1453
+        "clear_formatting": 1252,
+        "complete": 1337,
+        "creative": 355,
+        "incorrect": 354,
+        "instructions_not_followed": 140,
+        "positive_prefs_ratio": 0.8309911935544313,
+        "superficial": 408,
+        "total_prefs": 5337,
+        "useful": 1491
       },
       "pricey": false,
       "quantization": null,
@@ -773,19 +773,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1082,
-        "mean_win_prob": 0.6096206023679359,
-        "n_match": 2016,
+        "elo": 1078,
+        "mean_win_prob": 0.6048116583019952,
+        "n_match": 2324,
         "rank": 12,
-        "rank_p2_5": 9,
-        "rank_p97_5": 19,
-        "score_p2_5": 1069,
-        "score_p97_5": 1094,
+        "rank_p2_5": 10,
+        "rank_p97_5": 21,
+        "score_p2_5": 1065,
+        "score_p97_5": 1090,
         "trust_range": [
-          3,
-          7
+          2,
+          9
         ],
-        "win_rate": 0.5316617063492063
+        "win_rate": 0.5211273666092943
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -802,15 +802,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 225,
-        "complete": 244,
-        "creative": 93,
-        "incorrect": 74,
-        "instructions_not_followed": 44,
-        "positive_prefs_ratio": 0.8140214216163584,
-        "superficial": 73,
-        "total_prefs": 1027,
-        "useful": 274
+        "clear_formatting": 255,
+        "complete": 293,
+        "creative": 104,
+        "incorrect": 104,
+        "instructions_not_followed": 56,
+        "positive_prefs_ratio": 0.7917341977309562,
+        "superficial": 97,
+        "total_prefs": 1234,
+        "useful": 325
       },
       "pricey": false,
       "quantization": null,
@@ -829,16 +829,16 @@
       "commercial_use": true,
       "data": {
         "elo": 1024,
-        "mean_win_prob": 0.5318905738874531,
+        "mean_win_prob": 0.5315432556280325,
         "n_match": 3510,
         "rank": 40,
         "rank_p2_5": 36,
-        "rank_p97_5": 44,
+        "rank_p97_5": 45,
         "score_p2_5": 1014,
         "score_p97_5": 1035,
         "trust_range": [
           4,
-          4
+          5
         ],
         "win_rate": 0.5313019943019943
       },
@@ -883,19 +883,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1054,
-        "mean_win_prob": 0.5725671793802569,
-        "n_match": 1614,
-        "rank": 29,
-        "rank_p2_5": 20,
-        "rank_p97_5": 34,
+        "elo": 1056,
+        "mean_win_prob": 0.575138210014572,
+        "n_match": 1899,
+        "rank": 28,
+        "rank_p2_5": 19,
+        "rank_p97_5": 33,
         "score_p2_5": 1042,
-        "score_p97_5": 1069,
+        "score_p97_5": 1068,
         "trust_range": [
           9,
           5
         ],
-        "win_rate": 0.5251301115241636
+        "win_rate": 0.5232596103212217
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -912,15 +912,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 135,
-        "complete": 187,
-        "creative": 67,
-        "incorrect": 57,
-        "instructions_not_followed": 32,
-        "positive_prefs_ratio": 0.798941798941799,
-        "superficial": 63,
-        "total_prefs": 756,
-        "useful": 215
+        "clear_formatting": 197,
+        "complete": 247,
+        "creative": 79,
+        "incorrect": 80,
+        "instructions_not_followed": 36,
+        "positive_prefs_ratio": 0.8042813455657493,
+        "superficial": 76,
+        "total_prefs": 981,
+        "useful": 266
       },
       "pricey": false,
       "quantization": null,
@@ -939,13 +939,13 @@
       "commercial_use": true,
       "data": {
         "elo": 944,
-        "mean_win_prob": 0.4211278179681587,
+        "mean_win_prob": 0.42154991944242054,
         "n_match": 2981,
         "rank": 77,
         "rank_p2_5": 72,
         "rank_p97_5": 79,
         "score_p2_5": 934,
-        "score_p97_5": 955,
+        "score_p97_5": 956,
         "trust_range": [
           5,
           2
@@ -993,13 +993,13 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1092,
-        "mean_win_prob": 0.6231132661156734,
+        "elo": 1091,
+        "mean_win_prob": 0.6223996896715935,
         "n_match": 4385,
         "rank": 9,
         "rank_p2_5": 7,
         "rank_p97_5": 12,
-        "score_p2_5": 1083,
+        "score_p2_5": 1082,
         "score_p97_5": 1101,
         "trust_range": [
           2,
@@ -1048,17 +1048,17 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1079,
-        "mean_win_prob": 0.6055366472572501,
+        "elo": 1078,
+        "mean_win_prob": 0.6047929898900393,
         "n_match": 5388,
         "rank": 13,
-        "rank_p2_5": 11,
-        "rank_p97_5": 20,
-        "score_p2_5": 1069,
+        "rank_p2_5": 10,
+        "rank_p97_5": 19,
+        "score_p2_5": 1070,
         "score_p97_5": 1087,
         "trust_range": [
-          2,
-          7
+          3,
+          6
         ],
         "win_rate": 0.6141481069042317
       },
@@ -1099,19 +1099,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1072,
-        "mean_win_prob": 0.5973077070083498,
-        "n_match": 1296,
-        "rank": 17,
+        "elo": 1075,
+        "mean_win_prob": 0.6002545489898781,
+        "n_match": 1633,
+        "rank": 15,
         "rank_p2_5": 10,
-        "rank_p97_5": 26,
-        "score_p2_5": 1058,
+        "rank_p97_5": 25,
+        "score_p2_5": 1061,
         "score_p97_5": 1088,
         "trust_range": [
-          7,
-          9
+          5,
+          10
         ],
-        "win_rate": 0.5447067901234568
+        "win_rate": 0.5502265768524188
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1128,15 +1128,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 237,
-        "complete": 328,
-        "creative": 171,
-        "incorrect": 91,
-        "instructions_not_followed": 47,
-        "positive_prefs_ratio": 0.8243034055727554,
-        "superficial": 89,
-        "total_prefs": 1292,
-        "useful": 329
+        "clear_formatting": 294,
+        "complete": 397,
+        "creative": 186,
+        "incorrect": 117,
+        "instructions_not_followed": 61,
+        "positive_prefs_ratio": 0.8162612035851472,
+        "superficial": 109,
+        "total_prefs": 1562,
+        "useful": 398
       },
       "pricey": false,
       "quantization": null,
@@ -1154,19 +1154,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 997,
-        "mean_win_prob": 0.49449139797752767,
-        "n_match": 254,
-        "rank": 52,
-        "rank_p2_5": 37,
-        "rank_p97_5": 69,
-        "score_p2_5": 962,
-        "score_p97_5": 1033,
+        "elo": 1014,
+        "mean_win_prob": 0.517404079994749,
+        "n_match": 346,
+        "rank": 45,
+        "rank_p2_5": 32,
+        "rank_p97_5": 60,
+        "score_p2_5": 983,
+        "score_p97_5": 1046,
         "trust_range": [
-          15,
-          17
+          13,
+          15
         ],
-        "win_rate": 0.419484126984127
+        "win_rate": 0.45523121387283233
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1183,15 +1183,15 @@
       "organisation": "EuroLLM",
       "params": 22,
       "prefs": {
-        "clear_formatting": 54,
-        "complete": 46,
-        "creative": 17,
-        "incorrect": 15,
-        "instructions_not_followed": 10,
-        "positive_prefs_ratio": 0.7925311203319502,
-        "superficial": 25,
-        "total_prefs": 241,
-        "useful": 74
+        "clear_formatting": 70,
+        "complete": 61,
+        "creative": 20,
+        "incorrect": 24,
+        "instructions_not_followed": 14,
+        "positive_prefs_ratio": 0.775,
+        "superficial": 34,
+        "total_prefs": 320,
+        "useful": 97
       },
       "pricey": false,
       "quantization": null,
@@ -1210,13 +1210,13 @@
       "commercial_use": null,
       "data": {
         "elo": 1030,
-        "mean_win_prob": 0.5397201200029579,
+        "mean_win_prob": 0.5394972746988902,
         "n_match": 7387,
         "rank": 39,
         "rank_p2_5": 35,
         "rank_p97_5": 41,
         "score_p2_5": 1022,
-        "score_p97_5": 1038,
+        "score_p97_5": 1037,
         "trust_range": [
           4,
           2
@@ -1261,12 +1261,12 @@
       "commercial_use": null,
       "data": {
         "elo": 1099,
-        "mean_win_prob": 0.6330681261716332,
+        "mean_win_prob": 0.632897676872256,
         "n_match": 8684,
         "rank": 8,
         "rank_p2_5": 5,
         "rank_p97_5": 9,
-        "score_p2_5": 1092,
+        "score_p2_5": 1093,
         "score_p97_5": 1107,
         "trust_range": [
           3,
@@ -1311,19 +1311,19 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1105,
-        "mean_win_prob": 0.6402238978033056,
-        "n_match": 4429,
+        "elo": 1106,
+        "mean_win_prob": 0.6412839743578328,
+        "n_match": 4731,
         "rank": 5,
         "rank_p2_5": 4,
         "rank_p97_5": 8,
-        "score_p2_5": 1096,
-        "score_p97_5": 1114,
+        "score_p2_5": 1097,
+        "score_p97_5": 1115,
         "trust_range": [
           1,
           3
         ],
-        "win_rate": 0.578116956423572
+        "win_rate": 0.5790065525258931
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1340,15 +1340,15 @@
       "organisation": "Google",
       "params": 440,
       "prefs": {
-        "clear_formatting": 451,
-        "complete": 599,
-        "creative": 173,
-        "incorrect": 132,
-        "instructions_not_followed": 42,
-        "positive_prefs_ratio": 0.8601364522417154,
-        "superficial": 113,
-        "total_prefs": 2052,
-        "useful": 542
+        "clear_formatting": 502,
+        "complete": 663,
+        "creative": 194,
+        "incorrect": 143,
+        "instructions_not_followed": 47,
+        "positive_prefs_ratio": 0.8614775725593667,
+        "superficial": 125,
+        "total_prefs": 2274,
+        "useful": 600
       },
       "pricey": false,
       "quantization": null,
@@ -1366,19 +1366,19 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1124,
-        "mean_win_prob": 0.6645617913372063,
-        "n_match": 651,
+        "elo": 1128,
+        "mean_win_prob": 0.6694254263174676,
+        "n_match": 973,
         "rank": 2,
         "rank_p2_5": 1,
-        "rank_p97_5": 6,
-        "score_p2_5": 1104,
-        "score_p97_5": 1147,
+        "rank_p97_5": 4,
+        "score_p2_5": 1110,
+        "score_p97_5": 1146,
         "trust_range": [
           1,
-          4
+          2
         ],
-        "win_rate": 0.5824731182795699
+        "win_rate": 0.5728057553956835
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1395,15 +1395,15 @@
       "organisation": "Google",
       "params": 440,
       "prefs": {
-        "clear_formatting": 115,
-        "complete": 135,
-        "creative": 45,
-        "incorrect": 35,
-        "instructions_not_followed": 12,
-        "positive_prefs_ratio": 0.8488372093023255,
-        "superficial": 31,
-        "total_prefs": 516,
-        "useful": 143
+        "clear_formatting": 170,
+        "complete": 193,
+        "creative": 61,
+        "incorrect": 41,
+        "instructions_not_followed": 13,
+        "positive_prefs_ratio": 0.8642659279778393,
+        "superficial": 44,
+        "total_prefs": 722,
+        "useful": 200
       },
       "pricey": false,
       "quantization": null,
@@ -1421,19 +1421,19 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1104,
-        "mean_win_prob": 0.6386004462995448,
-        "n_match": 2475,
-        "rank": 6,
+        "elo": 1102,
+        "mean_win_prob": 0.6364750473873861,
+        "n_match": 2865,
+        "rank": 7,
         "rank_p2_5": 4,
         "rank_p97_5": 9,
-        "score_p2_5": 1091,
-        "score_p97_5": 1116,
+        "score_p2_5": 1090,
+        "score_p97_5": 1112,
         "trust_range": [
-          2,
-          3
+          3,
+          2
         ],
-        "win_rate": 0.5569090909090909
+        "win_rate": 0.554303664921466
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1450,15 +1450,15 @@
       "organisation": "Google",
       "params": 750,
       "prefs": {
-        "clear_formatting": 353,
-        "complete": 478,
-        "creative": 156,
-        "incorrect": 69,
-        "instructions_not_followed": 50,
-        "positive_prefs_ratio": 0.8755841121495327,
-        "superficial": 94,
-        "total_prefs": 1712,
-        "useful": 512
+        "clear_formatting": 419,
+        "complete": 560,
+        "creative": 189,
+        "incorrect": 82,
+        "instructions_not_followed": 61,
+        "positive_prefs_ratio": 0.8745661874070402,
+        "superficial": 110,
+        "total_prefs": 2017,
+        "useful": 596
       },
       "pricey": false,
       "quantization": null,
@@ -1504,16 +1504,16 @@
       "commercial_use": true,
       "data": {
         "elo": 1000,
-        "mean_win_prob": 0.49846955830892076,
+        "mean_win_prob": 0.4980885662475079,
         "n_match": 762,
-        "rank": 50,
+        "rank": 51,
         "rank_p2_5": 40,
         "rank_p97_5": 62,
         "score_p2_5": 977,
-        "score_p97_5": 1026,
+        "score_p97_5": 1025,
         "trust_range": [
-          10,
-          12
+          11,
+          11
         ],
         "win_rate": 0.5826115485564304
       },
@@ -1581,17 +1581,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 952,
-        "mean_win_prob": 0.43143376714457565,
+        "elo": 951,
+        "mean_win_prob": 0.4311905949930325,
         "n_match": 5115,
         "rank": 74,
         "rank_p2_5": 70,
-        "rank_p97_5": 77,
-        "score_p2_5": 942,
-        "score_p97_5": 961,
+        "rank_p97_5": 76,
+        "score_p2_5": 943,
+        "score_p97_5": 960,
         "trust_range": [
           4,
-          3
+          2
         ],
         "win_rate": 0.5068660801564027
       },
@@ -1632,19 +1632,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1064,
-        "mean_win_prob": 0.5860916159139896,
-        "n_match": 7796,
-        "rank": 21,
+        "elo": 1063,
+        "mean_win_prob": 0.5852683860147119,
+        "n_match": 8085,
+        "rank": 22,
         "rank_p2_5": 18,
         "rank_p97_5": 27,
         "score_p2_5": 1057,
-        "score_p97_5": 1071,
+        "score_p97_5": 1070,
         "trust_range": [
-          3,
-          6
+          4,
+          5
         ],
-        "win_rate": 0.5560915854284249
+        "win_rate": 0.5551329622758194
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1661,15 +1661,15 @@
       "organisation": "Google",
       "params": 12,
       "prefs": {
-        "clear_formatting": 1126,
-        "complete": 1475,
-        "creative": 393,
-        "incorrect": 456,
-        "instructions_not_followed": 200,
-        "positive_prefs_ratio": 0.812781954887218,
-        "superficial": 340,
-        "total_prefs": 5320,
-        "useful": 1330
+        "clear_formatting": 1169,
+        "complete": 1518,
+        "creative": 409,
+        "incorrect": 487,
+        "instructions_not_followed": 205,
+        "positive_prefs_ratio": 0.8095324065715833,
+        "superficial": 363,
+        "total_prefs": 5539,
+        "useful": 1388
       },
       "pricey": false,
       "quantization": null,
@@ -1688,18 +1688,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1083,
-        "mean_win_prob": 0.6115286426167124,
-        "n_match": 8066,
+        "mean_win_prob": 0.611065874901126,
+        "n_match": 8373,
         "rank": 11,
         "rank_p2_5": 10,
-        "rank_p97_5": 16,
+        "rank_p97_5": 15,
         "score_p2_5": 1076,
         "score_p97_5": 1089,
         "trust_range": [
           1,
-          5
+          4
         ],
-        "win_rate": 0.5720505826927845
+        "win_rate": 0.5698972889048131
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1716,15 +1716,15 @@
       "organisation": "Google",
       "params": 27,
       "prefs": {
-        "clear_formatting": 1248,
-        "complete": 1698,
-        "creative": 511,
-        "incorrect": 418,
-        "instructions_not_followed": 146,
-        "positive_prefs_ratio": 0.8528205128205129,
-        "superficial": 297,
-        "total_prefs": 5850,
-        "useful": 1532
+        "clear_formatting": 1300,
+        "complete": 1756,
+        "creative": 524,
+        "incorrect": 434,
+        "instructions_not_followed": 151,
+        "positive_prefs_ratio": 0.8518213284984342,
+        "superficial": 314,
+        "total_prefs": 6067,
+        "useful": 1588
       },
       "pricey": false,
       "quantization": null,
@@ -1742,19 +1742,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1036,
-        "mean_win_prob": 0.5472835493330679,
-        "n_match": 8861,
+        "elo": 1035,
+        "mean_win_prob": 0.5470589803845023,
+        "n_match": 9158,
         "rank": 36,
         "rank_p2_5": 34,
-        "rank_p97_5": 38,
-        "score_p2_5": 1030,
+        "rank_p97_5": 39,
+        "score_p2_5": 1029,
         "score_p97_5": 1042,
         "trust_range": [
           2,
-          2
+          3
         ],
-        "win_rate": 0.5128111951247039
+        "win_rate": 0.512464511902162
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1771,15 +1771,15 @@
       "organisation": "Google",
       "params": 4,
       "prefs": {
-        "clear_formatting": 1173,
-        "complete": 1457,
-        "creative": 402,
-        "incorrect": 699,
-        "instructions_not_followed": 246,
-        "positive_prefs_ratio": 0.7708149973596198,
-        "superficial": 357,
-        "total_prefs": 5681,
-        "useful": 1347
+        "clear_formatting": 1212,
+        "complete": 1503,
+        "creative": 416,
+        "incorrect": 728,
+        "instructions_not_followed": 254,
+        "positive_prefs_ratio": 0.7689825038219806,
+        "superficial": 378,
+        "total_prefs": 5887,
+        "useful": 1396
       },
       "pricey": false,
       "quantization": null,
@@ -1798,18 +1798,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1031,
-        "mean_win_prob": 0.5407164118920295,
-        "n_match": 4176,
-        "rank": 38,
+        "mean_win_prob": 0.5415190861630047,
+        "n_match": 4473,
+        "rank": 37,
         "rank_p2_5": 34,
         "rank_p97_5": 41,
-        "score_p2_5": 1021,
-        "score_p97_5": 1040,
+        "score_p2_5": 1023,
+        "score_p97_5": 1041,
         "trust_range": [
-          4,
-          3
+          3,
+          4
         ],
-        "win_rate": 0.49403735632183904
+        "win_rate": 0.4958663089649006
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1826,15 +1826,15 @@
       "organisation": "Google",
       "params": 8,
       "prefs": {
-        "clear_formatting": 353,
-        "complete": 417,
-        "creative": 137,
-        "incorrect": 209,
-        "instructions_not_followed": 92,
-        "positive_prefs_ratio": 0.7401443642420877,
-        "superficial": 167,
-        "total_prefs": 1801,
-        "useful": 426
+        "clear_formatting": 401,
+        "complete": 464,
+        "creative": 162,
+        "incorrect": 238,
+        "instructions_not_followed": 108,
+        "positive_prefs_ratio": 0.7369970559371933,
+        "superficial": 190,
+        "total_prefs": 2038,
+        "useful": 475
       },
       "pricey": false,
       "quantization": null,
@@ -1853,13 +1853,13 @@
       "commercial_use": true,
       "data": {
         "elo": 1072,
-        "mean_win_prob": 0.5965934755223276,
+        "mean_win_prob": 0.5965974700900935,
         "n_match": 2178,
         "rank": 18,
         "rank_p2_5": 11,
         "rank_p97_5": 25,
         "score_p2_5": 1060,
-        "score_p97_5": 1085,
+        "score_p97_5": 1084,
         "trust_range": [
           7,
           7
@@ -1907,19 +1907,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1041,
-        "mean_win_prob": 0.5548395099451212,
-        "n_match": 2427,
-        "rank": 35,
-        "rank_p2_5": 29,
-        "rank_p97_5": 38,
-        "score_p2_5": 1030,
-        "score_p97_5": 1053,
+        "elo": 1043,
+        "mean_win_prob": 0.5575733196070535,
+        "n_match": 2621,
+        "rank": 34,
+        "rank_p2_5": 28,
+        "rank_p97_5": 37,
+        "score_p2_5": 1032,
+        "score_p97_5": 1054,
         "trust_range": [
           6,
           3
         ],
-        "win_rate": 0.501516275236918
+        "win_rate": 0.5038496756962991
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1936,15 +1936,15 @@
       "organisation": "Zhipu",
       "params": 357,
       "prefs": {
-        "clear_formatting": 223,
-        "complete": 324,
-        "creative": 108,
-        "incorrect": 87,
-        "instructions_not_followed": 54,
-        "positive_prefs_ratio": 0.805982905982906,
-        "superficial": 86,
-        "total_prefs": 1170,
-        "useful": 288
+        "clear_formatting": 249,
+        "complete": 365,
+        "creative": 117,
+        "incorrect": 98,
+        "instructions_not_followed": 60,
+        "positive_prefs_ratio": 0.8027522935779816,
+        "superficial": 100,
+        "total_prefs": 1308,
+        "useful": 319
       },
       "pricey": false,
       "quantization": null,
@@ -1962,19 +1962,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1047,
-        "mean_win_prob": 0.5622476944384343,
-        "n_match": 420,
-        "rank": 33,
-        "rank_p2_5": 16,
-        "rank_p97_5": 41,
-        "score_p2_5": 1019,
-        "score_p97_5": 1074,
+        "elo": 1036,
+        "mean_win_prob": 0.5481271628371293,
+        "n_match": 658,
+        "rank": 35,
+        "rank_p2_5": 27,
+        "rank_p97_5": 45,
+        "score_p2_5": 1013,
+        "score_p97_5": 1058,
         "trust_range": [
-          17,
-          8
+          8,
+          10
         ],
-        "win_rate": 0.497
+        "win_rate": 0.47074468085106386
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1991,15 +1991,15 @@
       "organisation": "Zhipu",
       "params": 357,
       "prefs": {
-        "clear_formatting": 66,
-        "complete": 82,
-        "creative": 27,
-        "incorrect": 22,
-        "instructions_not_followed": 15,
-        "positive_prefs_ratio": 0.8019169329073482,
-        "superficial": 25,
-        "total_prefs": 313,
-        "useful": 76
+        "clear_formatting": 92,
+        "complete": 124,
+        "creative": 33,
+        "incorrect": 33,
+        "instructions_not_followed": 29,
+        "positive_prefs_ratio": 0.775599128540305,
+        "superficial": 41,
+        "total_prefs": 459,
+        "useful": 107
       },
       "pricey": false,
       "quantization": null,
@@ -2045,16 +2045,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1031,
-        "mean_win_prob": 0.5413055141479137,
+        "mean_win_prob": 0.5406501590144065,
         "n_match": 7173,
-        "rank": 37,
+        "rank": 38,
         "rank_p2_5": 35,
         "rank_p97_5": 40,
         "score_p2_5": 1024,
         "score_p97_5": 1038,
         "trust_range": [
-          2,
-          3
+          3,
+          2
         ],
         "win_rate": 0.5152977269557941
       },
@@ -2100,13 +2100,13 @@
       "commercial_use": null,
       "data": {
         "elo": 977,
-        "mean_win_prob": 0.46670650496723026,
+        "mean_win_prob": 0.466135820974965,
         "n_match": 5717,
         "rank": 61,
         "rank_p2_5": 58,
         "rank_p97_5": 67,
-        "score_p2_5": 970,
-        "score_p97_5": 984,
+        "score_p2_5": 969,
+        "score_p97_5": 985,
         "trust_range": [
           3,
           6
@@ -2155,16 +2155,16 @@
       "commercial_use": null,
       "data": {
         "elo": 961,
-        "mean_win_prob": 0.4446030395867616,
+        "mean_win_prob": 0.4441106393175794,
         "n_match": 5896,
         "rank": 70,
         "rank_p2_5": 66,
-        "rank_p97_5": 74,
-        "score_p2_5": 952,
+        "rank_p97_5": 73,
+        "score_p2_5": 953,
         "score_p97_5": 970,
         "trust_range": [
           4,
-          4
+          3
         ],
         "win_rate": 0.48863297150610585
       },
@@ -2205,8 +2205,8 @@
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 980,
-        "mean_win_prob": 0.4710625525223503,
+        "elo": 981,
+        "mean_win_prob": 0.47146039730615813,
         "n_match": 6990,
         "rank": 60,
         "rank_p2_5": 56,
@@ -2257,16 +2257,16 @@
       "commercial_use": null,
       "data": {
         "elo": 999,
-        "mean_win_prob": 0.49695521685767907,
+        "mean_win_prob": 0.4970946216472743,
         "n_match": 3843,
-        "rank": 51,
-        "rank_p2_5": 47,
+        "rank": 52,
+        "rank_p2_5": 48,
         "rank_p97_5": 55,
-        "score_p2_5": 989,
+        "score_p2_5": 990,
         "score_p97_5": 1008,
         "trust_range": [
           4,
-          4
+          3
         ],
         "win_rate": 0.45334721499219155
       },
@@ -2312,18 +2312,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1011,
-        "mean_win_prob": 0.5129871203813897,
-        "n_match": 3712,
-        "rank": 46,
+        "mean_win_prob": 0.5138825250357583,
+        "n_match": 4110,
+        "rank": 47,
         "rank_p2_5": 41,
-        "rank_p97_5": 51,
-        "score_p2_5": 1001,
-        "score_p97_5": 1021,
+        "rank_p97_5": 50,
+        "score_p2_5": 1003,
+        "score_p97_5": 1022,
         "trust_range": [
-          5,
-          5
+          6,
+          3
         ],
-        "win_rate": 0.4687388843977365
+        "win_rate": 0.47117060111949377
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2340,15 +2340,15 @@
       "organisation": "OpenAI",
       "params": 47,
       "prefs": {
-        "clear_formatting": 220,
-        "complete": 367,
-        "creative": 89,
-        "incorrect": 84,
-        "instructions_not_followed": 98,
-        "positive_prefs_ratio": 0.7600585223116313,
-        "superficial": 146,
-        "total_prefs": 1367,
-        "useful": 363
+        "clear_formatting": 260,
+        "complete": 421,
+        "creative": 102,
+        "incorrect": 108,
+        "instructions_not_followed": 110,
+        "positive_prefs_ratio": 0.753416149068323,
+        "superficial": 179,
+        "total_prefs": 1610,
+        "useful": 430
       },
       "pricey": false,
       "quantization": null,
@@ -2366,19 +2366,19 @@
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 948,
-        "mean_win_prob": 0.42670782827312054,
-        "n_match": 3055,
-        "rank": 75,
-        "rank_p2_5": 71,
+        "elo": 945,
+        "mean_win_prob": 0.4231188476790912,
+        "n_match": 3344,
+        "rank": 76,
+        "rank_p2_5": 72,
         "rank_p97_5": 78,
-        "score_p2_5": 938,
-        "score_p97_5": 959,
+        "score_p2_5": 935,
+        "score_p97_5": 956,
         "trust_range": [
           4,
-          3
+          2
         ],
-        "win_rate": 0.40083142389525367
+        "win_rate": 0.3978708133971292
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2395,15 +2395,15 @@
       "organisation": "OpenAI",
       "params": 11,
       "prefs": {
-        "clear_formatting": 155,
-        "complete": 228,
-        "creative": 56,
-        "incorrect": 115,
-        "instructions_not_followed": 137,
-        "positive_prefs_ratio": 0.6324222431668237,
-        "superficial": 138,
-        "total_prefs": 1061,
-        "useful": 232
+        "clear_formatting": 167,
+        "complete": 255,
+        "creative": 62,
+        "incorrect": 130,
+        "instructions_not_followed": 148,
+        "positive_prefs_ratio": 0.6302170283806344,
+        "superficial": 165,
+        "total_prefs": 1198,
+        "useful": 271
       },
       "pricey": false,
       "quantization": null,
@@ -2421,19 +2421,19 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1072,
-        "mean_win_prob": 0.5964187419659115,
-        "n_match": 2666,
-        "rank": 19,
-        "rank_p2_5": 12,
-        "rank_p97_5": 25,
-        "score_p2_5": 1061,
+        "elo": 1074,
+        "mean_win_prob": 0.5989256271172112,
+        "n_match": 2974,
+        "rank": 16,
+        "rank_p2_5": 11,
+        "rank_p97_5": 23,
+        "score_p2_5": 1063,
         "score_p97_5": 1084,
         "trust_range": [
-          7,
-          6
+          5,
+          7
         ],
-        "win_rate": 0.5288709677419355
+        "win_rate": 0.5281573638197714
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2450,15 +2450,15 @@
       "organisation": "OpenAI",
       "params": 300,
       "prefs": {
-        "clear_formatting": 318,
-        "complete": 381,
-        "creative": 111,
-        "incorrect": 60,
-        "instructions_not_followed": 46,
-        "positive_prefs_ratio": 0.846643109540636,
-        "superficial": 111,
-        "total_prefs": 1415,
-        "useful": 388
+        "clear_formatting": 360,
+        "complete": 433,
+        "creative": 124,
+        "incorrect": 70,
+        "instructions_not_followed": 54,
+        "positive_prefs_ratio": 0.842170160295931,
+        "superficial": 132,
+        "total_prefs": 1622,
+        "useful": 449
       },
       "pricey": false,
       "quantization": null,
@@ -2476,19 +2476,19 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1077,
-        "mean_win_prob": 0.6041193176587559,
-        "n_match": 1783,
+        "elo": 1076,
+        "mean_win_prob": 0.602775976439592,
+        "n_match": 2367,
         "rank": 14,
         "rank_p2_5": 10,
         "rank_p97_5": 22,
-        "score_p2_5": 1064,
-        "score_p97_5": 1090,
+        "score_p2_5": 1065,
+        "score_p97_5": 1087,
         "trust_range": [
           4,
           8
         ],
-        "win_rate": 0.5219629837352776
+        "win_rate": 0.529467680608365
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2505,15 +2505,15 @@
       "organisation": "OpenAI",
       "params": 300,
       "prefs": {
-        "clear_formatting": 281,
-        "complete": 293,
-        "creative": 88,
-        "incorrect": 54,
-        "instructions_not_followed": 45,
-        "positive_prefs_ratio": 0.8235294117647058,
-        "superficial": 123,
-        "total_prefs": 1258,
-        "useful": 374
+        "clear_formatting": 363,
+        "complete": 380,
+        "creative": 108,
+        "incorrect": 71,
+        "instructions_not_followed": 57,
+        "positive_prefs_ratio": 0.8220443349753694,
+        "superficial": 161,
+        "total_prefs": 1624,
+        "useful": 484
       },
       "pricey": false,
       "quantization": null,
@@ -2531,19 +2531,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1065,
-        "mean_win_prob": 0.5873573376283776,
-        "n_match": 1868,
-        "rank": 20,
+        "elo": 1066,
+        "mean_win_prob": 0.5883633282708796,
+        "n_match": 2127,
+        "rank": 21,
         "rank_p2_5": 14,
-        "rank_p97_5": 30,
-        "score_p2_5": 1052,
+        "rank_p97_5": 29,
+        "score_p2_5": 1054,
         "score_p97_5": 1078,
         "trust_range": [
-          6,
-          10
+          7,
+          8
         ],
-        "win_rate": 0.5230690948044993
+        "win_rate": 0.5258607714016933
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2560,15 +2560,15 @@
       "organisation": "OpenAI",
       "params": 117,
       "prefs": {
-        "clear_formatting": 250,
-        "complete": 371,
-        "creative": 96,
-        "incorrect": 107,
-        "instructions_not_followed": 59,
-        "positive_prefs_ratio": 0.8043831168831169,
-        "superficial": 75,
-        "total_prefs": 1232,
-        "useful": 274
+        "clear_formatting": 289,
+        "complete": 424,
+        "creative": 111,
+        "incorrect": 121,
+        "instructions_not_followed": 69,
+        "positive_prefs_ratio": 0.8043326345213138,
+        "superficial": 90,
+        "total_prefs": 1431,
+        "useful": 327
       },
       "pricey": false,
       "quantization": null,
@@ -2586,19 +2586,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1012,
-        "mean_win_prob": 0.5143487040259033,
-        "n_match": 2169,
-        "rank": 45,
+        "elo": 1013,
+        "mean_win_prob": 0.516412782918306,
+        "n_match": 2499,
+        "rank": 46,
         "rank_p2_5": 40,
-        "rank_p97_5": 51,
-        "score_p2_5": 1000,
+        "rank_p97_5": 50,
+        "score_p2_5": 1002,
         "score_p97_5": 1024,
         "trust_range": [
-          5,
-          6
+          6,
+          4
         ],
-        "win_rate": 0.45893911439114393
+        "win_rate": 0.4535828662930344
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2615,15 +2615,15 @@
       "organisation": "OpenAI",
       "params": 21,
       "prefs": {
-        "clear_formatting": 203,
-        "complete": 230,
-        "creative": 83,
-        "incorrect": 122,
-        "instructions_not_followed": 68,
-        "positive_prefs_ratio": 0.7140169332079022,
-        "superficial": 114,
-        "total_prefs": 1063,
-        "useful": 243
+        "clear_formatting": 247,
+        "complete": 292,
+        "creative": 102,
+        "incorrect": 142,
+        "instructions_not_followed": 84,
+        "positive_prefs_ratio": 0.723207401696222,
+        "superficial": 133,
+        "total_prefs": 1297,
+        "useful": 297
       },
       "pricey": false,
       "quantization": null,
@@ -2642,18 +2642,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1060,
-        "mean_win_prob": 0.5803508234220015,
+        "mean_win_prob": 0.5807327089224541,
         "n_match": 1537,
         "rank": 25,
         "rank_p2_5": 15,
-        "rank_p97_5": 33,
-        "score_p2_5": 1045,
-        "score_p97_5": 1077,
+        "rank_p97_5": 32,
+        "score_p2_5": 1046,
+        "score_p97_5": 1076,
         "trust_range": [
           10,
-          8
+          7
         ],
-        "win_rate": 0.5305338541666668
+        "win_rate": 0.5305338541666667
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2696,17 +2696,17 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1063,
-        "mean_win_prob": 0.5842195331607049,
+        "elo": 1062,
+        "mean_win_prob": 0.5839268487478416,
         "n_match": 2623,
         "rank": 24,
         "rank_p2_5": 16,
-        "rank_p97_5": 29,
+        "rank_p97_5": 30,
         "score_p2_5": 1052,
-        "score_p97_5": 1075,
+        "score_p97_5": 1074,
         "trust_range": [
           8,
-          5
+          6
         ],
         "win_rate": 0.5293971766501335
       },
@@ -2751,19 +2751,19 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1077,
-        "mean_win_prob": 0.6029060545671084,
-        "n_match": 1963,
-        "rank": 15,
-        "rank_p2_5": 10,
-        "rank_p97_5": 23,
-        "score_p2_5": 1063,
-        "score_p97_5": 1089,
+        "elo": 1069,
+        "mean_win_prob": 0.5923987719075315,
+        "n_match": 2311,
+        "rank": 19,
+        "rank_p2_5": 13,
+        "rank_p97_5": 27,
+        "score_p2_5": 1057,
+        "score_p97_5": 1081,
         "trust_range": [
-          5,
+          6,
           8
         ],
-        "win_rate": 0.5402649006622516
+        "win_rate": 0.532081350064907
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2780,15 +2780,15 @@
       "organisation": "xAI",
       "params": 1700,
       "prefs": {
-        "clear_formatting": 267,
-        "complete": 306,
-        "creative": 143,
-        "incorrect": 99,
-        "instructions_not_followed": 42,
-        "positive_prefs_ratio": 0.8196844477836214,
-        "superficial": 99,
-        "total_prefs": 1331,
-        "useful": 375
+        "clear_formatting": 307,
+        "complete": 350,
+        "creative": 159,
+        "incorrect": 118,
+        "instructions_not_followed": 48,
+        "positive_prefs_ratio": 0.8125819134993447,
+        "superficial": 120,
+        "total_prefs": 1526,
+        "useful": 424
       },
       "pricey": false,
       "quantization": null,
@@ -2807,16 +2807,16 @@
       "commercial_use": true,
       "data": {
         "elo": 940,
-        "mean_win_prob": 0.4161042345796578,
+        "mean_win_prob": 0.416086088357126,
         "n_match": 6735,
         "rank": 78,
         "rank_p2_5": 74,
-        "rank_p97_5": 79,
-        "score_p2_5": 933,
-        "score_p97_5": 948,
+        "rank_p97_5": 80,
+        "score_p2_5": 932,
+        "score_p97_5": 947,
         "trust_range": [
           4,
-          1
+          2
         ],
         "win_rate": 0.46634743875278395
       },
@@ -2858,18 +2858,18 @@
       "commercial_use": true,
       "data": {
         "elo": 934,
-        "mean_win_prob": 0.40840134196626643,
-        "n_match": 2809,
+        "mean_win_prob": 0.4081375648971059,
+        "n_match": 3038,
         "rank": 79,
         "rank_p2_5": 75,
-        "rank_p97_5": 83,
-        "score_p2_5": 922,
+        "rank_p97_5": 82,
+        "score_p2_5": 923,
         "score_p97_5": 946,
         "trust_range": [
           4,
-          4
+          3
         ],
-        "win_rate": 0.3727344028520499
+        "win_rate": 0.36948582729070534
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2886,15 +2886,15 @@
       "organisation": "Nous",
       "params": 70,
       "prefs": {
-        "clear_formatting": 146,
-        "complete": 106,
-        "creative": 43,
-        "incorrect": 133,
-        "instructions_not_followed": 91,
-        "positive_prefs_ratio": 0.5513347022587269,
-        "superficial": 213,
-        "total_prefs": 974,
-        "useful": 242
+        "clear_formatting": 167,
+        "complete": 124,
+        "creative": 54,
+        "incorrect": 155,
+        "instructions_not_followed": 102,
+        "positive_prefs_ratio": 0.5478723404255319,
+        "superficial": 253,
+        "total_prefs": 1128,
+        "useful": 273
       },
       "pricey": false,
       "quantization": null,
@@ -2913,18 +2913,18 @@
       "commercial_use": true,
       "data": {
         "elo": 972,
-        "mean_win_prob": 0.4600445997642982,
+        "mean_win_prob": 0.45883980407650465,
         "n_match": 172,
         "rank": 64,
         "rank_p2_5": 44,
-        "rank_p97_5": 81,
-        "score_p2_5": 927,
-        "score_p97_5": 1015,
+        "rank_p97_5": 82,
+        "score_p2_5": 924,
+        "score_p97_5": 1014,
         "trust_range": [
           20,
-          17
+          18
         ],
-        "win_rate": 0.5449418604651162
+        "win_rate": 0.5449418604651163
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2963,19 +2963,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1057,
-        "mean_win_prob": 0.5771536046889836,
-        "n_match": 1332,
-        "rank": 27,
+        "elo": 1059,
+        "mean_win_prob": 0.5797761570851532,
+        "n_match": 1571,
+        "rank": 26,
         "rank_p2_5": 17,
-        "rank_p97_5": 34,
-        "score_p2_5": 1042,
+        "rank_p97_5": 33,
+        "score_p2_5": 1045,
         "score_p97_5": 1073,
         "trust_range": [
-          10,
+          9,
           7
         ],
-        "win_rate": 0.5049284099472494
+        "win_rate": 0.5203639846743295
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2992,15 +2992,15 @@
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 174,
-        "complete": 188,
-        "creative": 79,
-        "incorrect": 64,
-        "instructions_not_followed": 19,
-        "positive_prefs_ratio": 0.8192771084337349,
-        "superficial": 82,
-        "total_prefs": 913,
-        "useful": 307
+        "clear_formatting": 222,
+        "complete": 220,
+        "creative": 97,
+        "incorrect": 76,
+        "instructions_not_followed": 30,
+        "positive_prefs_ratio": 0.8147138964577657,
+        "superficial": 98,
+        "total_prefs": 1101,
+        "useful": 358
       },
       "pricey": false,
       "quantization": null,
@@ -3018,19 +3018,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1063,
-        "mean_win_prob": 0.5843774363499111,
-        "n_match": 871,
-        "rank": 23,
-        "rank_p2_5": 12,
-        "rank_p97_5": 33,
-        "score_p2_5": 1044,
-        "score_p97_5": 1083,
+        "elo": 1067,
+        "mean_win_prob": 0.5904652115076863,
+        "n_match": 1129,
+        "rank": 20,
+        "rank_p2_5": 11,
+        "rank_p97_5": 30,
+        "score_p2_5": 1051,
+        "score_p97_5": 1084,
         "trust_range": [
-          11,
+          9,
           10
         ],
-        "win_rate": 0.5373708381171068
+        "win_rate": 0.5386802480070859
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3047,15 +3047,15 @@
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 121,
-        "complete": 167,
-        "creative": 32,
-        "incorrect": 47,
-        "instructions_not_followed": 36,
-        "positive_prefs_ratio": 0.7783094098883573,
-        "superficial": 56,
-        "total_prefs": 627,
-        "useful": 168
+        "clear_formatting": 167,
+        "complete": 209,
+        "creative": 44,
+        "incorrect": 52,
+        "instructions_not_followed": 39,
+        "positive_prefs_ratio": 0.7992565055762082,
+        "superficial": 71,
+        "total_prefs": 807,
+        "useful": 225
       },
       "pricey": false,
       "quantization": null,
@@ -3104,8 +3104,8 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 881,
-        "mean_win_prob": 0.3387517352980045,
+        "elo": 880,
+        "mean_win_prob": 0.33814755590519974,
         "n_match": 3578,
         "rank": 85,
         "rank_p2_5": 84,
@@ -3156,18 +3156,18 @@
       "commercial_use": true,
       "data": {
         "elo": 997,
-        "mean_win_prob": 0.49367475884329776,
-        "n_match": 1907,
+        "mean_win_prob": 0.49326465624278226,
+        "n_match": 2130,
         "rank": 53,
-        "rank_p2_5": 46,
+        "rank_p2_5": 48,
         "rank_p97_5": 59,
-        "score_p2_5": 983,
-        "score_p97_5": 1010,
+        "score_p2_5": 984,
+        "score_p97_5": 1008,
         "trust_range": [
-          7,
+          5,
           6
         ],
-        "win_rate": 0.4640115364446775
+        "win_rate": 0.46863615023474176
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3184,15 +3184,15 @@
       "organisation": "Liquid",
       "params": 8,
       "prefs": {
-        "clear_formatting": 193,
-        "complete": 158,
-        "creative": 41,
-        "incorrect": 155,
-        "instructions_not_followed": 70,
-        "positive_prefs_ratio": 0.6246246246246246,
-        "superficial": 150,
-        "total_prefs": 999,
-        "useful": 232
+        "clear_formatting": 214,
+        "complete": 184,
+        "creative": 52,
+        "incorrect": 174,
+        "instructions_not_followed": 76,
+        "positive_prefs_ratio": 0.6339522546419099,
+        "superficial": 164,
+        "total_prefs": 1131,
+        "useful": 267
       },
       "pricey": false,
       "quantization": null,
@@ -3211,18 +3211,18 @@
       "commercial_use": true,
       "data": {
         "elo": 956,
-        "mean_win_prob": 0.4371502244185798,
+        "mean_win_prob": 0.4371707735244224,
         "n_match": 9973,
         "rank": 73,
         "rank_p2_5": 69,
         "rank_p97_5": 75,
         "score_p2_5": 949,
-        "score_p97_5": 963,
+        "score_p97_5": 962,
         "trust_range": [
           4,
           2
         ],
-        "win_rate": 0.4950747166783673
+        "win_rate": 0.4950747166783672
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3266,16 +3266,16 @@
       "commercial_use": true,
       "data": {
         "elo": 971,
-        "mean_win_prob": 0.45861713828707984,
+        "mean_win_prob": 0.4576333673006023,
         "n_match": 5583,
         "rank": 66,
-        "rank_p2_5": 61,
-        "rank_p97_5": 70,
+        "rank_p2_5": 62,
+        "rank_p97_5": 69,
         "score_p2_5": 962,
-        "score_p97_5": 980,
+        "score_p97_5": 979,
         "trust_range": [
-          5,
-          4
+          4,
+          3
         ],
         "win_rate": 0.530445996775927
       },
@@ -3317,13 +3317,13 @@
       "commercial_use": true,
       "data": {
         "elo": 932,
-        "mean_win_prob": 0.405322988048665,
+        "mean_win_prob": 0.4052017688864367,
         "n_match": 10444,
         "rank": 80,
         "rank_p2_5": 77,
         "rank_p97_5": 82,
         "score_p2_5": 926,
-        "score_p97_5": 938,
+        "score_p97_5": 939,
         "trust_range": [
           3,
           2
@@ -3372,16 +3372,16 @@
       "commercial_use": true,
       "data": {
         "elo": 1044,
-        "mean_win_prob": 0.5581554441201362,
+        "mean_win_prob": 0.558268567791439,
         "n_match": 6709,
-        "rank": 34,
+        "rank": 33,
         "rank_p2_5": 30,
         "rank_p97_5": 36,
         "score_p2_5": 1036,
         "score_p97_5": 1051,
         "trust_range": [
-          4,
-          2
+          3,
+          3
         ],
         "win_rate": 0.5452863107664778
       },
@@ -3427,18 +3427,18 @@
       "commercial_use": true,
       "data": {
         "elo": 986,
-        "mean_win_prob": 0.47847166537734503,
-        "n_match": 9454,
+        "mean_win_prob": 0.4780959322604436,
+        "n_match": 9667,
         "rank": 57,
         "rank_p2_5": 54,
         "rank_p97_5": 62,
-        "score_p2_5": 980,
+        "score_p2_5": 979,
         "score_p97_5": 992,
         "trust_range": [
           3,
           5
         ],
-        "win_rate": 0.47380262322826316
+        "win_rate": 0.4733588496948381
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3455,15 +3455,15 @@
       "organisation": "Meta",
       "params": 70,
       "prefs": {
-        "clear_formatting": 1180,
-        "complete": 1228,
-        "creative": 326,
-        "incorrect": 517,
-        "instructions_not_followed": 175,
-        "positive_prefs_ratio": 0.7499131039277025,
-        "superficial": 747,
-        "total_prefs": 5754,
-        "useful": 1581
+        "clear_formatting": 1207,
+        "complete": 1258,
+        "creative": 334,
+        "incorrect": 536,
+        "instructions_not_followed": 187,
+        "positive_prefs_ratio": 0.7463216641298833,
+        "superficial": 777,
+        "total_prefs": 5913,
+        "useful": 1614
       },
       "pricey": false,
       "quantization": null,
@@ -3482,18 +3482,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1010,
-        "mean_win_prob": 0.51125200002953,
-        "n_match": 6149,
-        "rank": 47,
+        "mean_win_prob": 0.5113408309670182,
+        "n_match": 6404,
+        "rank": 48,
         "rank_p2_5": 43,
-        "rank_p97_5": 50,
+        "rank_p97_5": 51,
         "score_p2_5": 1003,
         "score_p97_5": 1017,
         "trust_range": [
-          4,
+          5,
           3
         ],
-        "win_rate": 0.48678972190600095
+        "win_rate": 0.48567613991255465
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3510,15 +3510,15 @@
       "organisation": "Meta",
       "params": 109,
       "prefs": {
-        "clear_formatting": 747,
-        "complete": 787,
-        "creative": 208,
-        "incorrect": 323,
-        "instructions_not_followed": 123,
-        "positive_prefs_ratio": 0.74748322147651,
-        "superficial": 457,
-        "total_prefs": 3576,
-        "useful": 931
+        "clear_formatting": 786,
+        "complete": 828,
+        "creative": 220,
+        "incorrect": 340,
+        "instructions_not_followed": 131,
+        "positive_prefs_ratio": 0.7461456671982988,
+        "superficial": 484,
+        "total_prefs": 3762,
+        "useful": 973
       },
       "pricey": false,
       "quantization": null,
@@ -3536,19 +3536,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1012,
-        "mean_win_prob": 0.5153698355260665,
-        "n_match": 3383,
-        "rank": 44,
-        "rank_p2_5": 41,
-        "rank_p97_5": 50,
-        "score_p2_5": 1003,
-        "score_p97_5": 1022,
+        "elo": 1015,
+        "mean_win_prob": 0.5184106940626225,
+        "n_match": 3666,
+        "rank": 43,
+        "rank_p2_5": 40,
+        "rank_p97_5": 49,
+        "score_p2_5": 1005,
+        "score_p97_5": 1024,
         "trust_range": [
           3,
           6
         ],
-        "win_rate": 0.4775879396984925
+        "win_rate": 0.48111565739225315
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3565,15 +3565,15 @@
       "organisation": "Meta",
       "params": 400,
       "prefs": {
-        "clear_formatting": 234,
-        "complete": 245,
-        "creative": 67,
-        "incorrect": 103,
-        "instructions_not_followed": 57,
-        "positive_prefs_ratio": 0.7196787148594378,
-        "superficial": 189,
-        "total_prefs": 1245,
-        "useful": 350
+        "clear_formatting": 272,
+        "complete": 293,
+        "creative": 76,
+        "incorrect": 120,
+        "instructions_not_followed": 69,
+        "positive_prefs_ratio": 0.7164487267721955,
+        "superficial": 223,
+        "total_prefs": 1453,
+        "useful": 400
       },
       "pricey": false,
       "quantization": null,
@@ -3592,12 +3592,12 @@
       "commercial_use": null,
       "data": {
         "elo": 1089,
-        "mean_win_prob": 0.6197154055144258,
+        "mean_win_prob": 0.6196930694463499,
         "n_match": 2207,
         "rank": 10,
         "rank_p2_5": 7,
         "rank_p97_5": 14,
-        "score_p2_5": 1078,
+        "score_p2_5": 1077,
         "score_p97_5": 1102,
         "trust_range": [
           3,
@@ -3647,16 +3647,16 @@
       "commercial_use": true,
       "data": {
         "elo": 1048,
-        "mean_win_prob": 0.5646979028521918,
+        "mean_win_prob": 0.5648041262731391,
         "n_match": 3147,
-        "rank": 32,
+        "rank": 31,
         "rank_p2_5": 26,
         "rank_p97_5": 35,
-        "score_p2_5": 1039,
+        "score_p2_5": 1038,
         "score_p97_5": 1059,
         "trust_range": [
-          6,
-          3
+          5,
+          4
         ],
         "win_rate": 0.52184361093452
       },
@@ -3755,19 +3755,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 974,
-        "mean_win_prob": 0.4618454749310405,
-        "n_match": 1763,
-        "rank": 63,
+        "elo": 976,
+        "mean_win_prob": 0.4642606306819486,
+        "n_match": 1992,
+        "rank": 62,
         "rank_p2_5": 56,
-        "rank_p97_5": 71,
-        "score_p2_5": 960,
-        "score_p97_5": 988,
+        "rank_p97_5": 70,
+        "score_p2_5": 962,
+        "score_p97_5": 989,
         "trust_range": [
-          7,
+          6,
           8
         ],
-        "win_rate": 0.4338287010777085
+        "win_rate": 0.432394578313253
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3784,15 +3784,15 @@
       "organisation": "MiniMax",
       "params": 230,
       "prefs": {
-        "clear_formatting": 126,
-        "complete": 179,
-        "creative": 53,
-        "incorrect": 91,
-        "instructions_not_followed": 53,
-        "positive_prefs_ratio": 0.6998784933171325,
-        "superficial": 103,
-        "total_prefs": 823,
-        "useful": 218
+        "clear_formatting": 153,
+        "complete": 209,
+        "creative": 61,
+        "incorrect": 110,
+        "instructions_not_followed": 62,
+        "positive_prefs_ratio": 0.696319018404908,
+        "superficial": 125,
+        "total_prefs": 978,
+        "useful": 258
       },
       "pricey": false,
       "quantization": null,
@@ -3811,16 +3811,16 @@
       "commercial_use": false,
       "data": {
         "elo": 962,
-        "mean_win_prob": 0.44592318016451804,
+        "mean_win_prob": 0.4454050973891244,
         "n_match": 9278,
         "rank": 69,
         "rank_p2_5": 66,
-        "rank_p97_5": 72,
+        "rank_p97_5": 73,
         "score_p2_5": 956,
-        "score_p97_5": 969,
+        "score_p97_5": 968,
         "trust_range": [
           3,
-          3
+          4
         ],
         "win_rate": 0.47576819407008086
       },
@@ -3862,16 +3862,16 @@
       "commercial_use": false,
       "data": {
         "elo": 1018,
-        "mean_win_prob": 0.5228170484784175,
+        "mean_win_prob": 0.5226971697345342,
         "n_match": 8829,
         "rank": 42,
         "rank_p2_5": 40,
-        "rank_p97_5": 46,
-        "score_p2_5": 1012,
-        "score_p97_5": 1025,
+        "rank_p97_5": 47,
+        "score_p2_5": 1011,
+        "score_p97_5": 1024,
         "trust_range": [
           2,
-          4
+          5
         ],
         "win_rate": 0.527441386340469
       },
@@ -3913,18 +3913,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1121,
-        "mean_win_prob": 0.6601080046824633,
-        "n_match": 2216,
+        "mean_win_prob": 0.6600162661515026,
+        "n_match": 2723,
         "rank": 3,
         "rank_p2_5": 1,
-        "rank_p97_5": 5,
+        "rank_p97_5": 4,
         "score_p2_5": 1109,
-        "score_p97_5": 1133,
+        "score_p97_5": 1132,
         "trust_range": [
           2,
-          2
+          1
         ],
-        "win_rate": 0.5707581227436823
+        "win_rate": 0.5632243848696291
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3941,15 +3941,15 @@
       "organisation": "Mistral AI",
       "params": 675,
       "prefs": {
-        "clear_formatting": 413,
-        "complete": 516,
-        "creative": 137,
-        "incorrect": 97,
-        "instructions_not_followed": 72,
-        "positive_prefs_ratio": 0.8635156664896442,
-        "superficial": 88,
-        "total_prefs": 1883,
-        "useful": 560
+        "clear_formatting": 490,
+        "complete": 627,
+        "creative": 174,
+        "incorrect": 122,
+        "instructions_not_followed": 79,
+        "positive_prefs_ratio": 0.8639365918097754,
+        "superficial": 108,
+        "total_prefs": 2271,
+        "useful": 671
       },
       "pricey": false,
       "quantization": null,
@@ -3968,18 +3968,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1118,
-        "mean_win_prob": 0.6562598155346869,
-        "n_match": 5837,
+        "mean_win_prob": 0.6568151662596042,
+        "n_match": 6128,
         "rank": 4,
         "rank_p2_5": 2,
-        "rank_p97_5": 5,
+        "rank_p97_5": 4,
         "score_p2_5": 1110,
-        "score_p97_5": 1125,
+        "score_p97_5": 1126,
         "trust_range": [
           2,
-          1
+          0
         ],
-        "win_rate": 0.5845202193283071
+        "win_rate": 0.5871405255426799
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3996,15 +3996,15 @@
       "organisation": "Mistral AI",
       "params": 123,
       "prefs": {
-        "clear_formatting": 571,
-        "complete": 713,
-        "creative": 191,
-        "incorrect": 162,
-        "instructions_not_followed": 73,
-        "positive_prefs_ratio": 0.8584686774941995,
-        "superficial": 131,
-        "total_prefs": 2586,
-        "useful": 745
+        "clear_formatting": 629,
+        "complete": 770,
+        "creative": 212,
+        "incorrect": 179,
+        "instructions_not_followed": 80,
+        "positive_prefs_ratio": 0.8561789772727273,
+        "superficial": 146,
+        "total_prefs": 2816,
+        "useful": 800
       },
       "pricey": false,
       "quantization": null,
@@ -4023,13 +4023,13 @@
       "commercial_use": true,
       "data": {
         "elo": 850,
-        "mean_win_prob": 0.3021513534733929,
+        "mean_win_prob": 0.3022397561809575,
         "n_match": 6251,
         "rank": 88,
         "rank_p2_5": 87,
         "rank_p97_5": 89,
         "score_p2_5": 842,
-        "score_p97_5": 859,
+        "score_p97_5": 858,
         "trust_range": [
           1,
           1
@@ -4074,16 +4074,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1014,
-        "mean_win_prob": 0.5177262937335063,
+        "mean_win_prob": 0.5177708287099839,
         "n_match": 4934,
-        "rank": 43,
+        "rank": 44,
         "rank_p2_5": 41,
         "rank_p97_5": 49,
         "score_p2_5": 1006,
         "score_p97_5": 1022,
         "trust_range": [
-          2,
-          6
+          3,
+          5
         ],
         "win_rate": 0.48257855260490573
       },
@@ -4128,16 +4128,16 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 985,
-        "mean_win_prob": 0.47664243725867267,
+        "elo": 984,
+        "mean_win_prob": 0.47635235200443404,
         "n_match": 3318,
         "rank": 58,
-        "rank_p2_5": 52,
+        "rank_p2_5": 53,
         "rank_p97_5": 64,
-        "score_p2_5": 974,
-        "score_p97_5": 996,
+        "score_p2_5": 975,
+        "score_p97_5": 995,
         "trust_range": [
-          6,
+          5,
           6
         ],
         "win_rate": 0.4952350813743219
@@ -4179,19 +4179,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1060,
-        "mean_win_prob": 0.5801651656735431,
-        "n_match": 4752,
-        "rank": 26,
-        "rank_p2_5": 20,
+        "elo": 1059,
+        "mean_win_prob": 0.5789817648849578,
+        "n_match": 5151,
+        "rank": 27,
+        "rank_p2_5": 21,
         "rank_p97_5": 30,
-        "score_p2_5": 1050,
-        "score_p97_5": 1068,
+        "score_p2_5": 1051,
+        "score_p97_5": 1066,
         "trust_range": [
           6,
-          4
+          3
         ],
-        "win_rate": 0.5266603535353536
+        "win_rate": 0.5255173752669384
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4208,15 +4208,15 @@
       "organisation": "Mistral AI",
       "params": 24,
       "prefs": {
-        "clear_formatting": 424,
-        "complete": 441,
-        "creative": 136,
-        "incorrect": 196,
-        "instructions_not_followed": 53,
-        "positive_prefs_ratio": 0.7840735068912711,
-        "superficial": 174,
-        "total_prefs": 1959,
-        "useful": 535
+        "clear_formatting": 479,
+        "complete": 492,
+        "creative": 158,
+        "incorrect": 222,
+        "instructions_not_followed": 60,
+        "positive_prefs_ratio": 0.7811796488068438,
+        "superficial": 204,
+        "total_prefs": 2221,
+        "useful": 606
       },
       "pricey": false,
       "quantization": null,
@@ -4234,17 +4234,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1005,
-        "mean_win_prob": 0.5043426283031475,
+        "elo": 1004,
+        "mean_win_prob": 0.5042666923948425,
         "n_match": 5079,
-        "rank": 48,
+        "rank": 49,
         "rank_p2_5": 45,
         "rank_p97_5": 53,
         "score_p2_5": 996,
-        "score_p97_5": 1013,
+        "score_p97_5": 1012,
         "trust_range": [
-          3,
-          5
+          4,
+          4
         ],
         "win_rate": 0.4945107304587517
       },
@@ -4313,12 +4313,12 @@
       "commercial_use": true,
       "data": {
         "elo": 840,
-        "mean_win_prob": 0.2901231918216952,
+        "mean_win_prob": 0.2902292446405549,
         "n_match": 5455,
         "rank": 89,
         "rank_p2_5": 88,
         "rank_p97_5": 90,
-        "score_p2_5": 831,
+        "score_p2_5": 830,
         "score_p97_5": 848,
         "trust_range": [
           1,
@@ -4364,12 +4364,12 @@
       "commercial_use": true,
       "data": {
         "elo": 883,
-        "mean_win_prob": 0.34147230645609067,
+        "mean_win_prob": 0.3419748267041058,
         "n_match": 2560,
         "rank": 84,
         "rank_p2_5": 84,
         "rank_p97_5": 86,
-        "score_p2_5": 869,
+        "score_p2_5": 871,
         "score_p97_5": 896,
         "trust_range": [
           0,
@@ -4415,16 +4415,16 @@
       "commercial_use": null,
       "data": {
         "elo": 981,
-        "mean_win_prob": 0.4717784406109374,
+        "mean_win_prob": 0.472093888599696,
         "n_match": 1619,
         "rank": 59,
-        "rank_p2_5": 52,
-        "rank_p97_5": 67,
+        "rank_p2_5": 53,
+        "rank_p97_5": 68,
         "score_p2_5": 966,
-        "score_p97_5": 996,
+        "score_p97_5": 995,
         "trust_range": [
-          7,
-          8
+          6,
+          9
         ],
         "win_rate": 0.51142063001853
       },
@@ -4465,16 +4465,16 @@
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1003,
-        "mean_win_prob": 0.5016919435195798,
+        "elo": 1002,
+        "mean_win_prob": 0.5004343955057601,
         "n_match": 2830,
-        "rank": 49,
-        "rank_p2_5": 44,
-        "rank_p97_5": 54,
-        "score_p2_5": 992,
-        "score_p97_5": 1014,
+        "rank": 50,
+        "rank_p2_5": 46,
+        "rank_p97_5": 55,
+        "score_p2_5": 991,
+        "score_p97_5": 1013,
         "trust_range": [
-          5,
+          4,
           5
         ],
         "win_rate": 0.4738494167550371
@@ -4547,19 +4547,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 878,
-        "mean_win_prob": 0.33537291495874644,
-        "n_match": 751,
+        "elo": 872,
+        "mean_win_prob": 0.3288954531461895,
+        "n_match": 994,
         "rank": 86,
         "rank_p2_5": 84,
         "rank_p97_5": 87,
         "score_p2_5": 854,
-        "score_p97_5": 900,
+        "score_p97_5": 893,
         "trust_range": [
           2,
           1
         ],
-        "win_rate": 0.3532356857523303
+        "win_rate": 0.3467907444668008
       },
       "distribution": "fully-open-source",
       "endpoint": {
@@ -4576,15 +4576,15 @@
       "organisation": "Ai2",
       "params": 32,
       "prefs": {
-        "clear_formatting": 33,
-        "complete": 63,
-        "creative": 22,
-        "incorrect": 75,
-        "instructions_not_followed": 62,
-        "positive_prefs_ratio": 0.49343832020997375,
-        "superficial": 56,
-        "total_prefs": 381,
-        "useful": 70
+        "clear_formatting": 48,
+        "complete": 83,
+        "creative": 29,
+        "incorrect": 95,
+        "instructions_not_followed": 85,
+        "positive_prefs_ratio": 0.49615384615384617,
+        "superficial": 82,
+        "total_prefs": 520,
+        "useful": 98
       },
       "pricey": false,
       "quantization": null,
@@ -4657,13 +4657,13 @@
       "commercial_use": true,
       "data": {
         "elo": 860,
-        "mean_win_prob": 0.31319216099271757,
+        "mean_win_prob": 0.3133617512274764,
         "n_match": 2535,
         "rank": 87,
         "rank_p2_5": 86,
         "rank_p97_5": 88,
         "score_p2_5": 846,
-        "score_p97_5": 872,
+        "score_p97_5": 873,
         "trust_range": [
           1,
           1
@@ -4708,15 +4708,15 @@
       "commercial_use": true,
       "data": {
         "elo": 966,
-        "mean_win_prob": 0.45101415659935146,
+        "mean_win_prob": 0.45085826524679345,
         "n_match": 9968,
         "rank": 68,
-        "rank_p2_5": 65,
+        "rank_p2_5": 64,
         "rank_p97_5": 71,
         "score_p2_5": 960,
         "score_p97_5": 972,
         "trust_range": [
-          3,
+          4,
           3
         ],
         "win_rate": 0.46780074245008524
@@ -4762,19 +4762,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 987,
-        "mean_win_prob": 0.4802983346485039,
-        "n_match": 2776,
-        "rank": 56,
-        "rank_p2_5": 51,
-        "rank_p97_5": 63,
-        "score_p2_5": 976,
+        "elo": 988,
+        "mean_win_prob": 0.4817273926037259,
+        "n_match": 3059,
+        "rank": 55,
+        "rank_p2_5": 52,
+        "rank_p97_5": 62,
+        "score_p2_5": 979,
         "score_p97_5": 998,
         "trust_range": [
-          5,
+          3,
           7
         ],
-        "win_rate": 0.43244596541786745
+        "win_rate": 0.4339146779993462
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4791,15 +4791,15 @@
       "organisation": "Alibaba",
       "params": 8,
       "prefs": {
-        "clear_formatting": 182,
-        "complete": 262,
-        "creative": 73,
-        "incorrect": 184,
-        "instructions_not_followed": 74,
-        "positive_prefs_ratio": 0.6740282685512368,
-        "superficial": 111,
-        "total_prefs": 1132,
-        "useful": 246
+        "clear_formatting": 203,
+        "complete": 292,
+        "creative": 80,
+        "incorrect": 221,
+        "instructions_not_followed": 87,
+        "positive_prefs_ratio": 0.6602613374327441,
+        "superficial": 134,
+        "total_prefs": 1301,
+        "useful": 284
       },
       "pricey": false,
       "quantization": null,
@@ -4898,14 +4898,14 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 726,
-        "mean_win_prob": 0.1773719633399619,
+        "elo": 727,
+        "mean_win_prob": 0.17819468156096058,
         "n_match": 80,
         "rank": 93,
         "rank_p2_5": 91,
         "rank_p97_5": 93,
-        "score_p2_5": 616,
-        "score_p97_5": 804,
+        "score_p2_5": 627,
+        "score_p97_5": 806,
         "trust_range": [
           2,
           0
@@ -4949,17 +4949,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 956,
-        "mean_win_prob": 0.43797189480634385,
+        "elo": 959,
+        "mean_win_prob": 0.4416137596215693,
         "n_match": 142,
-        "rank": 72,
-        "rank_p2_5": 44,
+        "rank": 71,
+        "rank_p2_5": 41,
         "rank_p97_5": 83,
-        "score_p2_5": 904,
-        "score_p97_5": 1013,
+        "score_p2_5": 898,
+        "score_p97_5": 1022,
         "trust_range": [
-          28,
-          11
+          30,
+          12
         ],
         "win_rate": 0.5557042253521126
       },
@@ -5001,13 +5001,13 @@
       "commercial_use": true,
       "data": {
         "elo": 925,
-        "mean_win_prob": 0.3959347678996002,
+        "mean_win_prob": 0.3960513840154857,
         "n_match": 1417,
         "rank": 82,
         "rank_p2_5": 76,
         "rank_p97_5": 83,
         "score_p2_5": 907,
-        "score_p97_5": 943,
+        "score_p97_5": 942,
         "trust_range": [
           6,
           1
@@ -5051,13 +5051,13 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 925,
-        "mean_win_prob": 0.3953224509075499,
+        "elo": 924,
+        "mean_win_prob": 0.39515441720401645,
         "n_match": 7299,
         "rank": 83,
         "rank_p2_5": 79,
         "rank_p97_5": 83,
-        "score_p2_5": 917,
+        "score_p2_5": 918,
         "score_p97_5": 932,
         "trust_range": [
           4,
@@ -5103,18 +5103,18 @@
       "commercial_use": true,
       "data": {
         "elo": 988,
-        "mean_win_prob": 0.48125541854162907,
-        "n_match": 3337,
-        "rank": 55,
+        "mean_win_prob": 0.4815755388145933,
+        "n_match": 3628,
+        "rank": 56,
         "rank_p2_5": 52,
         "rank_p97_5": 62,
-        "score_p2_5": 977,
+        "score_p2_5": 978,
         "score_p97_5": 998,
         "trust_range": [
-          3,
-          7
+          4,
+          6
         ],
-        "win_rate": 0.4606205035971223
+        "win_rate": 0.45714640198511164
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -5131,15 +5131,15 @@
       "organisation": "Alibaba",
       "params": 30,
       "prefs": {
-        "clear_formatting": 224,
-        "complete": 298,
-        "creative": 72,
-        "incorrect": 188,
-        "instructions_not_followed": 76,
-        "positive_prefs_ratio": 0.6761978361669243,
-        "superficial": 155,
-        "total_prefs": 1294,
-        "useful": 281
+        "clear_formatting": 267,
+        "complete": 348,
+        "creative": 86,
+        "incorrect": 206,
+        "instructions_not_followed": 106,
+        "positive_prefs_ratio": 0.6779548472775564,
+        "superficial": 173,
+        "total_prefs": 1506,
+        "useful": 320
       },
       "pricey": false,
       "quantization": null,
@@ -5157,19 +5157,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1018,
-        "mean_win_prob": 0.523403026420265,
-        "n_match": 1905,
+        "elo": 1020,
+        "mean_win_prob": 0.5252102910158156,
+        "n_match": 2158,
         "rank": 41,
         "rank_p2_5": 38,
-        "rank_p97_5": 49,
-        "score_p2_5": 1006,
-        "score_p97_5": 1031,
+        "rank_p97_5": 48,
+        "score_p2_5": 1008,
+        "score_p97_5": 1032,
         "trust_range": [
           3,
-          8
+          7
         ],
-        "win_rate": 0.5019831667543398
+        "win_rate": 0.5020269016697587
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -5186,15 +5186,15 @@
       "organisation": "Alibaba",
       "params": 32,
       "prefs": {
-        "clear_formatting": 276,
-        "complete": 359,
-        "creative": 127,
-        "incorrect": 171,
-        "instructions_not_followed": 79,
-        "positive_prefs_ratio": 0.7523510971786834,
-        "superficial": 145,
-        "total_prefs": 1595,
-        "useful": 438
+        "clear_formatting": 312,
+        "complete": 397,
+        "creative": 139,
+        "incorrect": 187,
+        "instructions_not_followed": 85,
+        "positive_prefs_ratio": 0.7522573363431151,
+        "superficial": 167,
+        "total_prefs": 1772,
+        "useful": 485
       },
       "pricey": false,
       "quantization": null,
@@ -5213,18 +5213,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1050,
-        "mean_win_prob": 0.5668174223080993,
-        "n_match": 1119,
+        "mean_win_prob": 0.5668799162822064,
+        "n_match": 1385,
         "rank": 30,
-        "rank_p2_5": 21,
-        "rank_p97_5": 37,
+        "rank_p2_5": 22,
+        "rank_p97_5": 36,
         "score_p2_5": 1034,
-        "score_p97_5": 1066,
+        "score_p97_5": 1064,
         "trust_range": [
-          9,
-          7
+          8,
+          6
         ],
-        "win_rate": 0.5335004476275739
+        "win_rate": 0.5229573391178597
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -5241,15 +5241,15 @@
       "organisation": "Alibaba",
       "params": 480,
       "prefs": {
-        "clear_formatting": 144,
-        "complete": 128,
-        "creative": 50,
-        "incorrect": 50,
-        "instructions_not_followed": 26,
-        "positive_prefs_ratio": 0.7806354009077155,
-        "superficial": 69,
-        "total_prefs": 661,
-        "useful": 194
+        "clear_formatting": 190,
+        "complete": 167,
+        "creative": 62,
+        "incorrect": 58,
+        "instructions_not_followed": 31,
+        "positive_prefs_ratio": 0.7866354044548651,
+        "superficial": 93,
+        "total_prefs": 853,
+        "useful": 252
       },
       "pricey": false,
       "quantization": null,
@@ -5267,19 +5267,19 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1103,
-        "mean_win_prob": 0.6373282578576308,
-        "n_match": 2852,
-        "rank": 7,
+        "elo": 1102,
+        "mean_win_prob": 0.6369730718514893,
+        "n_match": 3108,
+        "rank": 6,
         "rank_p2_5": 4,
         "rank_p97_5": 9,
-        "score_p2_5": 1092,
-        "score_p97_5": 1114,
+        "score_p2_5": 1093,
+        "score_p97_5": 1112,
         "trust_range": [
-          3,
-          2
+          2,
+          3
         ],
-        "win_rate": 0.578716239915819
+        "win_rate": 0.5737045381396846
       },
       "distribution": "api-only",
       "endpoint": {
@@ -5296,15 +5296,15 @@
       "organisation": "Alibaba",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 308,
-        "complete": 319,
-        "creative": 114,
-        "incorrect": 119,
-        "instructions_not_followed": 41,
-        "positive_prefs_ratio": 0.8162040510127532,
-        "superficial": 85,
-        "total_prefs": 1333,
-        "useful": 347
+        "clear_formatting": 347,
+        "complete": 361,
+        "creative": 126,
+        "incorrect": 131,
+        "instructions_not_followed": 46,
+        "positive_prefs_ratio": 0.8157199471598415,
+        "superficial": 102,
+        "total_prefs": 1514,
+        "useful": 401
       },
       "pricey": false,
       "quantization": null,
@@ -5322,12 +5322,12 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 947,
-        "mean_win_prob": 0.4256146358234883,
+        "elo": 948,
+        "mean_win_prob": 0.4260268272929281,
         "n_match": 1566,
-        "rank": 76,
-        "rank_p2_5": 70,
-        "rank_p97_5": 80,
+        "rank": 75,
+        "rank_p2_5": 69,
+        "rank_p97_5": 79,
         "score_p2_5": 932,
         "score_p97_5": 963,
         "trust_range": [
@@ -5377,14 +5377,14 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 763,
-        "mean_win_prob": 0.21028866114872546,
+        "elo": 764,
+        "mean_win_prob": 0.21134908039900374,
         "n_match": 65,
         "rank": 91,
         "rank_p2_5": 88,
         "rank_p97_5": 93,
         "score_p2_5": 664,
-        "score_p97_5": 852,
+        "score_p97_5": 850,
         "trust_range": [
           3,
           2
