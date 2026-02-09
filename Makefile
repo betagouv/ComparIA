@@ -46,10 +46,10 @@ db:
 
 ## Launch and init Postgres database with production data from a backup (result of pg_dump -Fc made with postgres 16)
 # put a prd-backup.dump file in docker folder before launching this
-# once the container has correctly loaded you can remove the prd-backup.dump file
+# once the container has correctly loaded, the pg_restore log says : Backup restoration completed successfully!
 db-prd-local:
 	@echo "Starting PostgreSQL database with prd dump init..."
-	cd docker && docker compose -f db-prd-local.compose.yml up -d
+	cd docker && docker compose -f db-prd-local.compose.yml up | grep -E 'pg_restore|successfully'
 
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."

@@ -35,7 +35,10 @@ checkpoints_flant5_3b
 *.pkl
 # *.csv
 tests/state_of_the_union.txt
+
+#Postgresql backup files
 prd-backup.dump
+*.dump
 
 # Build
 build
