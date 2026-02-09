@@ -595,6 +595,11 @@
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
                     "reuse_specificities": ""
                 },
+                "Arcee": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "Cohere": {
                     "commercial_use_specificities": "",
                     "license_desc": "",
@@ -1208,10 +1213,20 @@
                 "fyi": "<p>Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud).</p>",
                 "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une fraction des paramètres (35 B sur 480 B), ce qui réduit considérablement l'impact environnemental et le coût par rapport à un modèle dense équivalent.\nLa fenêtre de contexte atteint nativement 256 000 jetons et peut être étendue jusqu’à 1 million grâce à des techniques d’extrapolation (YaRN), ce qui est idéal pour l’analyse de bases de code volumineuses.</p>"
             },
+            "Qwen3 Coder Next": {
+                "desc": "<p>Modèle conçu spécifiquement pour le code (notamment pour du développement local). Grâce à une architecture hybride combinant Gated DeltaNet, Gated Attention et MoE, il atteint des performances comparables à des modèles bien plus grands tout en n'activant que 3 milliards de paramètres sur 80 milliards au total.</p>",
+                "fyi": "<p>Ce modèle a été entraîné sur plus de 800 000 tâches de code vérifiables via un processus d'apprentissage par renforcement. Il excelle dans le raisonnement sur des horizons longs, l'utilisation d'outils complexes et la récupération après des erreurs d'exécution.</p>",
+                "size_desc": "<p>Qwen3-Coder-Next utilise une architecture de mélange d'experts (MoE) ultra-sparse avec 512 experts, dont seulement 10 sont activés par jeton. Cette conception permet de faire fonctionner le modèle sur du matériel haut de gamme mais grand public (MacBook 64 Go, RTX 5090 ou AMD Radeon 7900 XTX) tout en conservant une fenêtre de contexte native de 256 000 jetons.</p>"
+            },
             "qwq 32B": {
                 "desc": "<p>Modèle de raisonnement de taille moyenne spécialisé et très performant en mathématiques, génération de code, et résolution de problèmes logiques.</p>",
                 "fyi": "<p>Ce modèle a été entraîné avec une méthode d’apprentissage par renforcement (RL) pour optimiser la gestion des problèmes de mathématiques et des tâches de programmation. Il utilise plusieurs techniques récentes pour améliorer la qualité des réponses. Par exemple, la méthode RoPE (Rotary Position Embedding) lui permet de mieux comprendre l’ordre des mots dans un texte. La fonction d'activation SwiGLU est une manière plus efficace de gérer les calculs au sein du réseau de neurones qui aide le modèle à produire des réponses plus fiables. La méthode d'ajustement QKV (Query Key Value-biais) améliore la manière dont le modèle repère et sélectionne les informations importantes. Enfin, grâce à la méthode YaRN (Yet another RoPE extensioN method), il peut traiter de très longs textes allant jusqu’à 130 000 jetons, ce qui lui permet de travailler sur des documents complexes ou très détaillés.</p>",
                 "size_desc": "<p>Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. Néanmoins, les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse car une phase de raisonnement précède la génération du résultat final, ce qui augmente la consommation énergétique.</p>"
+            },
+            "Trinity Large": {
+                "desc": "<p>Modèle semi-ouvert américain créé par Arcee AI, une startup de 30 personnes.</p>",
+                "fyi": "<p>Trinity Large a été conçu et entraîné entièrement aux États-Unis par Arcee AI, une startup de 30 personnes. Il a été entraîné sur 17 billions de jetons.</p>\n<p>L'entraînement complet s'est déroulé en 33 jours sur 2 048 GPUs Nvidia B300, pour un coût total d'environ 20 millions de dollars. L'architecture intègre des avancées comme l'attention \"gated\" et Muon.</p>",
+                "size_desc": "<p>Avec 398 milliards de paramètres, Trinity Large est un modèle de très grande taille. Néanmoins, grâce à son architecture de mélange d'experts (MoE, Mixture of Experts) hautement optimisée, il n'active que 13 milliards de paramètres par jeton généré, ce qui réduit significativement l'empreinte énergétique et les coûts d'inférence comparé à un modèle dense équivalent. Sa fenêtre de contexte atteint 512 000 jetons, ce qui le rend particulièrement adapté à l'analyse de très longs documents ou de bases de code massives.</p>"
             },
             "Yi-1.5 9B": {
                 "desc": "<p>Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage.</p>",
