@@ -264,6 +264,7 @@
             "accessibility": "Tilgængelighed: ikke compliant",
             "legal": "Om os",
             "privacy": "Privatlivspolitik",
+            "rgesn": "Miljøvenligt design",
             "sources": "Kildekode",
             "tos": "Brugsbetingelser"
         },
@@ -340,6 +341,97 @@
             "privacyResp": "Brugeren er ansvarlig for de data eller det indhold, som vedkommende indtaster i den prompt, som platformen stiller til rådighed. Ved at acceptere <a {linkProps}>brugsbetingelserne</a> accepterer brugeren ikke at overføre oplysninger, der kan identificere vedkommende selv eller en tredjepart.",
             "privacyTitle": "Behandler vi personoplysninger?",
             "title": "Fortrolighedspolitik"
+        },
+        "rgesn": {
+            "1": {
+                "1": "The AI-Arenaen giver nem og gratis adgang til en bred vifte af konvertionelle AI-modeller, hvilket øger offentlighedens bevidsthed om de forskellige udfordringer ved generativ AI: diversitet, bias og miljøpåvirkning. Desuden deles datasættene af spørgsmål og præferencer som open source under MIT og creative common (CC-BY) kompatible Etalab 2.0-licensen.",
+                "2": "Målgruppen for AI-Arenaen blev identificeret ved at gennemføre brugerinterviews og en indledende fase af behovsundersøgelse.",
+                "3": "Således er alle borgere berørte som potentielle brugere, men særligt lærere, elever, studerende, workshopfacilitatorer, AI-trænere samt forskere (datalogi, AI, humaniora og samfundsvidenskab) og virksomheder, der er interesserede i at analysere eller bruge open source-delte datasæt. Derfor imødekommer den digitale tjeneste deres behov gennem følgende funktioner: afprøvning og sammenligning af modeller gratis samt brug af open source-delte data.",
+                "4": "AI-Arenaen indgår i en bæredygtig designtilgang, der sigter mod at reducere miljøpåvirkningerne. Med henblik herpå er erklæringen blevet udarbejdet som led i implementeringen af den generelle referenceramme for bæredygtigt design af digitale tjenester (RGESN, version 2024).<br> RGESN, udarbejdet af Arcep og Arcom i samarbejde med ADEME, DINUM, CNIL og Inria, er tilgængelig på <a {linkProps}>Arceps websted</a>.",
+                "title": "Formålet med denne tjeneste"
+            },
+            "2": {
+                "1": "Bæredygtigt design af digitale tjenester er en tilgang, der sigter mod at reducere og begrænse miljøpåvirkningerne fra en tjeneste fra dens designfase og gennem hele dens livscyklus.",
+                "2": {
+                    "1": "Designe mere bæredygtige digitale tjenester for at forlænge enhedernes levetid;",
+                    "2": "Fremme en tilgang baseret på miljømæssig soberhed som svar på strategier for indfangning af brugerens opmærksomhed, i overensstemmelse med internationale miljømål;",
+                    "3": "Reducere de anvendte IT-ressourcer, optimere datatrafik og brugen af digital infrastruktur;",
+                    "4": "Øge transparensniveauet omkring den digitale tjenestes miljøaftryk.",
+                    "title": "Implementeringen har fire hovedmål:"
+                },
+                "3": {
+                    "1": "Begrænse størrelsen af en side",
+                    "2": "Begrænse kompleksiteten af en side",
+                    "3": "Begrænse antallet af serverforespørgsler",
+                    "4": "Begrænse det energiforbrug, der kræves for at hoste tjenesten",
+                    "title": "I praksis oversættes bæredygtigt design til et sæt best practices, der skal følges før, under og efter oprettelsen eller forbedringen af en tjeneste, hvilket særligt muliggør:"
+                },
+                "4": "Dette er en proces med løbende og kollektiv forbedring.",
+                "title": "Hvad er bæredygtigt design?"
+            },
+            "3": {
+                "1": {
+                    "1": "Forenkling af brugeroplevelsen: navigationssti bliver optimeret og centreret omkring AI-Arenaens væsentlige funktioner (arena af modeller at afprøve, datasæt, rangering) med regelmæssig brugertest.",
+                    "2": "Øge brugernes bevidsthed om tjenestens økologiske fodaftryk: fremhævelse af energipåvirkningsindikatorer på spørgsmål stillet til AI; fremme af \"sparsommelig\" brug med en tilstand dedikeret til forespørgsler til \"små\" konverserende AI-modeller, hvis miljøpåvirkning er mindre.",
+                    "3": "Brug af State Design System (DSFR) grænseflade-komponenter: de er tilgængelige, og deres fodaftryk er minimalt.",
+                    "4": "Den mest intuitiv navigation muligt for at reducere den tid, der bruges på at finde information.",
+                    "5": "Mobile-first design: alt indhold kan ses på mobile enheder. Siden tilpasser sig alle skærmstørrelser.",
+                    "6": "Udelukkelse af videointegration på siden.",
+                    "title": "Hovedudfordringen er at sikre, at AI-Arenaen-tjenesten fungerer på de ældst mulige brugerenheder under varierende forbindelsesbetingelser. Flere foranstaltninger blev implementeret under designfasen, herunder:"
+                },
+                "title": "Implementeret strategi og mål vedrørende reduktion eller begrænsning af miljøpåvirkninger"
+            },
+            "4": {
+                "1": "Selvevalueringen, gennemført mellem maj og oktober 2025 af produktteamet (to personer var ansvarlige for at gennemgå og validere alle kriterier), dækkede alle sider på webstedet. De værktøjer, der blev brugt til at evaluere visse tekniske indikatorer, var browserens udviklerværktøjs \"netværks\"-inspektør, <a {greenitLinkProps}>Green IT Analysis</a>-udvidelsen og <a {ecoindexLinkProps}>EcoIndex</a>-værktøjet.",
+                "title": "RGESN-diagnose"
+            },
+            "5": {
+                "1": {
+                    "1": "Fremskridtsscore i implementeringen af RGESN pr. 12/10/2025: 89%",
+                    "title": "Selvdiagnosen giver en overensstemmelsesrate med <a {linkProps}>RGESN</a> (generel bæredygtig design-reference) på 89%."
+                },
+                "2": "Den digitale tjeneste AI-Arenaen sigter mod at forbedre denne fremskridtsscore for at nå 95% inden 2027.",
+                "3": {
+                    "1": "Strategi: 100%",
+                    "2": "Specifikationer: 78%",
+                    "3": "Arkitektur: 100%",
+                    "4": "Brugeroplevelse og grænseflade (UX/UI): 100%",
+                    "5": "Indhold: 67%",
+                    "6": "Frontend: 82%",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90%",
+                    "9": "Algoritmer: 100%",
+                    "title": "Score efter tema:"
+                },
+                "4": {
+                    "date": "10. december 2025",
+                    "title": "RGESN-revisionstabel"
+                },
+                "title": "Score i implementeringen af referencerammen"
+            },
+            "6": {
+                "1": "Siden er designet til at være tilgængelig for enhver mobil enhed fra 2017 eller senere.",
+                "2": "Minimumsforbindelse påkrævet for komfortabel adgang og brug af tjenesten: 3G på mobil og 512 Kbps på fast forbindelse.",
+                "3": "Siden er designet til forskellige skærmstørrelser (minimum 320 pixels bred).",
+                "4": "Siden er ikke tilgængelig via Internet Explorer-browseren. ",
+                "title": "Minimumskrav for at tilgå siden"
+            },
+            "7": {
+                "1": "Designe tjenesten med et designreview og et kodereview, hvor et af målene er at reducere miljøpåvirkningerne fra hver funktionalitet (kriterium 2.1)",
+                "2": "Implementere dataopbevaringsperioder med henblik på sletning eller arkivering: regelmæssig sletning af logs i \"S3\"-filserveren og databasen (Postgres) i særdeleshed.",
+                "3": {
+                    "1": "Maksimalt antal serverforespørgsler per skærm: 40",
+                    "2": "Maksimal ressourcestørrelse per skærm: 600 KB",
+                    "title": "For at overholde en maksimal vægt og en grænse for antallet af forespørgsler per skærm (kriterium 6.1):"
+                },
+                "4": "Konvertere illustrationerne til WebP, AVIF, JPEG XL eller et mere effektivt billedformat til rasterbilleder (kriterium 5.1).",
+                "5": "Muliggøre muligheden for at afbryde inferens (indlæsning af svar) under modelsammenligning.",
+                "6": "EcoIndex-analysescores demonstrerer en betydelig forskel i påvirkningsmålinger, hvor nogle sider modtager scores op til E eller F (relativt stor sidevægt, kompleksitet og antal forespørgsler); udfordringen nu er at forstå disse resultater mere præcist fra sag til sag, på trods af de implementerede best practices, for at identificere yderligere forbedringer.",
+                "desc": "Flere forbedringer er blevet eller er stadig ved at blive identificeret, herunder:",
+                "title": "Identificerede forbedringer"
+            },
+            "desc": "offentliggjort den 11. december 2025",
+            "title": "Erklæring om bæredygtigt design"
         },
         "tos": {
             "contactDesc": "Hvis du har spørgsmål om tjenesten, kan du skrive til <a {linkProps}>{contactLink}</a>.",
@@ -597,6 +689,11 @@
                 "fyi": "<p>Denne model er baseret på en Mixture of Experts-arkitektur (MoE), med 671 milliarder parametre, men aktiverer kun 37 milliarder per genereret token. Den er effektiv til værktøjskald, generering af strukturerede outputs (JSON) og kodegenerering. Træningen anvender FP8 microscaling, hvilket reducerer beregnings- og hukommelsesomkostninger, samtidig med at præcisionen opretholdes. Modellen er blevet trænet i to faser: først på sekvenser på 32.000 tokens, derefter udvidet til 163.000 tokens, hvilket muliggør bedre stabilitet og øget performance på meget lange kontekster.</p>",
                 "size_desc": "<p>DeepSeek V3.1 er en meget stor model, der kræver flere grafikkort for at fungere. Mixture of Experts-arkitekturen (MoE) gør det dog muligt kun at aktivere en del af parametrene, hvilket reducerer footprintet sammenlignet med en tæt model af samme størrelse.</p>\n<p>Kontekstvinduet når nu op på 163.000 tokens mod 128.000 i den tidligere version, hvilket forbedrer analysen af meget lange dokumenter.</p>"
             },
+            "EuroLLM 22B Instruct": {
+                "desc": "<p> En flersproget model designet specifikt til europæisk sproglig mangfoldighed med stærke flersprogede oversættelses- og forståelsesevner. </p>",
+                "fyi": "<p> EuroLLM-22B er en model skabt af et konsortium bestående af Sorbonne University, Paris-Saclay University, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam og Naver Labs. Den blev trænet med det primære mål om balanceret dækning af europæiske sprog. Den dækker de 24 officielle sprog i Den Europæiske Union samt 11 yderligere sprog. Træningen blev udført på cirka 4 billioner tokens ved hjælp af 400 Nvidia H100 GPU'er på MareNostrum 5-supercomputeren, drevet af Barcelona Supercomputing Center. Projektet modtog europæisk institutionel støtte gennem Horizon Europe og EuroHPC inden for rammerne af en \"ekstrem-skala\" computing-tildeling. </p>\n <p> Træningsmaterialet kombinerer webdata, flersproget parallelt data (en–xx og xx–en) og omhyggeligt udvalgte datasæt af høj kvalitet med stærk vægt på balance mellem europæiske sprog. Modellen præsterer særligt godt til flersprogede oversættelsesopgaver. </p>",
+                "size_desc": "<p> Med 22 milliarder parametre falder denne model i kategorien af mellemstore modeller. Dens brug kræver en meget kraftfuld personlig computer eller, mere generelt, en server med mindst ét højtydende grafikkort. Kontekstvinduet indeholder 32.000 tokens. </p>"
+            },
             "GLM 4.5": {
                 "desc": "<p>Meget stor model skabt af Zhipu AI, en kinesisk AI-modeludvikler grundlagt i 2019 af professorer fra Tsinghua-universitetet og støttet af store aktører som Alibaba og Tencent. Modellen har to svarmuligheder: brugeren kan vælge mellem en ræsonneringstilstand for mere dybdegående svar eller en hurtig tilstand til at generere det endelige svar direkte.</p>",
                 "fyi": "<p>Denne model har gode agentiske kapaciteter, som gør det muligt for den at udføre funktionskald med stor pålidelighed. Dens kodningspræstationer er høje, og modellen har en god evne til at skabe komplette webapplikationer og generere artefakter, som er enkeltfilsprogrammer, der kan bruges direkte i grænsefladerne for konversationsagenter. Til træningen er der blevet designet en specifik forstærkningslæringsinfrastruktur ved navn slime for at optimere præstationerne på komplekse og agentiske opgaver ved effektivt at håndtere lange arbejdsgange - modellen er i stand til at behandle komplekse og langvarige opgaver, såsom at skabe en applikation fra A til Z, ved at anvende sine værktøjer optimalt og forblive konsistent fra start til slut.</p>",
@@ -606,6 +703,11 @@
                 "desc": "<p>Opdatering af den store model skabt af Zhipu AI - GLM 4.6, en kinesisk AI-modeludvikler grundlagt i 2019 af professorer fra Tsinghua-universitetet og støttet af store aktører som Alibaba og Tencent. Denne opdatering øger størrelsen på kontekstvinduet, forbedrer dens kodningspræstationer, alignerer den bedre med menneskelige præferencer og er merekapabel ved agentiske anvendelser/brug af værktøjer.</p>",
                 "fyi": "<p>Denne model har gode agentiske kapaciteter, som gør det muligt for den at udføre funktionskald med stor pålidelighed. Dens kodningspræstationer er høje, og modellen har en god evne til at skabe komplette webapplikationer og generere artefakter, som er enkeltfilsprogrammer, der kan bruges direkte i grænsefladerne for konversationsagenter. Til træningen er der blevet designet en specifik forstærkningslæringsinfrastruktur ved navn slime for at optimere præstationerne på komplekse og agentiske opgaver ved effektivt at håndtere lange arbejdsgange - modellen er i stand til at behandle komplekse og langvarige opgaver, såsom at skabe en applikation fra A til Z, ved at anvende sine værktøjer optimalt og forblive konsistent fra start til slut.</p>",
                 "size_desc": "<p>Med 357 milliarder parametre placerer denne model sig i kategorien af meget store modeller. Takket være en Mixture of Experts-arkitektur (MoE) er den mere effektiv end visse andre modeller af lignende størrelse, men den kræver stadig en server med flere meget kraftige grafikkort for at blive hostet. Dens kontekstvindue går op til 200.000 tokens, hvilket gør det muligt at behandle meget lange dokumenter.</p>"
+            },
+            "GLM 4.7": {
+                "desc": "<p> En stor, specialiseret kodemodel skabt af Zhipu AI, en kinesisk AI-modeludvikler grundlagt i 2019 af professorer fra Tsinghua University og støttet af store aktører som Alibaba og Tencent. Denne opdatering forbedrer dens kodeydeevne (især for webgrænseflader), interagerer bedre med AI-assisterede kodemiljøer og præsterer generelt bedre i agentiske sammenhænge. </p>",
+                "fyi": "<p> Denne model har gode agentiske evner, hvilket gør det muligt at foretage funktionskald med høj pålidelighed. Dens kodeydeevne er høj, og modellen har en god evne til at skabe applikationer og grænseflader. Til træning blev en specifik forstærkningslæringsinfrastruktur ved navn Slime designet til at optimere ydeevnen på komplekse og agentiske opgaver ved effektivt at håndtere lange arbejdsgange—modellen er i stand til at håndtere komplekse og langvarige opgaver, såsom at skabe en applikation fra start til slut, gøre den bedste brug af sine værktøjer og forblive konsistent fra begyndelse til slut. </p>",
+                "size_desc": "<p>Med 357 milliarder parametre placerer denne model sig i kategorien af meget store modeller. Takket være en mixture of experts (MoE)-arkitektur er den mere effektiv end visse andre modeller af tilsvarende størrelse, men den kræver stadig en server udstyret med flere meget kraftfulde grafikkort at hoste. Dens kontekstvindue går op til 200.000 tokens, hvilket gør det muligt at behandle meget lange dokumenter.</p>"
             },
             "GPT 4.1 Nano": {
                 "desc": "<p>Mindre lettet version af GPT 4.1-modellen, designet til at begrænse omkostninger, samtidig med at den forbliver konkurrencedygtig på de fleste opgaver. Modellen accepterer meget lange forespørgsler, hvilket gør det muligt at bruge den for eksempel til analyse af dokumentkorpusser.</p>",
@@ -631,6 +733,11 @@
                 "desc": "<p>Anden iteration af GPT 5, med en stil, der vurderes (af udgiveren) som mere naturlig, med bedre resultater i kode og agentopgaver. Modellen har den særlige egenskab at justere sin ræsonneringstid efter sværhedsgraden.</p>",
                 "fyi": "<p>Ankomsten af denne nye iteration bringer skifter automatisk (\"routing\") mellem to tilstande. For simple forespørgsler vælger modellen et hurtigt svar. For mere komplekse opgaver skifter den til en tilstand med ræsonnering, før den svarer. Denne logik undgår at spilde tid på ræsonnering på lette forespørgsler.</p>\n<p>Den første udgivelse af GPT 5-familien havde udløst mange negative reaktioner i forhold til dens skrivestil. Mange brugere fandt modellen mindre varm end GPT 4o. Denne iteration sigter mod at vende tilbage til en varmere stil.</p>\n<p>Denne nye version markerer også fremskridt inden for kode og matematik, som bekræftes af benchmarks som SWE Bench for kode og AIME for matematiske kompetencer.</p>",
                 "size_desc": "<p>Størrelserne på modellerne bag GPT-5.1-systemet er ikke kendte. Arkitekturen er sandsynligvis baseret på en \"Mixture of Experts\" (MoE), hvilket betyder, at kun en del af parametrene aktiveres for hver forespørgsel. Dette muliggør bedre energieffektivitet og høj ydeevne. De tilgængelige estimater om modellernes størrelse bygger på offentlige oplysninger og indirekte indikationer såsom inferensomkostninger og svartid.</p>"
+            },
+            "GPT 5.2": {
+                "desc": "<p> Tredje iteration af GPT 5, med særlig opmærksomhed på dens anvendelighed i professionelle opgaver. </p>",
+                "fyi": "<p>Modellen blev præsenteret som værende i stand til at opnå eller endda overgå niveauet af menneskelige eksperters ydeevne på GDPval-benchmarket, som evaluerer veldefinerede digitale professionelle opgaver. Den tilbyder forskellige niveauer af ræsonneringsindsats, der kan konfigureres af brugeren eller udvikleren, hvilket gør det muligt at afbalancere mellem omkostninger, latenstid og kvalitet af svar afhængigt af opgavens kompleksitet. GPT 5.2 udmærker sig også ved sin evne til at finde præcise oplysninger inden for meget store kontekster, selv når disse er sjældne og spredt i lange korpora (needle in the haystack).</p>",
+                "size_desc": "<p> Modelstørrelserne bag GPT-5.2-systemet er ikke kendte. Arkitekturen er sandsynligvis baseret på en \"mixture of experts\" (MoE), hvilket betyder, at kun en delmængde af parametre aktiveres for hver forespørgsel. Dette muliggør større energieffektivitet og høj ydeevne. Tilgængelige estimater af modelstørrelser bygger på offentligt tilgængelig information og indirekte indikatorer såsom inferensomkostninger og svarlatentstid. </p>"
             },
             "GPT OSS-120B": {
                 "desc": "<p>Den største af de to første semi-åbne modeller fra OpenAI siden GPT-2. Designet som svar på fremgangen for open source-aktører som Meta (LLaMA) og Mistral, er det en performant ræsonneringsmodel, især til komplekse opgaver og i \"agentiske\" miljøer.</p>",
@@ -676,6 +783,11 @@
                 "desc": "<p>Stor multimodal og flersproget model med to svarmuligheder: brugeren kan vælge mellem en ræsonneringstilstand for mere dybdegående svar eller en hurtig tilstand til at generere det endelige svar direkte.</p>",
                 "fyi": "<p>Denne model bygger på en Mixture of Experts-arkitektur (MoE) og er blevet destilleret ved kun at bevare en approximation af forudsigelserne fra lærermodellen - Gemini 2.5 Pro. Den er blevet trænet på en TPUv5p-arkitektur, der integrerer fremskridt som muligheden for at fortsætte træningen automatisk selv i tilfælde af træningsfejl, datakorruption eller hukommelsesproblemer.</p>\n<p>Gemini 2.5 Flash håndterer kontekster op til 1 million tokens og tre timers videoindhold. Optimeringen af visuel behandling gør det muligt at behandle videoer, der er omkring tre gange længere i det samme kontekstvindue: der er kun brug for 66 visuelle tokens til at generere et billede mod 258 tidligere. Denne model muliggør også native audiogenerering til dialoger og talesyntese.</p>",
                 "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indikationer tyder på, at det er en stor model, der kræver flere kraftige grafikkort til at fungere. Ikke desto mindre aktiverer Mixture of Experts-arkitekturen (MoE) kun en del af parametrene ved hvert token, hvilket begrænser dens energiforbrug. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlantens. Dens kontekstvindue går op til 1 million tokens, hvilket gør det muligt at behandle meget store dokumentkorpusser.</p>"
+            },
+            "Gemini 3 Flash": {
+                "desc": "<p> Stor, native, multimodal og flersproget model, destilleret fra Gemini 3 Pro. Den inkorporerer en avanceret ræsonneringsevne (\"Deep Think\"), der kan aktiveres efter behov, med et ræsonneringsniveau, der kan konfigureres af brugeren eller udvikleren. Modellen understøtter nativt tekst, kode, lyd, billeder, video og PDF'er. </p>",
+                "fyi": "<p> Modellen blev trænet på en infrastruktur udelukkende sammensat af TPU'er (Tensor Processing Units). Gemini 3 Flash kan behandle store mængder multimodalt indhold per prompt: op til 900 billeder, 900 PDF'er på 900 sider hver, videoer fra 45 minutter til 1 time og op til 8,4 timers lyd. På tidspunktet for sin udgivelse viste Gemini 3 Flash sig at være meget kraftfuld, samtidig med at den var cirka ni gange billigere end Gemini 3 Pro. </p>",
+                "size_desc": "<p> Den nøjagtige størrelse af modellen er ikke offentliggjort, men den er baseret på en mixture of experts (MoE)-arkitektur. Denne arkitektur aktiverer kun en delmængde af parametre for hvert token, hvilket reducerer den nødvendige beregningskraft. Dens kontekstvindue strækker sig til 1 million tokens. Modellen er cirka 9 gange billigere end Gemini 3 Pro. Miljøpåvirkningen varierer afhængigt af det valgte ræsonneringsniveau: dybere ræsonnering genererer flere tokens og forbruger derfor flere ressourcer. </p>"
             },
             "Gemini 3 Pro": {
                 "desc": "<p>Stor multimodal og flersproget model. Den integrerer en avanceret ræsonneringskapacitet (\"Deep Think\"), der kan aktiveres efter behov til komplekse opgaver (matematik, logik, kodning), som er adskilt fra dens hurtigere standard genereringskapacitet. Modellen understøtter tekst, kode, lyd, billede, video og 3D.</p>",
@@ -827,13 +939,18 @@
                 "fyi": "<p>Denne model bruger en grouped query attention-metode (GQA) til at begrænse den tekst, der analyseres ved hvert genereringstrin, og vinde i hastighed og hukommelse: beregningerne reduceres uden indvirkning på kvaliteten. Attention-mekanismen forbedres ved at anvende vinduer af forskellige størrelser, hvilket gør det muligt at håndtere lange kontekster (op til 128.000 tokens), samtidig med at den forbliver let. Den store tokenizer (V3-Tekken) komprimerer sprog og kode bedre, hvilket forbedrer dens præstationer på flersprogede opgaver.</p>",
                 "size_desc": "<p>Med sine 8 milliarder parametre tilhører denne model kategorien af små modeller (mellem 7 og 20 milliarder parametre). Den kan implementeres lokalt på en ret kraftig computer, hvilket garanterer databeskyttelse, eller hostes på en server med et enkelt grafikkort for at begrænse infrastrukturomkostningerne.</p>"
             },
+            "Mistral 3 Large": {
+                "desc": "<p> En meget stor, semi-åben, multimodal model, der præsterer godt i flersproget kode og kontekster. </p>",
+                "fyi": "<p> Denne model blev trænet på 3.000 Nvidia H200 GPU'er. Den konkurrerer direkte med semi-åbne kinesiske modeller. Ved lanceringen er den konkurrencedygtig med DeepSeek V3.1, Kimi K2, GLM 4.6 og andre benchmarks med hensyn til kode og generelle anvendelsestilfælde. </p>",
+                "size_desc": "<p> Med 675 milliarder parametre falder denne model i kategorien af meget store modeller. Takket være en Mixture of Experts (MoE)-arkitektur er den mere effektiv end tætte modeller af tilsvarende størrelse, men den kræver stadig en server med flere meget kraftfulde grafikkort at hoste. Denne model aktiverer 41 milliarder parametre per token-generering. Dens kontekstvindue kan rumme op til 256.000 tokens, hvilket gør det muligt at behandle meget lange dokumenter. </p>"
+            },
             "Mistral Large 2": {
                 "desc": "<p>Stor model beregnet til at behandle komplekse spørgsmål og opgaver: for eksempel kodegenerering, brug af værktøjer, analyse af lange dokumenter eller præcis sprogforståelse.</p>",
                 "fyi": "<p>Denne model er blevet trænet med en høj andel af data i kode (mere end 80 programmeringssprog) og matematik, hvilket forbedrer dens evne til at løse komplekse problemer og bruge eksterne værktøjer.</p>",
                 "size_desc": "<p>Med 123 milliarder parametre tilhører denne model kategorien af store modeller. Den kræver en server udstyret med mindst et kraftigt grafikkort, hvilket medfører betydelige driftsomkostninger. Den har et kontekstvindue på op til 128.000 tokens, hvilket er nyttigt til analyse af lange dokumenter.</p>"
             },
             "Mistral Medium 3.1": {
-                "desc": "<p>Mellemstor flersproget, multimodal model, der er billigere sammenlignet med andre modeller, som tilbyder lignende præstationer. Den er særligt interessant til programmeringsopgaver eller ræsonneringsopgaver, for eksempel matematik.</p>",
+                "desc": "<p>Mellemstor multilingual, multimodal model, der er billigere sammenlignet med andre modeller, som tilbyder lignende ydeevne. Den blev særligt interessant efter en opdatering i august 2025 med betydelige forbedringer af den generelle ydeevne, en \"forbedret\" tone og en bedre evne til at søge information på internettet.</p>",
                 "fyi": "<p>Denne model er blevet designet til at tilbyde solid performance til en lavere pris end proprietære eller semi-åbne modeller. Der er blevet lagt særlig vægt på data til professionel brug under dens træning. Den er særligt god sammenlignet med andre modeller af lignende størrelse til at generere kode og udføre matematiske opgaver.</p>\n<p>Denne model har tjent som grundlag for træning af Magistral Medium - en ræsonneringsmodel.</p>",
                 "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indikationer tyder på, at det er en stor model, der kræver mindst flere kraftige grafikkort for at fungere. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlantens.</p>\n<p>Den har et kontekstvindue på op til 128.000 tokens, hvilket er nyttigt til analyse af lange dokumenter.</p>"
             },
@@ -1761,6 +1878,7 @@
             "problem": "Den indledende udfordring",
             "product": "Produkt og partnere",
             "ranking": "Rangliste",
+            "rgesn": "Erklæring om bæredygtigt design",
             "share": "Mine resultater"
         }
     },
