@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis models-doc
+.PHONY: help install install-backend install-frontend db-generate-init db  db-prd-local dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis models-doc 
 
 # Variables
 PYTHON := python3
@@ -43,6 +43,13 @@ db:
 	@$(MAKE) db-generate-init
 	@echo "Starting PostgreSQL database..."
 	cd docker && docker compose up postgres -d
+
+## Launch and init Postgres database with production data from a backup (result of pg_dump -Fc made with postgres 16)
+# put a prd-backup.dump file in docker folder before launching this
+# once the container has correctly loaded you can remove the prd-backup.dump file
+db-prd-local:
+	@echo "Starting PostgreSQL database with prd dump init..."
+	cd docker && docker compose -f db-prd-local.compose.yml up -d
 
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
