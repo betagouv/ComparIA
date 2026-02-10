@@ -11,14 +11,15 @@ services:
       # URL for server-side rendering (inside Docker network)
       PUBLIC_API_LOCAL_URL: "http://backend:80"
       # URL for client-side browser requests (exposed to host)
-      PUBLIC_API_URL: "http://localhost:3000"
+      PUBLIC_API_URL: "http://localhost:8001"
+      PUBLIC_API_DEV_MODE: "true"
     ports:
       - "3000:3000"
     # Dev config
-    volumes:
-      - ../frontend:/app
-      - /app/node_modules # Exclude node_modules from host mount
-    command: ["npx", "vite", "dev", "--host", "--port", "3000"]
+    # volumes:
+    #   - ../frontend:/app
+    #   - /app/node_modules # Exclude node_modules from host mount
+    # command: ["node", "build"]
 
   backend:
     env_file: ./.env
@@ -38,28 +39,24 @@ services:
     image: languia:latest
     ports:
       - "8001:80"
-    volumes:
-      - ../data:/data
-      # Dev config - mount everything except .venv
-      - ../:/app
-      - /app/.venv # Exclude .venv from host mount (use container's .venv)
+    # volumes:
+    #   - ../data:/data
+    #   # Dev config - mount everything except .venv
+    #   - ../:/app
+    #   - /app/.venv # Exclude .venv from host mount (use container's .venv)
     command:
-      ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+      [
+        "uvicorn",
+        "backend.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "80",
+        "--reload",
+      ]
     depends_on:
       - postgres
       - redis
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "127.0.0.1:5050:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    depends_on:
-      - postgres
 
 volumes:
   pgadmin-data:
