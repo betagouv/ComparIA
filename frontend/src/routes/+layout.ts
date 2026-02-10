@@ -9,7 +9,7 @@ export async function load() {
     method: 'GET'
   })
 
-  const data = await api.request<APIData>('/models', { method: 'GET' })
+  const data = await api.request<APIData>('/models/', { method: 'GET' })
 
   return { data, votes }
 }
