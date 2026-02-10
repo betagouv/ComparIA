@@ -263,12 +263,12 @@
 
         <div class="relative flex max-w-[640px] items-start">
           <img
-            src="/arena/ranking-table.png"
+            src="/images/ranking-table.png"
             class="rounded-xl shadow-md md:-me-[10%] -me-[30%] w-full max-w-[400px]"
             alt={m['reveal.thanks.rankingAlt']()}
           />
           <img
-            src="/arena/ranking-graph.png"
+            src="/images/ranking-graph.png"
             class="rounded-xl shadow-md mt-[30px] w-full max-w-[300px]"
             alt={m['reveal.thanks.graphAlt']()}
           />
