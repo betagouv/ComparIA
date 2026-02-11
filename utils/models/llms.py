@@ -82,7 +82,7 @@ class LLMDataRawBase(LLMDataBase):
     url: Annotated[str | None, Field(description=descs["url"])] = (
         None  # FIXME required?
     )
-    endpoint: Annotated[Endpoint | None, Field(description=descs["endpoint"])]
+    endpoint: Annotated[Endpoint | None, Field(description=descs["endpoint"])] = None
     pricey: Annotated[bool, Field(description=descs["pricey"])] = False
     specific_portals: Annotated[
         list[CountryPortal] | None, Field(description=descs["specific_portals"])
