@@ -1551,6 +1551,25 @@
     "icon_path": "zhipu-color",
     "models": [
       {
+        "new": true,
+        "id": "glm-5",
+        "simple_name": "GLM 5",
+        "license": "MIT",
+        "release_date": "02/2026",
+        "arch": "moe",
+        "params": 744,
+        "active_params": 40,
+        "reasoning": true,
+        "url": "https://huggingface.co/zai-org/GLM-5",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "z-ai/glm-5"
+        },
+        "desc": "Très grand modèle conçu pour des tâches complexes : ingénierie logicielle, orchestration agentique et raisonnement avancé. Il simule une étape de raisonnement avant de générer sa réponse.",
+        "size_desc": "Avec 744 milliards de paramètres, GLM 5 fait partie des très grands modèles. L'architecture de mélange d'experts (MoE, Mixture of Experts) — 256 experts dont 8 activés par jeton — permet de n'utiliser que 40 milliards de paramètres par inférence, ce qui réduit l'empreinte par rapport à un modèle dense de même taille, tout en nécessitant un serveur doté de plusieurs cartes graphiques puissantes. La fenêtre de contexte atteint environ 200 000 jetons, ce qui est utile pour l'analyse de très longs documents ou de bases de code. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "GLM 5 est le modèle phare de Zhipu AI, éditeur chinois fondé en 2019 par des professeurs de l'université de Tsinghua. Il repose sur une architecture de mélange d'experts (MoE) comptant 744 milliards de paramètres totaux mais n'en activant que 40 milliards par jeton généré, grâce à 256 modules experts dont 8 sont sélectionnés à chaque étape. Le pré-entraînement a porté sur 28,5 billions de jetons, en hausse par rapport aux 23 billions de la génération précédente (GLM 4.5). Le modèle intègre le mécanisme DeepSeek Sparse Attention (DSA), qui réduit les coûts de déploiement tout en préservant la capacité de traitement de longs contextes.\n\nPour le post-entraînement, Zhipu a développé une infrastructure d'apprentissage par renforcement asynchrone nommée slime, qui découple la génération de données des mises à jour de politique, atteignant un débit jusqu'à trois fois supérieur aux méthodes synchrones classiques. Ce cadre est particulièrement adapté aux tâches agentiques de longue durée. GLM 5 se distingue sur les évaluations de code (SWE-bench Verified : 77,8 %) et de navigation web (BrowseComp : 75,9 %). Le modèle a été entraîné sur des puces Huawei Ascend avec le framework MindSpore."
+      },
+      {
         "id": "glm-4.7",
         "simple_name": "GLM 4.7",
         "license": "MIT",
@@ -1568,6 +1587,7 @@
         "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications et des interfaces. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
       },
       {
+        "status": "archived",
         "id": "glm-4.6",
         "simple_name": "GLM 4.6",
         "license": "MIT",
