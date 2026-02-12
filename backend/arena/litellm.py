@@ -169,7 +169,14 @@ def litellm_stream_iter(
         kwargs["enable_reasoning"] = True
 
     # Make the API call through LiteLLM
-    response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
+    try:
+        response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
+    except litellm.ContextWindowExceededError as e:
+        logger.error(
+            f"context_window_exceeded: {litellm_model_name}: {e}",
+            extra={"request": request},
+        )
+        raise ContextTooLongError from e
 
     # OpenRouter specific params could be added here
     # transforms = [""], route= ""
@@ -215,11 +222,12 @@ def litellm_stream_iter(
             if choice.finish_reason == "stop":
                 break
             elif choice.finish_reason == "length":
-                # Model hit max tokens limit
-                logger.error(
-                    "context_too_long: " + str(chunk), extra={"request": request}
+                # Output truncated at max_tokens limit — response is still valid
+                logger.warning(
+                    "output_truncated_at_max_tokens: " + str(chunk),
+                    extra={"request": request},
                 )
-                raise ContextTooLongError
+                break
 
             # Yield partial results for streaming to frontend
             yield data

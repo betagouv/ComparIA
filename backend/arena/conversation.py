@@ -31,7 +31,7 @@ async def bot_response_async(
     state: Conversation,
     request: Request,
     temperature=0.7,
-    max_new_tokens=4096,
+    max_new_tokens=16384,
 ) -> AsyncGenerator[list[AnyMessage]]:
     """
     Stream a response from an AI model asynchronously.
