@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc 
 
 # Variables
 PYTHON := python3
@@ -44,9 +44,28 @@ db:
 	@echo "Starting PostgreSQL database..."
 	cd docker && docker compose up postgres -d
 
+## Launch and init Postgres database with production data from a backup (result of pg_dump -Fc made with postgres 16)
+# put a prd-backup.dump file in docker folder before launching this
+# once the container has correctly loaded, the pg_restore log says : Backup restoration completed successfully!
+db-prd-local:
+	@echo "Starting PostgreSQL database with prd dump init..."
+	cd docker && docker compose -f db-prd-local.compose.yml up | grep -E 'pg_restore|successfully'
+
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
 	cd docker && docker compose up redis -d
+
+docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
+	@$(MAKE) db-generate-init
+	@echo "Starting full app with Docker..."
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml up -d --build
+
+docker-app-down: ## Stop only app services (frontend + backend), keep infra
+	@echo "Stopping app services..."
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend
+
+docker-app-logs: ## Show logs for frontend and backend containers
+	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml logs -f frontend backend
 
 dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA with Postgres and Redis..."
@@ -65,7 +84,7 @@ dev: ## Launch backend and frontend without Redis (Ctrl+C to stop)
 
 dev-backend: ## Launch only the backend (FastAPI + Gradio)
 	@echo "Starting backend on port $(BACKEND_PORT)..."
-	$(UV) run uvicorn main:app --reload --host 0.0.0.0 --port $(BACKEND_PORT) --timeout-graceful-shutdown 1
+	$(UV) run uvicorn backend.main:app --reload --host 0.0.0.0 --port $(BACKEND_PORT) --timeout-graceful-shutdown 1
 
 dev-frontend: ## Launch only the frontend (Vite + SvelteKit)
 	@echo "Starting frontend on port $(FRONTEND_PORT)..."
@@ -79,9 +98,19 @@ build-frontend: ## Build the frontend for production
 	@echo "Building frontend..."
 	cd frontend && $(NPM) run build
 
+lint-python: ## Check python code
+	@echo "Checking python code..."
+	uv run mypy .
+
 lint-frontend: ## Check frontend code
 	@echo "Checking frontend code..."
 	cd frontend && $(NPM) run lint
+
+format-python: ## Format python code
+	@echo "Formatting python code..."
+	uv run autoflake .
+	uv run isort .
+	uv run black .
 
 format-frontend: ## Format frontend code
 	@echo "Formatting frontend code..."
@@ -105,29 +134,6 @@ dev-full-reset-data:
 	@cd docker && docker down -v
 	@$(MAKE) dev-full
 
-
-
-# db-schema-init: ## Initialize database schema
-# 	@echo "Initializing database schema..."
-# 	@if [ -z "$$DATABASE_URI" ]; then \
-# 		echo "Error: DATABASE_URI is not defined"; \
-# 		exit 1; \
-# 	fi
-# 	@echo "Executing SQL scripts in utils/schemas/..."
-# 	psql $$DATABASE_URI -f utils/schemas/conversations.sql
-# 	psql $$DATABASE_URI -f utils/schemas/votes.sql
-# 	psql $$DATABASE_URI -f utils/schemas/reactions.sql
-# 	psql $$DATABASE_URI -f utils/schemas/logs.sql
-
-# db-migrate: ## Apply database migrations
-# 	@echo "Applying migrations..."
-# 	@if [ -z "$$DATABASE_URI" ]; then \
-# 		echo "Error: DATABASE_URI is not defined"; \
-# 		exit 1; \
-# 	fi
-# 	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
-# 	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
-
 # Models utilities
 models-build: ## Build/generate model files from JSON sources
 	@echo "Generating models..."
@@ -137,11 +143,15 @@ models-maintenance: ## Run the models maintenance script
 	@echo "Models maintenance..."
 	$(UV) run python -m utils.models.maintenance
 
+models-doc: ## Build/generate llm doc and JSON schemas
+	@echo "Generating LLM specs documentation and JSON schemas..."
+	$(UV) run python -m utils.models.schemas.build_doc
+
 # Dataset utilities
-dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and DATABASE_URI)
+dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
-	@if [ -z "$$DATABASE_URI" ]; then \
-		echo "Error: DATABASE_URI is not defined"; \
+	@if [ -z "$$COMPARIA_DB_URI" ]; then \
+		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
 	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
@@ -190,3 +200,29 @@ check-requirements: ## Check that required tools are installed
 	@command -v $(NPM) >/dev/null 2>&1 || { echo "npm is required but not installed."; exit 1; }
 	@command -v $(UV) >/dev/null 2>&1 || { echo "uv is not installed. Run 'make install-backend' to install it."; }
 	@echo "All prerequisites are installed ✓"
+
+
+
+###### Old
+
+
+# db-schema-init: ## Initialize database schema
+# 	@echo "Initializing database schema..."
+# 	@if [ -z "$$DATABASE_URI" ]; then \
+# 		echo "Error: DATABASE_URI is not defined"; \
+# 		exit 1; \
+# 	fi
+# 	@echo "Executing SQL scripts in utils/schemas/..."
+# 	psql $$DATABASE_URI -f utils/schemas/conversations.sql
+# 	psql $$DATABASE_URI -f utils/schemas/votes.sql
+# 	psql $$DATABASE_URI -f utils/schemas/reactions.sql
+# 	psql $$DATABASE_URI -f utils/schemas/logs.sql
+
+# db-migrate: ## Apply database migrations
+# 	@echo "Applying migrations..."
+# 	@if [ -z "$$DATABASE_URI" ]; then \
+# 		echo "Error: DATABASE_URI is not defined"; \
+# 		exit 1; \
+# 	fi
+# 	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
+# 	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql

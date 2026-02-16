@@ -1,0 +1,518 @@
+import logging
+from typing import Annotated, AsyncGenerator, TypedDict
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi.responses import StreamingResponse
+
+from backend.arena.models import (
+    AddFirstTextBody,
+    AddTextBody,
+    AssistantMessage,
+    Conversations,
+    ReactionBody,
+    ReactionData,
+    RevealData,
+    UserMessage,
+    VoteBody,
+    create_conversation,
+    create_conversations,
+)
+from backend.arena.persistence import (
+    delete_reaction,
+    record_conversations,
+    record_reaction,
+    record_vote,
+)
+from backend.arena.reveal import get_chosen_llm, get_reveal_data
+from backend.arena.session import create_session, increment_input_chars, is_ratelimited
+from backend.arena.streaming import create_sse_response, stream_comparison_messages
+from backend.llms.data import get_llms_data
+from backend.utils.countries import CountryPortalAnno
+from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+
+logger = logging.getLogger("languia")
+
+router = APIRouter(
+    prefix="/arena",
+    tags=["arena"],
+)
+
+
+# Dependencies
+
+
+def assert_not_rate_limited(request: Request) -> None:
+    """Dependency to check rate limiting based on IP address."""
+    ip = get_ip(request)
+
+    if is_ratelimited(ip):
+        logger.error(
+            f"Too much text submitted to pricey models for ip {ip}",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+        )
+
+
+def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) -> str:
+    """
+    Dependency to extract and validate session hash from headers.
+
+    Args:
+        session_hash: Session identifier from X-Session-Hash header
+
+    Returns:
+        str: Validated session hash
+
+    Raises:
+        HTTPException: If session hash is missing or invalid
+    """
+    if not session_hash or len(session_hash) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing session hash"
+        )
+    return session_hash
+
+
+def get_conversations(session_hash: str = Depends(get_session_hash)) -> Conversations:
+    try:
+        conversations = Conversations.from_session(session_hash)
+    except Exception as e:
+        # FIXME raise different errors depending on problem
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Conversations '{session_hash}' couldn't be found or parsed: {str(e)}",
+        )
+
+    # For any arena view, raise error if chat responses are not yet finished
+    if conversations.is_streaming:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Veuillez attendre la fin de la réponse des modèles.",
+        )
+
+    return conversations
+
+
+ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
+
+# FIXME log conversation session data (ip, portal, cohorts, conv id) in routes?
+
+
+@router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
+async def add_first_text(
+    args: AddFirstTextBody, country_portal: CountryPortalAnno, request: Request
+) -> StreamingResponse:
+    """
+    Process user's first message and initiate model comparison.
+
+    This is the main handler for the send button click. It:
+    1. Creates a new session
+    2. Selects two models to compare based on mode
+    3. Initializes Conversations for both models
+    4. Streams responses from both models in parallel
+
+    Args:
+        args: Request body with prompt, mode, and optional custom model selection
+        request: FastAPI request for logging and rate limiting
+
+    Returns:
+        StreamingResponse: Server-Sent Events stream with model responses
+
+    Raises:
+        HTTPException: If rate limiting triggered or validation fails
+    """
+    logger.info(
+        f"'/add_first_text' called with: {args.model_dump_json()}",
+        extra={"request": request},
+    )
+    logger.info(f"country_portal: {country_portal}")
+
+    # Select models
+    models = get_llms_data(country_portal)
+    model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
+
+    logger.info(
+        f"Selected models: {model_a_id} vs {model_b_id}", extra={"request": request}
+    )
+
+    # Create new session
+    session_hash = create_session()
+
+    # Initialize conversations using Pydantic models
+    conversations = create_conversations(
+        llm_id_a=model_a_id,
+        llm_id_b=model_b_id,
+        args=args,
+        session_hash=session_hash,
+        country_portal=country_portal,
+        ip=get_ip(request),
+        visitor_id=get_matomo_tracker_from_cookies(request.cookies),
+    )
+
+    logger.info(
+        f"conv_pair_id: {conversations.conversation_pair_id}",
+        extra={"request": request},
+    )
+
+    conversations.is_streaming = True
+    # Store Conversations to redis/db/logs
+    conversations.store_to_session()
+    # Record for questions only dataset and stats on ppl abandoning before generation completion
+    record_conversations(conversations)
+
+    # Stream responses
+    async def event_stream() -> AsyncGenerator[str]:
+        # Send session hash first
+        import json
+
+        yield f"data: {json.dumps({'type': 'init', 'session_hash': session_hash})}\n\n"
+
+        # Stream both model responses
+        async for chunk in stream_comparison_messages(conversations, request):
+            yield chunk
+
+        # Increment input chars for pricey llms
+        for conv in [conversations.conversation_a, conversations.conversation_b]:
+            if conv.llm.pricey:
+                increment_input_chars(get_ip(request), len(args.prompt_value))
+
+        conversations.is_streaming = False
+        # After streaming completes, store Conversations to redis/db/logs
+        conversations.store_to_session()
+        record_conversations(conversations)
+
+    return create_sse_response(event_stream())
+
+
+@router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
+async def add_text(
+    args: AddTextBody,
+    conversations: ConversationsAnno,
+    request: Request,
+) -> StreamingResponse:
+    """
+    Add a follow-up message to an existing conversation.
+
+    Args:
+        args: Request body with message content
+        conversations: Conversations from session_hash
+        request: FastAPI request for logging
+
+    Returns:
+        StreamingResponse: SSE stream with both model responses
+
+    Raises:
+        HTTPException: If session not found or rate limiting triggered
+    """
+    logger.info(
+        f"'/add_text' session={conversations.session_hash} called with: {args.model_dump_json()}",
+        extra={"request": request},
+    )
+
+    # Add user message to both conversations
+    user_message = UserMessage(content=args.message)
+    conversations.conversation_a.messages.append(user_message)
+    conversations.conversation_b.messages.append(user_message)
+
+    conversations.is_streaming = True
+    # Store Conversations to redis/db/logs
+    conversations.store_to_session()
+    # Record for questions only dataset and stats on ppl abandoning before generation completion
+    record_conversations(conversations)
+
+    # Stream responses
+    async def event_stream() -> AsyncGenerator[str]:
+        async for chunk in stream_comparison_messages(conversations, request):
+            yield chunk
+
+        # Increment input chars for pricey llms
+        for conv in [conversations.conversation_a, conversations.conversation_b]:
+            if conv.llm.pricey:
+                increment_input_chars(get_ip(request), len(args.message))
+
+        conversations.is_streaming = False
+        # After streaming completes, store Conversations to redis/db/logs
+        conversations.store_to_session()
+        record_conversations(conversations)
+
+    return create_sse_response(event_stream())
+
+
+@router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
+async def retry(
+    conversations: ConversationsAnno,
+    request: Request,
+) -> StreamingResponse:
+    """
+    Retry generating the last bot response.
+
+    Removes the last assistant messages and re-generates them.
+
+    Args:
+        conversations: Conversations from session_hash
+        request: FastAPI request for logging
+
+    Returns:
+        StreamingResponse: SSE stream with new model responses
+
+    Raises:
+        HTTPException: If session not found or rate limiting triggered
+    """
+    logger.info(
+        f"'/retry' session={conversations.session_hash}", extra={"request": request}
+    )
+
+    conv_a = conversations.conversation_a
+    conv_b = conversations.conversation_b
+
+    # Remove last assistant messages
+    if isinstance(conv_a.messages[-1], AssistantMessage):
+        conv_a.messages = conv_a.messages[:-1]
+    if isinstance(conv_b.messages[-1], AssistantMessage):
+        conv_b.messages = conv_b.messages[:-1]
+
+    if not (
+        isinstance(conv_a.messages[-1], UserMessage)
+        and isinstance(conv_b.messages[-1], UserMessage)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
+        )
+    last_user_msg = conv_a.messages[-1]
+
+    # If conversations has not yet trully started
+    if conversations.error and last_user_msg.content == conversations.opening_msg:
+        # if error is from a specific model, reroll it
+        if pos := conversations.error.pos:
+            models = get_llms_data(conversations.country_portal)
+            failing_model_id = conv_a.model_name if pos == "a" else conv_b
+
+            if selection := conversations.custom_models_selection:
+                # Filter failing model from custom_models_selection
+                new_selection = tuple(
+                    model_id for model_id in selection if model_id != failing_model_id
+                )
+                conversations.custom_models_selection = (
+                    (new_selection[0],) if new_selection else None
+                )
+                # FIXME warn user that its selection is not taken into account
+            else:
+                conversations.custom_models_selection = None
+
+            # Repick a model ids excluding current ones
+            new_model_id, _ = models.pick_two(
+                conversations.mode,
+                unavailable_models=[conv_a.model_name, conv_b.model_name],
+            )
+            logger.info(
+                f"reinitializing conv {pos} w/ new model: {new_model_id}",
+                extra={"request": request},
+            )
+            # Reset conversation with new model
+            setattr(
+                conversations,
+                f"conversation_{pos}",
+                create_conversation(
+                    new_model_id, conversations.country_portal, last_user_msg
+                ),
+            )
+            logger.info(
+                f"new conv {pos} id: {(conv_a if pos == "a" else conv_b).conv_id}",
+                extra={"request": request},
+            )
+
+    conversations.error = None
+
+    conversations.is_streaming = True
+    # Store Conversations to redis/db/logs
+    conversations.store_to_session()
+    # Record for questions only dataset and stats on ppl abandoning before generation completion
+    record_conversations(conversations)
+
+    logger.info(
+        f"retry with user message: {last_user_msg.content}", extra={"request": request}
+    )
+
+    # Re-stream responses
+    async def event_stream() -> AsyncGenerator[str]:
+        async for chunk in stream_comparison_messages(conversations, request):
+            yield chunk
+
+        # Increment input chars for pricey llms
+        for conv in [conversations.conversation_a, conversations.conversation_b]:
+            if conv.llm.pricey:
+                increment_input_chars(get_ip(request), len(last_user_msg.content))
+
+        conversations.is_streaming = False
+        # After streaming completes, store Conversations to redis/db/logs
+        conversations.store_to_session()
+        record_conversations(conversations)
+
+    return create_sse_response(event_stream())
+
+
+ReactReturnType = TypedDict("ReactReturnType", {"reaction": ReactionData | None})
+
+
+@router.post("/react")
+async def react(
+    reaction_body: ReactionBody,
+    conversations: ConversationsAnno,
+    request: Request,
+) -> ReactReturnType:
+    """
+    Update reaction (like/dislike) for a specific message.
+
+    Args:
+        reaction_body: Request body with reaction data
+        conversations: Conversations from session_hash
+        request: FastAPI request for logging
+
+    Returns:
+        dict: reaction data
+
+    Raises:
+        HTTPException: If session not found
+    """
+    logger.info(
+        f"'/react' session={conversations.session_hash} called with: {reaction_body.model_dump_json()}",
+        extra={"request": request},
+    )
+
+    if conversations.vote:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't react: Conversations has vote",
+        )
+
+    conv = (
+        conversations.conversation_a
+        if reaction_body.bot == "a"
+        else conversations.conversation_b
+    )
+
+    # Get real message index from front which is the assistant message index without counting system message
+    msg_index = (
+        reaction_body.index if not conv.has_system_msg else reaction_body.index + 1
+    )
+    message = conv.messages[msg_index] if len(conv.messages) > msg_index else None
+
+    if not message or not isinstance(message, AssistantMessage):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Assistant message not found"
+        )
+
+    if reaction_body.liked is None:
+        # A reaction has been undone, remove it from its message and db
+        message.reaction = None
+        # Store conversations with removed reaction
+        conversations.store_to_session()
+        # Delete db reaction
+        delete_reaction(conv, msg_index)
+
+        return {"reaction": None}
+
+    # Build final reaction data
+    # FIXME replace reaction.index with msg_index?
+    reaction = ReactionData.model_validate(reaction_body, from_attributes=True)
+
+    message.reaction = reaction
+    # Store conversations with updated reaction to redis
+    conversations.store_to_session()
+    # Store reaction to db/logs
+    reaction_record = record_reaction(
+        conversations=conversations,
+        reaction=reaction,
+        msg_index=msg_index,
+        request=request,
+    )
+
+    return {"reaction": reaction}
+
+
+@router.post("/vote")
+async def vote(
+    vote_body: VoteBody,
+    conversations: ConversationsAnno,
+    request: Request,
+) -> RevealData:
+    """
+    Submit a vote after conversation and reveal model identities.
+
+    Saves the vote to database and returns reveal data.
+
+    Args:
+        vote_body: Request body with vote data
+        conversations: Conversations from session_hash
+        request: FastAPI request for logging
+
+    Returns:
+        dict: Reveal data with model names, metadata, and environmental stats
+
+    Raises:
+        HTTPException: If session not found
+    """
+    logger.info(
+        f"'/vote' session={conversations.session_hash} called with: {vote_body.model_dump_json()}",
+        extra={"request": request},
+    )
+
+    if conversations.vote:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't vote: Conversations has vote",
+        )
+    if conversations.conversation_a.reactions or conversations.conversation_a.reactions:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't vote: Conversation has reactions",
+        )
+
+    conversations.vote = vote_body
+    # Store conversations with updated vote to redis
+    conversations.store_to_session()
+
+    # Save vote to database with prefs and comments
+    record_vote(
+        conversations=conversations,
+        vote=vote_body,
+        request=request,
+    )
+
+    # Return computed reveal data with environmental impact
+    return get_reveal_data(conversations, vote_body.chosen_llm)
+
+
+@router.get("/reveal")
+async def reveal(conversations: ConversationsAnno, request: Request) -> RevealData:
+    """
+    Get reveal data for a session (model identities and metadata).
+
+    Args:
+        conversations: Conversations from session_hash
+        request: FastAPI request for logging
+
+    Returns:
+        dict: Reveal data with model names and metadata
+
+    Raises:
+        HTTPException: If session not found
+    """
+    logger.info(
+        f"[REVEAL] session={conversations.session_hash}", extra={"request": request}
+    )
+
+    chosen_llm = get_chosen_llm(conversations)
+
+    if chosen_llm is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No reaction or vote found, can't access reveal",
+        )
+
+    # Return computed reveal data with environmental impact
+    return get_reveal_data(conversations, chosen_llm)

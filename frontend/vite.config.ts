@@ -9,14 +9,11 @@ export default defineConfig({
     UnoCSS(),
     sveltekit(),
     paraglideVitePlugin({
-      project: './locales',
+      project: './comparia.inlang',
       outdir: './src/lib/i18n',
       strategy: ['cookie', 'custom-url', 'baseLocale']
     })
   ],
-  optimizeDeps: {
-    include: ['@gradio/client']
-  },
 
   server: {
     fs: {

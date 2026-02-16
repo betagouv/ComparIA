@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Amuchina from 'amuchina'
 import GithubSlugger from 'github-slugger'
 import { type Renderer, Marked } from 'marked'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
@@ -73,46 +74,6 @@ interface Tokenizer {
   renderer: (token: any) => string
 }
 
-function createLatexTokenizer(
-  delimiters: { left: string; right: string; display: boolean }[]
-): Tokenizer {
-  const delimiterPatterns = delimiters.map((delimiter) => ({
-    start: new RegExp(delimiter.left.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')),
-    end: new RegExp(delimiter.right.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'))
-  }))
-
-  return {
-    name: 'latex',
-    level: 'block',
-    start(src: string) {
-      for (const pattern of delimiterPatterns) {
-        const match = src.match(pattern.start)
-        if (match) {
-          return match.index
-        }
-      }
-      return -1
-    },
-    tokenizer(src: string, _tokens: any) {
-      for (const pattern of delimiterPatterns) {
-        const match = new RegExp(`${pattern.start.source}([\\s\\S]+?)${pattern.end.source}`).exec(
-          src
-        )
-        if (match) {
-          return {
-            type: 'latex',
-            raw: match[0],
-            text: match[1].trim()
-          }
-        }
-      }
-    },
-    renderer(token: any) {
-      return `<div class="latex-block">${token.text}</div>`
-    }
-  }
-}
-
 function createMermaidTokenizer(): Tokenizer {
   return {
     name: 'mermaid',
@@ -138,7 +99,7 @@ function createMermaidTokenizer(): Tokenizer {
 }
 
 const renderer: Partial<Omit<Renderer, 'constructor' | 'options'>> = {
-  code(this: Renderer, code: string, infostring: string | undefined, escaped: boolean) {
+  code(this: Renderer, { text: code, lang: infostring, escaped }) {
     const lang = (infostring ?? '').match(/\S*/)?.[0] ?? ''
     code = code.replace(/\n$/, '') + '\n'
 
@@ -171,12 +132,10 @@ const slugger = new GithubSlugger()
 
 export function create_marked({
   header_links,
-  line_breaks,
-  latex_delimiters
+  line_breaks
 }: {
   header_links: boolean
   line_breaks: boolean
-  latex_delimiters: { left: string; right: string; display: boolean }[]
 }): typeof marked {
   const marked = new Marked()
   marked.use(
@@ -219,11 +178,8 @@ export function create_marked({
     })
   }
 
-  const mermaidTokenizer = createMermaidTokenizer()
-  const latexTokenizer = createLatexTokenizer(latex_delimiters)
-
   marked.use({
-    extensions: [mermaidTokenizer, latexTokenizer]
+    extensions: [createMermaidTokenizer()]
   })
 
   return marked
@@ -296,4 +252,49 @@ async function copy_to_clipboard(value: string): Promise<boolean> {
   }
 
   return copied
+}
+
+// FIXME
+// this is from https://github.com/gradio-app/gradio/blob/main/js/sanitize/browser.ts
+// Rework to only use one sanitizer (other in utils/commons)
+
+const is_external_url = (link: string | null, root = location.href): boolean => {
+  try {
+    return !!link && new URL(link).origin !== new URL(root).origin
+  } catch (_e) {
+    return false
+  }
+}
+
+export function sanitize(source: string): string {
+  const amuchina = new Amuchina()
+  const node = new DOMParser().parseFromString(source, 'text/html')
+  walk_nodes(node.body, 'A', (node) => {
+    if (node instanceof HTMLElement && 'target' in node) {
+      if (is_external_url(node.getAttribute('href'), location.href)) {
+        node.setAttribute('target', '_blank')
+        node.setAttribute('rel', 'noopener noreferrer')
+      }
+    }
+  })
+
+  return amuchina.sanitize(node).body.innerHTML
+}
+
+function walk_nodes(
+  node: Node | null | HTMLElement,
+  test: string | ((node: Node | HTMLElement) => boolean),
+  callback: (node: Node | HTMLElement) => void
+): void {
+  if (
+    node &&
+    ((typeof test === 'string' && node.nodeName === test) ||
+      (typeof test === 'function' && test(node)))
+  ) {
+    callback(node)
+  }
+  const children = node?.childNodes || []
+  for (let i = 0; i < children.length; i++) {
+    walk_nodes(children[i], test, callback)
+  }
 }

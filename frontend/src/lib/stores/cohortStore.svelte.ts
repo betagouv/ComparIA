@@ -3,10 +3,9 @@
  */
 
 import { browser } from '$app/environment'
-import { logger } from '$lib/logger'
 import { getContext, setContext } from 'svelte'
 
-const COHORT_STORAGE_KEY = 'comparia-cohorts'
+export const COHORT_STORAGE_KEY = 'comparia-cohorts'
 
 // for now possible cohort are just an hardcoded Array here - move to db ?
 const EXISTING_COHORTS = ['pix']
@@ -15,30 +14,24 @@ const EXISTING_COHORTS = ['pix']
 function detectCohorts(): string {
   if (!browser) return ''
 
-  const cohortsCommaSepareted = sessionStorage.getItem(COHORT_STORAGE_KEY) ?? ''
+  const cohortsCommaSepareted = sessionStorage.getItem(COHORT_STORAGE_KEY)
   if (cohortsCommaSepareted) {
-    logger.debug(`[COHORT] Found in sessionStorage ${cohortsCommaSepareted}`)
+    console.debug(`[COHORT] Found in sessionStorage: '${cohortsCommaSepareted}'`)
     return cohortsCommaSepareted
   }
   // Detect from GET parameter
   const urlParams = new URLSearchParams(window.location.search)
-  const cohortsCommaSeparetedParam = urlParams.get('c') ?? ''
-  logger.debug(`[COHORT] URL param c ${cohortsCommaSeparetedParam}`)
+  const cohortsCommaSeparetedParam = urlParams.get('c')
+  if (!cohortsCommaSeparetedParam) return ''
 
+  console.debug(`[COHORT] URL param c found: '${cohortsCommaSeparetedParam}'`)
   const inputCohortList = cohortsCommaSeparetedParam.split(',')
 
   const validCohorts: string[] = inputCohortList.filter((item) => EXISTING_COHORTS.includes(item))
-  logger.debug(`[COHORT] Valid cohorts after filtering ${validCohorts.join(',')}`)
+  console.debug(`[COHORT] Valid cohorts after filtering '${validCohorts.join(',')}'`)
 
   // rebuilding the string after sorting cohort names for consistant orders in the backend/db
-  const validCohortsCommaSeparated = validCohorts.sort().join(',')
-
-  if (cohortsCommaSeparetedParam) {
-    logger.debug(`[COHORT] Storing in sessionStorage ${validCohortsCommaSeparated}`)
-    sessionStorage.setItem(COHORT_STORAGE_KEY, validCohortsCommaSeparated)
-  }
-
-  return validCohortsCommaSeparated
+  return validCohorts.sort().join(',')
 }
 
 /**
@@ -47,7 +40,13 @@ function detectCohorts(): string {
 export function setCohortContext() {
   const cohortsCommaSeparetedParam = detectCohorts()
   const cohortsForLogging = cohortsCommaSeparetedParam || '(empty)'
-  logger.debug(`[COHORT] Setting context with ${cohortsForLogging}`)
+  if (browser) {
+    console.debug(`[COHORT] Storing in sessionStorage '${cohortsForLogging}'`)
+    // Set cohorts even if it is an empty string, this allows to check that it is not
+    // null and therefore detection has been called
+    sessionStorage.setItem(COHORT_STORAGE_KEY, cohortsCommaSeparetedParam)
+  }
+  console.debug(`[COHORT] Setting context with '${cohortsForLogging}'`)
   setContext<string>(COHORT_STORAGE_KEY, cohortsCommaSeparetedParam)
 }
 

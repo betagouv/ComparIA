@@ -1,0 +1,176 @@
+import logging
+from pathlib import Path
+from typing import Annotated, Any
+
+from pydantic import (
+    BaseModel,
+    Field,
+    RootModel,
+    ValidationError,
+    ValidationInfo,
+    field_validator,
+)
+from pydantic_core import PydanticCustomError
+
+from utils.logger import configure_logger, log_pydantic_parsed_errors
+from utils.utils import FRONTEND_DIR, ROOT_DIR
+
+from .llms import LLMDataRaw, LLMDataRawBase
+
+logger = configure_logger(logging.getLogger("llms:organisations"))
+
+LLMS_RAW_DATA_FILE = Path(__file__).parent / "models.json"
+
+EXCLUDED_LLMS_STATUS = {"missing_data"}
+
+descs = {
+    "name": "Organisation's name",
+    "icon_path": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`",
+    "proprietary_license_desc": "Description of the optional organisation's proprietary license",
+    "proprietary_reuse": "Whether LLMs can be reused/redistributed according to this proprietary license",
+    "proprietary_commercial_use": "Whether commercial use is permitted with this proprietary license",
+    "proprietary_reuse_specificities": "Additional reuse restrictions/notes",
+    "proprietary_commercial_use_specificities": "Additional commercial use restrictions/notes",
+    "models": "list of this organisation's LLMs",
+}
+
+
+# Model to validate organisations data from 'utils/models/models.json'
+class RawOrganisation(BaseModel):
+    name: Annotated[str, Field(description=descs["name"])]
+    icon_path: Annotated[str | None, Field(description=descs["icon_path"])] = (
+        None  # FIXME required?
+    )
+    proprietary_license_desc: Annotated[
+        str | None, Field(description=descs["proprietary_license_desc"])
+    ] = ""
+    proprietary_reuse: Annotated[
+        bool, Field(description=descs["proprietary_reuse"])
+    ] = False
+    proprietary_commercial_use: Annotated[
+        bool | None, Field(description=descs["proprietary_commercial_use"])
+    ] = None
+    proprietary_reuse_specificities: Annotated[
+        str | None, Field(description=descs["proprietary_reuse_specificities"])
+    ] = ""
+    proprietary_commercial_use_specificities: Annotated[
+        str | None, Field(description=descs["proprietary_commercial_use_specificities"])
+    ] = ""
+    models: Annotated[list[LLMDataRawBase], Field(description=descs["models"])]
+
+    @field_validator("icon_path", mode="after")
+    @classmethod
+    def check_icon_exists(cls, value: str) -> str:
+        file_path = FRONTEND_DIR / "static" / "orgs" / "ai" / value
+        if "." in value and not file_path.exists():
+            raise PydanticCustomError(
+                "file_missing",
+                f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_DIR)}' doesn't exists.",
+            )
+
+        return value
+
+    @field_validator("models", mode="before")
+    @classmethod
+    def filter_excluded_llms_status(cls, models: list[Any]) -> list[Any]:
+        filtered_llms: list[Any] = []
+
+        for model in models:
+            # Filter out some models based on attr `status`
+            if model.get("status", None) in EXCLUDED_LLMS_STATUS:
+                logger.warning(
+                    f"LLM '{model["simple_name"]}' is excluded (reason={model["status"]})"
+                )
+                continue
+
+            filtered_llms.append(model)
+
+        return filtered_llms
+
+
+# Model used to generated 'utils/models/generated-models.json'
+class Organisation(RawOrganisation):
+    license_desc: Annotated[
+        str | None, Field(validation_alias="proprietary_license_desc")
+    ] = ""
+    reuse: Annotated[bool, Field(validation_alias="proprietary_reuse")] = False
+    commercial_use: Annotated[
+        bool | None, Field(validation_alias="proprietary_commercial_use")
+    ] = None
+    reuse_specificities: Annotated[
+        str | None, Field(validation_alias="proprietary_reuse_specificities")
+    ] = ""
+    commercial_use_specificities: Annotated[
+        str | None, Field(validation_alias="proprietary_commercial_use_specificities")
+    ] = ""
+    models: list[LLMDataRaw]  # type: ignore
+
+    @field_validator("models", mode="before")
+    @classmethod
+    def enhance_models(cls, value: Any, info: ValidationInfo) -> list[LLMDataRawBase]:
+        assert info.context is not None
+        assert info.context["data"] is not None
+        assert info.context["licenses"] is not None
+
+        for model in value:
+            # forward organisation data
+            model["organisation"] = info.data.get("name")
+            model["icon_path"] = info.data.get("icon_path")
+
+            # forward/inject license data
+            if model["license"] not in info.context["licenses"]:
+                raise PydanticCustomError(
+                    "license_missing",
+                    f"license is defined but license data is missing in 'licenses.json' for license '{model["license"]}'",
+                )
+
+            model |= info.context["licenses"][model["license"]]
+
+            if model["license"] == "proprietary":
+                model["reuse"] = info.data["proprietary_reuse"]
+                model["commercial_use"] = info.data["proprietary_commercial_use"]
+
+            # inject ranking/prefs data
+            dataset_data = info.context["data"].get(model["id"])
+
+            if dataset_data:
+                warning_infos = f"'{model["id"]}' (status: {model.get("status")})"
+                model["data"] = dataset_data.data
+                if not dataset_data.data:
+                    logger.warning(f"No ranking data for {warning_infos}")
+
+                model["prefs"] = dataset_data.prefs
+                if not dataset_data.prefs:
+                    logger.warning(f"No preferences data for {warning_infos}")
+
+        return value
+
+
+RawOrgas = RootModel[list[RawOrganisation]]
+Orgas = RootModel[list[Organisation]]
+
+
+def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[Any]:
+    try:
+        orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump()
+        logger.info("No errors in 'models.json'!")
+        return orgas
+    except ValidationError as exc:
+        errors: dict[str, list[dict[str, Any]]] = {}
+
+        for err in exc.errors():
+            orga = raw_orgas[err["loc"][0]]
+            if len(err["loc"]) <= 2:
+                name = f"organisation '{orga.get("name", err["loc"][0])}'"
+                key = err["loc"][1]
+            elif "models" in err["loc"]:
+                name = f"model '{orga["models"][err["loc"][2]]["id"]}'"
+                key = err["type"] if err["type"] == "endpoint" else err["loc"][3]
+
+            if name not in errors:
+                errors[name] = []
+            errors[name].append({"key": key, **err})
+
+        log_pydantic_parsed_errors(logger, errors)
+
+        raise Exception("Errors in 'models.json', exiting...")

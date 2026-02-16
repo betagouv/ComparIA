@@ -2,7 +2,7 @@
   import { Icon, Link, Tooltip } from '$components/dsfr'
   import Header from '$components/header/Header.svelte'
   import SeoHead from '$components/SEOHead.svelte'
-  import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
+  import { arena, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
 
@@ -132,7 +132,7 @@
 
 <main class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
   {#if arena.currentScreen === 'prompt'}
-    <ViewPrompt onSubmit={runChatBots} />
+    <ViewPrompt />
   {:else}
     <ViewChat />
   {/if}

@@ -1,25 +1,17 @@
-from rich import print
 import glob
 import json
 from pathlib import Path
+
 from pydantic import BaseModel, RootModel
 
-from utils.models.utils import read_json, write_json
+from utils.utils import FRONTEND_GENERATED_DIR, read_json
 
-
-CURRENT_FOLDER = Path(__file__).parent
-FRONTEND_EXPORT_PATH = (
-    CURRENT_FOLDER.parent.parent
-    / "frontend"
-    / "src"
-    / "lib"
-    / "generated"
-    / "suggestions.ts"
-)
+CURRENT_DIR = Path(__file__).parent
+FRONTEND_EXPORT_FILE = FRONTEND_GENERATED_DIR / "suggestions.ts"
 
 LOCALE_FILES = {
     path.split("/")[-1].replace(".json", ""): Path(path)
-    for path in glob.glob(str(CURRENT_FOLDER) + "/*.json")
+    for path in glob.glob(str(CURRENT_DIR) + "/*.json")
 }
 ALL_LOCALES = set(LOCALE_FILES.keys())
 
@@ -45,7 +37,7 @@ def main():
         for locale, path in LOCALE_FILES.items()
     }
 
-    FRONTEND_EXPORT_PATH.write_text(
+    FRONTEND_EXPORT_FILE.write_text(
         TS_TYPE
         + f"export const SUGGESTIONS: Record<{' | '.join([f"'{locale}'" for locale in LOCALE_FILES.keys()])}, SuggestionCategory[]> = {json.dumps(categories, ensure_ascii=False)}"
     )

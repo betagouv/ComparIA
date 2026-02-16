@@ -1,30 +1,32 @@
 {
-  "timestamp": 1770179221.0,
+  "timestamp": 1770784106.0,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 975,
-        "mean_win_prob": 0.4642485892877616,
-        "n_match": 2227,
-        "rank": 63,
-        "rank_p2_5": 56,
-        "rank_p97_5": 69,
-        "score_p2_5": 963,
-        "score_p97_5": 987,
+        "elo": 978,
+        "mean_win_prob": 0.4679694356462587,
+        "n_match": 2415,
+        "rank": 61,
+        "rank_p2_5": 55,
+        "rank_p97_5": 68,
+        "score_p2_5": 966,
+        "score_p97_5": 990,
         "trust_range": [
-          7,
-          6
+          6,
+          7
         ],
-        "win_rate": 0.4106286484059273
+        "win_rate": 0.41113871635610766
       },
       "distribution": "fully-open-source",
       "endpoint": {
         "api_base": "https://router.huggingface.co/v1",
         "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
-        "api_type": "huggingface"
+        "api_type": "huggingface",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": true,
@@ -35,15 +37,15 @@
       "organisation": "Swiss AI",
       "params": 70,
       "prefs": {
-        "clear_formatting": 134,
-        "complete": 146,
-        "creative": 42,
-        "incorrect": 115,
-        "instructions_not_followed": 68,
-        "positive_prefs_ratio": 0.6186726659167604,
-        "superficial": 156,
-        "total_prefs": 889,
-        "useful": 228
+        "clear_formatting": 155,
+        "complete": 174,
+        "creative": 46,
+        "incorrect": 132,
+        "instructions_not_followed": 78,
+        "positive_prefs_ratio": 0.6147058823529412,
+        "superficial": 183,
+        "total_prefs": 1020,
+        "useful": 252
       },
       "pricey": false,
       "quantization": null,
@@ -52,6 +54,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Apertus 70B Instruct",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
       "wh_per_million_token": 12468.733333333334
@@ -61,17 +64,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 958,
-        "mean_win_prob": 0.44088117180683034,
+        "elo": 960,
+        "mean_win_prob": 0.4430788303920943,
         "n_match": 86,
-        "rank": 72,
-        "rank_p2_5": 45,
+        "rank": 71,
+        "rank_p2_5": 44,
         "rank_p97_5": 83,
-        "score_p2_5": 904,
-        "score_p97_5": 1015,
+        "score_p2_5": 898,
+        "score_p97_5": 1018,
         "trust_range": [
           27,
-          11
+          12
         ],
         "win_rate": 0.46880952380952384
       },
@@ -103,6 +106,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Apertus 8B Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509",
       "wh_per_million_token": 3767.8599999999997
@@ -130,6 +134,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Aya 23 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -140,13 +145,13 @@
       "commercial_use": false,
       "data": {
         "elo": 990,
-        "mean_win_prob": 0.48452064833220676,
+        "mean_win_prob": 0.48475688163584535,
         "n_match": 5113,
         "rank": 54,
         "rank_p2_5": 52,
         "rank_p97_5": 60,
         "score_p2_5": 982,
-        "score_p97_5": 998,
+        "score_p97_5": 999,
         "trust_range": [
           2,
           6
@@ -157,7 +162,9 @@
       "endpoint": {
         "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
         "api_model_id": "c4ai-aya-expanse-32b",
-        "api_type": "openai"
+        "api_type": "openai",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -185,6 +192,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Aya Expanse 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
       "wh_per_million_token": 7135.939999999998
@@ -194,17 +202,17 @@
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 971,
-        "mean_win_prob": 0.4582197942019967,
+        "elo": 973,
+        "mean_win_prob": 0.46018520179190664,
         "n_match": 1302,
-        "rank": 65,
-        "rank_p2_5": 57,
+        "rank": 64,
+        "rank_p2_5": 56,
         "rank_p97_5": 72,
-        "score_p2_5": 954,
-        "score_p97_5": 987,
+        "score_p2_5": 957,
+        "score_p97_5": 988,
         "trust_range": [
           8,
-          7
+          8
         ],
         "win_rate": 0.5014285714285714
       },
@@ -236,6 +244,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Aya Expanse 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -263,6 +272,7 @@
       "required_ram": 35,
       "reuse": true,
       "simple_name": "Aya23-35B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 7556.949999999999
@@ -273,12 +283,12 @@
       "commercial_use": false,
       "data": {
         "elo": 928,
-        "mean_win_prob": 0.39960085178925336,
+        "mean_win_prob": 0.3994859127883386,
         "n_match": 5959,
         "rank": 81,
         "rank_p2_5": 78,
         "rank_p97_5": 83,
-        "score_p2_5": 919,
+        "score_p2_5": 920,
         "score_p97_5": 936,
         "trust_range": [
           3,
@@ -314,6 +324,7 @@
       "required_ram": 35,
       "reuse": true,
       "simple_name": "Command R",
+      "specific_portals": null,
       "status": "disabled",
       "url": null,
       "wh_per_million_token": 7556.949999999999
@@ -341,6 +352,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2",
       "wh_per_million_token": 4609.88
@@ -350,14 +362,14 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 747,
-        "mean_win_prob": 0.19561217453551033,
+        "elo": 749,
+        "mean_win_prob": 0.19720591247765598,
         "n_match": 309,
         "rank": 92,
         "rank_p2_5": 91,
         "rank_p97_5": 93,
-        "score_p2_5": 703,
-        "score_p97_5": 789,
+        "score_p2_5": 701,
+        "score_p97_5": 794,
         "trust_range": [
           1,
           1
@@ -392,6 +404,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
       "wh_per_million_token": 4609.88
@@ -419,6 +432,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Chocolatine 2 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
       "wh_per_million_token": 4609.88
@@ -428,13 +442,13 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 817,
-        "mean_win_prob": 0.2646214642043346,
+        "elo": 816,
+        "mean_win_prob": 0.26411516240464195,
         "n_match": 1796,
         "rank": 90,
         "rank_p2_5": 90,
         "rank_p97_5": 91,
-        "score_p2_5": 800,
+        "score_p2_5": 801,
         "score_p97_5": 833,
         "trust_range": [
           0,
@@ -470,6 +484,7 @@
       "required_ram": 28,
       "reuse": true,
       "simple_name": "Chocolatine 2 14B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
       "wh_per_million_token": 3627.5233333333335
@@ -480,13 +495,13 @@
       "commercial_use": null,
       "data": {
         "elo": 970,
-        "mean_win_prob": 0.4568320130896421,
+        "mean_win_prob": 0.45690528643282347,
         "n_match": 5683,
         "rank": 67,
         "rank_p2_5": 62,
         "rank_p97_5": 70,
-        "score_p2_5": 961,
-        "score_p97_5": 979,
+        "score_p2_5": 962,
+        "score_p97_5": 978,
         "trust_range": [
           5,
           3
@@ -521,6 +536,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 3.5 Sonnet v2",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
       "wh_per_million_token": 87485.15999999997
@@ -531,16 +547,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1048,
-        "mean_win_prob": 0.5646473093578714,
+        "mean_win_prob": 0.5642564764160243,
         "n_match": 3907,
-        "rank": 32,
-        "rank_p2_5": 27,
+        "rank": 31,
+        "rank_p2_5": 26,
         "rank_p97_5": 35,
         "score_p2_5": 1038,
         "score_p97_5": 1058,
         "trust_range": [
           5,
-          3
+          4
         ],
         "win_rate": 0.524225748656258
       },
@@ -572,6 +588,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 3.7 Sonnet",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
       "wh_per_million_token": 87485.15999999997
@@ -582,24 +599,26 @@
       "commercial_use": null,
       "data": {
         "elo": 1072,
-        "mean_win_prob": 0.5968034272098997,
-        "n_match": 6138,
-        "rank": 17,
+        "mean_win_prob": 0.5964760454586694,
+        "n_match": 6519,
+        "rank": 16,
         "rank_p2_5": 13,
-        "rank_p97_5": 22,
-        "score_p2_5": 1065,
-        "score_p97_5": 1080,
+        "rank_p97_5": 21,
+        "score_p2_5": 1064,
+        "score_p97_5": 1079,
         "trust_range": [
-          4,
+          3,
           5
         ],
-        "win_rate": 0.5363734115347019
+        "win_rate": 0.5354793680012272
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "anthropic/claude-sonnet-4.5",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -610,15 +629,15 @@
       "organisation": "Anthropic",
       "params": 440,
       "prefs": {
-        "clear_formatting": 623,
-        "complete": 870,
-        "creative": 512,
-        "incorrect": 161,
-        "instructions_not_followed": 92,
-        "positive_prefs_ratio": 0.8635869565217391,
-        "superficial": 249,
-        "total_prefs": 3680,
-        "useful": 1173
+        "clear_formatting": 695,
+        "complete": 916,
+        "creative": 539,
+        "incorrect": 173,
+        "instructions_not_followed": 97,
+        "positive_prefs_ratio": 0.862033984275932,
+        "superficial": 274,
+        "total_prefs": 3943,
+        "useful": 1249
       },
       "pricey": false,
       "quantization": null,
@@ -627,6 +646,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 4.5 Sonnet",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
       "wh_per_million_token": 87485.15999999997
@@ -637,16 +657,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1063,
-        "mean_win_prob": 0.5843548562485997,
+        "mean_win_prob": 0.5842932469540095,
         "n_match": 2540,
-        "rank": 23,
-        "rank_p2_5": 16,
-        "rank_p97_5": 30,
-        "score_p2_5": 1052,
-        "score_p97_5": 1074,
+        "rank": 24,
+        "rank_p2_5": 15,
+        "rank_p97_5": 29,
+        "score_p2_5": 1051,
+        "score_p97_5": 1075,
         "trust_range": [
-          7,
-          7
+          9,
+          5
         ],
         "win_rate": 0.5355651831429696
       },
@@ -654,7 +674,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "anthropic/claude-sonnet-4",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -682,6 +704,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Claude 4 Sonnet",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 87485.15999999997
@@ -692,24 +715,26 @@
       "commercial_use": false,
       "data": {
         "elo": 1055,
-        "mean_win_prob": 0.5733914065953097,
-        "n_match": 7693,
+        "mean_win_prob": 0.5739456330894819,
+        "n_match": 7866,
         "rank": 29,
-        "rank_p2_5": 24,
-        "rank_p97_5": 32,
+        "rank_p2_5": 23,
+        "rank_p97_5": 31,
         "score_p2_5": 1048,
         "score_p97_5": 1062,
         "trust_range": [
-          5,
-          3
+          6,
+          2
         ],
-        "win_rate": 0.5440517353438191
+        "win_rate": 0.5454881769641495
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "cohere/command-a",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -720,15 +745,15 @@
       "organisation": "Cohere",
       "params": 111,
       "prefs": {
-        "clear_formatting": 1252,
-        "complete": 1337,
-        "creative": 355,
-        "incorrect": 354,
-        "instructions_not_followed": 140,
-        "positive_prefs_ratio": 0.8309911935544313,
-        "superficial": 408,
-        "total_prefs": 5337,
-        "useful": 1491
+        "clear_formatting": 1298,
+        "complete": 1390,
+        "creative": 360,
+        "incorrect": 365,
+        "instructions_not_followed": 145,
+        "positive_prefs_ratio": 0.8320043494019572,
+        "superficial": 417,
+        "total_prefs": 5518,
+        "useful": 1543
       },
       "pricey": false,
       "quantization": null,
@@ -737,6 +762,7 @@
       "required_ram": 111,
       "reuse": true,
       "simple_name": "Command A",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
       "wh_per_million_token": 18222.536666666667
@@ -764,6 +790,7 @@
       "required_ram": 104,
       "reuse": true,
       "simple_name": "Command R+",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 17240.18
@@ -773,25 +800,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1078,
-        "mean_win_prob": 0.6048116583019952,
-        "n_match": 2324,
-        "rank": 12,
+        "elo": 1077,
+        "mean_win_prob": 0.6038239995762236,
+        "n_match": 2527,
+        "rank": 13,
         "rank_p2_5": 10,
-        "rank_p97_5": 21,
-        "score_p2_5": 1065,
-        "score_p97_5": 1090,
+        "rank_p97_5": 20,
+        "score_p2_5": 1067,
+        "score_p97_5": 1089,
         "trust_range": [
-          2,
-          9
+          3,
+          7
         ],
-        "win_rate": 0.5211273666092943
+        "win_rate": 0.5254768500197864
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "deepseek/deepseek-chat-v3.1",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -802,15 +831,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 255,
-        "complete": 293,
-        "creative": 104,
-        "incorrect": 104,
-        "instructions_not_followed": 56,
-        "positive_prefs_ratio": 0.7917341977309562,
-        "superficial": 97,
-        "total_prefs": 1234,
-        "useful": 325
+        "clear_formatting": 286,
+        "complete": 335,
+        "creative": 118,
+        "incorrect": 108,
+        "instructions_not_followed": 58,
+        "positive_prefs_ratio": 0.8011611030478955,
+        "superficial": 108,
+        "total_prefs": 1378,
+        "useful": 365
       },
       "pricey": false,
       "quantization": null,
@@ -819,6 +848,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek v3.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
       "wh_per_million_token": 47025.74
@@ -828,13 +858,13 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1024,
-        "mean_win_prob": 0.5315432556280325,
+        "elo": 1025,
+        "mean_win_prob": 0.5321601957399885,
         "n_match": 3510,
         "rank": 40,
         "rank_p2_5": 36,
         "rank_p97_5": 45,
-        "score_p2_5": 1014,
+        "score_p2_5": 1015,
         "score_p97_5": 1035,
         "trust_range": [
           4,
@@ -846,7 +876,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "deepseek/deepseek-r1",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -874,6 +906,7 @@
       "required_ram": 671,
       "reuse": true,
       "simple_name": "DeepSeek R1",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
       "wh_per_million_token": 47025.74
@@ -883,25 +916,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1056,
-        "mean_win_prob": 0.575138210014572,
-        "n_match": 1899,
+        "elo": 1055,
+        "mean_win_prob": 0.5742035983812075,
+        "n_match": 2097,
         "rank": 28,
-        "rank_p2_5": 19,
-        "rank_p97_5": 33,
+        "rank_p2_5": 20,
+        "rank_p97_5": 34,
         "score_p2_5": 1042,
-        "score_p97_5": 1068,
+        "score_p97_5": 1067,
         "trust_range": [
-          9,
-          5
+          8,
+          6
         ],
-        "win_rate": 0.5232596103212217
+        "win_rate": 0.5195946590367192
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "deepseek/DeepSeek-R1-0528",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -912,15 +947,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 197,
-        "complete": 247,
-        "creative": 79,
-        "incorrect": 80,
-        "instructions_not_followed": 36,
-        "positive_prefs_ratio": 0.8042813455657493,
-        "superficial": 76,
-        "total_prefs": 981,
-        "useful": 266
+        "clear_formatting": 223,
+        "complete": 281,
+        "creative": 91,
+        "incorrect": 92,
+        "instructions_not_followed": 45,
+        "positive_prefs_ratio": 0.8001768346595933,
+        "superficial": 89,
+        "total_prefs": 1131,
+        "useful": 310
       },
       "pricey": false,
       "quantization": null,
@@ -929,6 +964,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek R1 0528",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
       "wh_per_million_token": 47025.74
@@ -939,13 +975,13 @@
       "commercial_use": true,
       "data": {
         "elo": 944,
-        "mean_win_prob": 0.42154991944242054,
+        "mean_win_prob": 0.42154691495602004,
         "n_match": 2981,
         "rank": 77,
         "rank_p2_5": 72,
         "rank_p97_5": 79,
-        "score_p2_5": 934,
-        "score_p97_5": 956,
+        "score_p2_5": 933,
+        "score_p97_5": 955,
         "trust_range": [
           5,
           2
@@ -956,7 +992,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "deepseek/deepseek-r1-distill-llama-70b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -984,6 +1022,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "DeepSeek R1 Llama 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
       "wh_per_million_token": 12468.733333333334
@@ -994,24 +1033,26 @@
       "commercial_use": true,
       "data": {
         "elo": 1091,
-        "mean_win_prob": 0.6223996896715935,
+        "mean_win_prob": 0.6223347154914951,
         "n_match": 4385,
         "rank": 9,
         "rank_p2_5": 7,
-        "rank_p97_5": 12,
-        "score_p2_5": 1082,
+        "rank_p97_5": 11,
+        "score_p2_5": 1083,
         "score_p97_5": 1101,
         "trust_range": [
           2,
-          3
+          2
         ],
-        "win_rate": 0.5851128848346637
+        "win_rate": 0.5851128848346636
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "deepseek/deepseek-chat-v3-0324",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1039,6 +1080,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek V3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
       "wh_per_million_token": 47025.74
@@ -1049,16 +1091,16 @@
       "commercial_use": true,
       "data": {
         "elo": 1078,
-        "mean_win_prob": 0.6047929898900393,
+        "mean_win_prob": 0.6047594570124205,
         "n_match": 5388,
-        "rank": 13,
+        "rank": 12,
         "rank_p2_5": 10,
         "rank_p97_5": 19,
-        "score_p2_5": 1070,
+        "score_p2_5": 1069,
         "score_p97_5": 1087,
         "trust_range": [
-          3,
-          6
+          2,
+          7
         ],
         "win_rate": 0.6141481069042317
       },
@@ -1090,6 +1132,7 @@
       "required_ram": 671,
       "reuse": true,
       "simple_name": "DeepSeek v3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
       "wh_per_million_token": 47025.74
@@ -1099,25 +1142,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1075,
-        "mean_win_prob": 0.6002545489898781,
-        "n_match": 1633,
+        "elo": 1074,
+        "mean_win_prob": 0.5997920260793798,
+        "n_match": 1843,
         "rank": 15,
         "rank_p2_5": 10,
-        "rank_p97_5": 25,
+        "rank_p97_5": 23,
         "score_p2_5": 1061,
-        "score_p97_5": 1088,
+        "score_p97_5": 1087,
         "trust_range": [
           5,
-          10
+          8
         ],
-        "win_rate": 0.5502265768524188
+        "win_rate": 0.5554259359739555
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "deepseek/deepseek-v3.2",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1128,15 +1173,15 @@
       "organisation": "DeepSeek",
       "params": 685,
       "prefs": {
-        "clear_formatting": 294,
-        "complete": 397,
-        "creative": 186,
-        "incorrect": 117,
-        "instructions_not_followed": 61,
-        "positive_prefs_ratio": 0.8162612035851472,
-        "superficial": 109,
-        "total_prefs": 1562,
-        "useful": 398
+        "clear_formatting": 328,
+        "complete": 443,
+        "creative": 204,
+        "incorrect": 124,
+        "instructions_not_followed": 67,
+        "positive_prefs_ratio": 0.8221963974433469,
+        "superficial": 115,
+        "total_prefs": 1721,
+        "useful": 440
       },
       "pricey": false,
       "quantization": null,
@@ -1145,6 +1190,7 @@
       "required_ram": 685,
       "reuse": true,
       "simple_name": "DeepSeek V3.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek/deepseek-v3.2",
       "wh_per_million_token": 47025.74
@@ -1154,25 +1200,27 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1014,
-        "mean_win_prob": 0.517404079994749,
-        "n_match": 346,
-        "rank": 45,
-        "rank_p2_5": 32,
-        "rank_p97_5": 60,
-        "score_p2_5": 983,
-        "score_p97_5": 1046,
+        "elo": 1023,
+        "mean_win_prob": 0.5298756680233072,
+        "n_match": 495,
+        "rank": 41,
+        "rank_p2_5": 31,
+        "rank_p97_5": 52,
+        "score_p2_5": 998,
+        "score_p97_5": 1049,
         "trust_range": [
-          13,
-          15
+          10,
+          11
         ],
-        "win_rate": 0.45523121387283233
+        "win_rate": 0.44686868686868686
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": "https://router.huggingface.co/v1",
         "api_model_id": "utter-project/EuroLLM-22B-Instruct-2512",
-        "api_type": "huggingface"
+        "api_type": "huggingface",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1183,15 +1231,15 @@
       "organisation": "EuroLLM",
       "params": 22,
       "prefs": {
-        "clear_formatting": 70,
-        "complete": 61,
-        "creative": 20,
-        "incorrect": 24,
-        "instructions_not_followed": 14,
-        "positive_prefs_ratio": 0.775,
-        "superficial": 34,
-        "total_prefs": 320,
-        "useful": 97
+        "clear_formatting": 95,
+        "complete": 81,
+        "creative": 22,
+        "incorrect": 38,
+        "instructions_not_followed": 19,
+        "positive_prefs_ratio": 0.7540603248259861,
+        "superficial": 49,
+        "total_prefs": 431,
+        "useful": 127
       },
       "pricey": false,
       "quantization": null,
@@ -1200,6 +1248,7 @@
       "required_ram": 22,
       "reuse": true,
       "simple_name": "EuroLLM 22B Instruct",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
       "wh_per_million_token": 5732.573333333333
@@ -1210,16 +1259,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1030,
-        "mean_win_prob": 0.5394972746988902,
+        "mean_win_prob": 0.5396481444648186,
         "n_match": 7387,
         "rank": 39,
         "rank_p2_5": 35,
-        "rank_p97_5": 41,
+        "rank_p97_5": 42,
         "score_p2_5": 1022,
-        "score_p97_5": 1037,
+        "score_p97_5": 1038,
         "trust_range": [
           4,
-          2
+          3
         ],
         "win_rate": 0.5830743197509137
       },
@@ -1251,6 +1300,7 @@
       "required_ram": 600,
       "reuse": false,
       "simple_name": "Gemini 1.5 Pro",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
       "wh_per_million_token": 167596.16666666666
@@ -1260,14 +1310,14 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1099,
-        "mean_win_prob": 0.632897676872256,
+        "elo": 1100,
+        "mean_win_prob": 0.6332027746282586,
         "n_match": 8684,
         "rank": 8,
         "rank_p2_5": 5,
         "rank_p97_5": 9,
         "score_p2_5": 1093,
-        "score_p97_5": 1107,
+        "score_p97_5": 1106,
         "trust_range": [
           3,
           1
@@ -1302,6 +1352,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 2.0 Flash",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
       "wh_per_million_token": 87485.15999999997
@@ -1312,24 +1363,26 @@
       "commercial_use": null,
       "data": {
         "elo": 1106,
-        "mean_win_prob": 0.6412839743578328,
-        "n_match": 4731,
+        "mean_win_prob": 0.6417167220443732,
+        "n_match": 4927,
         "rank": 5,
         "rank_p2_5": 4,
         "rank_p97_5": 8,
-        "score_p2_5": 1097,
+        "score_p2_5": 1098,
         "score_p97_5": 1115,
         "trust_range": [
           1,
           3
         ],
-        "win_rate": 0.5790065525258931
+        "win_rate": 0.5783245382585752
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "gemini-2.5-flash",
-        "api_type": "vertex_ai"
+        "api_type": "vertex_ai",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1340,15 +1393,15 @@
       "organisation": "Google",
       "params": 440,
       "prefs": {
-        "clear_formatting": 502,
-        "complete": 663,
-        "creative": 194,
-        "incorrect": 143,
-        "instructions_not_followed": 47,
-        "positive_prefs_ratio": 0.8614775725593667,
-        "superficial": 125,
-        "total_prefs": 2274,
-        "useful": 600
+        "clear_formatting": 540,
+        "complete": 705,
+        "creative": 205,
+        "incorrect": 151,
+        "instructions_not_followed": 53,
+        "positive_prefs_ratio": 0.8611224907824662,
+        "superficial": 135,
+        "total_prefs": 2441,
+        "useful": 652
       },
       "pricey": false,
       "quantization": null,
@@ -1357,6 +1410,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 2.5 Flash",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 87485.15999999997
@@ -1367,24 +1421,26 @@
       "commercial_use": null,
       "data": {
         "elo": 1128,
-        "mean_win_prob": 0.6694254263174676,
-        "n_match": 973,
+        "mean_win_prob": 0.6698772782232936,
+        "n_match": 1262,
         "rank": 2,
         "rank_p2_5": 1,
         "rank_p97_5": 4,
-        "score_p2_5": 1110,
-        "score_p97_5": 1146,
+        "score_p2_5": 1112,
+        "score_p97_5": 1145,
         "trust_range": [
           1,
           2
         ],
-        "win_rate": 0.5728057553956835
+        "win_rate": 0.5719809825673534
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemini-3-flash-preview",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1395,15 +1451,15 @@
       "organisation": "Google",
       "params": 440,
       "prefs": {
-        "clear_formatting": 170,
-        "complete": 193,
-        "creative": 61,
-        "incorrect": 41,
-        "instructions_not_followed": 13,
-        "positive_prefs_ratio": 0.8642659279778393,
-        "superficial": 44,
-        "total_prefs": 722,
-        "useful": 200
+        "clear_formatting": 220,
+        "complete": 276,
+        "creative": 83,
+        "incorrect": 51,
+        "instructions_not_followed": 16,
+        "positive_prefs_ratio": 0.8742268041237113,
+        "superficial": 55,
+        "total_prefs": 970,
+        "useful": 269
       },
       "pricey": false,
       "quantization": null,
@@ -1412,6 +1468,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "Gemini 3 Flash",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3-flash/",
       "wh_per_million_token": 87485.15999999997
@@ -1421,25 +1478,27 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1102,
-        "mean_win_prob": 0.6364750473873861,
-        "n_match": 2865,
-        "rank": 7,
-        "rank_p2_5": 4,
+        "elo": 1101,
+        "mean_win_prob": 0.6356066427576355,
+        "n_match": 3210,
+        "rank": 6,
+        "rank_p2_5": 5,
         "rank_p97_5": 9,
-        "score_p2_5": 1090,
+        "score_p2_5": 1092,
         "score_p97_5": 1112,
         "trust_range": [
-          3,
-          2
+          1,
+          3
         ],
-        "win_rate": 0.554303664921466
+        "win_rate": 0.5553489096573209
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemini-3-pro-preview",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1450,15 +1509,15 @@
       "organisation": "Google",
       "params": 750,
       "prefs": {
-        "clear_formatting": 419,
-        "complete": 560,
-        "creative": 189,
-        "incorrect": 82,
-        "instructions_not_followed": 61,
-        "positive_prefs_ratio": 0.8745661874070402,
-        "superficial": 110,
-        "total_prefs": 2017,
-        "useful": 596
+        "clear_formatting": 462,
+        "complete": 626,
+        "creative": 214,
+        "incorrect": 99,
+        "instructions_not_followed": 71,
+        "positive_prefs_ratio": 0.8676341248900615,
+        "superficial": 131,
+        "total_prefs": 2274,
+        "useful": 671
       },
       "pricey": false,
       "quantization": null,
@@ -1467,6 +1526,7 @@
       "required_ram": 750,
       "reuse": false,
       "simple_name": "Gemini 3 Pro",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
       "wh_per_million_token": 53761.899999999994
@@ -1494,6 +1554,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 2 27B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1503,17 +1564,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1000,
-        "mean_win_prob": 0.4980885662475079,
+        "elo": 1001,
+        "mean_win_prob": 0.49886101074090466,
         "n_match": 762,
         "rank": 51,
         "rank_p2_5": 40,
-        "rank_p97_5": 62,
-        "score_p2_5": 977,
-        "score_p97_5": 1025,
+        "rank_p97_5": 63,
+        "score_p2_5": 976,
+        "score_p97_5": 1026,
         "trust_range": [
           11,
-          11
+          12
         ],
         "win_rate": 0.5826115485564304
       },
@@ -1545,6 +1606,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 2 27B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1572,6 +1634,7 @@
       "required_ram": 2,
       "reuse": true,
       "simple_name": "Gemma 2 2B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-2b-it",
       "wh_per_million_token": 2925.84
@@ -1581,14 +1644,14 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 951,
-        "mean_win_prob": 0.4311905949930325,
+        "elo": 952,
+        "mean_win_prob": 0.4316710505845071,
         "n_match": 5115,
         "rank": 74,
         "rank_p2_5": 70,
         "rank_p97_5": 76,
         "score_p2_5": 943,
-        "score_p97_5": 960,
+        "score_p97_5": 961,
         "trust_range": [
           4,
           2
@@ -1623,6 +1686,7 @@
       "required_ram": 9,
       "reuse": true,
       "simple_name": "Gemma 2 9B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-9b-it",
       "wh_per_million_token": 3908.1966666666667
@@ -1633,24 +1697,26 @@
       "commercial_use": true,
       "data": {
         "elo": 1063,
-        "mean_win_prob": 0.5852683860147119,
-        "n_match": 8085,
-        "rank": 22,
+        "mean_win_prob": 0.5845168950335101,
+        "n_match": 8288,
+        "rank": 23,
         "rank_p2_5": 18,
         "rank_p97_5": 27,
-        "score_p2_5": 1057,
+        "score_p2_5": 1056,
         "score_p97_5": 1070,
         "trust_range": [
-          4,
-          5
+          5,
+          4
         ],
-        "win_rate": 0.5551329622758194
+        "win_rate": 0.5528173262548263
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemma-3-12b-it",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1661,15 +1727,15 @@
       "organisation": "Google",
       "params": 12,
       "prefs": {
-        "clear_formatting": 1169,
-        "complete": 1518,
-        "creative": 409,
-        "incorrect": 487,
-        "instructions_not_followed": 205,
-        "positive_prefs_ratio": 0.8095324065715833,
-        "superficial": 363,
-        "total_prefs": 5539,
-        "useful": 1388
+        "clear_formatting": 1201,
+        "complete": 1557,
+        "creative": 418,
+        "incorrect": 506,
+        "instructions_not_followed": 210,
+        "positive_prefs_ratio": 0.8080364976311634,
+        "superficial": 378,
+        "total_prefs": 5699,
+        "useful": 1429
       },
       "pricey": false,
       "quantization": null,
@@ -1678,6 +1744,7 @@
       "required_ram": 12,
       "reuse": true,
       "simple_name": "Gemma 3 12B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-12b-it",
       "wh_per_million_token": 4329.206666666666
@@ -1687,9 +1754,9 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1083,
-        "mean_win_prob": 0.611065874901126,
-        "n_match": 8373,
+        "elo": 1082,
+        "mean_win_prob": 0.6107152793947536,
+        "n_match": 8583,
         "rank": 11,
         "rank_p2_5": 10,
         "rank_p97_5": 15,
@@ -1699,13 +1766,15 @@
           1,
           4
         ],
-        "win_rate": 0.5698972889048131
+        "win_rate": 0.5692613305371083
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemma-3-27b-it",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1716,15 +1785,15 @@
       "organisation": "Google",
       "params": 27,
       "prefs": {
-        "clear_formatting": 1300,
-        "complete": 1756,
-        "creative": 524,
-        "incorrect": 434,
-        "instructions_not_followed": 151,
-        "positive_prefs_ratio": 0.8518213284984342,
-        "superficial": 314,
-        "total_prefs": 6067,
-        "useful": 1588
+        "clear_formatting": 1327,
+        "complete": 1791,
+        "creative": 530,
+        "incorrect": 447,
+        "instructions_not_followed": 159,
+        "positive_prefs_ratio": 0.8492178680857926,
+        "superficial": 329,
+        "total_prefs": 6201,
+        "useful": 1618
       },
       "pricey": false,
       "quantization": null,
@@ -1733,6 +1802,7 @@
       "required_ram": 27,
       "reuse": true,
       "simple_name": "Gemma 3 27B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-27b-it",
       "wh_per_million_token": 6434.256666666666
@@ -1743,8 +1813,8 @@
       "commercial_use": true,
       "data": {
         "elo": 1035,
-        "mean_win_prob": 0.5470589803845023,
-        "n_match": 9158,
+        "mean_win_prob": 0.5467385579531175,
+        "n_match": 9361,
         "rank": 36,
         "rank_p2_5": 34,
         "rank_p97_5": 39,
@@ -1754,13 +1824,15 @@
           2,
           3
         ],
-        "win_rate": 0.512464511902162
+        "win_rate": 0.5116579425275077
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemma-3-4b-it",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1771,15 +1843,15 @@
       "organisation": "Google",
       "params": 4,
       "prefs": {
-        "clear_formatting": 1212,
-        "complete": 1503,
-        "creative": 416,
-        "incorrect": 728,
-        "instructions_not_followed": 254,
-        "positive_prefs_ratio": 0.7689825038219806,
-        "superficial": 378,
-        "total_prefs": 5887,
-        "useful": 1396
+        "clear_formatting": 1241,
+        "complete": 1539,
+        "creative": 423,
+        "incorrect": 748,
+        "instructions_not_followed": 263,
+        "positive_prefs_ratio": 0.7673956262425448,
+        "superficial": 393,
+        "total_prefs": 6036,
+        "useful": 1429
       },
       "pricey": false,
       "quantization": null,
@@ -1788,6 +1860,7 @@
       "required_ram": 4,
       "reuse": true,
       "simple_name": "Gemma 3 4B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-4b-it",
       "wh_per_million_token": 3206.5133333333333
@@ -1797,25 +1870,27 @@
       "arch": "matformer",
       "commercial_use": true,
       "data": {
-        "elo": 1031,
-        "mean_win_prob": 0.5415190861630047,
-        "n_match": 4473,
+        "elo": 1033,
+        "mean_win_prob": 0.543704796481743,
+        "n_match": 4676,
         "rank": 37,
         "rank_p2_5": 34,
         "rank_p97_5": 41,
-        "score_p2_5": 1023,
-        "score_p97_5": 1041,
+        "score_p2_5": 1025,
+        "score_p97_5": 1042,
         "trust_range": [
           3,
           4
         ],
-        "win_rate": 0.4958663089649006
+        "win_rate": 0.4968156544054748
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemma-3n-e4b-it",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1826,15 +1901,15 @@
       "organisation": "Google",
       "params": 8,
       "prefs": {
-        "clear_formatting": 401,
-        "complete": 464,
-        "creative": 162,
-        "incorrect": 238,
-        "instructions_not_followed": 108,
-        "positive_prefs_ratio": 0.7369970559371933,
-        "superficial": 190,
-        "total_prefs": 2038,
-        "useful": 475
+        "clear_formatting": 429,
+        "complete": 500,
+        "creative": 168,
+        "incorrect": 252,
+        "instructions_not_followed": 113,
+        "positive_prefs_ratio": 0.7364305427782889,
+        "superficial": 208,
+        "total_prefs": 2174,
+        "useful": 504
       },
       "pricey": false,
       "quantization": null,
@@ -1843,6 +1918,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Gemma 3n 4B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3206.5133333333333
@@ -1853,16 +1929,16 @@
       "commercial_use": true,
       "data": {
         "elo": 1072,
-        "mean_win_prob": 0.5965974700900935,
+        "mean_win_prob": 0.5963287665208331,
         "n_match": 2178,
-        "rank": 18,
+        "rank": 17,
         "rank_p2_5": 11,
         "rank_p97_5": 25,
         "score_p2_5": 1060,
-        "score_p97_5": 1084,
+        "score_p97_5": 1085,
         "trust_range": [
-          7,
-          7
+          6,
+          8
         ],
         "win_rate": 0.5414882866329811
       },
@@ -1870,7 +1946,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "z-ai/glm-4.5",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1898,6 +1976,7 @@
       "required_ram": 355,
       "reuse": true,
       "simple_name": "GLM 4.5",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 21407.82
@@ -1907,25 +1986,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1043,
-        "mean_win_prob": 0.5575733196070535,
-        "n_match": 2621,
-        "rank": 34,
+        "elo": 1045,
+        "mean_win_prob": 0.559623067245928,
+        "n_match": 2769,
+        "rank": 33,
         "rank_p2_5": 28,
         "rank_p97_5": 37,
-        "score_p2_5": 1032,
-        "score_p97_5": 1054,
+        "score_p2_5": 1033,
+        "score_p97_5": 1055,
         "trust_range": [
-          6,
-          3
+          5,
+          4
         ],
-        "win_rate": 0.5038496756962991
+        "win_rate": 0.5069447453954496
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "z-ai/glm-4.6",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1936,15 +2017,15 @@
       "organisation": "Zhipu",
       "params": 357,
       "prefs": {
-        "clear_formatting": 249,
-        "complete": 365,
-        "creative": 117,
-        "incorrect": 98,
-        "instructions_not_followed": 60,
-        "positive_prefs_ratio": 0.8027522935779816,
-        "superficial": 100,
-        "total_prefs": 1308,
-        "useful": 319
+        "clear_formatting": 266,
+        "complete": 387,
+        "creative": 125,
+        "incorrect": 104,
+        "instructions_not_followed": 65,
+        "positive_prefs_ratio": 0.7995705082319255,
+        "superficial": 111,
+        "total_prefs": 1397,
+        "useful": 339
       },
       "pricey": false,
       "quantization": null,
@@ -1953,6 +2034,7 @@
       "required_ram": 357,
       "reuse": true,
       "simple_name": "GLM 4.6",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 21407.82
@@ -1963,24 +2045,26 @@
       "commercial_use": true,
       "data": {
         "elo": 1036,
-        "mean_win_prob": 0.5481271628371293,
-        "n_match": 658,
+        "mean_win_prob": 0.5484968080794734,
+        "n_match": 820,
         "rank": 35,
         "rank_p2_5": 27,
-        "rank_p97_5": 45,
-        "score_p2_5": 1013,
-        "score_p97_5": 1058,
+        "rank_p97_5": 44,
+        "score_p2_5": 1016,
+        "score_p97_5": 1057,
         "trust_range": [
           8,
-          10
+          9
         ],
-        "win_rate": 0.47074468085106386
+        "win_rate": 0.4835243902439024
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "z-ai/glm-4.7",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1991,15 +2075,15 @@
       "organisation": "Zhipu",
       "params": 357,
       "prefs": {
-        "clear_formatting": 92,
-        "complete": 124,
-        "creative": 33,
-        "incorrect": 33,
-        "instructions_not_followed": 29,
-        "positive_prefs_ratio": 0.775599128540305,
-        "superficial": 41,
-        "total_prefs": 459,
-        "useful": 107
+        "clear_formatting": 109,
+        "complete": 143,
+        "creative": 39,
+        "incorrect": 43,
+        "instructions_not_followed": 30,
+        "positive_prefs_ratio": 0.776536312849162,
+        "superficial": 47,
+        "total_prefs": 537,
+        "useful": 126
       },
       "pricey": false,
       "quantization": null,
@@ -2008,6 +2092,7 @@
       "required_ram": 357,
       "reuse": true,
       "simple_name": "GLM 4.7",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://z.ai/blog/glm-4.7",
       "wh_per_million_token": 21407.82
@@ -2035,6 +2120,7 @@
       "required_ram": 55,
       "reuse": false,
       "simple_name": "GPT-3.5",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
       "wh_per_million_token": 10363.683333333332
@@ -2045,16 +2131,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1031,
-        "mean_win_prob": 0.5406501590144065,
+        "mean_win_prob": 0.5406766528753802,
         "n_match": 7173,
         "rank": 38,
         "rank_p2_5": 35,
-        "rank_p97_5": 40,
+        "rank_p97_5": 41,
         "score_p2_5": 1024,
         "score_p97_5": 1038,
         "trust_range": [
           3,
-          2
+          3
         ],
         "win_rate": 0.5152977269557941
       },
@@ -2062,7 +2148,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-4.1-mini",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -2090,6 +2178,7 @@
       "required_ram": 75,
       "reuse": false,
       "simple_name": "GPT-4.1 Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
       "wh_per_million_token": 13170.416666666666
@@ -2100,16 +2189,16 @@
       "commercial_use": null,
       "data": {
         "elo": 977,
-        "mean_win_prob": 0.466135820974965,
+        "mean_win_prob": 0.4665744648024418,
         "n_match": 5717,
-        "rank": 61,
+        "rank": 62,
         "rank_p2_5": 58,
         "rank_p97_5": 67,
         "score_p2_5": 969,
         "score_p97_5": 985,
         "trust_range": [
-          3,
-          6
+          4,
+          5
         ],
         "win_rate": 0.46743047052649994
       },
@@ -2117,7 +2206,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-4.1-nano",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -2145,6 +2236,7 @@
       "required_ram": 23,
       "reuse": false,
       "simple_name": "GPT 4.1 Nano",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://openai.com/index/gpt-4-1/",
       "wh_per_million_token": 5872.909999999999
@@ -2155,12 +2247,12 @@
       "commercial_use": null,
       "data": {
         "elo": 961,
-        "mean_win_prob": 0.4441106393175794,
+        "mean_win_prob": 0.4441278834897516,
         "n_match": 5896,
         "rank": 70,
         "rank_p2_5": 66,
         "rank_p97_5": 73,
-        "score_p2_5": 953,
+        "score_p2_5": 952,
         "score_p97_5": 970,
         "trust_range": [
           4,
@@ -2196,6 +2288,7 @@
       "required_ram": 440,
       "reuse": false,
       "simple_name": "GPT-4o",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4o",
       "wh_per_million_token": 87485.15999999997
@@ -2206,12 +2299,12 @@
       "commercial_use": null,
       "data": {
         "elo": 981,
-        "mean_win_prob": 0.47146039730615813,
+        "mean_win_prob": 0.47132620703894984,
         "n_match": 6990,
         "rank": 60,
         "rank_p2_5": 56,
         "rank_p97_5": 65,
-        "score_p2_5": 973,
+        "score_p2_5": 974,
         "score_p97_5": 988,
         "trust_range": [
           4,
@@ -2247,6 +2340,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "GPT-4o mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -2257,13 +2351,13 @@
       "commercial_use": null,
       "data": {
         "elo": 999,
-        "mean_win_prob": 0.4970946216472743,
+        "mean_win_prob": 0.4971582561736023,
         "n_match": 3843,
         "rank": 52,
         "rank_p2_5": 48,
         "rank_p97_5": 55,
-        "score_p2_5": 990,
-        "score_p97_5": 1008,
+        "score_p2_5": 989,
+        "score_p97_5": 1009,
         "trust_range": [
           4,
           3
@@ -2274,7 +2368,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-5",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2302,6 +2398,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2311,25 +2408,27 @@
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1011,
-        "mean_win_prob": 0.5138825250357583,
-        "n_match": 4110,
+        "elo": 1012,
+        "mean_win_prob": 0.5147685698572521,
+        "n_match": 4459,
         "rank": 47,
-        "rank_p2_5": 41,
+        "rank_p2_5": 42,
         "rank_p97_5": 50,
-        "score_p2_5": 1003,
-        "score_p97_5": 1022,
+        "score_p2_5": 1004,
+        "score_p97_5": 1021,
         "trust_range": [
-          6,
+          5,
           3
         ],
-        "win_rate": 0.47117060111949377
+        "win_rate": 0.473140421713773
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-5-mini",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -2340,15 +2439,15 @@
       "organisation": "OpenAI",
       "params": 47,
       "prefs": {
-        "clear_formatting": 260,
-        "complete": 421,
-        "creative": 102,
-        "incorrect": 108,
-        "instructions_not_followed": 110,
-        "positive_prefs_ratio": 0.753416149068323,
-        "superficial": 179,
-        "total_prefs": 1610,
-        "useful": 430
+        "clear_formatting": 285,
+        "complete": 468,
+        "creative": 111,
+        "incorrect": 122,
+        "instructions_not_followed": 123,
+        "positive_prefs_ratio": 0.7479085331846068,
+        "superficial": 207,
+        "total_prefs": 1793,
+        "useful": 477
       },
       "pricey": false,
       "quantization": null,
@@ -2357,6 +2456,7 @@
       "required_ram": 47,
       "reuse": false,
       "simple_name": "GPT 5 Mini",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-mini",
       "wh_per_million_token": 9240.99
@@ -2367,24 +2467,26 @@
       "commercial_use": null,
       "data": {
         "elo": 945,
-        "mean_win_prob": 0.4231188476790912,
-        "n_match": 3344,
+        "mean_win_prob": 0.4221567817453329,
+        "n_match": 3583,
         "rank": 76,
         "rank_p2_5": 72,
-        "rank_p97_5": 78,
-        "score_p2_5": 935,
-        "score_p97_5": 956,
+        "rank_p97_5": 79,
+        "score_p2_5": 934,
+        "score_p97_5": 955,
         "trust_range": [
           4,
-          2
+          3
         ],
-        "win_rate": 0.3978708133971292
+        "win_rate": 0.39687412782584425
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-5-nano",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -2395,15 +2497,15 @@
       "organisation": "OpenAI",
       "params": 11,
       "prefs": {
-        "clear_formatting": 167,
-        "complete": 255,
-        "creative": 62,
-        "incorrect": 130,
-        "instructions_not_followed": 148,
-        "positive_prefs_ratio": 0.6302170283806344,
-        "superficial": 165,
-        "total_prefs": 1198,
-        "useful": 271
+        "clear_formatting": 182,
+        "complete": 282,
+        "creative": 69,
+        "incorrect": 147,
+        "instructions_not_followed": 166,
+        "positive_prefs_ratio": 0.625,
+        "superficial": 188,
+        "total_prefs": 1336,
+        "useful": 302
       },
       "pricey": false,
       "quantization": null,
@@ -2412,6 +2514,7 @@
       "required_ram": 11,
       "reuse": false,
       "simple_name": "GPT 5 Nano",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-nano",
       "wh_per_million_token": 4188.87
@@ -2421,25 +2524,27 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1074,
-        "mean_win_prob": 0.5989256271172112,
-        "n_match": 2974,
-        "rank": 16,
+        "elo": 1075,
+        "mean_win_prob": 0.6005713831907888,
+        "n_match": 3189,
+        "rank": 14,
         "rank_p2_5": 11,
-        "rank_p97_5": 23,
-        "score_p2_5": 1063,
-        "score_p97_5": 1084,
+        "rank_p97_5": 21,
+        "score_p2_5": 1065,
+        "score_p97_5": 1085,
         "trust_range": [
-          5,
+          3,
           7
         ],
-        "win_rate": 0.5281573638197714
+        "win_rate": 0.5270429601756036
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-5.1",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2450,15 +2555,15 @@
       "organisation": "OpenAI",
       "params": 300,
       "prefs": {
-        "clear_formatting": 360,
-        "complete": 433,
-        "creative": 124,
-        "incorrect": 70,
-        "instructions_not_followed": 54,
-        "positive_prefs_ratio": 0.842170160295931,
-        "superficial": 132,
-        "total_prefs": 1622,
-        "useful": 449
+        "clear_formatting": 393,
+        "complete": 473,
+        "creative": 138,
+        "incorrect": 79,
+        "instructions_not_followed": 63,
+        "positive_prefs_ratio": 0.8383668903803132,
+        "superficial": 147,
+        "total_prefs": 1788,
+        "useful": 495
       },
       "pricey": false,
       "quantization": null,
@@ -2467,6 +2572,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2476,25 +2582,27 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1076,
-        "mean_win_prob": 0.602775976439592,
-        "n_match": 2367,
-        "rank": 14,
-        "rank_p2_5": 10,
-        "rank_p97_5": 22,
-        "score_p2_5": 1065,
-        "score_p97_5": 1087,
+        "elo": 1069,
+        "mean_win_prob": 0.5929233837228672,
+        "n_match": 2832,
+        "rank": 18,
+        "rank_p2_5": 13,
+        "rank_p97_5": 26,
+        "score_p2_5": 1059,
+        "score_p97_5": 1079,
         "trust_range": [
-          4,
+          5,
           8
         ],
-        "win_rate": 0.529467680608365
+        "win_rate": 0.5164548022598869
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-5.2",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2505,15 +2613,15 @@
       "organisation": "OpenAI",
       "params": 300,
       "prefs": {
-        "clear_formatting": 363,
-        "complete": 380,
-        "creative": 108,
-        "incorrect": 71,
-        "instructions_not_followed": 57,
-        "positive_prefs_ratio": 0.8220443349753694,
-        "superficial": 161,
-        "total_prefs": 1624,
-        "useful": 484
+        "clear_formatting": 438,
+        "complete": 452,
+        "creative": 126,
+        "incorrect": 92,
+        "instructions_not_followed": 70,
+        "positive_prefs_ratio": 0.815668202764977,
+        "superficial": 198,
+        "total_prefs": 1953,
+        "useful": 577
       },
       "pricey": false,
       "quantization": null,
@@ -2522,6 +2630,7 @@
       "required_ram": 300,
       "reuse": false,
       "simple_name": "GPT 5.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 47510.43999999999
@@ -2531,25 +2640,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1066,
-        "mean_win_prob": 0.5883633282708796,
-        "n_match": 2127,
+        "elo": 1065,
+        "mean_win_prob": 0.5868560289633313,
+        "n_match": 2315,
         "rank": 21,
         "rank_p2_5": 14,
         "rank_p97_5": 29,
-        "score_p2_5": 1054,
-        "score_p97_5": 1078,
+        "score_p2_5": 1052,
+        "score_p97_5": 1077,
         "trust_range": [
           7,
           8
         ],
-        "win_rate": 0.5258607714016933
+        "win_rate": 0.5229299913569576
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-oss-120b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2560,15 +2671,15 @@
       "organisation": "OpenAI",
       "params": 117,
       "prefs": {
-        "clear_formatting": 289,
-        "complete": 424,
-        "creative": 111,
-        "incorrect": 121,
-        "instructions_not_followed": 69,
-        "positive_prefs_ratio": 0.8043326345213138,
-        "superficial": 90,
-        "total_prefs": 1431,
-        "useful": 327
+        "clear_formatting": 310,
+        "complete": 459,
+        "creative": 119,
+        "incorrect": 134,
+        "instructions_not_followed": 76,
+        "positive_prefs_ratio": 0.7975499677627337,
+        "superficial": 104,
+        "total_prefs": 1551,
+        "useful": 349
       },
       "pricey": false,
       "quantization": null,
@@ -2577,6 +2688,7 @@
       "required_ram": 117,
       "reuse": true,
       "simple_name": "GPT OSS-120B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3346.8500000000004
@@ -2586,25 +2698,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1013,
-        "mean_win_prob": 0.516412782918306,
-        "n_match": 2499,
-        "rank": 46,
+        "elo": 1014,
+        "mean_win_prob": 0.5180611754067206,
+        "n_match": 2719,
+        "rank": 45,
         "rank_p2_5": 40,
         "rank_p97_5": 50,
-        "score_p2_5": 1002,
+        "score_p2_5": 1003,
         "score_p97_5": 1024,
         "trust_range": [
-          6,
-          4
+          5,
+          5
         ],
-        "win_rate": 0.4535828662930344
+        "win_rate": 0.45679911699779246
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/gpt-oss-20b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -2615,15 +2729,15 @@
       "organisation": "OpenAI",
       "params": 21,
       "prefs": {
-        "clear_formatting": 247,
-        "complete": 292,
-        "creative": 102,
-        "incorrect": 142,
-        "instructions_not_followed": 84,
-        "positive_prefs_ratio": 0.723207401696222,
-        "superficial": 133,
-        "total_prefs": 1297,
-        "useful": 297
+        "clear_formatting": 268,
+        "complete": 319,
+        "creative": 103,
+        "incorrect": 159,
+        "instructions_not_followed": 98,
+        "positive_prefs_ratio": 0.7162162162162162,
+        "superficial": 142,
+        "total_prefs": 1406,
+        "useful": 317
       },
       "pricey": false,
       "quantization": null,
@@ -2632,6 +2746,7 @@
       "required_ram": 21,
       "reuse": true,
       "simple_name": "GPT OSS-20B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3066.1766666666667
@@ -2642,24 +2757,26 @@
       "commercial_use": null,
       "data": {
         "elo": 1060,
-        "mean_win_prob": 0.5807327089224541,
+        "mean_win_prob": 0.5810320019634347,
         "n_match": 1537,
         "rank": 25,
         "rank_p2_5": 15,
         "rank_p97_5": 32,
         "score_p2_5": 1046,
-        "score_p97_5": 1076,
+        "score_p97_5": 1075,
         "trust_range": [
           10,
           7
         ],
-        "win_rate": 0.5305338541666667
+        "win_rate": 0.5305338541666668
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "x-ai/grok-3-mini-beta",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2687,6 +2804,7 @@
       "required_ram": 180,
       "reuse": false,
       "simple_name": "Grok 3 Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-3",
       "wh_per_million_token": 11465.146666666666
@@ -2696,17 +2814,17 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1062,
-        "mean_win_prob": 0.5839268487478416,
+        "elo": 1063,
+        "mean_win_prob": 0.5847097813311337,
         "n_match": 2623,
-        "rank": 24,
-        "rank_p2_5": 16,
-        "rank_p97_5": 30,
+        "rank": 22,
+        "rank_p2_5": 15,
+        "rank_p97_5": 29,
         "score_p2_5": 1052,
-        "score_p97_5": 1074,
+        "score_p97_5": 1075,
         "trust_range": [
-          8,
-          6
+          7,
+          7
         ],
         "win_rate": 0.5293971766501335
       },
@@ -2714,7 +2832,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "x-ai/grok-4-fast",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2742,6 +2862,7 @@
       "required_ram": 1700,
       "reuse": false,
       "simple_name": "Grok 4 Fast",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-4-fast",
       "wh_per_million_token": 255136.7433333333
@@ -2751,25 +2872,27 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1069,
-        "mean_win_prob": 0.5923987719075315,
-        "n_match": 2311,
-        "rank": 19,
-        "rank_p2_5": 13,
-        "rank_p97_5": 27,
-        "score_p2_5": 1057,
-        "score_p97_5": 1081,
+        "elo": 1066,
+        "mean_win_prob": 0.5890709388552419,
+        "n_match": 2553,
+        "rank": 20,
+        "rank_p2_5": 14,
+        "rank_p97_5": 28,
+        "score_p2_5": 1054,
+        "score_p97_5": 1078,
         "trust_range": [
           6,
           8
         ],
-        "win_rate": 0.532081350064907
+        "win_rate": 0.5295064629847238
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "x-ai/grok-4.1-fast",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2780,15 +2903,15 @@
       "organisation": "xAI",
       "params": 1700,
       "prefs": {
-        "clear_formatting": 307,
-        "complete": 350,
-        "creative": 159,
-        "incorrect": 118,
-        "instructions_not_followed": 48,
-        "positive_prefs_ratio": 0.8125819134993447,
-        "superficial": 120,
-        "total_prefs": 1526,
-        "useful": 424
+        "clear_formatting": 336,
+        "complete": 377,
+        "creative": 167,
+        "incorrect": 127,
+        "instructions_not_followed": 55,
+        "positive_prefs_ratio": 0.8077611940298507,
+        "superficial": 140,
+        "total_prefs": 1675,
+        "useful": 473
       },
       "pricey": false,
       "quantization": null,
@@ -2797,6 +2920,7 @@
       "required_ram": 1700,
       "reuse": false,
       "simple_name": "Grok 4.1 Fast",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://x.ai/news/grok-4-1-fast",
       "wh_per_million_token": 255136.7433333333
@@ -2807,16 +2931,16 @@
       "commercial_use": true,
       "data": {
         "elo": 940,
-        "mean_win_prob": 0.416086088357126,
+        "mean_win_prob": 0.41593264110506944,
         "n_match": 6735,
         "rank": 78,
         "rank_p2_5": 74,
-        "rank_p97_5": 80,
-        "score_p2_5": 932,
+        "rank_p97_5": 79,
+        "score_p2_5": 933,
         "score_p97_5": 947,
         "trust_range": [
           4,
-          2
+          1
         ],
         "win_rate": 0.46634743875278395
       },
@@ -2848,6 +2972,7 @@
       "required_ram": 405,
       "reuse": true,
       "simple_name": "Hermes 3 405B",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
       "wh_per_million_token": 237926.06666666665
@@ -2858,24 +2983,26 @@
       "commercial_use": true,
       "data": {
         "elo": 934,
-        "mean_win_prob": 0.4081375648971059,
-        "n_match": 3038,
+        "mean_win_prob": 0.4080584620780003,
+        "n_match": 3199,
         "rank": 79,
         "rank_p2_5": 75,
-        "rank_p97_5": 82,
+        "rank_p97_5": 83,
         "score_p2_5": 923,
-        "score_p97_5": 946,
+        "score_p97_5": 945,
         "trust_range": [
           4,
-          3
+          4
         ],
-        "win_rate": 0.36948582729070534
+        "win_rate": 0.37180907668231616
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "nousresearch/hermes-4-70b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -2886,15 +3013,15 @@
       "organisation": "Nous",
       "params": 70,
       "prefs": {
-        "clear_formatting": 167,
-        "complete": 124,
-        "creative": 54,
-        "incorrect": 155,
-        "instructions_not_followed": 102,
-        "positive_prefs_ratio": 0.5478723404255319,
-        "superficial": 253,
-        "total_prefs": 1128,
-        "useful": 273
+        "clear_formatting": 179,
+        "complete": 133,
+        "creative": 56,
+        "incorrect": 168,
+        "instructions_not_followed": 110,
+        "positive_prefs_ratio": 0.5445544554455446,
+        "superficial": 274,
+        "total_prefs": 1212,
+        "useful": 292
       },
       "pricey": false,
       "quantization": null,
@@ -2903,6 +3030,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Hermes 4 70B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 12468.733333333334
@@ -2912,19 +3040,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 972,
-        "mean_win_prob": 0.45883980407650465,
+        "elo": 970,
+        "mean_win_prob": 0.45707915723429754,
         "n_match": 172,
-        "rank": 64,
-        "rank_p2_5": 44,
+        "rank": 66,
+        "rank_p2_5": 45,
         "rank_p97_5": 82,
-        "score_p2_5": 924,
-        "score_p97_5": 1014,
+        "score_p2_5": 922,
+        "score_p97_5": 1016,
         "trust_range": [
-          20,
-          18
+          21,
+          16
         ],
-        "win_rate": 0.5449418604651163
+        "win_rate": 0.5449418604651162
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2954,6 +3082,7 @@
       "required_ram": 400,
       "reuse": true,
       "simple_name": "Jamba 1.5 Large",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
       "wh_per_million_token": 47510.43999999999
@@ -2963,25 +3092,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1059,
-        "mean_win_prob": 0.5797761570851532,
-        "n_match": 1571,
-        "rank": 26,
-        "rank_p2_5": 17,
+        "elo": 1057,
+        "mean_win_prob": 0.5759855189845751,
+        "n_match": 1746,
+        "rank": 27,
+        "rank_p2_5": 18,
         "rank_p97_5": 33,
         "score_p2_5": 1045,
-        "score_p97_5": 1073,
+        "score_p97_5": 1071,
         "trust_range": [
           9,
-          7
+          6
         ],
-        "win_rate": 0.5203639846743295
+        "win_rate": 0.5120103388856978
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2-0905",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2992,15 +3123,15 @@
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 222,
-        "complete": 220,
-        "creative": 97,
-        "incorrect": 76,
-        "instructions_not_followed": 30,
-        "positive_prefs_ratio": 0.8147138964577657,
-        "superficial": 98,
-        "total_prefs": 1101,
-        "useful": 358
+        "clear_formatting": 242,
+        "complete": 247,
+        "creative": 114,
+        "incorrect": 87,
+        "instructions_not_followed": 35,
+        "positive_prefs_ratio": 0.8083197389885808,
+        "superficial": 113,
+        "total_prefs": 1226,
+        "useful": 388
       },
       "pricey": false,
       "quantization": null,
@@ -3009,6 +3140,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
       "wh_per_million_token": 57087.51999999998
@@ -3018,25 +3150,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1067,
-        "mean_win_prob": 0.5904652115076863,
-        "n_match": 1129,
-        "rank": 20,
+        "elo": 1068,
+        "mean_win_prob": 0.5911595008562106,
+        "n_match": 1304,
+        "rank": 19,
         "rank_p2_5": 11,
-        "rank_p97_5": 30,
-        "score_p2_5": 1051,
-        "score_p97_5": 1084,
+        "rank_p97_5": 29,
+        "score_p2_5": 1052,
+        "score_p97_5": 1083,
         "trust_range": [
-          9,
+          8,
           10
         ],
-        "win_rate": 0.5386802480070859
+        "win_rate": 0.5399769938650306
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2-thinking",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3047,15 +3181,15 @@
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 167,
-        "complete": 209,
-        "creative": 44,
-        "incorrect": 52,
-        "instructions_not_followed": 39,
-        "positive_prefs_ratio": 0.7992565055762082,
-        "superficial": 71,
-        "total_prefs": 807,
-        "useful": 225
+        "clear_formatting": 199,
+        "complete": 251,
+        "creative": 58,
+        "incorrect": 65,
+        "instructions_not_followed": 48,
+        "positive_prefs_ratio": 0.7981366459627329,
+        "superficial": 82,
+        "total_prefs": 966,
+        "useful": 263
       },
       "pricey": false,
       "quantization": null,
@@ -3064,6 +3198,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2 Thinking",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
       "wh_per_million_token": 57087.51999999998
@@ -3077,7 +3212,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2.5",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3095,6 +3232,7 @@
       "required_ram": 1000,
       "reuse": true,
       "simple_name": "Kimi K2.5",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.kimi.com/blog/kimi-k2-5.html",
       "wh_per_million_token": 57087.51999999998
@@ -3105,7 +3243,7 @@
       "commercial_use": null,
       "data": {
         "elo": 880,
-        "mean_win_prob": 0.33814755590519974,
+        "mean_win_prob": 0.3382348009721951,
         "n_match": 3578,
         "rank": 85,
         "rank_p2_5": 84,
@@ -3146,6 +3284,7 @@
       "required_ram": 40,
       "reuse": false,
       "simple_name": "LFM 40B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://www.liquid.ai/liquid-foundation-models",
       "wh_per_million_token": 4329.206666666666
@@ -3155,25 +3294,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 997,
-        "mean_win_prob": 0.49326465624278226,
-        "n_match": 2130,
+        "elo": 996,
+        "mean_win_prob": 0.4922311821608464,
+        "n_match": 2276,
         "rank": 53,
-        "rank_p2_5": 48,
-        "rank_p97_5": 59,
+        "rank_p2_5": 49,
+        "rank_p97_5": 58,
         "score_p2_5": 984,
         "score_p97_5": 1008,
         "trust_range": [
-          5,
-          6
+          4,
+          5
         ],
-        "win_rate": 0.46863615023474176
+        "win_rate": 0.4696990333919156
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "liquid/lfm2-8b-a1b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -3184,15 +3325,15 @@
       "organisation": "Liquid",
       "params": 8,
       "prefs": {
-        "clear_formatting": 214,
-        "complete": 184,
-        "creative": 52,
-        "incorrect": 174,
-        "instructions_not_followed": 76,
-        "positive_prefs_ratio": 0.6339522546419099,
-        "superficial": 164,
-        "total_prefs": 1131,
-        "useful": 267
+        "clear_formatting": 232,
+        "complete": 199,
+        "creative": 56,
+        "incorrect": 190,
+        "instructions_not_followed": 86,
+        "positive_prefs_ratio": 0.6336311941510967,
+        "superficial": 175,
+        "total_prefs": 1231,
+        "useful": 293
       },
       "pricey": false,
       "quantization": null,
@@ -3201,6 +3342,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "LFM 2 8B A1B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
       "wh_per_million_token": 2785.5033333333336
@@ -3211,24 +3353,26 @@
       "commercial_use": true,
       "data": {
         "elo": 956,
-        "mean_win_prob": 0.4371707735244224,
+        "mean_win_prob": 0.4372064150532003,
         "n_match": 9973,
         "rank": 73,
         "rank_p2_5": 69,
         "rank_p97_5": 75,
-        "score_p2_5": 949,
-        "score_p97_5": 962,
+        "score_p2_5": 950,
+        "score_p97_5": 963,
         "trust_range": [
           4,
           2
         ],
-        "win_rate": 0.4950747166783672
+        "win_rate": 0.4950747166783673
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "meta/llama3-405b-instruct-maas",
-        "api_type": "vertex_ai"
+        "api_type": "vertex_ai",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3256,6 +3400,7 @@
       "required_ram": 405,
       "reuse": true,
       "simple_name": "Llama 3.1 405B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
       "wh_per_million_token": 237926.06666666665
@@ -3266,16 +3411,16 @@
       "commercial_use": true,
       "data": {
         "elo": 971,
-        "mean_win_prob": 0.4576333673006023,
+        "mean_win_prob": 0.45844663659701973,
         "n_match": 5583,
-        "rank": 66,
-        "rank_p2_5": 62,
+        "rank": 65,
+        "rank_p2_5": 61,
         "rank_p97_5": 69,
-        "score_p2_5": 962,
-        "score_p97_5": 979,
+        "score_p2_5": 963,
+        "score_p97_5": 980,
         "trust_range": [
           4,
-          3
+          4
         ],
         "win_rate": 0.530445996775927
       },
@@ -3307,6 +3452,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Llama 3.1 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3317,13 +3463,13 @@
       "commercial_use": true,
       "data": {
         "elo": 932,
-        "mean_win_prob": 0.4052017688864367,
+        "mean_win_prob": 0.405144013473085,
         "n_match": 10444,
         "rank": 80,
         "rank_p2_5": 77,
         "rank_p97_5": 82,
         "score_p2_5": 926,
-        "score_p97_5": 939,
+        "score_p97_5": 938,
         "trust_range": [
           3,
           2
@@ -3334,7 +3480,9 @@
       "endpoint": {
         "api_base": "https://albert.api.etalab.gouv.fr/v1/",
         "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
-        "api_type": "openai"
+        "api_type": "openai",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -3362,6 +3510,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Llama 3.1 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
       "wh_per_million_token": 3767.8599999999997
@@ -3371,17 +3520,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1044,
-        "mean_win_prob": 0.558268567791439,
+        "elo": 1043,
+        "mean_win_prob": 0.557921563104075,
         "n_match": 6709,
-        "rank": 33,
+        "rank": 34,
         "rank_p2_5": 30,
         "rank_p97_5": 36,
         "score_p2_5": 1036,
         "score_p97_5": 1051,
         "trust_range": [
-          3,
-          3
+          4,
+          2
         ],
         "win_rate": 0.5452863107664778
       },
@@ -3389,7 +3538,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "nvidia/llama-3.1-nemotron-70b-instruct",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -3417,6 +3568,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Nemotron Llama 3.1 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3427,24 +3579,26 @@
       "commercial_use": true,
       "data": {
         "elo": 986,
-        "mean_win_prob": 0.4780959322604436,
-        "n_match": 9667,
+        "mean_win_prob": 0.4788765433374813,
+        "n_match": 9845,
         "rank": 57,
         "rank_p2_5": 54,
         "rank_p97_5": 62,
-        "score_p2_5": 979,
+        "score_p2_5": 980,
         "score_p97_5": 992,
         "trust_range": [
           3,
           5
         ],
-        "win_rate": 0.4733588496948381
+        "win_rate": 0.47193905535804975
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "meta-llama/llama-3.3-70b-instruct",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -3455,15 +3609,15 @@
       "organisation": "Meta",
       "params": 70,
       "prefs": {
-        "clear_formatting": 1207,
-        "complete": 1258,
-        "creative": 334,
-        "incorrect": 536,
-        "instructions_not_followed": 187,
-        "positive_prefs_ratio": 0.7463216641298833,
-        "superficial": 777,
-        "total_prefs": 5913,
-        "useful": 1614
+        "clear_formatting": 1223,
+        "complete": 1272,
+        "creative": 340,
+        "incorrect": 556,
+        "instructions_not_followed": 191,
+        "positive_prefs_ratio": 0.7444721529509559,
+        "superficial": 790,
+        "total_prefs": 6015,
+        "useful": 1643
       },
       "pricey": false,
       "quantization": null,
@@ -3472,6 +3626,7 @@
       "required_ram": 70,
       "reuse": true,
       "simple_name": "Llama 3.3 70B",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
       "wh_per_million_token": 12468.733333333334
@@ -3482,8 +3637,8 @@
       "commercial_use": true,
       "data": {
         "elo": 1010,
-        "mean_win_prob": 0.5113408309670182,
-        "n_match": 6404,
+        "mean_win_prob": 0.5123785468735157,
+        "n_match": 6565,
         "rank": 48,
         "rank_p2_5": 43,
         "rank_p97_5": 51,
@@ -3493,13 +3648,15 @@
           5,
           3
         ],
-        "win_rate": 0.48567613991255465
+        "win_rate": 0.4864204112718964
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "meta-llama/llama-4-scout",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -3510,15 +3667,15 @@
       "organisation": "Meta",
       "params": 109,
       "prefs": {
-        "clear_formatting": 786,
-        "complete": 828,
-        "creative": 220,
-        "incorrect": 340,
-        "instructions_not_followed": 131,
-        "positive_prefs_ratio": 0.7461456671982988,
-        "superficial": 484,
-        "total_prefs": 3762,
-        "useful": 973
+        "clear_formatting": 807,
+        "complete": 846,
+        "creative": 224,
+        "incorrect": 355,
+        "instructions_not_followed": 143,
+        "positive_prefs_ratio": 0.7429749935550399,
+        "superficial": 499,
+        "total_prefs": 3879,
+        "useful": 1005
       },
       "pricey": false,
       "quantization": null,
@@ -3527,6 +3684,7 @@
       "required_ram": 109,
       "reuse": true,
       "simple_name": "Llama 4 Scout",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
       "wh_per_million_token": 5030.889999999999
@@ -3537,24 +3695,26 @@
       "commercial_use": true,
       "data": {
         "elo": 1015,
-        "mean_win_prob": 0.5184106940626225,
-        "n_match": 3666,
-        "rank": 43,
+        "mean_win_prob": 0.5185264225483007,
+        "n_match": 3849,
+        "rank": 44,
         "rank_p2_5": 40,
         "rank_p97_5": 49,
-        "score_p2_5": 1005,
-        "score_p97_5": 1024,
+        "score_p2_5": 1006,
+        "score_p97_5": 1025,
         "trust_range": [
-          3,
-          6
+          4,
+          5
         ],
-        "win_rate": 0.48111565739225315
+        "win_rate": 0.48251234086775785
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "meta-llama/llama-4-maverick",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3565,15 +3725,15 @@
       "organisation": "Meta",
       "params": 400,
       "prefs": {
-        "clear_formatting": 272,
-        "complete": 293,
-        "creative": 76,
-        "incorrect": 120,
-        "instructions_not_followed": 69,
-        "positive_prefs_ratio": 0.7164487267721955,
-        "superficial": 223,
-        "total_prefs": 1453,
-        "useful": 400
+        "clear_formatting": 306,
+        "complete": 321,
+        "creative": 86,
+        "incorrect": 137,
+        "instructions_not_followed": 76,
+        "positive_prefs_ratio": 0.7171464330413017,
+        "superficial": 239,
+        "total_prefs": 1598,
+        "useful": 433
       },
       "pricey": false,
       "quantization": null,
@@ -3582,6 +3742,7 @@
       "required_ram": 400,
       "reuse": true,
       "simple_name": "Llama 4 Maverick",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 15092.669999999998
@@ -3592,13 +3753,13 @@
       "commercial_use": null,
       "data": {
         "elo": 1089,
-        "mean_win_prob": 0.6196930694463499,
+        "mean_win_prob": 0.6190814217227704,
         "n_match": 2207,
         "rank": 10,
         "rank_p2_5": 7,
         "rank_p97_5": 14,
-        "score_p2_5": 1077,
-        "score_p97_5": 1102,
+        "score_p2_5": 1076,
+        "score_p97_5": 1101,
         "trust_range": [
           3,
           4
@@ -3609,7 +3770,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "mistralai/magistral-medium-2506",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -3637,6 +3800,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Magistral Medium",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 19906.576666666668
@@ -3646,17 +3810,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1048,
-        "mean_win_prob": 0.5648041262731391,
+        "elo": 1049,
+        "mean_win_prob": 0.5656657968772842,
         "n_match": 3147,
-        "rank": 31,
+        "rank": 30,
         "rank_p2_5": 26,
         "rank_p97_5": 35,
         "score_p2_5": 1038,
         "score_p97_5": 1059,
         "trust_range": [
-          5,
-          4
+          4,
+          5
         ],
         "win_rate": 0.52184361093452
       },
@@ -3664,7 +3828,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "mistralai/magistral-small-2506",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3692,6 +3858,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Magistral Small",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 6013.246666666666
@@ -3719,6 +3886,7 @@
       "required_ram": 70,
       "reuse": false,
       "simple_name": "Llama 3 70B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 12468.733333333334
@@ -3746,6 +3914,7 @@
       "required_ram": 8,
       "reuse": false,
       "simple_name": "Llama 3 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3767.8599999999997
@@ -3756,24 +3925,26 @@
       "commercial_use": true,
       "data": {
         "elo": 976,
-        "mean_win_prob": 0.4642606306819486,
-        "n_match": 1992,
-        "rank": 62,
-        "rank_p2_5": 56,
-        "rank_p97_5": 70,
-        "score_p2_5": 962,
+        "mean_win_prob": 0.4653418021375933,
+        "n_match": 2160,
+        "rank": 63,
+        "rank_p2_5": 55,
+        "rank_p97_5": 69,
+        "score_p2_5": 964,
         "score_p97_5": 989,
         "trust_range": [
-          6,
-          8
+          8,
+          6
         ],
-        "win_rate": 0.432394578313253
+        "win_rate": 0.4370324074074074
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "minimax/minimax-m2",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -3784,15 +3955,15 @@
       "organisation": "MiniMax",
       "params": 230,
       "prefs": {
-        "clear_formatting": 153,
-        "complete": 209,
-        "creative": 61,
-        "incorrect": 110,
-        "instructions_not_followed": 62,
-        "positive_prefs_ratio": 0.696319018404908,
-        "superficial": 125,
-        "total_prefs": 978,
-        "useful": 258
+        "clear_formatting": 166,
+        "complete": 234,
+        "creative": 66,
+        "incorrect": 127,
+        "instructions_not_followed": 75,
+        "positive_prefs_ratio": 0.6854545454545454,
+        "superficial": 144,
+        "total_prefs": 1100,
+        "useful": 288
       },
       "pricey": false,
       "quantization": null,
@@ -3801,6 +3972,7 @@
       "required_ram": 230,
       "reuse": true,
       "simple_name": "MiniMax M2",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://www.minimax.io/news/minimax-m2",
       "wh_per_million_token": 8097.066666666667
@@ -3811,16 +3983,16 @@
       "commercial_use": false,
       "data": {
         "elo": 962,
-        "mean_win_prob": 0.4454050973891244,
+        "mean_win_prob": 0.4455187602323125,
         "n_match": 9278,
         "rank": 69,
-        "rank_p2_5": 66,
-        "rank_p97_5": 73,
+        "rank_p2_5": 67,
+        "rank_p97_5": 72,
         "score_p2_5": 956,
-        "score_p97_5": 968,
+        "score_p97_5": 969,
         "trust_range": [
-          3,
-          4
+          2,
+          3
         ],
         "win_rate": 0.47576819407008086
       },
@@ -3852,6 +4024,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Ministral",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
       "wh_per_million_token": 3767.8599999999997
@@ -3862,18 +4035,18 @@
       "commercial_use": false,
       "data": {
         "elo": 1018,
-        "mean_win_prob": 0.5226971697345342,
+        "mean_win_prob": 0.5229610244104481,
         "n_match": 8829,
-        "rank": 42,
+        "rank": 43,
         "rank_p2_5": 40,
         "rank_p97_5": 47,
         "score_p2_5": 1011,
-        "score_p97_5": 1024,
+        "score_p97_5": 1025,
         "trust_range": [
-          2,
-          5
+          3,
+          4
         ],
-        "win_rate": 0.527441386340469
+        "win_rate": 0.5274413863404689
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3903,6 +4076,7 @@
       "required_ram": 123,
       "reuse": true,
       "simple_name": "Mistral Large 2",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
       "wh_per_million_token": 19906.576666666668
@@ -3912,25 +4086,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1121,
-        "mean_win_prob": 0.6600162661515026,
-        "n_match": 2723,
+        "elo": 1122,
+        "mean_win_prob": 0.6618490883409148,
+        "n_match": 3140,
         "rank": 3,
         "rank_p2_5": 1,
         "rank_p97_5": 4,
-        "score_p2_5": 1109,
-        "score_p97_5": 1132,
+        "score_p2_5": 1111,
+        "score_p97_5": 1133,
         "trust_range": [
           2,
           1
         ],
-        "win_rate": 0.5632243848696291
+        "win_rate": 0.5630509554140127
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "mistralai/mistral-large-2512",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3941,15 +4117,15 @@
       "organisation": "Mistral AI",
       "params": 675,
       "prefs": {
-        "clear_formatting": 490,
-        "complete": 627,
-        "creative": 174,
-        "incorrect": 122,
-        "instructions_not_followed": 79,
-        "positive_prefs_ratio": 0.8639365918097754,
-        "superficial": 108,
-        "total_prefs": 2271,
-        "useful": 671
+        "clear_formatting": 568,
+        "complete": 741,
+        "creative": 217,
+        "incorrect": 140,
+        "instructions_not_followed": 88,
+        "positive_prefs_ratio": 0.8645088445615355,
+        "superficial": 132,
+        "total_prefs": 2657,
+        "useful": 771
       },
       "pricey": false,
       "quantization": null,
@@ -3958,6 +4134,7 @@
       "required_ram": 675,
       "reuse": true,
       "simple_name": "Mistral 3 Large",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-3",
       "wh_per_million_token": 50393.81999999999
@@ -3968,8 +4145,8 @@
       "commercial_use": null,
       "data": {
         "elo": 1118,
-        "mean_win_prob": 0.6568151662596042,
-        "n_match": 6128,
+        "mean_win_prob": 0.6569260462960075,
+        "n_match": 6358,
         "rank": 4,
         "rank_p2_5": 2,
         "rank_p97_5": 4,
@@ -3979,13 +4156,15 @@
           2,
           0
         ],
-        "win_rate": 0.5871405255426799
+        "win_rate": 0.5899433695139217
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "mistralai/mistral-medium-3.1",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -3996,15 +4175,15 @@
       "organisation": "Mistral AI",
       "params": 123,
       "prefs": {
-        "clear_formatting": 629,
-        "complete": 770,
-        "creative": 212,
-        "incorrect": 179,
-        "instructions_not_followed": 80,
-        "positive_prefs_ratio": 0.8561789772727273,
-        "superficial": 146,
-        "total_prefs": 2816,
-        "useful": 800
+        "clear_formatting": 670,
+        "complete": 818,
+        "creative": 235,
+        "incorrect": 192,
+        "instructions_not_followed": 85,
+        "positive_prefs_ratio": 0.8535370308867486,
+        "superficial": 164,
+        "total_prefs": 3011,
+        "useful": 847
       },
       "pricey": false,
       "quantization": null,
@@ -4013,6 +4192,7 @@
       "required_ram": 123,
       "reuse": false,
       "simple_name": "Mistral Medium 3.1",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-medium-3.1",
       "wh_per_million_token": 19906.576666666668
@@ -4023,13 +4203,13 @@
       "commercial_use": true,
       "data": {
         "elo": 850,
-        "mean_win_prob": 0.3022397561809575,
+        "mean_win_prob": 0.3023279790045121,
         "n_match": 6251,
         "rank": 88,
         "rank_p2_5": 87,
         "rank_p97_5": 89,
-        "score_p2_5": 842,
-        "score_p97_5": 858,
+        "score_p2_5": 841,
+        "score_p97_5": 860,
         "trust_range": [
           1,
           1
@@ -4064,6 +4244,7 @@
       "required_ram": 12,
       "reuse": true,
       "simple_name": "Mistral Nemo",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
       "wh_per_million_token": 4329.206666666666
@@ -4074,16 +4255,16 @@
       "commercial_use": null,
       "data": {
         "elo": 1014,
-        "mean_win_prob": 0.5177708287099839,
+        "mean_win_prob": 0.5179736182228161,
         "n_match": 4934,
-        "rank": 44,
+        "rank": 46,
         "rank_p2_5": 41,
         "rank_p97_5": 49,
         "score_p2_5": 1006,
-        "score_p97_5": 1022,
+        "score_p97_5": 1023,
         "trust_range": [
-          3,
-          5
+          5,
+          3
         ],
         "win_rate": 0.48257855260490573
       },
@@ -4091,7 +4272,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "mistralai/mistral-saba",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -4119,6 +4302,7 @@
       "required_ram": 24,
       "reuse": false,
       "simple_name": "Mistral Saba",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://mistral.ai/news/mistral-saba",
       "wh_per_million_token": 6013.246666666666
@@ -4129,13 +4313,13 @@
       "commercial_use": true,
       "data": {
         "elo": 984,
-        "mean_win_prob": 0.47635235200443404,
+        "mean_win_prob": 0.47639783839994443,
         "n_match": 3318,
         "rank": 58,
         "rank_p2_5": 53,
         "rank_p97_5": 64,
-        "score_p2_5": 975,
-        "score_p97_5": 995,
+        "score_p2_5": 974,
+        "score_p97_5": 994,
         "trust_range": [
           5,
           6
@@ -4170,6 +4354,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
       "wh_per_million_token": 6013.246666666666
@@ -4180,24 +4365,26 @@
       "commercial_use": true,
       "data": {
         "elo": 1059,
-        "mean_win_prob": 0.5789817648849578,
-        "n_match": 5151,
-        "rank": 27,
-        "rank_p2_5": 21,
+        "mean_win_prob": 0.5787279715419086,
+        "n_match": 5510,
+        "rank": 26,
+        "rank_p2_5": 20,
         "rank_p97_5": 30,
         "score_p2_5": 1051,
-        "score_p97_5": 1066,
+        "score_p97_5": 1067,
         "trust_range": [
           6,
-          3
+          4
         ],
-        "win_rate": 0.5255173752669384
+        "win_rate": 0.5236805807622504
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "mistralai/mistral-small-3.2-24b-instruct",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -4208,15 +4395,15 @@
       "organisation": "Mistral AI",
       "params": 24,
       "prefs": {
-        "clear_formatting": 479,
-        "complete": 492,
-        "creative": 158,
-        "incorrect": 222,
-        "instructions_not_followed": 60,
-        "positive_prefs_ratio": 0.7811796488068438,
-        "superficial": 204,
-        "total_prefs": 2221,
-        "useful": 606
+        "clear_formatting": 544,
+        "complete": 551,
+        "creative": 172,
+        "incorrect": 243,
+        "instructions_not_followed": 76,
+        "positive_prefs_ratio": 0.7788884446221511,
+        "superficial": 234,
+        "total_prefs": 2501,
+        "useful": 681
       },
       "pricey": false,
       "quantization": null,
@@ -4225,6 +4412,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.2",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 6013.246666666666
@@ -4235,15 +4423,15 @@
       "commercial_use": true,
       "data": {
         "elo": 1004,
-        "mean_win_prob": 0.5042666923948425,
+        "mean_win_prob": 0.5041806219854251,
         "n_match": 5079,
         "rank": 49,
-        "rank_p2_5": 45,
+        "rank_p2_5": 46,
         "rank_p97_5": 53,
-        "score_p2_5": 996,
-        "score_p97_5": 1012,
+        "score_p2_5": 997,
+        "score_p97_5": 1013,
         "trust_range": [
-          4,
+          3,
           4
         ],
         "win_rate": 0.4945107304587517
@@ -4276,6 +4464,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.1 24B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
       "wh_per_million_token": 6013.246666666666
@@ -4303,6 +4492,7 @@
       "required_ram": 24,
       "reuse": true,
       "simple_name": "Mistral Small 3.2 24B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506",
       "wh_per_million_token": 6013.246666666666
@@ -4313,13 +4503,13 @@
       "commercial_use": true,
       "data": {
         "elo": 840,
-        "mean_win_prob": 0.2902292446405549,
+        "mean_win_prob": 0.2899370564206755,
         "n_match": 5455,
         "rank": 89,
         "rank_p2_5": 88,
         "rank_p97_5": 90,
         "score_p2_5": 830,
-        "score_p97_5": 848,
+        "score_p97_5": 849,
         "trust_range": [
           1,
           1
@@ -4354,6 +4544,7 @@
       "required_ram": 176,
       "reuse": true,
       "simple_name": "Mixtral 8x22B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
       "wh_per_million_token": 17639.96
@@ -4364,12 +4555,12 @@
       "commercial_use": true,
       "data": {
         "elo": 883,
-        "mean_win_prob": 0.3419748267041058,
+        "mean_win_prob": 0.34170176350917003,
         "n_match": 2560,
         "rank": 84,
         "rank_p2_5": 84,
         "rank_p97_5": 86,
-        "score_p2_5": 871,
+        "score_p2_5": 869,
         "score_p97_5": 896,
         "trust_range": [
           0,
@@ -4405,6 +4596,7 @@
       "required_ram": 56,
       "reuse": true,
       "simple_name": "Mixtral-8x7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
       "wh_per_million_token": 4609.88
@@ -4415,12 +4607,12 @@
       "commercial_use": null,
       "data": {
         "elo": 981,
-        "mean_win_prob": 0.472093888599696,
+        "mean_win_prob": 0.47144303296775514,
         "n_match": 1619,
         "rank": 59,
         "rank_p2_5": 53,
         "rank_p97_5": 68,
-        "score_p2_5": 966,
+        "score_p2_5": 967,
         "score_p97_5": 995,
         "trust_range": [
           6,
@@ -4456,6 +4648,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "o3-mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o3-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -4466,15 +4659,15 @@
       "commercial_use": null,
       "data": {
         "elo": 1002,
-        "mean_win_prob": 0.5004343955057601,
+        "mean_win_prob": 0.5008963606355553,
         "n_match": 2830,
         "rank": 50,
-        "rank_p2_5": 46,
+        "rank_p2_5": 47,
         "rank_p97_5": 55,
         "score_p2_5": 991,
-        "score_p97_5": 1013,
+        "score_p97_5": 1012,
         "trust_range": [
-          4,
+          3,
           5
         ],
         "win_rate": 0.4738494167550371
@@ -4483,7 +4676,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "openai/o4-mini",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -4511,6 +4706,7 @@
       "required_ram": 18,
       "reuse": false,
       "simple_name": "o4 mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o4-mini",
       "wh_per_million_token": 5171.2266666666665
@@ -4538,6 +4734,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "OLMo-2 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -4547,25 +4744,27 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 872,
-        "mean_win_prob": 0.3288954531461895,
-        "n_match": 994,
+        "elo": 868,
+        "mean_win_prob": 0.32319439223691965,
+        "n_match": 1196,
         "rank": 86,
         "rank_p2_5": 84,
-        "rank_p97_5": 87,
-        "score_p2_5": 854,
-        "score_p97_5": 893,
+        "rank_p97_5": 88,
+        "score_p2_5": 850,
+        "score_p97_5": 886,
         "trust_range": [
           2,
-          1
+          2
         ],
-        "win_rate": 0.3467907444668008
+        "win_rate": 0.3349247491638796
       },
       "distribution": "fully-open-source",
       "endpoint": {
         "api_base": null,
         "api_model_id": "allenai/olmo-3-32b-think",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": true,
@@ -4576,15 +4775,15 @@
       "organisation": "Ai2",
       "params": 32,
       "prefs": {
-        "clear_formatting": 48,
-        "complete": 83,
-        "creative": 29,
-        "incorrect": 95,
-        "instructions_not_followed": 85,
-        "positive_prefs_ratio": 0.49615384615384617,
-        "superficial": 82,
-        "total_prefs": 520,
-        "useful": 98
+        "clear_formatting": 59,
+        "complete": 99,
+        "creative": 33,
+        "incorrect": 117,
+        "instructions_not_followed": 107,
+        "positive_prefs_ratio": 0.4840764331210191,
+        "superficial": 100,
+        "total_prefs": 628,
+        "useful": 113
       },
       "pricey": false,
       "quantization": null,
@@ -4593,6 +4792,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Olmo 3 32B Think",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://allenai.org/blog/olmo2-32b",
       "wh_per_million_token": 7135.939999999998
@@ -4620,6 +4820,7 @@
       "required_ram": 3.8,
       "reuse": true,
       "simple_name": "Phi-3-Mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
       "wh_per_million_token": 3066.1766666666667
@@ -4647,6 +4848,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Phi-3-small-8k-Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 3627.5233333333335
@@ -4657,13 +4859,13 @@
       "commercial_use": true,
       "data": {
         "elo": 860,
-        "mean_win_prob": 0.3133617512274764,
+        "mean_win_prob": 0.3138985932327813,
         "n_match": 2535,
         "rank": 87,
         "rank_p2_5": 86,
         "rank_p97_5": 88,
-        "score_p2_5": 846,
-        "score_p97_5": 873,
+        "score_p2_5": 845,
+        "score_p97_5": 874,
         "trust_range": [
           1,
           1
@@ -4698,6 +4900,7 @@
       "required_ram": 3.8,
       "reuse": true,
       "simple_name": "Phi-3.5-mini",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
       "wh_per_million_token": 3066.1766666666667
@@ -4708,15 +4911,15 @@
       "commercial_use": true,
       "data": {
         "elo": 966,
-        "mean_win_prob": 0.45085826524679345,
+        "mean_win_prob": 0.4508925178341852,
         "n_match": 9968,
         "rank": 68,
-        "rank_p2_5": 64,
+        "rank_p2_5": 65,
         "rank_p97_5": 71,
         "score_p2_5": 960,
         "score_p97_5": 972,
         "trust_range": [
-          4,
+          3,
           3
         ],
         "win_rate": 0.46780074245008524
@@ -4725,7 +4928,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "microsoft/phi-4",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -4753,6 +4958,7 @@
       "required_ram": 14,
       "reuse": true,
       "simple_name": "Phi-4",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-4",
       "wh_per_million_token": 4609.88
@@ -4763,24 +4969,26 @@
       "commercial_use": true,
       "data": {
         "elo": 988,
-        "mean_win_prob": 0.4817273926037259,
-        "n_match": 3059,
-        "rank": 55,
+        "mean_win_prob": 0.4809162135045945,
+        "n_match": 3245,
+        "rank": 56,
         "rank_p2_5": 52,
-        "rank_p97_5": 62,
-        "score_p2_5": 979,
-        "score_p97_5": 998,
+        "rank_p97_5": 63,
+        "score_p2_5": 977,
+        "score_p97_5": 999,
         "trust_range": [
-          3,
+          4,
           7
         ],
-        "win_rate": 0.4339146779993462
+        "win_rate": 0.4323697996918336
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwen3-8b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -4791,15 +4999,15 @@
       "organisation": "Alibaba",
       "params": 8,
       "prefs": {
-        "clear_formatting": 203,
-        "complete": 292,
-        "creative": 80,
-        "incorrect": 221,
-        "instructions_not_followed": 87,
-        "positive_prefs_ratio": 0.6602613374327441,
-        "superficial": 134,
-        "total_prefs": 1301,
-        "useful": 284
+        "clear_formatting": 222,
+        "complete": 314,
+        "creative": 84,
+        "incorrect": 247,
+        "instructions_not_followed": 99,
+        "positive_prefs_ratio": 0.651048951048951,
+        "superficial": 153,
+        "total_prefs": 1430,
+        "useful": 311
       },
       "pricey": false,
       "quantization": null,
@@ -4808,6 +5016,7 @@
       "required_ram": 8,
       "reuse": true,
       "simple_name": "Qwen 3 8B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
       "wh_per_million_token": 3767.8599999999997
@@ -4835,6 +5044,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen1.5-32B",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 7135.939999999998
@@ -4862,6 +5072,7 @@
       "required_ram": 57,
       "reuse": true,
       "simple_name": "Qwen2-57B-A14B-Instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": null,
       "wh_per_million_token": 4609.88
@@ -4889,6 +5100,7 @@
       "required_ram": 72,
       "reuse": true,
       "simple_name": "Qwen2-72b-instruct",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct",
       "wh_per_million_token": 12749.406666666668
@@ -4899,13 +5111,13 @@
       "commercial_use": true,
       "data": {
         "elo": 727,
-        "mean_win_prob": 0.17819468156096058,
+        "mean_win_prob": 0.17852204152240891,
         "n_match": 80,
         "rank": 93,
         "rank_p2_5": 91,
         "rank_p97_5": 93,
-        "score_p2_5": 627,
-        "score_p97_5": 806,
+        "score_p2_5": 630,
+        "score_p97_5": 810,
         "trust_range": [
           2,
           0
@@ -4940,6 +5152,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Qwen2-7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
       "wh_per_million_token": 3627.5233333333335
@@ -4950,16 +5163,16 @@
       "commercial_use": true,
       "data": {
         "elo": 959,
-        "mean_win_prob": 0.4416137596215693,
+        "mean_win_prob": 0.44154711922363155,
         "n_match": 142,
-        "rank": 71,
-        "rank_p2_5": 41,
+        "rank": 72,
+        "rank_p2_5": 44,
         "rank_p97_5": 83,
-        "score_p2_5": 898,
-        "score_p97_5": 1022,
+        "score_p2_5": 897,
+        "score_p97_5": 1016,
         "trust_range": [
-          30,
-          12
+          28,
+          11
         ],
         "win_rate": 0.5557042253521126
       },
@@ -4991,6 +5204,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen2.5-32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -5001,12 +5215,12 @@
       "commercial_use": true,
       "data": {
         "elo": 925,
-        "mean_win_prob": 0.3960513840154857,
+        "mean_win_prob": 0.39571107140389744,
         "n_match": 1417,
         "rank": 82,
         "rank_p2_5": 76,
         "rank_p97_5": 83,
-        "score_p2_5": 907,
+        "score_p2_5": 906,
         "score_p97_5": 942,
         "trust_range": [
           6,
@@ -5042,6 +5256,7 @@
       "required_ram": 7,
       "reuse": true,
       "simple_name": "Qwen2.5-7B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
       "wh_per_million_token": 3627.5233333333335
@@ -5052,7 +5267,7 @@
       "commercial_use": true,
       "data": {
         "elo": 924,
-        "mean_win_prob": 0.39515441720401645,
+        "mean_win_prob": 0.3951786628063842,
         "n_match": 7299,
         "rank": 83,
         "rank_p2_5": 79,
@@ -5093,6 +5308,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen 2.5 Coder 32B",
+      "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
       "wh_per_million_token": 7135.939999999998
@@ -5103,24 +5319,26 @@
       "commercial_use": true,
       "data": {
         "elo": 988,
-        "mean_win_prob": 0.4815755388145933,
-        "n_match": 3628,
-        "rank": 56,
+        "mean_win_prob": 0.48116116666937253,
+        "n_match": 3825,
+        "rank": 55,
         "rank_p2_5": 52,
         "rank_p97_5": 62,
-        "score_p2_5": 978,
-        "score_p97_5": 998,
+        "score_p2_5": 979,
+        "score_p97_5": 997,
         "trust_range": [
-          4,
-          6
+          3,
+          7
         ],
-        "win_rate": 0.45714640198511164
+        "win_rate": 0.454989539748954
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwen3-30b-a3b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -5131,15 +5349,15 @@
       "organisation": "Alibaba",
       "params": 30,
       "prefs": {
-        "clear_formatting": 267,
-        "complete": 348,
-        "creative": 86,
-        "incorrect": 206,
-        "instructions_not_followed": 106,
-        "positive_prefs_ratio": 0.6779548472775564,
-        "superficial": 173,
-        "total_prefs": 1506,
-        "useful": 320
+        "clear_formatting": 287,
+        "complete": 375,
+        "creative": 92,
+        "incorrect": 225,
+        "instructions_not_followed": 112,
+        "positive_prefs_ratio": 0.6758747697974218,
+        "superficial": 191,
+        "total_prefs": 1629,
+        "useful": 347
       },
       "pricey": false,
       "quantization": null,
@@ -5148,6 +5366,7 @@
       "required_ram": 30,
       "reuse": true,
       "simple_name": "Qwen 3 30B A3B",
+      "specific_portals": null,
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 3066.1766666666667
@@ -5158,24 +5377,26 @@
       "commercial_use": true,
       "data": {
         "elo": 1020,
-        "mean_win_prob": 0.5252102910158156,
-        "n_match": 2158,
-        "rank": 41,
-        "rank_p2_5": 38,
+        "mean_win_prob": 0.5256039722598065,
+        "n_match": 2352,
+        "rank": 42,
+        "rank_p2_5": 39,
         "rank_p97_5": 48,
         "score_p2_5": 1008,
-        "score_p97_5": 1032,
+        "score_p97_5": 1030,
         "trust_range": [
           3,
-          7
+          6
         ],
-        "win_rate": 0.5020269016697587
+        "win_rate": 0.5059914893617021
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwen3-32b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -5186,15 +5407,15 @@
       "organisation": "Alibaba",
       "params": 32,
       "prefs": {
-        "clear_formatting": 312,
-        "complete": 397,
-        "creative": 139,
-        "incorrect": 187,
-        "instructions_not_followed": 85,
-        "positive_prefs_ratio": 0.7522573363431151,
-        "superficial": 167,
-        "total_prefs": 1772,
-        "useful": 485
+        "clear_formatting": 323,
+        "complete": 420,
+        "creative": 145,
+        "incorrect": 208,
+        "instructions_not_followed": 97,
+        "positive_prefs_ratio": 0.7435082140964494,
+        "superficial": 179,
+        "total_prefs": 1887,
+        "useful": 515
       },
       "pricey": false,
       "quantization": null,
@@ -5203,6 +5424,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "Qwen 3 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-32B",
       "wh_per_million_token": 7135.939999999998
@@ -5212,25 +5434,27 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1050,
-        "mean_win_prob": 0.5668799162822064,
-        "n_match": 1385,
-        "rank": 30,
-        "rank_p2_5": 22,
-        "rank_p97_5": 36,
-        "score_p2_5": 1034,
-        "score_p97_5": 1064,
+        "elo": 1047,
+        "mean_win_prob": 0.5626803248042114,
+        "n_match": 1557,
+        "rank": 32,
+        "rank_p2_5": 24,
+        "rank_p97_5": 37,
+        "score_p2_5": 1033,
+        "score_p97_5": 1062,
         "trust_range": [
           8,
-          6
+          5
         ],
-        "win_rate": 0.5229573391178597
+        "win_rate": 0.5199228295819935
       },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwen3-coder",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -5241,15 +5465,15 @@
       "organisation": "Alibaba",
       "params": 480,
       "prefs": {
-        "clear_formatting": 190,
-        "complete": 167,
-        "creative": 62,
-        "incorrect": 58,
-        "instructions_not_followed": 31,
-        "positive_prefs_ratio": 0.7866354044548651,
-        "superficial": 93,
-        "total_prefs": 853,
-        "useful": 252
+        "clear_formatting": 245,
+        "complete": 217,
+        "creative": 74,
+        "incorrect": 73,
+        "instructions_not_followed": 39,
+        "positive_prefs_ratio": 0.7925581395348837,
+        "superficial": 111,
+        "total_prefs": 1075,
+        "useful": 316
       },
       "pricey": false,
       "quantization": null,
@@ -5258,6 +5482,7 @@
       "required_ram": 480,
       "reuse": true,
       "simple_name": "Qwen3 Coder 480B A35B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
       "wh_per_million_token": 30227.799999999996
@@ -5271,7 +5496,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwen3-coder-next",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -5289,6 +5516,7 @@
       "required_ram": 80,
       "reuse": true,
       "simple_name": "Qwen3 Coder Next",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
       "wh_per_million_token": 3066.1766666666667
@@ -5298,25 +5526,27 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1102,
-        "mean_win_prob": 0.6369730718514893,
-        "n_match": 3108,
-        "rank": 6,
-        "rank_p2_5": 4,
+        "elo": 1101,
+        "mean_win_prob": 0.6346198758377717,
+        "n_match": 3283,
+        "rank": 7,
+        "rank_p2_5": 5,
         "rank_p97_5": 9,
-        "score_p2_5": 1093,
-        "score_p97_5": 1112,
+        "score_p2_5": 1091,
+        "score_p97_5": 1111,
         "trust_range": [
           2,
-          3
+          2
         ],
-        "win_rate": 0.5737045381396846
+        "win_rate": 0.5672212065813528
       },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwen3-max",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -5327,15 +5557,15 @@
       "organisation": "Alibaba",
       "params": 1000,
       "prefs": {
-        "clear_formatting": 347,
-        "complete": 361,
-        "creative": 126,
-        "incorrect": 131,
-        "instructions_not_followed": 46,
-        "positive_prefs_ratio": 0.8157199471598415,
-        "superficial": 102,
-        "total_prefs": 1514,
-        "useful": 401
+        "clear_formatting": 376,
+        "complete": 385,
+        "creative": 136,
+        "incorrect": 144,
+        "instructions_not_followed": 50,
+        "positive_prefs_ratio": 0.8136419001218027,
+        "superficial": 112,
+        "total_prefs": 1642,
+        "useful": 439
       },
       "pricey": false,
       "quantization": null,
@@ -5344,6 +5574,7 @@
       "required_ram": 1000,
       "reuse": false,
       "simple_name": "Qwen 3 Max",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
       "wh_per_million_token": 57087.51999999998
@@ -5353,17 +5584,17 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 948,
-        "mean_win_prob": 0.4260268272929281,
+        "elo": 947,
+        "mean_win_prob": 0.4253287566739331,
         "n_match": 1566,
         "rank": 75,
-        "rank_p2_5": 69,
-        "rank_p97_5": 79,
+        "rank_p2_5": 70,
+        "rank_p97_5": 80,
         "score_p2_5": 932,
         "score_p97_5": 963,
         "trust_range": [
-          6,
-          4
+          5,
+          5
         ],
         "win_rate": 0.4485997442455243
       },
@@ -5371,7 +5602,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "qwen/qwq-32b",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -5399,6 +5632,7 @@
       "required_ram": 32,
       "reuse": true,
       "simple_name": "qwq 32B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/QwQ-32B",
       "wh_per_million_token": 7135.939999999998
@@ -5412,7 +5646,9 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "arcee-ai/trinity-large-preview:free",
-        "api_type": "openrouter"
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -5430,6 +5666,7 @@
       "required_ram": 398,
       "reuse": true,
       "simple_name": "Trinity Large",
+      "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/arcee-ai/Trinity-Large-Preview",
       "wh_per_million_token": 13408.630000000001
@@ -5440,13 +5677,13 @@
       "commercial_use": true,
       "data": {
         "elo": 764,
-        "mean_win_prob": 0.21134908039900374,
+        "mean_win_prob": 0.21100247288159402,
         "n_match": 65,
         "rank": 91,
         "rank_p2_5": 88,
         "rank_p97_5": 93,
-        "score_p2_5": 664,
-        "score_p97_5": 850,
+        "score_p2_5": 661,
+        "score_p97_5": 854,
         "trust_range": [
           3,
           2
@@ -5481,6 +5718,7 @@
       "required_ram": 9,
       "reuse": true,
       "simple_name": "Yi-1.5 9B",
+      "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat",
       "wh_per_million_token": 3908.1966666666667

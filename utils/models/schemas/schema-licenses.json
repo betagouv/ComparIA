@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "License": {
+      "additionalProperties": false,
+      "description": "License metadata for a LLM.\n\nDefines licensing terms, distribution restrictions, and permitted uses.\nUsed to validate `utils/models/licenses.json`.",
+      "properties": {
+        "license": {
+          "description": "Human-readable License name (e.g. 'Apache 2.0' or 'MIT')",
+          "title": "License",
+          "type": "string"
+        },
+        "license_desc": {
+          "description": "Description of the license",
+          "title": "License Desc",
+          "type": "string"
+        },
+        "distribution": {
+          "description": "How the LLM is distributed",
+          "enum": [
+            "api-only",
+            "open-weights",
+            "fully-open-source"
+          ],
+          "title": "Distribution",
+          "type": "string"
+        },
+        "reuse": {
+          "description": "Whether the LLM can be reused/redistributed",
+          "title": "Reuse",
+          "type": "boolean"
+        },
+        "commercial_use": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether commercial use is permitted (None = unknown)",
+          "title": "Commercial Use"
+        },
+        "reuse_specificities": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "",
+          "description": "Additional reuse restrictions/notes",
+          "title": "Reuse Specificities"
+        },
+        "commercial_use_specificities": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "",
+          "description": "Additional commercial use restrictions/notes",
+          "title": "Commercial Use Specificities"
+        }
+      },
+      "required": [
+        "license",
+        "license_desc",
+        "distribution",
+        "reuse"
+      ],
+      "title": "License",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/License"
+  },
+  "title": "RootModel[list[License]]",
+  "type": "array"
+}

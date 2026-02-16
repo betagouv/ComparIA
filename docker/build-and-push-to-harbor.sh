@@ -1,46 +1,30 @@
 #!/bin/bash
+set -euo pipefail
 
-# Script pour builder et pousser les images Docker sur Harbor
-
-set -e
+# Se positionner à la racine du projet
+cd "$(dirname "$0")/.."
 
 # Configuration Harbor
-HARBOR_REGISTRY="55h10w99.gra7.container-registry.ovh.net"
-HARBOR_PROJECT="atnum"
-BACKEND_IMAGE="$HARBOR_REGISTRY/$HARBOR_PROJECT/languia"
-FRONTEND_IMAGE="$HARBOR_REGISTRY/$HARBOR_PROJECT/languia-front"
+export HARBOR_REGISTRY="55h10w99.gra7.container-registry.ovh.net"
+export HARBOR_PROJECT="atnum"
 
-docker login https://${HARBOR_REGISTRY}/harbor/
+# Git info
+export GIT_COMMIT=$(git rev-parse HEAD)
+export BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
-# Récupérer le hash long du commit courant
-COMMIT_HASH=$(git rev-parse HEAD)
-echo "Commit hash: $COMMIT_HASH"
+# Build args (optionnels)
+export PUBLIC_API_URL="${PUBLIC_API_URL:-}"
+export MATOMO_ID="${MATOMO_ID:-}"
+export MATOMO_URL="${MATOMO_URL:-}"
 
-# Tags avec hash du commit
-BACKEND_TAG="$BACKEND_IMAGE:$COMMIT_HASH"
-FRONTEND_TAG="$FRONTEND_IMAGE:$COMMIT_HASH"
+# Setup buildx
+docker buildx create --name comparia-builder --use --bootstrap 2>/dev/null || docker buildx use comparia-builder
+docker buildx inspect --bootstrap
 
-echo "Construction des images Docker..."
+echo "Build des images avec docker bake..."
+docker buildx bake -f docker/docker-bake.yml
 
-# Build l'image backend avec le hash du commit
-echo "Build de l'image backend (languia)..."
-docker build -t $BACKEND_TAG -f Dockerfile ..
-
-# Build l'image frontend avec le hash du commit
-echo "Build de l'image frontend (languia-front)..."
-docker build -t $FRONTEND_TAG -f Dockerfile.front ../frontend
-
-echo "Push des images sur Harbor..."
-
-# Push de l'image backend
-echo "Push de l'image backend..."
-docker push $BACKEND_TAG
-
-# Push de l'image frontend
-echo "Push de l'image frontend..."
-docker push $FRONTEND_TAG
-
-echo "Images buildées et poussées sur Harbor avec succès !"
-echo "Images disponibles :"
-echo "- $BACKEND_TAG"
-echo "- $FRONTEND_TAG"
+echo "Images buildées et poussées avec succès !"
+echo "Backend: $HARBOR_REGISTRY/$HARBOR_PROJECT/languia:$GIT_COMMIT"
+echo "Frontend: $HARBOR_REGISTRY/$HARBOR_PROJECT/languia-front:$GIT_COMMIT"
+[[ "$BRANCH_NAME" != "main" ]] && echo "Tags branch: $BRANCH_NAME"

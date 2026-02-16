@@ -1888,13 +1888,13 @@
             "altText": "{choice} for model {model}",
             "negative": {
                 "incorrect": "Incorrect",
-                "instructions-not-followed": "Instructions not followed",
+                "instructions_not_followed": "Instructions not followed",
                 "question": "Why did you not like the answer",
                 "superficial": "Superficial"
             },
             "other": "Other…",
             "positive": {
-                "clear-formatting": "Clear formatting",
+                "clear_formatting": "Clear formatting",
                 "complete": "Complete",
                 "creative": "Creative",
                 "question": "What did you like about the answer?",

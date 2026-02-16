@@ -16,6 +16,7 @@
 
   let step = $state<'chat' | 'vote' | 'reveal'>('chat')
   let prompt = $state('')
+  let promptError = $state<string>()
   let canVote = $state<boolean | null>(true)
   let voteData = $state<VoteData>({
     selected: undefined,
@@ -37,9 +38,9 @@
     arena.chat.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
   )
 
-  const onReactionChange: OnReactionFn = async (kind, reaction) => {
+  const onReactionChange: OnReactionFn = async (reaction) => {
     canVote = reaction.liked === null
-    await updateReaction(kind, reaction)
+    await updateReaction(reaction)
   }
 
   function onRetry() {
@@ -53,8 +54,12 @@
 
   async function onPromptSubmit() {
     window.scrollTo(0, document.body.scrollHeight)
-    await askChatBots(prompt)
-    prompt = ''
+    const validationError = await askChatBots(prompt)
+    if (validationError) {
+      promptError = validationError
+    } else {
+      prompt = ''
+    }
   }
 
   async function onRevealModels() {
@@ -85,14 +90,7 @@
 <svelte:window onresize={onResize} />
 
 <div style="--footer-size: {footerSize}px;" class="flex grow flex-col">
-  <ChatBot
-    disabled={chatbotDisabled}
-    pending={arena.chat.status === 'pending'}
-    generating={arena.chat.status === 'generating'}
-    {onReactionChange}
-    {onRetry}
-    {onVote}
-  />
+  <ChatBot disabled={chatbotDisabled} {onReactionChange} {onRetry} {onVote} />
 
   {#if step === 'vote' || (step === 'reveal' && canVote)}
     <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
@@ -105,7 +103,7 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="bottom-0 gap-3 bg-very-light-grey px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
+      class="bg-very-light-grey bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
     >
       {#if step === 'chat'}
         <div class="gap-3 md:flex-row flex w-full flex-col">
@@ -114,6 +112,7 @@
             bind:value={prompt}
             label={m['chatbot.continuePrompt']()}
             placeholder={m['chatbot.continuePrompt']()}
+            error={promptError}
             hideLabel
             rows={1}
             maxRows={4}

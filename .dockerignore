@@ -9,6 +9,7 @@ venv
 
 # JS
 node_modules
+frontend/
 
 # Log
 *.log
@@ -24,6 +25,12 @@ data/
 # Editor
 .idea
 *.swp
+.vscode
+.devin
+.ruff_cache
+.git
+.github
+google_creds.json
 
 # Other
 .DS_Store

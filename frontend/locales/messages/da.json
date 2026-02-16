@@ -1888,13 +1888,13 @@
             "altText": "{choice} for modellen {model}",
             "negative": {
                 "incorrect": "Forkert",
-                "instructions-not-followed": "Instruktionerne er ikke blevet fulgt",
+                "instructions_not_followed": "Instruktionerne er ikke blevet fulgt",
                 "question": "Hvorfor kunne du ikke lide svaret?",
                 "superficial": "Overfladisk"
             },
             "other": "Andet…",
             "positive": {
-                "clear-formatting": "Klar formattering",
+                "clear_formatting": "Klar formattering",
                 "complete": "Fuldstændigt",
                 "creative": "Kreativt",
                 "question": "Hvad kunne du lide ved svaret?",

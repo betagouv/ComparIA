@@ -27,5 +27,19 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "isort.args": ["--profile", "black"],
-  "eslint.validate": ["javascript", "typescript", "svelte"]
+  "eslint.validate": ["javascript", "typescript", "svelte"],
+  "json.schemas": [
+    {
+      "fileMatch": ["/utils/models/licenses.json"],
+      "url": "/utils/models/schemas/schema-licenses.json"
+    },
+    {
+      "fileMatch": ["/utils/models/archs.json"],
+      "url": "/utils/models/schemas/schema-archs.json"
+    },
+    {
+      "fileMatch": ["/utils/models/models.json"],
+      "url": "/utils/models/schemas/schema-organisations.json"
+    }
+  ]
 }
