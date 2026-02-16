@@ -76,6 +76,13 @@
     "license_desc": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur."
   },
   {
+    "license": "Modified MIT",
+    "distribution": "open-weights",
+    "reuse": true,
+    "commercial_use": true,
+    "license_desc": "Variante de la license MIT. La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur."
+  },
+  {
     "license": "Gemma",
     "distribution": "open-weights",
     "reuse": true,
