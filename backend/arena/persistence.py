@@ -768,4 +768,8 @@ def record_conversations(
     # Always rewrite the file
     conv_log_path.write_text(json.dumps(db_data) + "\n")
 
-    return upsert_conv_to_db(db_data)
+    try:
+        return upsert_conv_to_db(db_data)
+    except Exception:
+        logger.warning("Could not upsert conversations to DB", exc_info=True)
+        return db_data
