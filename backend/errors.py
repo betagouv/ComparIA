@@ -30,11 +30,13 @@ class ChatError(RuntimeError):
 
     message: str
     pos: BotPos
+    is_timeout: bool
 
-    def __init__(self, message: str, pos: BotPos) -> None:
+    def __init__(self, message: str, pos: BotPos, is_timeout: bool = False) -> None:
         super().__init__(message)
         self.message = message
         self.pos = pos
+        self.is_timeout = is_timeout
 
     def __str__(self):
         return self.message

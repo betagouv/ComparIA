@@ -9,6 +9,7 @@ import logging
 import traceback
 from typing import Any, AsyncGenerator, Literal, TypedDict
 
+import litellm
 import sentry_sdk
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
@@ -21,9 +22,12 @@ from backend.arena.models import (
     Conversation,
     Conversations,
     ErrorDetails,
+    UserMessage,
+    create_conversation,
 )
-from backend.config import settings
+from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
+from backend.llms.data import get_llms_data
 
 logger = logging.getLogger("languia")
 
@@ -128,7 +132,7 @@ async def stream_conversation_messages(
             exc_info=True,
         )
 
-        raise ChatError(message=error_message, pos=pos)
+        raise ChatError(message=error_message, pos=pos, is_timeout=isinstance(e, litellm.Timeout))
 
 
 async def stream_comparison_messages(
@@ -169,6 +173,9 @@ async def stream_comparison_messages(
         }
         # Track state from both generators
         complete: dict[BotPos, bool] = {"a": False, "b": False}
+        # Track timeout swap attempts (max one per position)
+        retried: dict[BotPos, bool] = {"a": False, "b": False}
+        is_first_turn = conversations.conv_turns == 0
 
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):
@@ -189,7 +196,52 @@ async def stream_comparison_messages(
 
             # Process completed chunks
             for task in completed:
-                event = task.result()
+                try:
+                    event = task.result()
+                except ChatError as e:
+                    # On first-turn timeout, swap the model if it wasn't user-selected
+                    if (
+                        e.is_timeout
+                        and is_first_turn
+                        and not retried[e.pos]
+                        and not _is_model_user_selected(
+                            getattr(
+                                conversations, f"conversation_{e.pos}"
+                            ).model_name,
+                            conversations.mode,
+                            conversations.custom_models_selection,
+                        )
+                    ):
+                        new_model = _pick_replacement_model(conversations, e.pos)
+                        if new_model:
+                            old_name = getattr(
+                                conversations, f"conversation_{e.pos}"
+                            ).model_name
+                            logger.warning(
+                                f"Model '{old_name}' timed out, swapping to '{new_model}'"
+                            )
+                            user_msg = UserMessage(
+                                content=conversations.opening_msg
+                            )
+                            new_conv = create_conversation(
+                                new_model,
+                                conversations.country_portal,
+                                user_msg,
+                            )
+                            setattr(
+                                conversations,
+                                f"conversation_{e.pos}",
+                                new_conv,
+                            )
+                            generators[e.pos] = (
+                                stream_conversation_messages(
+                                    e.pos, new_conv, request
+                                )
+                            )
+                            retried[e.pos] = True
+                            continue
+                        # No replacement available, fall through to raise
+                    raise
 
                 for pos in BOT_POS:
                     if event["type"] == "complete":
@@ -215,6 +267,37 @@ async def stream_comparison_messages(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
         yield format_sse_event({"type": "error", "error": str(e)})
+
+
+def _is_model_user_selected(
+    model_name: str, mode: SelectionMode, custom_selection: CustomModelsSelection
+) -> bool:
+    """Check if a model was explicitly chosen by the user (custom mode)."""
+    if mode != "custom" or not custom_selection:
+        return False
+    return model_name in custom_selection
+
+
+def _pick_replacement_model(conversations: Conversations, pos: BotPos) -> str | None:
+    """Pick a replacement model from the appropriate pool, excluding both current models."""
+    models = get_llms_data(conversations.country_portal)
+    other_pos: BotPos = "b" if pos == "a" else "a"
+    failing = getattr(conversations, f"conversation_{pos}").model_name
+    other = getattr(conversations, f"conversation_{other_pos}").model_name
+    excluded = [failing, other]
+
+    # Pick from the right pool based on mode
+    if conversations.mode == "small-models":
+        pool = models.small_models
+    elif conversations.mode == "big-vs-small":
+        pool = models.big_models if failing in models.big_models else models.small_models
+    else:
+        pool = models.random_models
+
+    try:
+        return models.pick_one(pool, excluded=excluded)
+    except Exception:
+        return None
 
 
 def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:
