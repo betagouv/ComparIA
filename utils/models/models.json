@@ -130,7 +130,6 @@
     "icon_path": "deepseek-color",
     "models": [
       {
-        "new": true,
         "id": "DeepSeek-V3.2",
         "simple_name": "DeepSeek V3.2",
         "license": "Apache 2.0",
@@ -148,6 +147,7 @@
         "fyi": "Pour cette version, le coût de l’API et les besoins en calcul sont réduits d’environ 50 % ou plus pour les contextes longs. Cette amélioration repose sur le \"DeepSeek Sparse Attention (DSA)\", un mécanisme d’attention clairsemée à granularité fine qui calcule l’attention de façon sélective afin de diminuer la complexité sur les longues séquences tout en préservant l’essentiel du contexte.\n\nLe modèle a été entraîné en donnant la priorité aux capacités de raisonnement et aux usages agentiques."
       },
       {
+        "status": "archived",
         "id": "deepseek-chat-v3.1",
         "simple_name": "DeepSeek v3.1",
         "license": "MIT",
@@ -524,7 +524,6 @@
         "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Gemini 3 Flash peut traiter des volumes importants de contenu multimodal par prompt : jusqu'à 900 images, 900 PDFs de 900 pages chacun, des vidéos de 45 minutes à 1 heure, et jusqu'à 8,4 heures d'audio. Au moment de sa sortie, Gemini 3 Flash se montre très performant tout en étant environ neuf fois moins coûteux que Gemini 3 Pro. "
       },
       {
-        "new": true,
         "id": "gemini-3-pro-preview",
         "simple_name": "Gemini 3 Pro",
         "license": "proprietary",
@@ -542,6 +541,7 @@
         "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio."
       },
       {
+        "status": "archived",
         "id": "gemini-2.5-flash",
         "simple_name": "Gemini 2.5 Flash",
         "license": "proprietary",
@@ -710,6 +710,24 @@
     "models": [
       {
         "new": true,
+        "id": "qwen3.5-397b-a17b",
+        "simple_name": "Qwen 3.5 397B",
+        "license": "Apache 2.0",
+        "release_date": "02/2026",
+        "arch": "moe",
+        "params": 397,
+        "active_params": 17,
+        "reasoning": true,
+        "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3.5-397b-a17b"
+        },
+        "desc": "Très grand modèle multimodal et multilingue doté d'un mode de raisonnement. Grâce à une architecture hybride combinant attention linéaire (Gated DeltaNet) et mélange d'experts, il n'active que 17 milliards de paramètres sur 397 milliards au total.",
+        "size_desc": "Avec 397 milliards de paramètres, Qwen 3.5 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. L'architecture de mélange d'experts (MoE, Mixture of Experts) permet néanmoins de n'activer que 17 milliards de paramètres par jeton généré, ce qui réduit l'empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte native atteint 262 144 jetons et peut être étendue jusqu'à environ 1 million grâce à des techniques d'extrapolation (YaRN). Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Ce modèle repose sur une architecture hybride innovante combinant Gated DeltaNet (attention linéaire) et attention classique avec un mélange d'experts ultra-sparse : 512 experts au total, dont seulement 10 routés et 1 partagé sont activés par jeton. Le réseau compte 60 couches organisées en blocs de 4 : 3 couches Gated DeltaNet suivies d'1 couche d'attention classique, chacune associée à un module MoE. Cette conception réduit considérablement le coût d'inférence tout en préservant la capacité du modèle sur les tâches de raisonnement complexes.\n\nQwen 3.5 est nativement multimodal, entraîné en fusion précoce (early fusion) sur des billions de jetons multimodaux (texte et images). Il prend en charge 201 langues et dialectes. Le post-entraînement fait appel à un apprentissage par renforcement à grande échelle, déployé sur des environnements massivement parallèles (million-agent environments), avec des distributions de tâches de complexité progressive. L'infrastructure d'entraînement utilise un pipeline FP8 et un cadre d'apprentissage par renforcement asynchrone pour optimiser l'efficacité."
+      },
+      {
         "id": "qwen3-coder-next",
         "simple_name": "Qwen3 Coder Next",
         "license": "Apache 2.0",
@@ -780,6 +798,7 @@
         "fyi": "Qwen 3 8B a été entraîné sur le même corpus que les modèles plus grands de la famille Qwen : 36 billions de jetons couvrant 119 langues. Son apprentissage suit trois étapes : pré-entraînement sur 30 billions de jetons avec une fenêtre de 4 000, enrichissement factuel avec 5 billions de jetons, puis une phase spécialisée pour les contextes longs."
       },
       {
+        "status": "archived",
         "id": "qwen3-30b-a3b",
         "simple_name": "Qwen 3 30B A3B",
         "license": "Apache 2.0",
@@ -1026,7 +1045,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
         "id": "gpt-5.2",
         "simple_name": "GPT 5.2",
         "license": "proprietary",
@@ -1255,7 +1273,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
         "id": "mistral-large-2512",
         "simple_name": "Mistral 3 Large",
         "license": "Apache 2.0",
@@ -1853,6 +1870,25 @@
     "name": "MiniMax",
     "icon_path": "minimax-color",
     "models": [
+      {
+        "new": true,
+        "id": "minimax-m2.5",
+        "simple_name": "MiniMax M2.5",
+        "license": "Modified MIT",
+        "release_date": "02/2026",
+        "arch": "moe",
+        "params": 229,
+        "active_params": 10,
+        "reasoning": true,
+        "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.5",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "minimax/minimax-m2.5"
+        },
+        "desc": "Très grand modèle semi-ouvert spécialisé dans le code et les tâches agentiques, avec un mode de raisonnement intégré. Il est conçu par MiniMax, entreprise basée à Shanghai en Chine.",
+        "size_desc": "Avec 229 milliards de paramètres, MiniMax M2.5 est un modèle de très grande taille. L'architecture de mélange d'experts (MoE, Mixture of Experts) permet de n'activer que 10 milliards de paramètres par jeton généré, ce qui réduit considérablement l'empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte atteint environ 200 000 jetons. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Ce modèle utilise une architecture MoE avec 256 experts, dont 8 sont activés par jeton. Son entraînement repose sur Forge, un cadre d'apprentissage par renforcement agentique développé par MiniMax, qui découple l'entraînement de l'inférence et permet d'optimiser le modèle sur plus de 200 000 environnements réels (dépôts de code, navigateurs web, applications bureautiques). L'algorithme CISPO (Clipped Importance Sampling Policy Optimization) assure la stabilité de l'entraînement MoE à grande échelle. Un mécanisme de fusion arborescente des échantillons accélère l'entraînement d'environ 40 fois.\n\nLe modèle obtient 80,2 % sur SWE-Bench Verified (résolution automatique de problèmes logiciels) et 51,3 % sur Multi-SWE-Bench. Il intègre également des compétences bureautiques (Word, PowerPoint, Excel). Sa particularité est de rédiger des spécifications avant de commencer à coder, décomposant les tâches complexes en sous-étapes."
+      },
       {
         "id": "minimax-m2",
         "simple_name": "MiniMax M2",
