@@ -1,16 +1,3 @@
-<!-- TODO: Replace screenshot with a short video demo -->
-<div align="center">
-  <a href="https://comparia.beta.gouv.fr/"
-     aria-label="Click to visit the hosted platform"
-     title="Screenshot of the comparator">
-    <img
-      src="https://github.com/user-attachments/assets/6c8257fc-a2e5-4ee1-8052-dbf14a0419ea"
-      alt="Comparator screenshot"
-      width="800"
-    />
-  </a>
-</div>
-
 <h1 align="center">Open Source LLM Arena</h1>
 
 <p align="center">
@@ -31,6 +18,21 @@
 ---
 
 ## How does it work?
+
+<div align="center">
+  <a href="https://comparia.beta.gouv.fr/"
+     aria-label="Click to visit the hosted platform"
+     title="Demo video of the comparator">
+    <video
+      src="https://github.com/user-attachments/assets/06ce8c3d-aec1-48d6-ab64-a75a08020796"
+      width="800"
+      autoplay
+      loop
+      muted
+      playsinline
+    />
+  </a>
+</div>
 
 ```mermaid
 flowchart LR
