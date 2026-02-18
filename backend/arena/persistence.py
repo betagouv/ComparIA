@@ -321,8 +321,6 @@ class VoteRecord(BaseModel):
     session_hash: str
     visitor_id: str | None
     ip: str
-    country_portal: CountryPortal
-    cohorts: str
 
     # Conversations
     conv_turns: int

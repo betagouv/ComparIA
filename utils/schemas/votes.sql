@@ -37,8 +37,6 @@ CREATE TABLE votes (
     conv_instructions_not_followed_a BOOLEAN,
     conv_instructions_not_followed_b BOOLEAN,
     archived BOOLEAN DEFAULT FALSE,
-    country_portal VARCHAR(255),
-    cohorts TEXT
 );
 
 GRANT ALL PRIVILEGES ON TABLE votes TO "languia";
