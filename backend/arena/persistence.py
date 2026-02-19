@@ -768,6 +768,6 @@ def record_conversations(
 
     try:
         return upsert_conv_to_db(db_data)
-    except Exception:
+    except (psycopg2.OperationalError, psycopg2.InterfaceError):
         logger.warning("Could not upsert conversations to DB", exc_info=True)
         return db_data
