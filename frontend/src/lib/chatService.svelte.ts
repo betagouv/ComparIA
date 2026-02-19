@@ -1,9 +1,8 @@
-import { api } from '$lib/api'
+import { api, ValidationError, type AnySSEEvent } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
-import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
-import type { LoadingStatus } from '@gradio/statustracker'
+import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -25,37 +24,47 @@ export type ModeInfos = {
 
 // CHAT
 
-type APIMessageRole = 'system' | 'user' | 'assistant'
 export type Bot = 'a' | 'b'
+export type BotChoice = Bot | 'both_equal'
 
-interface APIChatMessageMetadata<Role extends APIMessageRole = APIMessageRole> {
-  bot: Role extends 'assistant' ? Bot : null
-  duration: number | null
-  generation_id: Role extends 'assistant' ? string : null
-}
+export type LLMPos = 'a' | 'b'
+export type ChatStatus = 'pending' | 'error' | 'complete' | 'generating'
 
-export interface APIChatMessage<Role extends APIMessageRole = APIMessageRole> {
-  role: Role
-  error: string | null
-  metadata: APIChatMessageMetadata<Role>
+export interface UserMessage {
+  role: 'user'
   content: string
-  reasoning: Role extends 'assistant' ? string | '' : null
+  error: { round_index: number; pos: Bot; content: string } | null
 }
+export interface AssistantMessage {
+  role: 'assistant'
+  pos: Bot
+  metadata: {
+    bot: Bot
+    duration: number | null
+    generation_id: string
+  }
+  content: string
+  reasoning: string | ''
 
-export interface ChatMessage<Role extends APIMessageRole = APIMessageRole>
-  extends APIChatMessage<Role> {
+  generating?: boolean
+}
+export type AnyMessage = UserMessage | AssistantMessage
+
+interface Chat {
+  messages: AnyMessage[]
+  status: ChatStatus
+  // error: string | null
+}
+export interface ChatRound {
+  user: UserMessage
+  a?: AssistantMessage
+  b?: AssistantMessage
+  showMessages: boolean
   index: number
-  isLast: boolean
-}
-
-export type GroupedChatMessages = {
-  user: ChatMessage<'user'>
-  bots: [ChatMessage<'assistant'>, ChatMessage<'assistant'>]
 }
 
 // REACTIONS
 
-// TODO use underscore everywhere ?
 export const APIPositiveReactions = ['useful', 'complete', 'creative', 'clear_formatting'] as const
 export const APINegativeReactions = [
   'incorrect',
@@ -65,39 +74,35 @@ export const APINegativeReactions = [
 export type APIReactionPref =
   | (typeof APIPositiveReactions)[number]
   | (typeof APINegativeReactions)[number]
-export const positiveReactions = ['useful', 'complete', 'creative', 'clear-formatting'] as const
-export const negativeReactions = ['incorrect', 'superficial', 'instructions-not-followed'] as const
-export type ReactionPref = (typeof positiveReactions)[number] | (typeof negativeReactions)[number]
 
 export type ReactionKind = 'like' | 'comment'
 export type APIReactionData = {
+  bot: Bot
   index: number
   value: string
-  liked?: boolean | null
-  prefs?: ReactionPref[]
+  liked: boolean | null
+  prefs: APIReactionPref[]
   comment?: string
 }
-export type OnReactionFn = (kind: ReactionKind, reaction: Required<APIReactionData>) => void
+export type OnReactionFn = (reaction: APIReactionData) => void
 
 // VOTE
 
 export interface APIVoteData {
-  which_model_radio_output: 'model-a' | 'model-b' | 'both-equal'
-  positive_a_output: ReactionPref[]
-  positive_b_output: ReactionPref[]
-  negative_a_output: ReactionPref[]
-  negative_b_output: ReactionPref[]
-  comments_a_output: string
-  comments_b_output: string
+  chosen_llm: BotChoice
+  prefs_a: APIReactionPref[]
+  prefs_b: APIReactionPref[]
+  comment_a: string
+  comment_b: string
 }
 
 interface VoteDetails {
-  like: ReactionPref[]
-  dislike: ReactionPref[]
+  like: APIReactionPref[]
+  dislike: APIReactionPref[]
   comment: string
 }
 export interface VoteData {
-  selected?: APIVoteData['which_model_radio_output']
+  selected?: BotChoice
   a: VoteDetails
   b: VoteDetails
 }
@@ -106,40 +111,32 @@ export interface VoteData {
 
 type DurationUnit = 'j' | 'h' | 'min' | 's'
 
-export interface APIRevealData {
-  b64: string
-  model_a: APIBotModel
-  model_b: APIBotModel
-  chosen_model: 'model-a' | 'model-b' | null
-  model_a_kwh: number
-  model_b_kwh: number
-  model_a_co2: number
-  model_b_co2: number
-  model_a_tokens: number
-  model_b_tokens: number
-  streaming_a: number
-  streaming_a_unit: DurationUnit
-  streaming_b: number
-  streaming_b_unit: DurationUnit
-  lightbulb_a: number
-  lightbulb_a_unit: DurationUnit
-  lightbulb_b: number
-  lightbulb_b_unit: DurationUnit
-}
-
-interface RevealModelData {
-  model: BotModel
-  side: 'model-a' | 'model-b'
+interface APIConsoData {
   kwh: number
   co2: number
   tokens: number
-  lightbulb: number
-  lightbulbUnit: string
-  streaming: number
-  streamingUnit: string
+  streaming: { value: number; unit: DurationUnit }
+  lightbulb: { value: number; unit: DurationUnit }
+}
+
+interface APIRevealModelData {
+  llm: APIBotModel
+  conso: APIConsoData
+}
+
+export interface APIRevealData {
+  b64: string
+  chosen_llm: BotChoice
+  a: APIRevealModelData
+  b: APIRevealModelData
+}
+
+interface RevealModelData extends APIConsoData {
+  model: BotModel
+  pos: Bot
 }
 export interface RevealData {
-  selected: APIVoteData['which_model_radio_output']
+  selected: BotChoice
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
 }
@@ -166,141 +163,196 @@ export const arena = $state<{
   mode?: Mode
   chat: {
     step?: 1 | 2
-    status: LoadingStatus['status']
-    messages: APIChatMessage[]
-    root: string
+    status: ChatStatus
+    a: Chat
+    b: Chat
+    error: string | null
   }
 }>({
   currentScreen: 'prompt',
   chat: {
     step: 1,
     status: 'pending',
-    messages: [],
-    root: '/' // FIXME or '/arene'
+    a: { status: 'pending', messages: [] },
+    b: { status: 'pending', messages: [] },
+    error: null
   }
 })
 
 // API CALLS
 
-export async function runChatBots(args: APIModeAndPromptData) {
+function onSSEEvent(event: AnySSEEvent) {
+  if (event.type === 'init') {
+    arena.chat.status = 'pending'
+  } else if (event.type === 'error') {
+    arena.chat.error = event.error
+    arena.chat.status = 'error'
+    if (event.pos) {
+      arena.chat[event.pos].status = 'error'
+    }
+  } else if (event.type === 'chunk') {
+    arena.chat[event.pos].messages = event.messages
+    arena.chat[event.pos].status = 'generating'
+    arena.chat.status = 'generating'
+  } else if (event.type === 'complete') {
+    if (event.pos) {
+      arena.chat[event.pos].status = 'complete'
+    } else {
+      arena.chat.status = 'complete'
+    }
+  }
+}
+
+export async function runChatBots(args: APIModeAndPromptData): Promise<string | undefined> {
   arena.chat.status = 'pending'
+  arena.chat.error = null
 
   try {
-    const job = await api.submit<APIChatMessage[]>('/add_first_text', {
-      model_dropdown_scoped: args,
-      locale: getLocale()
-    })
-
-    arena.currentScreen = 'chat'
-    arena.mode = args.mode
-    arena.chat.step = 1
-    // arena.chat.status = 'streaming'
-
-    for await (const messages of job) {
-      arena.chat.status = 'generating'
-      arena.chat.messages = messages
+    const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
+    if (cohorts === null) {
+      console.error(
+        `[COHORT] cohorts is None and it should not happen, maybe cohorts detection has not been called.`
+      )
+    }
+    if (cohorts) {
+      console.debug(`[COHORT] call to '/arena/add_first_text' with found cohorts: '${cohorts}'`)
     }
 
-    arena.chat.status = 'complete'
+    const stream = api.stream('/arena/add_first_text', {
+      prompt_value: args.prompt_value,
+      mode: args.mode,
+      custom_models_selection: args.custom_models_selection,
+      cohorts
+    })
+
+    // Stream from FastAPI endpoint
+    for await (const event of stream) {
+      if (arena.currentScreen !== 'chat') {
+        arena.currentScreen = 'chat'
+        arena.mode = args.mode
+        arena.chat.step = 1
+      }
+      onSSEEvent(event)
+    }
+
+    arena.chat.status = arena.chat.status = [
+      arena.chat.status,
+      arena.chat.a.status,
+      arena.chat.b.status
+    ].some((status) => status === 'error')
+      ? 'error'
+      : 'complete'
   } catch (error) {
-    console.error('Error:', error)
+    if (error instanceof ValidationError) {
+      arena.chat.status = 'complete'
+      return error.message
+    }
     arena.chat.status = 'error'
+    throw error
   }
 
   return arena.chat.status
 }
 
-export async function askChatBots(text: string) {
+export async function askChatBots(text: string): Promise<string | undefined> {
   arena.chat.status = 'pending'
-
+  arena.chat.error = null
   try {
-    const job = await api.submit<APIChatMessage[]>('/add_text', { text })
-    // arena.chat.status = 'streaming'
-
-    for await (const messages of job) {
-      arena.chat.status = 'generating'
-      arena.chat.messages = messages
+    // Stream from FastAPI endpoint
+    for await (const event of api.stream('/arena/add_text', {
+      message: text
+    })) {
+      onSSEEvent(event)
     }
 
-    arena.chat.status = 'complete'
+    arena.chat.status = arena.chat.status = [
+      arena.chat.status,
+      arena.chat.a.status,
+      arena.chat.b.status
+    ].some((status) => status === 'error')
+      ? 'error'
+      : 'complete'
   } catch (error) {
-    console.error('Error:', error)
+    if (error instanceof ValidationError) {
+      arena.chat.status = 'complete'
+      return error.message
+    }
     arena.chat.status = 'error'
+    throw error
   }
 }
 
-export async function retryAskChatBots() {
+export async function retryAskChatBots(): Promise<string | undefined> {
   arena.chat.status = 'pending'
-
+  arena.chat.error = null
   try {
-    const job = await api.submit<APIChatMessage[]>('/chatbot_retry')
-    // arena.chat.status = 'streaming'
-
-    for await (const messages of job) {
-      arena.chat.status = 'generating'
-      arena.chat.messages = messages
+    // Stream from FastAPI endpoint
+    for await (const event of api.stream('/arena/retry', {})) {
+      onSSEEvent(event)
     }
 
-    arena.chat.status = 'complete'
+    arena.chat.status = arena.chat.status = [
+      arena.chat.status,
+      arena.chat.a.status,
+      arena.chat.b.status
+    ].some((status) => status === 'error')
+      ? 'error'
+      : 'complete'
   } catch (error) {
-    console.error('Error:', error)
+    if (error instanceof ValidationError) {
+      arena.chat.status = 'complete'
+      return error.message
+    }
     arena.chat.status = 'error'
+    throw error
   }
 }
 
-export async function updateReaction(kind: ReactionKind, reaction: APIReactionData) {
-  const data =
-    kind === 'like'
-      ? {
-          index: reaction.index,
-          value: reaction.value,
-          liked: reaction.liked,
-          prefs: reaction.prefs
-        }
-      : {
-          index: reaction.index,
-          value: '',
-          comment: reaction.comment
-        }
-
-  return api.predict('/chatbot_react', {
-    // pass complete raw messages array
-    chatbot: arena.chat.messages,
-    reaction_json: data
+export async function updateReaction(reaction: APIReactionData) {
+  await api.request('/arena/react', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reaction)
   })
 }
 
 export async function postVoteGetReveal(vote: Required<VoteData>) {
   const data = {
-    which_model_radio_output: vote.selected,
-    positive_a_output: vote.a.like,
-    positive_b_output: vote.b.like,
-    negative_a_output: vote.a.dislike,
-    negative_b_output: vote.b.dislike,
-    comments_a_output: vote.a.comment,
-    comments_b_output: vote.b.comment
+    chosen_llm: vote.selected,
+    prefs_a: [...vote.a.like, ...vote.a.dislike],
+    prefs_b: [...vote.b.like, ...vote.b.dislike],
+    comment_a: vote.a.comment,
+    comment_b: vote.b.comment
   } satisfies APIVoteData
-  return api.predict<APIRevealData>('/chatbot_vote', data).then(parseAPIRevealData)
+
+  const revealData = await api.request<APIRevealData>('/arena/vote', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+
+  return parseAPIRevealData(revealData)
 }
 
 function parseAPIRevealData(data: APIRevealData): RevealData {
   return {
-    selected: data.chosen_model ?? 'both-equal',
-    modelsData: (['a', 'b'] as const).map((model) => ({
-      model: parseModel(data[`model_${model}`]),
-      side: `model-${model}`,
-      kwh: data[`model_${model}_kwh`],
-      co2: data[`model_${model}_co2`] * 1000,
-      tokens: data[`model_${model}_tokens`],
-      lightbulb: data[`lightbulb_${model}`],
-      lightbulbUnit: data[`lightbulb_${model}_unit`],
-      streaming: data[`streaming_${model}`],
-      streamingUnit: data[`streaming_${model}_unit`]
+    selected: data.chosen_llm,
+    modelsData: (['a', 'b'] as const).map((pos) => ({
+      model: parseModel(data[pos].llm),
+      pos,
+      ...data[pos].conso,
+      co2: data[pos].conso.co2 * 1000 // FIXME *1000?
     })),
     shareB64Data: data.b64
   }
 }
 
 export async function getReveal(): Promise<RevealData> {
-  return api.predict<APIRevealData>('/reveal').then(parseAPIRevealData)
+  const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
+    method: 'GET'
+  })
+
+  return parseAPIRevealData(revealData)
 }

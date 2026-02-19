@@ -1,9 +1,12 @@
+# FIXME Legacy: to remove (used to be a migration)
+import json
+
 import litellm
 import psycopg2
-import json
 from psycopg2.extras import DictCursor
 from pydantic import ValidationError
-from languia.models import ConversationMessages
+
+from backend.arena.models import ConversationMessages
 
 
 def count_tokens(text, model):
@@ -313,13 +316,13 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 if __name__ == "__main__":
     import os
 
-    dsn = os.getenv("DATABASE_URI")
+    dsn = os.getenv("COMPARIA_DB_URI")
 
     if not dsn:
-        error_message = "DATABASE_URI environment variable not set"
+        error_message = "COMPARIA_DB_URI environment variable not set"
         print(f"Error: {error_message}")
         raise ValueError(error_message)
 
-    print(f"Starting the main execution. DATABASE_URI is set.")
+    print(f"Starting the main execution. COMPARIA_DB_URI is set.")
     process_unprocessed_conversations(dsn)
     print("Finished the main execution.")

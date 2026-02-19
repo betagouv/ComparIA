@@ -1,18 +1,18 @@
 <script lang="ts">
-  import type { APIVoteData } from '$lib/chatService.svelte'
+  import type { BotChoice } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
 
   export interface VoteAreaProps {
-    value?: APIVoteData['which_model_radio_output']
+    value?: BotChoice
     disabled?: boolean
   }
 
   let { value: selected = $bindable(), disabled = false }: VoteAreaProps = $props()
 
   const choices = [
-    { value: 'model-a', label: m['models.names.a']() },
-    { value: 'both-equal', label: m['vote.bothEqual']() },
-    { value: 'model-b', label: m['models.names.b']() }
+    { value: 'a', label: m['models.names.a']() },
+    { value: 'both_equal', label: m['vote.bothEqual']() },
+    { value: 'b', label: m['models.names.b']() }
   ] as const
 </script>
 
@@ -32,10 +32,10 @@
           class="sr-only"
         />
         <label
-          class="cg-border px-3 py-4 font-medium md:flex-row md:justify-center md:rounded-[56px]! flex h-full flex-col items-center justify-center text-center"
+          class="cg-border md:rounded-[56px]! px-3 py-4 font-medium md:flex-row md:justify-center flex h-full flex-col items-center justify-center text-center"
           for="radio-{value}"
         >
-          {#if value === 'both-equal'}
+          {#if value === 'both_equal'}
             <svg
               width="26"
               height="26"
@@ -49,7 +49,7 @@
               <path d="M20 9H6V11H20V9ZM20 15H6V17H20V15Z" fill="#1A1A1A" />
             </svg>
           {:else}
-            <div class="c-bot-disk-{value === 'model-a' ? 'a' : 'b'}"></div>
+            <div class="c-bot-disk-{value}"></div>
           {/if}
           <span class="mt-3 md:ms-3 md:mt-0">{label}</span>
         </label>

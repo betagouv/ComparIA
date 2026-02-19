@@ -1,22 +1,24 @@
-FROM public.ecr.aws/docker/library/node:24.4
-ARG GIT_COMMIT
-ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
-
-ARG PUBLIC_API_URL
-ENV PUBLIC_API_URL=$PUBLIC_API_URL
-
-ARG MATOMO_ID
-ENV MATOMO_ID=$MATOMO_ID
-ARG MATOMO_URL
-ENV MATOMO_URL=$MATOMO_URL
+# Multi-stage build optimisé avec buildx
+FROM public.ecr.aws/docker/library/node:24.4 AS builder
 
 WORKDIR /app
-RUN npm install -g vite
-COPY ./package.json ./yarn.lock /app/
-RUN yarn install
-COPY ./ /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-RUN vite build
+COPY . .
+ARG PUBLIC_API_URL MATOMO_ID MATOMO_URL GIT_COMMIT
+ENV PUBLIC_API_URL=$PUBLIC_API_URL MATOMO_ID=$MATOMO_ID MATOMO_URL=$MATOMO_URL PUBLIC_GIT_COMMIT=$GIT_COMMIT
+
+RUN yarn build && yarn install --production --ignore-scripts
+
+FROM public.ecr.aws/docker/library/node:24.4-alpine AS runtime
+WORKDIR /app
+
+# Copier le build et les dépendances de production
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
 
 EXPOSE 80
-CMD ["node", "build"]
+# node build executes build/index.js which starts the server (@sveltejs/adapter-node)
+CMD ["node", "build"] 

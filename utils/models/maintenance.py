@@ -1,39 +1,37 @@
+import logging
 from datetime import date
 
-from languia.models import Archs, Licenses, RawOrgas
-from utils.models.build_models import (
-    ARCHS_PATH,
-    LICENSES_PATH,
-    MODELS_PATH,
-    validate_orgas_and_models,
-    log,
-)
-from utils.models.utils import read_json, write_json
+from utils.logger import configure_logger
+from utils.models.build_models import LLMS_RAW_DATA_FILE
+from utils.utils import read_json, write_json
+
+from .archs import get_archs
+from .licenses import get_licenses
+from .organisations import RawOrgas
+
+logger = configure_logger(logging.getLogger("llms:maintenance"))
 
 
-def clean_models():
+def clean_models() -> None:
     # Clean models.json
     # put 'missing_data' models first in list
     # reorder models based on date (most recent first)
     # remove keys that are default values
 
     context = {
-        "licenses": {
-            l["license"]: l
-            for l in Licenses(read_json(LICENSES_PATH)).model_dump(exclude_none=True)
-        },
-        "archs": {a.pop("id"): a for a in Archs(read_json(ARCHS_PATH)).model_dump()},
+        "licenses": {l.license: l for l in get_licenses().root},
+        "archs": {a.pop("id"): a for a in get_archs()},
     }
 
-    raw_orgas = read_json(MODELS_PATH)
-    filtered_out_models = {}
+    raw_orgas = read_json(LLMS_RAW_DATA_FILE)
+    filtered_out_models: dict[str, list[dict]] = {}
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
         filtered_models = []
         for model in orga["models"]:
             if model.get("status", None) == "missing_data":
-                print(f"Warning: Missing model data for '{model["id"]}'")
+                logger.warning(f"Missing model data for '{model["id"]}'")
                 if not orga["name"] in filtered_out_models:
                     filtered_out_models[orga["name"]] = []
                 filtered_out_models[orga["name"]].append(model)
@@ -42,7 +40,7 @@ def clean_models():
         orga["models"] = filtered_models
 
     orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump(
-        exclude_defaults=True
+        exclude_defaults=True, mode="json"
     )
 
     for orga in orgas:
@@ -61,7 +59,7 @@ def clean_models():
         orga = next((orga for orga in orgas if orga["name"] == name))
         orga["models"] = orga["models"] + models
 
-    write_json(MODELS_PATH, orgas)
+    write_json(LLMS_RAW_DATA_FILE, orgas)
 
 
 if __name__ == "__main__":

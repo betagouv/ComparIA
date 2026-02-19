@@ -1,0 +1,62 @@
+# Overlay for full stack (frontend + backend)
+# Usage: docker compose -f docker-compose.yml -f app.compose.override.yml up
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.front
+    depends_on:
+      - backend
+    environment:
+      # URL for server-side rendering (inside Docker network)
+      PUBLIC_API_LOCAL_URL: "http://backend:80"
+      # URL for client-side browser requests (exposed to host)
+      PUBLIC_API_URL: "http://localhost:8001"
+      PUBLIC_API_DEV_MODE: "true"
+    ports:
+      - "3000:3000"
+    # Dev config
+    # volumes:
+    #   - ../frontend:/app
+    #   - /app/node_modules # Exclude node_modules from host mount
+    # command: ["node", "build"]
+
+  backend:
+    env_file: ./.env
+    environment:
+      LOGDIR: /data
+      # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
+      COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
+      COMPARIA_REDIS_HOST: redis
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      # args:
+      #   GIT_COMMIT: ${GIT_COMMIT:-}
+      #   PUBLIC_API_URL: ${PUBLIC_API_URL:-}
+      #   MATOMO_ID: ${MATOMO_ID:-}
+      #   MATOMO_URL: ${MATOMO_URL:-}
+    image: languia:latest
+    ports:
+      - "8001:80"
+    # volumes:
+    #   - ../data:/data
+    #   # Dev config - mount everything except .venv
+    #   - ../:/app
+    #   - /app/.venv # Exclude .venv from host mount (use container's .venv)
+    command:
+      [
+        "uvicorn",
+        "backend.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "80",
+        "--reload",
+      ]
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  pgadmin-data:

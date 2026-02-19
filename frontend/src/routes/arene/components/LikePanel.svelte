@@ -1,7 +1,11 @@
 <script lang="ts">
   import { Button, Icon } from '$components/dsfr'
   import Selector from '$components/Selector.svelte'
-  import { negativeReactions, positiveReactions, type ReactionPref } from '$lib/chatService.svelte'
+  import {
+    APINegativeReactions,
+    APIPositiveReactions,
+    type APIReactionPref
+  } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { noop } from '$lib/utils/commons'
 
@@ -10,11 +14,11 @@
     show: boolean
     kind: 'like' | 'dislike'
     model: string
-    selection: ReactionPref[]
+    selection: APIReactionPref[]
     comment?: string
     disabled?: boolean
     mode?: 'react' | 'vote'
-    onSelectionChange?: (selection: ReactionPref[]) => void
+    onSelectionChange?: (selection: APIReactionPref[]) => void
     onCommentChange?: (comment: string) => void
   }
 
@@ -38,18 +42,18 @@
     like: {
       label: m['vote.choices.positive.question'](),
       icon: 'thumb-up-fill',
-      choices: positiveReactions.map((value) => ({
+      choices: APIPositiveReactions.map((value) => ({
         value,
         label: m[`vote.choices.positive.${value}`]()
-      })) as { value: ReactionPref; label: string }[]
+      })) as { value: APIReactionPref; label: string }[]
     },
     dislike: {
       label: m['vote.choices.negative.question'](),
       icon: 'thumb-down-fill',
-      choices: negativeReactions.map((value) => ({
+      choices: APINegativeReactions.map((value) => ({
         value,
         label: m[`vote.choices.negative.${value}`]()
-      })) as { value: ReactionPref; label: string }[]
+      })) as { value: APIReactionPref; label: string }[]
     }
   }
   const reaction = $derived(reactions[kind])
@@ -116,6 +120,7 @@
     bind:value={selection}
     choices={reaction.choices}
     multiple
+    {disabled}
     containerClass="flex flex-wrap gap-3"
     choiceClass="px-2 py-1 md:px-3 text-[14px]! rounded-full! font-medium! text-grey! has-checked:text-primary! border-1! m-0!"
     onChange={onSelectionChange}

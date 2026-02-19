@@ -1,74 +1,51 @@
+# Base compose with infrastructure services only (postgres, redis)
+# For full stack, use: docker compose -f docker-compose.yml -f app.compose.override.yml up
 services:
-  # backend:
-  #   env_file: .env
-  #   environment:
-  #     LOGDIR: /data
-  #     # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
-  #     COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
-  #     COMPARIA_REDIS_HOST: redis
-  #   build:
-  #     context: ..
-  #     dockerfile: docker/Dockerfile
-  #   image: languia:latest
-  #   ports:
-  #     - "8001:80"
-  #   volumes:
-  #     - ../data:/data
-  #     # Dev config - mount everything except .venv
-  #     - ../:/app
-  #     - /app/.venv  # Exclude .venv from host mount (use container's .venv)
-  #   command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
-  #   # depends_on:
-  #   #   - postgres
-
-  # frontend:
-  #   build:
-  #     context: ../frontend
-  #     dockerfile: ../docker/Dockerfile.front
-  #   # For runtime access in +page.server.ts via same hostname
-  #   network_mode: host
-  #   depends_on:
-  #     - backend
-  #   environment:
-  #     PUBLIC_API_URL: "http://127.0.0.1:8001"
-  #     PUBLIC_API_LOCAL_URL: "http://comparia:80"
-  #   # ports:
-  #   # - 3000:3000
-  #   # Dev config
-  #   volumes:
-  #     - ../frontend:/app
-  #     - /app/node_modules  # Exclude node_modules from host mount
-  #   command: ["npx", "vite", "dev", "--host", "--port", "3000"]
-
   postgres:
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: languia
+    # command:
+    #   - postgres
+    #   - -c
+    #   - logging_collector=on
+    #   - -c
+    #   - log_directory=/var/log/postgresql
+    #   - -c
+    #   - log_filename=postgresql-%Y-%m-%d.log
+    #   - -c
+    #   - log_statement=all
+    #   - -c
+    #   - log_duration=on
+    #   - -c
+    #   - log_line_prefix=%t [%p] %u@%d [%a]
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./data/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - pglogs:/var/log/postgresql # Nouveau volume pour les logs
     ports:
       - "127.0.0.1:5432:5432"
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "127.0.0.1:5050:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    depends_on:
-      - postgres
 
   redis:
     image: redis
     ports:
       - "127.0.0.1:6379:6379"
 
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@comparia.fr
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
 volumes:
   db-data:
-  pgadmin-data:
+  pglogs:

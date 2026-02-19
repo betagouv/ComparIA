@@ -9,6 +9,7 @@ venv
 
 # JS
 node_modules
+package-lock.json # using yarn.lock instead
 
 # Log
 *.log
@@ -36,6 +37,10 @@ checkpoints_flant5_3b
 # *.csv
 tests/state_of_the_union.txt
 
+#Postgresql backup files
+prd-backup.dump
+*.dump
+
 # Build
 build
 
@@ -48,6 +53,7 @@ docker/.env
 # Secrets
 model-info-file.json
 register-api-endpoint-file*.json
+google_creds.json
 docker/.env
 .env
 languia-*.json
@@ -58,6 +64,7 @@ litellm_config.yml
 results-output/
 venv.bak
 cache/
+.mypy_cache
 
 # Agentic stuffs
 CLAUDE.md

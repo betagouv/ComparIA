@@ -1,0 +1,358 @@
+{
+  "$defs": {
+    "Endpoint": {
+      "description": "API endpoint configuration for model access.\n\nSpecifies how to reach a model's API (OpenAI-compatible, custom, etc).\n\nAttributes:\n    api_type: API format (default \"openai\" for OpenAI-compatible APIs)\n    api_base: Base URL for the API endpoint\n    api_model_id: Model identifier used in API calls",
+      "properties": {
+        "api_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "openai",
+          "title": "Api Type"
+        },
+        "api_base": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Base"
+        },
+        "api_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Version"
+        },
+        "vertex_ai_location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vertex Ai Location"
+        },
+        "api_model_id": {
+          "title": "Api Model Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_model_id"
+      ],
+      "title": "Endpoint",
+      "type": "object"
+    },
+    "LLMDataRawBase": {
+      "description": "Individual LLM raw model definition (before enrichment).\n\nRaw LLM data loaded from `utils/models/models.json`.\nContains basic LLM information (name, params, licensing).\nGets enriched with license data, architecture info, and rankings to become `LLMDataRaw` class.",
+      "properties": {
+        "new": {
+          "default": false,
+          "description": "Whether this is a newly added LLM",
+          "title": "New",
+          "type": "boolean"
+        },
+        "status": {
+          "default": "enabled",
+          "description": "This LLM data status",
+          "enum": [
+            "archived",
+            "missing_data",
+            "disabled",
+            "enabled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique LLM identifier (you can choose it or use HF one)",
+          "title": "Id",
+          "type": "string"
+        },
+        "simple_name": {
+          "description": "Human-readable LLM name",
+          "title": "Simple Name",
+          "type": "string"
+        },
+        "license": {
+          "description": "License identifier (maps to `licenses.json` ids)",
+          "title": "License",
+          "type": "string"
+        },
+        "fully_open_source": {
+          "default": false,
+          "description": "Whether LLM weights are fully open/public",
+          "title": "Fully Open Source",
+          "type": "boolean"
+        },
+        "release_date": {
+          "description": "LLM release date in MM/YYYY format",
+          "pattern": "^[0-9]{02}/[0-9]{4}$",
+          "title": "Release Date",
+          "type": "string"
+        },
+        "arch": {
+          "description": "LLM architecture (maps to `archs.json` ids). Use `maybe-*` if information is not confirmed",
+          "title": "Arch",
+          "type": "string"
+        },
+        "params": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Total parameters in billions",
+          "title": "Params"
+        },
+        "active_params": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Active parameters in billions (only for MoE LLMs)",
+          "title": "Active Params"
+        },
+        "reasoning": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "hybrid",
+              "type": "string"
+            }
+          ],
+          "default": false,
+          "description": "Extended thinking capability",
+          "title": "Reasoning"
+        },
+        "quantization": {
+          "anyOf": [
+            {
+              "enum": [
+                "q4",
+                "q8"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Quantization scheme applied (q4, q8, or None for full precision)",
+          "title": "Quantization"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "LLM homepage or documentation URL",
+          "title": "Url"
+        },
+        "endpoint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Endpoint"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "API access configuration (None for unavailable LLMs)"
+        },
+        "pricey": {
+          "default": false,
+          "description": "Whether LLM has high API costs (triggers stricter rate limits)",
+          "title": "Pricey",
+          "type": "boolean"
+        },
+        "specific_portals": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "fr",
+                  "da"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Custom allow list of country portals on which the LLM is available",
+          "title": "Specific Portals"
+        },
+        "desc": {
+          "description": "Detailed LLM description",
+          "title": "Desc",
+          "type": "string"
+        },
+        "size_desc": {
+          "description": "Detailed description of LLM size",
+          "title": "Size Desc",
+          "type": "string"
+        },
+        "fyi": {
+          "description": "Additional notes for users",
+          "title": "Fyi",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "simple_name",
+        "license",
+        "release_date",
+        "arch",
+        "params",
+        "endpoint",
+        "desc",
+        "size_desc",
+        "fyi"
+      ],
+      "title": "LLMDataRawBase",
+      "type": "object"
+    },
+    "RawOrganisation": {
+      "properties": {
+        "name": {
+          "description": "Organisation's name",
+          "title": "Name",
+          "type": "string"
+        },
+        "icon_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`",
+          "title": "Icon Path"
+        },
+        "proprietary_license_desc": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "",
+          "description": "Description of the optional organisation's proprietary license",
+          "title": "Proprietary License Desc"
+        },
+        "proprietary_reuse": {
+          "default": false,
+          "description": "Whether LLMs can be reused/redistributed according to this proprietary license",
+          "title": "Proprietary Reuse",
+          "type": "boolean"
+        },
+        "proprietary_commercial_use": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether commercial use is permitted with this proprietary license",
+          "title": "Proprietary Commercial Use"
+        },
+        "proprietary_reuse_specificities": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "",
+          "description": "Additional reuse restrictions/notes",
+          "title": "Proprietary Reuse Specificities"
+        },
+        "proprietary_commercial_use_specificities": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "",
+          "description": "Additional commercial use restrictions/notes",
+          "title": "Proprietary Commercial Use Specificities"
+        },
+        "models": {
+          "description": "list of this organisation's LLMs",
+          "items": {
+            "$ref": "#/$defs/LLMDataRawBase"
+          },
+          "title": "Models",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "models"
+      ],
+      "title": "RawOrganisation",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/RawOrganisation"
+  },
+  "title": "RootModel[list[RawOrganisation]]",
+  "type": "array"
+}

@@ -1,44 +1,47 @@
 <script lang="ts">
   import { Button, Icon, Link } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
-  import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
-  import { arena } from '$lib/chatService.svelte'
+  import type { OnReactionFn } from '$lib/chatService.svelte'
+  import { arena, type ChatRound } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { GroupedMessages } from '.'
 
   let {
-    pending,
-    generating,
     disabled,
     onReactionChange,
     onRetry,
     onVote
   }: {
-    pending: boolean
-    generating: boolean
     disabled: boolean
     onReactionChange: OnReactionFn
     onRetry: () => void
     onVote: () => void
   } = $props()
 
-  const groupedMessages = $derived.by(() => {
-    const questionCount = Math.ceil(arena.chat.messages.length / 3)
-    const messages = arena.chat.messages.map((message, index) => ({
-      ...message,
-      index,
-      isLast: index >= (questionCount - 1) * 3,
-      // FIXME still needed ?
-      content: message.content.replace('src="/file', `src="${arena.chat.root}file`)
-    }))
-    // Group messages by exchange (1 user question, 2 bots answers)
-    return Array.from(new Array(questionCount), (_, i) => messages.slice(i * 3, i * 3 + 3)).map(
-      ([user, ...bots]) => ({ user, bots }) as GroupedChatMessages
-    )
+  const rounds = $derived.by<ChatRound[]>(() => {
+    const { a, b } = arena.chat
+    const base = a.messages.length ? 'a' : 'b'
+    const userMessages = arena.chat[base].messages.filter((m) => m.role === 'user')
+    const assistantMessages = {
+      a: a.messages.filter((m) => m.role === 'assistant'),
+      b: b.messages.filter((m) => m.role === 'assistant')
+    }
+    return userMessages.map((userMessage, i) => {
+      const isLast = i === userMessages.length - 1
+      const msgA = assistantMessages['a'][i]
+      const msgB = assistantMessages['b'][i]
+      return {
+        user: userMessage,
+        a: isLast && msgA ? { ...msgA, generating: a.status === 'generating' } : msgA,
+        b: isLast && msgB ? { ...msgB, generating: b.status === 'generating' } : msgB,
+        showMessages: isLast ? a.status !== 'error' && b.status !== 'error' : true,
+        index: i
+      }
+    })
   })
 
-  const errorString = $derived(arena.chat.messages.find((message) => message.error !== null)?.error)
+  const errorString = $derived(arena.chat.error)
 </script>
 
 <div
@@ -48,31 +51,31 @@
   aria-live="polite"
   class="pb-7 flex grow flex-col"
 >
-  {#each groupedMessages as { user, bots }, i (i)}
-    <GroupedMessages {user} {bots} {generating} {disabled} {onReactionChange} />
+  {#each rounds as round (round.index)}
+    <GroupedMessages {round} {disabled} {onReactionChange} />
   {/each}
 
-  {#if pending}
+  {#if arena.chat.status === 'pending'}
     <Pending message={m['chatbot.loading']()} class="m-auto" {@attach scrollTo} />
   {/if}
 
   {#if errorString}
-    <div class="fr-container">
-      <div class="cg-border gap-4 bg-white p-4 pe-13 pb-7 lg:max-w-1/2 m-auto flex">
+    <div class={['fr-container', { 'mt-10': rounds.length < 2 }]}>
+      <div class="cg-border pe-13 lg:max-w-1/2 gap-4 bg-white p-4 pb-7 m-auto flex">
         <Icon icon="warning-fill" class="text-error" />
         <div>
           {#if errorString === 'Context too long.'}
             <h6 class="mb-2!">{m['chatbot.errors.tooLong.title']()}</h6>
             <p>
               {m['chatbot.errors.tooLong.message']()}&nbsp;{m[
-                `chatbot.errors.tooLong.${groupedMessages.length > 1 ? 'vote' : 'retry'}`
+                `chatbot.errors.tooLong.${rounds.length > 1 ? 'vote' : 'retry'}`
               ]()}
             </p>
           {:else}
             <h6 class="mb-2!">{m['chatbot.errors.other.title']()}</h6>
             <p>
               {m['chatbot.errors.other.message']()}<br />
-              {m['chatbot.errors.other.retry']()}{#if groupedMessages.length > 1}&nbsp;{m[
+              {m['chatbot.errors.other.retry']()}{#if rounds.length > 1}&nbsp;{m[
                   'chatbot.errors.other.vote'
                 ]()}{/if}.
               <span class="hidden">{errorString}</span>
@@ -100,7 +103,7 @@
               />
             {/if}
 
-            {#if groupedMessages.length > 1}
+            {#if rounds.length > 1}
               <Button
                 icon="checkbox-fill"
                 iconPos="right"

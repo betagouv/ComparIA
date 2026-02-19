@@ -3,45 +3,39 @@
   import { Icon } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import Pending from '$components/Pending.svelte'
-  import type { ChatMessage, OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
+  import type { APIReactionData, AssistantMessage, OnReactionFn } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { LikeDislike, LikePanel } from '.'
 
   export type MessageBotProps = {
-    message: ChatMessage<'assistant'>
-    generating?: boolean
+    message: AssistantMessage
+    index: number
     disabled?: boolean
     onReactionChange: OnReactionFn
   }
 
-  let {
-    message,
-    generating = false,
-    disabled = false,
-    onReactionChange
-  }: MessageBotProps = $props()
+  let { message, index, disabled = false, onReactionChange }: MessageBotProps = $props()
 
   const bot = message.metadata.bot
-  const reaction = $state<{
-    liked: boolean | null
-    prefs: ReactionPref[]
-    comment: string
-  }>({
+  const reaction = $state<APIReactionData>({
+    index: index * 2 + 1,
+    bot: message.metadata.bot,
     liked: null,
     prefs: [],
-    comment: ''
+    comment: '',
+    value: message.content
   })
 
   function onLikedChanged() {
     reaction.prefs = []
-    dispatchOnReactionChange('like')
+    // FIXME reset comment?
+    dispatchOnReactionChange()
   }
 
-  function dispatchOnReactionChange(kind: 'like' | 'comment') {
-    onReactionChange(kind, {
+  function dispatchOnReactionChange() {
+    onReactionChange({
       ...reaction,
-      index: message.index,
       value: message.content
     })
   }
@@ -57,7 +51,7 @@
         <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
-      {#if message.reasoning != ''}
+      {#if message.reasoning.trim() !== ''}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
             <h3 class="fr-accordion__title ms-1!">
@@ -65,10 +59,10 @@
                 type="button"
                 class="fr-accordion__btn text-primary! bg-transparent!"
                 aria-expanded="true"
-                aria-controls="reasoning-{message.metadata.bot}"
+                aria-controls="reasoning-{message.metadata.generation_id}"
               >
                 <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
-                {#if message.content === '' && generating}
+                {#if message.content === '' && message.generating}
                   {m['chatbot.reasoning.inProgress']()}
                 {:else}
                   {m['chatbot.reasoning.finished']()}
@@ -76,7 +70,7 @@
               </button>
             </h3>
             <div
-              id="reasoning-{message.metadata.bot}"
+              id="reasoning-{message.metadata.generation_id}"
               class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
             >
               <div class="px-5 py-4">
@@ -89,7 +83,7 @@
 
       <Markdown message={message.content} chatbot />
 
-      {#if generating && message.isLast}
+      {#if message.generating}
         <Pending message={m['chatbot.loading']()} />
       {/if}
     </div>
@@ -100,7 +94,7 @@
       <div class="gap-2 ms-auto flex">
         <LikeDislike
           bind:liked={reaction.liked}
-          disabled={generating || disabled}
+          disabled={message.generating || disabled}
           onChange={onLikedChanged}
         />
       </div>
@@ -115,8 +109,8 @@
         show={true}
         bind:selection={reaction.prefs}
         bind:comment={reaction.comment}
-        onSelectionChange={() => dispatchOnReactionChange('like')}
-        onCommentChange={() => dispatchOnReactionChange('comment')}
+        onSelectionChange={dispatchOnReactionChange}
+        onCommentChange={dispatchOnReactionChange}
         model={bot.toUpperCase()}
       />
     </div>
