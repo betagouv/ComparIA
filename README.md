@@ -190,16 +190,33 @@ Compar:IA is a digital common. Whether you can offer funding, code, translations
 
 ## Roadmap
 
-🟢 **Now**
-- Consolidating the codebase and streamlining the product
-- Expanding to new languages and professional sectors
+### 🟢 In Progress
+- **EcoLogits update** [#253](https://github.com/betagouv/ComparIA/pull/253) *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
+- **Gradio → FastAPI migration** *(🇫🇷 Ministry of Culture, 🇫🇷 DINUM, 🇪🇺 ALT-EDIC)*
+- **Language/platform-specific model support** *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
+- **Dataset publication pipeline** configurable per language/platform, with customizable publication delays and anonymization pipelines *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
 
-🔮 **Next**
+### 🔮 Up Next
 - Web search and document upload
-- Advanced analytics and leaderboard improvements
-- Optional user accounts and socio-demographic data collection
+- Authentication
+- Style control [#273](https://github.com/betagouv/ComparIA/pull/273)
+- Ranking consolidation and internationalization
+- Message history
+- Easier deployment and streamlined onboarding
+- Improved anonymization pipeline
+- Live use-case mapping
 
-👉 **[Technical roadmap on GitHub](https://github.com/orgs/betagouv/projects/160)**
+### ⛵ Shipped
+- Dataset publishing pipeline v1 *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- Leaderboard v1 *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture, in collaboration with 🇫🇷 PEReN)*
+- Archived models *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- Blog section *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- Internationalization foundations *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- compar:IA v1 *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+
+---
+
+👉 **[Full technical roadmap on GitHub](https://github.com/orgs/betagouv/projects/160)**
 
 ---
 
