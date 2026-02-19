@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None
     SENTRY_DSN: str | None = None
-    SENTRY_ENV: str = "dev"
+    SENTRY_ENVIRONMENT: str = "dev"
     SENTRY_SAMPLE_RATE: float = 0.2
     OPENROUTER_API_KEY: str | None = None
     GOOGLE_APPLICATION_CREDENTIALS: str | None = None
