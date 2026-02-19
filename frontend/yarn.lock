@@ -2310,10 +2310,10 @@ detect-libc@^2.0.3:
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
   integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
 
-devalue@^5.6.2:
-  version "5.6.2"
-  resolved "https://registry.yarnpkg.com/devalue/-/devalue-5.6.2.tgz#931e2bb1cc2b299e0f0fb9e4e5be8ebf521a25b8"
-  integrity sha512-nPRkjWzzDQlsejL1WVifk5rvcFi/y1onBRxjaFMjZeR9mFpqu2gmAZ9xUB9/IEanEP/vBtGeGganC/GO1fmufg==
+devalue@^5.6.2, devalue@^5.6.3:
+  version "5.6.3"
+  resolved "https://registry.yarnpkg.com/devalue/-/devalue-5.6.3.tgz#fee7b50bf072f4a4cdf18d1f27de3ce92131f699"
+  integrity sha512-nc7XjUU/2Lb+SvEFVGcWLiKkzfw8+qHI7zn8WYXKkLMgfGSHbgCEaR6bJpev8Cm6Rmrb19Gfd/tZvGqx9is3wg==
 
 dom-accessibility-api@^0.5.9:
   version "0.5.16"
@@ -2532,10 +2532,10 @@ esquery@^1.5.0:
   dependencies:
     estraverse "^5.1.0"
 
-esrap@^2.2.1:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/esrap/-/esrap-2.2.2.tgz#437163734f470f6191580652388a4dc5e09643f6"
-  integrity sha512-zA6497ha+qKvoWIK+WM9NAh5ni17sKZKhbS5B3PoYbBvaYHZWoS33zmFybmyqpn07RLUxSmn+RCls2/XF+d0oQ==
+esrap@^2.2.2:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/esrap/-/esrap-2.2.3.tgz#cbc5a6aad5349697b78ef7af62704e733a50d2c1"
+  integrity sha512-8fOS+GIGCQZl/ZIlhl59htOlms6U8NvX6ZYgYHpRU/b6tVSh3uHkOHZikl3D4cMbYM0JlpBe+p/BkZEi8J9XIQ==
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
@@ -3668,22 +3668,23 @@ svelte-eslint-parser@^1.4.0:
     postcss-scss "^4.0.9"
     postcss-selector-parser "^7.0.0"
 
-svelte@^5.48.0:
-  version "5.48.2"
-  resolved "https://registry.yarnpkg.com/svelte/-/svelte-5.48.2.tgz#18bb2513db79425acb2aa16043eec0e9cd3619ce"
-  integrity sha512-VPWD+UyoSFZ7Nxix5K/F8yWiKWOiROkLlWYXOZReE0TUycw+58YWB3D6lAKT+57xmN99wRX4H3oZmw0NPy7y3Q==
+svelte@^5.51.5:
+  version "5.51.5"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-5.51.5.tgz#42d03a54d848783df769a88752ae6cd7e1b7d037"
+  integrity sha512-/4tR5cLsWOgH3wnNRXnFoWaJlwPGbJanZPSKSD6nHM2y01dvXeEF4Nx7jevoZ+UpJpkIHh6mY2tqDncuI4GHng==
   dependencies:
     "@jridgewell/remapping" "^2.3.4"
     "@jridgewell/sourcemap-codec" "^1.5.0"
     "@sveltejs/acorn-typescript" "^1.0.5"
     "@types/estree" "^1.0.5"
+    "@types/trusted-types" "^2.0.7"
     acorn "^8.12.1"
     aria-query "^5.3.1"
     axobject-query "^4.1.0"
     clsx "^2.1.1"
-    devalue "^5.6.2"
+    devalue "^5.6.3"
     esm-env "^1.2.1"
-    esrap "^2.2.1"
+    esrap "^2.2.2"
     is-reference "^3.0.3"
     locate-character "^3.0.0"
     magic-string "^0.30.11"
