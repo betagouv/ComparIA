@@ -109,20 +109,36 @@ export interface VoteData {
 
 // REVEAL
 
-type DurationUnit = 'j' | 'h' | 'min' | 's' | 'ms'
-
-type CO2Unit = 'g' | 'mg'
-
 type EnergyUnit = 'Wh' | 'mWh'
 
 interface APIConsoData {
   tokens: number
   energy: { value: number; unit: EnergyUnit }
-  co2: { value: number; unit: CO2Unit }
-  streaming: { value: number; unit: DurationUnit }
-  lightbulb: { value: number; unit: DurationUnit }
-  // deprecated: kept for backward compatibility
+  co2: number
   kwh: number
+}
+// Equivalence types for scaled impact comparisons
+export type EquivalenceType =
+  | 'country_electricity'
+  | 'city_power'
+  | 'european_homes'
+  | 'nuclear_reactors'
+  | 'solar_farm_area'
+  | 'wind_turbines'
+  | 'car_earth_trips'
+  | 'paris_nyc_flights'
+
+// Single equivalence with values for both models
+export interface APIEquivalence {
+  type: EquivalenceType
+  model_a_value: number
+  model_b_value: number
+}
+
+export interface Equivalence {
+  type: EquivalenceType
+  modelAValue: number
+  modelBValue: number
 }
 
 interface APIRevealModelData {
@@ -135,16 +151,20 @@ export interface APIRevealData {
   chosen_llm: BotChoice
   a: APIRevealModelData
   b: APIRevealModelData
+  // All meaningful scaled equivalences (frontend can cycle through them)
+  equivalences: APIEquivalence[]
 }
 
 interface RevealModelData extends APIConsoData {
   model: BotModel
   pos: Bot
 }
+
 export interface RevealData {
   selected: BotChoice
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
+  equivalences: Equivalence[]
 }
 
 // DATA
@@ -350,7 +370,12 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
       pos,
       ...data[pos].conso
     })),
-    shareB64Data: data.b64
+    shareB64Data: data.b64,
+    equivalences: data.equivalences.map((eq) => ({
+      type: eq.type,
+      modelAValue: eq.model_a_value,
+      modelBValue: eq.model_b_value
+    }))
   }
 }
 

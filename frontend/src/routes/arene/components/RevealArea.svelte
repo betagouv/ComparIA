@@ -2,19 +2,29 @@
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Link, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import type { RevealData } from '$lib/chatService.svelte'
+  import type { EquivalenceType, RevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { sanitize } from '$lib/utils/commons'
   import { MiniCard } from '.'
 
   let { data }: { data: RevealData } = $props()
 
   const locale = getLocale()
 
-  const { selected, modelsData, shareB64Data } = data
+  const { selected, modelsData, shareB64Data, equivalences } = data
+
+  // Current equivalence index (for cycling through options)
+  let currentEquivIndex = $state(0)
+  const currentEquiv = $derived(equivalences[currentEquivIndex])
+  const equivalenceType = $derived(currentEquiv.type)
+  const hasMultipleEquivalences = equivalences.length > 1
+
+  function nextEquivalence() {
+    currentEquivIndex = (currentEquivIndex + 1) % equivalences.length
+  }
 
   let shareInput: HTMLInputElement
 
@@ -23,11 +33,196 @@
     navigator.clipboard.writeText(shareInput.value)
     useToast(m['actions.copyLink.done'](), 2000)
   }
+
+  // Locale-specific reference data for country/city equivalences
+  const localeReferences: Record<
+    string,
+    { country: string; countryTwh: number; city: string; cityGwhDay: number }
+  > = {
+    fr: { country: 'france', countryTwh: 470, city: 'paris', cityGwhDay: 40 },
+    en: { country: 'germany', countryTwh: 500, city: 'amsterdam', cityGwhDay: 10 },
+    da: { country: 'denmark', countryTwh: 35, city: 'copenhagen', cityGwhDay: 5 },
+    sv: { country: 'sweden', countryTwh: 130, city: 'stockholm', cityGwhDay: 8 }
+  }
+
+  const refs = localeReferences[locale] || localeReferences['en']
+
+  // Icon mapping for each equivalence type
+  function getEquivalenceIcon(type: EquivalenceType): string {
+    const icons: Record<EquivalenceType, string> = {
+      country_electricity: 'flashlight-fill',
+      city_power: 'building-2-fill',
+      european_homes: 'home-4-fill',
+      nuclear_reactors: 'settings-5-fill',
+      solar_farm_area: 'sun-fill',
+      wind_turbines: 'windy-fill',
+      car_earth_trips: 'car-fill',
+      paris_nyc_flights: 'plane-fill'
+    }
+    return icons[type]
+  }
+
+  function getEquivalenceIconClass(type: EquivalenceType): string {
+    const classes: Record<EquivalenceType, string> = {
+      country_electricity: 'text-yellow',
+      city_power: 'text-info',
+      european_homes: 'text-success',
+      nuclear_reactors: 'text-warning',
+      solar_farm_area: 'text-yellow',
+      wind_turbines: 'text-info',
+      car_earth_trips: 'text-error',
+      paris_nyc_flights: 'text-error'
+    }
+    return classes[type]
+  }
+
+  // Calculate display value and unit based on equivalence type and locale
+  function formatEquivalence(
+    rawValue: number,
+    type: EquivalenceType
+  ): { value: string; unit: string } {
+    let value: number
+    let unit: string
+
+    switch (type) {
+      case 'country_electricity':
+        // rawValue is TWh, divide by country's annual TWh to get fraction of year
+        const yearFraction = rawValue / refs.countryTwh
+        if (yearFraction >= 1) {
+          value = yearFraction
+          unit = m['reveal.equivalent.scaled.units.years']()
+        } else if (yearFraction * 12 >= 1) {
+          value = yearFraction * 12
+          unit = m['reveal.equivalent.scaled.units.months']()
+        } else {
+          value = yearFraction * 365
+          unit = m['reveal.equivalent.scaled.units.days']()
+        }
+        break
+
+      case 'city_power':
+        // rawValue is GWh/day, divide by city's daily GWh
+        const days = rawValue / refs.cityGwhDay
+        if (days >= 30) {
+          value = days / 30
+          unit = m['reveal.equivalent.scaled.units.months']()
+        } else if (days >= 7) {
+          value = days / 7
+          unit = m['reveal.equivalent.scaled.units.weeks']()
+        } else {
+          value = days
+          unit = m['reveal.equivalent.scaled.units.days']()
+        }
+        break
+
+      case 'european_homes':
+        // rawValue is number of homes
+        // Only use "million" for very large numbers, show raw numbers up to 999,999
+        if (rawValue >= 1_000_000) {
+          value = rawValue / 1_000_000
+          unit = m['reveal.equivalent.scaled.units.millionHomes']()
+        } else {
+          value = rawValue
+          unit = m['reveal.equivalent.scaled.units.homes']()
+        }
+        break
+
+      case 'nuclear_reactors':
+        value = rawValue
+        unit = m['reveal.equivalent.scaled.units.reactors']()
+        break
+
+      case 'solar_farm_area':
+        value = rawValue
+        unit = 'km²'
+        break
+
+      case 'wind_turbines':
+        // Only use "thousand" for very large numbers
+        if (rawValue >= 1_000_000) {
+          value = rawValue / 1_000_000
+          unit = m['reveal.equivalent.scaled.units.millionTurbines']()
+        } else {
+          value = rawValue
+          unit = m['reveal.equivalent.scaled.units.turbines']()
+        }
+        break
+
+      case 'car_earth_trips':
+        // Only use "million" for very large numbers
+        if (rawValue >= 1_000_000) {
+          value = rawValue / 1_000_000
+          unit = m['reveal.equivalent.scaled.units.millionTrips']()
+        } else {
+          value = rawValue
+          unit = m['reveal.equivalent.scaled.units.trips']()
+        }
+        break
+
+      case 'paris_nyc_flights':
+        // Only use "million" for very large numbers
+        if (rawValue >= 1_000_000) {
+          value = rawValue / 1_000_000
+          unit = m['reveal.equivalent.scaled.units.millionFlights']()
+        } else {
+          value = rawValue
+          unit = m['reveal.equivalent.scaled.units.flights']()
+        }
+        break
+
+      default:
+        value = rawValue
+        unit = ''
+    }
+
+    // Format value with appropriate precision
+    let formattedValue: string
+    if (value >= 100) {
+      formattedValue = Math.round(value).toLocaleString(locale)
+    } else if (value >= 10) {
+      formattedValue = value.toFixed(1)
+    } else if (value >= 1) {
+      formattedValue = value.toFixed(2)
+    } else if (value >= 0.01) {
+      formattedValue = value.toFixed(2)
+    } else if (value > 0) {
+      // For very small values, show "< 0.01" instead of "0.00"
+      formattedValue = '< 0.01'
+    } else {
+      formattedValue = '0'
+    }
+
+    return { value: formattedValue, unit }
+  }
+
+  // Get reference name for display (country or city name)
+  function getReferenceName(type: EquivalenceType): string {
+    if (type === 'country_electricity') {
+      return m[`reveal.equivalent.scaled.references.${refs.country}`]()
+    } else if (type === 'city_power') {
+      return m[`reveal.equivalent.scaled.references.${refs.city}`]()
+    }
+    return ''
+  }
+
+  // Check if equivalence type is CO2-based (vs energy-based)
+  function isCo2Based(type: EquivalenceType): boolean {
+    return type === 'car_earth_trips' || type === 'paris_nyc_flights'
+  }
+
+  // Get the appropriate connector based on equivalence type (derived since type can change)
+  const connector = $derived(
+    isCo2Based(equivalenceType)
+      ? m['reveal.equivalent.scaled.connectorCo2']()
+      : m['reveal.equivalent.scaled.connectorEnergy']()
+  )
 </script>
 
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid">
-    {#each modelsData as { model, pos, energy, co2, tokens, lightbulb, streaming } (pos)}
+    {#each modelsData as { model, pos, energy, energyUnit, tokens } (pos)}
+      {@const equivalenceValue = pos === 'a' ? currentEquiv.modelAValue : currentEquiv.modelBValue}
+      {@const formatted = formatEquivalence(equivalenceValue, equivalenceType)}
       {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
@@ -119,42 +314,32 @@
           </div>
         </div>
 
-        <h6 class="mt-9! mb-5! text-base! md:mt-14!">{m['reveal.equivalent.title']()}</h6>
-        <div class="gap-2 grid grid-cols-3">
-          <MiniCard
-            id="co2-{pos}"
-            value={co2.value.toFixed(co2.value < 2 ? 2 : 0)}
-            units={co2.unit}
-            desc={m['reveal.equivalent.co2.label']()}
-            icon="i-ri-cloudy-2-fill"
-            iconClass="text-[--grey-975-75-active]"
-            tooltip={m['reveal.equivalent.co2.tooltip']()}
-          />
-
-          <MiniCard
-            id="ampoule-{pos}"
-            value={lightbulb.value}
-            units={lightbulb.unit}
-            desc={m['reveal.equivalent.lightbulb.label']()}
-            icon="i-ri-lightbulb-fill"
-            iconClass="text-yellow"
-            tooltip={m['reveal.equivalent.lightbulb.tooltip']()}
-          />
-
-          <MiniCard
-            id="videos-{pos}"
-            value={streaming.value}
-            units={streaming.unit}
-            desc={m['reveal.equivalent.streaming.label']()}
-            icon="i-ri-youtube-fill"
-            iconClass="text-error"
-            tooltip={m['reveal.equivalent.streaming.tooltip']({
-              linkProps: externalLinkProps(
-                'https://impactco2.fr/outils/usagenumerique/streamingvideo'
-              )
-            })}
-          />
+        <div class="mt-9! md:mt-14! mb-5! gap-2 flex items-center">
+          <h6 class="text-base! mb-0!">{m['reveal.equivalent.title']()}</h6>
+          {#if hasMultipleEquivalences}
+            <button
+              type="button"
+              onclick={nextEquivalence}
+              class="fr-btn--tertiary-no-outline fr-btn--sm text-grey hover:text-primary p-1!"
+              title={m['reveal.equivalent.scaled.refresh']()}
+              aria-label={m['reveal.equivalent.scaled.refresh']()}
+            >
+              <span class="fr-icon-refresh-line" aria-hidden="true"></span>
+            </button>
+          {/if}
         </div>
+        <p class="text-sm text-grey mb-4!">{m['reveal.equivalent.scaled.premise']()} {connector}</p>
+        <MiniCard
+          id="scaled-{pos}"
+          value={formatted.value}
+          units={formatted.unit}
+          desc={m[`reveal.equivalent.scaled.${equivalenceType}.label`]({
+            reference: getReferenceName(equivalenceType)
+          })}
+          icon={getEquivalenceIcon(equivalenceType)}
+          iconClass={getEquivalenceIconClass(equivalenceType)}
+          tooltip={m[`reveal.equivalent.scaled.${equivalenceType}.tooltip`]()}
+        />
 
         <div class="mt-7 text-center">
           <Button

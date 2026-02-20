@@ -1,20 +1,16 @@
 """
-Environmental impact calculations and reveal screen data generation.
-
-This module computes the ecological impact of LLM inference using the ecologits library,
-converting technical metrics (energy, CO2) into user-friendly comparisons (LED lightbulbs, video streaming).
+Reveal screen data generation.
 
 Functions:
-- convert_range_to_value: Normalize impact ranges to single values
-- calculate_lightbulb_consumption: Energy equivalent in LED light hours
-- calculate_streaming_hours: CO2 equivalent in video streaming hours
+- get_chosen_llm: Guess the chosen LLM
+- get_equivalence_seed: Generate deterministic seed from conversation IDs
 - get_reveal_data: Main function generating reveal screen data
 """
 
 import logging
 
 from backend.arena.models import BotChoice, BotPos, Conversations, RevealData
-from backend.llms.utils import get_llm_consumption
+from backend.llms.utils import get_all_meaningful_equivalences, get_llm_consumption
 
 logger = logging.getLogger("languia")
 
@@ -58,16 +54,34 @@ def get_chosen_llm(conversations: Conversations) -> BotChoice | None:
         return "both_equal"
 
 
+def get_equivalence_seed(conv_a_id: str, conv_b_id: str) -> int:
+    """
+    Generate a deterministic seed from conversation IDs.
+
+    This ensures the same equivalence type is shown for both models
+    in the same conversation, while being random across different conversations.
+
+    Args:
+        conv_a_id: Conversation ID for model A
+        conv_b_id: Conversation ID for model B
+
+    Returns:
+        int: A 32-bit seed for random selection
+    """
+    combined = conv_a_id + conv_b_id
+    return hash(combined) % (2**32)
+
+
 def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> RevealData:
     """
     Build reveal screen data with model comparison and environmental impact metrics.
 
     Calculates environmental impact (energy, CO2 emissions) and creates data for the
     reveal screen shown after voting. Includes model metadata, token counts, and
-    user-friendly comparisons (LED lightbulb hours, video streaming equivalents).
+    scaled equivalence (e.g., "if 1 billion people used this daily for a year").
 
     Args:
-        conversations: Conversation object for model B with messages and model_name
+        conversations: Conversation object for model B with messages, model_name, and conv_id
         chosen_llm: User's choice ("a", "b", or "both_equal")
 
     Returns:
@@ -76,12 +90,15 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
             - chosen_llm: User's model preference ("a", "b" or None)
             - a: llm 'a' data (see `LLMData`) and conso (see `Consumption`)
             - b: llm 'b' data (see `LLMData`) and conso (see `Consumption`)
+            - equivalences: all meaningful scaled consumptions equivalences
 
     Process:
         1. Compute total output tokens for each conversation
         2. Compute `Consumption` data for each conversation
-        3. Encode summary to base64 for efficient storage
-        4. Return comprehensive metrics for reveal screen display
+        3. Select random equivalence type (seeded by conversation IDs for consistency)
+        4. Calculate scaled equivalence values for both models
+        5. Encode summary to base64 for efficient storage
+        6. Return comprehensive metrics for reveal screen display
     """
     import base64
     import json
@@ -100,6 +117,11 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
     tokens_b = conv_b.tokens
     conso_b = get_llm_consumption(conv_b.llm, tokens_b)
     logger.debug(f"[REVEAL] output_tokens (llm 'b'): {tokens_b}")
+
+    # Get all meaningful equivalences for both models
+    # Uses conversation IDs as seed for consistent shuffling across page refreshes
+    seed = get_equivalence_seed(conv_a.conv_id, conv_b.conv_id)
+    equivalences = get_all_meaningful_equivalences(conso_a, conso_b, seed)
 
     # Encode summary as base64 for safe storage/transmission (share feature)
     jsonstring = json.dumps(
@@ -120,4 +142,7 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
         "chosen_llm": chosen_llm,
         "a": {"llm": conv_a.llm, "conso": conso_a},
         "b": {"llm": conv_b.llm, "conso": conso_b},
+        # All meaningful scaled equivalences (frontend can cycle through them)
+        # Each contains: type, model_a_value, model_b_value
+        "equivalences": equivalences,
     }

@@ -341,3 +341,4 @@ class RevealData(TypedDict):
     chosen_llm: BotChoice
     a: RevealModelData
     b: RevealModelData
+    equivalences: list[dict]
