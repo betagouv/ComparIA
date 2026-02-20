@@ -109,14 +109,20 @@ export interface VoteData {
 
 // REVEAL
 
-type DurationUnit = 'j' | 'h' | 'min' | 's'
+type DurationUnit = 'j' | 'h' | 'min' | 's' | 'ms'
+
+type CO2Unit = 'g' | 'mg'
+
+type EnergyUnit = 'Wh' | 'mWh'
 
 interface APIConsoData {
-  kwh: number
-  co2: number
   tokens: number
+  energy: { value: number; unit: EnergyUnit }
+  co2: { value: number; unit: CO2Unit }
   streaming: { value: number; unit: DurationUnit }
   lightbulb: { value: number; unit: DurationUnit }
+  // deprecated: kept for backward compatibility
+  kwh: number
 }
 
 interface APIRevealModelData {
@@ -342,8 +348,7 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
     modelsData: (['a', 'b'] as const).map((pos) => ({
       model: parseModel(data[pos].llm),
       pos,
-      ...data[pos].conso,
-      co2: data[pos].conso.co2 * 1000 // FIXME *1000?
+      ...data[pos].conso
     })),
     shareB64Data: data.b64
   }

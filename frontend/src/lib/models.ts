@@ -78,7 +78,7 @@ function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
 export function parseModel(model: APIBotModel) {
   return {
     ...model,
-    consumption_wh: Math.round(model.wh_per_million_token / 1000),
+    consumption_wh: Math.round(model.wh_per_million_token),
     desc: m[`generated.models.${model.simple_name}.desc`](),
     sizeDesc: m[`generated.models.${model.simple_name}.size_desc`](),
     fyi: m[`generated.models.${model.simple_name}.fyi`](),
