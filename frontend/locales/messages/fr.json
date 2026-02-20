@@ -1959,101 +1959,51 @@
     },
     "reveal": {
         "equivalent": {
-            "title": "Impact à grande échelle",
-            "scaled": {
-                "premise": "Si tous les Français utilisaient ce prompt chaque jour pendant un an,",
-                "connectorEnergy": "cela nécessiterait autant d'énergie que :",
-                "connectorCo2": "cela émettrait autant de CO₂ que :",
-                "connectorAbsorption": "pour absorber ce CO₂, il faudrait :",
-                "refresh": "Voir une autre équivalence",
-                "references": {
-                    "france": "la France",
-                    "germany": "l'Allemagne",
-                    "denmark": "le Danemark",
-                    "sweden": "la Suède",
-                    "paris": "Paris",
-                    "amsterdam": "Amsterdam",
-                    "copenhagen": "Copenhague",
-                    "stockholm": "Stockholm"
+            "co2": {
+                "label": "CO<sub>2</sub> émis",
+                "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée."
+            },
+            "desc": "Si tous les Français qui utilisent l’IA générative (48%) avaient eu cette discussion, cela représenterait :",
+            "scales": {
+                "arctic_sea_ice_melt": {
+                    "tooltip": "Basé sur une relation observée entre émissions cumulées et perte de surface de banquise arctique en septembre. (Source <a {linkProps}>Science</a>)",
+                    "unit": "Banquise arctique fondue"
                 },
-                "units": {
-                    "years": "ans",
-                    "months": "mois",
-                    "weeks": "semaines",
-                    "days": "jours",
-                    "homes": "foyers",
-                    "thousandHomes": "milliers de foyers",
-                    "millionHomes": "millions de foyers",
-                    "reactors": "réacteurs",
-                    "turbines": "éoliennes",
-                    "thousandTurbines": "milliers d'éoliennes",
-                    "millionTurbines": "millions d'éoliennes",
-                    "trips": "tours",
-                    "thousandTrips": "milliers de tours",
-                    "millionTrips": "millions de tours",
-                    "flights": "vols",
-                    "thousandFlights": "milliers de vols",
-                    "millionFlights": "millions de vols",
-                    "hectares": "hectares",
-                    "thousandHectares": "milliers d'hectares",
-                    "millionHectares": "millions d'hectares",
-                    "trees": "arbres",
-                    "millionTrees": "millions d'arbres",
-                    "billionTrees": "milliards d'arbres",
-                    "people": "Français",
-                    "millionPeople": "millions de Français",
-                    "journeys": "trajets",
-                    "millionJourneys": "millions de trajets"
+                "baguette_production": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de la production de baguettes traditions. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Baguettes produites"
                 },
-                "country_electricity": {
-                    "label": "de l'électricité de {reference}",
-                    "tooltip": "Équivalent à la fraction de la consommation électrique annuelle de ce pays"
+                "mango_import": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de la production à la livraison de mangues importées en avion. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Mangues importées"
                 },
-                "city_power": {
-                    "label": "pour alimenter {reference}",
-                    "tooltip": "Durée nécessaire pour alimenter cette ville avec l'énergie équivalente"
+                "one_year_tree_absortion": {
+                    "tooltip": "Estimation basée sur une moyenne : un arbre mature absorbe ~22 kg CO₂/an (≈48 lb). Le résultat est un ordre de grandeur : cela varie selon l’espèce, l’âge, le climat et le sol. (Source <a {linkProps}>USDA</a>)",
+                    "unit": "Arbres pour absorber le CO2 pendant 1 an"
                 },
-                "european_homes": {
-                    "label": "foyers européens alimentés",
-                    "tooltip": "Nombre de foyers européens pouvant être alimentés pendant un an (moy. 3 500 kWh/an)"
+                "package_delivery": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de livraisons à domicile de colis de 1kg. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Livraisons de colis"
                 },
-                "nuclear_reactors": {
-                    "label": "réacteurs nucléaires nécessaires",
-                    "tooltip": "Nombre de réacteurs nucléaires de 1 GW nécessaires pour produire cette énergie (à 90% de disponibilité)"
-                },
-                "solar_farm_area": {
-                    "label": "de panneaux solaires",
-                    "tooltip": "Surface de panneaux solaires nécessaire pour produire cette énergie annuellement en Europe"
-                },
-                "wind_turbines": {
-                    "label": "éoliennes offshore",
-                    "tooltip": "Nombre d'éoliennes offshore de 10 MW nécessaires (à 40% de facteur de charge)"
-                },
-                "car_earth_trips": {
-                    "label": "tours de la Terre en voiture",
-                    "tooltip": "Émissions de CO₂ équivalentes à parcourir la Terre en voiture essence"
+                "paris_berlin_tgv": {
+                    "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris-Berlin en TGV. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "A/R Paris - Berlin en train"
                 },
                 "paris_nyc_flights": {
-                    "label": "allers-retours Paris-NYC",
-                    "tooltip": "Émissions de CO₂ équivalentes à des vols Paris-New York"
+                    "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris New York en avion long courrier. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "A/R Paris - NYC en avion"
                 },
-                "forest_absorption": {
-                    "label": "de forêt absorbant le CO₂ pendant un an",
-                    "tooltip": "Surface de forêt tempérée mature nécessaire pour absorber ces émissions en un an (~8 tonnes CO₂/ha/an)"
+                "pizza_production": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de la production de pizzas quatres fromages. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Pizzas produites"
                 },
-                "trees_planted": {
-                    "label": "poussant pendant 10 ans",
-                    "tooltip": "Nombre d'arbres qui devraient pousser pendant 10 ans pour absorber ces émissions (~15 kg CO₂/arbre/an)"
-                },
-                "carbon_budget": {
-                    "label": "— empreinte carbone annuelle",
-                    "tooltip": "Équivalent à l'empreinte carbone annuelle complète de ce nombre de Français (~9 tonnes/personne/an)"
-                },
-                "tgv_paris_lyon": {
-                    "label": "trajets TGV Paris-Lyon",
-                    "tooltip": "Émissions de CO₂ équivalentes à des trajets en TGV Paris-Lyon (~4 kg CO₂ par passager)"
+                "pool_filing": {
+                    "tooltip": "Donnée calculée selon l’impact carbone d’un remplissage d’une piscine d’un particulier 8 x 4m (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Remplissages de piscine"
                 }
-            }
+            },
+            "title": "Équivalences en tonnes de CO2",
+            "title_tooltip": "Les équivalences sont des projections pour illustrer l'effet de masse, nous avons multiplié l'impact de votre discussion avec ce modèle à l'ensemble des utilisateurs d'IA en France : 48% des Français déclarent aujourd’hui avoir recours à l’IA générative, jamais une technologie numérique n'avait été adoptée aussi vite.(source <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
         },
         "feedback": {
             "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
