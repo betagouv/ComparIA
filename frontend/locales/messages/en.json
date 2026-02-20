@@ -1809,19 +1809,74 @@
     },
     "reveal": {
         "equivalent": {
-            "co2": {
-                "label": "CO <sub> 2 </sub> emitted",
-                "tooltip": "The CO <sub> 2 </sub> emitted is equivalent to the carbon dioxide emissions produced by the energy used to run the model. It reflects the environmental impact linked to energy consumption. The Watt-hour/CO <sub> 2 </sub> equivalence calculation differs depending on the energy mix of each country. However, the servers used for model inference are not all located in Europe. Thus, the equivalence calculation is based on the global average CO <sub> 2 </sub> emission rate per energy consumed."
-            },
-            "lightbulb": {
-                "label": "LED bulb",
-                "tooltip": "Data calculated based on the consumption of a standard 5W LED bulb (E14)"
-            },
-            "streaming": {
-                "label": "online videos",
-                "tooltip": "Data calculated based on the carbon impact of one hour of streamed video in high definition, on a television, with a Wi-Fi connection (source <a {linkProps}>ADEME</a>)"
-            },
-            "title": "Which corresponds to:"
+            "title": "Scaled impact",
+            "scaled": {
+                "premise": "If the entire French population used this prompt every day for a year,",
+                "connectorEnergy": "it would require as much energy as:",
+                "connectorCo2": "it would emit as much CO₂ as:",
+                "refresh": "See another equivalence",
+                "references": {
+                    "france": "France",
+                    "germany": "Germany",
+                    "denmark": "Denmark",
+                    "sweden": "Sweden",
+                    "paris": "Paris",
+                    "amsterdam": "Amsterdam",
+                    "copenhagen": "Copenhagen",
+                    "stockholm": "Stockholm"
+                },
+                "units": {
+                    "years": "years",
+                    "months": "months",
+                    "weeks": "weeks",
+                    "days": "days",
+                    "homes": "homes",
+                    "thousandHomes": "thousand homes",
+                    "millionHomes": "million homes",
+                    "reactors": "reactors",
+                    "turbines": "turbines",
+                    "thousandTurbines": "thousand turbines",
+                    "millionTurbines": "million turbines",
+                    "trips": "trips",
+                    "thousandTrips": "thousand trips",
+                    "millionTrips": "million trips",
+                    "flights": "flights",
+                    "thousandFlights": "thousand flights",
+                    "millionFlights": "million flights"
+                },
+                "country_electricity": {
+                    "label": "of {reference}'s electricity",
+                    "tooltip": "Equivalent to the fraction of this country's annual electricity consumption"
+                },
+                "city_power": {
+                    "label": "powering {reference}",
+                    "tooltip": "Time needed to power this city with the equivalent energy"
+                },
+                "european_homes": {
+                    "label": "European homes powered",
+                    "tooltip": "Number of European households that could be powered for a year (avg. 3,500 kWh/year)"
+                },
+                "nuclear_reactors": {
+                    "label": "nuclear reactors needed",
+                    "tooltip": "Number of 1 GW nuclear reactors required to generate this energy (at 90% uptime)"
+                },
+                "solar_farm_area": {
+                    "label": "of solar farms",
+                    "tooltip": "Area of solar panels required to generate this energy annually in Europe"
+                },
+                "wind_turbines": {
+                    "label": "offshore wind turbines",
+                    "tooltip": "Number of 10 MW offshore wind turbines required (at 40% capacity factor)"
+                },
+                "car_earth_trips": {
+                    "label": "trips around Earth by car",
+                    "tooltip": "Equivalent CO₂ emissions from driving a petrol car around the Earth"
+                },
+                "paris_nyc_flights": {
+                    "label": "Paris-NYC round trips",
+                    "tooltip": "Equivalent CO₂ emissions from Paris to New York flights"
+                }
+            }
         },
         "feedback": {
             "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",

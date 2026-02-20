@@ -1959,19 +1959,74 @@
     },
     "reveal": {
         "equivalent": {
-            "co2": {
-                "label": "CO<sub>2</sub> émis",
-                "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée."
-            },
-            "lightbulb": {
-                "label": "ampoule LED",
-                "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5 W (E14)"
-            },
-            "streaming": {
-                "label": "vidéos en ligne",
-                "tooltip": "Donnée calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur une télévision, en connexion wifi (source <a {linkProps}>ADEME</a>)"
-            },
-            "title": "Ce qui correspond à :"
+            "title": "Impact à grande échelle",
+            "scaled": {
+                "premise": "Si tous les Français utilisaient ce prompt chaque jour pendant un an,",
+                "connectorEnergy": "cela nécessiterait autant d'énergie que :",
+                "connectorCo2": "cela émettrait autant de CO₂ que :",
+                "refresh": "Voir une autre équivalence",
+                "references": {
+                    "france": "la France",
+                    "germany": "l'Allemagne",
+                    "denmark": "le Danemark",
+                    "sweden": "la Suède",
+                    "paris": "Paris",
+                    "amsterdam": "Amsterdam",
+                    "copenhagen": "Copenhague",
+                    "stockholm": "Stockholm"
+                },
+                "units": {
+                    "years": "ans",
+                    "months": "mois",
+                    "weeks": "semaines",
+                    "days": "jours",
+                    "homes": "foyers",
+                    "thousandHomes": "milliers de foyers",
+                    "millionHomes": "millions de foyers",
+                    "reactors": "réacteurs",
+                    "turbines": "éoliennes",
+                    "thousandTurbines": "milliers d'éoliennes",
+                    "millionTurbines": "millions d'éoliennes",
+                    "trips": "tours",
+                    "thousandTrips": "milliers de tours",
+                    "millionTrips": "millions de tours",
+                    "flights": "vols",
+                    "thousandFlights": "milliers de vols",
+                    "millionFlights": "millions de vols"
+                },
+                "country_electricity": {
+                    "label": "de l'électricité de {reference}",
+                    "tooltip": "Équivalent à la fraction de la consommation électrique annuelle de ce pays"
+                },
+                "city_power": {
+                    "label": "pour alimenter {reference}",
+                    "tooltip": "Durée nécessaire pour alimenter cette ville avec l'énergie équivalente"
+                },
+                "european_homes": {
+                    "label": "foyers européens alimentés",
+                    "tooltip": "Nombre de foyers européens pouvant être alimentés pendant un an (moy. 3 500 kWh/an)"
+                },
+                "nuclear_reactors": {
+                    "label": "réacteurs nucléaires nécessaires",
+                    "tooltip": "Nombre de réacteurs nucléaires de 1 GW nécessaires pour produire cette énergie (à 90% de disponibilité)"
+                },
+                "solar_farm_area": {
+                    "label": "de panneaux solaires",
+                    "tooltip": "Surface de panneaux solaires nécessaire pour produire cette énergie annuellement en Europe"
+                },
+                "wind_turbines": {
+                    "label": "éoliennes offshore",
+                    "tooltip": "Nombre d'éoliennes offshore de 10 MW nécessaires (à 40% de facteur de charge)"
+                },
+                "car_earth_trips": {
+                    "label": "tours de la Terre en voiture",
+                    "tooltip": "Émissions de CO₂ équivalentes à parcourir la Terre en voiture essence"
+                },
+                "paris_nyc_flights": {
+                    "label": "allers-retours Paris-NYC",
+                    "tooltip": "Émissions de CO₂ équivalentes à des vols Paris-New York"
+                }
+            }
         },
         "feedback": {
             "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
