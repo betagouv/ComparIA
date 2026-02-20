@@ -9,6 +9,7 @@ dependencies = [
     "fastapi>=0.128.0",
     "json5>=0.13.0",
     "litellm==1.77.5",
+    "google-auth>=2.38.0",
     "markdown>=3.10.1",
     "numpy>=2.4.1",
     "psycopg2-binary>=2.9.11",

@@ -33,19 +33,6 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@comparia.fr
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-
 volumes:
   db-data:
   pglogs:

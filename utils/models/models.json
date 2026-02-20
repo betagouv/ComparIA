@@ -1500,6 +1500,23 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "new": true,
+        "id": "claude-4-6-sonnet",
+        "simple_name": "Claude 4.6 Sonnet",
+        "license": "proprietary",
+        "release_date": "02/2026",
+        "arch": "maybe-moe",
+        "params": 440,
+        "active_params": 137.5,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "anthropic/claude-sonnet-4.6"
+        },
+        "desc": "Très grand modèle multimodal et multilingue, très performant en code, en utilisation autonome d'ordinateur et en raisonnement. L'utilisateur ou le développeur peut choisir entre plusieurs niveaux de raisonnement.",
+        "size_desc": "La taille exacte n'est pas connue. Tout indique qu'il s'agit d'un très grand modèle, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour le faire fonctionner. Les estimations de taille et de consommation énergétique reposent sur des indices indirects comme les coûts d'inférence et la latence observée. Claude Sonnet 4.6 dispose d'une fenêtre de contexte allant jusqu'à 1 000 000 jetons, adaptée à l'analyse de dépôts de code entiers ou de documents très volumineux.",
+        "fyi": "Claude Sonnet 4.6 succède à Sonnet 4.5 et constitue une mise à niveau majeure de la gamme intermédiaire d'Anthropic. Le modèle obtient 79,6 % sur SWE-bench Verified, un score de référence pour la génération de code, et 72,5 % sur OSWorld pour l'utilisation d'ordinateur, se rapprochant d'Opus 4.6 pour un coût cinq fois inférieur. Les performances en mathématiques (89 %) sont également en forte hausse par rapport à son prédécesseur.\n\nLe modèle prend en charge un mode de raisonnement adaptatif, permettant de moduler l'intensité de la réflexion selon la complexité de la tâche. Sa fenêtre de contexte atteint 1 000 000 jetons en version bêta, une première pour un modèle de la gamme Sonnet, ce qui permet de traiter des bases de code entières ou de volumineux ensembles documentaires en une seule requête. Lors de tests comparatifs internes, les utilisateurs ont préféré Sonnet 4.6 à Sonnet 4.5 dans environ 70 % des cas."
+      },
+      {
         "id": "claude-4-5-sonnet",
         "simple_name": "Claude 4.5 Sonnet",
         "license": "proprietary",

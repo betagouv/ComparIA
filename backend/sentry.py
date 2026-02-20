@@ -20,7 +20,7 @@ def init_sentry() -> None:
         release=settings.GIT_COMMIT,
         attach_stacktrace=True,
         dsn=settings.SENTRY_DSN,
-        environment=settings.SENTRY_ENV,
+        environment=settings.SENTRY_ENVIRONMENT,
         traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
         profiles_sample_rate=settings.SENTRY_SAMPLE_RATE,
         project_root=os.getcwd(),

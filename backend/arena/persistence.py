@@ -321,8 +321,6 @@ class VoteRecord(BaseModel):
     session_hash: str
     visitor_id: str | None
     ip: str
-    country_portal: CountryPortal
-    cohorts: str
 
     # Conversations
     conv_turns: int
@@ -770,6 +768,6 @@ def record_conversations(
 
     try:
         return upsert_conv_to_db(db_data)
-    except Exception:
+    except (psycopg2.OperationalError, psycopg2.InterfaceError):
         logger.warning("Could not upsert conversations to DB", exc_info=True)
         return db_data

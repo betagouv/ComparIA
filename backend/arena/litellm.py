@@ -215,7 +215,7 @@ def litellm_stream_iter(
                 if content := choice.delta.get("content"):
                     data["content"] += content
                 # Get reasoning content (for reasoning models)
-                if reasoning := delta.get("reasoning"):
+                if reasoning := delta.get("reasoning_content") or delta.get("reasoning"):
                     data["reasoning"] += reasoning
 
             # Check for generation completion signal
