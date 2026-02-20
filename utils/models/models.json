@@ -541,6 +541,24 @@
         "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio."
       },
       {
+        "new": true,
+        "id": "gemini-3.1-pro-preview",
+        "simple_name": "Gemini 3.1 Pro",
+        "license": "proprietary",
+        "release_date": "02/2026",
+        "arch": "moe",
+        "params": 750,
+        "active_params": 45,
+        "reasoning": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3.1-pro-preview"
+        },
+        "desc": "Très grand modèle multimodal natif et multilingue, évolution de Gemini 3 Pro. Il reprend les mêmes capacités multimodales et le mode de raisonnement (\"Deep Think\"), en ajoutant un troisième niveau de raisonnement intermédiaire et des améliorations sur les tâches de planification et d'utilisation d'outils.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur la même architecture de mélange d'experts (MoE, Mixture of Experts) que Gemini 3 Pro. Cette architecture n'active qu'un sous-ensemble de paramètres pour chaque jeton, ce qui réduit la puissance de calcul nécessaire par rapport à un modèle dense de taille équivalente. Sa fenêtre de contexte s'étend jusqu'à 1 million de jetons en entrée et 65 000 jetons en sortie. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Gemini 3.1 Pro reprend l'architecture MoE et les capacités multimodales natives de Gemini 3 Pro (texte, images, audio, vidéo, PDF jusqu'à 1 000 pages), ainsi que l'entraînement sur TPU et l'optimisation pour les usages agentiques.\n\nLa principale nouveauté est l'ajout d'un niveau de raisonnement intermédiaire (\"medium\") au mode Deep Think, qui ne proposait auparavant que deux niveaux (bas et haut). Ce niveau vise un compromis entre qualité de réponse et latence. Le modèle introduit également des « signatures de pensée » (thought signatures), des représentations chiffrées du raisonnement intermédiaire permettant de conserver le contexte de réflexion lors d'interactions multi-étapes. Selon l'éditeur, ces évolutions se traduisent par une amélioration relative de 40 à 60 % sur les tâches de planification complexes par rapport à la génération précédente, et par une meilleure résistance aux hallucinations. Il obtient 77,1 % sur ARC-AGI-2, 94,3 % sur GPQA Diamond et 80,6 % sur SWE-Bench Verified."
+      },
+      {
         "status": "archived",
         "id": "gemini-2.5-flash",
         "simple_name": "Gemini 2.5 Flash",
