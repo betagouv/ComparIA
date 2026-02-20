@@ -47,7 +47,7 @@ COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
 DEFAULT_COUNTRY_PORTAL: CountryPortal = "fr"
 
 # Per-country objectives for data collection (rows to collect)
-OBJECTIVES: dict[CountryPortal, int] = {"fr": 250_000, "da": 10_000}
+OBJECTIVES: dict[CountryPortal, int] = {"fr": 300_000, "da": 10_000}
 
 # Language model selection modes
 SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
