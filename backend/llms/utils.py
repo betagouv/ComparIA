@@ -16,13 +16,14 @@ Functions:
 - calculate_scaled_equivalence: Calculate scaled impact metrics
 """
 
-import random
 from enum import Enum
 from typing import TYPE_CHECKING, TypedDict, Union
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
+
+from backend.config import CountryPortal
 
 if TYPE_CHECKING:
     from backend.llms.models import LLMData
@@ -31,84 +32,39 @@ if TYPE_CHECKING:
 
 # Equivalence types for scaled impact comparisons
 class EquivalenceType(Enum):
-    COUNTRY_ELECTRICITY = "country_electricity"
-    CITY_POWER = "city_power"
-    EUROPEAN_HOMES = "european_homes"
-    NUCLEAR_REACTORS = "nuclear_reactors"
-    SOLAR_FARM_AREA = "solar_farm_area"
-    WIND_TURBINES = "wind_turbines"
-    CAR_EARTH_TRIPS = "car_earth_trips"
+    PACKAGE_DELIVERY = "package_delivery"
     PARIS_NYC_FLIGHTS = "paris_nyc_flights"
-    FOREST_ABSORPTION = "forest_absorption"
-    TREES_PLANTED = "trees_planted"
-    CARBON_BUDGET = "carbon_budget"
-    TGV_PARIS_LYON = "tgv_paris_lyon"
+    PARIS_BERLIN_TGV = "paris_berlin_tgv"
+    BAGUETTE_PRODUCTION = "baguette_production"
+    PIZZA_PRODUCTION = "pizza_production"
+    MANGO_IMPORT = "mango_import"
+    POOL_FILING = "pool_filing"
+    # ARTIC_SEA_ICE_MELT = "arctic_sea_ice_melt"
+    ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
 
 
 # Reference data for scaled equivalences
-# Scale: French population (~67 million) using this prompt daily for 1 year
-SCALE_FACTOR = 67_000_000 * 365  # ~24.5 billion queries/year
-
-# Country annual electricity consumption in TWh (source: IEA 2023)
-COUNTRY_ELECTRICITY_TWH = {
-    "france": 470,
-    "germany": 500,
-    "spain": 260,
-    "belgium": 84,
-    "netherlands": 110,
-    "denmark": 35,
-    "sweden": 130,
+# Population using generative AI
+SCALE_FACTORS: dict[CountryPortal, float] = {
+    # 48% of ppl aged 12 or more in 2026 https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport
+    # population count of 12 or more in 2024 https://www.insee.fr/fr/statistiques/7746192?sommaire=7746197
+    "fr": 59_315_947 * 0.48,
+    # 48.4% of ppl aged 16–74 in 2025 https://ec.europa.eu/eurostat/fr/web/products-eurostat-news/w/ddn-20251216-3
+    # population count of 16-74 https://en.wikipedia.org/wiki/Demographics_of_Denmark
+    "da": 4_350_000 * 0.484,
 }
 
-# City daily electricity consumption in GWh/day (estimated from annual consumption)
-CITY_ELECTRICITY_GWH_DAY = {
-    "paris": 40,
-    "amsterdam": 10,
-    "copenhagen": 5,
-    "stockholm": 8,
+CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
+    EquivalenceType.PACKAGE_DELIVERY: 0.576,
+    EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
+    EquivalenceType.PARIS_BERLIN_TGV: 7.26,
+    EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
+    EquivalenceType.PIZZA_PRODUCTION: 3.5994,
+    EquivalenceType.MANGO_IMPORT: 11.655508000000001,
+    EquivalenceType.POOL_FILING: 7.54,
+    # EquivalenceType.ARTIC_SEA_ICE_MELT: 0,  # FIXME get factor
+    EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
 }
-
-# European household average annual consumption: 3,500 kWh (source: Eurostat)
-EUROPEAN_HOME_KWH_YEAR = 3500
-
-# Nuclear reactor: 1 GW capacity, ~90% uptime = 7,900 GWh/year
-NUCLEAR_REACTOR_GWH_YEAR = 7900
-
-# Solar farm: ~150 GWh/year per km² in Europe (source: NREL estimates)
-SOLAR_GWH_PER_KM2_YEAR = 150
-
-# Offshore wind turbine: 10 MW, 40% capacity factor = 35 GWh/year
-WIND_TURBINE_GWH_YEAR = 35
-
-# Petrol car: ~150g CO2/km average (source: EEA)
-CAR_CO2_G_PER_KM = 150
-
-# Earth circumference: 40,075 km
-EARTH_CIRCUMFERENCE_KM = 40_075
-
-# Paris-NYC round trip flight: ~1,000 kg CO2 per passenger (source: myclimate.org)
-PARIS_NYC_CO2_KG = 1000
-
-# Forest CO2 absorption: ~8 tonnes CO2/ha/year for mature temperate forest
-# Source: ONF (Office National des Forêts), INRAE
-FOREST_CO2_TONNES_PER_HA_YEAR = 8
-
-# Tree CO2 absorption: ~15 kg CO2/year average over 10 years (young tree)
-# Source: European Environment Agency
-TREE_CO2_KG_PER_10_YEARS = 150
-
-# Annual carbon footprint per person in kg CO2
-# Source: Ministère de la Transition Écologique
-CARBON_BUDGET_KG = {
-    "france": 9000,
-    "germany": 8000,
-    "denmark": 5500,
-    "sweden": 4500,
-}
-
-# TGV Paris-Lyon: ~4 kg CO2 per passenger (~500 km)
-# Source: SNCF environmental reports
-TGV_PARIS_LYON_CO2_KG = 4
 
 # Minimum threshold for meaningful display (values below this aren't intuitive)
 MIN_MEANINGFUL_VALUE = 1.0
@@ -244,6 +200,7 @@ def get_llm_impact(
     )
 
 
+# FIXME rm?
 def calculate_energy_with_unit(impact_energy_value_or_range):
     """
     Calculates energy consumption and determines the most sensible unit.
@@ -306,18 +263,21 @@ class ValueAndUnit(TypedDict):
 class Consumption(TypedDict):
     # Token usage
     tokens: int
-    # Energy (in Wh or mWh)
-    energy: ValueAndUnit
     # Environmental metrics (CO2)
-    co2: int | float
-    # # Energy metrics (deprecated: kept for backward compatibility)
-    kwh: int | float
+    co2_kg: int | float
+    # Scaled CO2
+    scaled_co2_kg: int | float
+    scaled_co2_t: int | float
+    # Energy metrics
+    energy_mwh: int | float
+    energy_kwh: int | float
 
 
 def get_llm_consumption(
     llm: Union["LLMDataRaw", "LLMData"],
     tokens: int,
     request_latency: float | None = None,
+    country_portal: CountryPortal = "fr",  # FIXME
 ) -> Consumption:
     """
     Calculates environmental impact (energy, CO2 emissions)
@@ -332,100 +292,20 @@ def get_llm_consumption(
     """
     impact = get_llm_impact(llm, tokens, request_latency)
 
-    # Convert energy to appropriate unit (Wh or mWh) with dynamic unit selection
-    energy, energy_unit = calculate_energy_with_unit(impact.energy.value)
     # Get raw kWh and CO2 kg values for equivalence calculations
     kwh = convert_range_to_value(impact.energy.value)
     co2_kg = convert_range_to_value(impact.gwp.value)
+    # co2 scaled to population using generative AI
+    scaled_co2_kg = co2_kg * SCALE_FACTORS[country_portal]
 
     return {
         "tokens": tokens,
-        "energy": {"value": energy, "unit": energy_unit},
-        "co2": co2_kg,
-        "kwh": kwh,
+        "co2_kg": co2_kg,
+        "scaled_co2_kg": scaled_co2_kg,
+        "scaled_co2_t": scaled_co2_kg / 1000,
+        "energy_mwh": kwh * 1000 * 1000,
+        "energy_kwh": kwh,
     }
-
-
-def calculate_scaled_equivalence(conso: Consumption, eq_type: EquivalenceType) -> dict:
-    """
-    Calculate scaled equivalence for 1 billion daily users over a year.
-
-    Args:
-        conso: Consumption per query (energy in kWh, CO2 in kg)
-        eq_type: The type of equivalence to calculate
-
-    Returns:
-        dict: Contains 'value' (float) representing the scaled metric.
-              Frontend will apply locale-specific reference and unit formatting.
-    """
-    # Scale up to 1 billion users × 365 days
-    scaled_energy_kwh = conso["kwh"] * SCALE_FACTOR
-    scaled_energy_twh = scaled_energy_kwh / 1e9  # Convert to TWh
-    scaled_energy_gwh = scaled_energy_kwh / 1e6  # Convert to GWh
-    scaled_co2_kg = conso["co2"] * SCALE_FACTOR
-    scaled_co2_tonnes = scaled_co2_kg / 1000
-
-    if eq_type == EquivalenceType.COUNTRY_ELECTRICITY:
-        # Return scaled TWh - frontend will divide by country's TWh consumption
-        return {"value": scaled_energy_twh}
-
-    elif eq_type == EquivalenceType.CITY_POWER:
-        # Return scaled GWh/day - frontend will divide by city's daily consumption
-        return {"value": scaled_energy_gwh / 365}  # Convert annual to daily
-
-    elif eq_type == EquivalenceType.EUROPEAN_HOMES:
-        # Number of homes that could be powered for a year
-        homes = scaled_energy_kwh / EUROPEAN_HOME_KWH_YEAR
-        return {"value": homes}
-
-    elif eq_type == EquivalenceType.NUCLEAR_REACTORS:
-        # Number of 1 GW reactors needed
-        reactors = scaled_energy_gwh / NUCLEAR_REACTOR_GWH_YEAR
-        return {"value": reactors}
-
-    elif eq_type == EquivalenceType.SOLAR_FARM_AREA:
-        # km² of solar farms needed
-        area_km2 = scaled_energy_gwh / SOLAR_GWH_PER_KM2_YEAR
-        return {"value": area_km2}
-
-    elif eq_type == EquivalenceType.WIND_TURBINES:
-        # Number of 10 MW offshore turbines needed
-        turbines = scaled_energy_gwh / WIND_TURBINE_GWH_YEAR
-        return {"value": turbines}
-
-    elif eq_type == EquivalenceType.CAR_EARTH_TRIPS:
-        # Number of trips around Earth by petrol car
-        co2_grams = scaled_co2_kg * 1000
-        total_km = co2_grams / CAR_CO2_G_PER_KM
-        trips = total_km / EARTH_CIRCUMFERENCE_KM
-        return {"value": trips}
-
-    elif eq_type == EquivalenceType.PARIS_NYC_FLIGHTS:
-        # Number of Paris-NYC round trip flights
-        flights = scaled_co2_kg / PARIS_NYC_CO2_KG
-        return {"value": flights}
-
-    elif eq_type == EquivalenceType.FOREST_ABSORPTION:
-        # Hectares of forest absorbing CO2 for one year
-        hectares = scaled_co2_tonnes / FOREST_CO2_TONNES_PER_HA_YEAR
-        return {"value": hectares}
-
-    elif eq_type == EquivalenceType.TREES_PLANTED:
-        # Trees growing for 10 years to absorb this CO2
-        trees = scaled_co2_kg / TREE_CO2_KG_PER_10_YEARS
-        return {"value": trees}
-
-    elif eq_type == EquivalenceType.CARBON_BUDGET:
-        # Return scaled CO2 in kg - frontend divides by locale's per-capita budget
-        return {"value": scaled_co2_kg}
-
-    elif eq_type == EquivalenceType.TGV_PARIS_LYON:
-        # Number of TGV Paris-Lyon journeys
-        journeys = scaled_co2_kg / TGV_PARIS_LYON_CO2_KG
-        return {"value": journeys}
-
-    else:
-        return {"value": 0}
 
 
 def get_all_meaningful_equivalences(
@@ -456,22 +336,20 @@ def get_all_meaningful_equivalences(
             - model_a_value: Scaled value for model A
             - model_b_value: Scaled value for model B
     """
-    rng = random.Random(seed)
-
     all_types = list(EquivalenceType)
     valid_equivalences = []
     fallback_equivalence = None
-    fallback_min_value = 0
+    fallback_min_value = 0.0
 
     for eq_type in all_types:
-        value_a = calculate_scaled_equivalence(conso_a, eq_type)["value"]
-        value_b = calculate_scaled_equivalence(conso_b, eq_type)["value"]
+        value_a = conso_a["scaled_co2_kg"] / CO2_KG_EQUIVALENCE[eq_type]
+        value_b = conso_b["scaled_co2_kg"] / CO2_KG_EQUIVALENCE[eq_type]
         min_value = min(value_a, value_b)
 
         equiv_data = {
             "type": eq_type.value,
-            "model_a_value": value_a,
-            "model_b_value": value_b,
+            "a": value_a,
+            "b": value_b,
         }
 
         if min_value >= MIN_MEANINGFUL_VALUE:
@@ -482,9 +360,7 @@ def get_all_meaningful_equivalences(
             fallback_min_value = min_value
             fallback_equivalence = equiv_data
 
-    # Shuffle valid equivalences for variety, or use fallback if none qualify
     if valid_equivalences:
-        rng.shuffle(valid_equivalences)
         return valid_equivalences
     else:
         return (
@@ -493,8 +369,8 @@ def get_all_meaningful_equivalences(
             else [
                 {
                     "type": all_types[0].value,
-                    "model_a_value": 0,
-                    "model_b_value": 0,
+                    "a": 0,
+                    "b": 0,
                 }
             ]
         )
