@@ -40,7 +40,7 @@ os.makedirs(settings.LOGDIR, exist_ok=True)
 
 # HTTP timeout for API calls to LLM providers
 # Structure: total timeout, read, write, connect (all in seconds)
-GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
+GLOBAL_TIMEOUT = Timeout(15.0, read=15.0, write=5.0, connect=15.0)
 
 # Available country portals
 CountryPortal = Literal["fr", "da"]

@@ -194,6 +194,10 @@ async def stream_comparison_messages(
                 tasks, return_when=asyncio.FIRST_COMPLETED
             )
 
+            # Cancel pending tasks to avoid concurrent anext() on the same generator
+            for task in pending:
+                task.cancel()
+
             # Process completed chunks
             for task in completed:
                 try:
@@ -214,11 +218,11 @@ async def stream_comparison_messages(
                     ):
                         new_model = _pick_replacement_model(conversations, e.pos)
                         if new_model:
-                            old_name = getattr(
+                            old_conv = getattr(
                                 conversations, f"conversation_{e.pos}"
-                            ).model_name
+                            )
                             logger.warning(
-                                f"Model '{old_name}' timed out, swapping to '{new_model}'"
+                                f"Model '{old_conv.model_name}' timed out, swapping to '{new_model}'"
                             )
                             user_msg = UserMessage(
                                 content=conversations.opening_msg
@@ -228,6 +232,8 @@ async def stream_comparison_messages(
                                 conversations.country_portal,
                                 user_msg,
                             )
+                            # Preserve conv_id so conversation_pair_id stays stable
+                            new_conv.conv_id = old_conv.conv_id
                             setattr(
                                 conversations,
                                 f"conversation_{e.pos}",
@@ -239,6 +245,9 @@ async def stream_comparison_messages(
                                 )
                             )
                             retried[e.pos] = True
+                            yield format_sse_event(
+                                {"type": "swap", "pos": e.pos}
+                            )
                             continue
                         # No replacement available, fall through to raise
                     raise

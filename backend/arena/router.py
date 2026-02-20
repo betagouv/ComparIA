@@ -289,7 +289,7 @@ async def retry(
         # if error is from a specific model, reroll it
         if pos := conversations.error.pos:
             models = get_llms_data(conversations.country_portal)
-            failing_model_id = conv_a.model_name if pos == "a" else conv_b
+            failing_model_id = conv_a.model_name if pos == "a" else conv_b.model_name
 
             if selection := conversations.custom_models_selection:
                 # Filter failing model from custom_models_selection
