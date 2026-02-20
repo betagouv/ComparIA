@@ -139,6 +139,60 @@ def get_llm_impact(
     )
 
 
+def calculate_energy_with_unit(impact_energy_value_or_range):
+    """
+    Calculates energy consumption and determines the most sensible unit.
+
+    Args:
+      impact_energy_value_or_range: Energy consumption in kilowatt-hours (kWh).
+
+    Returns:
+      A tuple containing:
+        - A float representing the energy value.
+        - A string representing the most sensible unit ('Wh' or 'mWh').
+    """
+    impact_energy_value = convert_range_to_value(impact_energy_value_or_range)
+
+    # Convert to watt-hours
+    energy_wh = impact_energy_value * 1000
+
+    # Determine sensible unit based on magnitude
+    if energy_wh >= 1:
+        return energy_wh, "Wh"
+    else:
+        # Convert to milliwatt-hours for very small values
+        energy_mwh = energy_wh * 1000
+        return energy_mwh, "mWh"
+
+
+def calculate_co2_with_unit(
+    impact_gwp_value_or_range: ValueOrRange,
+) -> tuple[int | float, str]:
+    """
+    Calculates CO2 emissions and determines the most sensible unit.
+
+    Args:
+      impact_gwp_value_or_range: CO2 emissions in kilograms.
+
+    Returns:
+      A tuple containing:
+        - A float representing the CO2 value.
+        - A string representing the most sensible unit ('kg', 'g', or 'mg').
+    """
+    impact_gwp_value = convert_range_to_value(impact_gwp_value_or_range)
+
+    # Convert to grams
+    co2_grams = impact_gwp_value * 1000
+
+    # Determine sensible unit based on magnitude
+    if co2_grams >= 1:
+        return co2_grams, "g"
+    else:
+        # Convert to milligrams for very small values
+        co2_milligrams = co2_grams * 1000
+        return co2_milligrams, "mg"
+
+
 def calculate_lightbulb_consumption(
     impact_energy_value_or_range: ValueOrRange,
 ) -> tuple[int | float, str]:
@@ -150,8 +204,8 @@ def calculate_lightbulb_consumption(
 
     Returns:
       A tuple containing:
-        - An integer representing the consumption time.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
+        - A number representing the consumption time.
+        - A string representing the most sensible time unit ('j', 'h', 'min', 's', or 'ms').
     """
     impact_energy_value = convert_range_to_value(impact_energy_value_or_range)
     # Calculate consumption time using Wh
@@ -168,8 +222,12 @@ def calculate_lightbulb_consumption(
         return int(consumption_hours), "h"
     elif consumption_minutes >= 1:
         return int(consumption_minutes), "min"
-    else:
+    elif consumption_seconds >= 1:
         return int(consumption_seconds), "s"
+    else:
+        # For very small values, use milliseconds
+        consumption_milliseconds = watthours * 60 * 60 * 1000 / 5
+        return round(consumption_milliseconds, 2), "ms"
 
 
 def calculate_streaming_hours(
@@ -183,8 +241,8 @@ def calculate_streaming_hours(
 
     Returns:
       A tuple containing:
-        - An integer representing the streaming hours.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
+        - A number representing the streaming time.
+        - A string representing the most sensible time unit ('j', 'h', 'min', 's', or 'ms').
     """
     impact_gwp_value = convert_range_to_value(impact_gwp_value_or_range)
     # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
@@ -197,8 +255,11 @@ def calculate_streaming_hours(
         return int(streaming_hours), "h"
     elif streaming_hours * 60 >= 1:
         return int(streaming_hours * 60), "min"
-    else:
+    elif streaming_hours * 60 * 60 >= 1:
         return int(streaming_hours * 60 * 60), "s"
+    else:
+        # For very small values, use milliseconds
+        return round(streaming_hours * 60 * 60 * 1000, 2), "ms"
 
 
 class ValueAndUnit(TypedDict):
@@ -207,16 +268,18 @@ class ValueAndUnit(TypedDict):
 
 
 class Consumption(TypedDict):
-    # Energy metrics
-    kwh: int | float
-    # Environmental metrics (CO2)
-    co2: int | float
     # Token usage
     tokens: int
+    # Energy (in Wh or mWh)
+    energy: ValueAndUnit
+    # Environmental metrics (CO2)
+    co2: ValueAndUnit
     # Video streaming equivalent (user-friendly CO2 comparison)
     streaming: ValueAndUnit
     # LED lightbulb equivalent (user-friendly energy comparison)
     lightbulb: ValueAndUnit
+    # Energy metrics (deprecated: kept for backward compatibility)
+    kwh: int | float
 
 
 def get_llm_consumption(
@@ -237,19 +300,24 @@ def get_llm_consumption(
     """
     impact = get_llm_impact(llm, tokens, request_latency)
 
-    # Extract and normalize energy and CO2 values (handles value ranges)
+    # Convert energy to appropriate unit (Wh or mWh) with dynamic unit selection
+    energy, energy_unit = calculate_energy_with_unit(impact.energy.value)
+    # Convert CO2 to appropriate unit (g or mg) with dynamic unit selection
+    co2, co2_unit = calculate_co2_with_unit(impact.gwp.value)
+    # Keep kWh for backward compatibility with lightbulb calculation
     kwh = convert_range_to_value(impact.energy.value)
-    co2 = convert_range_to_value(impact.gwp.value)
 
     # Convert energy to LED lightbulb comparison (5W LED light)
     lightbulb, lightbulb_unit = calculate_lightbulb_consumption(kwh)
     # Convert CO2 to video streaming comparison
-    streaming, streaming_unit = calculate_streaming_hours(co2)
+    streaming, streaming_unit = calculate_streaming_hours(impact.gwp.value)
 
     return {
-        "kwh": kwh,
-        "co2": co2,
         "tokens": tokens,
+        "energy": {"value": energy, "unit": energy_unit},
+        "co2": {"value": co2, "unit": co2_unit},
         "lightbulb": {"value": lightbulb, "unit": lightbulb_unit},
         "streaming": {"value": streaming, "unit": streaming_unit},
+        # Deprecated: kept for backward compatibility
+        "kwh": kwh,
     }
