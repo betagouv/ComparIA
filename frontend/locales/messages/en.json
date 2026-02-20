@@ -1814,6 +1814,7 @@
                 "premise": "If the entire French population used this prompt every day for a year,",
                 "connectorEnergy": "it would require as much energy as:",
                 "connectorCo2": "it would emit as much CO₂ as:",
+                "connectorAbsorption": "absorbing this CO₂ would require:",
                 "refresh": "See another equivalence",
                 "references": {
                     "france": "France",
@@ -1842,7 +1843,17 @@
                     "millionTrips": "million trips",
                     "flights": "flights",
                     "thousandFlights": "thousand flights",
-                    "millionFlights": "million flights"
+                    "millionFlights": "million flights",
+                    "hectares": "hectares",
+                    "thousandHectares": "thousand hectares",
+                    "millionHectares": "million hectares",
+                    "trees": "trees",
+                    "millionTrees": "million trees",
+                    "billionTrees": "billion trees",
+                    "people": "French people",
+                    "millionPeople": "million French people",
+                    "journeys": "journeys",
+                    "millionJourneys": "million journeys"
                 },
                 "country_electricity": {
                     "label": "of {reference}'s electricity",
@@ -1875,6 +1886,22 @@
                 "paris_nyc_flights": {
                     "label": "Paris-NYC round trips",
                     "tooltip": "Equivalent CO₂ emissions from Paris to New York flights"
+                },
+                "forest_absorption": {
+                    "label": "of forest absorbing CO₂ for a year",
+                    "tooltip": "Area of mature temperate forest needed to absorb these emissions in one year (~8 tonnes CO₂/ha/year)"
+                },
+                "trees_planted": {
+                    "label": "growing for 10 years",
+                    "tooltip": "Number of trees that would need to grow for 10 years to absorb these emissions (~15 kg CO₂/tree/year)"
+                },
+                "carbon_budget": {
+                    "label": "— annual carbon footprint",
+                    "tooltip": "Equivalent to the full annual carbon footprint of this many French people (~9 tonnes/person/year)"
+                },
+                "tgv_paris_lyon": {
+                    "label": "TGV Paris-Lyon journeys",
+                    "tooltip": "Equivalent CO₂ emissions from TGV high-speed train journeys Paris-Lyon (~4 kg CO₂ per passenger)"
                 }
             }
         },

@@ -37,43 +37,177 @@
   // Locale-specific reference data for country/city equivalences
   const localeReferences: Record<
     string,
-    { country: string; countryTwh: number; city: string; cityGwhDay: number }
+    {
+      country: string
+      countryTwh: number
+      city: string
+      cityGwhDay: number
+      carbonBudgetKg: number
+    }
   > = {
-    fr: { country: 'france', countryTwh: 470, city: 'paris', cityGwhDay: 40 },
-    en: { country: 'germany', countryTwh: 500, city: 'amsterdam', cityGwhDay: 10 },
-    da: { country: 'denmark', countryTwh: 35, city: 'copenhagen', cityGwhDay: 5 },
-    sv: { country: 'sweden', countryTwh: 130, city: 'stockholm', cityGwhDay: 8 }
+    fr: { country: 'france', countryTwh: 470, city: 'paris', cityGwhDay: 40, carbonBudgetKg: 9000 },
+    en: {
+      country: 'germany',
+      countryTwh: 500,
+      city: 'amsterdam',
+      cityGwhDay: 10,
+      carbonBudgetKg: 8000
+    },
+    da: {
+      country: 'denmark',
+      countryTwh: 35,
+      city: 'copenhagen',
+      cityGwhDay: 5,
+      carbonBudgetKg: 5500
+    },
+    sv: {
+      country: 'sweden',
+      countryTwh: 130,
+      city: 'stockholm',
+      cityGwhDay: 8,
+      carbonBudgetKg: 4500
+    }
   }
 
   const refs = localeReferences[locale] || localeReferences['en']
 
-  // Icon mapping for each equivalence type
-  function getEquivalenceIcon(type: EquivalenceType): string {
-    const icons: Record<EquivalenceType, string> = {
-      country_electricity: 'flashlight-fill',
-      city_power: 'building-2-fill',
-      european_homes: 'home-4-fill',
-      nuclear_reactors: 'settings-5-fill',
-      solar_farm_area: 'sun-fill',
-      wind_turbines: 'windy-fill',
-      car_earth_trips: 'car-fill',
-      paris_nyc_flights: 'plane-fill'
+  // ============================================================================
+  // EQUIVALENCES CONFIG - Add new equivalences here
+  // ============================================================================
+  // category: 'energy' | 'emission' | 'absorption' - determines connector text
+  // unit: translation key suffix for the base unit (e.g., 'homes' -> reveal.equivalent.scaled.units.homes)
+  // reference: optional key for locale-specific reference name (country/city)
+  // ============================================================================
+  type EquivalenceCategory = 'energy' | 'emission' | 'absorption'
+
+  const EQUIVALENCES: Record<
+    EquivalenceType,
+    {
+      icon: string
+      color: string
+      category: EquivalenceCategory
+      unit: string
+      reference?: 'country' | 'city'
     }
-    return icons[type]
+  > = {
+    country_electricity: {
+      icon: 'flashlight-fill',
+      color: 'text-yellow',
+      category: 'energy',
+      unit: 'days',
+      reference: 'country'
+    },
+    city_power: {
+      icon: 'building-2-fill',
+      color: 'text-info',
+      category: 'energy',
+      unit: 'days',
+      reference: 'city'
+    },
+    european_homes: {
+      icon: 'home-4-fill',
+      color: 'text-success',
+      category: 'energy',
+      unit: 'homes'
+    },
+    nuclear_reactors: {
+      icon: 'settings-5-fill',
+      color: 'text-warning',
+      category: 'energy',
+      unit: 'reactors'
+    },
+    solar_farm_area: { icon: 'sun-fill', color: 'text-yellow', category: 'energy', unit: 'km2' },
+    wind_turbines: { icon: 'windy-fill', color: 'text-info', category: 'energy', unit: 'turbines' },
+    car_earth_trips: { icon: 'car-fill', color: 'text-error', category: 'emission', unit: 'trips' },
+    paris_nyc_flights: {
+      icon: 'plane-fill',
+      color: 'text-error',
+      category: 'emission',
+      unit: 'flights'
+    },
+    forest_absorption: {
+      icon: 'leaf-fill',
+      color: 'text-success',
+      category: 'absorption',
+      unit: 'hectares'
+    },
+    trees_planted: {
+      icon: 'plant-fill',
+      color: 'text-success',
+      category: 'absorption',
+      unit: 'trees'
+    },
+    carbon_budget: {
+      icon: 'user-fill',
+      color: 'text-warning',
+      category: 'emission',
+      unit: 'people'
+    },
+    tgv_paris_lyon: {
+      icon: 'train-fill',
+      color: 'text-info',
+      category: 'emission',
+      unit: 'journeys'
+    }
   }
 
-  function getEquivalenceIconClass(type: EquivalenceType): string {
-    const classes: Record<EquivalenceType, string> = {
-      country_electricity: 'text-yellow',
-      city_power: 'text-info',
-      european_homes: 'text-success',
-      nuclear_reactors: 'text-warning',
-      solar_farm_area: 'text-yellow',
-      wind_turbines: 'text-info',
-      car_earth_trips: 'text-error',
-      paris_nyc_flights: 'text-error'
+  // Helper to get config for an equivalence type
+  function getConfig(type: EquivalenceType) {
+    return EQUIVALENCES[type]
+  }
+
+  // Auto-scale a value and return the scaled value with appropriate unit suffix
+  // unitKey: base translation key (e.g., 'homes' -> reveal.equivalent.scaled.units.homes)
+  // Options: includeThousand (for hectares), includeBillion (for trees)
+  function autoScale(
+    rawValue: number,
+    unitKey: string,
+    options: { includeThousand?: boolean; includeBillion?: boolean } = {}
+  ): { value: number; unit: string } {
+    const { includeThousand = false, includeBillion = false } = options
+
+    // Capitalize first letter for prefixed units (e.g., 'homes' -> 'millionHomes')
+    const capitalizedKey = unitKey.charAt(0).toUpperCase() + unitKey.slice(1)
+
+    // Helper for dynamic translation key lookup (cast via unknown for dynamic keys)
+    const getUnit = (key: string) => (m as unknown as Record<string, () => string>)[key]()
+
+    if (includeBillion && rawValue >= 1_000_000_000) {
+      return {
+        value: rawValue / 1_000_000_000,
+        unit: getUnit(`reveal.equivalent.scaled.units.billion${capitalizedKey}`)
+      }
     }
-    return classes[type]
+    if (rawValue >= 1_000_000) {
+      return {
+        value: rawValue / 1_000_000,
+        unit: getUnit(`reveal.equivalent.scaled.units.million${capitalizedKey}`)
+      }
+    }
+    if (includeThousand && rawValue >= 1_000) {
+      return {
+        value: rawValue / 1_000,
+        unit: getUnit(`reveal.equivalent.scaled.units.thousand${capitalizedKey}`)
+      }
+    }
+    return {
+      value: rawValue,
+      unit: getUnit(`reveal.equivalent.scaled.units.${unitKey}`)
+    }
+  }
+
+  // Format value with appropriate precision for display
+  function formatValue(value: number): string {
+    if (value >= 100) {
+      return Math.round(value).toLocaleString(locale)
+    } else if (value >= 10) {
+      return value.toFixed(1)
+    } else if (value >= 0.01) {
+      return value.toFixed(2)
+    } else if (value > 0) {
+      return '< 0.01'
+    }
+    return '0'
   }
 
   // Calculate display value and unit based on equivalence type and locale
@@ -81,140 +215,104 @@
     rawValue: number,
     type: EquivalenceType
   ): { value: string; unit: string } {
-    let value: number
-    let unit: string
+    let result: { value: number; unit: string }
 
     switch (type) {
-      case 'country_electricity':
-        // rawValue is TWh, divide by country's annual TWh to get fraction of year
+      // === Time-based equivalences (special handling) ===
+      case 'country_electricity': {
         const yearFraction = rawValue / refs.countryTwh
         if (yearFraction >= 1) {
-          value = yearFraction
-          unit = m['reveal.equivalent.scaled.units.years']()
+          result = { value: yearFraction, unit: m['reveal.equivalent.scaled.units.years']() }
         } else if (yearFraction * 12 >= 1) {
-          value = yearFraction * 12
-          unit = m['reveal.equivalent.scaled.units.months']()
+          result = { value: yearFraction * 12, unit: m['reveal.equivalent.scaled.units.months']() }
         } else {
-          value = yearFraction * 365
-          unit = m['reveal.equivalent.scaled.units.days']()
+          result = { value: yearFraction * 365, unit: m['reveal.equivalent.scaled.units.days']() }
         }
         break
+      }
 
-      case 'city_power':
-        // rawValue is GWh/day, divide by city's daily GWh
+      case 'city_power': {
         const days = rawValue / refs.cityGwhDay
         if (days >= 30) {
-          value = days / 30
-          unit = m['reveal.equivalent.scaled.units.months']()
+          result = { value: days / 30, unit: m['reveal.equivalent.scaled.units.months']() }
         } else if (days >= 7) {
-          value = days / 7
-          unit = m['reveal.equivalent.scaled.units.weeks']()
+          result = { value: days / 7, unit: m['reveal.equivalent.scaled.units.weeks']() }
         } else {
-          value = days
-          unit = m['reveal.equivalent.scaled.units.days']()
+          result = { value: days, unit: m['reveal.equivalent.scaled.units.days']() }
         }
         break
+      }
 
-      case 'european_homes':
-        // rawValue is number of homes
-        // Only use "million" for very large numbers, show raw numbers up to 999,999
-        if (rawValue >= 1_000_000) {
-          value = rawValue / 1_000_000
-          unit = m['reveal.equivalent.scaled.units.millionHomes']()
-        } else {
-          value = rawValue
-          unit = m['reveal.equivalent.scaled.units.homes']()
-        }
+      // === Locale-dependent scaling ===
+      case 'carbon_budget':
+        result = autoScale(rawValue / refs.carbonBudgetKg, 'people')
         break
 
+      // === No scaling ===
       case 'nuclear_reactors':
-        value = rawValue
-        unit = m['reveal.equivalent.scaled.units.reactors']()
+        result = { value: rawValue, unit: m['reveal.equivalent.scaled.units.reactors']() }
         break
 
       case 'solar_farm_area':
-        value = rawValue
-        unit = 'km²'
+        result = { value: rawValue, unit: 'km²' }
+        break
+
+      // === Standard auto-scaling with options ===
+      case 'forest_absorption':
+        result = autoScale(rawValue, 'hectares', { includeThousand: true })
+        break
+
+      case 'trees_planted':
+        result = autoScale(rawValue, 'trees', { includeBillion: true })
+        break
+
+      // === Standard auto-scaling (million threshold only) ===
+      case 'european_homes':
+        result = autoScale(rawValue, 'homes')
         break
 
       case 'wind_turbines':
-        // Only use "thousand" for very large numbers
-        if (rawValue >= 1_000_000) {
-          value = rawValue / 1_000_000
-          unit = m['reveal.equivalent.scaled.units.millionTurbines']()
-        } else {
-          value = rawValue
-          unit = m['reveal.equivalent.scaled.units.turbines']()
-        }
+        result = autoScale(rawValue, 'turbines')
         break
 
       case 'car_earth_trips':
-        // Only use "million" for very large numbers
-        if (rawValue >= 1_000_000) {
-          value = rawValue / 1_000_000
-          unit = m['reveal.equivalent.scaled.units.millionTrips']()
-        } else {
-          value = rawValue
-          unit = m['reveal.equivalent.scaled.units.trips']()
-        }
+        result = autoScale(rawValue, 'trips')
         break
 
       case 'paris_nyc_flights':
-        // Only use "million" for very large numbers
-        if (rawValue >= 1_000_000) {
-          value = rawValue / 1_000_000
-          unit = m['reveal.equivalent.scaled.units.millionFlights']()
-        } else {
-          value = rawValue
-          unit = m['reveal.equivalent.scaled.units.flights']()
-        }
+        result = autoScale(rawValue, 'flights')
+        break
+
+      case 'tgv_paris_lyon':
+        result = autoScale(rawValue, 'journeys')
         break
 
       default:
-        value = rawValue
-        unit = ''
+        result = { value: rawValue, unit: '' }
     }
 
-    // Format value with appropriate precision
-    let formattedValue: string
-    if (value >= 100) {
-      formattedValue = Math.round(value).toLocaleString(locale)
-    } else if (value >= 10) {
-      formattedValue = value.toFixed(1)
-    } else if (value >= 1) {
-      formattedValue = value.toFixed(2)
-    } else if (value >= 0.01) {
-      formattedValue = value.toFixed(2)
-    } else if (value > 0) {
-      // For very small values, show "< 0.01" instead of "0.00"
-      formattedValue = '< 0.01'
-    } else {
-      formattedValue = '0'
-    }
-
-    return { value: formattedValue, unit }
+    return { value: formatValue(result.value), unit: result.unit }
   }
 
   // Get reference name for display (country or city name)
   function getReferenceName(type: EquivalenceType): string {
-    if (type === 'country_electricity') {
-      return m[`reveal.equivalent.scaled.references.${refs.country}`]()
-    } else if (type === 'city_power') {
-      return m[`reveal.equivalent.scaled.references.${refs.city}`]()
+    const config = getConfig(type)
+    const getRef = (key: string) => (m as unknown as Record<string, () => string>)[key]()
+    if (config.reference === 'country') {
+      return getRef(`reveal.equivalent.scaled.references.${refs.country}`)
+    } else if (config.reference === 'city') {
+      return getRef(`reveal.equivalent.scaled.references.${refs.city}`)
     }
     return ''
   }
 
-  // Check if equivalence type is CO2-based (vs energy-based)
-  function isCo2Based(type: EquivalenceType): boolean {
-    return type === 'car_earth_trips' || type === 'paris_nyc_flights'
-  }
-
-  // Get the appropriate connector based on equivalence type (derived since type can change)
+  // Get the appropriate connector based on equivalence category
   const connector = $derived(
-    isCo2Based(equivalenceType)
-      ? m['reveal.equivalent.scaled.connectorCo2']()
-      : m['reveal.equivalent.scaled.connectorEnergy']()
+    getConfig(equivalenceType).category === 'absorption'
+      ? m['reveal.equivalent.scaled.connectorAbsorption']()
+      : getConfig(equivalenceType).category === 'emission'
+        ? m['reveal.equivalent.scaled.connectorCo2']()
+        : m['reveal.equivalent.scaled.connectorEnergy']()
   )
 </script>
 
@@ -336,8 +434,8 @@
           desc={m[`reveal.equivalent.scaled.${equivalenceType}.label`]({
             reference: getReferenceName(equivalenceType)
           })}
-          icon={getEquivalenceIcon(equivalenceType)}
-          iconClass={getEquivalenceIconClass(equivalenceType)}
+          icon={getConfig(equivalenceType).icon}
+          iconClass={getConfig(equivalenceType).color}
           tooltip={m[`reveal.equivalent.scaled.${equivalenceType}.tooltip`]()}
         />
 
