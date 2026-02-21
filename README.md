@@ -1,201 +1,235 @@
-<br>
+<h1 align="center">Open Source LLM Arena</h1>
+
 <p align="center">
-  <a href="https://comparia.beta.gouv.fr/">
-  <img src="https://github.com/user-attachments/assets/bd071ffd-1253-486d-ad18-9f5b371788b0" width=300px alt="compar:IA logo" />  </a>
+  <strong>Collect human preference datasets for less-resourced languages and specific sectors,<br>
+  while raising awareness about model diversity, bias, and environmental impact.</strong><br><br>
+  <em>Built by the French government, now growing into new languages and sectors.</em>
 </p>
 
-<h2 align="center" >Comparateur d’IA conversationnelles / Conversational AI comparator</h3>
-<p align="center">Compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.</p>
-<p align="center">Compar:IA is a tool for blindly comparing different conversational AI models to raise awareness about the challenges of generative AI (bias, environmental impact) and to build up French-language preference datasets.</p>
+<p align="center">
+  <a href="https://comparia.beta.gouv.fr/">🇫🇷 French platform</a>&nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://ai-arenaen.dk/">🇩🇰 Danish platform</a>
+</p>
 
-<p align="center"><a href="https://comparia.beta.gouv.fr/">🌐 comparia.beta.gouv.fr</a> · <a href="https://comparia.beta.gouv.fr/a-propos">📚 À propos</a> · <a href="https://beta.gouv.fr/startups/languia.html">🚀 Description de la startup d'Etat</a><p>
+<p align="center">
+  <img src="https://github.com/simonaszilinskas/fourre-tout/blob/main/Frame%2014254.png?raw=true" alt="Supported by DINUM, Ministry of Culture, ALT-EDIC, Denmark, and recognised as a Digital Public Good" />
+</p>
+
+---
+
+## How does it work?
+
 <div align="center">
-  <a href="https://comparia.beta.gouv.fr/" 
-     aria-label="Cliquez pour se rendre sur la plateforme hébergée"
-     title="Capture d'écran du comparateur">
-    <img 
-      src="https://github.com/user-attachments/assets/6c8257fc-a2e5-4ee1-8052-dbf14a0419ea" 
-      alt="Aperçu du comparateur" 
+  <a href="https://comparia.beta.gouv.fr/"
+     aria-label="Click to visit the hosted platform"
+     title="Demo video of the comparator">
+    <video
+      src="https://github.com/user-attachments/assets/06ce8c3d-aec1-48d6-ab64-a75a08020796"
       width="800"
+      autoplay
+      loop
+      muted
+      playsinline
     />
   </a>
 </div>
-<div align="center">
-  <sub>
-    <i>Cliquez sur l'image ci-dessus pour consulter le site (s'ouvre dans un nouvel onglet)</i>
-  </sub>
-</div>
 
-## Run the arena
+```mermaid
+flowchart LR
+    U["👤 Ask"] --> A["🤖 Compare"] --> V["🗳️ Vote"] --> R["🔍 Reveal"]
 
-### API configuration
+    R --> L["🏆 Leaderboard"]
+    R --> T["🧠 Rare data for model training"]
+    R --> M["🗺️ Use case mapping"]
+    R --> E1["💡 Model diversity"]
+    R --> E2["⚖️ Bias awareness"]
+    R --> E3["🌱 Env. impact"]
 
-We rely heavily on OpenRouter, so if you want to test with real providers, in your environment variables, you need to have `OPENROUTER_API_KEY` set according to the configured models located in `utils/models/generated_models.json`.
-
-#### Mock Response Mode
-
-For testing purposes, you can enable mock responses by setting the `MOCK_RESPONSE` environment variable to `true` in your `.env` file:
-
-```bash
-MOCK_RESPONSE=True
+    style U fill:#f0f4ff,stroke:#3558a2
+    style A fill:#f0f4ff,stroke:#3558a2
+    style V fill:#f0f4ff,stroke:#3558a2
+    style R fill:#f0f4ff,stroke:#3558a2
+    style E1 fill:#e8f5e9,stroke:#388e3c
+    style E2 fill:#e8f5e9,stroke:#388e3c
+    style E3 fill:#e8f5e9,stroke:#388e3c
+    style L fill:#fff3e0,stroke:#e65100
+    style T fill:#fff3e0,stroke:#e65100
+    style M fill:#fff3e0,stroke:#e65100
 ```
 
+<p align="center">
+  <em>🟦 User journey &nbsp;&nbsp; 🟩 Awareness value &nbsp;&nbsp; 🟧 Dataset value</em>
+</p>
 
-### Development and Testing
+---
 
-### With Docker
+## 🇫🇷 The French use case
 
-`docker compose -f docker/docker-compose.yml up backend frontend`
+<table>
+<tr>
+<td width="55%" valign="top">
 
-### Without Docker
+Launched in October 2024 by [DINUM](https://www.numerique.gouv.fr/dinum/) and the French [Ministry of Culture](https://www.culture.gouv.fr/) to address the lack of French-language preference data for LLM training nd evaluation.
 
-#### Quick start with `make`
+Since launch: **600,000+ prompts**, **250,000+ preference votes**, 300,000+ visitors. One of the largest non-English human preference datasets available. All data published openly on Hugging Face:
 
-The easiest way to run Languia is using the provided Makefile:
+- [comparia-conversations](https://huggingface.co/datasets/ministere-culture/comparia-conversations) (460k+ entries)
+- [comparia-votes](https://huggingface.co/datasets/ministere-culture/comparia-votes) (149k+ entries)
+- [comparia-reactions](https://huggingface.co/datasets/ministere-culture/comparia-reactions) (89k+ entries)
+
+We published a [pre-print](https://huggingface.co/papers/2602.06669) to dive deep into the project's strategy in France.
+
+</td>
+<td width="45%" valign="top">
+
+<img src="https://comparia.beta.gouv.fr/news/jt-france2.jpeg" alt="Compar:IA featured on France 2 news, being used in a classroom" width="100%" />
+
+<sub><em>Compar:IA on the France 2 evening news, used in the classroom to teach students about AI models, bias, and environmental impact.</em></sub>
+
+</td>
+</tr>
+</table>
+
+---
+
+## For whom?
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🌍 Languages
+
+Most LLMs underperform outside English. Compar:IA collects the preference data needed to close this gap.
+
+Already live in **French and Danish**, and planning launches in Sweden, Estonia and Lithuania.
+
+</td>
+<td width="33%" valign="top">
+
+### 🏛️ Sectors
+
+Generic benchmarks miss domain-specific needs. A sector arena reveals which models handle specialised language best.
+
+*Healthcare, legal, education, public admin, agriculture...*
+
+</td>
+<td width="33%" valign="top">
+
+### 🏢 Organisations
+
+Run your own arena, evaluate models on your real-world tasks, and contribute data back to the commons.
+
+*Governments, universities, hospitals, companies, NGOs...*
+
+</td>
+</tr>
+</table>
+
+---
+
+## Benefits
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+### 💡 Raise awareness
+
+Teach citizens and professionals about model diversity, bias, and environmental cost. Already used in schools and training sessions.
+
+<img src="https://comparia.beta.gouv.fr/news/duel.jpg" alt="Blind comparison between two models" width="100%" />
+
+</td>
+<td width="33%" align="center">
+
+### 📊 Generate rare datasets
+
+Produce instruction and preference data in less-ressourced languages. 
+
+<img src="https://comparia.beta.gouv.fr/datasets/bunka-analyse.png" alt="Dataset analysis visualization" width="100%" />
+
+</td>
+<td width="33%" align="center">
+
+### 🔁 Downstream reuse
+
+Data feeds into new model training, leaderboards, use case mappings, and other research topics.
+
+<img src="https://comparia.beta.gouv.fr/news/analyse-bunka.png" alt="Downstream data analysis" width="100%" />
+
+</td>
+</tr>
+</table>
+
+---
+
+## Interested in an arena for your language, sector, or organisation?
+
+The platform is fully open source, self-hostable, and customizable: choose your models, translate the interface, adapt prompt suggestions, add your logo. We can host it for you or help you set it up yourself.
+
+Whatever your situation, **reach out first** and we'll figure out the best path together.
+
+📬 **[contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr)**
+
+---
+
+## Contribute, we need you 🤝
+
+Compar:IA is a digital common. Whether you can offer funding, code, translations, or simply ideas, there is a place for you.
+
+**💰 Financially.** Compar:IA has been funded by DINUM and the French Ministry of Culture, with European support from ALT-EDIC. We are actively looking for new partners and funders to sustain the infrastructure, expand to new languages, and keep the project independent. **[contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr)**
+
+**💻 In code.** The entire platform is open source and we welcome contributions of all sizes: bug fixes, new features, translations, documentation. Come build with us. **[GitHub repository](https://github.com/betagouv/ComparIA)**
+
+**💬 In discussions.** Share your ideas, flag issues, or just ask questions on GitHub Discussions. We want to hear from you. **[GitHub Discussions](https://github.com/betagouv/ComparIA/discussions)**
+
+**Any other way.** Partnerships, academic collaborations, media coverage, spreading the word: every contribution matters. Reach out and let's talk. **[Contact us](mailto:contact@comparia.beta.gouv.fr)**
+
+---
+
+## Roadmap
+
+### 🟢 In Progress
+- **EcoLogits update** [#253](https://github.com/betagouv/ComparIA/pull/253) *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
+- **Gradio → FastAPI migration** *(🇫🇷 Ministry of Culture, 🇫🇷 DINUM, 🇪🇺 ALT-EDIC)*
+- **Language/platform-specific model support** *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
+- **Dataset publication pipeline** configurable per language/platform, with customizable publication delays and anonymization pipelines *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
+
+### 🔮 Up Next
+- Web search and document upload
+- Authentication
+- Style control [#273](https://github.com/betagouv/ComparIA/pull/273)
+- Ranking consolidation and internationalization
+- Message history
+- Easier deployment and streamlined onboarding
+- Improved anonymization pipeline
+- Live use-case mapping
+
+### ⛵ Shipped
+- Dataset publishing pipeline v1 *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- Leaderboard v1 *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture, in collaboration with 🇫🇷 PEReN)*
+- Archived models *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- Blog section *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- Internationalization foundations *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+- compar:IA v1 *(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)*
+
+---
+
+👉 **[Full technical roadmap on GitHub](https://github.com/orgs/betagouv/projects/160)**
+
+---
+
+## Getting started
+
+The platform is fully open source and self-hostable. The quickest way to get running:
 
 ```bash
-# Install all dependencies (backend + frontend)
-make install
-
-# Run both backend and frontend in development mode
-make dev
+cp .env.example .env       # Configure environment
+make install               # Install all dependencies
+make dev                   # Start backend + frontend
 ```
 
-This will start:
+For the full setup guide (Docker, manual setup, testing, database, models, i18n, architecture), see **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
-- Backend (FastAPI + Gradio) on http://localhost:8001
-- Frontend (SvelteKit) on http://localhost:5173
-
-### Manual Setup
-
-**Backend:**
-
-1. Install `uv`: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-2. Install dependencies: `uv sync`
-3. Run the server: `uv run uvicorn main:app --reload --timeout-graceful-shutdown 1 --port 8001`
-
-**Frontend:**
-
-1. Install Node.js and yarn
-2. Navigate to frontend: `cd frontend/`
-3. Install dependencies: `yarn install`
-4. Run dev server: `vite dev` or `npm run dev` or `npx vite dev`
-
-**(optional) Dashboard:**
-
-```bash
-uv run uvicorn controller:app --reload --port 21001
-```
-
-## Other operations
-
-### Available Makefile Commands
-
-```bash
-make help                # Display all available commands
-make install             # Install all dependencies
-make install-backend     # Install backend dependencies only
-make install-frontend    # Install frontend dependencies only
-make dev                 # Run backend + frontend (parallel)
-make dev-backend         # Run backend only
-make dev-frontend        # Run frontend only
-make dev-controller      # Run the dashboard controller
-make build-frontend      # Build frontend for production
-make test-backend        # Run backend tests
-make test-frontend       # Run frontend tests
-make clean               # Clean generated files
-
-make db-schema-init   # Initializes the database schema
-make db-migrate       # Applies migrations
-
-make models-build       # Generates model files from JSON sources
-make models-maintenance # Launches the model maintenance script
-
-make dataset-export   # Exports datasets to HuggingFace
-
-```
-
-### Database
-
-**Prerequisites:** `DATABASE_URI` environment variable configured
-
-```bash
-# Initialize database schema
-psql $DATABASE_URI -f utils/schemas/conversations.sql
-psql $DATABASE_URI -f utils/schemas/votes.sql
-psql $DATABASE_URI -f utils/schemas/reactions.sql
-psql $DATABASE_URI -f utils/schemas/logs.sql
-
-# Apply database migrations
-psql $DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
-psql $DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
-```
-
-### Models
-
-These commands generate [`utils/models/generated-models.json`](utils/models/generated-models.json) and update translations in [`frontend/locales/messages/fr.json`](frontend/locales/messages/fr.json).
-
-```bash
-# Generate model files from JSON sources
-uv run python utils/models/build_models.py
-
-# Run the models maintenance script
-uv run python utils/models/maintenance.py
-```
-
-#### Mock responses
-
-If you don't have access to an API, you can enable mock responses by uncommenting in `.env` file:
-`MOCK_RESPONSE=True`
-
-### Datasets
-
-**Prerequisites:** `DATABASE_URI` and `HF_PUSH_DATASET_KEY` environment variables configured
-
-```bash
-# Export datasets to HuggingFace
-uv run python utils/export_dataset.py
-```
-
-### Ranking Methods
-
-```bash
-# Install ranking_methods project dependencies (via uv)
-cd utils/ranking_methods && uv pip install -e .
-
-```
-
-For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_methods/README.md) and the notebooks in [`utils/ranking_methods/notebooks/`](utils/ranking_methods/notebooks/).
-
-## Project architecture and rationale
-
-### Architecture
-
-- `frontend/`: main code for frontend.
-  Frontend is Sveltekit. It lives in `frontend/` and runs on port 5173 in dev env, which is Vite's default.
-
-- `main.py`: the Python file for the main FastAPI app
-- `languia`: backend code.
-  Most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py` with `languia/config.py` for config.
-  It runs on port 8001 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
-
-- `docker/`: Docker config
-- `utils/`: utilities for models generation and maintenance, ranking methods (Elo, maximum likelihood), database schemas, and dataset export to HuggingFace
-
-- `controller.py`: a simplistic dashboard
-  You can run it with FastAPI: `uv run uvicorn controller:app --reload --port 21001`
-- `templates`: Jinja2 template for the dashboard
-
-- `pyproject.toml`: Python requirements
-- `sonar-project.properties` SonarQube configuration
-
-### Evolution
-
-We want to get rid of that Gradio code by transforming it into async FastAPI code and Redis session handling.
-
-<div align="center">
-
-<br />
 <a href="https://digitalpublicgoods.net/r/comparia" target="_blank" rel="noopener noreferrer"><img src="https://github.com/DPGAlliance/dpg-resources/blob/main/docs/assets/dpg-badge.png?raw=true" width="100" alt="Digital Public Goods Badge"></a>
-
-</div>
