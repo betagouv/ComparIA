@@ -1,20 +1,17 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button, Link, Tooltip } from '$components/dsfr'
-  import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import { Button, Link } from '$components/dsfr'
   import type { RevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  import { MiniCard } from '.'
+  import { RevealCard } from '.'
 
   let { data }: { data: RevealData } = $props()
 
   const locale = getLocale()
 
-  const { selected, modelsData, shareB64Data, equivalences } = data
+  const { selected, modelsData, shareB64Data } = data
 
   let shareInput: HTMLInputElement
 
@@ -26,162 +23,9 @@
 </script>
 
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
-  <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid">
-    {#each modelsData as { model, pos, scaled_co2_t, energy_mwh, tokens } (pos)}
-      {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
-        .map((k) => model.badges[k])
-        .filter((b) => !!b)}
-
-      <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex flex-col">
-        <div>
-          <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
-            <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
-            <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
-            {#if selected === pos}
-              <div
-                class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px]"
-              >
-                {m['vote.yours']()}
-              </div>
-            {/if}
-          </h5>
-          <ul class="fr-badges-group mb-4!">
-            {#each modelBadges as badge, i (i)}
-              <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
-            {/each}
-          </ul>
-
-          {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
-        </div>
-
-        <h6 class="mb-5! text-base! mt-auto!">
-          {m['reveal.impacts.title']()}
-          <Tooltip id="impact-{pos}" text={m['reveal.impacts.tooltip']()} />
-        </h6>
-        <div class="flex">
-          <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
-            <div class="md:w-full relative">
-              <MiniCard
-                id="params-{pos}"
-                value={model.params}
-                desc={m['reveal.impacts.size.label']()}
-                tooltip={m['models.openWeight.tooltips.params']()}
-                class="-mb-2 bg-white z-1 h-full "
-              >
-                {m['reveal.impacts.size.count']()}
-                {#if model.distribution === 'api-only'}
-                  {m['reveal.impacts.size.estimated']()}
-                {/if}
-                {#if model.quantization === 'q8'}
-                  {m['reveal.impacts.size.quantized']()}
-                {/if}
-              </MiniCard>
-              <div
-                class="cg-border rounded-sm! p-1 ps-3 pt-2 leading-normal absolute z-0 flex w-full bg-[--beige-gris-galet-950-100] text-[11px]"
-              >
-                <span class="text-[--beige-gris-galet-sun-407-moon-821]">
-                  {model.badges.arch.text}
-                </span>
-                <Tooltip
-                  id="{model.id}-arch-tooltip"
-                  size="xs"
-                  text={model.badges.arch.tooltip}
-                  class="ms-auto"
-                />
-              </div>
-            </div>
-
-            <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
-
-            <MiniCard
-              id="tokens-{pos}"
-              value={tokens}
-              units={m['reveal.impacts.tokens.tokens']()}
-              desc={m['reveal.impacts.tokens.label']()}
-              tooltip={m['reveal.impacts.tokens.tooltip']()}
-              class="md:w-full"
-            />
-          </div>
-
-          <div class="md:basis-1/3 flex basis-1/2 items-center">
-            <strong class="m-auto">≈</strong>
-
-            <MiniCard
-              id="energy-{pos}"
-              value={energy_mwh.toFixed(energy_mwh < 2 ? 2 : 0)}
-              units="mWh"
-              desc={m['reveal.impacts.energy.label']()}
-              icon="i-ri-flashlight-fill"
-              iconClass="text-info"
-              tooltip={m['reveal.impacts.energy.tooltip']()}
-              class="h-fit"
-            />
-          </div>
-        </div>
-
-        <div class="mt-9! md:mt-14! mb-5!">
-          <div class="flex">
-            <div>
-              <h6 class="text-base! mb-0!">
-                {m['reveal.equivalent.title']()}
-                <Tooltip id="equivalent-{pos}">
-                  {@html sanitize(
-                    m['reveal.equivalent.title_tooltip']({
-                      linkProps: externalLinkProps({
-                        href: 'https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport'
-                      })
-                    })
-                  )}
-                </Tooltip>
-              </h6>
-              <p>{m['reveal.equivalent.desc']()}</p>
-            </div>
-
-            <!-- FIXME -->
-            <MiniCard
-              id="co2-{pos}"
-              value={scaled_co2_t < 1
-                ? scaled_co2_t.toFixed(3)
-                : scaled_co2_t < 10
-                  ? scaled_co2_t.toFixed(1)
-                  : scaled_co2_t.toFixed(0)}
-              units="tonnes"
-              desc={m['reveal.equivalent.co2.label']()}
-              tooltip={m['reveal.equivalent.co2.tooltip']()}
-              class="md:w-full"
-            />
-          </div>
-
-          {#each equivalences as eq, i (i)}
-            <div>
-              <strong>{eq[pos].toFixed(1)}</strong>
-              <p>
-                {m[`reveal.equivalent.scales.${eq.type}.unit`]()}
-                <Tooltip id="equivalent-{eq.type}-{pos}">
-                  {@html sanitize(
-                    m[`reveal.equivalent.scales.${eq.type}.tooltip`]({
-                      linkProps: externalLinkProps({
-                        href: 'FIXME'
-                      })
-                    })
-                  )}
-                </Tooltip>
-              </p>
-            </div>
-          {/each}
-        </div>
-
-        <div class="mt-7 text-center">
-          <Button
-            text={m['actions.seeMore']()}
-            data-fr-opened="false"
-            aria-controls="modal-model-reveal-{model.id}"
-            size="sm"
-          />
-        </div>
-      </div>
-
-      <ModelInfoModal {model} modalId="modal-model-reveal-{model.id}" />
+  <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid grid-cols-1">
+    {#each modelsData as data (data.pos)}
+      <RevealCard {data} selected={selected === data.pos} />
     {/each}
   </div>
 
