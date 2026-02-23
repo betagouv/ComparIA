@@ -36,7 +36,7 @@ class EquivalenceType(Enum):
     PIZZA_PRODUCTION = "pizza_production"
     MANGO_IMPORT = "mango_import"
     POOL_FILING = "pool_filing"
-    # ARTIC_SEA_ICE_MELT = "arctic_sea_ice_melt"
+    ARTIC_SEA_ICE_MELT = "arctic_sea_ice_melt"
     ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
 
 
@@ -59,7 +59,7 @@ CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
     EquivalenceType.PIZZA_PRODUCTION: 3.5994,
     EquivalenceType.MANGO_IMPORT: 11.655508000000001,
     EquivalenceType.POOL_FILING: 7.54,
-    # EquivalenceType.ARTIC_SEA_ICE_MELT: 0,  # FIXME get factor
+    EquivalenceType.ARTIC_SEA_ICE_MELT: 1 / 0.003,
     EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
 }
 
