@@ -52,12 +52,10 @@
     const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('.eq-card')).reverse()
     const col = cols.find((col) => {
       const offsetLeft = col.offsetLeft - direction
-      console.log('col', col, col.offsetLeft, containerElem!.offsetLeft, offsetLeft)
       return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
     })
 
     if (!col) return
-    console.log('cocl', col)
     containerElem!.scrollTo({
       left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
     })
