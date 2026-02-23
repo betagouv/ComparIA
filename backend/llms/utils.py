@@ -66,9 +66,6 @@ CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
     EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
 }
 
-# Minimum threshold for meaningful display (values below this aren't intuitive)
-MIN_MEANINGFUL_VALUE = 1.0
-
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
     """
@@ -260,6 +257,11 @@ class ValueAndUnit(TypedDict):
     unit: str
 
 
+class Equivalence(TypedDict):
+    type: EquivalenceType
+    value: float
+
+
 class Consumption(TypedDict):
     # Token usage
     tokens: int
@@ -271,6 +273,8 @@ class Consumption(TypedDict):
     # Energy metrics
     energy_mwh: int | float
     energy_kwh: int | float
+    # Scaled equivalence values
+    equivalences: list[Equivalence]
 
 
 def get_llm_consumption(
@@ -288,7 +292,7 @@ def get_llm_consumption(
         request_latency: Time taken for inference (optional, for more accurate calculations)
 
     Returns:
-
+        dict: Consumption
     """
     impact = get_llm_impact(llm, tokens, request_latency)
 
@@ -305,72 +309,12 @@ def get_llm_consumption(
         "scaled_co2_t": scaled_co2_kg / 1000,
         "energy_mwh": kwh * 1000 * 1000,
         "energy_kwh": kwh,
+        # Compute all equivalences
+        "equivalences": [
+            {
+                "type": eq_type,
+                "value": scaled_co2_kg / CO2_KG_EQUIVALENCE[eq_type],
+            }
+            for eq_type in list(EquivalenceType)
+        ],
     }
-
-
-def get_all_meaningful_equivalences(
-    conso_a: Consumption,
-    conso_b: Consumption,
-    seed: int,
-) -> list[dict]:
-    """
-    Get all equivalence types that produce meaningful values for BOTH models.
-
-    This ensures users never see confusing values like "0.01 reactors" - instead
-    they'll see more relatable numbers like "15,000 flights" or "2.5 days".
-
-    Algorithm:
-        1. Calculate values for all 8 equivalence types for both models
-        2. Filter to types where BOTH models produce values >= MIN_MEANINGFUL_VALUE
-        3. Shuffle the valid types (using seed for consistency)
-        4. If none qualify, include the type with the largest minimum value
-
-    Args:
-        conso_a: Consumption for LLM A (energy in kWh, CO2 in kg)
-        conso_b: Consumption for LLM B (energy in kWh, CO2 in kg)
-        seed: Integer seed for deterministic shuffling
-
-    Returns:
-        list[dict]: List of equivalences, each containing:
-            - type: The equivalence type string
-            - model_a_value: Scaled value for model A
-            - model_b_value: Scaled value for model B
-    """
-    all_types = list(EquivalenceType)
-    valid_equivalences = []
-    fallback_equivalence = None
-    fallback_min_value = 0.0
-
-    for eq_type in all_types:
-        value_a = conso_a["scaled_co2_kg"] / CO2_KG_EQUIVALENCE[eq_type]
-        value_b = conso_b["scaled_co2_kg"] / CO2_KG_EQUIVALENCE[eq_type]
-        min_value = min(value_a, value_b)
-
-        equiv_data = {
-            "type": eq_type.value,
-            "a": value_a,
-            "b": value_b,
-        }
-
-        if min_value >= MIN_MEANINGFUL_VALUE:
-            valid_equivalences.append(equiv_data)
-
-        # Track best fallback (type with largest minimum value)
-        if min_value > fallback_min_value:
-            fallback_min_value = min_value
-            fallback_equivalence = equiv_data
-
-    if valid_equivalences:
-        return valid_equivalences
-    else:
-        return (
-            [fallback_equivalence]
-            if fallback_equivalence
-            else [
-                {
-                    "type": all_types[0].value,
-                    "a": 0,
-                    "b": 0,
-                }
-            ]
-        )
