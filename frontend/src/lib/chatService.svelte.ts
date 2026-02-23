@@ -148,7 +148,7 @@ export interface APIRevealData {
   b: APIRevealModelData
 }
 
-interface RevealModelData extends APIConsoData {
+export interface RevealModelData extends APIConsoData {
   model: BotModel
   pos: Bot
 }
