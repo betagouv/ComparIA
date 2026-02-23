@@ -2020,7 +2020,7 @@
         "impacts": {
             "energy": {
                 "label": "énergie conso.",
-                "tooltip": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+                "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "size": {
                 "count": "milliards param.",
