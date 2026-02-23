@@ -10,10 +10,7 @@ Functions:
 - get_total_params: Get the total number of parameters for a LLM
 - get_active_params: Get the number of active parameters for a LLM
 - get_llm_impact: Calculate environmental impact for a model
-- calculate_energy_with_unit: Calculates energy consumption
-- calculate_co2_with_unit: Calculates CO2 emissions
 - get_llm_consumption: Calculates environmental impact
-- calculate_scaled_equivalence: Calculate scaled impact metrics
 """
 
 from enum import Enum
@@ -195,66 +192,6 @@ def get_llm_impact(
         datacenter_wue=1.8,
         request_latency=request_latency,
     )
-
-
-# FIXME rm?
-def calculate_energy_with_unit(impact_energy_value_or_range):
-    """
-    Calculates energy consumption and determines the most sensible unit.
-
-    Args:
-      impact_energy_value_or_range: Energy consumption in kilowatt-hours (kWh).
-
-    Returns:
-      A tuple containing:
-        - A float representing the energy value.
-        - A string representing the most sensible unit ('Wh' or 'mWh').
-    """
-    impact_energy_value = convert_range_to_value(impact_energy_value_or_range)
-
-    # Convert to watt-hours
-    energy_wh = impact_energy_value * 1000
-
-    # Determine sensible unit based on magnitude
-    if energy_wh >= 1:
-        return energy_wh, "Wh"
-    else:
-        # Convert to milliwatt-hours for very small values
-        energy_mwh = energy_wh * 1000
-        return energy_mwh, "mWh"
-
-
-def calculate_co2_with_unit(
-    impact_gwp_value_or_range: ValueOrRange,
-) -> tuple[int | float, str]:
-    """
-    Calculates CO2 emissions and determines the most sensible unit.
-
-    Args:
-      impact_gwp_value_or_range: CO2 emissions in kilograms.
-
-    Returns:
-      A tuple containing:
-        - A float representing the CO2 value.
-        - A string representing the most sensible unit ('kg', 'g', or 'mg').
-    """
-    impact_gwp_value = convert_range_to_value(impact_gwp_value_or_range)
-
-    # Convert to grams
-    co2_grams = impact_gwp_value * 1000
-
-    # Determine sensible unit based on magnitude
-    if co2_grams >= 1:
-        return co2_grams, "g"
-    else:
-        # Convert to milligrams for very small values
-        co2_milligrams = co2_grams * 1000
-        return co2_milligrams, "mg"
-
-
-class ValueAndUnit(TypedDict):
-    value: int | float
-    unit: str
 
 
 class Equivalence(TypedDict):
