@@ -108,15 +108,6 @@ export interface VoteData {
 }
 
 // REVEAL
-
-interface APIConsoData {
-  tokens: number
-  co2_kg: number
-  scaled_co2_kg: number
-  scaled_co2_t: number
-  energy_mwh: number
-  energy_kwh: number
-}
 // Equivalence types for scaled impact comparisons
 export type EquivalenceType =
   | 'package_delivery'
@@ -129,11 +120,20 @@ export type EquivalenceType =
   | 'arctic_sea_ice_melt'
   | 'one_year_tree_absortion'
 
-// Single equivalence with values for both models
 export interface APIEquivalence {
   type: EquivalenceType
-  a: number
-  b: number
+  value: number
+}
+
+interface APIConsoData {
+  tokens: number
+  co2_kg: number
+  scaled_co2_kg: number
+  scaled_co2_t: number
+  energy_mwh: number
+  energy_kwh: number
+  // All meaningful scaled equivalences (frontend can cycle through them)
+  equivalences: APIEquivalence[]
 }
 
 interface APIRevealModelData {
@@ -146,8 +146,6 @@ export interface APIRevealData {
   chosen_llm: BotChoice
   a: APIRevealModelData
   b: APIRevealModelData
-  // All meaningful scaled equivalences (frontend can cycle through them)
-  equivalences: APIEquivalence[]
 }
 
 interface RevealModelData extends APIConsoData {
@@ -159,7 +157,6 @@ export interface RevealData {
   selected: BotChoice
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
-  equivalences: APIEquivalence[]
 }
 
 // DATA
@@ -365,8 +362,7 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
       pos,
       ...data[pos].conso
     })),
-    shareB64Data: data.b64,
-    equivalences: data.equivalences
+    shareB64Data: data.b64
   }
 }
 
