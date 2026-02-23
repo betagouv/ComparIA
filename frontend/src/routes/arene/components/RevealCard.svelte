@@ -33,7 +33,7 @@
     pizza_production: { emoji: '🍕', unit: 'kg' },
     mango_import: { emoji: '🥭', unit: 'kg' },
     pool_filing: { emoji: '💦' },
-    arctic_sea_ice_melt: { emoji: '🧊' },
+    arctic_sea_ice_melt: { emoji: '🧊', unit: 'm<sup>2</sup>' },
     one_year_tree_absortion: { emoji: '🌳' }
   }
 
@@ -211,7 +211,7 @@
 
             <strong class="text-[18px]">
               {eq.value.toFixed(equivalencesData[eq.type].decimals ?? 0)}
-              {equivalencesData[eq.type].unit}
+              {@html sanitize(equivalencesData[eq.type].unit ?? '')}
             </strong>
             <p class="mb-0! text-grey! lh-tight text-center text-[11px]!">
               {m[`reveal.equivalent.scales.${eq.type}.unit`]()}&nbsp;<Tooltip
