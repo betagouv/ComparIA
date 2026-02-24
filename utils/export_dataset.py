@@ -87,10 +87,15 @@ SELECT
     ip
 FROM conversations
 WHERE archived = FALSE
+-- Filter out rows potentially containing PII
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
+-- Filter out rows excluded because of their cohort (only pix for now)
 AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
+-- Filter out non-recoverable ModelResponseStream in JSONB conversations
+AND conversation_a::text NOT LIKE '%%ModelResponseStream%%'
+AND conversation_b::text NOT LIKE '%%ModelResponseStream%%'
 ;
 """
 
@@ -111,17 +116,49 @@ AND EXISTS (
 """
 
 reactions_db_query = """
-SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg,
+    conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id,
+    conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content,
+    liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial,
+    instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+
 FROM reactions r
+
 WHERE r.archived = FALSE
+
+-- Filter potentially incoherent data
+  -- 1. msg_index referencing a conversation must be within conversation bounds
+  AND r.msg_index < LEAST(
+      jsonb_array_length(r.conversation_a),
+      jsonb_array_length(r.conversation_b)
+  )
+  -- 2. Message at reacted to (at msg_index) must be from assistant role
+  -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
+  AND (
+    CASE
+        WHEN r.refers_to_conv_id = r.conv_a_id THEN
+            (r.conversation_a->r.msg_index->>'role' = 'assistant')
+        WHEN r.refers_to_conv_id = r.conv_b_id THEN
+            (r.conversation_b->r.msg_index->>'role' = 'assistant')
+        ELSE FALSE
+    END
+  )
+  -- 3. Filter out eventual ModelResponseStream corrupted content
+  AND (r.response_content NOT LIKE '%%ModelResponseStream%%' OR r.response_content IS NULL)
+  AND r.conversation_a::text NOT LIKE '%%ModelResponseStream%%'
+  AND r.conversation_b::text NOT LIKE '%%ModelResponseStream%%'
+
+
+-- Filtering reactions with PII, or excluded cohorts
 AND EXISTS (
     SELECT 1
     FROM conversations c
+
     WHERE c.conversation_pair_id = r.conversation_pair_id
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
     AND c.postprocess_failed = FALSE
-    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
+    AND (COALESCE(c.cohorts, '') NOT LIKE '%%pix%%')
 )
 ;
 """
