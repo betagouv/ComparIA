@@ -132,7 +132,9 @@ async def stream_conversation_messages(
             exc_info=True,
         )
 
-        raise ChatError(message=error_message, pos=pos, is_timeout=isinstance(e, litellm.Timeout))
+        raise ChatError(
+            message=error_message, pos=pos, is_timeout=isinstance(e, litellm.Timeout)
+        )
 
 
 async def stream_comparison_messages(
@@ -205,9 +207,7 @@ async def stream_comparison_messages(
                         and is_first_turn
                         and not retried[e.pos]
                         and not _is_model_user_selected(
-                            getattr(
-                                conversations, f"conversation_{e.pos}"
-                            ).model_name,
+                            getattr(conversations, f"conversation_{e.pos}").model_name,
                             conversations.mode,
                             conversations.custom_models_selection,
                         )
@@ -220,9 +220,7 @@ async def stream_comparison_messages(
                             logger.warning(
                                 f"Model '{old_name}' timed out, swapping to '{new_model}'"
                             )
-                            user_msg = UserMessage(
-                                content=conversations.opening_msg
-                            )
+                            user_msg = UserMessage(content=conversations.opening_msg)
                             new_conv = create_conversation(
                                 new_model,
                                 conversations.country_portal,
@@ -233,10 +231,8 @@ async def stream_comparison_messages(
                                 f"conversation_{e.pos}",
                                 new_conv,
                             )
-                            generators[e.pos] = (
-                                stream_conversation_messages(
-                                    e.pos, new_conv, request
-                                )
+                            generators[e.pos] = stream_conversation_messages(
+                                e.pos, new_conv, request
                             )
                             retried[e.pos] = True
                             continue
@@ -290,7 +286,9 @@ def _pick_replacement_model(conversations: Conversations, pos: BotPos) -> str | 
     if conversations.mode == "small-models":
         pool = models.small_models
     elif conversations.mode == "big-vs-small":
-        pool = models.big_models if failing in models.big_models else models.small_models
+        pool = (
+            models.big_models if failing in models.big_models else models.small_models
+        )
     else:
         pool = models.random_models
 
