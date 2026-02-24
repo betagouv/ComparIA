@@ -4847,6 +4847,78 @@
       "url": "https://platform.openai.com/docs/models/o4-mini",
       "wh_per_million_token": 5171.2266666666665
     },
+    "odin-large": {
+      "active_params": null,
+      "arch": "maybe-moe",
+      "commercial_use": false,
+      "data": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": "https://api.ordbogen.ai/v1",
+        "api_model_id": "odin-large",
+        "api_type": "openai",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "ordbogen.ai-color.svg",
+      "id": "odin-large",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "Ordbogen",
+      "params": 358,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 358,
+      "reuse": false,
+      "simple_name": "Odin Large",
+      "specific_portals": [
+        "da"
+      ],
+      "status": "enabled",
+      "url": "https://www.ordbogen.ai/",
+      "wh_per_million_token": 158657.07999999996
+    },
+    "odin-medium": {
+      "active_params": null,
+      "arch": "maybe-moe",
+      "commercial_use": false,
+      "data": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": "https://api.ordbogen.ai/v1",
+        "api_model_id": "odin-medium",
+        "api_type": "openai",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "ordbogen.ai-color.svg",
+      "id": "odin-medium",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "Ordbogen",
+      "params": 358,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "12/2025",
+      "required_ram": 358,
+      "reuse": false,
+      "simple_name": "Odin Medium",
+      "specific_portals": [
+        "da"
+      ],
+      "status": "enabled",
+      "url": "https://www.ordbogen.ai/",
+      "wh_per_million_token": 158657.07999999996
+    },
     "olmo-2-0325-32b": {
       "active_params": null,
       "arch": "dense",
