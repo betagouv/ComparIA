@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     HF_PUSH_DATASET_KEY: str = ""
     REPO_ORG: str = "ministere-culture"
 
+    RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
+
     enable_postgres_handler: bool = True
 
     # Response caching
