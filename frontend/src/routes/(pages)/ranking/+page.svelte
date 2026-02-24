@@ -32,7 +32,7 @@
       { key: 'rank_p2_5' as const, label: 'Rank p2.5' },
       { key: 'rank_p97_5' as const, label: 'Rank p97.5' },
       { key: 'n_match' as const, label: 'Total votes' },
-      { key: 'consumption_wh' as const, label: 'Consumption Wh (1000 tokens)', energy: true },
+      { key: 'consumption' as const, label: 'Consumption mWh (1000 tokens)', energy: true },
       { key: 'friendly_size' as const, label: 'Size', energy: true },
       { key: 'params' as const, label: 'Parameters (B)', energy: true },
       { key: 'arch' as const, label: 'Architecture', energy: true },
@@ -61,8 +61,8 @@
               if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
               if (col.key === 'trust_range')
                 return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
-              if (col.key === 'consumption_wh') {
-                return m.license === 'proprietary' ? 'N/A' : m.consumption_wh
+              if (col.key === 'consumption') {
+                return m.license === 'proprietary' ? 'N/A' : m.consumption
               }
               return m[col.key]
             })

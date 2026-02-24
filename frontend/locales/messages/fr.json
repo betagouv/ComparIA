@@ -1427,9 +1427,9 @@
         },
         "conso": {
             "count": {
-                "L": "> 100 Wh",
-                "M": "de 10 à 100 Wh",
-                "S": "< 10 Wh"
+                "L": "> 5000 mWh",
+                "M": "de 150 à 5000 mWh",
+                "S": "< 150 mWh"
             },
             "filterLegend": "Filtre par consommation énergétique moyenne pour 1000 tokens"
         },
@@ -1810,11 +1810,11 @@
                     "tooltip": {
                         "active_params": "Paramètres actifs (mds)",
                         "arch": "Architecture",
-                        "consumption_wh": "Conso. moyenne (Wh)",
+                        "consumption": "Conso. moyenne (mWh)",
                         "elo": "Score BT",
                         "params": "Paramètres (mds)"
                     },
-                    "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
+                    "xLabel": "Consommation moyenne pour 1000 tokens (mWh)",
                     "yLabel": "Score Bradley-Terry (BT)"
                 },
                 "methodo": {
@@ -1935,7 +1935,7 @@
                 "billions": "{count} Mds",
                 "cols": {
                     "arch": "Architecture",
-                    "consumption_wh": "Conso. moyenne<br>(1000 tokens)",
+                    "consumption": "Conso. moyenne<br>(1000 tokens)",
                     "elo": "Score de<br> satisfaction BT",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -1949,7 +1949,7 @@
                 "estimation": "(estimation)",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
-                    "consumption_wh": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
+                    "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "rank": "Rang de classement attribué selon le score de satisfaction Bradley-Terry",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",

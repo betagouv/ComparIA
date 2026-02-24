@@ -1142,9 +1142,9 @@
         },
         "conso": {
             "count": {
-                "L": "> 100 Wh",
-                "M": "10–100 Wh",
-                "S": "< 10 Wh"
+                "L": "> 5000 mWh",
+                "M": "150–5000 mWh",
+                "S": "< 150 mWh"
             }
         },
         "extra": {
@@ -1471,7 +1471,7 @@
                     "tooltip": {
                         "active_params": "Aktiivsed parameetrid (miljardites)",
                         "arch": "Arhitektuur",
-                        "consumption_wh": "Keskmine tarbimine (Wh)",
+                        "consumption": "Keskmine tarbimine (mWh)",
                         "elo": "BT skoor",
                         "params": "Parameetrit (miljardites)"
                     },

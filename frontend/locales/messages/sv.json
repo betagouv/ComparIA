@@ -1276,11 +1276,11 @@
             "views": {
                 "graph": {
                     "tooltip": {
-                        "consumption_wh": "Genomsnittlig förbrukning (Wh)",
+                        "consumption": "Genomsnittlig förbrukning (mWh)",
                         "elo": "BT-poäng",
                         "params": "Parametrar (i miljarder)"
                     },
-                    "xLabel": "Genomsnittlig förbrukning per 1000 tokens (Wh)",
+                    "xLabel": "Genomsnittlig förbrukning per 1000 tokens (mWh)",
                     "yLabel": "Bradley-Terry-poäng"
                 },
                 "table": {
@@ -1373,7 +1373,7 @@
                 "billions": "{count} miljarder",
                 "cols": {
                     "arch": "Arkitektur",
-                    "consumption_wh": "Genomsnittlig förbrukning<br>(1000 tokens)",
+                    "consumption": "Genomsnittlig förbrukning<br>(1000 tokens)",
                     "elo": "Nöjdhetspoäng (BT)",
                     "license": "Licens",
                     "n_match": "Totalt antal röster",

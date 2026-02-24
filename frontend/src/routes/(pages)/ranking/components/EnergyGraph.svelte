@@ -23,14 +23,14 @@
       .map((m) => {
         return {
           ...m,
-          x: m.consumption_wh,
+          x: m.consumption,
           y: m.data.elo,
           radius: dotSizes[m.friendly_size],
           class: m.license === 'proprietary' ? 'na' : m.arch,
           consoSize:
-            m.consumption_wh < 10
+            m.consumption < 150
               ? ('S' as const)
-              : m.consumption_wh < 100
+              : m.consumption < 5000
                 ? ('M' as const)
                 : ('L' as const)
         }
@@ -267,7 +267,7 @@
             </div>
 
             <div class="mt-1 text-[12px]">
-              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'i-ri-flashlight-line' }] as const as item (item.key)}
+              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption', icon: 'i-ri-flashlight-line' }] as const as item (item.key)}
                 <div class="gap-1 leading-relaxed flex">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
                   <p class="mb-0! leading-relaxed! text-grey text-[12px]!">
