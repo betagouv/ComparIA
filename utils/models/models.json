@@ -2007,9 +2007,9 @@
           "api_base": "https://api.ordbogen.ai/v1",
           "api_model_id": "odin-large"
         },
-        "desc": "The large version of the Odin models by the Danish company Ordbogen.com.",
-        "size_desc": "The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.",
-        "fyi": "This is the company's first model release which includes two models, where this is the largest of the two."
+        "desc": "La version grande des modèles Odin de la société danoise Ordbogen.com.",
+        "size_desc": "La taille des modèles utilisés par le système Odin n'est pas connue. L'architecture est probablement basée sur un « mélange d'experts » (Mixture of Experts, MoE), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects.",
+        "fyi": "Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus grand."
       },
       {
         "new": true,
@@ -2025,9 +2025,9 @@
           "api_base": "https://api.ordbogen.ai/v1",
           "api_model_id": "odin-medium"
         },
-        "desc": "The medium version of the Odin models by the Danish company Ordbogen.com.",
-        "size_desc": "The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.",
-        "fyi": "This is the company's first model release which includes two models, where this is the smallest of the two."
+        "desc": "La version moyenne des modèles Odin de la société danoise Ordbogen.com.",
+        "size_desc": "La taille des modèles utilisés par le système Odin n'est pas connue. L'architecture est probablement basée sur un « mélange d'experts » (Mixture of Experts, MoE), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects.",
+        "fyi": "Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus petit."
       }
     ]
   }
