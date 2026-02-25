@@ -13,6 +13,7 @@
   import { m } from '$lib/i18n/messages'
   import type { License, Organisation, Sizes } from '$lib/models'
   import { getModelsContext, SIZES } from '$lib/models'
+  import { onMount } from 'svelte'
 
   const models = getModelsContext().models
 
@@ -105,6 +106,45 @@
 
   let selectedModel = $state<string>()
   const selectedModelData = $derived(models.find((m) => m.id === selectedModel))
+
+  onMount(() => {
+    const hash = window.location.hash.slice(1)
+    if (hash) {
+      const model = models.find((m) => m.id === hash)
+      if (model) {
+        selectedModel = model.id
+        const modalElement = document.getElementById('modal-model')
+        if (modalElement) {
+          window.setTimeout(() => {
+            // @ts-expect-error - DSFR is globally available
+            window.dsfr(modalElement).modal.disclose()
+            // Restore the hash in the URL (DSFR removes it when opening the modal)
+            window.history.replaceState(null, '', `#${hash}`)
+          }, 100)
+        }
+      } else {
+        // Keep the hash in the URL even if the model is not found
+        window.history.replaceState(null, '', `#${hash}`)
+      }
+    }
+
+    // Remove hash from URL when modal is closed
+    const modalElement = document.getElementById('modal-model')
+    const handleModalConceal = () => {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+
+    if (modalElement) {
+      modalElement.addEventListener('dsfr.conceal', handleModalConceal)
+    }
+
+    // Cleanup: remove event listener when component is destroyed
+    return () => {
+      if (modalElement) {
+        modalElement.removeEventListener('dsfr.conceal', handleModalConceal)
+      }
+    }
+  })
 </script>
 
 <SeoHead title={m['seo.titles.modeles']()} />
