@@ -37,6 +37,13 @@ checkpoints_flant5_3b
 # *.csv
 tests/state_of_the_union.txt
 
+#Dataset
+*.parquet
+*.arrow
+*.duckdb
+*.tsv
+*.jsonl
+
 #Postgresql backup files
 prd-backup.dump
 *.dump

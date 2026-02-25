@@ -26,6 +26,10 @@ import subprocess
 import sys
 from datetime import datetime
 
+# Add the parent directory to the Python path BEFORE importing backend modules
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(SCRIPT_DIR, "..")))
+
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
@@ -33,24 +37,16 @@ from sqlalchemy.exc import OperationalError
 from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 
-# Add the parent directory to the Python path to resolve the 'languia' module
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 # FIXME import path from 'utils.utils'
 LLMS_GENERATED_DATA_FILE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "models", "generated-models.json"
+    SCRIPT_DIR, "models", "generated-models.json"
 )
 MODELS_DATA = {}
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
 
 COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
 
@@ -87,10 +83,15 @@ SELECT
     ip
 FROM conversations
 WHERE archived = FALSE
+-- Filter out rows potentially containing PII
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
+-- Filter out rows excluded because of their cohort (only pix for now)
 AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
+-- Filter out non-recoverable ModelResponseStream in JSONB conversations
+AND conversation_a::text NOT LIKE '%%ModelResponseStream%%'
+AND conversation_b::text NOT LIKE '%%ModelResponseStream%%'
 ;
 """
 
@@ -111,17 +112,49 @@ AND EXISTS (
 """
 
 reactions_db_query = """
-SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg,
+    conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id,
+    conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content,
+    liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial,
+    instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+
 FROM reactions r
+
 WHERE r.archived = FALSE
+
+-- Filter potentially incoherent data
+  -- 1. msg_index referencing a conversation must be within conversation bounds
+  AND r.msg_index < LEAST(
+      jsonb_array_length(r.conversation_a),
+      jsonb_array_length(r.conversation_b)
+  )
+  -- 2. Message at reacted to (at msg_index) must be from assistant role
+  -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
+  AND (
+    CASE
+        WHEN r.refers_to_conv_id = r.conv_a_id THEN
+            (r.conversation_a->r.msg_index->>'role' = 'assistant')
+        WHEN r.refers_to_conv_id = r.conv_b_id THEN
+            (r.conversation_b->r.msg_index->>'role' = 'assistant')
+        ELSE FALSE
+    END
+  )
+  -- 3. Filter out eventual ModelResponseStream corrupted content
+  AND (r.response_content NOT LIKE '%%ModelResponseStream%%' OR r.response_content IS NULL)
+  AND r.conversation_a::text NOT LIKE '%%ModelResponseStream%%'
+  AND r.conversation_b::text NOT LIKE '%%ModelResponseStream%%'
+
+
+-- Filtering reactions with PII, or excluded cohorts
 AND EXISTS (
     SELECT 1
     FROM conversations c
+
     WHERE c.conversation_pair_id = r.conversation_pair_id
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
     AND c.postprocess_failed = FALSE
-    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
+    AND (COALESCE(c.cohorts, '') NOT LIKE '%%pix%%')
 )
 ;
 """
@@ -213,10 +246,13 @@ def load_models_data():
                 MODELS_DATA = {
                     k.lower(): LLMData.model_validate(v)
                     for k, v in models_data["models"].items()
+                    if v.get("status") in ("enabled", "archived")
                 }
             else:
                 MODELS_DATA = {
-                    k.lower(): LLMData.model_validate(v) for k, v in models_data.items()
+                    k.lower(): LLMData.model_validate(v)
+                    for k, v in models_data.items()
+                    if v.get("status") in ("enabled", "archived")
                 }
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
@@ -240,8 +276,11 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
         # Execute SQL query and load all results into a pandas DataFrame
         dataframe = pd.read_sql_query(query, conn)
+        logger.info(f"Retrieved {len(dataframe):,} rows for {table_name}")
+
         if dataframe.empty:
-            logger.warning("DataFrame vide")
+            logger.warning("DataFrame vide - no data to export")
+            return dataframe
 
         # Anonymize visitor_id using MD5 hash
         if "visitor_id" in dataframe.columns:
@@ -351,23 +390,41 @@ def export_data(dataframe, table_name, export_dir):
     logger.info(f"Exporting data for table: {table_name}")
     try:
         # Full dataset exports
+        logger.debug(f"  Writing {table_name}.parquet...")
         dataframe.to_parquet(f"{export_dir}/{table_name}.parquet")
-        dataframe.to_json(
-            f"{export_dir}/{table_name}.jsonl", orient="records", lines=True
-        )
+
+        logger.debug(f"  Writing {table_name}.jsonl (this may take several minutes for large datasets)...")
+        # Write in chunks to avoid OOM for large datasets
+        chunk_size = 10_000
+        with open(f"{export_dir}/{table_name}.jsonl", "w") as f:
+            for i in range(0, len(dataframe), chunk_size):
+                chunk = dataframe.iloc[i:i+chunk_size]
+                chunk_json = chunk.to_json(orient="records", lines=True, date_format="iso")
+                f.write(chunk_json)
+                if i + chunk_size < len(dataframe):
+                    f.write("\n")
+                if (i // chunk_size) % 10 == 0:
+                    logger.debug(f"    Progress: {i+len(chunk):,}/{len(dataframe):,} rows")
 
         # Sample dataset exports (max 1000 rows)
+        logger.debug(f"  Creating sample ({min(len(dataframe), 1000)} rows)...")
         sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
+
+        logger.debug(f"  Writing {table_name}_samples.tsv...")
         sample_df.to_csv(
             f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False
         )
+
+        logger.debug(f"  Writing {table_name}_samples.jsonl...")
         sample_df.to_json(
-            f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True
+            f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True, date_format="iso"
         )
 
         logger.info(f"Export completed for table: {table_name}")
     except Exception as e:
         logger.error(f"Failed to export data for table {table_name}: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
 
 
 def commit_and_push(repo_org, repo_name, repo_path):
@@ -452,7 +509,7 @@ def count_dataset_rows():
             engine.dispose()
 
 
-def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
+def process_dataset(dataset_name, dataset_config, export_base_path, dry_run=False):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
     Export to multiple formats (parquet, jsonl, samples), and push to HF Hub.
@@ -460,7 +517,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
     Args:
         dataset_name: Name of the dataset to process
         dataset_config: Configuration dict with 'query' and 'repo' keys
-        repo_prefix: Local directory for export
+        export_base_path: Local directory for export
         dry_run: If True, skip HuggingFace upload
     """
 
@@ -476,9 +533,9 @@ def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return False
 
-    logger.info(f"Folder defined for dataset: {repo_prefix}")
+    logger.info(f"Folder defined for dataset: {export_base_path}")
 
-    repo_path = os.path.join(repo_prefix, repo_name)
+    repo_path = os.path.join(export_base_path, repo_name)
 
     engine = None
     conn = None
@@ -527,7 +584,7 @@ def main():
     Main entry point for dataset export script.
 
     Args (via command line):
-        repo_prefix: directory for export (positional, default: ".")
+        export_base_path: directory for export (positional, default: ".")
         dataset: specific dataset to export (positional, optional)
         --dry-run: skip HuggingFace upload (optional)
 
@@ -540,11 +597,11 @@ def main():
         description="Export ComparIA datasets from PostgreSQL to HuggingFace Hub"
     )
     parser.add_argument(
-        "repo_prefix",
+        "export_base_path",
         nargs="?",
         type=str,
-        default=".",
-        help="Directory for local export (default: current directory)",
+        default=os.path.join(SCRIPT_DIR, "local_dataset"),
+        help="Directory for local export (default: utils/local_dataset)",
     )
     parser.add_argument(
         "dataset",
@@ -556,7 +613,7 @@ def main():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Skip HuggingFace upload (only export locally)",
+        help="Skip HuggingFace upload (only export to utils/local_dataset/)",
     )
     parser.add_argument(
         "--count",
@@ -601,13 +658,17 @@ def main():
         logger.warning(f"only processing dataset: {args.dataset}")
 
     # Process each dataset (or just the specified one)
-    for dataset_name, config in DATASET_CONFIG.items():
-        if not args.dataset or args.dataset == dataset_name:
-            process_dataset(
-                dataset_name, config, args.repo_prefix, dry_run=args.dry_run
-            )
+    try:
+        for dataset_name, config in DATASET_CONFIG.items():
+            if not args.dataset or args.dataset == dataset_name:
+                process_dataset(
+                    dataset_name, config, args.export_base_path, dry_run=args.dry_run
+                )
 
-    logger.info("Finished processing all datasets.")
+        logger.info("Finished processing all datasets.")
+    except KeyboardInterrupt:
+        logger.warning("\n⚠️  Export interrupted by user (Ctrl+C)")
+        return
 
 
 if __name__ == "__main__":
