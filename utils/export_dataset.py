@@ -48,7 +48,6 @@ MODELS_DATA = {}
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
 
 REPO_ORG = os.getenv("REPO_ORG", "ministere-culture")
@@ -489,7 +488,7 @@ def count_dataset_rows():
             engine.dispose()
 
 
-def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
+def process_dataset(dataset_name, dataset_config, export_base_path, dry_run=False):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
     Export to multiple formats (parquet, jsonl, samples), and push to HF Hub.
@@ -497,7 +496,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
     Args:
         dataset_name: Name of the dataset to process
         dataset_config: Configuration dict with 'query' and 'repo' keys
-        repo_prefix: Local directory for export
+        export_base_path: Local directory for export
         dry_run: If True, skip HuggingFace upload
     """
 
@@ -513,9 +512,9 @@ def process_dataset(dataset_name, dataset_config, repo_prefix, dry_run=False):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return False
 
-    logger.info(f"Folder defined for dataset: {repo_prefix}")
+    logger.info(f"Folder defined for dataset: {export_base_path}")
 
-    repo_path = os.path.join(repo_prefix, repo_name)
+    repo_path = os.path.join(export_base_path, repo_name)
 
     engine = None
     conn = None
@@ -564,7 +563,7 @@ def main():
     Main entry point for dataset export script.
 
     Args (via command line):
-        repo_prefix: directory for export (positional, default: ".")
+        export_base_path: directory for export (positional, default: ".")
         dataset: specific dataset to export (positional, optional)
         --dry-run: skip HuggingFace upload (optional)
 
@@ -577,11 +576,11 @@ def main():
         description="Export ComparIA datasets from PostgreSQL to HuggingFace Hub"
     )
     parser.add_argument(
-        "repo_prefix",
+        "export_base_path",
         nargs="?",
         type=str,
-        default=".",
-        help="Directory for local export (default: current directory)",
+        default=os.path.join(SCRIPT_DIR, "local_dataset"),
+        help="Directory for local export (default: utils/local_dataset)",
     )
     parser.add_argument(
         "dataset",
@@ -593,7 +592,7 @@ def main():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Skip HuggingFace upload (only export locally)",
+        help="Skip HuggingFace upload (only export to utils/local_dataset/)",
     )
     parser.add_argument(
         "--count",
@@ -607,11 +606,6 @@ def main():
     if args.count:
         count_dataset_rows()
         return
-
-    # In dry-run mode, default output to local_dataset/ if no repo_prefix specified
-    if args.dry_run and args.repo_prefix == ".":
-        args.repo_prefix = os.path.join(SCRIPT_DIR, "local_dataset")
-        logger.info(f"[DRY RUN] Exporting to: {args.repo_prefix}")
 
     # Load lookup tables for data enrichment
     load_session_hash_ip()
@@ -643,13 +637,17 @@ def main():
         logger.warning(f"only processing dataset: {args.dataset}")
 
     # Process each dataset (or just the specified one)
-    for dataset_name, config in DATASET_CONFIG.items():
-        if not args.dataset or args.dataset == dataset_name:
-            process_dataset(
-                dataset_name, config, args.repo_prefix, dry_run=args.dry_run
-            )
+    try:
+        for dataset_name, config in DATASET_CONFIG.items():
+            if not args.dataset or args.dataset == dataset_name:
+                process_dataset(
+                    dataset_name, config, args.export_base_path, dry_run=args.dry_run
+                )
 
-    logger.info("Finished processing all datasets.")
+        logger.info("Finished processing all datasets.")
+    except KeyboardInterrupt:
+        logger.warning("\n⚠️  Export interrupted by user (Ctrl+C)")
+        return
 
 
 if __name__ == "__main__":
