@@ -45,7 +45,7 @@ LLMS_GENERATED_DATA_FILE = os.path.join(
 MODELS_DATA = {}
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
@@ -276,8 +276,11 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
         # Execute SQL query and load all results into a pandas DataFrame
         dataframe = pd.read_sql_query(query, conn)
+        logger.info(f"Retrieved {len(dataframe):,} rows for {table_name}")
+
         if dataframe.empty:
-            logger.warning("DataFrame vide")
+            logger.warning("DataFrame vide - no data to export")
+            return dataframe
 
         # Anonymize visitor_id using MD5 hash
         if "visitor_id" in dataframe.columns:
@@ -387,23 +390,41 @@ def export_data(dataframe, table_name, export_dir):
     logger.info(f"Exporting data for table: {table_name}")
     try:
         # Full dataset exports
+        logger.debug(f"  Writing {table_name}.parquet...")
         dataframe.to_parquet(f"{export_dir}/{table_name}.parquet")
-        dataframe.to_json(
-            f"{export_dir}/{table_name}.jsonl", orient="records", lines=True
-        )
+
+        logger.debug(f"  Writing {table_name}.jsonl (this may take several minutes for large datasets)...")
+        # Write in chunks to avoid OOM for large datasets
+        chunk_size = 10_000
+        with open(f"{export_dir}/{table_name}.jsonl", "w") as f:
+            for i in range(0, len(dataframe), chunk_size):
+                chunk = dataframe.iloc[i:i+chunk_size]
+                chunk_json = chunk.to_json(orient="records", lines=True, date_format="iso")
+                f.write(chunk_json)
+                if i + chunk_size < len(dataframe):
+                    f.write("\n")
+                if (i // chunk_size) % 10 == 0:
+                    logger.debug(f"    Progress: {i+len(chunk):,}/{len(dataframe):,} rows")
 
         # Sample dataset exports (max 1000 rows)
+        logger.debug(f"  Creating sample ({min(len(dataframe), 1000)} rows)...")
         sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
+
+        logger.debug(f"  Writing {table_name}_samples.tsv...")
         sample_df.to_csv(
             f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False
         )
+
+        logger.debug(f"  Writing {table_name}_samples.jsonl...")
         sample_df.to_json(
-            f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True
+            f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True, date_format="iso"
         )
 
         logger.info(f"Export completed for table: {table_name}")
     except Exception as e:
         logger.error(f"Failed to export data for table {table_name}: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
 
 
 def commit_and_push(repo_org, repo_name, repo_path):
