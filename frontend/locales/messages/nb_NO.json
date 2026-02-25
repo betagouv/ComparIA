@@ -365,8 +365,84 @@
                     "3": "Begrens antall serverforespørsler",
                     "4": "Begrens energiforbruket som kreves for å være vert for tjenesten",
                     "title": "I praksis betyr økodesign et sett med beste praksis som skal følges før, under og etter etableringen eller forbedringen av en tjeneste, noe som særlig muliggjør:"
-                }
-            }
+                },
+                "4": "Dette er en prosess som innebærer kontinuerlig og kollektiv forbedring.",
+                "title": "Hva er økodesign?"
+            },
+            "3": {
+                "1": {
+                    "1": "Forenkling av brukeropplevelsen: navigasjonsstiene er optimalisert og sentrert rundt de viktigste funksjonene i compar:IA-tjenesten (arena for modeller som skal testes, datasett, rangering) med regelmessig brukertesting.",
+                    "2": "Øke bevisstheten blant brukerne om tjenestens økologiske fotavtrykk: fremheve indikatorer for energipåvirkning på spørsmål stilt til KI; fremme \"sparsommelig\" bruk, med en modus dedikert til å spørre etter \"små\" konversasjonsbaserte KI-modeller med mindre miljøpåvirkning.",
+                    "3": "Bruk av State Design System (DSFR)-grensesnittkomponenter: de er tilgjengelige, og fotavtrykket deres er minimalt.",
+                    "4": "Den mest intuitive navigasjonen som er mulig for å redusere tiden man bruker på å finne informasjon.",
+                    "5": "Mobilorientert design: mobile enheter kan vise alt innhold. Nettstedet tilpasser seg alle skjermstørrelser.",
+                    "6": "Utelukke integrasjon av video på nettstedet.",
+                    "title": "Hovedutfordringen er å sikre at compar:IA fungerer på så gamle enheter som mulig, under varierende tilkoblingsforhold. Flere tiltak ble implementert i designfasen, inkludert:"
+                },
+                "title": "Strategi implementert og mål for reduksjon eller begrensning av miljøpåvirkninger"
+            },
+            "4": {
+                "1": "Egenvurderingen, som ble utført mellom mai og oktober 2025 av produktteamet (to personer var ansvarlige for å gjennomgå og validere alle kriteriene), dekket alle sidene på nettstedet. Verktøyene som ble brukt til å evaluere visse tekniske indikatorer var nettleserens utviklerverktøys «nettverksinspektør», utvidelsen <a {greenitLinkProps}>Green IT Analysis</a> og verktøyet <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "RGESN-diagnose"
+            },
+            "5": {
+                "1": {
+                    "1": "Score for fremdrift i implementeringen av RGESN per 12.10.2025: 89 %",
+                    "title": "Selvdiagnostiseringen gir en grad av samsvar med <a {linkProps}>RGESN</a> (generell referanse for økodesign) på 89 %."
+                },
+                "2": "Den digitale tjenesten compar:IA har som mål å forbedre denne fremdriftsscoren til 95 % innen 2027.",
+                "3": {
+                    "1": "Strategi: 100 %",
+                    "2": "Spesifikasjoner: 78 %",
+                    "3": "Arkitektur: 100 %",
+                    "4": "Brukeropplevelse og grensesnitt (UX/UI): 100 %",
+                    "5": "Innhold: 67 %",
+                    "6": "Frontend: 82 %",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90 %",
+                    "9": "Algoritmer: 100 %",
+                    "title": "Poengsum etter tema:"
+                },
+                "4": {
+                    "date": "10. desember 2025",
+                    "title": "Revisjonstabell for RGESN"
+                },
+                "title": "Poengsum i implementeringen av rammeverket"
+            },
+            "6": {
+                "1": "Nettstedet er designet for å være tilgjengelig på alle mobile enheter fra 2017 eller senere.",
+                "2": "Minimumstilkobling som kreves for komfortabel tilgang og bruk av tjenesten: 3G på mobil og 512 Kbps på fastnett.",
+                "3": "Nettstedet er designet for forskjellige skjermstørrelser (minimum 320 pikslers bredde).",
+                "4": "Nettstedet er ikke tilgjengelig via nettleseren Internet Explorer. ",
+                "title": "Minimumskrav for å få tilgang til nettstedet"
+            },
+            "7": {
+                "1": "Sett opp tjenesten med en gjennomgang av design og kode, der ett av målene er å redusere miljøpåvirkningen av hver funksjon (kriterium 2.1)",
+                "2": "Implementer perioder for datalagring med formål å slette eller arkivere: regelmessig sletting av logger i filserveren «S3» og spesielt i databasen (Postgres).",
+                "3": {
+                    "1": "Maksimalt antall serverforespørsler per skjerm: 40",
+                    "2": "Maksimal ressursstørrelse per skjerm: 600 KB",
+                    "title": "Overholde en maksimal vekt og en grense for antall forespørsler per skjerm (kriterium 6.1):"
+                },
+                "4": "Konvertere illustrasjonene til WebP, AVIF, JPEG XL eller et mer effektivt bildeformat for rasterbilder (kriterium 5.1).",
+                "5": "Tillate muligheten til å avbryte inferens (lasting av svar) under sammenligning av modeller.",
+                "6": "Resultatene for EcoIndex-analyse viser et betydelig avvik i effektmålinger, der noen sider får poengsummer på opptil E eller F (relativt høy sidevekt, kompleksitet og antall forespørsler). Utfordringen nå er å forstå disse resultatene mer presist fra sak til sak, til tross for implementeringen av en god praksis, for å identifisere ytterligere forbedringer.",
+                "desc": "Flere forbedringer har blitt eller blir fortsatt identifisert, inkludert:",
+                "title": "Identifiserte forbedringer"
+            },
+            "desc": "publisert 11. desember 2025",
+            "title": "Erklæring om økodesign"
+        },
+        "tos": {
+            "contactDesc": "Hvis du har spørsmål om tjenesten, kan du skrive til <a {linkProps}>{contactLink}</a>.",
+            "contactTitle": "9. Kontakt",
+            "defsEditor": "«Utgiver» viser til den sentrale digitale enheten i det franske kulturdepartementet.",
+            "defsModels": "«Modeller» viser til de store språkmodellene (LLM-ene) som gjenbrukes (under sine egne lisenser for bruk) av plattformen for å oppfylle formålet.",
+            "defsPlatform": "«Plattform» viser til nettstedet som tilgjengeliggjør tjenestene.",
+            "defsServices": "«Tjenester» refererer til funksjonene som tilbys av plattformen for å oppfylle formålet.",
+            "defsTitle": "2. Definisjoner",
+            "defsUser": "«Bruker» refererer til enhver fysisk person som bruker plattformen og nyttiggjør seg tjenestene.",
+            "descDatasets": "Disse datasettene blir tilgjengeliggjort under en åpen lisens, spesielt for å oppmuntre til forskningsbruk."
         }
     }
 }
