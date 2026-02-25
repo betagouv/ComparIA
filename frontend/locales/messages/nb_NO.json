@@ -43,7 +43,12 @@
             "generateAnother": "Generer et nytt prompt",
             "title": "Foreslått prompt"
         },
-        "title": "Hva kan jeg hjelpe deg med i dag?"
+        "title": "Hva kan jeg hjelpe deg med i dag?",
+        "webSearch": {
+            "title": "Nettsøk",
+            "enabled": "Nettsøk aktivert",
+            "disabled": "Nettsøk deaktivert"
+        }
     },
     "chatbot": {
         "continuePrompt": "Fortsett samtalen med KI-modellene",

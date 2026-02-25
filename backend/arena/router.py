@@ -141,6 +141,15 @@ async def add_first_text(
     # Create new session
     session_hash = create_session()
 
+    # If web search enabled, fetch search results
+    search_context = None
+    if args.web_search:
+        from backend.arena.web_search import search_web
+
+        search_context = await search_web(args.prompt_value)
+        if search_context:
+            logger.info("Web search returned context", extra={"request": request})
+
     # Initialize conversations using Pydantic models
     conversations = create_conversations(
         llm_id_a=model_a_id,
@@ -150,6 +159,7 @@ async def add_first_text(
         country_portal=country_portal,
         ip=get_ip(request),
         visitor_id=get_matomo_tracker_from_cookies(request.cookies),
+        search_context=search_context,
     )
 
     logger.info(

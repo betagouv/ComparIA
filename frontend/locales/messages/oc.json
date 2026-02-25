@@ -4,6 +4,11 @@
         "modelSelection": "Seleccion dels modèls",
         "prompt": {
             "label": "Escrivètz vòstre primièr messatge"
+        },
+        "webSearch": {
+            "title": "Recèrca web",
+            "enabled": "Recèrca web activada",
+            "disabled": "Recèrca web desactivada"
         }
     }
 }

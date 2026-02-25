@@ -43,7 +43,12 @@
             "generateAnother": "Generate another prompt",
             "title": "Suggested prompts"
         },
-        "title": "How can I help you today?"
+        "title": "How can I help you today?",
+        "webSearch": {
+            "title": "Web search",
+            "enabled": "Web search enabled",
+            "disabled": "Web search disabled"
+        }
     },
     "chatbot": {
         "continuePrompt": "Continue the chat with the AI models",

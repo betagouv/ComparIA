@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     HF_INFERENCE_KEY: str | None = None
     HF_PUSH_DATASET_KEY: str = ""
     REPO_ORG: str = "ministere-culture"
+    LINKUP_API_KEY: str | None = None
 
     enable_postgres_handler: bool = True
 

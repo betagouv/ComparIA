@@ -43,7 +43,12 @@
             "generateAnother": "Skapa ett nytt meddelande",
             "title": "Förslag på prompter"
         },
-        "title": "Hur kan jag hjälpa dig idag?"
+        "title": "Hur kan jag hjälpa dig idag?",
+        "webSearch": {
+            "title": "Webbsökning",
+            "enabled": "Webbsökning aktiverad",
+            "disabled": "Webbsökning inaktiverad"
+        }
     },
     "chatbot": {
         "continuePrompt": "Fortsätt chatta med AI-modellerna",

@@ -38,7 +38,12 @@
             "generateAnother": "Sukurti dar vieną užklausą",
             "title": "Siūlomos užklausos"
         },
-        "title": "Kaip galime Jums padėti?"
+        "title": "Kaip galime Jums padėti?",
+        "webSearch": {
+            "title": "Paieška internete",
+            "enabled": "Paieška internete įjungta",
+            "disabled": "Paieška internete išjungta"
+        }
     },
     "chatbot": {
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",

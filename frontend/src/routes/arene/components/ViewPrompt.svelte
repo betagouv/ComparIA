@@ -11,6 +11,7 @@
 
   let promptEl = $state<HTMLTextAreaElement>()
   let disabled = $state(false)
+  let webSearch = $state(false)
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
   let prompt = $state('')
@@ -54,7 +55,8 @@
     const validationError = await runChatBots({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
-      prompt_value: prompt
+      prompt_value: prompt,
+      web_search: webSearch
     })
     if (validationError) {
       promptError = validationError
@@ -134,12 +136,27 @@
         />
       </div>
 
-      <ModelSelector
-        bind:mode={mode.value}
-        bind:modelsSelection={modelsSelection.value}
-        {models}
-        {disabled}
-      />
+      <div class="md:order-none md:col-span-5 order-3 flex items-center gap-3">
+        <button
+          type="button"
+          class="web-search-toggle shrink-0"
+          class:active={webSearch}
+          disabled={disabled}
+          onclick={() => (webSearch = !webSearch)}
+          title={m['arenaHome.webSearch.title']()}
+          aria-pressed={webSearch}
+        >
+          <span class="i-ri-global-line text-lg" aria-hidden="true"></span>
+          <span class="text-sm">{webSearch ? m['arenaHome.webSearch.enabled']() : m['arenaHome.webSearch.disabled']()}</span>
+        </button>
+
+        <ModelSelector
+          bind:mode={mode.value}
+          bind:modelsSelection={modelsSelection.value}
+          {models}
+          {disabled}
+        />
+      </div>
 
       <Button
         type="submit"
@@ -154,3 +171,40 @@
     </div>
   </div>
 </div>
+
+<style lang="postcss">
+  .web-search-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-default-grey);
+    background: var(--background-default-grey);
+    color: var(--text-mention-grey);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+
+    &:hover:not(:disabled) {
+      border-color: var(--blue-france-main-525);
+      color: var(--blue-france-main-525);
+    }
+
+    &.active {
+      background: var(--blue-france-main-525) !important;
+      border-color: var(--blue-france-main-525) !important;
+      color: white !important;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+</style>

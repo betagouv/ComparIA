@@ -11,6 +11,7 @@ export interface APIModeAndPromptData {
   prompt_value: string
   mode: Mode
   custom_models_selection: string[]
+  web_search?: boolean
 }
 
 export type ModeInfos = {
@@ -222,6 +223,7 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
       prompt_value: args.prompt_value,
       mode: args.mode,
       custom_models_selection: args.custom_models_selection,
+      web_search: args.web_search ?? false,
       cohorts
     })
 

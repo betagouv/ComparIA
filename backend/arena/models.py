@@ -153,12 +153,27 @@ class Conversation(BaseModel):
 
 
 def create_conversation(
-    llm_id: str, country_portal: CountryPortal, user_msg: UserMessage
+    llm_id: str,
+    country_portal: CountryPortal,
+    user_msg: UserMessage,
+    search_context: str | None = None,
 ) -> Conversation:
     """Create a single conversation with system prompt if configured."""
     conv = Conversation(model_name=llm_id, country_portal=country_portal, messages=[])
+
+    # Build system prompt: combine model's own system prompt + web search context
+    system_parts = []
     if conv.llm.system_prompt:
-        conv.messages.append(SystemMessage(content=conv.llm.system_prompt))
+        system_parts.append(conv.llm.system_prompt)
+    if search_context:
+        system_parts.append(
+            "Voici des informations récentes issues d'une recherche web. "
+            "Utilise-les pour répondre à la question de l'utilisateur si pertinent :\n\n"
+            + search_context
+        )
+    if system_parts:
+        conv.messages.append(SystemMessage(content="\n\n".join(system_parts)))
+
     conv.messages.append(user_msg)
 
     return conv
@@ -260,11 +275,12 @@ def create_conversations(
     country_portal: CountryPortal,
     ip: str,
     visitor_id: str | None,
+    search_context: str | None = None,
 ) -> Conversations:
     """Create paired conversations for arena comparison."""
     user_msg = UserMessage(content=args.prompt_value)
-    conv_a = create_conversation(llm_id_a, country_portal, user_msg)
-    conv_b = create_conversation(llm_id_b, country_portal, user_msg)
+    conv_a = create_conversation(llm_id_a, country_portal, user_msg, search_context)
+    conv_b = create_conversation(llm_id_b, country_portal, user_msg, search_context)
 
     return Conversations(
         session_hash=session_hash,
@@ -291,6 +307,7 @@ class AddFirstTextBody(BaseModel):
     custom_models_selection: CustomModelsSelection = None
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
+    web_search: bool = False
 
 
 class AddTextBody(BaseModel):

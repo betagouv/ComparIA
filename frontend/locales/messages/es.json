@@ -43,7 +43,12 @@
             "generateAnother": "Generar otra instrucción",
             "title": "Instrucciones sugeridas"
         },
-        "title": "¿Cómo puedo ayudarte el día de hoy?"
+        "title": "¿Cómo puedo ayudarte el día de hoy?",
+        "webSearch": {
+            "title": "Búsqueda web",
+            "enabled": "Búsqueda web activada",
+            "disabled": "Búsqueda web desactivada"
+        }
     },
     "chatbot": {
         "continuePrompt": "Continuar la conversación con los modelos de IA",

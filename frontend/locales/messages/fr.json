@@ -43,7 +43,12 @@
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
-        "title": "Comment puis-je vous aider aujourd'hui ?"
+        "title": "Comment puis-je vous aider aujourd'hui ?",
+        "webSearch": {
+            "title": "Recherche web",
+            "enabled": "Recherche web activée",
+            "disabled": "Recherche web désactivée"
+        }
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter avec les modèles",

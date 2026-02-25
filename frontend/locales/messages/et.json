@@ -43,7 +43,12 @@
             "generateAnother": "Genereeri veel üks viip",
             "title": "Soovitatud viibad"
         },
-        "title": "Millega sind täna aidata saan?"
+        "title": "Millega sind täna aidata saan?",
+        "webSearch": {
+            "title": "Veebiotsing",
+            "enabled": "Veebiotsing aktiveeritud",
+            "disabled": "Veebiotsing deaktiveeritud"
+        }
     },
     "chatbot": {
         "continuePrompt": "Jätka nende keelemudelitega vestlemist",
