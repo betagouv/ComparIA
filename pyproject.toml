@@ -24,6 +24,7 @@ dependencies = [
 
 [dependency-groups]
 data = [
+    "duckdb>=1.1.0",
     "pandas>=3.0.0",
     "polars>=1.37.1",
     "pyarrow>=23.0.0",

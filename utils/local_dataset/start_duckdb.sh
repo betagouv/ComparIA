@@ -1,22 +1,22 @@
 #!/bin/bash
 
-# Start DuckDB UI with ComparIA local exported datasets
+# Start DuckDB CLI with ComparIA local exported datasets
 
 echo "=================================="
-echo "Starting DuckDB UI"
+echo "Starting DuckDB CLI"
 echo "=================================="
 echo ""
 echo "Database: comparia_local.duckdb"
-echo "Opening at: http://localhost:3000"
 echo ""
-echo "Press Ctrl+C to stop"
+echo "Press Ctrl+D or type .quit to exit"
 echo ""
 
 # Check if database exists
 if [ ! -f "comparia_local.duckdb" ]; then
     echo "⚠️  Database not found! Creating it first..."
-    uv run python launch_duckdb_ui.py
+    uv run python load_dataset_duckdb.py
+    echo ""
 fi
 
-# Start DuckDB with UI
-duckdb comparia_local.duckdb -init init_ui.sql
+# Start DuckDB CLI with init script
+duckdb comparia_local.duckdb -init init_duckdb.sql

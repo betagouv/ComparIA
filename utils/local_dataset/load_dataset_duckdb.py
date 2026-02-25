@@ -1,15 +1,15 @@
 """
-Launch DuckDB UI with ComparIA local exported datasets
+Prepare DuckDB database with ComparIA local exported datasets
 
-This script creates a DuckDB database with the locally exported datasets,
-then launches the official DuckDB UI in your browser.
+This script creates a DuckDB database with the locally exported datasets.
+Use start_duckdb.sh to launch the DuckDB CLI.
 """
 
 import duckdb
 from pathlib import Path
 
 print("="*80)
-print("PREPARING DUCKDB UI WITH COMPARIA LOCAL DATASETS")
+print("PREPARING DUCKDB WITH COMPARIA LOCAL DATASETS")
 print("="*80)
 
 # Paths - parquets are in subdirectories from dry-run export
@@ -19,6 +19,10 @@ db_path = local_dataset_dir / "comparia_local.duckdb"
 # Create/connect to DuckDB database
 print(f"\n📦 Creating database at: {db_path.absolute()}")
 con = duckdb.connect(str(db_path))
+
+# Install and load JSON extension for query compatibility
+con.execute("INSTALL json")
+con.execute("LOAD json")
 
 # Load reactions
 reactions_parquet = local_dataset_dir / "comparia-reactions" / "reactions.parquet"
@@ -135,10 +139,23 @@ tables = con.execute("""
 """).fetchdf()
 print(tables.to_string(index=False))
 
-# Show ModelResponseStream check results
-print("\n🔍 Checking for ModelResponseStream issues (should all be 0):")
-mrs_check = con.execute("SELECT * FROM check_modelresponsestream").fetchdf()
-print(mrs_check.to_string(index=False))
+# Show basic statistics
+print("\n📊 Dataset Statistics")
+print("=" * 80)
+
+if reactions_parquet.exists():
+    reactions_count = con.execute("SELECT COUNT(*) FROM reactions").fetchone()[0]
+    print(f"  Reactions: {reactions_count:,}")
+
+if conversations_parquet.exists():
+    conversations_count = con.execute("SELECT COUNT(*) FROM conversations").fetchone()[0]
+    print(f"  Conversations: {conversations_count:,}")
+
+if votes_parquet.exists():
+    votes_count = con.execute("SELECT COUNT(*) FROM votes").fetchone()[0]
+    print(f"  Votes: {votes_count:,}")
+
+print("\nℹ️  To verify data quality, run queries from: verify_dataset.sql")
 
 # Close connection
 con.close()
@@ -156,12 +173,16 @@ Available tables:
 
 Useful views:
   - reactions_by_model (summary statistics by model)
-  - check_modelresponsestream (verify filtering worked - should show 0)
   - reactions_with_comments (reactions that have user comments)
+  - check_modelresponsestream (legacy check)
 
-To launch the UI, run:
-  ./start_ui.sh
+Data quality verification:
+  - Copy/paste queries from verify_dataset.sql into DuckDB CLI
+  - All queries are based on dataset/issue.md
+
+To launch the DuckDB CLI, run:
+  ./start_duckdb.sh
 
 Or manually:
-  duckdb comparia_local.duckdb -init init_ui.sql
+  duckdb comparia_local.duckdb
 """)

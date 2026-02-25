@@ -17,23 +17,21 @@ uv run python utils/export_dataset.py --dry-run reactions
 
 The `.parquet` files will be created in `utils/local_dataset/comparia-*/`.
 
-### 2. Launch the DuckDB interface
+### 2. Launch the DuckDB CLI
 
 ```bash
 cd utils/local_dataset
-./start_ui.sh
+./start_duckdb.sh
 ```
 
 Or manually:
 
 ```bash
 # Create the DuckDB database
-uv run python launch_duckdb_ui.py
-# Launch the UI
-duckdb comparia_local.duckdb -init init_ui.sql
+uv run python load_dataset_duckdb.py
+# Launch the CLI
+duckdb comparia_local.duckdb
 ```
-
-The interface will open at http://localhost:3000
 
 ## Available tables
 
@@ -44,16 +42,24 @@ The interface will open at http://localhost:3000
 ## Useful views
 
 - **reactions_by_model** - Statistics per model
-- **check_modelresponsestream** - Filter verification (should be 0 everywhere)
 - **reactions_with_comments** - Reactions with user comments
+- **check_modelresponsestream** - Legacy ModelResponseStream check
 
-## Checks
+## Data Quality Checks
 
-To verify that filtering worked correctly:
+To verify filtering and data quality (based on dataset/issue.md):
 
-```sql
--- Should return 0 everywhere
-SELECT * FROM check_modelresponsestream;
--- Check stats
-SELECT * FROM reactions_by_model LIMIT 10;
-```
+1. Open `verify_dataset.sql` in an editor
+2. Copy/paste individual queries into the DuckDB CLI
+3. Verify that reactions issues are all 0 (after filtering)
+4. Check conversations issues match expected percentages from issue.md
+
+The file contains all checks documented in `dataset/issue.md`:
+
+- msg_index out of bounds
+- msg_index not pointing to assistant
+- ModelResponseStream in response_content
+- ModelResponseStream in JSONB
+- Conversations not ending with assistant
+- Mismatched conversation pair sizes
+- And more...
