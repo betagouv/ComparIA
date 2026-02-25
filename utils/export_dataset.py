@@ -26,6 +26,10 @@ import subprocess
 import sys
 from datetime import datetime
 
+# Add the parent directory to the Python path BEFORE importing backend modules
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(SCRIPT_DIR, "..")))
+
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
@@ -33,19 +37,12 @@ from sqlalchemy.exc import OperationalError
 from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 
-# Add the parent directory to the Python path to resolve the 'languia' module
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 # FIXME import path from 'utils.utils'
 LLMS_GENERATED_DATA_FILE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "models", "generated-models.json"
+    SCRIPT_DIR, "models", "generated-models.json"
 )
 MODELS_DATA = {}
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -250,10 +247,13 @@ def load_models_data():
                 MODELS_DATA = {
                     k.lower(): LLMData.model_validate(v)
                     for k, v in models_data["models"].items()
+                    if v.get("status") in ("enabled", "archived")
                 }
             else:
                 MODELS_DATA = {
-                    k.lower(): LLMData.model_validate(v) for k, v in models_data.items()
+                    k.lower(): LLMData.model_validate(v)
+                    for k, v in models_data.items()
+                    if v.get("status") in ("enabled", "archived")
                 }
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
@@ -607,6 +607,11 @@ def main():
     if args.count:
         count_dataset_rows()
         return
+
+    # In dry-run mode, default output to local_dataset/ if no repo_prefix specified
+    if args.dry_run and args.repo_prefix == ".":
+        args.repo_prefix = os.path.join(SCRIPT_DIR, "local_dataset")
+        logger.info(f"[DRY RUN] Exporting to: {args.repo_prefix}")
 
     # Load lookup tables for data enrichment
     load_session_hash_ip()
