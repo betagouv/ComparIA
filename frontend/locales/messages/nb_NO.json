@@ -442,7 +442,105 @@
             "defsServices": "«Tjenester» refererer til funksjonene som tilbys av plattformen for å oppfylle formålet.",
             "defsTitle": "2. Definisjoner",
             "defsUser": "«Bruker» refererer til enhver fysisk person som bruker plattformen og nyttiggjør seg tjenestene.",
-            "descDatasets": "Disse datasettene blir tilgjengeliggjort under en åpen lisens, spesielt for å oppmuntre til forskningsbruk."
+            "descDatasets": "Disse datasettene blir tilgjengeliggjort under en åpen lisens, spesielt for å oppmuntre til forskningsbruk.",
+            "descEditor": "Arenaen, som publiseres av den sentrale digitale enheten i det franske kulturdepartementet, er en plattform for å sammenligne konversasjonsmodeller rettet mot allmennheten, med mål om å (1) øke borgernes bevissthet om store språkmodeller (LLM-er), og (2) samle inn brukerpreferanser for å lage datasett for tilpasning (alignment) av modellene.",
+            "descTitle": "3. Beskrivelse av plattformen",
+            "descUse": "Brukeren stiller et spørsmål på et gitt språk og mottar svar fra to anonyme store språkmodeller (LLM-er). De stemmer på modellen som gir deres foretrukne svar, og får deretter se identiteten til modellene. Dette deltakende produksjonssystemet, inspirert av plattformen «<a {linkProps}>chatbot arena</a>» (LMarena), muliggjør produksjon av datasett med menneskelige preferanser for virkelige oppgaver på det gitte språket, som kan brukes til tilpasning (alignment) av modellene.",
+            "dispoDesc": "Plattformen er tilgjengelig, unntatt i tilfeller av force majeure eller hendelser utenfor utgiverens kontroll.",
+            "dispoResp": "I denne forbindelse kan ikke utgiveren holdes ansvarlig for tap eller skader av noe slag som måtte følge av funksjonsfeil i tjenesten eller nedetid. Slike situasjoner vil ikke gi rett til økonomisk kompensasjon.",
+            "dispoRight": "Utgiveren forbeholder seg retten til å suspendere, avbryte eller begrense, uten forvarsel, tilgang til hele eller deler av tjenestene, spesielt for vedlikehold og oppdateringer som er nødvendige for at tjenesten og tilhørende utstyr skal fungere ordentlig, eller av andre grunner, inkludert tekniske årsaker.",
+            "dispoTitle": "7. Tilgjengelighet til tjenesten",
+            "dispoWarranty": "Det er ikke garantert at tjenesten vil være uten avvik eller feil. Derfor leveres tjenesten uten noen garanti for tilgjengelighet og ytelse.",
+            "evoDesc": "Bruksvilkårene kan endres eller suppleres når som helst uten forvarsel, avhengig av endringer i tjenestene, endringer i lovgivningen eller av andre grunner som anses nødvendige.",
+            "evoDescMore": "Disse endringene og oppdateringene er bindende for brukeren, som derfor regelmessig bør konsultere bruksvilkårene for å ha kontroll på de gjeldende generelle vilkårene.",
+            "evoTitle": "8. Endringer i vilkårene for bruk",
+            "featuresDatasets": "Tjenesten samler inn samtaledata (spørsmål, svar fra begge modellene) og brukerpreferanser (stemmer, tilhørende metadata). Disse dataene brukes både til å opprette offentlige datasett og til å bygge en rangering av KI-modellene som vises på plattformen, basert på stemmene avgitt av brukerne.",
+            "featuresDatasetsMore": "Utgiveren forbeholder seg retten til å distribuere brukerens dialog- og preferansedata under den åpne lisensen etalab 2.0. Datasettet distribueres på plattformen Hugging Face gjennom det franske kulturdepartementets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "featuresDesc": "For å oppfylle det doble målet om å øke borgernes bevissthet om store språkmodeller og samle inn brukerpreferanser, tilbyr plattformen følgende tjenester uten tilgangsbegrensninger:",
+            "featuresDescMore": "Et menneske-maskin-grensesnitt som lar brukerne ha en dialog samtidig med to samtalemodeller og deretter velge det foretrukne svaret.",
+            "featuresModels": "Modellene som er integrert i plattformen distribueres på inferensserverne til de ulike leverandørene og modellutgiverne. Forespørsler håndteres primært av tjenesten Open Router. Inferensbetingelser defineres på plattformen for å sikre transparent bruk av modellene.",
+            "featuresModelsMore": "Grensesnittet for sammenligning av modeller.",
+            "featuresTitle": "4. Funksjoner",
+            "featuresVote": "Brukeren kan se listen over modeller på arenaen og få tilgang til mer informasjon om disse modellene.",
+            "featuresVoteMore": "Deling, tilgang til og gjenbruk av datasett generert av brukerpreferanser.",
+            "licenceCode": "Kildekoden til plattformen er åpen og tilgjengelig her: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
+            "licenceLLM": "LLM-ene som brukes til å drive tjenestene er underlagt følgende lisenser:",
+            "licenceLLMEvolution": "Listen over språkmodeller som er integrert i plattformen kan endres over tid og oppdateres med hver modifikasjon.",
+            "licenceLLMLicence": "Lisens",
+            "licenceLLMModel": "Konversasjonsbasert KI-modell",
+            "licenceLLMNoticeLink": "Lenke til modellenes lisenser",
+            "licenceLLMUnavailable": "Ikke tilgjengelig",
+            "licenceTitle": "6. Kode og lisenser",
+            "respEditor": "Generelt fraskriver utgiveren seg ethvert ansvar ved manglende overholdelse av bruksvilkårene.",
+            "respLegal": "Plattformen er ikke ment å brukes til å generere ulovlig innhold eller innhold som er i strid med offentlig orden, og mer generelt, generering av innhold som bryter med gjeldende juridiske rammeverk.",
+            "respLegalMore": "I denne forbindelse legger ikke brukeren inn innhold eller informasjon i promptet som er i strid med gjeldende lover og forskrifter.",
+            "respPrivacy": "Siden dataene som brukeren legger inn på plattformen er ment å bli offentlig tilgjengelige, er brukeren ansvarlig for ikke å legge inn informasjon som kan identifisere brukeren selv eller en tredjepart.",
+            "respPrivacyMore": "Uansett må utgiveren iverksette tiltak for å sikre at dialogdata anonymiseres så mye som mulig før de tilgjengeliggjøres. Hvis sensitive data skulle bli publisert i datasettene til tross for utgiverens innsats, kan du rapportere dette via følgende skjema: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
+            "respTitle": "5. Ansvar",
+            "respUser": "Brukeren er ansvarlig for dataene eller innholdet brukeren oppgir i promptet som plattformen tilbyr.",
+            "scopeDesc": "Tilgang til plattformen er gratis, krever ikke registrering og innebærer anvendelse av spesifikke vilkår, som er listet opp i disse vilkårene for bruk.",
+            "scopeTitle": "1. Anvendelsesområde",
+            "title": "Vilkår for bruk"
+        }
+    },
+    "generated": {
+        "archs": {
+            "dense": {
+                "desc": "Tett koblet arkitektur refererer til en type nevralt nettverk der hvert nevron i ett lag er koblet til alle nevroner i det neste laget. Dette gjør at alle parametere i laget kan bidra til beregningen av utdata.",
+                "name": "Tett kobling",
+                "title": "Tett koblet arkitektur"
+            },
+            "matformer": {
+                "desc": "Tenk deg **russiske dukker** (matrjosjkaer → matrjosjka-transformator → Matformer): hver blokk inneholder flere **nestede delmodeller** av økende størrelse, som deler de samme parameterne. Dette gjør det mulig å velge en modell med tilpasset kapasitet for hver forespørsel, i henhold til tilgjengelig minne eller latens, uten å måtte trene opp forskjellige modeller på nytt.",
+                "name": "Matformer",
+                "title": "Matformer-arkitektur"
+            },
+            "moe": {
+                "desc": "En type arkitektur kalt «Mixture of Experts» (MoE) bruker en rutingsmekanisme for å aktivere, avhengig av input, kun visse spesialiserte delmengder («eksperter») av det nevrale nettverket. Dette muliggjør konstruksjon av svært store modeller samtidig som beregningskostnadene holdes lave, fordi bare en del av nettverket brukes i hvert trinn.",
+                "name": "MoE",
+                "title": "MoE-arkitektur"
+            },
+            "na": {
+                "desc": "Utgiveren har ikke offentliggjort informasjon om modellens arkitektur.",
+                "name": "Proprietær",
+                "title": "Arkitektur N/A"
+            }
+        },
+        "licenses": {
+            "os": {
+                "Apache 2.0": {
+                    "license_desc": "<p> Denne lisensen gir deg rett til fritt å bruke, endre og distribuere modellen, inkludert for kommersielle formål. I tillegg til bruksfrihet garanterer den juridisk beskyttelse ved å inkludere en patentklausul som fungerer som forsikring: hvis du bruker denne modellen, samtykker bidragsyterne i å ikke saksøke deg for å krenke patentene deres knyttet til prosjektet. Denne gjensidige beskyttelsen unngår juridiske konflikter mellom brukere og utviklere. Ved distribusjon av modifiserte versjoner må vesentlige endringer angis på adekvat måte, slik at åpenhet er sikret for brukeren.</p>"
+                },
+                "CC-BY-NC-4.0": {
+                    "license_desc": "<p> Denne lisensen gir deg rett til fritt å dele og tilpasse innholdet så lenge du krediterer forfatteren, men forbyr all kommersiell bruk. Den gir fleksibilitet for ikke-kommersiell bruk samtidig som forfatterens rettigheter er beskyttet.</p>",
+                    "reuse_specificities": "men kun for ikke-kommersiell bruk"
+                },
+                "Gemma": {
+                    "license_desc": "<p>Denne lisensen er utformet for å oppmuntre til bruk, modifisering og redistribusjon av programvaren, men inkluderer en klausul som sier at alle modifiserte eller forbedrede versjoner må deles med fellesskapet under samme kildelisens, og dermed fremme samarbeid og åpenhet i programvareutvikling.</p>"
+                },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "under 50 millioner dollar i årlig omsetning",
+                    "license_desc": "<p>Denne lisensen tillater fri bruk, reproduksjon, modifisering og distribusjon av koden med kreditering, men setter begrensninger for organisasjoner med en årlig omsetning på over 50 millioner dollar.</p>"
+                },
+                "LFM 1.0": {
+                    "license_desc": "<p>Denne verdensomspennende, gratis og ikke-eksklusive lisensen tillater bruk, modifisering og redistribusjon av modellen og dens derivater, inkludert gjenbruk av resultater for å trene andre modeller. Lisensen tillater, men begrenser kommersiell bruk til organisasjoner med årlige inntekter under 10 millioner dollar. Utover denne terskelen er bruk ikke lenger dekket.</p>"
+                },
+                "Llama 3 Community": {
+                    "commercial_use_specificities": "under 700 millioner brukere",
+                    "license_desc": "<p>Denne lisensen tillater fri bruk, modifisering og distribusjon av koden med kreditering, men pålegger begrensninger for operasjoner som overstiger 700 millioner månedlige brukere og forbyr gjenbruk av koden eller generert innhold for trening eller forbedring av konkurrerende modeller, og beskytter dermed Metas teknologiinvesteringer og merkevare.</p>"
+                },
+                "Llama 3.1": {
+                    "commercial_use_specificities": "under 700 millioner brukere",
+                    "license_desc": "<p>Denne lisensen gir deg rett til fritt å bruke, reprodusere, endre og distribuere koden med kreditering, men pålegger begrensninger for operasjoner som overstiger 700 millioner månedlige brukere. Gjenbruk av koden eller generert innhold for trening eller forbedring av derivatmodeller er tillatt, forutsatt at «bygd med llama» vises tydelig og at «Llama» er inkludert i navnet til enhver distribusjon.</p>"
+                },
+                "Llama 3.3": {
+                    "commercial_use_specificities": "under 700 millioner brukere",
+                    "license_desc": "<p>Denne <strong>ikke-eksklusive, verdensomspennende, royaltyfri</strong> lisensen gir deg rett til fritt å bruke, reprodusere, modifisere og distribuere Llama 3.3-koden og tilhørende materiale med kreditering. Den tillater spesielt gjenbruk for å forbedre derivatmodeller, men setter begrensninger på kommersiell drift i svært stor skala.</p>"
+                },
+                "Llama 4": {
+                    "commercial_use_specificities": "under 700 millioner brukere\n"
+                }
+            }
         }
     }
 }
