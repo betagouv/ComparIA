@@ -41,6 +41,8 @@ tests/state_of_the_union.txt
 *.parquet
 *.arrow
 *.duckdb
+*.tsv
+*.jsonl
 
 #Postgresql backup files
 prd-backup.dump
