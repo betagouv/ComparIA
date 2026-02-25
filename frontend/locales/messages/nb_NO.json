@@ -1,0 +1,448 @@
+{
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "accessData": "Få tilgang til data",
+        "contact": "Kontakt oss",
+        "contactUs": "Kontakt oss",
+        "copyLink": {
+            "do": "Kopier lenken",
+            "done": "Lenke kopiert til utklippstavlen"
+        },
+        "copyMessage": {
+            "do": "Kopier meldingen",
+            "done": "Melding kopiert"
+        },
+        "downloadData": "Last ned data",
+        "home": "Hjemmeside",
+        "returnHome": "Tilbake til hjemmesiden",
+        "scrollLeft": "bla til venstre",
+        "scrollRight": "Bla til høyre",
+        "searchModel": "Søk etter en modell",
+        "seeMore": "Se mer",
+        "selectLanguage": "Velg språk",
+        "vote": "Send tilbakemelding"
+    },
+    "arenaHome": {
+        "compareModels": {
+            "count": "{count}/2 modeller",
+            "help": "Hvis du bare velger én, velges den andre tilfeldig",
+            "question": "Hvilke modeller vil du sammenligne?"
+        },
+        "modelSelection": "Valg av modeller",
+        "prompt": {
+            "label": "Skriv din første melding",
+            "placeholder": "Skriv din første melding her"
+        },
+        "selectModels": {
+            "help": "Velg sammenligningsmodus",
+            "question": "Hvilke modeller vil du sammenligne?"
+        },
+        "suggestions": {
+            "generateAnother": "Generer et nytt prompt",
+            "title": "Foreslått prompt"
+        },
+        "title": "Hva kan jeg hjelpe deg med i dag?"
+    },
+    "chatbot": {
+        "continuePrompt": "Fortsett samtalen med KI-modellene",
+        "conversation": "Samtale",
+        "errors": {
+            "other": {
+                "message": "Det har oppstått en midlertidig feil.",
+                "retry": "Du kan prøve å spørre modellene på nytt.",
+                "title": "Oops, midlertidig feil",
+                "vote": "Eller avslutt ved å oppgi hvilken modell du foretrekker."
+            },
+            "tooLong": {
+                "message": "Hver modell har begrensninger på hvor lange samtaler de kan håndtere.",
+                "retry": "Du kan gjenoppta samtalen med to nye modeller.",
+                "title": "Oops, samtalen er for lang for en av modellene.",
+                "vote": "Du kan fremdeles oppgi hvilken modell du foretrekker eller starte en samtale med to nye modeller."
+            }
+        },
+        "loading": "Laster inn svar",
+        "reasoning": {
+            "finished": "Resonnement ferdig",
+            "inProgress": "Resonnerer…"
+        },
+        "revealButton": "Avslør modellene"
+    },
+    "closeModal": "Lukk popup-vinduet",
+    "components": {
+        "pagination": {
+            "first": "Første side",
+            "label": "Sider",
+            "last": "Siste side",
+            "next": "Neste side",
+            "nth": "Side {count}",
+            "previous": "Forrige side"
+        },
+        "table": {
+            "linePerPage": "Antall linjer per side",
+            "pageCount": "{count} linjer per side",
+            "triage": "Sorter"
+        },
+        "theme": {
+            "legend": "Velg et tema for å tilpasse nettstedets utseende.",
+            "options": {
+                "dark": "Nattmodus",
+                "light": "Dagmodus",
+                "system": "System",
+                "systemSub": "Bruk systeminnstillinger"
+            },
+            "title": "Skjerminnstillinger"
+        }
+    },
+    "datasets": {
+        "access": {
+            "catch": "Modellutgivere, forskere, selskaper, nå er det deres tur!",
+            "desc": "Plattformens spørsmål og preferanser er hovedsakelig på fransk, dansk, svensk og litauisk, på vanlig, dagligdags språk - ikke kunstige spørsmål. Datasettene er offentlig tilgjengelige på <a {linkProps}>data.gouv</a> og Hugging Face.",
+            "repos": {
+                "conversations": {
+                    "desc": "Alle spørsmål og svar",
+                    "title": "/samtaler"
+                },
+                "reactions": {
+                    "desc": "Alle reaksjoner på meldinger",
+                    "title": "/reaksjoner"
+                },
+                "votes": {
+                    "desc": "Alle uttrykte preferanser",
+                    "title": "/stemmer"
+                }
+            },
+            "share": "Vis oss hvordan du bruker dataene",
+            "title": "Få tilgang til compar:IA-datasett"
+        },
+        "reuse": {
+            "bunka": {
+                "analyze": {
+                    "desc": "Analyse av brukersamtaler med deteksjon av oppgaver (skriving, informasjonssøk osv.), emner (kunst og kultur, utdanning osv.), komplekse følelser (nysjerrighet, entusiasme osv.), språkføring (formell, faglig osv.)",
+                    "title": "Få tilgang til analysen"
+                },
+                "conversations": {
+                    "desc": "Interaktiv visualisering av samtaler der hver klynge representerer et tilbakevendende tema som diskuteres av brukerne (f.eks. utdanning, helse, miljø eller til og med filosofi).",
+                    "title": "Utforsk visualiseringen av data"
+                },
+                "desc": "Teamet Bunka.ai gjennomførte en storskala studie av interaksjoner mellom brukere og KI i chatboter, og kartla framtredende temaer, nøkkeloppgaver og balansen mellom automatisering og menneskelig intervensjon. Analysen deres, basert på 25 000 virkelige samtaler, gir en sjelden empirisk innsikt i hvordan folk faktisk bruker KI.",
+                "method": "Lær mer om metoden"
+            },
+            "desc": "Eksempler på gjenbruk av datasett fra compar:IA",
+            "title": "Hvordan brukes disse dataene?"
+        }
+    },
+    "errors": {
+        "404": {
+            "desc": "Hvis du skrev inn URL-en i nettleseren, sjekk om den er riktig. Siden er kanskje ikke tilgjengelig lenger. <br />Du kan fortsette ved å besøke hjemmesiden vår. <br />Hvis du har problemer med å finne siden du leter etter, kan du kontakte oss slik at vi kan vise deg til riktig URL.",
+            "error": "Feil 404",
+            "sorry": "Siden du leter etter finnes ikke. Vi beklager ulempen dette medfører.",
+            "title": "Siden ble ikke funnet"
+        },
+        "unexpected": {
+            "desc": "Prøv å oppdatere siden eller prøv igjen senere.",
+            "error": "Feil {code}",
+            "sorry": "Vi beklager, det er et problem med tjenesten. Vi jobber med å løse det så raskt som mulig.",
+            "title": "Uventet feil"
+        },
+        "unknown": "Det har oppstått en feil"
+    },
+    "faq": {
+        "datasets": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Preferansedata brukes til å forbedre modeller under fremtidig trening.</p> <p> Ved å sammenligne svarene fra to modeller blindt, kan compar:IA-brukerne uttrykke sine preferanser og indikere hvilke svar som er mest relevante. Disse preferansedataene kan brukes til å forbedre tilpasningen av modellene – det vil si å trene dem til å generere svar som er mer i tråd med brukerens forventninger og preferanser.</p> <p> Dette er en iterativ prosess, der modellen gradvis lærer å generere bedre svar basert på tilbakemeldinger fra mennesker angående kvaliteten på svarene. Ved å bli eksponert for preferansedata justerer modellene sin svarstil.</p>",
+                    "title": "Har preferansedata en umiddelbar effekt på modellenes ytelse?"
+                },
+                "2": {
+                    "desc": "<p> Det unike med dataene som samles inn på compar:IA-plattformen er at de er på språk med lavere tilgang på ressurser og samsvarer med virkelige brukeroppgaver. Dataene gjenspeiler menneskelige preferanser i spesifikke språklige og kulturelle kontekster. Dataene lar oss justere modellene for å gjøre dem mer relevante, nøyaktige og tilpasset brukernes behov, samtidig som vi prøver å rette opp i eventuelle skjevheter og mangler.</p>",
+                    "title": "Hvorfor er stemmene som avgis på compar:IA nyttige?"
+                },
+                "3": {
+                    "desc": "<p> compar:IA er et vurderings- og tilpasningsverktøy for språkmodeller, med fokus på responskvalitet og innsamling av preferansedata, og skiller seg dermed fra den globale rangeringstilnærmingen til <a href='https://lmarena.ai/' target='_blank'> chatbot-arenaen </a> utviklet av <a href='http://lmsys.org' target='_blank'> lmsys.org </a> og den etiske tilpasningen av AI-modeller fra <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a>. </p>",
+                    "title": "Hva skiller compar:IA fra andre lignende initiativer?"
+                }
+            },
+            "title": "Datasett"
+        },
+        "ecology": {
+            "questions": {
+                "1": {
+                    "desc": "<p> compar:AI bruker en metode utviklet av <a target='_blank' href='https://ecologits.ai/latest/'> <strong>Ecologits</strong> (GenAI Impact)</a> for å gi et estimat for energiforbruk som lar brukerne sammenligne ulike KI-modellers miljøpåvirkning for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.</p> <p> Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044, som for øyeblikket fokuserer på virkningen av <strong>inferens</strong> (dvs. bruk av modeller for å svare på spørringer) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).</p> <p> En modells strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen på KI-modellen som brukes, plasseringen av serverne der modellene er distribuert og antall tokener i outputen. Beregningen av indikatoren for globalt oppvarmingspotensial uttrykt i CO2-ekvivalenter er avledet fra modellens strømforbruksmåling. </p> <p> Det er viktig å merke seg at metoder for å vurdere miljøpåvirkningen av KI fortsatt er under utvikling. </p>",
+                    "title": "Hvordan beregnes miljøfaktorer?"
+                },
+                "2": {
+                    "desc": "<p> Datasentrenes plassering spiller en svært viktig rolle for karbonavtrykket til KI. Hvis en modell trenes eller brukes i et land som er sterkt avhengig av fossilt brensel, vil miljøpåvirkningen være større enn om den ligger i et land som hovedsakelig bruker fornybar energi.</p> <p> Metoden for analyse av miljøpåvirkning fra KI, utviklet av <a target='_blank' href='https://ecologits.ai/latest/'> Ecologits (fra GenAI Impact),</a> inkorporerer data om energimiksen i de forskjellige landene der serverne er plassert. Dette gir et mer nøyaktig og nyansert estimat av det faktiske karbonavtrykket til spørringer mot forskjellige generative KI-modeller.</p>",
+                    "title": "Tar miljøfaktorene hensyn til energimiksen i forskjellige land?"
+                },
+                "3": {
+                    "desc": "<p> Mange målinger av miljøpåvirkning fokuserer primært på virkningen av <strong>inferens</strong>, det vil si bruken av KI-modeller til å svare på spørsmål. Denne tilnærmingen kan gi illusjonen om at inferens er mindre energikrevende enn modelltrening. <strong>Imidlertid er virkeligheten mer kompleks. </strong> Tenk på analogien med biler: </p> <ul> <li> Å bygge en bil (trening) er en engangs, ressurskrevende prosess. </li> <li> Hver biltur (inferens) bruker mindre energi, men disse reisene gjentas daglig, og antallet er potensielt enormt. </li> </ul> <p> På samme måte er <strong>den kumulative virkningen av inferens</strong>, på tvers av millioner av brukere som spør daglig, ofte <strong>betydelig større enn virkningen av innledende trening.</strong> <strong>Det er derfor avgjørende at verktøy for vurdering av karbonavtrykk fra KI tar hele livssyklusen til modellene i betraktning, fra trening til inferens.</strong> </p>",
+                    "title": "Tar estimater av miljøpåvirkning hensyn til ressursene som brukes til å trene modellene?"
+                }
+            },
+            "title": "Miljødata"
+        },
+        "i18n": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Ja, internasjonaliseringen av compar:AI er i gang. Vi starter med en utvidelse til tre pilotland: Litauen, Sverige og Danmark. Denne første fasen vil tillate oss å teste tilnærmingen og tilpasse grensesnittet til ulike europeiske språklige og kulturelle kontekster. Etter hvert kan sirkelen utvides til flere europeiske språk basert på tilbakemeldinger fra pilotlandene. Målet er å gradvis bygge en ekte europeisk digital felles infrastruktur for menneskelig evaluering av konversasjonsbasert KI, med samarbeidende styring som gjenstår å definere mellom de ulike deltakerlandene.</p>",
+                    "title": "compar:IA fokuserte opprinnelig på fransk: finnes det planer for andre europeiske språk?"
+                },
+                "2": {
+                    "desc": "<p> Utviklingen av en europeisk plattform for sammenligning av konversasjonsbaserte KI-modeller gir flere konkrete fordeler. Den muliggjør innsamling av preferansedata som gjenspeiler de reelle behovene til europeiske brukere, og forbedrer dermed relevansen av modellsvar for denne brukerbasen. Publisering av datasettene garanterer bedre representasjon av europeiske språk og kulturer, som ofte er underrepresentert i globale datasett og evalueringer dominert av engelsk. Den sikrer også samsvar med europeiske forskrifter (GDPR, EUs AI Act) og integrerer evalueringskriterier i tråd med europeiske prioriteringer som reduksjon av miljøpåvirkning og åpne algoritmer. Til slutt fremmer den fremveksten av et konkurransedyktig og autonomt europeisk økosystem for kunstig intelligens.</p>",
+                    "title": "Hva er fordelene med en spesifikt europeisk plattform for innsamling av preferansedata?"
+                }
+            },
+            "title": "Internasjonalisering"
+        },
+        "models": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Vi velger modeller basert på deres popularitet, mangfold og relevans for brukerne. Vi legger spesielt vekt på å gjøre <em> åpne vekter </em> og modeller i forskjellige størrelser tilgjengelige. </p>",
+                    "title": "Hvordan velger dere modellene som finnes på plattformen?"
+                },
+                "2": {
+                    "desc": "<p> Inferens, altså muligheten til å spørre modellene, betales av prosjektet. For de fleste modellene bruker vi Open Router og Hugging Face Inference Providers på en per-token-basis.</p>",
+                    "title": "Hvordan klarer dere å tilby denne tjenesten gratis?"
+                },
+                "3": {
+                    "desc": "<p> Kvantiserte modeller er optimalisert for å bruke færre ressurser ved å forenkle visse beregninger samtidig som man sikter mot best mulig kvalitet i responsen.</p> <p> Kvantisering er en optimaliseringsteknikk som innebærer å redusere presisjonen til tallene som brukes til å representere parameterne til en KI-modell. Dette gjør det mulig å <strong> redusere størrelsen på modellen </strong> og <strong> øke hastigheten på beregningene </strong>, noe som er spesielt fordelaktig for inferens på maskiner med begrensede ressurser.</p>",
+                    "title": "Hva er “kvantiserte modeller” ?"
+                },
+                "4": {
+                    "desc": "<p> <strong> En modells flerspråklige evner er relatert til det språklige mangfoldet i treningsdataene, ikke til landet den ble utviklet i </strong>. <strong> Store språkmodeller bruker enorme datasamlinger som inneholder mange språk </strong>, men fordelingen av språk i treningsdataene er ikke ensartet. En overrepresentasjon av engelsk kan føre til begrensninger for andre språk. Disse begrensningene er synlige, for eksempel i <strong> anglisismer eller manglende evne til å generere innhold på visse språk klassifisert som \"truet\" av UNESCO </strong>. </p> <p> <strong> Nøyaktigheten og rikdommen i en modells vokabular avhenger av dataene som brukes i treningen </strong>. </p>",
+                    "title": "Er det en sammenheng mellom nasjonaliteten til selskapet eller laboratoriet som har laget en modell og modellens evne til å snakke flere språk?"
+                },
+                "5": {
+                    "desc": "<p> Få interessenter er «transparente» om datakildene som brukes i treningskorpora. Denne informasjonen er ofte konfidensiell av juridiske og kommersielle årsaker.</p>",
+                    "title": "Kan vi se treningsdataene til modellene?"
+                }
+            },
+            "title": "Modeller"
+        },
+        "title": "Ofte stilte spørsmål",
+        "usage": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Eksisterende modeller for samtale er <strong> ikke i stand til å sitere kildene </strong> de bruker for å generere et svar. De fungerer ved å forutsi det mest sannsynlige neste tokenet basert på den statistiske fordelingen i treningsdataene. Selv om modellene kan syntetisere informasjon fra ulike kilder, holder de ikke oversikt over hvor informasjonen kommer fra. </p> <p> Det finnes imidlertid teknikker som <strong> Retrieval Augmented Generation (RAG) </strong> som tar sikte på å overvinne denne begrensningen. RAG lar modeller få tilgang til eksterne kunnskapsbaser og <strong> gi kontekstualisert informasjon ved å sitere kildene </strong>. Denne tilnærmingen er nyttig for å forbedre gjennomsiktigheten og påliteligheten til svarene en modell gir. </p>",
+                    "title": "Kan modellene oppgi kildene sine?"
+                },
+                "2": {
+                    "desc": "<p> Har du stilt spørsmålet: «Gi meg den nyeste trendy ostekakeoppskriften og oppgi kildene dine» og blitt skuffet over svarene? Det er normalt... </p> <p> <strong>KI-modeller for «enkel» konversasjon kan ikke svare på spørsmål om de siste nyhetene.</strong> De er trent på statiske datasett og kan ikke samhandle med nettet eller åpne lenker. De har ikke muligheten til å oppdatere seg selv i sanntid med hendelser som utspiller seg i verden. Informasjonen modellen har tilgang til er begrenset til datoen for siste trening. </p> <p> Derfor, hvis du stiller et spørsmål om en nylig nyhetshendelse, vil modellen basere responsen på utdatert informasjon, og risikere å generere unøyaktige svar. </p> <p> Når det gjelder Perplexity, Copilot og ChatGPT, kombineres konversasjons-KI-modellene med andre systemblokker som lar dem koble til internett for å få tilgang til informasjon i sanntid. Disse kalles «konversasjonsagenter». </p>",
+                    "title": "Kan modellen svare hvis jeg stiller et spørsmål om nylige nyhetshendelser?"
+                },
+                "3": {
+                    "desc": "<p> Hvis forespørselen din inneholder en URL, vil ikke konversasjonsmodellen kunne få direkte tilgang til den. Språkmodeller behandler spørreteksten, men har ikke mulighet til å samhandle med nettet eller åpne lenker. De er trent på et fast datasett bestående av tekst, og svarene deres er basert på disse treningsdataene. Når et spørsmål stilles, bruker modellene denne treningen til å generere et svar, men kan ikke få tilgang til ny informasjon på nettet hvis de ikke er aktivert til det av et omkringliggende system.</p> <p> Som en analogi, tenk deg en student som tar en eksamen uten internettilgang. Hen kan bruke sin tilegnede kunnskap til å svare på spørsmål, men kan ikke besøke nettsteder for ytterligere informasjon.</p>",
+                    "title": "Hvis en spørring inneholder en URL, kan modellen få tilgang til den?"
+                },
+                "4": {
+                    "desc": "<p> Modeller mister noen ganger oversikten over en samtale fordi de har <strong> et begrenset kontekstvindu og problemet med \"nåla i høystakken\".</strong> Kontekstvinduet representerer mengden tidligere informasjon modellen kan huske, og fungerer som et korttidsminne. Jo mindre vinduet er, desto mer sannsynlig er det at modellen glemmer viktige deler av samtalen, noe som fører til inkonsekvente svar. Lange eller komplekse samtaler kan raskt fylle kontekstvinduet, noe som øker risikoen for inkonsekvens.</p> <p> Som en analogi, tenk deg en person som bare husker de siste fem setningene i en samtale. Hvis samtalen er kort, kan personen følge med. Men hvis samtalen blir lang, vil personen glemme viktig informasjon, noe som gjør vedkommendes svar inkonsekvente. På samme måte kan en AI-modell med et lite kontekstvindu \"miste oversikten\" over en samtale når for mye informasjon utveksles, gå glipp av viktige elementer og produsere svar som ikke lenger gir mening.</p>",
+                    "title": "Hvorfor mister noen modeller fort tråden i samtalen?"
+                },
+                "5": {
+                    "desc": "<p> Ordlyden i et prompt påvirker svarene betydelig. For å få et best mulig resultat fra en språkmodell er det viktig å mestre kunsten å <em>prompte</em>, det vil si formuleringen av forespørsler eller instruksjoner. <strong> Klarhet er nøkkelen</strong>: </p> <ul> <li> Bruk et enkelt og direkte språk, og unngå spørsmål som er for lange eller komplekse. Del opp forespørsler i flere enklere spørsmål for mer presise svar. </li> <li> <strong> Spesifiser spesifikke formatbegrensninger om nødvendig</strong>: Hvis du trenger et svar i et bestemt format (liste, tabell, sammendrag osv.), spesifiser det i spørsmålet. Du kan også spesifisere trinnene som skal følges og ønskede kvalitetskriterier. </li> <li> <strong> Spesifiser modellens rolle</strong> Start for eksempel med «Oppfør deg som en ekspert på…» eller «Se for deg at du er en lærer…» for å veilede tonen og perspektivet i svaret. </li> <li> <strong> Kontekstualiser spørsmålene dine</strong> Gi om nødvendig relevante eksempler for å veilede modellen. </li> <li> <strong> Oppmuntre til resonnement </strong> Bruk tankekjede-spørsmål (<em>Chain-of-Thought Prompting </em>) for å be modellen forklare resonnementet sitt, noe som gjør svarene mer robuste. </li> </ul> <p> Samtalemodeller er følsomme for variasjoner i ordlyd: enkelt språk, korte spørsmål og omformulering når det er nødvendig kan bidra til å lede modellen til å gi relevante svar. Test og finjuster spørsmålene dine for å finne den mest effektive ordlyden! </p>",
+                    "title": "Hva er den beste framgangsmåten for prompting?"
+                },
+                "6": {
+                    "desc": "<p> Konversasjonsbaserte KI-modeller svarer direkte ved å forutsi tokens (dvs. (deler av) ord) basert på sannsynlighet, mens en søkemotor tilbyr lenker og ressurser som brukeren kan utforske på egenhånd.</p>",
+                    "title": "Hva er forskjellen mellom å stille et spørsmål til en KI-modell og å søke på Google?"
+                }
+            },
+            "title": "Bruk"
+        }
+    },
+    "footer": {
+        "backHome": "Hjem - compar:IA",
+        "dpg": "Tjenesten er anerkjent som et digitalt offentlig gode av Digital Public Goods Alliance",
+        "helpUs": "Hjelp oss å forbedre produktet!",
+        "license": {
+            "linkTitle": "Etalab-lisens - nytt vindu",
+            "mention": "Med mindre noe er uttrykkelig angitt som tredjeparts immaterielle rettigheter, tilbys innholdet på dette nettstedet under <a {linkProps}>Etalab 2.0-lisensen</a>"
+        },
+        "links": {
+            "accessibility": "Tilgjengelighet: ikke kompatibel",
+            "legal": "Juridisk merknad",
+            "privacy": "Personvernerklæring",
+            "rgesn": "Økodesign",
+            "sources": "Kildekode",
+            "tos": "Bruksvilkår"
+        },
+        "writeUs": "Hvis du støter på et problem eller har tilbakemeldinger om chatbot-tjenesten, kan du gjerne skrive til oss <a {formLinkProps}>ved å bruke dette skjemaet</a> – vi leser alle meldinger.<br />Takk!"
+    },
+    "general": {
+        "a11y": {
+            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong> comparia.beta.gouv.fr </strong>.",
+            "disclaimer": "<strong> compar:IA </strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
+            "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
+            "improveDelay": "Vi prøver å svare innen to virkedager.",
+            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av beta.gouv.fr for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
+            "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Forbedring og kontakt",
+            "remedyAdvocate": "Skriv en melding til <a {linkProps}>Défenseur des droits</a>",
+            "remedyAdvocateAdress": "Send et brev i posten (gratis, ikke bruk frimerke): Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
+            "remedyDelegateAdvocate": "Kontakt <a {linkProps}>Likestillings- og diskrimineringsombudet</a>",
+            "remedyDesc": "Denne prosedyren skal brukes i følgende tilfelle: du har rapportert en feil med tilgjengeligheten til ansvarlig for nettstedet som hindrer deg i å få tilgang til innhold eller en av portalens tjenester, og du har ikke mottatt et tilfredsstillende svar.",
+            "remedyList": "Du kan:",
+            "remedyTitle": "Anke",
+            "stateDesc": "Nettstedet comparia.beta.gouv.fr er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig.</strong> Du bør derfor kunne:",
+            "stateNavigate": "finne fram på alle sidene på nettstedet ved hjelp av et tastatur",
+            "statePrefs": "tilpasse nettstedet til dine behov (skriftstørrelse, zoome inn på skjermen, endre typografi osv.) uten tap av innhold",
+            "stateScreenReader": "se nettsiden med en skjermleser.",
+            "stateTitle": "Status for samsvar",
+            "title": "Tilgjengelighetserklæring"
+        },
+        "legal": {
+            "a11yDesc": "Overholdelse av standarder for digital tilgjengelighet er et framtidig mål, men vi etterstreber å gjøre dette nettstedet tilgjengelig for alle.",
+            "a11yTitle": "Tilgjengelighet",
+            "directorDesc": "Herr Romain Delassus, leder for den sentrale digitale enheten i det franske kulturdepartementet",
+            "directorTitle": "Ansvarlig redaktør",
+            "editorDesc": "Denne nettsiden er publisert av det franske kulturdepartementet, 182, rue Saint-Honoré, 75001 Paris",
+            "editorTitle": "Publisert",
+            "hostingDesc": "Dette nettstedet driftes av OVH SAS (<a {linkProps}>https://www.ovh.com</a>), med registrert kontoradresse på 2 rue Kellermann, 59100 Roubaix, Frankrike.",
+            "hostingTitle": "Drift av nettstedet",
+            "reportA11y": "Hvis du støter på et tilgjengelighetsproblem som hindrer deg i å få tilgang til innhold eller funksjoner på nettstedet, vennligst gi oss beskjed.",
+            "reportA11yDesc": "For å lære mer om statens tilgjengelighetspolicy for digitale tjenester: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+            "reportDesc": "Hvis du ikke mottar et raskt svar fra oss, har du rett til å sende inn en klage eller be om henvisning til Likestillings- og diskrimineringsombudet.",
+            "reportTitle": "Rapporter et problem",
+            "securityCertif": "Nettstedet er beskyttet av et elektronisk sertifikat, representert i de fleste nettlesere som en hengelås. Denne beskyttelsen bidrar til å sikre konfidensialitet i dataoverføringen.",
+            "securityNoMail": "Tjenestene tilknyttet plattformen vil ikke under noen omstendigheter sende ut e-poster som ber deg sende inn personopplysninger.",
+            "securityTitle": "Sikkerhet",
+            "sources": "Med mindre annet er oppgitt, er all tekst på dette nettstedet under lisensen <a {etalabLinkProps}>Etalab Open 2.0</a>. Kildekoden til applikasjonen kan gjenbrukes fritt og er tilgjengelig på <a {githubLinkProps}>GitHub</a>.",
+            "title": "Juridisk merknad"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "Det er sant, du trengte ikke å klikke i en boks som dekker halve siden for å si at du godtar bruken av informasjonskapsler – selv om du ikke vet hva det betyr!",
+            "cookiesBannerNoNeed": "Ingenting eksepsjonelt, ingen spesialbehandling knyttet til et .gouv.fr-domene. Vi respekterer rett og slett loven, som sier at visse verktøy for målgruppesporing, riktig konfigurert for å respektere personvernet, er unntatt fra forhåndsgodkjenning.",
+            "cookiesBannerTitle": "Hvorfor popper det ikke opp en boks for samtykke til informasjonskapsler på dette nettstedet?",
+            "cookiesBannerTools": "Vi bruker <a {matomoLinkProps}>Matomo</a>, et <a {libreLinkProps}>gratis</a> verktøy, konfigurert til å overholde CNILs <a {cnilLinkProps}>anbefaling</a> om informasjonskapsler. Dette betyr at for eksempel IP-adressen din blir anonymisert før den registreres. Det er derfor umulig å knytte besøkene dine på dette nettstedet til din person.",
+            "cookiesDesc": "Dette nettstedet plasserer en liten tekstfil (en «informasjonskapsel») på datamaskinen din når du besøker det. Dette lar oss måle antall besøk slik at vi forstår hvilke sider som er mest besøkt.",
+            "cookiesDescMore": "Du kan velge å ikke la deg spore på dette nettstedet. Dette vil beskytte personvernet ditt, men det vil også hindre eieren i å lære av handlingene dine og skape en bedre opplevelse for deg og andre brukere.",
+            "cookiesTitle": "Informasjonskapsler og samtykke",
+            "dataAccessDatasets": "Brukerdialog- og preferansedata distribueres under Etalabs Open License 2.0 på plattformen Hugging Face gjennom det franske kulturdepartementets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Så klart! Bruksstatistikken for nettstedet er fritt tilgjengelig på <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Jeg bidrar til å berike dataene deres, kan jeg få tilgang til dem?",
+            "dataExtraCountry": "Destinasjonsland: Frankrike",
+            "dataExtraHost": "Underleverandør: OVH",
+            "dataExtraTitle": "Hvem hjelper oss med databehandling?",
+            "dataExtraWarranty": "Garantier: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Utført behandling: Tilrettelegging",
+            "dataRespDesc": "Det franske kulturdepartementets digitale enhet er ansvarlig for behandlingen av personopplysningene dine.",
+            "dataRespTitle": "Hvem er ansvarlig for databehandlingen?",
+            "dataTimeDesc": "Data knyttet til brukere og deres interaksjon med modeller lagres fra tidspunktet preferansevalget blir registrert.",
+            "dataTimeTitle": "Hvor lenge lagrer vi disse dataene?",
+            "dataUseDesc": "Utgiveren forplikter seg uansett til å implementere tiltak for å sikre anonymisering av dialogdata før de gjøres offentlig tilgjengelige.",
+            "dataUseTitle": "Hvilken behandling utføres på samtaledataene?",
+            "desc": "Tjenesten publiseres av den digitale enheten i det franske kulturdepartementet.",
+            "privacyData": "Dataene som samles inn på nettstedet er som følger:",
+            "privacyDataArena": "Data relatert til brukernes samtaler med modellene: spørsmål stilt av brukerne, modellsvar og brukernes preferanser mellom svarene til de to modellene",
+            "privacyDataForm": "Data relatert til spørreskjemaet «Hjelp oss å forbedre compar:IA».",
+            "privacyDesc": "Tjenesten behandler ikke personopplysninger som definert av CNIL, det vil si informasjon knyttet til en identifiserbar fysisk person, direkte eller indirekte.",
+            "privacyResp": "Brukeren er ansvarlig for dataene eller innholdet brukeren oppgir i prompter som plattformen foreslår. Ved å godta <a {linkProps}>bruksvilkårene</a> samtykker brukeren i å ikke overføre informasjon som kan identifisere brukeren selv eller en tredjepart.",
+            "privacyTitle": "Behandler vi personopplysninger?",
+            "title": "Personvernerklæring"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Nettstedet compar:IA gir enkel og gratis tilgang til et bredt utvalg av konversasjonsbaserte KI-modeller, med mål om å øke den offentlig bevisstheten rundt de ulike utfordringene med generativ KI: mangfold, skjevheter og miljøpåvirkning. Videre deles datasettene med spørsmål og preferanser som er samlet inn som åpen kildekode under lisensen MIT/Etalab 2.0.",
+                "2": "Målgruppen av brukere av tjenesten Compar:IA ble identifisert ved å gjennomføre brukerintervjuer og en innledende fase med behovsundersøkelse.",
+                "3": "Dermed er alle borgere ansett som potensielle brukere, men spesielt lærere, elever, studenter, workshop-arrangører, KI-instruktører, samt forskere (innen informatikk, KI, humaniora og samfunnsvitenskap) og bedrifter som er interessert i å analysere eller bruke delte datasett med åpen kildekode. Følgelig dekker den digitale tjenesten deres behov gjennom følgende funksjoner: gratis testing og sammenligning av modeller, og bruk av delte data med åpen kildekode.",
+                "4": "Tjenesten compar:IA er en del av en økodesigntilnærming som tar sikte på å redusere miljøpåvirkning. For dette formålet ble denne erklæringen utarbeidet innenfor rammen av implementeringen av det generelle rammeverket for økodesign for digitale tjenester (RGESN, versjon 2024). RGESN, produsert av Arcep og Arcom, i samarbeid med ADEME, DINUM, CNIL og Inria, er tilgjengelig på <a {linkProps}>Arceps nettsted</a>.",
+                "title": "Formålet med denne tjenesten"
+            },
+            "2": {
+                "1": "Økodesign av digitale tjenester er en tilnærming som tar sikte på å redusere og begrense miljøpåvirkningen av en tjeneste fra designfasen og gjennom hele livssyklusen.",
+                "2": {
+                    "1": "Utforme mer bærekraftige digitale tjenester for å forlenge levetiden til enheter;",
+                    "2": "Fremme en tilnærming basert på miljømessig nøkternhet som svar på strategier for å fange brukernes oppmerksomhet, i tråd med internasjonale miljømål;",
+                    "3": "Reduser bruken av IT-ressurser, optimaliser datatrafikk og bruken av digital infrastruktur;",
+                    "4": "Øk nivået av åpenhet om det miljømessige fotavtrykket til den digitale tjenesten.",
+                    "title": "Implementeringen har fire hovedmål:"
+                },
+                "3": {
+                    "1": "Begrens størrelsen på en side",
+                    "2": "Begrens kompleksiteten til en side",
+                    "3": "Begrens antall serverforespørsler",
+                    "4": "Begrens energiforbruket som kreves for å være vert for tjenesten",
+                    "title": "I praksis betyr økodesign et sett med beste praksis som skal følges før, under og etter etableringen eller forbedringen av en tjeneste, noe som særlig muliggjør:"
+                },
+                "4": "Dette er en prosess som innebærer kontinuerlig og kollektiv forbedring.",
+                "title": "Hva er økodesign?"
+            },
+            "3": {
+                "1": {
+                    "1": "Forenkling av brukeropplevelsen: navigasjonsstiene er optimalisert og sentrert rundt de viktigste funksjonene i compar:IA-tjenesten (arena for modeller som skal testes, datasett, rangering) med regelmessig brukertesting.",
+                    "2": "Øke bevisstheten blant brukerne om tjenestens økologiske fotavtrykk: fremheve indikatorer for energipåvirkning på spørsmål stilt til KI; fremme \"sparsommelig\" bruk, med en modus dedikert til å spørre etter \"små\" konversasjonsbaserte KI-modeller med mindre miljøpåvirkning.",
+                    "3": "Bruk av State Design System (DSFR)-grensesnittkomponenter: de er tilgjengelige, og fotavtrykket deres er minimalt.",
+                    "4": "Den mest intuitive navigasjonen som er mulig for å redusere tiden man bruker på å finne informasjon.",
+                    "5": "Mobilorientert design: mobile enheter kan vise alt innhold. Nettstedet tilpasser seg alle skjermstørrelser.",
+                    "6": "Utelukke integrasjon av video på nettstedet.",
+                    "title": "Hovedutfordringen er å sikre at compar:IA fungerer på så gamle enheter som mulig, under varierende tilkoblingsforhold. Flere tiltak ble implementert i designfasen, inkludert:"
+                },
+                "title": "Strategi implementert og mål for reduksjon eller begrensning av miljøpåvirkninger"
+            },
+            "4": {
+                "1": "Egenvurderingen, som ble utført mellom mai og oktober 2025 av produktteamet (to personer var ansvarlige for å gjennomgå og validere alle kriteriene), dekket alle sidene på nettstedet. Verktøyene som ble brukt til å evaluere visse tekniske indikatorer var nettleserens utviklerverktøys «nettverksinspektør», utvidelsen <a {greenitLinkProps}>Green IT Analysis</a> og verktøyet <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "RGESN-diagnose"
+            },
+            "5": {
+                "1": {
+                    "1": "Score for fremdrift i implementeringen av RGESN per 12.10.2025: 89 %",
+                    "title": "Selvdiagnostiseringen gir en grad av samsvar med <a {linkProps}>RGESN</a> (generell referanse for økodesign) på 89 %."
+                },
+                "2": "Den digitale tjenesten compar:IA har som mål å forbedre denne fremdriftsscoren til 95 % innen 2027.",
+                "3": {
+                    "1": "Strategi: 100 %",
+                    "2": "Spesifikasjoner: 78 %",
+                    "3": "Arkitektur: 100 %",
+                    "4": "Brukeropplevelse og grensesnitt (UX/UI): 100 %",
+                    "5": "Innhold: 67 %",
+                    "6": "Frontend: 82 %",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90 %",
+                    "9": "Algoritmer: 100 %",
+                    "title": "Poengsum etter tema:"
+                },
+                "4": {
+                    "date": "10. desember 2025",
+                    "title": "Revisjonstabell for RGESN"
+                },
+                "title": "Poengsum i implementeringen av rammeverket"
+            },
+            "6": {
+                "1": "Nettstedet er designet for å være tilgjengelig på alle mobile enheter fra 2017 eller senere.",
+                "2": "Minimumstilkobling som kreves for komfortabel tilgang og bruk av tjenesten: 3G på mobil og 512 Kbps på fastnett.",
+                "3": "Nettstedet er designet for forskjellige skjermstørrelser (minimum 320 pikslers bredde).",
+                "4": "Nettstedet er ikke tilgjengelig via nettleseren Internet Explorer. ",
+                "title": "Minimumskrav for å få tilgang til nettstedet"
+            },
+            "7": {
+                "1": "Sett opp tjenesten med en gjennomgang av design og kode, der ett av målene er å redusere miljøpåvirkningen av hver funksjon (kriterium 2.1)",
+                "2": "Implementer perioder for datalagring med formål å slette eller arkivere: regelmessig sletting av logger i filserveren «S3» og spesielt i databasen (Postgres).",
+                "3": {
+                    "1": "Maksimalt antall serverforespørsler per skjerm: 40",
+                    "2": "Maksimal ressursstørrelse per skjerm: 600 KB",
+                    "title": "Overholde en maksimal vekt og en grense for antall forespørsler per skjerm (kriterium 6.1):"
+                },
+                "4": "Konvertere illustrasjonene til WebP, AVIF, JPEG XL eller et mer effektivt bildeformat for rasterbilder (kriterium 5.1).",
+                "5": "Tillate muligheten til å avbryte inferens (lasting av svar) under sammenligning av modeller.",
+                "6": "Resultatene for EcoIndex-analyse viser et betydelig avvik i effektmålinger, der noen sider får poengsummer på opptil E eller F (relativt høy sidevekt, kompleksitet og antall forespørsler). Utfordringen nå er å forstå disse resultatene mer presist fra sak til sak, til tross for implementeringen av en god praksis, for å identifisere ytterligere forbedringer.",
+                "desc": "Flere forbedringer har blitt eller blir fortsatt identifisert, inkludert:",
+                "title": "Identifiserte forbedringer"
+            },
+            "desc": "publisert 11. desember 2025",
+            "title": "Erklæring om økodesign"
+        },
+        "tos": {
+            "contactDesc": "Hvis du har spørsmål om tjenesten, kan du skrive til <a {linkProps}>{contactLink}</a>.",
+            "contactTitle": "9. Kontakt",
+            "defsEditor": "«Utgiver» viser til den sentrale digitale enheten i det franske kulturdepartementet.",
+            "defsModels": "«Modeller» viser til de store språkmodellene (LLM-ene) som gjenbrukes (under sine egne lisenser for bruk) av plattformen for å oppfylle formålet.",
+            "defsPlatform": "«Plattform» viser til nettstedet som tilgjengeliggjør tjenestene.",
+            "defsServices": "«Tjenester» refererer til funksjonene som tilbys av plattformen for å oppfylle formålet.",
+            "defsTitle": "2. Definisjoner",
+            "defsUser": "«Bruker» refererer til enhver fysisk person som bruker plattformen og nyttiggjør seg tjenestene.",
+            "descDatasets": "Disse datasettene blir tilgjengeliggjort under en åpen lisens, spesielt for å oppmuntre til forskningsbruk."
+        }
+    }
+}

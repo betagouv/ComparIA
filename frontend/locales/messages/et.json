@@ -1657,13 +1657,11 @@
             "altText": "{choice} mudelile {model}",
             "negative": {
                 "incorrect": "Vale",
-                "instructions-not-followed": "Juhiseid pole järgitud",
                 "question": "Miks sulle see vastus ei meeldinud?",
                 "superficial": "Pealiskaudne"
             },
             "other": "Muu",
             "positive": {
-                "clear-formatting": "Eemalda vorming",
                 "complete": "Lõpeta",
                 "creative": "Loominguline",
                 "question": "Mis sulle selle vastuse juures meeldis?",
