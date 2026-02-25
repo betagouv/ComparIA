@@ -5,7 +5,8 @@
   import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
-  let { model, modalId }: { model?: BotModel; modalId: string } = $props()
+  let { model, modalId, onClose }: { model?: BotModel; modalId: string; onClose?: () => void } =
+    $props()
 
   const badges = $derived.by(() => {
     if (!model) return []
@@ -51,12 +52,19 @@
           }
     ].filter((b) => !!b)
   })
+
+  const dsfrEvents = {
+    'ondsfr.conceal': () => onClose?.()
+  }
 </script>
+
+<button class="hidden" data-fr-opened={!!model} aria-controls={modalId}>Hidden</button>
 
 <dialog
   aria-labelledby="{modalId}-title"
   id={modalId}
   class="fr-modal before:h-[5vh]! before:basis-[5vh]! after:h-[5vh]! after:basis-[5vh]!"
+  {...dsfrEvents}
 >
   <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row fr-grid-row--center">

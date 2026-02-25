@@ -288,8 +288,15 @@ async def retry(
     if conversations.error and last_user_msg.content == conversations.opening_msg:
         # if error is from a specific model, reroll it
         if pos := conversations.error.pos:
+            if conversations.mode != "custom" and conversations.error.is_timeout:
+                # Another timeout error occured even tho llms have been rerolled already
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                )
+
             models = get_llms_data(conversations.country_portal)
-            failing_model_id = conv_a.model_name if pos == "a" else conv_b
+            failing_model_id = conv_a.model_name if pos == "a" else conv_b.model_name
 
             if selection := conversations.custom_models_selection:
                 # Filter failing model from custom_models_selection

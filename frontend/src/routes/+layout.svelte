@@ -11,6 +11,7 @@
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import 'uno.css'
   import '../css/app.css'
+
   if (browser) {
     // FIXME import only needed parts?
     // @ts-expect-error - DSFR module import
@@ -22,8 +23,10 @@
   onMount(() => {
     // Remove locale param to avoid locale changes override problems
     const params = new SvelteURLSearchParams(page.url.searchParams)
-    params.delete('locale')
-    goto(`?${params}`)
+    if (params.get('locale')) {
+      params.delete('locale')
+      goto(`?${params}` + page.url.hash)
+    }
   })
 
   setVotesContext(data.votes)

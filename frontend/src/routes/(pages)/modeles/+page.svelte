@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import {
     Accordion,
     AccordionGroup,
@@ -103,7 +104,7 @@
     allFilter.forEach((arr) => (arr.length = 0))
   }
 
-  let selectedModel = $state<string>()
+  let selectedModel = $state<string>(page.url.hash.replace('#', ''))
   const selectedModelData = $derived(models.find((m) => m.id === selectedModel))
 </script>
 
@@ -268,7 +269,11 @@
   </div>
 </main>
 
-<ModelInfoModal model={selectedModelData} modalId="modal-model" />
+<ModelInfoModal
+  model={selectedModelData}
+  modalId="modal-model"
+  onClose={() => window.history.replaceState(null, '', page.url.pathname)}
+/>
 
 <style>
   :global(.fr-sidemenu .fr-collapse) {
