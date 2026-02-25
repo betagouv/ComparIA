@@ -32,6 +32,7 @@ BotChoice = BotPos | Literal["both_equal"]
 class ErrorDetails(BaseModel):
     message: str
     pos: BotPos | None = None
+    is_timeout: bool = False
 
 
 class BaseMessage(BaseModel):

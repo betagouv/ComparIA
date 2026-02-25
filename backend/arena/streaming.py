@@ -255,7 +255,9 @@ async def stream_comparison_messages(
     except ChatError as e:
         # Specific chat error
         # Error logging is done in `stream_conversation_messages()`
-        conversations.error = ErrorDetails(message=e.message, pos=e.pos)
+        conversations.error = ErrorDetails(
+            message=e.message, pos=e.pos, is_timeout=e.is_timeout
+        )
         yield format_sse_event({"type": "error", "error": e.message, "pos": e.pos})
     except Exception as e:
         # General error
