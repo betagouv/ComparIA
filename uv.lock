@@ -864,6 +864,7 @@ dependencies = [
 [package.dev-dependencies]
 data = [
     { name = "duckdb" },
+    { name = "huggingface-hub" },
     { name = "pandas" },
     { name = "polars" },
     { name = "pyarrow" },
@@ -901,6 +902,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 data = [
     { name = "duckdb", specifier = ">=1.1.0" },
+    { name = "huggingface-hub", specifier = ">=1.4" },
     { name = "pandas", specifier = ">=3.0.0" },
     { name = "polars", specifier = ">=1.37.1" },
     { name = "pyarrow", specifier = ">=23.0.0" },
