@@ -27,7 +27,7 @@
     { emoji: string; unit?: string; decimals?: number }
   > = {
     package_delivery: { emoji: '📦' },
-    paris_nyc_flights: { emoji: '✈', decimals: 1 },
+    paris_nyc_flights: { emoji: '✈️', decimals: 1 },
     paris_berlin_tgv: { emoji: '🚅' },
     baguette_production: { emoji: '🥖', unit: 'kg' },
     pizza_production: { emoji: '🍕', unit: 'kg' },
