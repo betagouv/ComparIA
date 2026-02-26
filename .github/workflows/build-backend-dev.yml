@@ -1,5 +1,8 @@
 name: Build Backend Image on Dev
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
