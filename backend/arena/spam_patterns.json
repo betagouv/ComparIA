@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "description": "Regex patterns to detect spam/injection prompts. Each pattern has a description and can be enabled/disabled.",
+  "patterns": [
+    {
+      "name": "xml_conversation_tag",
+      "regex": "<Conversation>",
+      "flags": "IGNORECASE",
+      "description": "Detects XML <Conversation> tags used by bots",
+      "enabled": true
+    },
+    {
+      "name": "begin_response_instruction",
+      "regex": "Begin your response to the most recent message",
+      "flags": "IGNORECASE",
+      "description": "Detects instruction looking like prompt injections",
+      "enabled": true
+    },
+    {
+      "name": "xml_user_tag",
+      "regex": "<User>.*</User>",
+      "flags": "IGNORECASE|DOTALL",
+      "description": "Detects XML <User> tags in prompts",
+      "enabled": true
+    },
+    {
+      "name": "combined_conversation_injection",
+      "regex": "<Conversation>.*</Conversation>.*Begin your response",
+      "flags": "IGNORECASE|DOTALL",
+      "description": "Combined pattern detecting the full injection structure observed in spam",
+      "enabled": true
+    }
+  ],
+  "notes": [
+    "To add a pattern: add an object with name, regex, flags, description, enabled",
+    "Available flags: IGNORECASE, MULTILINE, DOTALL, ASCII, VERBOSE",
+    "Set enabled: false to temporarily disable a pattern without removing it"
+  ]
+}

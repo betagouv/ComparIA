@@ -25,6 +25,7 @@ from backend.arena.persistence import (
 )
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.session import create_session, increment_input_chars, is_ratelimited
+from backend.arena.spam_detection import validate_prompt_not_spam
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
 from backend.llms.data import get_llms_data
 from backend.utils.countries import CountryPortalAnno
@@ -130,6 +131,15 @@ async def add_first_text(
     )
     logger.info(f"country_portal: {country_portal}")
 
+    # Validate prompt is not spam
+    try:
+        validate_prompt_not_spam(args.prompt_value, request)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
     # Select models
     models = get_llms_data(country_portal)
     model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
@@ -211,6 +221,15 @@ async def add_text(
         f"'/add_text' session={conversations.session_hash} called with: {args.model_dump_json()}",
         extra={"request": request},
     )
+
+    # Validate prompt is not spam
+    try:
+        validate_prompt_not_spam(args.message, request)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
 
     # Add user message to both conversations
     user_message = UserMessage(content=args.message)
