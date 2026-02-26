@@ -34,6 +34,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
+from backend.arena.spam_detection import is_spam
 from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 
@@ -232,6 +233,56 @@ def calculate_kwh(model_name, tokens):
     return (wh_per_million / 1_000_000) * tokens / 1_000
 
 
+def conversation_contains_spam(conversation_json) -> bool:
+    """
+    Check if a conversation (JSONB field) contains spam in user messages.
+
+    Args:
+        conversation_json: JSON string or parsed list of messages
+
+    Returns:
+        True if any user message contains spam, False otherwise
+    """
+    # Handle null/None values
+    if conversation_json is None:
+        return False
+
+    # Handle pandas NA/null
+    try:
+        if pd.isnull(conversation_json):
+            return False
+    except (ValueError, TypeError):
+        # If pd.isnull fails on this value, continue
+        pass
+
+    try:
+        # Parse JSON if string
+        if isinstance(conversation_json, str):
+            messages = json.loads(conversation_json)
+        else:
+            messages = conversation_json
+
+        # Ensure messages is a list
+        if not isinstance(messages, list):
+            return False
+
+        # Check each user message
+        for message in messages:
+            if not isinstance(message, dict):
+                continue
+
+            if message.get("role") == "user":
+                content = message.get("content", "")
+                if content and is_spam(str(content)):
+                    return True
+
+        return False
+
+    except (json.JSONDecodeError, TypeError, AttributeError) as e:
+        logger.debug(f"Failed to parse conversation for spam detection: {e}")
+        return False
+
+
 def load_models_data():
     """
     Load the generated models JSON data.
@@ -281,6 +332,30 @@ def fetch_and_transform_data(conn, table_name, query=None):
         if dataframe.empty:
             logger.warning("DataFrame vide - no data to export")
             return dataframe
+
+        # Filter out spam conversations (for conversations and reactions tables)
+        if table_name in ("conversations", "reactions") and "conversation_a" in dataframe.columns:
+            logger.info("Filtering spam conversations...")
+            initial_count = len(dataframe)
+
+            # Build list of indices to keep (not spam)
+            indices_to_keep = []
+            for idx, row in dataframe.iterrows():
+                has_spam_a = conversation_contains_spam(row["conversation_a"])
+                has_spam_b = conversation_contains_spam(row["conversation_b"])
+
+                # Keep row only if neither conversation has spam
+                if not has_spam_a and not has_spam_b:
+                    indices_to_keep.append(idx)
+
+            # Filter dataframe to keep only non-spam rows
+            dataframe = dataframe.loc[indices_to_keep].copy()
+
+            filtered_count = initial_count - len(dataframe)
+            if filtered_count > 0:
+                logger.info(f"Filtered out {filtered_count:,} spam conversations ({filtered_count/initial_count*100:.1f}%)")
+            else:
+                logger.info("No spam detected")
 
         # Anonymize visitor_id using MD5 hash
         if "visitor_id" in dataframe.columns:
@@ -631,6 +706,11 @@ def main():
     # Load lookup tables for data enrichment
     load_session_hash_ip()
     load_models_data()
+
+    # Log spam patterns info
+    from backend.arena.spam_detection import _get_compiled_patterns
+    patterns = _get_compiled_patterns()
+    logger.info(f"Spam detection: {len(patterns)} patterns loaded for filtering")
 
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not args.dry_run:

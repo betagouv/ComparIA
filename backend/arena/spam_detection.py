@@ -117,6 +117,29 @@ def _get_compiled_patterns() -> list[tuple[str, re.Pattern, str]]:
     return _compiled_patterns
 
 
+def is_spam(prompt: str) -> bool:
+    """
+    Check if a prompt matches known spam patterns.
+
+    Args:
+        prompt: User prompt to check
+
+    Returns:
+        True if prompt is spam, False otherwise
+    """
+    patterns = _get_compiled_patterns()
+
+    if not patterns:
+        # No patterns loaded, consider as not spam
+        return False
+
+    for name, pattern, description in patterns:
+        if pattern.search(prompt):
+            return True
+
+    return False
+
+
 def validate_prompt_not_spam(prompt: str, request: Request) -> None:
     """
     Validate that a prompt doesn't match known spam patterns.

@@ -124,3 +124,37 @@ GROUP BY msg_index
 ORDER BY count DESC
 LIMIT 10;
 
+
+-- ============================================================================
+-- SPAM DETECTION - Quality Verification
+-- ============================================================================
+-- After spam filtering, these counts should be 0
+-- Checks for patterns defined in backend/arena/spam_patterns.json
+-- ============================================================================
+
+-- Issue: Spam patterns in conversations (expected 0 after filtering)
+SELECT
+    'spam_patterns_in_conversations' as issue_type,
+    COUNT(*) as count,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM conversations), 2) as percentage
+FROM conversations
+WHERE CAST(conversation_a AS VARCHAR) LIKE '%<Conversation>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<Conversation>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%Begin your response to the most recent message%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%Begin your response to the most recent message%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<User>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<User>%';
+
+-- Issue: Spam patterns in reactions (expected 0 after filtering)
+SELECT
+    'spam_patterns_in_reactions' as issue_type,
+    COUNT(*) as count,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM reactions), 2) as percentage
+FROM reactions
+WHERE CAST(conversation_a AS VARCHAR) LIKE '%<Conversation>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<Conversation>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%Begin your response to the most recent message%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%Begin your response to the most recent message%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<User>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<User>%';
+
