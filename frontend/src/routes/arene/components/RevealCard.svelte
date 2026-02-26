@@ -203,7 +203,7 @@
       >
         {#each data.equivalences as eq, i (i)}
           <div
-            class="eq-card sm:min-w-1/2 md:min-w-1/3 lg:min-w-1/2 xl:min-w-1/3 flex min-w-full flex-col items-center"
+            class="eq-card sm:min-w-1/2 md:min-w-1/3 lg:min-w-1/2 xl:min-w-1/3 px-2 flex min-w-full flex-col items-center"
           >
             <div class="mb-1 text-[20px]">
               {equivalencesData[eq.type].emoji}
@@ -214,9 +214,8 @@
               {@html sanitize(equivalencesData[eq.type].unit ?? '')}
             </strong>
             <p class="mb-0! text-grey! lh-tight text-center text-[11px]!">
-              {m[`reveal.equivalent.scales.${eq.type}.unit`]()}&nbsp;<Tooltip
-                id="equivalent-{eq.type}-{data.pos}"
-              >
+              {m[`reveal.equivalent.scales.${eq.type}.unit`]()}
+              <Tooltip id="equivalent-{eq.type}-{data.pos}">
                 {@html sanitize(
                   m[`reveal.equivalent.scales.${eq.type}.tooltip`]({
                     linkProps: externalLinkProps({
