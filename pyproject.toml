@@ -27,9 +27,11 @@ data = [
     "duckdb>=1.1.0",
     "pandas>=3.0.0",
     "polars>=1.37.1",
+    "psycopg2-binary>=2.9.11",
     "pyarrow>=23.0.0",
     "sqlalchemy>=2.0.46",
     "huggingface_hub>=1.4",
+    "google-cloud-aiplatform>=1.75.0",
 ]
 dev = [
     "autoflake>=2.3.1",
