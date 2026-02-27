@@ -57,6 +57,9 @@ def get_api_key(endpoint: "Endpoint") -> str | None:
     # HuggingFace Inference API
     if endpoint.api_base and "huggingface.co" in endpoint.api_base:
         return settings.HF_INFERENCE_KEY
+    # Ordbogen.ai (Danish LLM)
+    if endpoint.api_base and "ordbogen.ai" in endpoint.api_base:
+        return settings.ORDBOGEN_API_KEY
     # OpenRouter and Vertex AI are handled by LiteLLM reading env variables directly
     # OPENROUTER_API_KEY and Google credentials are checked automatically
     # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value

@@ -675,6 +675,11 @@
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
                     "reuse_specificities": ""
                 },
+                "Ordbogen": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "Swiss AI": {
                     "commercial_use_specificities": "",
                     "license_desc": "",
@@ -810,7 +815,7 @@
             },
             "EuroLLM 22B Instruct": {
                 "desc": "<p>Modèle multilingue conçu spécifiquement pour la diversité linguistique européenne, avec de fortes capacités en traduction et compréhension multilingue.</p>",
-                "fyi": "<p>EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l’Union européenne ainsi que 11 langues supplémentaires. L’entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d’un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d’une allocation de calcul « extreme-scale ».</p>\n<p>Les données d’entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l’équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue.</p>",
+                "fyi": "<p>EuroLLM-22B est un modèle créé par un consortium composé de Sorbonne Université, Université Paris-Saclay, Artefact Research Center, Instituto Superior Técnico – University of Lisbon, Instituto de Telecomunicações, University of Edinburgh, Aveni, Unbabel, University of Amsterdam et Naver Labs. Il a été entraîné avec pour objectif principal la couverture équilibrée des langues européennes. Il couvre les 24 langues officielles de l'Union européenne ainsi que 11 langues supplémentaires. L'entraînement a été réalisé sur environ 4 000 milliards de jetons, en utilisant 400 GPU Nvidia H100 sur le supercalculateur MareNostrum 5, opéré par le Barcelona Supercomputing Center. Le projet a bénéficié d'un soutien institutionnel européen via Horizon Europe et EuroHPC, dans le cadre d'une allocation de calcul « extreme-scale ».</p>\n<p>Les données d'entraînement combinent des données issues du web, des données parallèles multilingues (en–xx et xx–en) et des jeux de données de haute qualité soigneusement sélectionnés, avec un accent fort mis sur l'équilibre entre les langues européennes. Le modèle est particulièrement performant pour les tâches de traduction multilingue.</p>",
                 "size_desc": "<p>Avec 22 milliards de paramètres, ce modèle se situe dans la catégorie des modèles de taille intermédiaire. Son utilisation nécessite un ordinateur personnel très puissant ou, plus généralement, un serveur disposant d’au moins une carte graphique performante. La fenêtre de contexte atteint 32 000 jetons.</p>"
             },
             "Gemini 1.5 Pro": {
@@ -1147,6 +1152,16 @@
                 "desc": "<p>Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.</p>",
                 "fyi": "<p>Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents.</p>",
                 "size_desc": "<p>Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>"
+            },
+            "Odin Large": {
+                "desc": "<p>La version grande des modèles Odin de la société danoise Ordbogen.com.</p>",
+                "fyi": "<p>Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus grand.</p>",
+                "size_desc": "<p>La taille des modèles utilisés par le système Odin n'est pas connue. L'architecture est probablement basée sur un « mélange d'experts » (Mixture of Experts, MoE), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects.</p>"
+            },
+            "Odin Medium": {
+                "desc": "<p>La version moyenne des modèles Odin de la société danoise Ordbogen.com.</p>",
+                "fyi": "<p>Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus petit.</p>",
+                "size_desc": "<p>La taille des modèles utilisés par le système Odin n'est pas connue. L'architecture est probablement basée sur un « mélange d'experts » (Mixture of Experts, MoE), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects.</p>"
             },
             "Olmo 3 32B Think": {
                 "desc": "<p>Modèle de raisonnement dont le code et les données sont complètement ouverts. Il a été entraîné par AI2, un institut de recherche à but non lucratif.</p>",
