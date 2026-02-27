@@ -538,8 +538,161 @@
                     "license_desc": "<p>Denne <strong>ikke-eksklusive, verdensomspennende, royaltyfri</strong> lisensen gir deg rett til fritt å bruke, reprodusere, modifisere og distribuere Llama 3.3-koden og tilhørende materiale med kreditering. Den tillater spesielt gjenbruk for å forbedre derivatmodeller, men setter begrensninger på kommersiell drift i svært stor skala.</p>"
                 },
                 "Llama 4": {
-                    "commercial_use_specificities": "under 700 millioner brukere\n"
+                    "commercial_use_specificities": "under 700 millioner brukere\n",
+                    "license_desc": "<p>Denne ikke-eksklusive, verdensomspennende, royaltyfri lisensen lar deg bruke, reprodusere, modifisere og distribuere Llama 4-materiale (modeller og dokumentasjon) med kreditering. Den pålegger imidlertid to hovedbegrensninger: (1) selskaper med over 700 millioner månedlige aktive brukere må innhente en spesiell lisens fra Meta, og (2) <strong>fullstendig utelukkelse</strong> av EU-innbyggere og selskaper med hovedkontor i EU fra å bruke multimodale modeller direkte, på grunn av regulatorisk usikkerhet knyttet til den europeiske KI-loven. Europeiske sluttbrukere kan likevel få tilgang til tjenester som integrerer Llama 4, forutsatt at de leveres fra utenfor EU.</p>"
+                },
+                "MIT": {
+                    "license_desc": "<p>MIT-lisensen er en permissiv fri programvarelisens: den tillater alle å gjenbruke, endre og distribuere modellen, selv for kommersielle formål, forutsatt at de inkluderer den originale lisensen og erklæringene om opphavsrett.</p>"
+                },
+                "Mistral AI Research License": {
+                    "license_desc": "<p>Denne ikke-eksklusive, royaltyfrie lisensen tillater bruk, kopiering, modifisering og distribusjon av Mistral-modeller og deres derivater (inkludert modifiserte eller raffinerte versjoner). Den er imidlertid strengt begrenset til forskningsformål.</p>"
+                },
+                "Modified MIT": {
+                    "license_desc": "<p>En variant av MIT-lisensen. MIT-lisensen er en permissiv, fri programvarelisens: den tillater alle å gjenbruke, endre og distribuere modellen, selv for kommersielle formål, forutsatt at de inkluderer den originale lisensen og erklæringene om opphavsrett.</p>"
                 }
+            },
+            "proprio": {
+                "Alibaba": {
+                    "license_desc": "Modellen er tilgjengelig under betalt lisens og tilgjengelig via API på Alibabas plattformer, og det kreves betaling per bruk (pay-per-use) basert på antall behandlede tokens eller reservert infrastruktur."
+                },
+                "Amazon": {
+                    "license_desc": "Modellen er tilgjengelig under betalt lisens og kan nås via Amazon Bedrock, og det kreves betaling etter bruk (pay-as-you-go) basert på antall behandlede tokens eller reservert infrastruktur.",
+                    "reuse_specificities": "bortsett fra å destillere eller trene andre modeller på Amazons plattformer."
+                },
+                "Anthropic": {
+                    "license_desc": "Modellen er tilgjengelig under betalt lisens og tilgjengelig via API på Anthropic-plattformen eller partnerplattformer, og det kreves betaling per bruk (pay-per-use) basert på antall behandlede tokens eller basert på infrastrukturen som er reservert for å være vert for modellen."
+                },
+                "Google": {
+                    "license_desc": "Modellen er tilgjengelig under betalt lisens og tilgjengelig via API på Googles plattformer, og det kreves betaling per bruk (pay-per-use) basert på antall behandlede tokens eller på reservert infrastruktur.",
+                    "reuse_specificities": "bortsett fra trening av andre modeller på Vertex AI"
+                },
+                "Liquid": {
+                    "license_desc": "Denne modellen er tilgjengelig under betalt lisens og tilgjengelig via API fra plattformene til Liquid AI og partnere, og det kreves betaling per token eller for reservert infrastruktur."
+                },
+                "Mistral AI": {
+                    "license_desc": "Modellen er tilgjengelig under en betalt lisens og tilgjengelig via Mistral API, Amazon Sagemaker og flere andre infrastrukturleverandører, og det kreves betaling per bruk (pay-per-use) basert på antall behandlede tokens eller reservert infrastruktur."
+                },
+                "OpenAI": {
+                    "license_desc": "Modellen er tilgjengelig under en betalt lisens og tilgjengelig via API på OpenAIs plattformer eller gjennom Microsoft Azure-tjenester, og det kreves betaling per bruk (pay-per-use) basert på antall behandlede tokens eller reservert infrastruktur."
+                },
+                "xAI": {
+                    "license_desc": "Modellen er tilgjengelig under en betalt lisens og tilgjengelig via X og xAI, og det kreves betaling per bruk (pay-per-use) basert på antall behandlede tokens eller reservert infrastruktur."
+                }
+            }
+        },
+        "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p>Reproduserbar mellomstor modell basert på åpen kildekode utviklet av et konsortium av sveitsiske institusjoner. Vektene og treningskoden er publisert under en permissiv lisens. Modellen ble trent på over 1800 språk og over 15 billioner tokens. Treningen fant sted på superdatamaskinen CSCS Alps i Lugano, drevet av karbonnøytral vannkraft. </p>",
+                "fyi": "<p>Modellen ble trent på superdatamaskinen Alps i Lugano, og det ble brukt over 10 millioner GPU-timer drevet av karbonnøytral vannkraft. Modellen ble forhåndstrent på 15 billioner tokens fra mer enn 1800 språk, inkludert en betydelig andel underrepresenterte språk.</p>\n<p>Apertus er basert på en BPE-tokenizer på bytenivå med 131 000 oppføringer, avledet fra Mistral AIs \"tekken\"-tokenizer, optimalisert for flerspråklighet, kode og matematiske uttrykk. Arkitekturen kombinerer flere innovasjoner: Rotary Posiional Embeddings (RoPE) med en utvidet base og NTK-bevisst tuning for lange kontekster, Grouped Query Attention (GQA) for bedre minneeffektivitet, QK-Norm-normalisering for å stabilisere treningen, og en xIELU (utvidet integrert ELU) aktiveringsfunksjon for å forbedre MLP-ytelsen.</p>\n<p>Den endelige finpussen på modellen er basert på en justeringsalgoritme kalt QRPO (Quantile Reward-Preferring Optimization), et alternativ til klassisk RLHF, som bruker absolutte belønningssignaler for mer stabil læring som er bedre tilpasset menneskelige preferanser. Selv om den ikke konkurrerer direkte med de mest avanserte proprietære modellene, skiller Apertus seg ut for sin grad av gjennomsiktighet.</p>",
+                "size_desc": "<p>Med 70 milliarder parametere er denne modellen av kategorien store modeller. Det kreves minst to kraftige GPU-er for å kjøre modellen, noe som fører til betydelige driftskostnader. Kontekstvinduet på 65 536 tokens lar den behandle ganske lange dokumenter.</p>"
+            },
+            "Apertus 8B Instruct": {
+                "desc": "<p>Liten og reproduserbar modell med åpen kildekode utviklet av et konsortium av sveitsiske institusjoner. Vektene og treningskoden er publisert under en permissiv lisens. Modellen ble trent på over 1800 språk og over 15 billioner tokens. Treningen fant sted på superdatamaskinen CSCS Alps i Lugano, drevet av karbonnøytral vannkraft.</p>",
+                "fyi": "<p>Modellen ble trent på superdatamaskinen Alps i Lugano, og det ble brukt over 10 millioner GPU-timer drevet av karbonnøytral vannkraft. Modellen ble forhåndstrent på 15 billioner tokens fra mer enn 1800 språk, inkludert en betydelig andel underrepresenterte språk.</p>\n<p>Apertus er basert på en BPE-tokenizer på bytenivå med 131 000 oppføringer, avledet fra Mistral AIs \"tekken\"-tokenizer, optimalisert for flerspråklighet, kode og matematiske uttrykk. Arkitekturen kombinerer flere innovasjoner: Rotary Posiional Embeddings (RoPE) med en utvidet base og NTK-bevisst tuning for lange kontekster, Grouped Query Attention (GQA) for bedre minneeffektivitet, QK-Norm-normalisering for å stabilisere treningen, og en xIELU (utvidet integrert ELU) aktiveringsfunksjon for å forbedre MLP-ytelsen.</p>\n<p>Den endelige finpussen av modellen er basert på en justeringsalgoritme kalt QRPO (Quantile Reward-Preferring Optimization), et alternativ til klassisk RLHF, som bruker absolutte belønningssignaler for mer stabil læring som er bedre tilpasset menneskelige preferanser. Selv om den ikke konkurrerer direkte med de mest avanserte proprietære modellene, skiller Apertus seg ut for sin grad av gjennomsiktighet.</p>",
+                "size_desc": "<p>Med 8 milliarder parametere er denne modellen en av de minste modellene. Den kan kjøres lokalt på en kraftig datamaskin, noe som sikrer datakonfidensialitet, eller lagres på en server utstyrt med et enkelt grafikkort, noe som begrenser kostnadene til infrastruktur. Kontekstvinduet på 65 536 tokens lar den behandle ganske lange dokumenter.</p>"
+            },
+            "Aya 23 8B": {
+                "desc": "<p>Liten flerspråklig språkmodell trent på en stor del språk som generelt er underrepresentert.</p>",
+                "fyi": "<p>Aya 23 8B av Cohere er en liten språkmodell fra Command R-familien, trent spesifikt på et flerspråklig korpus.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og kostbar å kjøre sammenlignet med større modeller, samtidig som den tilbyr tilstrekkelig ytelse for mange oppgaver som oppsummering, oversettelse osv.</p>"
+            },
+            "Aya Expanse 32B": {
+                "desc": "<p>Mellomstor, flerspråklig modell, trent til å generere tekst på 23 språk.</p>",
+                "fyi": "<p>Cohere, det kanadiske selskapet som trente denne modellen, ble grunnlagt i 2019 av tidligere Google Brain-forskere, inkludert Aidan Gomez, medforfatter av den berømte artikkelen «Attention Is All You Need» som revolusjonerte moderne KI. Det unike ved selskapet ligger i at de utelukkende har fokus på generativ KI for bedrifter, spesielt regulerte sektorer som finans, helsevesen, produksjon og energi, samt offentlig sektor. Selskapet er også en pioner når det gjelder flerspråklige tilnærminger og har et non-profit forskningslaboratorium for å støtte åpen innovasjon.</p>\n<p>Denne modellen ble designet for å gi gode muligheter for hvert av de 23 språkene i treningskorpuset.</p>",
+                "size_desc": "<p>Med 32 milliarder parametere regnes denne modellen som mellomstor. Den kan driftes på en server med et enkelt, kraftig grafikkort, noe som bidrar til å holde kostnadene til infrastruktur lave.</p>\n<p> Den har et kontekstvindu på opptil 130 000 tokens, noe som er nyttig for å analysere lange dokumenter.</p>"
+            },
+            "Aya Expanse 8B": {
+                "desc": "<p>Liten, flerspråklig modell, andre iterasjon av Aya-serien. Den ble trent på en stor andel underrepresenterte språk.</p>",
+                "fyi": "<p>Aya Expanse 8B fra det kanadiske selskapet Cohere er en liten modell av Command R-familien som er trent spesifikt på et flerspråklig korpus.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og kostbar å kjøre sammenlignet med større modeller, samtidig som den tilbyr tilstrekkelig ytelse for mange oppgaver som oppsummering, oversettelse osv.</p>"
+            },
+            "Aya23-35B": {
+                "desc": "<p>Mellomstor, flerspråklig modell, trent spesifikt på språk som i stor grad er generelt underrepresenterte.</p>",
+                "fyi": "<p>Coheres Aya 23 35B er en mellomstor modell fra Command R-familien som er spesialtrent på et flerspråklig korpus.</p>",
+                "size_desc": "<p>Mellomstore modeller gir en god balanse mellom kompleksitet, kostnad og ytelse: de er mye mindre ressurskrevende enn store modeller, samtidig som de fortsatt kan håndtere komplekse oppgaver som sentimentanalyse eller resonnering.</p>"
+            },
+            "Chocolatine 14B": {
+                "desc": "<p>Basert på Microsofts Phi-3 Medium-modell, er denne modellen spesialisert for det franske språket.</p>",
+                "fyi": "<p>Basert på Microsofts Phi-3 Medium-modell, er denne modellen spesialisert for fransk. Modellens navn «Chocolatine» er en nikk til CroissantLLM-prosjektet, som var et av de første initiativene for å lage en liten modell med åpen kildekode optimalisert for fransk.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og kostbar å kjøre sammenlignet med større modeller, samtidig som den tilbyr tilstrekkelig ytelse for mange oppgaver som oppsummering, oversettelse osv.</p>"
+            },
+            "Chocolatine 2 14B": {
+                "desc": "<p>Basert på Alibabas Qwen2.5-modell, har denne modellen blitt spesialisert for fransk.</p>",
+                "fyi": "<p>Basert på Alibabas Qwen2.5-modell, er denne modellen spesialisert for fransk. Navnet på modellen «Chocolatine» er en nikk til CroissantLLM-prosjektet, som var et av de første initiativene for å lage en liten modell med åpen kildekode, optimalisert for fransk.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og kostbar å kjøre sammenlignet med større modeller, samtidig som den tilbyr tilstrekkelig ytelse for mange oppgaver, som oppsummering, oversettelse osv.</p>"
+            },
+            "Claude 3.5 Sonnet v2": {
+                "desc": "<p>Svært effektiv modell i kode, laget etter en forbedring etter trening sammenlignet med Claude 3</p>",
+                "fyi": "<p>Den beste modellen i Claude 3.5-familien. Denne modellen er spesialisert til å generere litterære tekster og en mer naturlig tone. Versjon v2 ble utgitt i oktober 2024.</p>",
+                "size_desc": "<p>Disse modellene, med hundrevis av milliarder parametere, er de mest komplekse og avanserte når det gjelder ytelse og nøyaktighet. Databehandlings- og minneressursene som kreves for å kjøre disse modellene er slik at de er beregnet på de mest avanserte applikasjonene og svært spesialiserte miljøer.</p>"
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "<p>Svært stor, multimodal og flerspråklig modell, effektiv for kodegenerering, med to svarmoduser: brukeren kan velge mellom en resonneringsmodus for mer dyptgående svar, eller en rask modus for å generere det endelige svaret direkte.</p>",
+                "fyi": "<p>Claude 4 Opus er den mest avanserte modellen i Claude 4-familien. Den er optimalisert for rå kraft og komplekse oppgaver som krever vedvarende resonnering over lange perioder: for eksempel kan den jobbe med langsiktige oppgaver (Anthropic hevder at den kan jobbe uavhengig i opptil syv timer). På den annen side er Opus dyrere å bruke, tregere i responsen og den krever flere ressurser for å kjøre.</p>\n<p>Modellen tilbyr to bruksmåter: en resonneringsmodus med trinnvis resonnering for komplekse problemstillinger, og en hurtigmodus for direkte svar. I motsetning til andre modeller ble ikke resonneringsmodusen primært trent på matematiske data, men tilpasset virkelige brukstilfeller.</p>",
+                "size_desc": "<p>Den nøyaktige størrelsen på modellen er ukjent. Det finnes bevis som tyder på at det er en veldig stor modell som krever servere med flere kraftige grafikkort for å kjøre. Tilgjengelige estimater er basert på indirekte faktorer som kostnader til resonnering og forsinket respons. Den har et kontekstvindu på opptil 200 000 tokens, egnet for å analysere lange dokumenter eller kodelagre.</p>"
+            },
+            "Claude 4 Sonnet": {
+                "desc": "<p>Svært stor multimodal og flerspråklig modell, veldig sterk i koding. Brukeren eller utvikleren som bruker denne modellen kan velge mellom flere nivåer for resonnering.</p>",
+                "fyi": "<p>Claude 4 Sonnet er en mer kompakt versjon av Claude 4 Opus, optimalisert for hastighet, effektivitet og tilgjengelighet. Den er litt mindre effektiv i oppgaver som krever kompleks, flertrinns resonnering. Den er imidlertid betydelig billigere, raskere og mer energieffektiv enn Opus 4.</p>\n<p>Modellen tilbyr muligheten til å velge grad av intensitet for \"resonnering\". I motsetning til andre modeller ble resonneringsmodusen ikke primært trent på matematiske data, men hovedsakelig på virkelige brukstilfeller.</p>",
+                "size_desc": "<p>Den nøyaktige størrelsen er ukjent. Det finnes indisier som tyder på at dette er en veldig stor modell, som krever servere med flere kraftige grafikkort for å kjøre. Tilgjengelige estimater er avhengige av indirekte faktorer som kostnader til resonnering og forsinkelse i respons. Modellen har et kontekstvindu på opptil 1 000 000 tokens, egnet for å analysere veldig lange dokumenter eller kodelagre.</p>"
+            },
+            "Claude 4.5 Sonnet": {
+                "desc": "<p>Svært stor multimodal og flerspråklig modell, ekstremt kraftig og egnet til koding, resonnering og matematikk. Brukeren eller utvikleren som bruker denne modellen kan velge mellom flere nivåer av resonnering.</p>",
+                "fyi": "<p>Claude Sonnet 4.5 er en direkte videreutvikling av Sonnet 4. «.5» refererer til de store endringene som ble introdusert i etterkant av treningen, noe som resulterer i betydelige gevinster innen resonnering, matematikk og spesielt i praktisk bruk av datamaskiner. Da modellen kom, ble den ansett som den beste modellen i verden til koding, og den utmerket seg til å løse lange og komplekse flertrinnsoppgaver. Ytelsen på benchmarks som SWE-bench Verified og OSWorld markerte en klar forbedring i forhold til tidligere versjoner, med evnen til å opprettholde «fokus» i mer enn 30 timer på det samme problemet. </p>",
+                "size_desc": "<p>Den nøyaktige størrelsen er ukjent. Alle tilgjengelige informasjonskilder antyder at dette er en veldig stor modell, som krever servere med flere kraftige grafikkort for å kjøre. Estimater på størrelse og strømforbruk er basert på indirekte faktorer som kostnader til resonnering og observert latens. Claude Sonnet 4.5 har et kontekstvindu på opptil 1 000 000 tokens, egnet for å analysere hele kodelagre eller veldig store dokumenter.</p>"
+            },
+            "Claude 4.6 Sonnet": {
+                "desc": "<p>En veldig stor, multimodal og flerspråklig modell, svært effektiv til koding, frittstående datamaskindrift og resonnering. Brukeren eller utvikleren kan velge mellom flere nivåer av resonnering.</p>",
+                "fyi": "<p>Claude Sonnet 4.6 etterfølger Sonnet 4.5 og representerer en betydelig oppgradering av Anthropics mellomklassemodeller. Modellen oppnår 79,6 % på SWE-bench Verified, en referansepoengsum (benchmark score) for kodegenerering, og 72,5 % på OSWorld for databruk, og nærmer seg ytelsen til Opus 4.6 til en kostnad som er fem ganger lavere. Matematisk ytelse (89 %) er også betydelig forbedret sammenlignet med forgjengeren.</p>\n<p>Modellen støtter adaptiv resonnering, slik at intensiteten i resonneringen kan moduleres i henhold til oppgavens kompleksitet. Kontekstvinduet når 1 000 000 tokens i beta, noe som er første gang for en modell i Sonnet-familien, og muliggjør prosessering av hele kodebaser eller store dokumentbaser i en enkelt spørring. I interne komparative tester foretrakk brukerne Sonnet 4.6 fremfor Sonnet 4.5 i omtrent 70 % av tilfellene.</p>",
+                "size_desc": "<p>Den nøyaktige størrelsen er ukjent. Alt tyder på at det er en veldig stor modell, som krever servere utstyrt med flere kraftige grafikkort for å kjøre. Estimater på størrelse og strømforbruk er basert på indirekte faktorer som kostnader til resonnering og observert latens. Claude Sonnet 4.6 har et kontekstvindu på opptil 1 000 000 tokens, egnet for å analysere hele kodelagre eller veldig store dokumenter.</p>"
+            },
+            "Command A": {
+                "desc": "<p>Stor modell, effektiv for programmering, bruk av verktøy og «retrieval augmented generation» (RAG).</p>",
+                "fyi": "<p>Cohere, det kanadiske selskapet bak denne modellen, ble grunnlagt i 2019 av tidligere Google Brain-forskere, inkludert Aidan Gomez, medforfatter av den berømte artikkelen <a href=\"https://arxiv.org/abs/1706.03762\">«Attention Is All You Need»</a> publisert i 2017, som revolusjonerte KI. Selskapet skiller seg ut med sitt eksklusive fokus på generativ KI for bedrifter, spesielt regulerte sektorer som finans, helsevesen, produksjon og energi, samt offentlig sektor. Selskapet er også en pioner innen flerspråklige tilnærminger, og har et non-profit forskningslaboratorium for å støtte åpen innovasjon.</p>\n<p>Denne modellen er designet for å fungere på mer enn 23 språk og for enkelt å kunne integreres i bedriftssystemer. Det er en av få modeller distribuert under <strong>CC-BY-NC 4.0-lisensen, som tillater deling og modifisering, men forbyr kommersiell bruk.</strong> Dette lisensvalget gjenspeiler Coheres ønske om å bidra til forskning og åpen kildekode, samtidig som de opprettholder kontroll over kommersiell bruk for å beskytte forretningsmodellen sin... Dette utelukker for eksempel integrering av modellen i produkter eller tjenester som selges av et selskap til kunder, men tillater akademisk bruk, testing eller interne prosjekter, begrenset til et ikke-kommersielt rammeverk.</p>",
+                "size_desc": "<p>Med 111 milliarder parametere regnes denne modellen som stor. Det kreves minst to kraftige grafikkort for å kjøre den, noe som resulterer i betydelige driftskostnader.</p>\n<p>Kontekstvinduet er 256 000 tokens, egnet for å analysere store sett med dokumenter eller kodebaser.</p>"
+            },
+            "Command R": {
+                "desc": "<p>Mellomstor modell optimalisert for oppsummering, generelle spørsmål, verktøybruk og effektiv i systemer for \"retrieval augmented generation\" (RAG).</p>",
+                "fyi": "<p>Cohere, det kanadiske selskapet som trente denne modellen, ble grunnlagt i 2019 av tidligere Google Brain-forskere, inkludert Aidan Gomez, medforfatter av den berømte artikkelen «Attention Is All You Need» som revolusjonerte KI. Det unike med Cohere er deres eksklusive fokus på generativ KI for bedrifter, spesielt regulerte sektorer som finans, helsevesen, produksjon og energi, samt offentlig sektor. Selskapet er også en pioner innen flerspråklighet og har et non-profit forskningslaboratorium som fokuserer på åpen innovasjon.</p>\n<p>Denne modellen har blitt evaluert på over 10 språk. Kontekstvinduet er 128 000 tokens, noe som hjelper den med å analysere lange dokumenter. Kontekstvinduet er dobbelt så stort i neste versjon av modellen (Command A).</p>",
+                "size_desc": "<p>Med 35 milliarder parametere er denne modellen mellomstor. Den kan driftes på en server med et enkelt kraftig grafikkort, noe som bidrar til å holde infrastrukturkostnadene nede.</p>"
+            },
+            "Command R+": {
+                "desc": "<p>Flerspråklig modell, trent spesifikt på 10 språk, spesialisert for forretningsbruk.</p>",
+                "fyi": "<p>Storebroren i Coheres Command R-familie: denne språkmodellen er rettet mot profesjonelle brukere og designet spesielt for informasjonssøk og -gjenfinning.</p>",
+                "size_desc": "<p>Store modeller krever betydelige ressurser, men gir best ytelse for avanserte oppgaver som kreativ skriving, dialogmodellering og applikasjoner som krever en finmasket forståelse av kontekst.</p>"
+            },
+            "DeepSeek R1": {
+                "desc": "<p>Svært stor modell med høy ytelse på matematiske, vitenskapelige og programmeringsoppgaver, som simulerer et resonneringstrinn før svaret genereres.</p>",
+                "fyi": "<p>Denne modellen er basert på en Mixture of Experts-arkitektur (MoE) med 61 lag. Den har totalt 671 milliarder parametere, hvorav 37 milliarder er tokenaktiverte. Treningen brukte storskala forsterkningslæring, med flere SFT-trinn (overvåket fine-tuning) der modellen lærer fra eksempler på riktige svar.</p>",
+                "size_desc": "<p>Med 671 milliarder parametere er DeepSeek R1 en veldig stor modell som krever flere kraftige grafikkort for å kjøre. Resonneringsmodeller av denne typen bruker lengre tid på å produsere et svar, noe som øker energiforbruket. Imidlertid aktiverer Mixture of Experts-arkitekturen (MoE) bare en del av parameterne ved hvert token, og begrenser dermed energiforbruket. Kontekstvinduet er 163 840 tokens, noe som er egnet for å analysere lange dokumenter.</p>"
+            },
+            "DeepSeek R1 0528": {
+                "desc": "<p>En veldig stor modell, spesialisert på matematiske og vitenskapelige problemstillinger, samt programmering. Den simulerer et resonneringstrinn før den genererer svaret, og har med oppdateringen fra mai 2025 økt i analysedybde og nøyaktighet takket være optimalisering etter trening.</p>",
+                "fyi": "<p>Denne modellen er basert på en Mixture of Experts-arkitektur (MoE) med 61 lag. Den har totalt 671 milliarder parametere, hvorav 37 milliarder aktiveres per token. Treningen brukte storskala forsterkningslæring, med flere SFT-justeringer (<em>overvåket finjustering</em> - der modellen lærer fra eksempler på riktige svar). Den nyeste versjonen (DeepSeek-R1-0528) forbedrer resonneringsevnen betydelig, reduserer hallusinasjonsraten og øker effektiviteten i programmering, logikk og funksjonskall. På AIME 2025-testen økte poengsummen fra 70 % til 87,5 %, noe som bringer den nærmere modeller som o3 og Gemini 2.5 Pro.</p>",
+                "size_desc": "<p>Med 671 milliarder parametere er DeepSeek R1 en veldig stor modell som krever flere kraftige grafikkort for å kjøre. Resonneringsmodeller av denne typen bruker lengre tid på å produsere et svar, noe som øker energiforbruket. Imidlertid aktiverer Mixture of Experts-arkitekturen (MoE) bare en del av parameterne ved hvert token, og begrenser dermed energiforbruket. Kontekstvinduet er 163 840 tokens, noe som er godt egnet til å analysere lange dokumenter.</p>"
+            },
+            "DeepSeek R1 Llama 70B": {
+                "desc": "<p>Stor modell basert på Meta Llama 3.3 70B, trent på nytt med resonneringseksempler fra DeepSeek R1-modellen. Den tilbyr gode matematikk- og kodefunksjoner.</p>",
+                "fyi": "<p>Modellen ble ikke trent fra bunnen av. Den er avhengig av Llama 3.3 70B, trent på nytt ved hjelp av resultater generert av DeepSeek R1. Denne prosessen ga Llama 3.3 70B muligheten til å simulere resonnement, uten at brukeren kunne velge om denne funksjonen skulle aktiveres eller ikke.</p>\n<p>I samsvar med forpliktelsene i Llama 3.3-lisensen må navnet på kildemodellen refereres til i modellens navn, og den er underlagt samme lisensregime.</p>",
+                "size_desc": "<p>Med 70 milliarder parametere regnes denne modellen som stor. Den krever flere kraftige grafikkort for å kjøre, noe som resulterer i høye inferenskostnader. Resonneringsmodeller bruker også lengre tid på å produsere et svar, noe som øker energiforbruket.</p>\n<p>Kontekstvinduet er 16 000 tokens, noe som kan være begrensende hvis man skal analysere store dokumenter.</p>"
+            },
+            "DeepSeek V3": {
+                "desc": "<p>Svært stor modell designet for komplekse oppgaver: kodegenerering, bruk av verktøy, analyse av lange dokumenter. Den kan håndtere mange språk, men er spesielt godt egnet for engelsk og kinesisk.</p>",
+                "fyi": "<p>Denne modellen er basert på en Mixture of Experts-arkitektur (MoE), med 671 milliarder parametere, men bare 37 milliarder av disse aktiveres per genererte token. Den er godt egnet for verktøykall, generering av strukturert output (JSON) og kodegenerering.</p>",
+                "size_desc": "<p>DeepSeek V3 er en veldig stor modell som det kreves flere grafikkort å kjøre. Mixture of Experts-arkitekturen (MoE) tillater imidlertid at bare en del av parameterne brukes til å generere neste token, noe som reduserer fotavtrykket sammenlignet med en tett modell av samme størrelse.</p>\n<p>Kontekstvinduet er 163 000 tokens, noe som er nyttig for å analysere lange dokumenter.</p>"
+            },
+            "DeepSeek V3.2": {
+                "desc": "<p>En veldig stor modell designet for komplekse oppgaver: agentisk orkestrering, kodegenerering og analyse av lange dokumenter. Denne versjonen er spesielt sterk i bruk av verktøy og kan simulere en resonneringsfase før den gir det endelige svaret.</p>"
+            },
+            "DeepSeek v3": {
+                "desc": "<p>DeepSeek V3-modellen ble lansert i desember 2024 og har en Mixture of Experts-arkitektur som gjør at den kan være svært stor samtidig som den reduserer inferenskostnader.</p>",
+                "fyi": "<p>Denne flaggskipmodellen fra det kinesiske selskapet DeepSeek ble lansert i desember 2024 og har en Mixture of Experts-arkitektur som gjør at den kan være svært stor samtidig som den reduserer inferenskostnader.</p>",
+                "size_desc": "<p>Disse modellene, med hundrevis av milliarder parametere, er de mest komplekse og avanserte når det gjelder ytelse og nøyaktighet. Databehandlings- og minneressursene som kreves for å distribuere disse modellene er av et slik omfang at de er beregnet på de mest avanserte applikasjonene og svært spesialiserte miljøer.</p>"
+            },
+            "DeepSeek v3.1": {
+                "desc": "<p>Svært stor modell designet for komplekse oppgaver: kodegenerering, analyse av lange dokumenter. Denne versjonen er spesielt sterk i bruk av verktøy og kan simulere en resonneringsfase før det endelige svaret gis.</p>",
+                "fyi": "<p>Denne modellen er basert på en Mixture of Experts-arkitektur (MoE), med 671 milliarder parametere, men kun 37 milliarder av disse aktiveres per genererte token. Den er effektiv for verktøykall, generering av strukturert output (JSON) og kodegenerering. Treningen bruker FP8 mikroskalering, noe som reduserer beregnings- og minnekostnader samtidig som nøyaktigheten opprettholdes. Modellen ble trent i to faser: først på sekvenser av 32 000 tokens, deretter utvidet til 163 000 tokens, noe som gir bedre stabilitet og økt ytelse på svært lange kontekster.</p>",
+                "size_desc": "<p>DeepSeek V3.1 er en veldig stor modell, og det kreves flere grafikkort for å kjøre den. Mixture of Experts-arkitekturen (MoE) tillater imidlertid at bare en del av parameterne aktiveres, noe som reduserer fotavtrykket sammenlignet med en tett modell av samme størrelse.</p>\n<p>Kontekstvinduet er nå 163 000 tokens, opp fra 128 000 i forrige versjon, noe som forbedrer parsingen av veldig lange dokumenter.</p>"
             }
         }
     }
