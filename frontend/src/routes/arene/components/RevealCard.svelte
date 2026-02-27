@@ -3,6 +3,7 @@
   import { Badge, Button, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { EquivalenceType, RevealModelData } from '$lib/chatService.svelte'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { onMount } from 'svelte'
@@ -10,6 +11,7 @@
 
   let { data, selected }: { data: RevealModelData; selected: boolean } = $props()
 
+  const i18nData = getI18nContext()
   const model = $derived(data.model)
   const modelBadges = $derived(
     (['license', 'size', 'releaseDate'] as const).map((k) => model.badges[k]).filter((b) => !!b)
@@ -24,14 +26,32 @@
 
   const equivalencesData: Record<
     EquivalenceType,
-    { emoji: string; unit?: string; decimals?: number }
+    { emoji: string; source: string; unit?: string; decimals?: number }
   > = {
-    paris_nyc_flights: { emoji: '✈️', decimals: 1 },
-    baguette_production: { emoji: '🥖', unit: 'kg' },
-    one_year_tree_absortion: { emoji: '🌳' },
-    package_delivery: { emoji: '📦' },
-    mango_import: { emoji: '🥭', unit: 'kg' },
-    pool_filing: { emoji: '💦' }
+    paris_nyc_flights: {
+      emoji: '✈️',
+      decimals: 1,
+      source: 'https://impactco2.fr/outils/transport/avion-longcourrier'
+    },
+    baguette_production: {
+      emoji: '🥖',
+      unit: 'kg',
+      source: 'https://impactco2.fr/outils/alimentation/baguette'
+    },
+    one_year_tree_absortion: {
+      emoji: '🌳',
+      source: 'https://www.usda.gov/about-usda/news/blog/power-one-tree-very-air-we-breathe'
+    },
+    package_delivery: {
+      emoji: '📦',
+      source: 'https://impactco2.fr/outils/livraison/livraisondomicile'
+    },
+    mango_import: {
+      emoji: '🥭',
+      unit: 'kg',
+      source: 'https://impactco2.fr/outils/fruitsetlegumes/mangue'
+    },
+    pool_filing: { emoji: '💦', source: 'https://impactco2.fr/outils/caspratiques/piscine' }
   }
 
   let containerElem = $state<HTMLDivElement>()
@@ -159,14 +179,14 @@
           {@html sanitize(
             m['reveal.equivalent.title_tooltip']({
               linkProps: externalLinkProps({
-                href: 'https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport'
+                href: i18nData.peopleUsingAIDataLink
               })
             })
           )}
         </Tooltip>
       </h6>
       <div class="gap-6 flex items-start">
-        <p class="text-grey! md:text-[13px]! mb-0! text-[12px]!">
+        <p class="text-grey! md:text-[13px]! mb-0! lh-normal! text-[12px]!">
           {m['reveal.equivalent.desc']()}
         </p>
 
@@ -216,7 +236,7 @@
                 {@html sanitize(
                   m[`reveal.equivalent.scales.${eq.type}.tooltip`]({
                     linkProps: externalLinkProps({
-                      href: 'FIXME'
+                      href: equivalencesData[eq.type].source
                     })
                   })
                 )}
