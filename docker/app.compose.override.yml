@@ -22,7 +22,7 @@ services:
     # command: ["node", "build"]
 
   backend:
-    env_file: ./.env
+    env_file: ../.env
     environment:
       LOGDIR: /data
       # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
