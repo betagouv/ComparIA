@@ -17,11 +17,9 @@ from backend.utils.countries import CountryPortalAnno, get_country_portal_count
 async def lifespan(app: FastAPI):
     task = None
     if settings.COMPARIA_DB_URI:
-        from backend.ranking.service import ranking_scheduler
+        from utils.ranking.service import ranking_scheduler
 
-        task = asyncio.create_task(
-            ranking_scheduler(settings.RANKING_INTERVAL_SECONDS)
-        )
+        task = asyncio.create_task(ranking_scheduler(settings.RANKING_INTERVAL_SECONDS))
     yield
     if task:
         task.cancel()
