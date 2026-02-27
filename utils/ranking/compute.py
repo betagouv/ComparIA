@@ -12,8 +12,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from backend.llms.models import DatasetData, PreferencesData
-from backend.ranking.bradley_terry import bootstrap_confidence_intervals
-from backend.ranking.queries import fetch_reactions, fetch_votes
+from utils.ranking.bradley_terry import bootstrap_confidence_intervals
+from utils.ranking.queries import fetch_reactions, fetch_votes
 
 logger = logging.getLogger("languia")
 
@@ -250,8 +250,6 @@ def compute_all_rankings() -> dict[str, RankingResult]:
 
     elapsed = time.time() - start
     portals = list(results.keys())
-    logger.info(
-        f"[Ranking] Updated rankings for portals: {portals} in {elapsed:.1f}s"
-    )
+    logger.info(f"[Ranking] Updated rankings for portals: {portals} in {elapsed:.1f}s")
 
     return results

@@ -10,7 +10,7 @@ Provides:
 import asyncio
 import logging
 
-from backend.ranking.compute import RankingResult, compute_all_rankings
+from utils.ranking.compute import RankingResult, compute_all_rankings
 
 logger = logging.getLogger("languia")
 
@@ -32,9 +32,7 @@ async def ranking_scheduler(interval_seconds: int) -> None:
 
     Logs exceptions but never crashes — stale cache is better than no cache.
     """
-    logger.info(
-        f"[Ranking] Scheduler started (interval={interval_seconds}s)"
-    )
+    logger.info(f"[Ranking] Scheduler started (interval={interval_seconds}s)")
 
     while True:
         try:
