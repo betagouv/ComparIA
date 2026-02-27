@@ -8,7 +8,7 @@ COPY --from=uv /uv /usr/local/bin/uv
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen
+RUN uv sync --frozen --group data
 
 FROM public.ecr.aws/docker/library/python:3.13-slim AS runtime
 
