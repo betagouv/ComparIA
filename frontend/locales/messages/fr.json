@@ -1971,10 +1971,6 @@
             },
             "desc": "Si tous les Français qui utilisent l’IA générative (48%) avaient eu cette discussion, cela représenterait :",
             "scales": {
-                "arctic_sea_ice_melt": {
-                    "tooltip": "Basé sur une relation observée entre émissions cumulées et perte de surface de banquise arctique en septembre. (Source <a {linkProps}>Science</a>)",
-                    "unit": "Banquise arctique fondue"
-                },
                 "baguette_production": {
                     "tooltip": "Donnée calculée selon l’impact carbone de la production de baguettes traditions. (source <a {linkProps}>ADEME</a>)",
                     "unit": "Baguettes produites"
@@ -1991,17 +1987,9 @@
                     "tooltip": "Donnée calculée selon l’impact carbone de livraisons à domicile de colis de 1kg. (source <a {linkProps}>ADEME</a>)",
                     "unit": "Livraisons de colis"
                 },
-                "paris_berlin_tgv": {
-                    "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris-Berlin en TGV. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "A/R Paris - Berlin en train"
-                },
                 "paris_nyc_flights": {
                     "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris New York en avion long courrier. (source <a {linkProps}>ADEME</a>)",
                     "unit": "A/R Paris - NYC en avion"
-                },
-                "pizza_production": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de la production de pizzas quatres fromages. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Pizzas produites"
                 },
                 "pool_filing": {
                     "tooltip": "Donnée calculée selon l’impact carbone d’un remplissage d’une piscine d’un particulier 8 x 4m (source <a {linkProps}>ADEME</a>)",

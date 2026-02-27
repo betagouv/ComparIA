@@ -29,15 +29,12 @@ if TYPE_CHECKING:
 
 # Equivalence types for scaled impact comparisons
 class EquivalenceType(Enum):
-    PACKAGE_DELIVERY = "package_delivery"
     PARIS_NYC_FLIGHTS = "paris_nyc_flights"
-    PARIS_BERLIN_TGV = "paris_berlin_tgv"
     BAGUETTE_PRODUCTION = "baguette_production"
-    PIZZA_PRODUCTION = "pizza_production"
+    ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
+    PACKAGE_DELIVERY = "package_delivery"
     MANGO_IMPORT = "mango_import"
     POOL_FILING = "pool_filing"
-    ARTIC_SEA_ICE_MELT = "arctic_sea_ice_melt"
-    ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
 
 
 # Reference data for scaled equivalences
@@ -52,15 +49,12 @@ SCALE_FACTORS: dict[CountryPortal, float] = {
 }
 
 CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
-    EquivalenceType.PACKAGE_DELIVERY: 0.576,
     EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
-    EquivalenceType.PARIS_BERLIN_TGV: 7.26,
     EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
-    EquivalenceType.PIZZA_PRODUCTION: 3.5994,
+    EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
+    EquivalenceType.PACKAGE_DELIVERY: 0.576,
     EquivalenceType.MANGO_IMPORT: 11.655508000000001,
     EquivalenceType.POOL_FILING: 7.54,
-    EquivalenceType.ARTIC_SEA_ICE_MELT: 1 / 0.003,
-    EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
 }
 
 

@@ -26,15 +26,12 @@
     EquivalenceType,
     { emoji: string; unit?: string; decimals?: number }
   > = {
-    package_delivery: { emoji: '📦' },
     paris_nyc_flights: { emoji: '✈️', decimals: 1 },
-    paris_berlin_tgv: { emoji: '🚅' },
     baguette_production: { emoji: '🥖', unit: 'kg' },
-    pizza_production: { emoji: '🍕', unit: 'kg' },
+    one_year_tree_absortion: { emoji: '🌳' },
+    package_delivery: { emoji: '📦' },
     mango_import: { emoji: '🥭', unit: 'kg' },
-    pool_filing: { emoji: '💦' },
-    arctic_sea_ice_melt: { emoji: '🧊', unit: 'm<sup>2</sup>' },
-    one_year_tree_absortion: { emoji: '🌳' }
+    pool_filing: { emoji: '💦' }
   }
 
   let containerElem = $state<HTMLDivElement>()

@@ -110,15 +110,12 @@ export interface VoteData {
 // REVEAL
 // Equivalence types for scaled impact comparisons
 export type EquivalenceType =
-  | 'package_delivery'
   | 'paris_nyc_flights'
-  | 'paris_berlin_tgv'
   | 'baguette_production'
-  | 'pizza_production'
+  | 'one_year_tree_absortion'
+  | 'package_delivery'
   | 'mango_import'
   | 'pool_filing'
-  | 'arctic_sea_ice_melt'
-  | 'one_year_tree_absortion'
 
 export interface APIEquivalence {
   type: EquivalenceType
