@@ -1027,6 +1027,16 @@
                 "fyi": "<p> OLMo 2 32B is a fully open source model: both the corpus and the training code are fully accessible. This OLMo model family was designed by the Allen Institute for AI (Ai2). </p>",
                 "size_desc": "<p>Medium-sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.</p>"
             },
+            "Odin Large": {
+                "desc": "<p>The large version of the Odin models by the Danish company Ordbogen.com.</p>",
+                "fyi": "<p>This is the company's first model release which includes two models, where this is the largest of the two.</p>",
+                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
+            },
+            "Odin Medium": {
+                "desc": "<p>The medium version of the Odin models by the Danish company Ordbogen.com.</p>",
+                "fyi": "<p>This is the company's first model release which includes two models, where this is the smallest of the two.</p>",
+                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
+            },
             "Olmo 3 32B Think": {
                 "desc": "<p> A reasoning model whose code and data are completely open. It was trained by AI2, a non-profit research institute. </p>",
                 "fyi": "<p> This model is a rare example of total transparency. The code, the data (6 trillion tokens), the training checkpoints, and the evaluation recipes are all public. While fully reproducing the training is infrastructure-intensive and likely rare, this availability of checkpoints and the base models allows developers to fine-tune the model for specific tasks, notably by blending specific data with the existing dataset, thus ensuring more stable training. </p>",
@@ -1141,16 +1151,6 @@
                 "desc": "<p> Very large reasoning model, suitable for complex scientific and technological tasks and questions. </p>",
                 "fyi": "<p> This model is very powerful for analyzing images and graphs. It has also been trained to interact with other tools via function calls, making it suitable for agentic use cases. As a very powerful reasoning model, it can be used to distribute tasks among several smaller and/or more specialized models. It has a context window of up to 200,000 tokens, making it easy to analyze long documents. </p>",
                 "size_desc": "<p> Despite its name and the fact that the exact size is unknown, o4 mini is most likely a large model requiring servers equipped with multiple graphics cards. Reasoning models like o4 mini require more time to respond because a reasoning phase precedes the generation of the final result, which increases their energy consumption. However, the assumed Mixture of Experts (MoE) architecture only activates a subset of the parameters to generate each token, thus limiting its energy footprint. Size estimates rely on indirect indices such as inference costs and response latency. </p>"
-            },
-            "Odin Large": {
-                "desc": "<p>The large version of the Odin models by the Danish company Ordbogen.com.</p>",
-                "fyi": "<p>This is the company's first model release which includes two models, where this is the largest of the two.</p>",
-                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
-            },
-            "Odin Medium": {
-                "desc": "<p>The medium version of the Odin models by the Danish company Ordbogen.com.</p>",
-                "fyi": "<p>This is the company's first model release which includes two models, where this is the smallest of the two.</p>",
-                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
             },
             "qwq 32B": {
                 "desc": "<p> Medium-sized reasoning model specialized and highly efficient in mathematics, code generation, and logical problem solving. </p>",
