@@ -2009,6 +2009,7 @@
     "proprietary_commercial_use": false,
     "models": [
       {
+        "new": true,
         "id": "odin-large",
         "simple_name": "Odin Large",
         "license": "proprietary",
@@ -2026,6 +2027,7 @@
         "fyi": "Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus grand."
       },
       {
+        "new": true,
         "id": "odin-medium",
         "simple_name": "Odin Medium",
         "license": "proprietary",
