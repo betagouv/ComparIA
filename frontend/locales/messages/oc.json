@@ -5,5 +5,22 @@
         "prompt": {
             "label": "Escrivètz vòstre primièr messatge"
         }
+    },
+    "models": {
+        "contextLength": "Contèxt {length}",
+        "contextLengthTooltip": "La fenèstra de contèxt es la quantitat maximala de tèxt (messatges precedents e responsa) que lo modèl pòt tractar dins una sola conversacion. Mai es granda, mai lo modèl pòt mantener d'escambis longs.",
+        "list": {
+            "filters": {
+                "context": {
+                    "legend": "Talha del contèxt",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
+                }
+            }
+        }
     }
 }

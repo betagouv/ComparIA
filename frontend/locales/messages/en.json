@@ -1367,6 +1367,15 @@
                         "XS": "< 15 billion"
                     },
                     "legend": "Size (parameters)"
+                },
+                "context": {
+                    "legend": "Context size",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
                 }
             },
             "intro": "Explore the different conversational AI models available, their specifications, and licenses.",
@@ -1411,7 +1420,9 @@
             },
             "estimated": "Estimated size ({size})",
             "title": "Size"
-        }
+        },
+        "contextLength": "{length} context",
+        "contextLengthTooltip": "The context window is the maximum amount of text (previous messages and response) the model can process in a single conversation. The larger it is, the longer exchanges the model can maintain."
     },
     "modes": {
         "big-vs-small": {

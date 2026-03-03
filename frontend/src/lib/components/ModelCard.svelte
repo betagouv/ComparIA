@@ -15,8 +15,8 @@
     modalId: string
   } = $props()
 
-  const { license, releaseDate, size } = model.badges
-  const badges = [license, releaseDate, size].filter((b) => !!b)
+  const { license, releaseDate, size, contextLength } = model.badges
+  const badges = [license, releaseDate, size, contextLength].filter((b) => !!b)
 </script>
 
 <div

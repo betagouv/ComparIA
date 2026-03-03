@@ -28,7 +28,7 @@
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid">
     {#each modelsData as { model, pos, kwh, co2, tokens, lightbulb, streaming } (pos)}
-      {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
+      {@const modelBadges = (['license', 'size', 'releaseDate', 'contextLength'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
       {@const wh = kwh * 1000}

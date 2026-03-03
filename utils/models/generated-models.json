@@ -5,6 +5,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 65536,
       "data": {
         "elo": 978,
         "mean_win_prob": 0.4679694356462587,
@@ -63,6 +64,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 65536,
       "data": {
         "elo": 960,
         "mean_win_prob": 0.4430788303920943,
@@ -115,6 +117,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 8192,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -143,6 +146,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 128000,
       "data": {
         "elo": 990,
         "mean_win_prob": 0.48475688163584535,
@@ -201,6 +205,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 8192,
       "data": {
         "elo": 973,
         "mean_win_prob": 0.46018520179190664,
@@ -253,6 +258,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 8192,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -281,6 +287,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 128000,
       "data": {
         "elo": 928,
         "mean_win_prob": 0.3994859127883386,
@@ -333,6 +340,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 4096,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -361,6 +369,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 4096,
       "data": {
         "elo": 749,
         "mean_win_prob": 0.19720591247765598,
@@ -413,6 +422,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -441,6 +451,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 816,
         "mean_win_prob": 0.26411516240464195,
@@ -493,6 +504,7 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 200000,
       "data": {
         "elo": 970,
         "mean_win_prob": 0.45690528643282347,
@@ -545,6 +557,7 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 200000,
       "data": {
         "elo": 1048,
         "mean_win_prob": 0.5642564764160243,
@@ -597,6 +610,7 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 1000000,
       "data": {
         "elo": 1072,
         "mean_win_prob": 0.5964760454586694,
@@ -655,6 +669,7 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 1000000,
       "data": null,
       "distribution": "api-only",
       "endpoint": {
@@ -689,6 +704,7 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 1000000,
       "data": {
         "elo": 1063,
         "mean_win_prob": 0.5842932469540095,
@@ -747,6 +763,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 256000,
       "data": {
         "elo": 1055,
         "mean_win_prob": 0.5739456330894819,
@@ -805,6 +822,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 128000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -833,6 +851,7 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 163000,
       "data": {
         "elo": 1077,
         "mean_win_prob": 0.6038239995762236,
@@ -891,6 +910,7 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 163840,
       "data": {
         "elo": 1025,
         "mean_win_prob": 0.5321601957399885,
@@ -949,6 +969,7 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 163840,
       "data": {
         "elo": 1055,
         "mean_win_prob": 0.5742035983812075,
@@ -1007,6 +1028,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 16000,
       "data": {
         "elo": 944,
         "mean_win_prob": 0.42154691495602004,
@@ -1065,6 +1087,7 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1091,
         "mean_win_prob": 0.6223347154914951,
@@ -1123,6 +1146,7 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1078,
         "mean_win_prob": 0.6047594570124205,
@@ -1175,6 +1199,7 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 163000,
       "data": {
         "elo": 1074,
         "mean_win_prob": 0.5997920260793798,
@@ -1233,6 +1258,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 32768,
       "data": {
         "elo": 1023,
         "mean_win_prob": 0.5298756680233072,
@@ -1261,7 +1287,7 @@
       "icon_path": "euroLLM.webp",
       "id": "EuroLLM-22B-Instruct-2512",
       "license": "Apache 2.0",
-      "new": true,
+      "new": false,
       "organisation": "EuroLLM",
       "params": 22,
       "prefs": {
@@ -1291,6 +1317,7 @@
       "active_params": 220,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 2097152,
       "data": {
         "elo": 1030,
         "mean_win_prob": 0.5396481444648186,
@@ -1343,6 +1370,7 @@
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 1048576,
       "data": {
         "elo": 1100,
         "mean_win_prob": 0.6332027746282586,
@@ -1395,6 +1423,7 @@
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 1048576,
       "data": {
         "elo": 1106,
         "mean_win_prob": 0.6417167220443732,
@@ -1453,6 +1482,7 @@
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 1000000,
       "data": {
         "elo": 1128,
         "mean_win_prob": 0.6698772782232936,
@@ -1481,7 +1511,7 @@
       "icon_path": "google-color",
       "id": "gemini-3-flash-preview",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "Google",
       "params": 440,
       "prefs": {
@@ -1511,6 +1541,7 @@
       "active_params": 45,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 1000000,
       "data": {
         "elo": 1101,
         "mean_win_prob": 0.6356066427576355,
@@ -1569,6 +1600,7 @@
       "active_params": 45,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 1000000,
       "data": null,
       "distribution": "api-only",
       "endpoint": {
@@ -1603,6 +1635,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8192,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -1631,6 +1664,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8192,
       "data": {
         "elo": 1001,
         "mean_win_prob": 0.49886101074090466,
@@ -1683,6 +1717,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8192,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -1711,6 +1746,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8192,
       "data": {
         "elo": 952,
         "mean_win_prob": 0.4316710505845071,
@@ -1763,6 +1799,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1063,
         "mean_win_prob": 0.5845168950335101,
@@ -1821,6 +1858,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1082,
         "mean_win_prob": 0.6107152793947536,
@@ -1879,6 +1917,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1035,
         "mean_win_prob": 0.5467385579531175,
@@ -1937,6 +1976,7 @@
       "active_params": 4,
       "arch": "matformer",
       "commercial_use": true,
+      "context_length": 32768,
       "data": {
         "elo": 1033,
         "mean_win_prob": 0.543704796481743,
@@ -1995,6 +2035,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1072,
         "mean_win_prob": 0.5963287665208331,
@@ -2053,6 +2094,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 200000,
       "data": {
         "elo": 1045,
         "mean_win_prob": 0.559623067245928,
@@ -2111,6 +2153,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 200000,
       "data": {
         "elo": 1036,
         "mean_win_prob": 0.5484968080794734,
@@ -2169,6 +2212,7 @@
       "active_params": 40,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 200000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": {
@@ -2203,6 +2247,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 16385,
       "data": null,
       "distribution": "api-only",
       "endpoint": null,
@@ -2231,6 +2276,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 1047576,
       "data": {
         "elo": 1031,
         "mean_win_prob": 0.5406766528753802,
@@ -2289,6 +2335,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 1047576,
       "data": {
         "elo": 977,
         "mean_win_prob": 0.4665744648024418,
@@ -2347,6 +2394,7 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 128000,
       "data": {
         "elo": 961,
         "mean_win_prob": 0.4441278834897516,
@@ -2399,6 +2447,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 128000,
       "data": {
         "elo": 981,
         "mean_win_prob": 0.47132620703894984,
@@ -2451,6 +2500,7 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 400000,
       "data": {
         "elo": 999,
         "mean_win_prob": 0.4971582561736023,
@@ -2509,6 +2559,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 400000,
       "data": {
         "elo": 1012,
         "mean_win_prob": 0.5147685698572521,
@@ -2567,6 +2618,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 400000,
       "data": {
         "elo": 945,
         "mean_win_prob": 0.4221567817453329,
@@ -2625,6 +2677,7 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 1047576,
       "data": {
         "elo": 1075,
         "mean_win_prob": 0.6005713831907888,
@@ -2683,6 +2736,7 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 400000,
       "data": {
         "elo": 1069,
         "mean_win_prob": 0.5929233837228672,
@@ -2741,6 +2795,7 @@
       "active_params": 5.1,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 1065,
         "mean_win_prob": 0.5868560289633313,
@@ -2799,6 +2854,7 @@
       "active_params": 3.6,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 1014,
         "mean_win_prob": 0.5180611754067206,
@@ -2857,6 +2913,7 @@
       "active_params": 22,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 131072,
       "data": {
         "elo": 1060,
         "mean_win_prob": 0.5810320019634347,
@@ -2915,6 +2972,7 @@
       "active_params": 121,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 2000000,
       "data": {
         "elo": 1063,
         "mean_win_prob": 0.5847097813311337,
@@ -2973,6 +3031,7 @@
       "active_params": 121,
       "arch": "maybe-moe",
       "commercial_use": null,
+      "context_length": 2000000,
       "data": {
         "elo": 1066,
         "mean_win_prob": 0.5890709388552419,
@@ -3031,6 +3090,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 940,
         "mean_win_prob": 0.41593264110506944,
@@ -3083,6 +3143,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 40960,
       "data": {
         "elo": 934,
         "mean_win_prob": 0.4080584620780003,
@@ -3141,6 +3202,7 @@
       "active_params": 94,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 256000,
       "data": {
         "elo": 970,
         "mean_win_prob": 0.45707915723429754,
@@ -3193,6 +3255,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 1057,
         "mean_win_prob": 0.5759855189845751,
@@ -3251,6 +3314,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 262144,
       "data": {
         "elo": 1068,
         "mean_win_prob": 0.5911595008562106,
@@ -3309,6 +3373,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 262144,
       "data": null,
       "distribution": "open-weights",
       "endpoint": {
@@ -3323,7 +3388,7 @@
       "icon_path": "moonshot",
       "id": "kimi-k2.5",
       "license": "MIT",
-      "new": true,
+      "new": false,
       "organisation": "Moonshot AI",
       "params": 1000,
       "prefs": null,
@@ -3343,6 +3408,7 @@
       "active_params": 12,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 32768,
       "data": {
         "elo": 880,
         "mean_win_prob": 0.3382348009721951,
@@ -3395,6 +3461,7 @@
       "active_params": 1.5,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 32768,
       "data": {
         "elo": 996,
         "mean_win_prob": 0.4922311821608464,
@@ -3453,6 +3520,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 956,
         "mean_win_prob": 0.4372064150532003,
@@ -3511,6 +3579,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 971,
         "mean_win_prob": 0.45844663659701973,
@@ -3563,6 +3632,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 932,
         "mean_win_prob": 0.405144013473085,
@@ -3621,6 +3691,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1043,
         "mean_win_prob": 0.557921563104075,
@@ -3679,6 +3750,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 986,
         "mean_win_prob": 0.4788765433374813,
@@ -3737,6 +3809,7 @@
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 10000000,
       "data": {
         "elo": 1010,
         "mean_win_prob": 0.5123785468735157,
@@ -3795,6 +3868,7 @@
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 1000000,
       "data": {
         "elo": 1015,
         "mean_win_prob": 0.5185264225483007,
@@ -3853,6 +3927,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 40000,
       "data": {
         "elo": 1089,
         "mean_win_prob": 0.6190814217227704,
@@ -3911,6 +3986,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 40000,
       "data": {
         "elo": 1049,
         "mean_win_prob": 0.5656657968772842,
@@ -3969,6 +4045,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -3997,6 +4074,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -4025,6 +4103,7 @@
       "active_params": 10,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 200000,
       "data": {
         "elo": 976,
         "mean_win_prob": 0.4653418021375933,
@@ -4083,6 +4162,7 @@
       "active_params": 10,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 200000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": {
@@ -4117,6 +4197,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 128000,
       "data": {
         "elo": 962,
         "mean_win_prob": 0.4455187602323125,
@@ -4169,6 +4250,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
+      "context_length": 128000,
       "data": {
         "elo": 1018,
         "mean_win_prob": 0.5229610244104481,
@@ -4221,6 +4303,7 @@
       "active_params": 41,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 256000,
       "data": {
         "elo": 1122,
         "mean_win_prob": 0.6618490883409148,
@@ -4279,6 +4362,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 128000,
       "data": {
         "elo": 1118,
         "mean_win_prob": 0.6569260462960075,
@@ -4337,6 +4421,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 850,
         "mean_win_prob": 0.3023279790045121,
@@ -4389,6 +4474,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 32768,
       "data": {
         "elo": 1014,
         "mean_win_prob": 0.5179736182228161,
@@ -4447,6 +4533,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 32768,
       "data": {
         "elo": 984,
         "mean_win_prob": 0.47639783839994443,
@@ -4499,6 +4586,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1059,
         "mean_win_prob": 0.5787279715419086,
@@ -4557,6 +4645,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1004,
         "mean_win_prob": 0.5041806219854251,
@@ -4609,6 +4698,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -4637,6 +4727,7 @@
       "active_params": 44,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 65536,
       "data": {
         "elo": 840,
         "mean_win_prob": 0.2899370564206755,
@@ -4689,6 +4780,7 @@
       "active_params": 14,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 32768,
       "data": {
         "elo": 883,
         "mean_win_prob": 0.34170176350917003,
@@ -4741,6 +4833,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 200000,
       "data": {
         "elo": 981,
         "mean_win_prob": 0.47144303296775514,
@@ -4793,6 +4886,7 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
+      "context_length": 200000,
       "data": {
         "elo": 1002,
         "mean_win_prob": 0.5008963606355553,
@@ -4851,6 +4945,7 @@
       "active_params": null,
       "arch": "maybe-moe",
       "commercial_use": false,
+      "context_length": null,
       "data": null,
       "distribution": "api-only",
       "endpoint": {
@@ -4865,7 +4960,7 @@
       "icon_path": "ordbogen.ai-color.svg",
       "id": "odin-large",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "Ordbogen",
       "params": 358,
       "prefs": null,
@@ -4887,6 +4982,7 @@
       "active_params": null,
       "arch": "maybe-moe",
       "commercial_use": false,
+      "context_length": null,
       "data": null,
       "distribution": "api-only",
       "endpoint": {
@@ -4901,7 +4997,7 @@
       "icon_path": "ordbogen.ai-color.svg",
       "id": "odin-medium",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "Ordbogen",
       "params": 358,
       "prefs": null,
@@ -4923,6 +5019,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8192,
       "data": null,
       "distribution": "fully-open-source",
       "endpoint": null,
@@ -4951,6 +5048,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 65536,
       "data": {
         "elo": 868,
         "mean_win_prob": 0.32319439223691965,
@@ -5009,6 +5107,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 4096,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -5037,6 +5136,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 8192,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -5065,6 +5165,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 860,
         "mean_win_prob": 0.3138985932327813,
@@ -5117,6 +5218,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 16384,
       "data": {
         "elo": 966,
         "mean_win_prob": 0.4508925178341852,
@@ -5175,6 +5277,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 988,
         "mean_win_prob": 0.4809162135045945,
@@ -5233,6 +5336,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 32768,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -5261,6 +5365,7 @@
       "active_params": 14,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 65536,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -5289,6 +5394,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": null,
       "distribution": "open-weights",
       "endpoint": null,
@@ -5317,6 +5423,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 727,
         "mean_win_prob": 0.17852204152240891,
@@ -5369,6 +5476,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 959,
         "mean_win_prob": 0.44154711922363155,
@@ -5421,6 +5529,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 925,
         "mean_win_prob": 0.39571107140389744,
@@ -5473,6 +5582,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 924,
         "mean_win_prob": 0.3951786628063842,
@@ -5525,6 +5635,7 @@
       "active_params": 3.3,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 988,
         "mean_win_prob": 0.48116116666937253,
@@ -5583,6 +5694,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 128000,
       "data": {
         "elo": 1020,
         "mean_win_prob": 0.5256039722598065,
@@ -5641,6 +5753,7 @@
       "active_params": 35,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 262144,
       "data": {
         "elo": 1047,
         "mean_win_prob": 0.5626803248042114,
@@ -5699,6 +5812,7 @@
       "active_params": 3,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 262144,
       "data": null,
       "distribution": "open-weights",
       "endpoint": {
@@ -5733,6 +5847,7 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": null,
+      "context_length": 262144,
       "data": {
         "elo": 1101,
         "mean_win_prob": 0.6346198758377717,
@@ -5787,10 +5902,46 @@
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
       "wh_per_million_token": 57087.51999999998
     },
+    "qwen3.5-35b-a3b": {
+      "active_params": 3,
+      "arch": "moe",
+      "commercial_use": true,
+      "context_length": 262144,
+      "data": null,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "qwen/qwen3.5-35b-a3b",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "S",
+      "fully_open_source": false,
+      "icon_path": "qwen-color",
+      "id": "qwen3.5-35b-a3b",
+      "license": "Apache 2.0",
+      "new": true,
+      "organisation": "Alibaba",
+      "params": 35,
+      "prefs": null,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "02/2026",
+      "required_ram": 35,
+      "reuse": true,
+      "simple_name": "Qwen 3.5 35B A3B",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
+      "wh_per_million_token": 3066.1766666666667
+    },
     "qwen3.5-397b-a17b": {
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 262144,
       "data": null,
       "distribution": "open-weights",
       "endpoint": {
@@ -5825,6 +5976,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 131072,
       "data": {
         "elo": 947,
         "mean_win_prob": 0.4253287566739331,
@@ -5883,6 +6035,7 @@
       "active_params": 13,
       "arch": "moe",
       "commercial_use": true,
+      "context_length": 512000,
       "data": null,
       "distribution": "open-weights",
       "endpoint": {
@@ -5897,7 +6050,7 @@
       "icon_path": "arcee",
       "id": "trinity-large-preview",
       "license": "Apache 2.0",
-      "new": true,
+      "new": false,
       "organisation": "Arcee",
       "params": 398,
       "prefs": null,
@@ -5917,6 +6070,7 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
+      "context_length": 4096,
       "data": {
         "elo": 764,
         "mean_win_prob": 0.21100247288159402,

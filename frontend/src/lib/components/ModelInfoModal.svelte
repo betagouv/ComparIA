@@ -10,8 +10,8 @@
 
   const badges = $derived.by(() => {
     if (!model) return []
-    const { license, releaseDate, reasoning } = model.badges
-    return [license, releaseDate, reasoning].filter((b) => !!b)
+    const { license, releaseDate } = model.badges
+    return [license, releaseDate].filter((b) => !!b)
   })
 
   const licenseCards = $derived.by(() => {
@@ -96,8 +96,16 @@
 
               <ul class="fr-badges-group mb-4!">
                 {#each badges as badge, i (i)}
-                  <li><Badge id="general-badge-{i}" {...badge} /></li>
+                  <li><Badge {...badge} id="{modalId}-badge-{i}" /></li>
                 {/each}
+                {#if model.badges.contextLength}
+                  <li>
+                    <Badge
+                      {...model.badges.contextLength}
+                      id="{modalId}-context"
+                    />
+                  </li>
+                {/if}
               </ul>
 
               {@html sanitize(model.desc).replaceAll('<p>', '<p class="last:mb-5!">')}

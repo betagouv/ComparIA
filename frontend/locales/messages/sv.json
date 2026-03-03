@@ -1093,6 +1093,15 @@
                         "XS": "< 7 miljarder"
                     },
                     "legend": "Storlek (parametrar)"
+                },
+                "context": {
+                    "legend": "Kontextstorlek",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
                 }
             },
             "intro": "Utforska de olika konversationsbaserade AI-modellerna, deras specifikationer och licenser.",
@@ -1130,7 +1139,9 @@
         "size": {
             "estimated": "Uppskattad storlek ({size})",
             "title": "Storlek"
-        }
+        },
+        "contextLength": "{length} kontext",
+        "contextLengthTooltip": "Kontextfönstret är den maximala mängden text (tidigare meddelanden och svar) som modellen kan bearbeta i en enda konversation. Ju större det är, desto längre samtal kan modellen hantera."
     },
     "modes": {
         "big-vs-small": {

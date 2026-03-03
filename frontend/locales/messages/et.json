@@ -1186,6 +1186,15 @@
                         "XS": "< 15 miljardit"
                     },
                     "legend": "Suurus (parameetrid)"
+                },
+                "context": {
+                    "legend": "Konteksti suurus",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
                 }
             },
             "intro": "Tutvu erinevate vestluslike keelemudelite, nende spetsifikatsioonide ja litsentsidega.",
@@ -1230,7 +1239,9 @@
             },
             "estimated": "Hinnanguline suurus ({size})",
             "title": "Suurus"
-        }
+        },
+        "contextLength": "{length} kontekst",
+        "contextLengthTooltip": "Kontekstiaken on maksimaalne tekstimaht (eelnevad sõnumid ja vastus), mida mudel suudab ühes vestluses töödelda. Mida suurem see on, seda pikemaid vestlusi mudel suudab pidada."
     },
     "modes": {
         "big-vs-small": {

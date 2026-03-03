@@ -200,7 +200,7 @@
                   onChange={toggleModelSelection}
                 >
                   {#snippet option(opt, labelProps, input)}
-                    {@const modelBadges = (['license', 'releaseDate', 'size'] as const)
+                    {@const modelBadges = (['license', 'releaseDate', 'size', 'contextLength'] as const)
                       .map((k) => opt.badges[k])
                       .filter((b) => !!b)}
 

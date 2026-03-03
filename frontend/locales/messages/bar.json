@@ -1,5 +1,22 @@
 {
     "a11y": {
         "externalLink": "{text}"
+    },
+    "models": {
+        "contextLength": "{length} Kontext",
+        "contextLengthTooltip": "Des Kontextfenster is de maximale Menge an Text (vorige Nachrichten und Antwort), de wo des Modell in oana Unterhaltung verarbeiten ko. Je greßer es is, desto längere Unterhaltungen ko des Modell führ'n.",
+        "list": {
+            "filters": {
+                "context": {
+                    "legend": "Kontextgröße",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
+                }
+            }
+        }
     }
 }

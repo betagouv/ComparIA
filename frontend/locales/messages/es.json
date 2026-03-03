@@ -111,5 +111,22 @@
         "unexpected": {
             "error": "Error {code}"
         }
+    },
+    "models": {
+        "contextLength": "Contexto {length}",
+        "contextLengthTooltip": "La ventana de contexto es la cantidad máxima de texto (mensajes anteriores y respuesta) que el modelo puede procesar en una sola conversación. Cuanto mayor sea, más largos pueden ser los intercambios.",
+        "list": {
+            "filters": {
+                "context": {
+                    "legend": "Tamaño del contexto",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
+                }
+            }
+        }
     }
 }

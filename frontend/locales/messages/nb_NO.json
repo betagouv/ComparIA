@@ -444,5 +444,22 @@
             "defsUser": "«Bruker» refererer til enhver fysisk person som bruker plattformen og nyttiggjør seg tjenestene.",
             "descDatasets": "Disse datasettene blir tilgjengeliggjort under en åpen lisens, spesielt for å oppmuntre til forskningsbruk."
         }
+    },
+    "models": {
+        "contextLength": "{length} kontekst",
+        "contextLengthTooltip": "Kontekstvinduet er den maksimale mengden tekst (tidligere meldinger og svar) modellen kan behandle i en enkelt samtale. Jo større det er, jo lengre samtaler kan modellen håndtere.",
+        "list": {
+            "filters": {
+                "context": {
+                    "legend": "Kontekststørrelse",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
+                }
+            }
+        }
     }
 }

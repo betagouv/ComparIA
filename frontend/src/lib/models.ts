@@ -4,9 +4,11 @@ import { m } from './i18n/messages'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
 export const CONSO_SIZES = ['S', 'M', 'L'] as const
+export const CONTEXT_SIZES = ['small', 'medium', 'large', 'xlarge'] as const
 
 export type Sizes = (typeof SIZES)[number]
 export type ConsoSizes = (typeof CONSO_SIZES)[number]
+export type ContextSizes = (typeof CONTEXT_SIZES)[number]
 export type Archs = (typeof ARCHS)[number]
 export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
 export type AllArchs = Archs | MaybeArchs
@@ -59,6 +61,7 @@ export interface APIBotModel {
   arch: AllArchs
   reasoning: boolean | 'hybrid'
   quantization: 'q4' | 'q8' | null
+  context_length: number | null
   required_ram: number
   url: string | null // FIXME required?
   // conditions: 'free' | 'copyleft' | 'restricted'
@@ -75,7 +78,25 @@ function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
 }
 
+function formatContextLength(tokens: number): string {
+  if (tokens >= 1_000_000) {
+    const m = tokens / 1_000_000
+    return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`
+  }
+  const k = tokens / 1_000
+  return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}k`
+}
+
+export function getContextSizeBucket(contextLength: number | null): ContextSizes | null {
+  if (contextLength == null) return null
+  if (contextLength <= 32_768) return 'small'
+  if (contextLength <= 131_072) return 'medium'
+  if (contextLength <= 262_144) return 'large'
+  return 'xlarge'
+}
+
 export function parseModel(model: APIBotModel) {
+  const safeId = model.id.replaceAll('.', '-')
   return {
     ...model,
     consumption_wh: Math.round(model.wh_per_million_token / 1000),
@@ -100,19 +121,19 @@ export function parseModel(model: APIBotModel) {
     badges: {
       license: {
         'fully-open-source': {
-          id: `model-os-${model.id}`,
+          id: `model-os-${safeId}`,
           variant: 'green' as const,
           text: m['models.licenses.type.openSource'](),
           tooltip: m['models.openWeight.tooltips.openSource']()
         },
         'open-weights': {
-          id: `model-ow-${model.id}`,
+          id: `model-ow-${safeId}`,
           variant: 'yellow' as const,
           text: m['models.licenses.type.semiOpen'](),
           tooltip: m['models.openWeight.tooltips.openWeight']()
         },
         'api-only': {
-          id: `model-proprietary-${model.id}`,
+          id: `model-proprietary-${safeId}`,
           variant: 'orange' as const,
           text: m['models.licenses.type.proprietary']()
         }
@@ -129,7 +150,7 @@ export function parseModel(model: APIBotModel) {
           model.license === 'proprietary' ? m['models.licenses.type.proprietary']() : model.license
       },
       size: {
-        id: `model-parameters-${model.id}`,
+        id: `model-parameters-${safeId}`,
         variant: 'info' as const,
         text:
           model.distribution === 'open-weights' || model.distribution === 'fully-open-source'
@@ -139,12 +160,20 @@ export function parseModel(model: APIBotModel) {
           model.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
       },
       arch: {
-        id: `model-arch-${model.id}`,
+        id: `model-arch-${safeId}`,
         variant: 'yellow' as const,
         text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
         tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       },
-      reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
+      reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null,
+      contextLength: model.context_length
+        ? {
+            id: `model-context-${safeId}`,
+            variant: 'blue-ecume' as const,
+            text: m['models.contextLength']({ length: formatContextLength(model.context_length) }),
+            tooltip: m['models.contextLengthTooltip']()
+          }
+        : null
     },
     search: (['id', 'simple_name', 'organisation'] as const)
       .map((key) => model[key].toLowerCase())

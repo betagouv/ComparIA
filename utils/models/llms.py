@@ -34,6 +34,7 @@ descs = {
     "active_params": "Active parameters in billions (only for MoE LLMs)",
     "reasoning": "Extended thinking capability",
     "quantization": "Quantization scheme applied (q4, q8, or None for full precision)",
+    "context_length": "Maximum context window size in tokens",
     "url": "LLM homepage or documentation URL",
     "endpoint": "API access configuration (None for unavailable LLMs)",
     "pricey": "Whether LLM has high API costs (triggers stricter rate limits)",
@@ -78,6 +79,9 @@ class LLMDataRawBase(LLMDataBase):
     ] = False
     quantization: Annotated[
         Literal["q4", "q8"] | None, Field(description=descs["quantization"])
+    ] = None
+    context_length: Annotated[
+        int | None, Field(description=descs["context_length"])
     ] = None
     url: Annotated[str | None, Field(description=descs["url"])] = (
         None  # FIXME required?

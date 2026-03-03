@@ -156,6 +156,7 @@ class LLMDataBase(BaseModel):
     active_params: int | float | None
     reasoning: bool | Literal["hybrid"]
     quantization: Literal["q4", "q8"] | None
+    context_length: int | None
     url: str | None
     endpoint: Endpoint | None
     pricey: bool

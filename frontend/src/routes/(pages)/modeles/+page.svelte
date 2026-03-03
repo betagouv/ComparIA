@@ -12,8 +12,8 @@
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { License, Organisation, Sizes } from '$lib/models'
-  import { getModelsContext, SIZES } from '$lib/models'
+  import type { License, Organisation, Sizes, ContextSizes } from '$lib/models'
+  import { getModelsContext, getContextSizeBucket, SIZES, CONTEXT_SIZES } from '$lib/models'
 
   const models = getModelsContext().models
 
@@ -46,6 +46,16 @@
     }))
   }
 
+  const contextFilter = {
+    id: 'context',
+    legend: m['models.list.filters.context.legend'](),
+    options: CONTEXT_SIZES.map((value) => ({
+      value,
+      label: m[`models.list.filters.context.labels.${value}`](),
+      count: models.filter((m) => getContextSizeBucket(m.context_length) === value).length
+    }))
+  }
+
   const sortingOptions = (['name-asc', 'date-desc', 'params-asc', 'org-asc'] as const).map(
     (value) => ({
       value,
@@ -56,6 +66,7 @@
   let editors = $state<Organisation[]>([])
   let sizes = $state<Sizes[]>([])
   let licenses = $state<License[]>([])
+  let contextSizes = $state<ContextSizes[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let showArchived = $state(false)
   let search = $state('')
@@ -68,8 +79,11 @@
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
         const orgMatch = editors.length === 0 || editors.includes(model.organisation)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
+        const contextMatch =
+          contextSizes.length === 0 ||
+          contextSizes.includes(getContextSizeBucket(model.context_length) as ContextSizes)
         const archivedMatch = model.status === 'enabled' || showArchived
-        return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
+        return searchMatch && sizeMatch && orgMatch && licenseMatch && contextMatch && archivedMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
@@ -96,7 +110,7 @@
       })
   })
 
-  const allFilter = $derived([editors, sizes, licenses])
+  const allFilter = $derived([editors, sizes, licenses, contextSizes])
   const filterCount = $derived(allFilter.reduce((acc, f) => acc + (f.length ? 1 : 0), 0))
 
   function resetFilters(e: MouseEvent) {
@@ -195,6 +209,23 @@
                   <CheckboxGroup
                     {...licenseFilter}
                     bind:value={licenses}
+                    legendClass="sr-only"
+                    labelClass="flex-nowrap!"
+                    class="mb-0!"
+                  >
+                    {#snippet labelSlot({ option })}
+                      <div class="me-2">{option.label}</div>
+                      <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+                    {/snippet}
+                  </CheckboxGroup>
+                </div>
+              </Accordion>
+
+              <Accordion id="field-context" label={contextFilter.legend}>
+                <div class="p-4">
+                  <CheckboxGroup
+                    {...contextFilter}
+                    bind:value={contextSizes}
                     legendClass="sr-only"
                     labelClass="flex-nowrap!"
                     class="mb-0!"

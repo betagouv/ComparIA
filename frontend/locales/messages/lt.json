@@ -206,5 +206,22 @@
     },
     "header": {
         "title": "palyginti:AI"
+    },
+    "models": {
+        "contextLength": "{length} kontekstas",
+        "contextLengthTooltip": "Konteksto langas – tai didžiausias teksto kiekis (ankstesni pranešimai ir atsakymas), kurį modelis gali apdoroti viename pokalbyje. Kuo jis didesnis, tuo ilgesnius pokalbius modelis gali palaikyti.",
+        "list": {
+            "filters": {
+                "context": {
+                    "legend": "Konteksto dydis",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
+                }
+            }
+        }
     }
 }

@@ -1319,6 +1319,15 @@
                         "XS": "< 7 milliarder"
                     },
                     "legend": "Størrelse (parametre)"
+                },
+                "context": {
+                    "legend": "Kontekststørrelse",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
                 }
             },
             "intro": "Udforsk de forskellige samtale AI-modeller, deres specifikationer og licenser.",
@@ -1363,7 +1372,9 @@
             },
             "estimated": "Estimeret størrelse ({size})",
             "title": "Størrelse"
-        }
+        },
+        "contextLength": "{length} kontekst",
+        "contextLengthTooltip": "Kontekstvinduet er den maksimale mængde tekst (tidligere beskeder og svar), som modellen kan behandle i en enkelt samtale. Jo større det er, jo længere samtaler kan modellen håndtere."
     },
     "modes": {
         "big-vs-small": {

@@ -1,5 +1,22 @@
 {
     "a11y": {
         "externalLink": "{text}"
+    },
+    "models": {
+        "contextLength": "{length} kontekst",
+        "contextLengthTooltip": "Kontekstvindauget er den maksimale mengda tekst (tidlegare meldingar og svar) modellen kan behandle i ein einskild samtale. Di større det er, di lengre samtalar kan modellen handtere.",
+        "list": {
+            "filters": {
+                "context": {
+                    "legend": "Kontekststorleik",
+                    "labels": {
+                        "small": "≤ 32k",
+                        "medium": "32k – 128k",
+                        "large": "128k – 256k",
+                        "xlarge": "> 256k"
+                    }
+                }
+            }
+        }
     }
 }
