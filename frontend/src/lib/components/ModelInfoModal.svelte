@@ -10,8 +10,8 @@
 
   const badges = $derived.by(() => {
     if (!model) return []
-    const { license, releaseDate } = model.badges
-    return [license, releaseDate].filter((b) => !!b)
+    const { license, releaseDate, reasoning } = model.badges
+    return [license, releaseDate, reasoning].filter((b) => !!b)
   })
 
   const licenseCards = $derived.by(() => {
