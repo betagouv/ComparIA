@@ -10,7 +10,7 @@ from functools import cached_property
 from typing import Annotated, Literal, TypedDict, Union, get_args
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, computed_field
+from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, computed_field, field_validator
 
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -282,6 +282,25 @@ def create_conversations(
 # Request/Response models for FastAPI endpoints
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
+# Patterns commonly found in prompt injection spam
+import re
+
+PROMPT_INJECTION_PATTERNS = [
+    re.compile(r"<\s*/?\s*conversation\s*>", re.IGNORECASE),
+    re.compile(r"<\s*/?\s*user\s*>", re.IGNORECASE),
+    re.compile(r"<\s*/?\s*assistant\s*>", re.IGNORECASE),
+    re.compile(r"<\s*/?\s*system\s*>", re.IGNORECASE),
+]
+
+
+def _validate_no_prompt_injection(value: str) -> str:
+    for pattern in PROMPT_INJECTION_PATTERNS:
+        if pattern.search(value):
+            raise ValueError(
+                "Le message contient des motifs non autorisés."
+            )
+    return value
+
 
 class AddFirstTextBody(BaseModel):
     """Request body for add_first_text endpoint."""
@@ -292,11 +311,21 @@ class AddFirstTextBody(BaseModel):
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
 
+    @field_validator("prompt_value")
+    @classmethod
+    def check_prompt_injection(cls, v: str) -> str:
+        return _validate_no_prompt_injection(v)
+
 
 class AddTextBody(BaseModel):
     """Request body for add_text endpoint."""
 
     message: str = PromptField
+
+    @field_validator("message")
+    @classmethod
+    def check_prompt_injection(cls, v: str) -> str:
+        return _validate_no_prompt_injection(v)
 
 
 PositiveReaction = Literal["useful", "complete", "creative", "clear_formatting"]
