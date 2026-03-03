@@ -5,6 +5,7 @@ Defines all data structures for:
 - Conversation data (messages, participant info, metadata)
 """
 
+import re
 from datetime import datetime
 from functools import cached_property
 from typing import Annotated, Literal, TypedDict, Union, get_args
@@ -282,23 +283,14 @@ def create_conversations(
 # Request/Response models for FastAPI endpoints
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
-# Patterns commonly found in prompt injection spam
-import re
-
-PROMPT_INJECTION_PATTERNS = [
-    re.compile(r"<\s*/?\s*conversation\s*>", re.IGNORECASE),
-    re.compile(r"<\s*/?\s*user\s*>", re.IGNORECASE),
-    re.compile(r"<\s*/?\s*assistant\s*>", re.IGNORECASE),
-    re.compile(r"<\s*/?\s*system\s*>", re.IGNORECASE),
-]
+PROMPT_INJECTION_RE = re.compile(
+    r"<\s*/?\s*(?:conversation|user|assistant|system)\s*>", re.IGNORECASE
+)
 
 
 def _validate_no_prompt_injection(value: str) -> str:
-    for pattern in PROMPT_INJECTION_PATTERNS:
-        if pattern.search(value):
-            raise ValueError(
-                "Le message contient des motifs non autorisés."
-            )
+    if PROMPT_INJECTION_RE.search(value):
+        raise ValueError("Le message contient des motifs non autorisés.")
     return value
 
 
