@@ -79,12 +79,9 @@ function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
 }
 
 function formatContextLength(tokens: number): string {
-  if (tokens >= 1_000_000) {
-    const millions = tokens / 1_000_000
-    return `${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`
-  }
-  const thousands = tokens / 1_000
-  return `${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)}k`
+  const [value, suffix] =
+    tokens >= 1_000_000 ? [tokens / 1_000_000, 'M'] : [tokens / 1_000, 'k']
+  return `${value % 1 === 0 ? value.toFixed(0) : value.toFixed(1)}${suffix}`
 }
 
 export function getContextSizeBucket(contextLength: number | null): ContextSizes | null {

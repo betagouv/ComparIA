@@ -79,9 +79,8 @@
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
         const orgMatch = editors.length === 0 || editors.includes(model.organisation)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
-        const contextMatch =
-          contextSizes.length === 0 ||
-          contextSizes.includes(getContextSizeBucket(model.context_length) as ContextSizes)
+        const bucket = getContextSizeBucket(model.context_length)
+        const contextMatch = contextSizes.length === 0 || (bucket != null && contextSizes.includes(bucket))
         const archivedMatch = model.status === 'enabled' || showArchived
         return searchMatch && sizeMatch && orgMatch && licenseMatch && contextMatch && archivedMatch
       })
