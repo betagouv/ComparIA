@@ -32,6 +32,26 @@
       )}
     </p>
 
+    <h2 id="tally">{m['general.privacy.tallyTitle']()}</h2>
+    <p>
+      {@html sanitize(
+        m['general.privacy.tallyDesc']({
+          tallyLinkProps: externalLinkProps('https://tally.so/')
+        })
+      )}
+    </p>
+    <ul>
+      <li>{m['general.privacy.tallyNewsletter']()}</li>
+      <li>{m['general.privacy.tallyFeedback']()}</li>
+    </ul>
+    <p>
+      {@html sanitize(
+        m['general.privacy.tallyData']({
+          tallyPrivacyLinkProps: externalLinkProps('https://tally.so/help/privacy-policy')
+        })
+      )}
+    </p>
+
     <h2 id="data-access">{m['general.privacy.dataAccessTitle']()}</h2>
     <p>
       {@html sanitize(
