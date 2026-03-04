@@ -557,6 +557,25 @@
         "fyi": "Gemini 3.1 Pro reprend l'architecture MoE et les capacités multimodales natives de Gemini 3 Pro (texte, images, audio, vidéo, PDF jusqu'à 1 000 pages), ainsi que l'entraînement sur TPU et l'optimisation pour les usages agentiques.\n\nLa principale nouveauté est l'ajout d'un niveau de raisonnement intermédiaire (\"medium\") au mode Deep Think, qui ne proposait auparavant que deux niveaux (bas et haut). Ce niveau vise un compromis entre qualité de réponse et latence. Le modèle introduit également des « signatures de pensée » (thought signatures), des représentations chiffrées du raisonnement intermédiaire permettant de conserver le contexte de réflexion lors d'interactions multi-étapes. Selon l'éditeur, ces évolutions se traduisent par une amélioration relative de 40 à 60 % sur les tâches de planification complexes par rapport à la génération précédente, et par une meilleure résistance aux hallucinations. Il obtient 77,1 % sur ARC-AGI-2, 94,3 % sur GPQA Diamond et 80,6 % sur SWE-Bench Verified."
       },
       {
+        "new": true,
+        "id": "gemini-3.1-flash-lite-preview",
+        "simple_name": "Gemini 3.1 Flash Lite",
+        "license": "proprietary",
+        "release_date": "03/2026",
+        "arch": "moe",
+        "params": 250,
+        "active_params": 25,
+        "reasoning": true,
+        "url": "https://deepmind.google/models/model-cards/gemini-3-1-flash-lite/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3.1-flash-lite-preview"
+        },
+        "desc": "Modèle de taille moyenne, multimodal et rapide, adapté à un usage automatisé ou des tâches relativement simples : traduction, classification, modération de contenu. Il propose des niveaux de raisonnement ajustables, du minimal au plus approfondi.",
+        "size_desc": "La taille exacte de ce modèle n'est pas connue publiquement. Son architecture de mélange d'experts (MoE, Mixture of Experts) permet de n'activer qu'une partie des paramètres à chaque requête, ce qui le rend très rapide et économique. Sa fenêtre de contexte atteint 1 048 576 jetons en entrée, ce qui permet de traiter de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Ce modèle est dérivé de Gemini 3 Pro et utilise une architecture de mélange d'experts (MoE, Mixture of Experts). Sa particularité est de proposer des niveaux de raisonnement ajustables : minimal (par défaut), bas, moyen et haut. Cette fonctionnalité permet aux développeurs de contrôler finement le compromis entre rapidité et profondeur de raisonnement en fonction de la complexité de la tâche. Il accepte en entrée du texte, des images, de l'audio, de la vidéo et des documents PDF, mais ne produit que du texte en sortie.\n\nEntraîné sur des processeurs TPU de Google avec les frameworks JAX et ML Pathways, le modèle est conçu pour les applications à grand volume. Selon l'éditeur, il est 2,5 fois plus rapide que Gemini 2.5 Flash pour le temps de première réponse et 45 % plus rapide en débit de sortie. Sur les tests d'évaluation, il obtient 86,9 % au GPQA Diamond et 88,9 % au MMMLU, des scores proches de modèles plus coûteux."
+      },
+      {
         "status": "archived",
         "id": "gemini-2.5-flash",
         "simple_name": "Gemini 2.5 Flash",
