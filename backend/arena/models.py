@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, computed_field, field_validator
 
+from backend.arena.spam_detection import is_spam
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -313,8 +314,10 @@ class AddFirstTextBody(BaseModel):
 
     @field_validator("prompt_value")
     @classmethod
-    def check_prompt_injection(cls, v: str) -> str:
-        return _validate_no_prompt_injection(v)
+    def check_spam(cls, v: str) -> str:
+        if is_spam(v):
+            raise ValueError("This prompt format is not allowed. Please use natural language.")
+        return v
 
 
 class AddTextBody(BaseModel):
@@ -324,8 +327,10 @@ class AddTextBody(BaseModel):
 
     @field_validator("message")
     @classmethod
-    def check_prompt_injection(cls, v: str) -> str:
-        return _validate_no_prompt_injection(v)
+    def check_spam(cls, v: str) -> str:
+        if is_spam(v):
+            raise ValueError("This prompt format is not allowed. Please use natural language.")
+        return v
 
 
 PositiveReaction = Literal["useful", "complete", "creative", "clear_formatting"]
