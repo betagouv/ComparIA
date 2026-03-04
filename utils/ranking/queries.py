@@ -11,8 +11,9 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from backend.config import settings
+from utils.utils import configure_logger
 
-logger = logging.getLogger("languia")
+logger = configure_logger(logging.getLogger("ranking.queries"))
 
 
 def fetch_votes() -> list[dict]:

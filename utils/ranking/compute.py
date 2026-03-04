@@ -14,8 +14,9 @@ from dataclasses import dataclass, field
 from backend.llms.models import DatasetData, PreferencesData
 from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_reactions, fetch_votes
+from utils.utils import configure_logger
 
-logger = logging.getLogger("languia")
+logger = configure_logger(logging.getLogger("ranking.compute"))
 
 # Preference fields tracked on votes (boolean columns per side a/b)
 PREF_FIELDS = [
