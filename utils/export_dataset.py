@@ -707,10 +707,8 @@ def main():
     load_session_hash_ip()
     load_models_data()
 
-    # Log spam patterns info
-    from backend.arena.spam_detection import _get_compiled_patterns
-    patterns = _get_compiled_patterns()
-    logger.info(f"Spam detection: {len(patterns)} patterns loaded for filtering")
+    # Log spam detection info
+    logger.info("Spam detection enabled for filtering dataset")
 
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not args.dry_run:
