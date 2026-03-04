@@ -773,7 +773,14 @@
                 "size_desc": "<p>Den nøyaktige størrelsen på modellen er ukjent. Indikatorer tyder på at det er en stor modell som det kreves et kraftig grafikkort for å kjøre. Den antatte arkitekturen Mixture of Experts (MoE) aktiverer imidlertid bare en del av parameterne ved hver tokengenerering, og begrenser dermed energiforbruket. Tilgjengelige estimater er avhengige av indirekte indikatorer som inferenskostnader og responsforsinkelse.</p>"
             },
             "GPT-4o": {
-                "desc": "<p>Den største av de to modellene som lå til grunn for ChatGPT fra OpenAI, lansert i august 2024.</p>"
+                "desc": "<p>Den største av de to modellene som lå til grunn for ChatGPT fra OpenAI, lansert i august 2024.</p>",
+                "fyi": "<p>Modellen ble lansert i august 2024 og er etterfølgeren til GPT-4. GPT-4o er en forbedret versjon av GPT-4, designet for ulike oppgaver innen naturlig språkbehandling via for eksempel ChatGPT-applikasjonen fra det amerikanske selskapet OpenAI.</p>",
+                "size_desc": "<p>Disse modellene, med hundrevis av milliarder parametere, er de mest komplekse og avanserte når det gjelder ytelse og nøyaktighet. Databehandlings- og minneressursene som kreves for å kjøre disse modellene er slik at de er beregnet på de mest avanserte applikasjonene og svært spesialiserte miljøer.</p>"
+            },
+            "GPT-4o mini": {
+                "desc": "<p>Den minste av de to modellene som lå til grunn for OpenAIs ChatGPT, som ble lansert i juli 2024.</p>",
+                "fyi": "<p>GPT-4o mini ble lansert i juli 2024 og erstattet GPT-3.5. Det er en mindre versjon av GPT-4, designet for ulike oppgaver innen naturlig språkbehandling, som for eksempel ChatGPT-applikasjonen fra det amerikanske selskapet OpenAI.</p>",
+                "size_desc": "<p>Mellomstore modeller tilbyr en god balanse mellom kompleksitet, kostnad og ytelse: de er mye mindre ressurskrevende enn store modeller, samtidig som de fortsatt kan håndtere komplekse oppgaver som sentimentanalyse eller resonnement.</p>"
             },
             "Gemini 1.5 Pro": {
                 "desc": "<p>Denne multimodale modellen ble lansert i september 2024 (versjon 002), og kan brukes til tekstgenerering, men også til å tolke bilder, videoer og lyd.</p>",
@@ -840,6 +847,32 @@
                 "fyi": "<p>Denne modellen kan behandle tekst, bilder og lyd. Den er basert på MatFormer-arkitekturen og et PLE-hurtigbuffersystem (per-layer embeddings), som bare aktiverer parameterne som er nyttige for den aktuelle oppgaven, og tilpasser seg kapasiteten til maskinen modellen kjører på.</p>",
                 "size_desc": "<p>Med 4 milliarder parametere er det en av de minste tilgjengelige modellene. Den kan kjøres lokalt på en datamaskin eller smarttelefon for å opprettholde datakonfidensialitet, eller på en server for å begrense kostnader sammenlignet med en større modell.</p>\n<p>Kontekstvinduet går opptil 32 000 tokens.</p>"
             },
+            "Grok 4 Fast": {
+                "size_desc": "<p>Med et kontekstvindu på 2 millioner tokens kombinerer Grok 4 Fast resonnerings- og direkteresponsmoduser i én modell. Den bruker omtrent 40 % færre resonneringstokens enn Grok 4, noe som resulterer i en betydelig reduksjon i kostnader til regnekraft og mindre latens.</p>"
+            },
+            "Grok 4.1 Fast": {
+                "desc": "<p>Grok 4.1 Fast er en ny iterasjon av fjerde generasjon av Grok. Basert på den samme kjernemodellen, drar den ifølge utvikleren nytte av forbedret ettertrening (post-training) som gir den bedre stil, veldig gode agentiske evner og større konsistens i svar, spesielt under lengre diskusjoner.</p>",
+                "fyi": "<p>Tilgjengelige evalueringer indikerer en lavere hallusinasjonsrate for denne versjonen av modellen. Treningen av Grok 4.1 skal ha inneholdt utvidet belønningsmodellering, inkludert menneskelig evaluering og feedback fra modeller som fungerer som AI-evaluatorer.</p>",
+                "size_desc": "<p>Grok 4 Fast har en resonneringsmodus og en direkteresponsmodus. Brukeren eller utvikleren kan kontrollere om resonnering skal aktiveres eller ikke. Modellen har et kontekstvindu på 2 millioner tokens, noe som gjør at den kan analysere svært store dokumentkorpus og kodebaser.</p>"
+            },
+            "Hermes 3 405B": {
+                "desc": "<p>Svært stor modell, videretrent fra Llama 3.1 405B, justert for å møte brukerens instruksjoner på en bedre måte og forbedre modellens evne til å bruke verktøy.</p>",
+                "fyi": "<p>Denne modellen er et resultat av videretrening av Llama 3.1 405B-parametersettet for å gjøre oppførselen mindre begrenset og ta bedre hensyn til nyansene i bruker- og systemprompter – og dermed gi brukeren større kontroll over modellens «personlighet» og adferd. Spesifikke resonneringsfunksjoner som <strong><code>&lt; SCHRATCHPAD &gt;</code></strong>, <strong><code>&lt; REASONING &gt;</code></strong>, <strong><code>&lt; THINKING &gt;</code></strong> er lagt til for å simulere resonnering om komplekse oppgaver. Treningen brukte et verktøy kalt AdamW (læringsrate på 3,5 × 10⁻⁶), som hjelper modellen med å lære effektivt ved gradvis å justere parameterne. Deretter ble den finjustert med en metode kalt DPO (direkte preferanseoptimalisering), som forbedrer responsene basert på spesifikke preferanser. For å gjøre denne treningen lettere og raskere ble LoRA-adaptere brukt; Dette er mindre moduler som bare endrer en del av modellen, og dermed unngår man å måtte justere alle parameterne samtidig.</p>",
+                "size_desc": "<p>Med 405 milliarder parametere regnes denne modellen som svært stor. Den krever en server utstyrt med flere kraftige grafikkort, noe som gir betydelige driftskostnader.</p>"
+            },
+            "Hermes 4 70B": {
+                "desc": "<p>Stor modell videretrent fra Llama 3.1 70B, justert for å møte brukernes stilistiske ønsker og instruksjoner på en bedre måte.</p>"
+            },
+            "Kimi K2 Thinking": {
+                "desc": "<p>Denne versjonen av Kimi K2 har en mer avansert resonneringsfase, noe som forbedrer ytelsen sammenlignet med den opprinnelige iterasjonen. Den ble utviklet av Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), et selskap basert i Beijing.</p>",
+                "fyi": "<p>Modellen ser ut til å vise forbedret ytelse på lange resonneringsoppgaver og oppgaver som krever bruk av verktøy. Disse egenskapene antas å gjøre modellen mer autonom i utførelsen av lengre oppgaver.</p>",
+                "size_desc": "<p>Med 1 billion parametere (hvorav 32 milliarder er aktive per token), er denne modellen blant de svært store modellene. Mixture of Experts-arkitekturen (MoE) gir likevel større effektivitet sammenlignet med enkelte modeller av sammenlignbar størrelse. Modellen er også kvantisert på INT4-nivå. Denne kvantiseringen, som består i å \"avrunde\" modellvektene til færre sifre for å forenkle beregningene, presenteres av Moonshot AI som en reduksjon av inferenstiden med en faktor på 2. Kontekstvinduet når 256 000 tokens, noe som gir kapasitet til å behandle svært lange dokumenter eller kodebaser.</p>"
+            },
+            "Kimi K2.5": {
+                "desc": "<p>Med utgangspunkt i Kimi K2, fortsatte utviklerne forhåndstreningen på omtrent 15 billioner ekstra tokens, og blandet tekst og visuelle data. Utviklerne fremhever både modellens innebygde multimodalitet og dens agentiske evner, som er spesielt egnet for oppgaver som programvareutvikling.</p>",
+                "fyi": "<p>Modellen ble trent ved å bruke en spesifikk modus kalt «Agent Swarm». I denne orkestreringsmodusen løses ikke problemet strengt sekvensielt, men deles heller opp i flere mindre oppgaver som utføres parallelt av underagenter. Under treningen lærte modellen å oppføre seg som en masteragent: den analyserer kravene, bestemmer hvor mange underagenter som skal lastes, tildeler dem mål og aggregerer deretter resultatene. Dette ble oppnådd gjennom forsterkningslæringsmetoder for flere agenter, der orkestratoren ble belønnet når den valgte en god dekomponering av problemet og effektiv koordinering mellom agentene, og straffet når den gjorde resonneringen for lineær.</p>",
+                "size_desc": "<p>Med totalt 1 billion parametere, hvorav omtrent 32 milliarder aktiveres for hvert genererte token, er en av de svært store modellene. Mixture of Experts-arkitekturen (MoE) muliggjør imidlertid mer effektiv ressursutnyttelse enn tette modeller av sammenlignbar størrelse. Modellen er dessuten kvantisert ved hjelp av INT4, en teknikk som reduserer presisjonen til vektene for å forenkle beregningene og begrense resonneringstiden. Kontekstvinduet kan inneholde opptil 256 000 tokens, noe som muliggjør behandling av svært store dokumenter eller omfattende kodebaser.</p>"
+            },
             "LFM 2 8B A1B": {
                 "desc": "<p>En modell som er spesielt utviklet for effektiv inferens på lokale enheter (distribusjon på enheten). Arkitekturen har som mål å tilby utdata med en kvalitet som er konkurransedyktig med større modeller med full aktivering, samtidig som den minimerer forsinkelse og krav til regnekraft.</p>",
                 "fyi": "<p>LFM2-8B-A1B er basert på en hybridarkitektur som integrerer konvolusjonsblokker og Grouped Query Attention (GQA)-mekanismer. Denne Mixture of Experts-implementasjonen (MoE) består av 32 eksperter per transformasjonsblokk. Ruteren velger og aktiverer de fire beste ekspertene (top-4-gating) for behandling av hvert token. Denne designen tar sikte på å etablere en benchmark for Mixture of Experts-modeller optimalisert for lokal inferens.</p>",
@@ -877,9 +910,27 @@
             },
             "Llama 3.3 70B": {
                 "desc": "<p>Stor modell designet for et bredt spekter av oppgaver og i stand til å konkurrere med større modeller.</p>",
-                "fyi": "<p>Denne modellen er en destillert versjon av 405B-modellen, som den har fått overført noe av sin kunnskap fra. Den har også dratt fordel av nyere teknikker for tilpasning (alignment) og nettbasert forsterkningslæring (RL) – modellen lærer ved å prøve å utføre nettbaserte oppgaver autonomt. Treningen ble gjort på 15 milliarder tokens med data.</p>"
+                "fyi": "<p>Denne modellen er en destillert versjon av 405B-modellen, som den har fått overført noe av sin kunnskap fra. Den har også dratt fordel av nyere teknikker for tilpasning (alignment) og nettbasert forsterkningslæring (RL) – modellen lærer ved å prøve å utføre nettbaserte oppgaver autonomt. Treningen ble gjort på 15 milliarder tokens med data.</p>",
+                "size_desc": "<p>Med 70 milliarder parametere er dette en stor modell. Den krever flere kraftige grafikkort for å kjøre, noe som resulterer i høye driftskostnader. Kontekstvinduet på 128 000 tokens gjør at den kan behandle lange dokumenter.</p>"
+            },
+            "Llama 4 Maverick": {
+                "desc": "<p>Veldig stor modell med et veldig stort kontekstvindu. Nyttig for eksempel for å oppsummere flere dokumenter samtidig.</p>",
+                "fyi": "<p>Denne modellen ble destillert sammen med Behemoth, dvs. at den lærte sammen med den gigantiske modellen, snarere enn etterpå, som i tradisjonell destillasjon. Dette muliggjør raskere og mindre komputasjonelt tung overføring av ferdigheter. Modellen ble trent på 30 billioner datatokens med tekst på 200 ulike språk, samt bilder for å oppnå naturlige multimodale funksjoner – den kan behandle opptil 8 bilder samtidig. Arkitekturen er basert på et Mixture of Experts-system (MoE), med 17 milliarder aktive parametere, 16 eksperter og 109 milliarder totale parametere. Meta-teamet utviklet en progressiv strategi for post-trening som kombinerer adaptiv datafiltrering. Her ble bare den mest komplekse og interessante datarettede finjusteringen beholdt. Online forsterkningslæring (RL) ble brukt for å balansere multimodal ytelse, resonnering og samtalekvalitet. Takket være iRoPE-arkitekturen (en optimalisert versjon av posisjonskoding) kan modellen håndtere svært lange kontekstvinduer, opptil 10 millioner tokens.</p>\n<p>Llama 4 Maverick-modellen ble presentert som Metas direkte svar på DeepSeek-modellene. Men da den ble lansert, følte mange brukere at den ikke levde opp til forventningene, spesielt ikke for programmeringsoppgaver og kreativt arbeid.</p>"
+            },
+            "Magistral Small": {
+                "size_desc": "<p>Med 24 milliarder parametere regnes dette som en mellomstor modell. Den krever et enkelt kraftig grafikkort for å kjøre. Resonneringsmodeller bruker også lengre tid på å produsere et svar, noe som øker strømforbruket.</p>\n<p>Den har et kontekstvindu på opptil 40 000 tokens, nyttig for å analysere kortere dokumenter, men utilstrekkelig for å analysere store korpus av dokumenter.</p>"
+            },
+            "MiniMax M2": {
+                "desc": "<p>En modell som er spesialisert på koding med et svært konkurransedyktig forhold mellom kvalitet, hastighet og pris. Den ble trent av MiniMax, et selskap basert i Shanghai, Kina.</p>",
+                "fyi": "<p>En modell spesielt utviklet for agentoppgaver (som koding), trent til å overholde strenge protokoller for agentkontroll (planlegging, verktøykall, verifisering).</p>",
+                "size_desc": "<p>En Mixture of Experts-modell (MoE) med 230 milliarder parametere (hvorav 10 milliarder er aktive per tokengenerering). Kontekstvinduet støtter 200 000 tokens, noe som muliggjør behandling av kodebaser og lange dokumenter.</p>"
+            },
+            "Ministral": {
+                "fyi": "<p>Denne modellen bruker en metode kalt Grouped Query Attention (GQA) for å begrense den analyserte teksten ved hvert genereringstrinn, øke hastighet og redusere minnebruk: modellen kjører fortere uten at det påvirker kvaliteten. GQA-mekanismen blir forbedret ved å bruke vinduer i forskjellige størrelser, noe som gjør det mulig å håndtere store kontekster (opptil 128 000 tokens) samtidig som modellen forblir lett. Den store tokenisatoren (V3-Tekken) komprimerer språk og kode bedre, noe som forbedrer ytelsen på flerspråklige oppgaver.</p>",
+                "size_desc": "<p>Med 8 milliarder parametere regnes denne modellen som liten. Den kan kjøres lokalt på en ganske kraftig datamaskin, noe som sikrer datakonfidensialitet, eller på en server med et enkelt grafikkort for å begrense infrastrukturkostnadene.</p>"
             },
             "Mistral 3 Large": {
+                "desc": "<p>En veldig stor, semi-åpen, multimodal modell som fungerer bra til koding og i flerspråklige kontekster.</p>",
                 "fyi": "<p>Denne modellen ble trent på 3000 Nvidia H200 GPU-er. Den konkurrerer direkte med halvåpne kinesiske modeller. Ved lansering er den konkurransedyktig mot DeepSeek V3.1, Kimi K2, GLM 4.6 og andre benchmarks når det gjelder kode og generell bruk.</p>",
                 "size_desc": "<p>Med 675 milliarder parametere faller denne modellen inn i kategorien svært store modeller. Takket være en Mixture of Experts-arkitektur (MoE) er den mer effektiv enn tette modeller av lignende størrelse, men det kreves fortsatt en server med flere svært kraftige grafikkort for å hoste den. Modellen aktiverer 41 milliarder parametere per tokengenerering. Kontekstvinduet kan inneholde opptil 256 000 tokens, slik at den kan behandle svært lange dokumenter.</p>"
             },
@@ -915,7 +966,21 @@
             },
             "Mistral Small 3.2": {
                 "desc": "<p>Til tross for navnet er dette en mellomstor modell. Den er multimodal (kan behandle tekst og bilder) og skiller seg ut med sin presise behandling av spørringer og evnen til å bruke verktøy.</p>",
-                "fyi": "<p>Versjon 3.2 av denne modellen er optimalisert for å generere strukturert output, spesielt i JSON-format, samtidig som den begrenser repetisjoner og uønsket atferd under iterative genereringskjeder. Modellen er multimodal, og håndterer både tekst- og bildeinput, noe som muliggjør felles analyse.</p>"
+                "fyi": "<p>Versjon 3.2 av denne modellen er optimalisert for å generere strukturert output, spesielt i JSON-format, samtidig som den begrenser repetisjoner og uønsket atferd under iterative genereringskjeder. Modellen er multimodal, og håndterer både tekst- og bildeinput, noe som muliggjør felles analyse.</p>",
+                "size_desc": "<p>Med 32 milliarder parametere regnes denne modellen som mellomstor. Den kan hostes på en server med et enkelt kraftig grafikkort, noe som begrenser infrastrukturkostnadene. Den har et kontekstvindu på opptil 128 000 tokens. Dette er nyttig for å analysere lange dokumenter.</p>"
+            },
+            "Mistral Small 3.2 24B": {
+                "desc": "<p>Mistral Small 3.2 24B Instruct er en forbedret variant av Mistral Small 3.1 (mars 2025). Den har 24 milliarder parametere og avanserte multimodale funksjoner.</p>",
+                "fyi": "<p>Mistral Small 3.2 24B Instruct er en multimodal modell som gir gode resultater i tekst- og synsbaserte resonneringsoppgaver, inkludert bildeanalyse, programmering og matematisk resonnering. Den har støtte for dusinvis av språk.</p>",
+                "size_desc": "<p>Mellomstore modeller har en god balanse mellom kompleksitet, kostnad og ytelse: de er mye mindre ressurskrevende enn store modeller, samtidig som de fortsatt kan håndtere komplekse oppgaver som sentimentanalyse eller resonnement.</p>"
+            },
+            "Mixtral 8x22B": {
+                "desc": "<p>Denne flerspråklige modellen ble lansert i april 2024, og har blitt spesielt trent på engelsk, fransk, tysk, italiensk og spansk, samt i matematikk-, programmerings- og resonneringsoppgaver.</p>",
+                "fyi": "<p>Denne modellens SMoE-arkitektur (Sparse Mixture of Experts) gjør den raskere og optimaliserer forholdet mellom størrelse og kostnad. Bare 39 milliarder parametere er aktive av 141 milliarder. Popup-vinduet med 64 000 tokens muliggjør presis informasjonshenting fra store dokumenter. Modellen ble lansert i april 2024. </p>",
+                "size_desc": "<p>Disse modellene, med hundrevis av milliarder parametere, er de mest komplekse og avanserte når det kommer til ytelse og nøyaktighet. Databehandlings- og minneressursene som kreves for å kjøre disse modellene er slik at de er beregnet på de mest avanserte applikasjonene og svært spesialiserte miljøer.</p>"
+            },
+            "Mixtral-8x7B": {
+                "desc": "<p>Denne modellen er trent på et flerspråklig korpus, og er effektiv for varierte oppgaver med lav kompleksitet.</p>"
             }
         }
     }
