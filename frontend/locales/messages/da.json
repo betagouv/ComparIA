@@ -1273,9 +1273,9 @@
         },
         "conso": {
             "count": {
-                "L": "> 100 Wh",
-                "M": "fra 10 til 100 Wh",
-                "S": "< 10 Wh"
+                "L": "> 5000 mWh",
+                "M": "fra 150 til 5000 mWh",
+                "S": "< 150 mWh"
             },
             "filterLegend": "Filtrer efter gennemsnitligt energiforbrug for 1000 tokens"
         },
@@ -1656,11 +1656,11 @@
                     "tooltip": {
                         "active_params": "Aktive parametre (mia.)",
                         "arch": "Arkitektur",
-                        "consumption_wh": "Gennemsnitsforbrug (Wh)",
+                        "consumption": "Gennemsnitsforbrug (mWh)",
                         "elo": "BT score",
                         "params": "Parametre (mia.)"
                     },
-                    "xLabel": "Forbrug pr. 1000 tokens (Wh)",
+                    "xLabel": "Forbrug pr. 1000 tokens (mWh)",
                     "yLabel": "Bradley-Terry Score (BT)"
                 },
                 "methodo": {
@@ -1780,7 +1780,7 @@
                 "billions": "{count} mia.",
                 "cols": {
                     "arch": "Arkitektur",
-                    "consumption_wh": "Gns. forbrug<br>(1.000 tokens)",
+                    "consumption": "Gns. forbrug<br>(1.000 tokens)",
                     "elo": "BT<br>tilfredshedsscore",
                     "license": "Licens",
                     "n_match": "Samlet antal stemmer",
@@ -1794,7 +1794,7 @@
                 "estimation": "(estimering)",
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
-                    "consumption_wh": "Målt i watttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtig information om størrelse og arkitektur for, som gråtonede ikke-analyserede (N/A).",
+                    "consumption": "Målt i watttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtig information om størrelse og arkitektur for, som gråtonede ikke-analyserede (N/A).",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
                     "size": "Modellens størrelse i milliarder af parametre, kategoriseret i fem klasser. For proprietære modeller oplyses denne størrelse ikke.",

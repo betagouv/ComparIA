@@ -1,13 +1,8 @@
 """
-Environmental impact calculations and reveal screen data generation.
-
-This module computes the ecological impact of LLM inference using the ecologits library,
-converting technical metrics (energy, CO2) into user-friendly comparisons (LED lightbulbs, video streaming).
+Reveal screen data generation.
 
 Functions:
-- convert_range_to_value: Normalize impact ranges to single values
-- calculate_lightbulb_consumption: Energy equivalent in LED light hours
-- calculate_streaming_hours: CO2 equivalent in video streaming hours
+- get_chosen_llm: Guess the chosen LLM
 - get_reveal_data: Main function generating reveal screen data
 """
 
@@ -64,10 +59,10 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
 
     Calculates environmental impact (energy, CO2 emissions) and creates data for the
     reveal screen shown after voting. Includes model metadata, token counts, and
-    user-friendly comparisons (LED lightbulb hours, video streaming equivalents).
+    scaled equivalence (e.g., "if all the population made this prompt…").
 
     Args:
-        conversations: Conversation object for model B with messages and model_name
+        conversations: Conversation object for model B with messages, model_name, and conv_id
         chosen_llm: User's choice ("a", "b", or "both_equal")
 
     Returns:

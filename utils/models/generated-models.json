@@ -57,7 +57,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "Apertus-8B-Instruct-2509": {
       "active_params": null,
@@ -109,7 +109,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "aya-23-8b": {
       "active_params": null,
@@ -137,7 +137,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "aya-expanse-32b": {
       "active_params": null,
@@ -195,7 +195,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "aya-expanse-8b": {
       "active_params": null,
@@ -247,7 +247,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "Aya23-35B": {
       "active_params": null,
@@ -275,7 +275,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 7556.949999999999
+      "wh_per_million_token": 243.82777938658904
     },
     "c4ai-command-r-08-2024": {
       "active_params": null,
@@ -327,7 +327,7 @@
       "specific_portals": null,
       "status": "disabled",
       "url": null,
-      "wh_per_million_token": 7556.949999999999
+      "wh_per_million_token": 243.82777938658904
     },
     "chocolatine-14b-instruct-dpo-v1.2": {
       "active_params": null,
@@ -355,7 +355,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 96.43287458424557
     },
     "chocolatine-14b-instruct-dpo-v1.2-q4": {
       "active_params": null,
@@ -407,7 +407,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 96.43287458424557
     },
     "chocolatine-2-14b-instruct-v2.0.3": {
       "active_params": null,
@@ -435,7 +435,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 96.43287458424557
     },
     "chocolatine-2-14b-instruct-v2.0.3-q8": {
       "active_params": null,
@@ -487,7 +487,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 87.93920288122925
     },
     "claude-3-5-sonnet-v2": {
       "active_params": 137.5,
@@ -539,7 +539,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "claude-3-7-sonnet": {
       "active_params": 137.5,
@@ -591,7 +591,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "claude-4-5-sonnet": {
       "active_params": 137.5,
@@ -649,7 +649,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "claude-4-6-sonnet": {
       "active_params": 137.5,
@@ -683,7 +683,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "claude-4-sonnet": {
       "active_params": 137.5,
@@ -741,7 +741,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "command-a": {
       "active_params": null,
@@ -799,7 +799,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
-      "wh_per_million_token": 18222.536666666667
+      "wh_per_million_token": 856.5235870184582
     },
     "command-r-plus": {
       "active_params": null,
@@ -827,7 +827,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 17240.18
+      "wh_per_million_token": 822.5489002063929
     },
     "deepseek-chat-v3.1": {
       "active_params": 37,
@@ -885,7 +885,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3978.900897184431
     },
     "deepseek-r1": {
       "active_params": 37,
@@ -943,7 +943,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3978.900897184431
     },
     "deepseek-r1-0528": {
       "active_params": 37,
@@ -1001,7 +1001,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3978.900897184431
     },
     "deepseek-r1-distill-llama-70b": {
       "active_params": null,
@@ -1059,7 +1059,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "deepseek-v3-0324": {
       "active_params": 37,
@@ -1117,7 +1117,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3978.900897184431
     },
     "deepseek-v3-chat": {
       "active_params": 37,
@@ -1169,7 +1169,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3978.900897184431
     },
     "DeepSeek-V3.2": {
       "active_params": 37,
@@ -1227,7 +1227,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/deepseek/deepseek-v3.2",
-      "wh_per_million_token": 47025.74
+      "wh_per_million_token": 3978.900897184431
     },
     "EuroLLM-22B-Instruct-2512": {
       "active_params": null,
@@ -1285,7 +1285,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
-      "wh_per_million_token": 5732.573333333333
+      "wh_per_million_token": 106.13992795912138
     },
     "gemini-1.5-pro": {
       "active_params": 220,
@@ -1337,7 +1337,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
-      "wh_per_million_token": 167596.16666666666
+      "wh_per_million_token": 11084.46396759351
     },
     "gemini-2.0-flash": {
       "active_params": 137,
@@ -1389,7 +1389,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://ai.google.dev/gemini-api",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "gemini-2.5-flash": {
       "active_params": 137,
@@ -1447,7 +1447,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "gemini-3-flash-preview": {
       "active_params": 137,
@@ -1505,7 +1505,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3-flash/",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "gemini-3-pro-preview": {
       "active_params": 45,
@@ -1563,7 +1563,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
-      "wh_per_million_token": 53761.899999999994
+      "wh_per_million_token": 4289.5266051804565
     },
     "gemini-3.1-pro-preview": {
       "active_params": 45,
@@ -1625,7 +1625,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
-      "wh_per_million_token": 6434.256666666666
+      "wh_per_million_token": 112.20683631841874
     },
     "gemma-2-27b-it-q8": {
       "active_params": null,
@@ -1677,7 +1677,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-27b-it",
-      "wh_per_million_token": 6434.256666666666
+      "wh_per_million_token": 112.20683631841874
     },
     "gemma-2-2b-it": {
       "active_params": null,
@@ -1705,7 +1705,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-2b-it",
-      "wh_per_million_token": 2925.84
+      "wh_per_million_token": 81.87229452193189
     },
     "gemma-2-9b-it": {
       "active_params": null,
@@ -1757,7 +1757,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/google/gemma-2-9b-it",
-      "wh_per_million_token": 3908.1966666666667
+      "wh_per_million_token": 90.3659662249482
     },
     "gemma-3-12b": {
       "active_params": null,
@@ -1815,7 +1815,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-12b-it",
-      "wh_per_million_token": 4329.206666666666
+      "wh_per_million_token": 94.00611124052664
     },
     "gemma-3-27b": {
       "active_params": null,
@@ -1873,7 +1873,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-27b-it",
-      "wh_per_million_token": 6434.256666666666
+      "wh_per_million_token": 112.20683631841874
     },
     "gemma-3-4b": {
       "active_params": null,
@@ -1931,7 +1931,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/google/gemma-3-4b-it",
-      "wh_per_million_token": 3206.5133333333333
+      "wh_per_million_token": 84.29905786565084
     },
     "gemma-3n-e4b-it": {
       "active_params": 4,
@@ -1989,7 +1989,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3206.5133333333333
+      "wh_per_million_token": 84.29905786565084
     },
     "glm-4.5": {
       "active_params": 32,
@@ -2047,7 +2047,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 21407.82
+      "wh_per_million_token": 1892.3799148434578
     },
     "glm-4.6": {
       "active_params": 32,
@@ -2105,7 +2105,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 21407.82
+      "wh_per_million_token": 1892.3799148434578
     },
     "glm-4.7": {
       "active_params": 32,
@@ -2163,7 +2163,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://z.ai/blog/glm-4.7",
-      "wh_per_million_token": 21407.82
+      "wh_per_million_token": 1892.3799148434578
     },
     "glm-5": {
       "active_params": 40,
@@ -2197,7 +2197,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/zai-org/GLM-5",
-      "wh_per_million_token": 49551.8
+      "wh_per_million_token": 4095.385537682941
     },
     "gpt-3.5-turbo-0301": {
       "active_params": null,
@@ -2225,7 +2225,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
-      "wh_per_million_token": 10363.683333333332
+      "wh_per_million_token": 292.363046260968
     },
     "gpt-4.1-mini": {
       "active_params": null,
@@ -2283,7 +2283,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
-      "wh_per_million_token": 13170.416666666666
+      "wh_per_million_token": 681.7966262706939
     },
     "gpt-4.1-nano": {
       "active_params": null,
@@ -2341,7 +2341,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://openai.com/index/gpt-4-1/",
-      "wh_per_million_token": 5872.909999999999
+      "wh_per_million_token": 107.35330963098085
     },
     "gpt-4o-2024-08-06": {
       "active_params": 137.5,
@@ -2393,7 +2393,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gpt-4o",
-      "wh_per_million_token": 87485.15999999997
+      "wh_per_million_token": 3930.8611235673734
     },
     "gpt-4o-mini-2024-07-18": {
       "active_params": null,
@@ -2445,7 +2445,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
-      "wh_per_million_token": 5171.2266666666665
+      "wh_per_million_token": 101.28640127168345
     },
     "gpt-5": {
       "active_params": 94,
@@ -2503,7 +2503,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 3096.054533328056
     },
     "gpt-5-mini": {
       "active_params": null,
@@ -2561,7 +2561,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-mini",
-      "wh_per_million_token": 9240.99
+      "wh_per_million_token": 272.9489395112164
     },
     "gpt-5-nano": {
       "active_params": null,
@@ -2619,7 +2619,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://platform.openai.com/docs/models/gpt-5-nano",
-      "wh_per_million_token": 4188.87
+      "wh_per_million_token": 92.79272956866714
     },
     "gpt-5.1": {
       "active_params": 94,
@@ -2677,7 +2677,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 3096.054533328056
     },
     "gpt-5.2": {
       "active_params": 94,
@@ -2735,7 +2735,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 3096.054533328056
     },
     "gpt-oss-120b": {
       "active_params": 5.1,
@@ -2793,7 +2793,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3346.8500000000004
+      "wh_per_million_token": 342.0497581500412
     },
     "gpt-oss-20b": {
       "active_params": 3.6,
@@ -2851,7 +2851,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 83.08567619379136
     },
     "grok-3-mini-beta": {
       "active_params": 22,
@@ -2909,7 +2909,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-3",
-      "wh_per_million_token": 11465.146666666666
+      "wh_per_million_token": 849.119423672971
     },
     "grok-4-fast": {
       "active_params": 121,
@@ -2967,7 +2967,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://x.ai/news/grok-4-fast",
-      "wh_per_million_token": 255136.7433333333
+      "wh_per_million_token": 14480.941662285395
     },
     "grok-4.1-fast": {
       "active_params": 121,
@@ -3025,7 +3025,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://x.ai/news/grok-4-1-fast",
-      "wh_per_million_token": 255136.7433333333
+      "wh_per_million_token": 14480.941662285395
     },
     "hermes-3-llama-3.1-405b": {
       "active_params": null,
@@ -3077,7 +3077,7 @@
       "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
-      "wh_per_million_token": 237926.06666666665
+      "wh_per_million_token": 9133.8417325008
     },
     "hermes-4-70b": {
       "active_params": null,
@@ -3135,7 +3135,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "jamba-1.5-large": {
       "active_params": 94,
@@ -3187,7 +3187,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
-      "wh_per_million_token": 47510.43999999999
+      "wh_per_million_token": 3096.054533328056
     },
     "kimi-k2": {
       "active_params": 32,
@@ -3245,7 +3245,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3784.7598296869155
     },
     "kimi-k2-thinking": {
       "active_params": 32,
@@ -3303,7 +3303,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3784.7598296869155
     },
     "kimi-k2.5": {
       "active_params": 32,
@@ -3337,7 +3337,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://www.kimi.com/blog/kimi-k2-5.html",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3784.7598296869155
     },
     "lfm-40b": {
       "active_params": 12,
@@ -3389,7 +3389,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://www.liquid.ai/liquid-foundation-models",
-      "wh_per_million_token": 4329.206666666666
+      "wh_per_million_token": 188.01222248105327
     },
     "lfm2-8b-a1b": {
       "active_params": 1.5,
@@ -3447,7 +3447,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
-      "wh_per_million_token": 2785.5033333333336
+      "wh_per_million_token": 80.65891285007238
     },
     "llama-3.1-405b": {
       "active_params": null,
@@ -3505,7 +3505,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
-      "wh_per_million_token": 237926.06666666665
+      "wh_per_million_token": 9133.8417325008
     },
     "llama-3.1-70b": {
       "active_params": null,
@@ -3557,7 +3557,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "llama-3.1-8b": {
       "active_params": null,
@@ -3615,7 +3615,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "llama-3.1-nemotron-70b-instruct": {
       "active_params": null,
@@ -3673,7 +3673,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "llama-3.3-70b": {
       "active_params": null,
@@ -3731,7 +3731,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "llama-4-scout": {
       "active_params": 17,
@@ -3789,7 +3789,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
-      "wh_per_million_token": 5030.889999999999
+      "wh_per_million_token": 400.2920783992959
     },
     "llama-maverick": {
       "active_params": 17,
@@ -3847,7 +3847,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 15092.669999999998
+      "wh_per_million_token": 1601.1683135971837
     },
     "magistral-medium": {
       "active_params": null,
@@ -3905,7 +3905,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 19906.576666666668
+      "wh_per_million_token": 914.7659072677128
     },
     "magistral-small-2506": {
       "active_params": null,
@@ -3963,7 +3963,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 108.56669130284031
     },
     "Meta-Llama-3-70B-Instruct": {
       "active_params": null,
@@ -3991,7 +3991,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 12468.733333333334
+      "wh_per_million_token": 657.5289928335044
     },
     "Meta-Llama-3-8B-Instruct": {
       "active_params": null,
@@ -4019,7 +4019,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "minimax-m2": {
       "active_params": 10,
@@ -4077,7 +4077,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://www.minimax.io/news/minimax-m2",
-      "wh_per_million_token": 8097.066666666667
+      "wh_per_million_token": 732.6347831744614
     },
     "minimax-m2.5": {
       "active_params": 10,
@@ -4111,7 +4111,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.5",
-      "wh_per_million_token": 8097.066666666667
+      "wh_per_million_token": 732.6347831744614
     },
     "ministral-8b-instruct-2410": {
       "active_params": null,
@@ -4163,7 +4163,7 @@
       "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "mistral-large-2411": {
       "active_params": null,
@@ -4215,7 +4215,7 @@
       "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
-      "wh_per_million_token": 19906.576666666668
+      "wh_per_million_token": 914.7659072677128
     },
     "mistral-large-2512": {
       "active_params": 41,
@@ -4273,7 +4273,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-3",
-      "wh_per_million_token": 50393.81999999999
+      "wh_per_million_token": 4134.213751182444
     },
     "mistral-medium-2508": {
       "active_params": null,
@@ -4331,7 +4331,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-medium-3.1",
-      "wh_per_million_token": 19906.576666666668
+      "wh_per_million_token": 914.7659072677128
     },
     "mistral-nemo-2407": {
       "active_params": null,
@@ -4383,7 +4383,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
-      "wh_per_million_token": 4329.206666666666
+      "wh_per_million_token": 94.00611124052664
     },
     "mistral-saba": {
       "active_params": null,
@@ -4441,7 +4441,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://mistral.ai/news/mistral-saba",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 108.56669130284031
     },
     "mistral-small-24b-instruct-2501": {
       "active_params": null,
@@ -4493,7 +4493,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 108.56669130284031
     },
     "mistral-small-2506": {
       "active_params": null,
@@ -4551,7 +4551,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": null,
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 108.56669130284031
     },
     "mistral-small-3.1-24b": {
       "active_params": null,
@@ -4603,7 +4603,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 108.56669130284031
     },
     "mistral-small-3.2-24b": {
       "active_params": null,
@@ -4631,7 +4631,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506",
-      "wh_per_million_token": 6013.246666666666
+      "wh_per_million_token": 108.56669130284031
     },
     "mixtral-8x22b-instruct-v0.1": {
       "active_params": 44,
@@ -4683,7 +4683,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
-      "wh_per_million_token": 17639.96
+      "wh_per_million_token": 1062.6745979202383
     },
     "mixtral-8x7b-instruct-v0.1": {
       "active_params": 14,
@@ -4735,7 +4735,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 192.86574916849113
     },
     "o3-mini": {
       "active_params": null,
@@ -4787,7 +4787,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o3-mini",
-      "wh_per_million_token": 5171.2266666666665
+      "wh_per_million_token": 101.28640127168345
     },
     "o4-mini": {
       "active_params": null,
@@ -4845,7 +4845,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://platform.openai.com/docs/models/o4-mini",
-      "wh_per_million_token": 5171.2266666666665
+      "wh_per_million_token": 101.28640127168345
     },
     "olmo-2-0325-32b": {
       "active_params": null,
@@ -4873,7 +4873,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "olmo-3-32b-think": {
       "active_params": null,
@@ -4931,7 +4931,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://allenai.org/blog/olmo2-32b",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "phi-3-mini-4k": {
       "active_params": null,
@@ -4959,7 +4959,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 83.08567619379136
     },
     "Phi-3-small-8k-Instruct": {
       "active_params": null,
@@ -4987,7 +4987,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 87.93920288122925
     },
     "phi-3.5-mini-instruct": {
       "active_params": null,
@@ -5039,7 +5039,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 83.08567619379136
     },
     "phi-4": {
       "active_params": null,
@@ -5097,7 +5097,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/microsoft/Phi-4",
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 96.43287458424557
     },
     "qwen-3-8b": {
       "active_params": null,
@@ -5155,7 +5155,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
-      "wh_per_million_token": 3767.8599999999997
+      "wh_per_million_token": 89.15258455308872
     },
     "Qwen1.5-32B-Chat": {
       "active_params": null,
@@ -5183,7 +5183,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "Qwen2-57B-A14B-Instruct": {
       "active_params": 14,
@@ -5211,7 +5211,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 4609.88
+      "wh_per_million_token": 192.86574916849113
     },
     "Qwen2-72b-instruct": {
       "active_params": null,
@@ -5239,7 +5239,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct",
-      "wh_per_million_token": 12749.406666666668
+      "wh_per_million_token": 667.2360462083802
     },
     "qwen2-7b-instruct": {
       "active_params": null,
@@ -5291,7 +5291,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 87.93920288122925
     },
     "qwen2.5-32b-instruct": {
       "active_params": null,
@@ -5343,7 +5343,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "qwen2.5-7b-instruct": {
       "active_params": null,
@@ -5395,7 +5395,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
-      "wh_per_million_token": 3627.5233333333335
+      "wh_per_million_token": 87.93920288122925
     },
     "qwen2.5-coder-32b-instruct": {
       "active_params": null,
@@ -5447,7 +5447,7 @@
       "specific_portals": null,
       "status": "disabled",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "qwen3-30b-a3b": {
       "active_params": 3.3,
@@ -5505,7 +5505,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": null,
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 83.08567619379136
     },
     "qwen3-32b": {
       "active_params": null,
@@ -5563,7 +5563,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-32B",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "Qwen3-Coder-480B-A35B-Instruct": {
       "active_params": 35,
@@ -5621,7 +5621,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
-      "wh_per_million_token": 30227.799999999996
+      "wh_per_million_token": 1950.6222350927123
     },
     "qwen3-coder-next": {
       "active_params": 3,
@@ -5655,7 +5655,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
-      "wh_per_million_token": 3066.1766666666667
+      "wh_per_million_token": 332.34270477516543
     },
     "qwen3-max-2025-09-23": {
       "active_params": 32,
@@ -5713,7 +5713,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
-      "wh_per_million_token": 57087.51999999998
+      "wh_per_million_token": 3784.7598296869155
     },
     "qwen3.5-397b-a17b": {
       "active_params": 17,
@@ -5747,7 +5747,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
-      "wh_per_million_token": 15092.669999999998
+      "wh_per_million_token": 1601.1683135971837
     },
     "qwq-32b": {
       "active_params": null,
@@ -5805,7 +5805,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/Qwen/QwQ-32B",
-      "wh_per_million_token": 7135.939999999998
+      "wh_per_million_token": 118.27374467771611
     },
     "trinity-large-preview": {
       "active_params": 13,
@@ -5839,7 +5839,7 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/arcee-ai/Trinity-Large-Preview",
-      "wh_per_million_token": 13408.630000000001
+      "wh_per_million_token": 1523.5118865981776
     },
     "Yi-1.5-9B-Chat": {
       "active_params": null,
@@ -5891,7 +5891,7 @@
       "specific_portals": null,
       "status": "archived",
       "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat",
-      "wh_per_million_token": 3908.1966666666667
+      "wh_per_million_token": 90.3659662249482
     }
   }
 }

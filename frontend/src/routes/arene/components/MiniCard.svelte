@@ -36,7 +36,7 @@
     <div class={[icon ? 'md:text-start text-center' : '']}>
       <strong class="leading-normal inline-flex items-baseline">
         <span class={[icon ? 'text-[24px]' : 'text-[18px]']}>{value}</span>
-        <span class={[icon ? 'text-[14px]' : 'ms-1 text-[10px]']}>
+        <span class={[icon ? 'ms-1 text-[14px]' : 'ms-1 text-[10px]']}>
           {#if units}
             {@html sanitize(units)}
           {:else}

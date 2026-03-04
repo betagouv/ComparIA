@@ -80,9 +80,9 @@
       <h3 class="mb-0! text-lg!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
-        initialOrderCol="consumption_wh"
+        initialOrderCol="consumption"
         initialOrderMethod="ascending"
-        includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}
+        includedCols={['name', 'elo', 'consumption', 'size', 'arch', 'organisation', 'license']}
         hideTotal
         raw
         filterProprietary

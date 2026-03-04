@@ -1311,9 +1311,9 @@
         },
         "conso": {
             "count": {
-                "L": "> 100 Wh",
-                "M": "from 10 to 100 Wh",
-                "S": "< 10 Wh"
+                "L": "> 5000 mWh",
+                "M": "from 150 to 5000 mWh",
+                "S": "< 150 mWh"
             },
             "filterLegend": "Filter by average energy consumption per 1000 tokens"
         },
@@ -1694,11 +1694,11 @@
                     "tooltip": {
                         "active_params": "Active parameters (billions)",
                         "arch": "Architecture",
-                        "consumption_wh": "Average consumption (Wh)",
+                        "consumption": "Average consumption (mWh)",
                         "elo": "BT score",
                         "params": "Parameters (billions)"
                     },
-                    "xLabel": "Average consumption per 1000 tokens (Wh)",
+                    "xLabel": "Average consumption per 1000 tokens (mWh)",
                     "yLabel": "Bradley-Terry Score (BT)"
                 },
                 "methodo": {
@@ -1818,7 +1818,7 @@
                 "billions": "{count} billion",
                 "cols": {
                     "arch": "Architecture",
-                    "consumption_wh": "Average energy<br>(per 1000 tokens)",
+                    "consumption": "Average energy<br>(per 1000 tokens)",
                     "elo": "BT score <br> of satisfaction",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -1832,7 +1832,7 @@
                 "estimation": "(estimate)",
                 "tooltips": {
                     "arch": "The architecture of an LLM model refers to the design principles that define how the components of a neural network are arranged and interact to transform input data into predictive outputs, including the activation mode of parameters (dense vs. sparse), the specialization of components, and the information processing mechanisms (transformers, convolutional networks, hybrid architectures).",
-                    "consumption_wh": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a request and generate the corresponding response. Model energy consumption depends on the model's size and architecture. We have chosen to display proprietary models for which we do not have transparent information about their size and architecture in gray as \"unanalyzed\" (N/A).",
+                    "consumption": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a request and generate the corresponding response. Model energy consumption depends on the model's size and architecture. We have chosen to display proprietary models for which we do not have transparent information about their size and architecture in gray as \"unanalyzed\" (N/A).",
                     "elo": "Estimated statistical score based on the Bradley-Terry model, reflecting the probability that one model is preferred over another. This score is calculated from all user votes and reactions. For more information, visit the methodology tab.",
                     "rank": "Rank assigned based on Bradley-Terry satisfaction score",
                     "size": "Model size in billions of parameters, categorized into five classes. For proprietary models, this size is not reported.",
@@ -1846,21 +1846,6 @@
         "title": "From votes to a leaderboard"
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO <sub> 2 </sub> emitted",
-                "tooltip": "The CO <sub> 2 </sub> emitted is equivalent to the carbon dioxide emissions produced by the energy used to run the model. It reflects the environmental impact linked to energy consumption. The Watt-hour/CO <sub> 2 </sub> equivalence calculation differs depending on the energy mix of each country. However, the servers used for model inference are not all located in Europe. Thus, the equivalence calculation is based on the global average CO <sub> 2 </sub> emission rate per energy consumed."
-            },
-            "lightbulb": {
-                "label": "LED bulb",
-                "tooltip": "Data calculated based on the consumption of a standard 5W LED bulb (E14)"
-            },
-            "streaming": {
-                "label": "online videos",
-                "tooltip": "Data calculated based on the carbon impact of one hour of streamed video in high definition, on a television, with a Wi-Fi connection (source <a {linkProps}>ADEME</a>)"
-            },
-            "title": "Which corresponds to:"
-        },
         "feedback": {
             "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
             "example": "Example of shared results",
