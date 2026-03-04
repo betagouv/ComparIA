@@ -1442,9 +1442,9 @@
         },
         "conso": {
             "count": {
-                "L": "> 100 Wh",
-                "M": "de 10 à 100 Wh",
-                "S": "< 10 Wh"
+                "L": "> 5000 mWh",
+                "M": "de 150 à 5000 mWh",
+                "S": "< 150 mWh"
             },
             "filterLegend": "Filtre par consommation énergétique moyenne pour 1000 tokens"
         },
@@ -1825,11 +1825,11 @@
                     "tooltip": {
                         "active_params": "Paramètres actifs (mds)",
                         "arch": "Architecture",
-                        "consumption_wh": "Conso. moyenne (Wh)",
+                        "consumption": "Conso. moyenne (mWh)",
                         "elo": "Score BT",
                         "params": "Paramètres (mds)"
                     },
-                    "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
+                    "xLabel": "Consommation moyenne pour 1000 tokens (mWh)",
                     "yLabel": "Score Bradley-Terry (BT)"
                 },
                 "methodo": {
@@ -1950,7 +1950,7 @@
                 "billions": "{count} Mds",
                 "cols": {
                     "arch": "Architecture",
-                    "consumption_wh": "Conso. moyenne<br>(1000 tokens)",
+                    "consumption": "Conso. moyenne<br>(1000 tokens)",
                     "elo": "Score de<br> satisfaction BT",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -1964,7 +1964,7 @@
                 "estimation": "(estimation)",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
-                    "consumption_wh": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
+                    "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "rank": "Rang de classement attribué selon le score de satisfaction Bradley-Terry",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
@@ -1981,17 +1981,38 @@
         "equivalent": {
             "co2": {
                 "label": "CO<sub>2</sub> émis",
-                "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée."
+                "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée.",
+                "unit": "tonnes"
             },
-            "lightbulb": {
-                "label": "ampoule LED",
-                "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5 W (E14)"
+            "desc": "Si tous les Français qui utilisent l’IA générative (48%) avaient eu cette discussion, cela représenterait :",
+            "scales": {
+                "baguette_production": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de la production de baguettes traditions. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Baguettes produites"
+                },
+                "mango_import": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de la production à la livraison de mangues importées en avion. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Mangues importées"
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "Estimation basée sur une moyenne : un arbre mature absorbe ~22 kg CO₂/an (≈48 lb). Le résultat est un ordre de grandeur : cela varie selon l’espèce, l’âge, le climat et le sol. (Source <a {linkProps}>USDA</a>)",
+                    "unit": "Arbres pour absorber le CO2 pendant 1 an"
+                },
+                "package_delivery": {
+                    "tooltip": "Donnée calculée selon l’impact carbone de livraisons à domicile de colis de 1kg. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Livraisons de colis"
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris New York en avion long courrier. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "A/R Paris - NYC en avion"
+                },
+                "pool_filing": {
+                    "tooltip": "Donnée calculée selon l’impact carbone d’un remplissage d’une piscine d’un particulier 8 x 4m (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Remplissages de piscine"
+                }
             },
-            "streaming": {
-                "label": "vidéos en ligne",
-                "tooltip": "Donnée calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur une télévision, en connexion wifi (source <a {linkProps}>ADEME</a>)"
-            },
-            "title": "Ce qui correspond à :"
+            "title": "Équivalences en tonnes de CO2",
+            "title_tooltip": "Les équivalences sont des projections pour illustrer l'effet de masse, nous avons multiplié l'impact de votre discussion avec ce modèle à l'ensemble des utilisateurs d'IA en France : 48% des Français déclarent aujourd’hui avoir recours à l’IA générative, jamais une technologie numérique n'avait été adoptée aussi vite.(source <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
         },
         "feedback": {
             "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
@@ -2002,7 +2023,7 @@
         "impacts": {
             "energy": {
                 "label": "énergie conso.",
-                "tooltip": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+                "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "size": {
                 "count": "milliards param.",

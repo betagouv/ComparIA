@@ -14,7 +14,7 @@
     | 'elo'
     | 'trust_range'
     | 'n_match'
-    | 'consumption_wh'
+    | 'consumption'
     | 'size'
     | 'arch'
     | 'release'
@@ -56,7 +56,7 @@
       { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
       { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
       { id: 'n_match' },
-      { id: 'consumption_wh', tooltip: m['ranking.table.data.tooltips.consumption_wh']() },
+      { id: 'consumption', tooltip: m['ranking.table.data.tooltips.consumption']() },
       { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
       { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
       { id: 'release' },
@@ -92,7 +92,7 @@
       .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
     const highestElo = models[0].data.elo!
     const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
-    const highestConso = models.reduce((a, m) => (m.consumption_wh > a ? m.consumption_wh : a), 0)
+    const highestConso = models.reduce((a, m) => (m.consumption > a ? m.consumption : a), 0)
 
     return models.map((model) => {
       const [month, year] = model.release_date.split('/')
@@ -102,7 +102,7 @@
         arch: (model.license === 'proprietary' ? 'na' : model.arch) as Archs,
         release_date: new Date([month, '01', year].join('/')),
         eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
-        consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100)
+        consoRangeWidth: Math.ceil((model.consumption / highestConso) * 100)
       }
     })
   })
@@ -121,13 +121,13 @@
           case 'elo':
           case 'n_match':
             return sortIfDefined(a.data, b.data, orderingCol)
-          case 'consumption_wh': {
+          case 'consumption': {
             const aProprietary = a.license === 'proprietary'
             const bProprietary = b.license === 'proprietary'
             if (aProprietary && bProprietary) return a.id.localeCompare(b.id)
             if (aProprietary) return orderingMethod === 'ascending' ? -1 : 1
             if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
-            return b.consumption_wh - a.consumption_wh
+            return b.consumption - a.consumption
           }
           case 'trust_range': {
             const aCount = a.data.trust_range[0] + a.data.trust_range[1]
@@ -243,11 +243,11 @@
       {/if}
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
-    {:else if col.id === 'consumption_wh'}
+    {:else if col.id === 'consumption'}
       {#if model.license === 'proprietary'}
         <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
       {:else}
-        {model.consumption_wh} Wh
+        {model.consumption} mWh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
             <div class="rounded-xs bg-info h-[4px] w-[--range-width]"></div>

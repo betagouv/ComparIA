@@ -108,15 +108,29 @@ export interface VoteData {
 }
 
 // REVEAL
+// Equivalence types for scaled impact comparisons
+export type EquivalenceType =
+  | 'paris_nyc_flights'
+  | 'baguette_production'
+  | 'one_year_tree_absortion'
+  | 'package_delivery'
+  | 'mango_import'
+  | 'pool_filing'
 
-type DurationUnit = 'j' | 'h' | 'min' | 's'
+export interface APIEquivalence {
+  type: EquivalenceType
+  value: number
+}
 
 interface APIConsoData {
-  kwh: number
-  co2: number
   tokens: number
-  streaming: { value: number; unit: DurationUnit }
-  lightbulb: { value: number; unit: DurationUnit }
+  co2_kg: number
+  scaled_co2_kg: number
+  scaled_co2_t: number
+  energy_mwh: number
+  energy_kwh: number
+  // All meaningful scaled equivalences (frontend can cycle through them)
+  equivalences: APIEquivalence[]
 }
 
 interface APIRevealModelData {
@@ -131,10 +145,11 @@ export interface APIRevealData {
   b: APIRevealModelData
 }
 
-interface RevealModelData extends APIConsoData {
+export interface RevealModelData extends APIConsoData {
   model: BotModel
   pos: Bot
 }
+
 export interface RevealData {
   selected: BotChoice
   modelsData: RevealModelData[]
@@ -342,8 +357,7 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
     modelsData: (['a', 'b'] as const).map((pos) => ({
       model: parseModel(data[pos].llm),
       pos,
-      ...data[pos].conso,
-      co2: data[pos].conso.co2 * 1000 // FIXME *1000?
+      ...data[pos].conso
     })),
     shareB64Data: data.b64
   }
