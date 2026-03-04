@@ -1813,14 +1813,6 @@
                 "label": "CO <sub> 2 </sub> udledt",
                 "tooltip": "Den udledte CO <sub> 2 </sub> svarer til den mængde kuldioxid, der udledes ved den energi, der bruges til at drive modellen. Den afspejler den miljømæssige påvirkning, der er forbundet med energiforbruget. Beregningen af watt-time/CO <sub> 2 </sub>-ækvivalensen varierer afhængigt af hvert lands energimix. De servere, der anvendes til modelinferens, er dog ikke alle placeret i Europa. Ækvivalensberegningen er således baseret på den globale gennemsnitlige CO <sub> 2 </sub>-emissionsrate pr. forbrugt energi."
             },
-            "lightbulb": {
-                "label": "LED-pære",
-                "tooltip": "Data beregnet på baggrund af forbruget af en standard 5W LED-pære (E14)"
-            },
-            "streaming": {
-                "label": "online videoer",
-                "tooltip": "Data beregnet på baggrund af CO2-aftrykket fra en times streaming af video i høj opløsning på et fjernsyn med Wi-Fi-forbindelse (kilde <a {linkProps}>ADEME</a>)"
-            },
             "title": "Hvilket svarer til:"
         },
         "feedback": {
