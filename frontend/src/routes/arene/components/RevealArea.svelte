@@ -1,14 +1,11 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button, Link, Tooltip } from '$components/dsfr'
-  import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import { Button, Link } from '$components/dsfr'
   import type { RevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  import { MiniCard } from '.'
+  import { RevealCard } from '.'
 
   let { data }: { data: RevealData } = $props()
 
@@ -26,148 +23,9 @@
 </script>
 
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
-  <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid">
-    {#each modelsData as { model, pos, kwh, co2, tokens, lightbulb, streaming } (pos)}
-      {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
-        .map((k) => model.badges[k])
-        .filter((b) => !!b)}
-      {@const wh = kwh * 1000}
-
-      <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex flex-col">
-        <div>
-          <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
-            <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
-            <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
-            {#if selected === pos}
-              <div
-                class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px]"
-              >
-                {m['vote.yours']()}
-              </div>
-            {/if}
-          </h5>
-          <ul class="fr-badges-group mb-4!">
-            {#each modelBadges as badge, i (i)}
-              <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
-            {/each}
-          </ul>
-
-          {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
-        </div>
-
-        <h6 class="mb-5! text-base! mt-auto!">
-          {m['reveal.impacts.title']()}
-          <Tooltip id="impact-{pos}" text={m['reveal.impacts.tooltip']()} />
-        </h6>
-        <div class="flex">
-          <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
-            <div class="md:w-full relative">
-              <MiniCard
-                id="params-{pos}"
-                value={model.params}
-                desc={m['reveal.impacts.size.label']()}
-                tooltip={m['models.openWeight.tooltips.params']()}
-                class="-mb-2 bg-white z-1 h-full "
-              >
-                {m['reveal.impacts.size.count']()}
-                {#if model.distribution === 'api-only'}
-                  {m['reveal.impacts.size.estimated']()}
-                {/if}
-                {#if model.quantization === 'q8'}
-                  {m['reveal.impacts.size.quantized']()}
-                {/if}
-              </MiniCard>
-              <div
-                class="cg-border rounded-sm! p-1 ps-3 pt-2 leading-normal absolute z-0 flex w-full bg-[--beige-gris-galet-950-100] text-[11px]"
-              >
-                <span class="text-[--beige-gris-galet-sun-407-moon-821]">
-                  {model.badges.arch.text}
-                </span>
-                <Tooltip
-                  id="{model.id}-arch-tooltip"
-                  size="xs"
-                  text={model.badges.arch.tooltip}
-                  class="ms-auto"
-                />
-              </div>
-            </div>
-
-            <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
-
-            <MiniCard
-              id="tokens-{pos}"
-              value={tokens}
-              units={m['reveal.impacts.tokens.tokens']()}
-              desc={m['reveal.impacts.tokens.label']()}
-              tooltip={m['reveal.impacts.tokens.tooltip']()}
-              class="md:w-full"
-            />
-          </div>
-
-          <div class="md:basis-1/3 flex basis-1/2 items-center">
-            <strong class="m-auto">≈</strong>
-
-            <MiniCard
-              id="energy-{pos}"
-              value={wh.toFixed(wh < 2 ? 2 : 0)}
-              units="Wh"
-              desc={m['reveal.impacts.energy.label']()}
-              icon="i-ri-flashlight-fill"
-              iconClass="text-info"
-              tooltip={m['reveal.impacts.energy.tooltip']()}
-              class="h-fit"
-            />
-          </div>
-        </div>
-
-        <h6 class="mt-9! mb-5! text-base! md:mt-14!">{m['reveal.equivalent.title']()}</h6>
-        <div class="gap-2 grid grid-cols-3">
-          <MiniCard
-            id="co2-{pos}"
-            value={co2.toFixed(co2 < 2 ? 2 : 0)}
-            units="g"
-            desc={m['reveal.equivalent.co2.label']()}
-            icon="i-ri-cloudy-2-fill"
-            iconClass="text-[--grey-975-75-active]"
-            tooltip={m['reveal.equivalent.co2.tooltip']()}
-          />
-
-          <MiniCard
-            id="ampoule-{pos}"
-            value={lightbulb.value}
-            units={lightbulb.unit}
-            desc={m['reveal.equivalent.lightbulb.label']()}
-            icon="i-ri-lightbulb-fill"
-            iconClass="text-yellow"
-            tooltip={m['reveal.equivalent.lightbulb.tooltip']()}
-          />
-
-          <MiniCard
-            id="videos-{pos}"
-            value={streaming.value}
-            units={streaming.unit}
-            desc={m['reveal.equivalent.streaming.label']()}
-            icon="i-ri-youtube-fill"
-            iconClass="text-error"
-            tooltip={m['reveal.equivalent.streaming.tooltip']({
-              linkProps: externalLinkProps(
-                'https://impactco2.fr/outils/usagenumerique/streamingvideo'
-              )
-            })}
-          />
-        </div>
-
-        <div class="mt-7 text-center">
-          <Button
-            text={m['actions.seeMore']()}
-            data-fr-opened="false"
-            aria-controls="modal-model-reveal-{model.id}"
-            size="sm"
-          />
-        </div>
-      </div>
-
-      <ModelInfoModal {model} modalId="modal-model-reveal-{model.id}" />
+  <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid grid-cols-1">
+    {#each modelsData as data (data.pos)}
+      <RevealCard {data} selected={selected === data.pos} />
     {/each}
   </div>
 

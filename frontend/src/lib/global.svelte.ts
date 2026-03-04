@@ -42,12 +42,21 @@ export function getVotesContext() {
 
 export type I18nData = {
   contact: string
+  peopleUsingAIDataLink: string
 }
 
 export function setI18nContext() {
   const i18nData: Record<string, I18nData> = {
-    da: { contact: 'kontakt@ai-arenaen.dk' },
-    fr: { contact: 'contact@comparia.beta.gouv.fr' }
+    da: {
+      contact: 'kontakt@ai-arenaen.dk',
+      peopleUsingAIDataLink:
+        'https://ec.europa.eu/eurostat/fr/web/products-eurostat-news/w/ddn-20251216-3'
+    },
+    fr: {
+      contact: 'contact@comparia.beta.gouv.fr',
+      peopleUsingAIDataLink:
+        'https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport'
+    }
   } as const
   const locale = getLocale() === 'da' ? 'da' : 'fr'
   setContext('i18n', i18nData[locale])

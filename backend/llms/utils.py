@@ -1,12 +1,61 @@
+"""
+Environmental impact calculations.
+
+This module computes the ecological impact of LLM inference using the ecologits library,
+converting technical metrics (energy, CO2) into user-friendly scaled equivalences
+(e.g., "if 1 billion people used this daily for a year").
+
+Functions:
+- convert_range_to_value: Normalize impact ranges to single values
+- get_total_params: Get the total number of parameters for a LLM
+- get_active_params: Get the number of active parameters for a LLM
+- get_llm_impact: Calculate environmental impact for a model
+- get_llm_consumption: Calculates environmental impact
+"""
+
+from enum import Enum
 from typing import TYPE_CHECKING, TypedDict, Union
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
+from backend.config import CountryPortal
+
 if TYPE_CHECKING:
     from backend.llms.models import LLMData
     from utils.models.llms import LLMDataRaw
+
+
+# Equivalence types for scaled impact comparisons
+class EquivalenceType(Enum):
+    PARIS_NYC_FLIGHTS = "paris_nyc_flights"
+    BAGUETTE_PRODUCTION = "baguette_production"
+    ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
+    PACKAGE_DELIVERY = "package_delivery"
+    MANGO_IMPORT = "mango_import"
+    POOL_FILING = "pool_filing"
+
+
+# Reference data for scaled equivalences
+# Population using generative AI
+SCALE_FACTORS: dict[CountryPortal, float] = {
+    # 48% of ppl aged 12 or more in 2026 https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport
+    # population count of 12 or more in 2024 https://www.insee.fr/fr/statistiques/7746192?sommaire=7746197
+    "fr": 59_315_947 * 0.48,
+    # 48.4% of ppl aged 16–74 in 2025 https://ec.europa.eu/eurostat/fr/web/products-eurostat-news/w/ddn-20251216-3
+    # population count of 16-74 https://en.wikipedia.org/wiki/Demographics_of_Denmark
+    "da": 4_350_000 * 0.484,
+}
+
+CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
+    EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
+    EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
+    EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
+    EquivalenceType.PACKAGE_DELIVERY: 0.576,
+    EquivalenceType.MANGO_IMPORT: 11.655508000000001,
+    EquivalenceType.POOL_FILING: 7.54,
+}
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
@@ -129,94 +178,41 @@ def get_llm_impact(
         if_electricity_mix_adpe=electricity_mix.adpe,  # Abiotic Depletion Potential
         if_electricity_mix_pe=electricity_mix.pe,  # Primary Energy
         if_electricity_mix_gwp=electricity_mix.gwp,  # Global Warming Potential (CO2)
+        if_electricity_mix_wue=electricity_mix.gwp,  # Use GWP as proxy for water impact
+        # Datacenter efficiency parameters (industry average values)
+        # PUE: Power Usage Effectiveness (1.0 = perfect, typical hyperscaler ~1.2)
+        # WUE: Water Usage Effectiveness (L/kWh, typical ~1.8)
+        datacenter_pue=1.2,
+        datacenter_wue=1.8,
         request_latency=request_latency,
     )
 
 
-def calculate_lightbulb_consumption(
-    impact_energy_value_or_range: ValueOrRange,
-) -> tuple[int | float, str]:
-    """
-    Calculates the energy consumption of a 5W LED light and determines the most sensible time unit.
-
-    Args:
-      impact_energy_value: Energy consumption in kilowatt-hours (kWh).
-
-    Returns:
-      A tuple containing:
-        - An integer representing the consumption time.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
-    """
-    impact_energy_value = convert_range_to_value(impact_energy_value_or_range)
-    # Calculate consumption time using Wh
-    watthours = impact_energy_value * 1000
-    consumption_hours = watthours / 5
-    consumption_days = watthours / (5 * 24)
-    consumption_minutes = watthours * 60 / (5)
-    consumption_seconds = watthours * 60 * 60 / (5)
-
-    # Determine the most sensible unit based on magnitude
-    if consumption_days >= 1:
-        return int(consumption_days), "j"
-    elif consumption_hours >= 1:
-        return int(consumption_hours), "h"
-    elif consumption_minutes >= 1:
-        return int(consumption_minutes), "min"
-    else:
-        return int(consumption_seconds), "s"
-
-
-def calculate_streaming_hours(
-    impact_gwp_value_or_range: ValueOrRange,
-) -> tuple[int | float, str]:
-    """
-    Calculates equivalent streaming hours and determines a sensible time unit.
-
-    Args:
-      impact_gwp_value: CO2 emissions in kilograms.
-
-    Returns:
-      A tuple containing:
-        - An integer representing the streaming hours.
-        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
-    """
-    impact_gwp_value = convert_range_to_value(impact_gwp_value_or_range)
-    # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
-    streaming_hours = (impact_gwp_value * 10000) / 317
-
-    # Determine sensible unit based on magnitude
-    if streaming_hours >= 24:  # 1 day in hours
-        return int(streaming_hours / 24), "j"
-    elif streaming_hours >= 1:
-        return int(streaming_hours), "h"
-    elif streaming_hours * 60 >= 1:
-        return int(streaming_hours * 60), "min"
-    else:
-        return int(streaming_hours * 60 * 60), "s"
-
-
-class ValueAndUnit(TypedDict):
-    value: int | float
-    unit: str
+class Equivalence(TypedDict):
+    type: EquivalenceType
+    value: float
 
 
 class Consumption(TypedDict):
-    # Energy metrics
-    kwh: int | float
-    # Environmental metrics (CO2)
-    co2: int | float
     # Token usage
     tokens: int
-    # Video streaming equivalent (user-friendly CO2 comparison)
-    streaming: ValueAndUnit
-    # LED lightbulb equivalent (user-friendly energy comparison)
-    lightbulb: ValueAndUnit
+    # Environmental metrics (CO2)
+    co2_kg: int | float
+    # Scaled CO2
+    scaled_co2_kg: int | float
+    scaled_co2_t: int | float
+    # Energy metrics
+    energy_mwh: int | float
+    energy_kwh: int | float
+    # Scaled equivalence values
+    equivalences: list[Equivalence]
 
 
 def get_llm_consumption(
     llm: Union["LLMDataRaw", "LLMData"],
     tokens: int,
     request_latency: float | None = None,
+    country_portal: CountryPortal = "fr",  # FIXME
 ) -> Consumption:
     """
     Calculates environmental impact (energy, CO2 emissions)
@@ -227,23 +223,29 @@ def get_llm_consumption(
         request_latency: Time taken for inference (optional, for more accurate calculations)
 
     Returns:
-
+        dict: Consumption
     """
     impact = get_llm_impact(llm, tokens, request_latency)
 
-    # Extract and normalize energy and CO2 values (handles value ranges)
+    # Get raw kWh and CO2 kg values for equivalence calculations
     kwh = convert_range_to_value(impact.energy.value)
-    co2 = convert_range_to_value(impact.gwp.value)
-
-    # Convert energy to LED lightbulb comparison (5W LED light)
-    lightbulb, lightbulb_unit = calculate_lightbulb_consumption(kwh)
-    # Convert CO2 to video streaming comparison
-    streaming, streaming_unit = calculate_streaming_hours(co2)
+    co2_kg = convert_range_to_value(impact.gwp.value)
+    # co2 scaled to population using generative AI
+    scaled_co2_kg = co2_kg * SCALE_FACTORS[country_portal]
 
     return {
-        "kwh": kwh,
-        "co2": co2,
         "tokens": tokens,
-        "lightbulb": {"value": lightbulb, "unit": lightbulb_unit},
-        "streaming": {"value": streaming, "unit": streaming_unit},
+        "co2_kg": co2_kg,
+        "scaled_co2_kg": scaled_co2_kg,
+        "scaled_co2_t": scaled_co2_kg / 1000,
+        "energy_mwh": kwh * 1000 * 1000,
+        "energy_kwh": kwh,
+        # Compute all equivalences
+        "equivalences": [
+            {
+                "type": eq_type,
+                "value": scaled_co2_kg / CO2_KG_EQUIVALENCE[eq_type],
+            }
+            for eq_type in list(EquivalenceType)
+        ],
     }
