@@ -36,9 +36,8 @@ def _fit_from_arrays(
     Wins are constant across iterations so we compute them once.
     Uses np.bincount (histogram) instead of np.add.at (scatter-add) for speed.
     """
-    wins = (
-        np.bincount(ia, weights=winner_is_a, minlength=n)
-        + np.bincount(ib, weights=~winner_is_a, minlength=n)
+    wins = np.bincount(ia, weights=winner_is_a, minlength=n) + np.bincount(
+        ib, weights=~winner_is_a, minlength=n
     )
 
     p = np.ones(n)
@@ -46,9 +45,8 @@ def _fit_from_arrays(
 
     for _ in range(max_iter):
         inv_psum = 1.0 / (p[ia] + p[ib])
-        denom = (
-            np.bincount(ia, weights=inv_psum, minlength=n)
-            + np.bincount(ib, weights=inv_psum, minlength=n)
+        denom = np.bincount(ia, weights=inv_psum, minlength=n) + np.bincount(
+            ib, weights=inv_psum, minlength=n
         )
 
         p = wins / np.maximum(denom, 1e-12)

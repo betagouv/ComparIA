@@ -7,10 +7,8 @@ from backend/arena/persistence.py and backend/utils/countries.py.
 
 import logging
 
-import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from backend.config import settings
 from utils.storage.db import db_cursor
 from utils.storage.queries import get_reactions_db_query, get_votes_db_query
 from utils.utils import configure_logger
