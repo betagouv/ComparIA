@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Annotated, Awaitable, cast
 
@@ -9,9 +10,14 @@ from backend.config import (
     CountryPortal,
     settings,
 )
+from utils.ranking.compute import RankingResult
 from utils.storage.db import db_cursor
 from utils.storage.queries import get_reactions_db_query, get_votes_db_query
-from utils.storage.redis import REDIS_VOTE_COUNT_KEY, get_redis_client
+from utils.storage.redis import (
+    REDIS_RANKING_KEY,
+    REDIS_VOTE_COUNT_KEY,
+    get_redis_client,
+)
 
 logger = logging.getLogger("languia")
 
@@ -97,3 +103,32 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 1200) -> in
         return result
 
     return 0
+
+
+def get_country_portal_ranking(country_portal: CountryPortal) -> RankingResult | None:
+    """
+    Get ranking and preference data for a specific portal from redis cache.
+
+    Args:
+        country_portal: The country portal to filter by (e.g., 'da' for Danish)
+    """
+
+    data_info = f"ranking and prefs data for country_portal: {country_portal}"
+
+    try:
+        client = get_redis_client()
+        data = client.get(REDIS_RANKING_KEY.format(country_portal=country_portal))
+        assert not isinstance(data, Awaitable)
+
+        if data is None:
+            logger.error(f"[REDIS] No cached {data_info}")
+            return None
+
+        logger.info(f"[REDIS] Retrieved {data_info}")
+        return RankingResult(**json.loads(data))
+    except json.JSONDecodeError as e:
+        logger.error(f"[REDIS] Error decoding {data_info}: {e}", exc_info=True)
+        return None
+    except Exception as e:
+        logger.error(f"[REDIS] Error retrieving {data_info}: {e}", exc_info=True)
+        return None
