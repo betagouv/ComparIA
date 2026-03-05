@@ -1,30 +1,14 @@
-import asyncio
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.arena.router import router as arena_router
-from backend.config import OBJECTIVES, settings
+from backend.config import OBJECTIVES
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
 from backend.utils.countries import CountryPortalAnno, get_country_portal_count
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    task = None
-    if settings.COMPARIA_DB_URI:
-        from utils.ranking.service import ranking_scheduler
-
-        task = asyncio.create_task(ranking_scheduler(settings.RANKING_INTERVAL_SECONDS))
-    yield
-    if task:
-        task.cancel()
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 logger = configure_logger()
 configure_uvicorn_logging()
