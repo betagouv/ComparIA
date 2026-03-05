@@ -1,33 +1,47 @@
 {
-  "version": "1.0",
-  "description": "Regex patterns to detect prompt injection spam. Each pattern matches XML-like tags commonly used in spam.",
+  "version": "1.2",
+  "description": "Regex patterns to detect prompt injection spam. Blocks structured prompt template formats that no legitimate user would type.",
   "patterns": [
     {
-      "name": "xml_conversation_tag",
-      "regex": "<\\s*/?\\s*conversation\\s*>",
+      "name": "xml_chat_tags",
+      "regex": "<\\s*/?\\s*(?:conversation|user|assistant|system)\\s*>",
       "flags": "IGNORECASE",
-      "description": "Detects <conversation> or </conversation> tags",
+      "description": "XML-style chat role tags: <user>, </assistant>, <system>, <conversation>, etc.",
       "enabled": true
     },
     {
-      "name": "xml_user_tag",
-      "regex": "<\\s*/?\\s*user\\s*>",
+      "name": "json_role_injection",
+      "regex": "[\"']role[\"']\\s*:\\s*[\"'](?:system|user|assistant)[\"']",
       "flags": "IGNORECASE",
-      "description": "Detects <user> or </user> tags",
+      "description": "JSON role objects with single or double quotes: {\"role\":\"system\",...} or {'role':'system',...}",
       "enabled": true
     },
     {
-      "name": "xml_assistant_tag",
-      "regex": "<\\s*/?\\s*assistant\\s*>",
+      "name": "chatml_tokens",
+      "regex": "<\\|(?:im_start|im_end|system|user|assistant|endoftext|end_of_turn|eot_id|start_header_id|end_header_id)\\|>",
       "flags": "IGNORECASE",
-      "description": "Detects <assistant> or </assistant> tags",
+      "description": "ChatML and model-specific special tokens: <|im_start|>, <|endoftext|>, <|eot_id|>, etc.",
       "enabled": true
     },
     {
-      "name": "xml_system_tag",
-      "regex": "<\\s*/?\\s*system\\s*>",
+      "name": "llama_inst_tags",
+      "regex": "\\[/?INST\\]|<</?SYS>>",
+      "flags": "",
+      "description": "Llama-style prompt markers: [INST], [/INST], <<SYS>>, <</SYS>>",
+      "enabled": true
+    },
+    {
+      "name": "begin_your_response",
+      "regex": "begin your response",
       "flags": "IGNORECASE",
-      "description": "Detects <system> or </system> tags",
+      "description": "Instruction suffix used in prompt injection: 'Begin your response to the most recent message:'",
+      "enabled": true
+    },
+    {
+      "name": "alpaca_format",
+      "regex": "###\\s*(?:Instruction|Response|Input)\\s*:",
+      "flags": "IGNORECASE",
+      "description": "Alpaca-style prompt template markers: ### Instruction:, ### Response:, ### Input:",
       "enabled": true
     }
   ]
