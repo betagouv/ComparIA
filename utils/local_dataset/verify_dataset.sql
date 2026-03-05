@@ -124,3 +124,42 @@ GROUP BY msg_index
 ORDER BY count DESC
 LIMIT 10;
 
+
+-- ============================================================================
+-- SPAM DETECTION - Quality Verification
+-- ============================================================================
+-- After spam filtering, these counts should be 0
+-- Checks for XML-like tags: <conversation>, <user>, <assistant>, <system>
+-- Pattern defined in backend/arena/spam_detection.py
+-- ============================================================================
+
+-- Issue: Spam patterns in conversations (expected 0 after filtering)
+SELECT
+    'spam_patterns_in_conversations' as issue_type,
+    COUNT(*) as count,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM conversations), 2) as percentage
+FROM conversations
+WHERE CAST(conversation_a AS VARCHAR) LIKE '%<conversation>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<conversation>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<user>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<user>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<assistant>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<assistant>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<system>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<system>%';
+
+-- Issue: Spam patterns in reactions (expected 0 after filtering)
+SELECT
+    'spam_patterns_in_reactions' as issue_type,
+    COUNT(*) as count,
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM reactions), 2) as percentage
+FROM reactions
+WHERE CAST(conversation_a AS VARCHAR) LIKE '%<conversation>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<conversation>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<user>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<user>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<assistant>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<assistant>%'
+   OR CAST(conversation_a AS VARCHAR) LIKE '%<system>%'
+   OR CAST(conversation_b AS VARCHAR) LIKE '%<system>%';
+

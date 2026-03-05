@@ -557,6 +557,25 @@
         "fyi": "Gemini 3.1 Pro reprend l'architecture MoE et les capacités multimodales natives de Gemini 3 Pro (texte, images, audio, vidéo, PDF jusqu'à 1 000 pages), ainsi que l'entraînement sur TPU et l'optimisation pour les usages agentiques.\n\nLa principale nouveauté est l'ajout d'un niveau de raisonnement intermédiaire (\"medium\") au mode Deep Think, qui ne proposait auparavant que deux niveaux (bas et haut). Ce niveau vise un compromis entre qualité de réponse et latence. Le modèle introduit également des « signatures de pensée » (thought signatures), des représentations chiffrées du raisonnement intermédiaire permettant de conserver le contexte de réflexion lors d'interactions multi-étapes. Selon l'éditeur, ces évolutions se traduisent par une amélioration relative de 40 à 60 % sur les tâches de planification complexes par rapport à la génération précédente, et par une meilleure résistance aux hallucinations. Il obtient 77,1 % sur ARC-AGI-2, 94,3 % sur GPQA Diamond et 80,6 % sur SWE-Bench Verified."
       },
       {
+        "new": true,
+        "id": "gemini-3.1-flash-lite-preview",
+        "simple_name": "Gemini 3.1 Flash Lite",
+        "license": "proprietary",
+        "release_date": "03/2026",
+        "arch": "moe",
+        "params": 250,
+        "active_params": 25,
+        "reasoning": true,
+        "url": "https://deepmind.google/models/model-cards/gemini-3-1-flash-lite/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3.1-flash-lite-preview"
+        },
+        "desc": "Modèle de taille moyenne, multimodal et rapide, adapté à un usage automatisé ou des tâches relativement simples : traduction, classification, modération de contenu. Il propose des niveaux de raisonnement ajustables, du minimal au plus approfondi.",
+        "size_desc": "La taille exacte de ce modèle n'est pas connue publiquement. Son architecture de mélange d'experts (MoE, Mixture of Experts) permet de n'activer qu'une partie des paramètres à chaque requête, ce qui le rend très rapide et économique. Sa fenêtre de contexte atteint 1 048 576 jetons en entrée, ce qui permet de traiter de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Ce modèle est dérivé de Gemini 3 Pro et utilise une architecture de mélange d'experts (MoE, Mixture of Experts). Sa particularité est de proposer des niveaux de raisonnement ajustables : minimal (par défaut), bas, moyen et haut. Cette fonctionnalité permet aux développeurs de contrôler finement le compromis entre rapidité et profondeur de raisonnement en fonction de la complexité de la tâche. Il accepte en entrée du texte, des images, de l'audio, de la vidéo et des documents PDF, mais ne produit que du texte en sortie.\n\nEntraîné sur des processeurs TPU de Google avec les frameworks JAX et ML Pathways, le modèle est conçu pour les applications à grand volume. Selon l'éditeur, il est 2,5 fois plus rapide que Gemini 2.5 Flash pour le temps de première réponse et 45 % plus rapide en débit de sortie. Sur les tests d'évaluation, il obtient 86,9 % au GPQA Diamond et 88,9 % au MMMLU, des scores proches de modèles plus coûteux."
+      },
+      {
         "status": "archived",
         "id": "gemini-2.5-flash",
         "simple_name": "Gemini 2.5 Flash",
@@ -1079,6 +1098,23 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "new": true,
+        "id": "gpt-5.3",
+        "simple_name": "GPT 5.3",
+        "license": "proprietary",
+        "release_date": "03/2026",
+        "arch": "maybe-moe",
+        "params": 300,
+        "active_params": 94,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.3-chat"
+        },
+        "desc": "Quatrième itération de GPT 5, axée sur la fluidité conversationnelle. Par rapport à GPT 5.2, il réduit, selon l'éditeur, les hallucinations et adopte un style plus direct, avec moins de mises en garde inutiles.",
+        "size_desc": "Les tailles des modèles derrière le système GPT 5.3 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse. GPT 5.3 prend en charge une fenêtre de contexte de 128 000 jetons.",
+        "fyi": "GPT 5.3, surnommé « Instant » par OpenAI, est présenté comme une mise à jour axée sur la fiabilité et le naturel des conversations. Selon l'éditeur, les hallucinations sont réduites de 26,8 % lors de l'utilisation de la recherche web et de 19,7 % avec les seules connaissances internes du modèle, par rapport à GPT 5.2. Le modèle adopte un ton moins moralisateur, avec moins de formulations du type « Stop. Respirez. » et de mises en garde superflues qui caractérisaient les versions précédentes.\n\nL'API propose un nouveau paramètre de verbosité (low, medium, high) permettant aux développeurs de contrôler la longueur des réponses. Le modèle améliore également l'intégration de la recherche web, en contextualisant mieux les résultats trouvés en ligne plutôt que de se contenter de les résumer."
+      },
+      {
         "id": "gpt-5.2",
         "simple_name": "GPT 5.2",
         "license": "proprietary",
@@ -1095,6 +1131,7 @@
         "fyi": "Le modèle a été présenté comme atteignant, voire dépassant, le niveau de performance d’experts humains sur le benchmark GDPval, qui évalue des tâches professionnelles numériques bien définies. Il propose différents niveaux d’effort de raisonnement configurables par l’utilisateur ou le développeur, permettant d’arbitrer entre coût, latence et qualité des réponses selon la complexité de la tâche. GPT 5.2 se distingue également par sa capacité à retrouver des informations précises au sein de contextes très volumineux, y compris lorsque celles-ci sont rares et dispersées dans de longs corpus (needle in the haystack)."
       },
       {
+        "status": "archived",
         "id": "gpt-5.1",
         "simple_name": "GPT 5.1",
         "license": "proprietary",

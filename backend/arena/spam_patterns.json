@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "description": "Regex patterns to detect prompt injection spam. Each pattern matches XML-like tags commonly used in spam.",
+  "patterns": [
+    {
+      "name": "xml_conversation_tag",
+      "regex": "<\\s*/?\\s*conversation\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Detects <conversation> or </conversation> tags",
+      "enabled": true
+    },
+    {
+      "name": "xml_user_tag",
+      "regex": "<\\s*/?\\s*user\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Detects <user> or </user> tags",
+      "enabled": true
+    },
+    {
+      "name": "xml_assistant_tag",
+      "regex": "<\\s*/?\\s*assistant\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Detects <assistant> or </assistant> tags",
+      "enabled": true
+    },
+    {
+      "name": "xml_system_tag",
+      "regex": "<\\s*/?\\s*system\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Detects <system> or </system> tags",
+      "enabled": true
+    }
+  ]
+}

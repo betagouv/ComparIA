@@ -5,7 +5,6 @@ Defines all data structures for:
 - Conversation data (messages, participant info, metadata)
 """
 
-import re
 from datetime import datetime
 from functools import cached_property
 from typing import Annotated, Literal, TypedDict, Union, get_args
@@ -13,6 +12,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, computed_field, field_validator
 
+from backend.arena.spam_detection import is_spam
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -283,16 +283,6 @@ def create_conversations(
 # Request/Response models for FastAPI endpoints
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
-PROMPT_INJECTION_RE = re.compile(
-    r"<\s*/?\s*(?:conversation|user|assistant|system)\s*>", re.IGNORECASE
-)
-
-
-def _validate_no_prompt_injection(value: str) -> str:
-    if PROMPT_INJECTION_RE.search(value):
-        raise ValueError("Le message contient des motifs non autorisés.")
-    return value
-
 
 class AddFirstTextBody(BaseModel):
     """Request body for add_first_text endpoint."""
@@ -305,8 +295,10 @@ class AddFirstTextBody(BaseModel):
 
     @field_validator("prompt_value")
     @classmethod
-    def check_prompt_injection(cls, v: str) -> str:
-        return _validate_no_prompt_injection(v)
+    def check_spam(cls, v: str) -> str:
+        if is_spam(v):
+            raise ValueError("This prompt format is not allowed. Please use natural language.")
+        return v
 
 
 class AddTextBody(BaseModel):
@@ -316,8 +308,10 @@ class AddTextBody(BaseModel):
 
     @field_validator("message")
     @classmethod
-    def check_prompt_injection(cls, v: str) -> str:
-        return _validate_no_prompt_injection(v)
+    def check_spam(cls, v: str) -> str:
+        if is_spam(v):
+            raise ValueError("This prompt format is not allowed. Please use natural language.")
+        return v
 
 
 PositiveReaction = Literal["useful", "complete", "creative", "clear_formatting"]
