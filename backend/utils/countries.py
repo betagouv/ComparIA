@@ -11,6 +11,7 @@ from backend.config import (
 )
 from utils.storage.db import db_cursor
 from utils.storage.queries import get_reactions_db_query, get_votes_db_query
+from utils.storage.redis import REDIS_VOTE_COUNT_KEY, get_redis_client
 
 logger = logging.getLogger("languia")
 
@@ -43,7 +44,7 @@ def country_portal_from_locale(locale: str = Header(..., alias="X-Locale")) -> s
 CountryPortalAnno = Annotated[CountryPortal, Depends(country_portal_from_locale)]
 
 
-def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
+def get_country_portal_count(country_code: CountryPortal, ttl: int = 1200) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
 
@@ -57,9 +58,7 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
     import psycopg2
     from psycopg2 import sql
 
-    from backend.session import get_redis_client
-
-    cache_key = f"{country_code}_count"
+    cache_key = REDIS_VOTE_COUNT_KEY.format(country_code=country_code)
     # Try Redis first
     client = get_redis_client()
     try:

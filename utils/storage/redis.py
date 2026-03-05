@@ -1,8 +1,14 @@
 from functools import lru_cache
+from typing import Final
 
 import redis
 
 from backend.config import settings
+
+# Redis keys
+REDIS_CONVERSATIONS_KEY: Final[str] = "session:{session_hash}"
+REDIS_USER_CHAR_COUNT: Final[str] = "ip:{ip}"
+REDIS_VOTE_COUNT_KEY: Final[str] = "{country_code}_count"
 
 
 @lru_cache
