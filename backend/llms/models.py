@@ -60,6 +60,7 @@ class Endpoint(BaseModel):
 RoundInt = Annotated[int | float, AfterValidator(lambda n: round(n))]
 
 
+# TODO could be moved to 'utils/ranking'
 class DatasetData(BaseModel):
     """
     Ranking/evaluation data from benchmark datasets.
@@ -97,6 +98,7 @@ class DatasetData(BaseModel):
         ]
 
 
+# TODO could be moved to 'utils/ranking'
 class PreferencesData(BaseModel):
     """
     User preference statistics from ComparIA voting.
@@ -176,9 +178,6 @@ class LLMDataEnhanced(BaseModel):
     # Merged from Organisation
     organisation: str
     icon_path: str
-    # Merged from extra-data
-    data: DatasetData | None
-    prefs: PreferencesData | None
 
 
 class LLMData(LLMDataBase, LLMDataEnhanced):

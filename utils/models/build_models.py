@@ -1,5 +1,5 @@
+import datetime
 import logging
-import os
 import sys
 
 from utils.logger import configure_logger
@@ -7,19 +7,12 @@ from utils.utils import (
     FRONTEND_GENERATED_DIR,
     FRONTEND_MAIN_I18N_FILE,
     LLMS_GENERATED_DATA_FILE,
-    ROOT_DIR,
-    get_db_engine,
     read_json,
     sort_dict,
     write_json,
 )
 
 from .archs import get_archs
-from .dataset_data import (
-    LLMS_DATASET_DATA_FILE,
-    fetch_and_save_ranking_results,
-    get_dataset_data,
-)
 from .licenses import get_licenses
 from .organisations import LLMS_RAW_DATA_FILE, Orgas, validate_orgas_and_models
 
@@ -35,22 +28,15 @@ I18N_MODEL_KEYS = {"desc", "size_desc", "fyi"}
 
 
 def main(fetch_latest_dataset_results: bool = True) -> None:
-    # Fetch the latest dataset results from ranking pipelinerepo
-    if fetch_latest_dataset_results:
-        fetch_and_save_ranking_results()
-
     raw_orgas = read_json(LLMS_RAW_DATA_FILE)
-    raw_dataset_data = read_json(LLMS_DATASET_DATA_FILE)
 
     # First validate base data
     try:
         licenses = get_licenses()
         dumped_archs = get_archs()
-        dataset_data = get_dataset_data(raw_dataset_data)
         context = {
             "licenses": {l["license"]: l for l in licenses.model_dump()},
             "archs": {a.pop("id"): a for a in dumped_archs},
-            "data": dataset_data.models,
         }
         dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
     except Exception as err:
@@ -101,7 +87,7 @@ def main(fetch_latest_dataset_results: bool = True) -> None:
     write_json(
         LLMS_GENERATED_DATA_FILE,
         {
-            "timestamp": dataset_data.timestamp,
+            "timestamp": datetime.datetime.now().timestamp(),
             "models": sort_dict(generated_models),
         },
     )
