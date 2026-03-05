@@ -61,7 +61,6 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 1200) -> in
     Returns:
         The count of votes and reactions for the specified country portal
     """
-    import psycopg2
     from psycopg2 import sql
 
     cache_key = REDIS_VOTE_COUNT_KEY.format(country_code=country_code)

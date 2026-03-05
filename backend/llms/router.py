@@ -12,12 +12,12 @@ router = APIRouter(
 @router.get("/")
 async def get_available_models(country_portal: CountryPortalAnno):
     models = get_llms_data(country_portal)
-    cached = get_country_portal_ranking(country_portal)
+    data = get_country_portal_ranking(country_portal)
 
-    if not cached:
-        # No dynamic rankings yet, serve static data unchanged
+    if not data:
+        # No dynamic rankings yet, serve llm data without ranking
         return {
-            "data_timestamp": models.data_timestamp,
+            "data_timestamp": None,
             "models": list(models.all.values()),
         }
 
@@ -27,14 +27,14 @@ async def get_available_models(country_portal: CountryPortalAnno):
         # When dynamic rankings are active, replace static data entirely:
         # models with votes get dynamic data, others get null
         model_dict["data"] = (
-            cached.rankings[model.id] if model.id in cached.rankings else None
+            data.rankings[model.id] if model.id in data.rankings else None
         )
         model_dict["prefs"] = (
-            cached.preferences[model.id] if model.id in cached.preferences else None
+            data.preferences[model.id] if model.id in data.preferences else None
         )
         models_list.append(model_dict)
 
     return {
-        "data_timestamp": cached.timestamp,
+        "data_timestamp": data.timestamp,
         "models": models_list,
     }

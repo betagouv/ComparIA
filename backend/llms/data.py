@@ -20,7 +20,6 @@ logger = logging.getLogger("languia")
 
 
 class LLMsData(BaseModel):
-    data_timestamp: float
     all: dict[
         str,
         Annotated[LLMDataEnabled | LLMDataArchived, Field(discriminator="status")],
@@ -223,6 +222,5 @@ def get_llms_data(country_portal: CountryPortal) -> LLMsData:
     data = json.loads(LLMS_GENERATED_DATA_FILE.read_text())
 
     return LLMsData.model_validate(
-        {"data_timestamp": data["timestamp"], "all": data["models"]},
-        context={"country_portal": country_portal},
+        {"all": data["models"]}, context={"country_portal": country_portal}
     )
