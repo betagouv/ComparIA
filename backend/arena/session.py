@@ -10,7 +10,11 @@ from typing import Awaitable
 from uuid import uuid4
 
 from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
-from utils.storage.redis import get_redis_client
+from utils.storage.redis import (
+    REDIS_CONVERSATIONS_KEY,
+    REDIS_USER_CHAR_COUNT,
+    get_redis_client,
+)
 
 logger = logging.getLogger("languia")
 
@@ -40,7 +44,11 @@ def store_session_conversations(session_hash: str, data: dict) -> None:
 
     try:
         client = get_redis_client()
-        client.setex(f"session:{session_hash}", expire_time, json.dumps(data))
+        client.setex(
+            REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash),
+            expire_time,
+            json.dumps(data),
+        )
         logger.info(f"[SESSION] Stored conversations for {session_hash}")
     except Exception as e:
         logger.error(f"[SESSION] Error storing session: {e}")
@@ -64,7 +72,7 @@ def retrieve_session_conversations(
     """
     try:
         client = get_redis_client()
-        data = client.get(f"session:{session_hash}")
+        data = client.get(REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash))
         assert not isinstance(data, Awaitable)
         if not data:
             logger.warning(f"[SESSION] Session not found: {session_hash}")
@@ -96,7 +104,9 @@ def delete_session(session_hash: str) -> bool:
     """
     try:
         client = get_redis_client()
-        deleted = client.delete(f"session:{session_hash}")
+        deleted = client.delete(
+            REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash)
+        )
         logger.info(f"[SESSION] Deleted session {session_hash}: {bool(deleted)}")
         return bool(deleted)
     except Exception as e:
@@ -120,9 +130,9 @@ def increment_input_chars(ip: str, input_chars: int) -> None:
     """
     client = get_redis_client()
     # Increment counter under key "ip:{ip}"
-    client.incrby(f"ip:{ip}", input_chars)
+    client.incrby(REDIS_USER_CHAR_COUNT.format(ip=ip), input_chars)
     # Set counter to expire in 2 hours (3600 * 2 seconds)
-    client.expire(f"ip:{ip}", 3600 * 2)
+    client.expire(REDIS_USER_CHAR_COUNT.format(ip=ip), 3600 * 2)
 
 
 def is_ratelimited(ip: str) -> bool:
@@ -136,7 +146,7 @@ def is_ratelimited(ip: str) -> bool:
         bool: True if IP has exceeded limit (2x RATELIMIT_PRICEY_MODELS_INPUT), False otherwise
     """
     client = get_redis_client()
-    counter = client.get(f"ip:{ip}")
+    counter = client.get(REDIS_USER_CHAR_COUNT.format(ip=ip))
     assert not isinstance(counter, Awaitable)
     # Rate limit is 2x the configured limit for pricey models
     if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
