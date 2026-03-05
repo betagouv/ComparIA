@@ -34,29 +34,6 @@ I18N_OS_LICENSE_KEYS = {
 I18N_MODEL_KEYS = {"desc", "size_desc", "fyi"}
 
 
-def get_conversations_llm_ids() -> set[str]:
-    """Get distinct model IDs from the conversations table."""
-
-    import polars as pl
-
-    query = "SELECT DISTINCT model_a_name as model_id FROM conversations UNION SELECT DISTINCT model_b_name as model_id FROM conversations"
-    try:
-        with get_db_engine().connect() as conn:
-            df = pl.read_database(query=query, connection=conn)
-            # Filter out None values if any
-            model_ids = df["model_id"].drop_nulls().unique().to_list()
-
-            if not model_ids:
-                # log as error, this should not happen in prod
-                logger.error("No model IDs found in the database.")
-                return set()
-
-            return set(model_ids)
-    except Exception as e:
-        logger.error(f"Failed to fetch distinct model IDs: {e}")
-        raise e
-
-
 def main(fetch_latest_dataset_results: bool = True) -> None:
     # Fetch the latest dataset results from ranking pipelinerepo
     if fetch_latest_dataset_results:
@@ -114,38 +91,6 @@ def main(fetch_latest_dataset_results: bool = True) -> None:
             )
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
-
-    # Warn about missing llms definitions or dataset data
-    llm_ids = set(generated_models.keys())
-    new_llm_ids = set([id_ for id_ in llm_ids if generated_models[id_]["new"]])
-    archived_llm_ids = set(
-        [id_ for id_ in llm_ids if generated_models[id_]["status"] == "archived"]
-    )
-    dataset_llm_ids = set(context["data"].keys())
-
-    if no_llm_for_data_ids := dataset_llm_ids.difference(llm_ids):
-        # There is data for an LLM but its id cannot be found in LLM definitions
-        # Can happen if we changed its id
-        logger.error(
-            f"There is dataset data for LLMs that are not defined in '{LLMS_RAW_DATA_FILE.relative_to(ROOT_DIR)}': {no_llm_for_data_ids}"
-        )
-    if no_data_ids := archived_llm_ids.difference(dataset_llm_ids):
-        # Can't find data for an archived LLM, maybe we could drop it from our list since we have no data at all
-        logger.warning(f"There is no dataset data for archived LLMs: {no_data_ids}")
-    if no_data_ids := (llm_ids - new_llm_ids - archived_llm_ids).difference(
-        dataset_llm_ids
-    ):
-        # Can't find data for an LLM that is not new or archived, is it too soon? Is there a problem with its endpoint?
-        logger.warning(
-            f"There is no dataset data for LLMs (excepting new and archived ones): {no_data_ids}"
-        )
-    if os.getenv("COMPARIA_DB_URI"):
-        # If DB uri, try to find if there's some LLMs that do not ends up in dataset data
-        in_db_but_no_data_ids = get_conversations_llm_ids().difference(dataset_llm_ids)
-        if in_db_but_no_data_ids:
-            logger.error(
-                f"LLMs are in db but not in dataset data: {in_db_but_no_data_ids}"
-            )
 
     # Integrate translatable content to frontend locales
     frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
