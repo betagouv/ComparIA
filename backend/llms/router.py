@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from backend.llms.data import get_llms_data
-from backend.utils.countries import CountryPortalAnno
+from backend.utils.countries import CountryPortalAnno, get_country_portal_ranking
 from utils.ranking.service import get_cached_rankings
 
 router = APIRouter(
@@ -13,7 +13,7 @@ router = APIRouter(
 @router.get("/")
 async def get_available_models(country_portal: CountryPortalAnno):
     models = get_llms_data(country_portal)
-    cached = get_cached_rankings(country_portal)
+    cached = get_country_portal_ranking(country_portal)
 
     if not cached:
         # No dynamic rankings yet, serve static data unchanged
@@ -28,14 +28,10 @@ async def get_available_models(country_portal: CountryPortalAnno):
         # When dynamic rankings are active, replace static data entirely:
         # models with votes get dynamic data, others get null
         model_dict["data"] = (
-            cached.rankings[model.id].model_dump()
-            if model.id in cached.rankings
-            else None
+            cached.rankings[model.id] if model.id in cached.rankings else None
         )
         model_dict["prefs"] = (
-            cached.preferences[model.id].model_dump()
-            if model.id in cached.preferences
-            else None
+            cached.preferences[model.id] if model.id in cached.preferences else None
         )
         models_list.append(model_dict)
 
