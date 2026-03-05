@@ -10,7 +10,9 @@ import logging
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
+from typing import Literal
 
+from backend.config import CountryPortal
 from backend.llms.models import DatasetData, PreferencesData
 from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_reactions, fetch_votes
@@ -31,6 +33,8 @@ PREF_FIELDS = [
 
 POSITIVE_PREFS = {"useful", "complete", "creative", "clear_formatting"}
 NEGATIVE_PREFS = {"incorrect", "superficial", "instructions_not_followed"}
+
+DataGroup = Literal[CountryPortal, "all"]
 
 
 @dataclass
@@ -193,7 +197,7 @@ def _compute_rankings_for_group(
     )
 
 
-def compute_all_rankings() -> dict[str, RankingResult]:
+def compute_all_rankings() -> dict[DataGroup, RankingResult]:
     """
     Main function called by the scheduler.
 
@@ -218,18 +222,18 @@ def compute_all_rankings() -> dict[str, RankingResult]:
     reactions_by_portal: dict[str, list[dict]] = defaultdict(list)
 
     for v in all_votes:
-        portal = v.get("country_portal") or "unknown"
+        portal = v.get("country_portal", "unknown")
         votes_by_portal[portal].append(v)
 
     for r in all_reactions:
-        portal = r.get("country_portal") or "unknown"
+        portal = r.get("country_portal", "unknown")
         reactions_by_portal[portal].append(r)
 
     # Get all portal keys (excluding unknown)
     all_portals = set(votes_by_portal.keys()) | set(reactions_by_portal.keys())
     all_portals.discard("unknown")
 
-    results: dict[str, RankingResult] = {}
+    results: dict[DataGroup, RankingResult] = {}
 
     for portal in all_portals:
         try:
