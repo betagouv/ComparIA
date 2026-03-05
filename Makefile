@@ -177,9 +177,7 @@ compute-rankings: ## Execute the ranking pipeline (see notebooks for more option
 	@echo "  - utils/ranking_methods/notebooks/graph.ipynb"
 	
 	@echo "Compute rankings..."
-	$(UV) run python -m utils.models.build_simplified_llm_list_ranking
-	cd utils/ranking_methods/src && poetry run python -m rank_comparia.export
-	cp utils/ranking_methods/src/output/ml_final_data.json utils/models/generated-models-extra-data.json
+	$(UV) run python -m utils.ranking.run
 	@$(MAKE) models-build
 
 # Cleanup
