@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from backend.llms.data import get_llms_data
 from backend.utils.countries import CountryPortalAnno, get_country_portal_ranking
-from utils.ranking.service import get_cached_rankings
 
 router = APIRouter(
     prefix="/models",
