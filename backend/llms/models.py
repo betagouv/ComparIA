@@ -21,10 +21,8 @@ from typing import Annotated, Any, Literal, get_args
 
 from pydantic import (
     AfterValidator,
-    AliasChoices,
     BaseModel,
     ConfigDict,
-    Field,
     computed_field,
     field_validator,
 )
@@ -79,11 +77,11 @@ class DatasetData(BaseModel):
         trust_range: Computed confidence interval for ranking
     """
 
-    elo: RoundInt = Field(validation_alias=AliasChoices("median", "elo"))
-    score_p2_5: RoundInt = Field(validation_alias=AliasChoices("p2.5", "score_p2_5"))
-    score_p97_5: RoundInt = Field(validation_alias=AliasChoices("p97.5", "score_p97_5"))
-    rank_p2_5: int = Field(validation_alias=AliasChoices("rank_p2.5", "rank_p2_5"))
-    rank_p97_5: int = Field(validation_alias=AliasChoices("rank_p97.5", "rank_p97_5"))
+    elo: RoundInt
+    score_p2_5: RoundInt
+    score_p97_5: RoundInt
+    rank_p2_5: int
+    rank_p97_5: int
     rank: int
     n_match: int
     mean_win_prob: float
