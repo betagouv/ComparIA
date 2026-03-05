@@ -9,6 +9,8 @@ from backend.config import (
     CountryPortal,
     settings,
 )
+from utils.storage.db import db_cursor
+from utils.storage.queries import get_reactions_db_query, get_votes_db_query
 
 logger = logging.getLogger("languia")
 
@@ -73,24 +75,18 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         logger.warning("Cannot log to db: no db configured")
         return 0
 
-    conn = None
-    cursor = None
-    result = 0
-    try:
-        conn = psycopg2.connect(settings.COMPARIA_DB_URI)
-        cursor = conn.cursor()
-        # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL("""
-            SELECT
-                (SELECT COUNT(*) FROM votes v
-                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s) +
-                (SELECT COUNT(*) FROM reactions r
-                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s)
-            as total;
-        """)
-        cursor.execute(query, (country_code, country_code))
+    # Count votes and reactions linked to conversations with country_portal
+    with db_cursor("get votes and reactions count", logger) as cursor:
+        votes_query = get_votes_db_query(
+            country_portal=country_code, count=True, exclude_pii=False
+        )
+        reactions_query = get_reactions_db_query(
+            country_portal=country_code, count=True, exclude_pii=False
+        )
+        cursor.execute(
+            sql.SQL(f"SELECT ({votes_query}) + ({reactions_query}) as total;")
+        )
+        # FIXME raise error if None?
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
 
@@ -100,11 +96,5 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
             logger.error(f"Error setting {country_code} count in Redis: {e}")
 
         return result
-    except Exception as e:
-        logger.error(f"Error getting {country_code} count from db: {e}")
-        return 0
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+
+    return 0
