@@ -1,25 +1,10 @@
 {
-  "timestamp": 1770784106.0,
+  "timestamp": 1772721356.518107,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 978,
-        "mean_win_prob": 0.4679694356462587,
-        "n_match": 2415,
-        "rank": 61,
-        "rank_p2_5": 55,
-        "rank_p97_5": 68,
-        "score_p2_5": 966,
-        "score_p97_5": 990,
-        "trust_range": [
-          6,
-          7
-        ],
-        "win_rate": 0.41113871635610766
-      },
       "distribution": "fully-open-source",
       "endpoint": {
         "api_base": "https://router.huggingface.co/v1",
@@ -36,17 +21,6 @@
       "new": false,
       "organisation": "Swiss AI",
       "params": 70,
-      "prefs": {
-        "clear_formatting": 155,
-        "complete": 174,
-        "creative": 46,
-        "incorrect": 132,
-        "instructions_not_followed": 78,
-        "positive_prefs_ratio": 0.6147058823529412,
-        "superficial": 183,
-        "total_prefs": 1020,
-        "useful": 252
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -63,21 +37,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 960,
-        "mean_win_prob": 0.4430788303920943,
-        "n_match": 86,
-        "rank": 71,
-        "rank_p2_5": 44,
-        "rank_p97_5": 83,
-        "score_p2_5": 898,
-        "score_p97_5": 1018,
-        "trust_range": [
-          27,
-          12
-        ],
-        "win_rate": 0.46880952380952384
-      },
       "distribution": "fully-open-source",
       "endpoint": null,
       "friendly_size": "XS",
@@ -88,17 +47,6 @@
       "new": false,
       "organisation": "Swiss AI",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 2,
-        "complete": 3,
-        "creative": 0,
-        "incorrect": 3,
-        "instructions_not_followed": 0,
-        "positive_prefs_ratio": 0.4666666666666667,
-        "superficial": 5,
-        "total_prefs": 15,
-        "useful": 2
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -115,7 +63,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -126,7 +73,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 8,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -143,21 +89,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": {
-        "elo": 990,
-        "mean_win_prob": 0.48475688163584535,
-        "n_match": 5113,
-        "rank": 54,
-        "rank_p2_5": 52,
-        "rank_p97_5": 60,
-        "score_p2_5": 982,
-        "score_p97_5": 999,
-        "trust_range": [
-          2,
-          6
-        ],
-        "win_rate": 0.46256796401329947
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
@@ -174,17 +105,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 32,
-      "prefs": {
-        "clear_formatting": 513,
-        "complete": 527,
-        "creative": 142,
-        "incorrect": 277,
-        "instructions_not_followed": 109,
-        "positive_prefs_ratio": 0.7203934922436626,
-        "superficial": 353,
-        "total_prefs": 2643,
-        "useful": 722
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -201,21 +121,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": {
-        "elo": 973,
-        "mean_win_prob": 0.46018520179190664,
-        "n_match": 1302,
-        "rank": 64,
-        "rank_p2_5": 56,
-        "rank_p97_5": 72,
-        "score_p2_5": 957,
-        "score_p97_5": 988,
-        "trust_range": [
-          8,
-          8
-        ],
-        "win_rate": 0.5014285714285714
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -226,17 +131,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 223,
-        "complete": 133,
-        "creative": 55,
-        "incorrect": 149,
-        "instructions_not_followed": 31,
-        "positive_prefs_ratio": 0.697228144989339,
-        "superficial": 104,
-        "total_prefs": 938,
-        "useful": 243
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -253,7 +147,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -264,7 +157,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 35,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -281,21 +173,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": {
-        "elo": 928,
-        "mean_win_prob": 0.3994859127883386,
-        "n_match": 5959,
-        "rank": 81,
-        "rank_p2_5": 78,
-        "rank_p97_5": 83,
-        "score_p2_5": 920,
-        "score_p97_5": 936,
-        "trust_range": [
-          3,
-          2
-        ],
-        "win_rate": 0.42968786709179396
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -306,17 +183,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 35,
-      "prefs": {
-        "clear_formatting": 796,
-        "complete": 843,
-        "creative": 255,
-        "incorrect": 471,
-        "instructions_not_followed": 163,
-        "positive_prefs_ratio": 0.6964578935022285,
-        "superficial": 660,
-        "total_prefs": 4263,
-        "useful": 1075
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -333,7 +199,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -344,7 +209,6 @@
       "new": false,
       "organisation": "jpacifico",
       "params": 14,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -361,21 +225,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 749,
-        "mean_win_prob": 0.19720591247765598,
-        "n_match": 309,
-        "rank": 92,
-        "rank_p2_5": 91,
-        "rank_p97_5": 93,
-        "score_p2_5": 701,
-        "score_p97_5": 794,
-        "trust_range": [
-          1,
-          1
-        ],
-        "win_rate": 0.2402265372168285
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -386,17 +235,6 @@
       "new": false,
       "organisation": "jpacifico",
       "params": 14,
-      "prefs": {
-        "clear_formatting": 43,
-        "complete": 39,
-        "creative": 17,
-        "incorrect": 52,
-        "instructions_not_followed": 50,
-        "positive_prefs_ratio": 0.46547314578005117,
-        "superficial": 107,
-        "total_prefs": 391,
-        "useful": 83
-      },
       "pricey": false,
       "quantization": "q4",
       "reasoning": false,
@@ -413,7 +251,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -424,7 +261,6 @@
       "new": false,
       "organisation": "jpacifico",
       "params": 14,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -441,21 +277,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 816,
-        "mean_win_prob": 0.26411516240464195,
-        "n_match": 1796,
-        "rank": 90,
-        "rank_p2_5": 90,
-        "rank_p97_5": 91,
-        "score_p2_5": 801,
-        "score_p97_5": 833,
-        "trust_range": [
-          0,
-          1
-        ],
-        "win_rate": 0.3317316258351893
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -466,17 +287,6 @@
       "new": false,
       "organisation": "jpacifico",
       "params": 14,
-      "prefs": {
-        "clear_formatting": 199,
-        "complete": 100,
-        "creative": 37,
-        "incorrect": 161,
-        "instructions_not_followed": 50,
-        "positive_prefs_ratio": 0.5146198830409356,
-        "superficial": 370,
-        "total_prefs": 1197,
-        "useful": 280
-      },
       "pricey": false,
       "quantization": "q8",
       "reasoning": false,
@@ -493,21 +303,6 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 970,
-        "mean_win_prob": 0.45690528643282347,
-        "n_match": 5683,
-        "rank": 67,
-        "rank_p2_5": 62,
-        "rank_p97_5": 70,
-        "score_p2_5": 962,
-        "score_p97_5": 978,
-        "trust_range": [
-          5,
-          3
-        ],
-        "win_rate": 0.4921080415273623
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "XL",
@@ -518,17 +313,6 @@
       "new": false,
       "organisation": "Anthropic",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 905,
-        "complete": 721,
-        "creative": 291,
-        "incorrect": 250,
-        "instructions_not_followed": 94,
-        "positive_prefs_ratio": 0.7720729366602687,
-        "superficial": 606,
-        "total_prefs": 4168,
-        "useful": 1301
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -545,21 +329,6 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1048,
-        "mean_win_prob": 0.5642564764160243,
-        "n_match": 3907,
-        "rank": 31,
-        "rank_p2_5": 26,
-        "rank_p97_5": 35,
-        "score_p2_5": 1038,
-        "score_p97_5": 1058,
-        "trust_range": [
-          5,
-          4
-        ],
-        "win_rate": 0.524225748656258
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "XL",
@@ -570,17 +339,6 @@
       "new": false,
       "organisation": "Anthropic",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 822,
-        "complete": 774,
-        "creative": 230,
-        "incorrect": 140,
-        "instructions_not_followed": 46,
-        "positive_prefs_ratio": 0.8487848784878488,
-        "superficial": 318,
-        "total_prefs": 3333,
-        "useful": 1003
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -597,21 +355,6 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1072,
-        "mean_win_prob": 0.5964760454586694,
-        "n_match": 6519,
-        "rank": 16,
-        "rank_p2_5": 13,
-        "rank_p97_5": 21,
-        "score_p2_5": 1064,
-        "score_p97_5": 1079,
-        "trust_range": [
-          3,
-          5
-        ],
-        "win_rate": 0.5354793680012272
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -628,17 +371,6 @@
       "new": false,
       "organisation": "Anthropic",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 695,
-        "complete": 916,
-        "creative": 539,
-        "incorrect": 173,
-        "instructions_not_followed": 97,
-        "positive_prefs_ratio": 0.862033984275932,
-        "superficial": 274,
-        "total_prefs": 3943,
-        "useful": 1249
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -655,7 +387,6 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -672,7 +403,6 @@
       "new": true,
       "organisation": "Anthropic",
       "params": 440,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -689,21 +419,6 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1063,
-        "mean_win_prob": 0.5842932469540095,
-        "n_match": 2540,
-        "rank": 24,
-        "rank_p2_5": 15,
-        "rank_p97_5": 29,
-        "score_p2_5": 1051,
-        "score_p97_5": 1075,
-        "trust_range": [
-          9,
-          5
-        ],
-        "win_rate": 0.5355651831429696
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -720,17 +435,6 @@
       "new": false,
       "organisation": "Anthropic",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 215,
-        "complete": 198,
-        "creative": 62,
-        "incorrect": 41,
-        "instructions_not_followed": 20,
-        "positive_prefs_ratio": 0.8501199040767387,
-        "superficial": 64,
-        "total_prefs": 834,
-        "useful": 234
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -747,21 +451,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": {
-        "elo": 1055,
-        "mean_win_prob": 0.5739456330894819,
-        "n_match": 7866,
-        "rank": 29,
-        "rank_p2_5": 23,
-        "rank_p97_5": 31,
-        "score_p2_5": 1048,
-        "score_p97_5": 1062,
-        "trust_range": [
-          6,
-          2
-        ],
-        "win_rate": 0.5454881769641495
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -778,17 +467,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 111,
-      "prefs": {
-        "clear_formatting": 1298,
-        "complete": 1390,
-        "creative": 360,
-        "incorrect": 365,
-        "instructions_not_followed": 145,
-        "positive_prefs_ratio": 0.8320043494019572,
-        "superficial": 417,
-        "total_prefs": 5518,
-        "useful": 1543
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -805,7 +483,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "L",
@@ -816,7 +493,6 @@
       "new": false,
       "organisation": "Cohere",
       "params": 104,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -833,21 +509,6 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1077,
-        "mean_win_prob": 0.6038239995762236,
-        "n_match": 2527,
-        "rank": 13,
-        "rank_p2_5": 10,
-        "rank_p97_5": 20,
-        "score_p2_5": 1067,
-        "score_p97_5": 1089,
-        "trust_range": [
-          3,
-          7
-        ],
-        "win_rate": 0.5254768500197864
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -864,17 +525,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 685,
-      "prefs": {
-        "clear_formatting": 286,
-        "complete": 335,
-        "creative": 118,
-        "incorrect": 108,
-        "instructions_not_followed": 58,
-        "positive_prefs_ratio": 0.8011611030478955,
-        "superficial": 108,
-        "total_prefs": 1378,
-        "useful": 365
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -891,21 +541,6 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1025,
-        "mean_win_prob": 0.5321601957399885,
-        "n_match": 3510,
-        "rank": 40,
-        "rank_p2_5": 36,
-        "rank_p97_5": 45,
-        "score_p2_5": 1015,
-        "score_p97_5": 1035,
-        "trust_range": [
-          4,
-          5
-        ],
-        "win_rate": 0.5313019943019943
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -922,17 +557,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 671,
-      "prefs": {
-        "clear_formatting": 667,
-        "complete": 783,
-        "creative": 284,
-        "incorrect": 171,
-        "instructions_not_followed": 112,
-        "positive_prefs_ratio": 0.839344262295082,
-        "superficial": 207,
-        "total_prefs": 3050,
-        "useful": 826
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -949,21 +573,6 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1055,
-        "mean_win_prob": 0.5742035983812075,
-        "n_match": 2097,
-        "rank": 28,
-        "rank_p2_5": 20,
-        "rank_p97_5": 34,
-        "score_p2_5": 1042,
-        "score_p97_5": 1067,
-        "trust_range": [
-          8,
-          6
-        ],
-        "win_rate": 0.5195946590367192
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -980,17 +589,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 685,
-      "prefs": {
-        "clear_formatting": 223,
-        "complete": 281,
-        "creative": 91,
-        "incorrect": 92,
-        "instructions_not_followed": 45,
-        "positive_prefs_ratio": 0.8001768346595933,
-        "superficial": 89,
-        "total_prefs": 1131,
-        "useful": 310
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -1007,21 +605,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 944,
-        "mean_win_prob": 0.42154691495602004,
-        "n_match": 2981,
-        "rank": 77,
-        "rank_p2_5": 72,
-        "rank_p97_5": 79,
-        "score_p2_5": 933,
-        "score_p97_5": 955,
-        "trust_range": [
-          5,
-          2
-        ],
-        "win_rate": 0.4397953706809795
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -1038,17 +621,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 70,
-      "prefs": {
-        "clear_formatting": 363,
-        "complete": 355,
-        "creative": 130,
-        "incorrect": 190,
-        "instructions_not_followed": 126,
-        "positive_prefs_ratio": 0.6701754385964912,
-        "superficial": 342,
-        "total_prefs": 1995,
-        "useful": 489
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -1065,21 +637,6 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1091,
-        "mean_win_prob": 0.6223347154914951,
-        "n_match": 4385,
-        "rank": 9,
-        "rank_p2_5": 7,
-        "rank_p97_5": 11,
-        "score_p2_5": 1083,
-        "score_p97_5": 1101,
-        "trust_range": [
-          2,
-          2
-        ],
-        "win_rate": 0.5851128848346636
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -1096,17 +653,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 685,
-      "prefs": {
-        "clear_formatting": 1043,
-        "complete": 1012,
-        "creative": 336,
-        "incorrect": 230,
-        "instructions_not_followed": 79,
-        "positive_prefs_ratio": 0.8554129329135384,
-        "superficial": 288,
-        "total_prefs": 4129,
-        "useful": 1141
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1123,21 +669,6 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1078,
-        "mean_win_prob": 0.6047594570124205,
-        "n_match": 5388,
-        "rank": 12,
-        "rank_p2_5": 10,
-        "rank_p97_5": 19,
-        "score_p2_5": 1069,
-        "score_p97_5": 1087,
-        "trust_range": [
-          2,
-          7
-        ],
-        "win_rate": 0.6141481069042317
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XL",
@@ -1148,17 +679,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 671,
-      "prefs": {
-        "clear_formatting": 1399,
-        "complete": 1245,
-        "creative": 390,
-        "incorrect": 314,
-        "instructions_not_followed": 81,
-        "positive_prefs_ratio": 0.8651863600317209,
-        "superficial": 285,
-        "total_prefs": 5044,
-        "useful": 1330
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1175,21 +695,6 @@
       "active_params": 37,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1074,
-        "mean_win_prob": 0.5997920260793798,
-        "n_match": 1843,
-        "rank": 15,
-        "rank_p2_5": 10,
-        "rank_p97_5": 23,
-        "score_p2_5": 1061,
-        "score_p97_5": 1087,
-        "trust_range": [
-          5,
-          8
-        ],
-        "win_rate": 0.5554259359739555
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -1206,17 +711,6 @@
       "new": false,
       "organisation": "DeepSeek",
       "params": 685,
-      "prefs": {
-        "clear_formatting": 328,
-        "complete": 443,
-        "creative": 204,
-        "incorrect": 124,
-        "instructions_not_followed": 67,
-        "positive_prefs_ratio": 0.8221963974433469,
-        "superficial": 115,
-        "total_prefs": 1721,
-        "useful": 440
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1233,21 +727,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1023,
-        "mean_win_prob": 0.5298756680233072,
-        "n_match": 495,
-        "rank": 41,
-        "rank_p2_5": 31,
-        "rank_p97_5": 52,
-        "score_p2_5": 998,
-        "score_p97_5": 1049,
-        "trust_range": [
-          10,
-          11
-        ],
-        "win_rate": 0.44686868686868686
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": "https://router.huggingface.co/v1",
@@ -1264,17 +743,6 @@
       "new": false,
       "organisation": "EuroLLM",
       "params": 22,
-      "prefs": {
-        "clear_formatting": 95,
-        "complete": 81,
-        "creative": 22,
-        "incorrect": 38,
-        "instructions_not_followed": 19,
-        "positive_prefs_ratio": 0.7540603248259861,
-        "superficial": 49,
-        "total_prefs": 431,
-        "useful": 127
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1291,21 +759,6 @@
       "active_params": 220,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1030,
-        "mean_win_prob": 0.5396481444648186,
-        "n_match": 7387,
-        "rank": 39,
-        "rank_p2_5": 35,
-        "rank_p97_5": 42,
-        "score_p2_5": 1022,
-        "score_p97_5": 1038,
-        "trust_range": [
-          4,
-          3
-        ],
-        "win_rate": 0.5830743197509137
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "XL",
@@ -1316,17 +769,6 @@
       "new": false,
       "organisation": "Google",
       "params": 600,
-      "prefs": {
-        "clear_formatting": 1959,
-        "complete": 1630,
-        "creative": 683,
-        "incorrect": 461,
-        "instructions_not_followed": 202,
-        "positive_prefs_ratio": 0.8290088220031137,
-        "superficial": 655,
-        "total_prefs": 7708,
-        "useful": 2118
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1343,21 +785,6 @@
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1100,
-        "mean_win_prob": 0.6332027746282586,
-        "n_match": 8684,
-        "rank": 8,
-        "rank_p2_5": 5,
-        "rank_p97_5": 9,
-        "score_p2_5": 1093,
-        "score_p97_5": 1106,
-        "trust_range": [
-          3,
-          1
-        ],
-        "win_rate": 0.6317699216950714
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "XL",
@@ -1368,17 +795,6 @@
       "new": false,
       "organisation": "Google",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 1909,
-        "complete": 2179,
-        "creative": 677,
-        "incorrect": 376,
-        "instructions_not_followed": 112,
-        "positive_prefs_ratio": 0.8862175366418102,
-        "superficial": 397,
-        "total_prefs": 7778,
-        "useful": 2128
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1395,21 +811,6 @@
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1106,
-        "mean_win_prob": 0.6417167220443732,
-        "n_match": 4927,
-        "rank": 5,
-        "rank_p2_5": 4,
-        "rank_p97_5": 8,
-        "score_p2_5": 1098,
-        "score_p97_5": 1115,
-        "trust_range": [
-          1,
-          3
-        ],
-        "win_rate": 0.5783245382585752
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -1426,17 +827,6 @@
       "new": false,
       "organisation": "Google",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 540,
-        "complete": 705,
-        "creative": 205,
-        "incorrect": 151,
-        "instructions_not_followed": 53,
-        "positive_prefs_ratio": 0.8611224907824662,
-        "superficial": 135,
-        "total_prefs": 2441,
-        "useful": 652
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1453,21 +843,6 @@
       "active_params": 137,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1128,
-        "mean_win_prob": 0.6698772782232936,
-        "n_match": 1262,
-        "rank": 2,
-        "rank_p2_5": 1,
-        "rank_p97_5": 4,
-        "score_p2_5": 1112,
-        "score_p97_5": 1145,
-        "trust_range": [
-          1,
-          2
-        ],
-        "win_rate": 0.5719809825673534
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -1484,17 +859,6 @@
       "new": false,
       "organisation": "Google",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 220,
-        "complete": 276,
-        "creative": 83,
-        "incorrect": 51,
-        "instructions_not_followed": 16,
-        "positive_prefs_ratio": 0.8742268041237113,
-        "superficial": 55,
-        "total_prefs": 970,
-        "useful": 269
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1511,21 +875,6 @@
       "active_params": 45,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1101,
-        "mean_win_prob": 0.6356066427576355,
-        "n_match": 3210,
-        "rank": 6,
-        "rank_p2_5": 5,
-        "rank_p97_5": 9,
-        "score_p2_5": 1092,
-        "score_p97_5": 1112,
-        "trust_range": [
-          1,
-          3
-        ],
-        "win_rate": 0.5553489096573209
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -1542,17 +891,6 @@
       "new": false,
       "organisation": "Google",
       "params": 750,
-      "prefs": {
-        "clear_formatting": 462,
-        "complete": 626,
-        "creative": 214,
-        "incorrect": 99,
-        "instructions_not_followed": 71,
-        "positive_prefs_ratio": 0.8676341248900615,
-        "superficial": 131,
-        "total_prefs": 2274,
-        "useful": 671
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1569,7 +907,6 @@
       "active_params": 25,
       "arch": "moe",
       "commercial_use": null,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -1586,7 +923,6 @@
       "new": true,
       "organisation": "Google",
       "params": 250,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -1603,7 +939,6 @@
       "active_params": 45,
       "arch": "moe",
       "commercial_use": null,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -1620,7 +955,6 @@
       "new": true,
       "organisation": "Google",
       "params": 750,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -1637,7 +971,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -1648,7 +981,6 @@
       "new": false,
       "organisation": "Google",
       "params": 27,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1665,21 +997,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1001,
-        "mean_win_prob": 0.49886101074090466,
-        "n_match": 762,
-        "rank": 51,
-        "rank_p2_5": 40,
-        "rank_p97_5": 63,
-        "score_p2_5": 976,
-        "score_p97_5": 1026,
-        "trust_range": [
-          11,
-          12
-        ],
-        "win_rate": 0.5826115485564304
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -1690,17 +1007,6 @@
       "new": false,
       "organisation": "Google",
       "params": 27,
-      "prefs": {
-        "clear_formatting": 305,
-        "complete": 178,
-        "creative": 97,
-        "incorrect": 63,
-        "instructions_not_followed": 29,
-        "positive_prefs_ratio": 0.8307123034227567,
-        "superficial": 91,
-        "total_prefs": 1081,
-        "useful": 318
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1717,7 +1023,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -1728,7 +1033,6 @@
       "new": false,
       "organisation": "Google",
       "params": 2,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1745,21 +1049,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 952,
-        "mean_win_prob": 0.4316710505845071,
-        "n_match": 5115,
-        "rank": 74,
-        "rank_p2_5": 70,
-        "rank_p97_5": 76,
-        "score_p2_5": 943,
-        "score_p97_5": 961,
-        "trust_range": [
-          4,
-          2
-        ],
-        "win_rate": 0.5068660801564027
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -1770,17 +1059,6 @@
       "new": false,
       "organisation": "Google",
       "params": 9,
-      "prefs": {
-        "clear_formatting": 1197,
-        "complete": 771,
-        "creative": 403,
-        "incorrect": 472,
-        "instructions_not_followed": 177,
-        "positive_prefs_ratio": 0.7442959917780062,
-        "superficial": 595,
-        "total_prefs": 4865,
-        "useful": 1250
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1797,21 +1075,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1063,
-        "mean_win_prob": 0.5845168950335101,
-        "n_match": 8288,
-        "rank": 23,
-        "rank_p2_5": 18,
-        "rank_p97_5": 27,
-        "score_p2_5": 1056,
-        "score_p97_5": 1070,
-        "trust_range": [
-          5,
-          4
-        ],
-        "win_rate": 0.5528173262548263
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -1828,17 +1091,6 @@
       "new": false,
       "organisation": "Google",
       "params": 12,
-      "prefs": {
-        "clear_formatting": 1201,
-        "complete": 1557,
-        "creative": 418,
-        "incorrect": 506,
-        "instructions_not_followed": 210,
-        "positive_prefs_ratio": 0.8080364976311634,
-        "superficial": 378,
-        "total_prefs": 5699,
-        "useful": 1429
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1855,21 +1107,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1082,
-        "mean_win_prob": 0.6107152793947536,
-        "n_match": 8583,
-        "rank": 11,
-        "rank_p2_5": 10,
-        "rank_p97_5": 15,
-        "score_p2_5": 1076,
-        "score_p97_5": 1089,
-        "trust_range": [
-          1,
-          4
-        ],
-        "win_rate": 0.5692613305371083
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -1886,17 +1123,6 @@
       "new": false,
       "organisation": "Google",
       "params": 27,
-      "prefs": {
-        "clear_formatting": 1327,
-        "complete": 1791,
-        "creative": 530,
-        "incorrect": 447,
-        "instructions_not_followed": 159,
-        "positive_prefs_ratio": 0.8492178680857926,
-        "superficial": 329,
-        "total_prefs": 6201,
-        "useful": 1618
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1913,21 +1139,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1035,
-        "mean_win_prob": 0.5467385579531175,
-        "n_match": 9361,
-        "rank": 36,
-        "rank_p2_5": 34,
-        "rank_p97_5": 39,
-        "score_p2_5": 1029,
-        "score_p97_5": 1042,
-        "trust_range": [
-          2,
-          3
-        ],
-        "win_rate": 0.5116579425275077
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -1944,17 +1155,6 @@
       "new": false,
       "organisation": "Google",
       "params": 4,
-      "prefs": {
-        "clear_formatting": 1241,
-        "complete": 1539,
-        "creative": 423,
-        "incorrect": 748,
-        "instructions_not_followed": 263,
-        "positive_prefs_ratio": 0.7673956262425448,
-        "superficial": 393,
-        "total_prefs": 6036,
-        "useful": 1429
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -1971,21 +1171,6 @@
       "active_params": 4,
       "arch": "matformer",
       "commercial_use": true,
-      "data": {
-        "elo": 1033,
-        "mean_win_prob": 0.543704796481743,
-        "n_match": 4676,
-        "rank": 37,
-        "rank_p2_5": 34,
-        "rank_p97_5": 41,
-        "score_p2_5": 1025,
-        "score_p97_5": 1042,
-        "trust_range": [
-          3,
-          4
-        ],
-        "win_rate": 0.4968156544054748
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2002,17 +1187,6 @@
       "new": false,
       "organisation": "Google",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 429,
-        "complete": 500,
-        "creative": 168,
-        "incorrect": 252,
-        "instructions_not_followed": 113,
-        "positive_prefs_ratio": 0.7364305427782889,
-        "superficial": 208,
-        "total_prefs": 2174,
-        "useful": 504
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2029,21 +1203,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1072,
-        "mean_win_prob": 0.5963287665208331,
-        "n_match": 2178,
-        "rank": 17,
-        "rank_p2_5": 11,
-        "rank_p97_5": 25,
-        "score_p2_5": 1060,
-        "score_p97_5": 1085,
-        "trust_range": [
-          6,
-          8
-        ],
-        "win_rate": 0.5414882866329811
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2060,17 +1219,6 @@
       "new": false,
       "organisation": "Zhipu",
       "params": 355,
-      "prefs": {
-        "clear_formatting": 209,
-        "complete": 282,
-        "creative": 75,
-        "incorrect": 48,
-        "instructions_not_followed": 33,
-        "positive_prefs_ratio": 0.8517722878625135,
-        "superficial": 57,
-        "total_prefs": 931,
-        "useful": 227
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2087,21 +1235,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1045,
-        "mean_win_prob": 0.559623067245928,
-        "n_match": 2769,
-        "rank": 33,
-        "rank_p2_5": 28,
-        "rank_p97_5": 37,
-        "score_p2_5": 1033,
-        "score_p97_5": 1055,
-        "trust_range": [
-          5,
-          4
-        ],
-        "win_rate": 0.5069447453954496
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2118,17 +1251,6 @@
       "new": false,
       "organisation": "Zhipu",
       "params": 357,
-      "prefs": {
-        "clear_formatting": 266,
-        "complete": 387,
-        "creative": 125,
-        "incorrect": 104,
-        "instructions_not_followed": 65,
-        "positive_prefs_ratio": 0.7995705082319255,
-        "superficial": 111,
-        "total_prefs": 1397,
-        "useful": 339
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2145,21 +1267,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1036,
-        "mean_win_prob": 0.5484968080794734,
-        "n_match": 820,
-        "rank": 35,
-        "rank_p2_5": 27,
-        "rank_p97_5": 44,
-        "score_p2_5": 1016,
-        "score_p97_5": 1057,
-        "trust_range": [
-          8,
-          9
-        ],
-        "win_rate": 0.4835243902439024
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2176,17 +1283,6 @@
       "new": false,
       "organisation": "Zhipu",
       "params": 357,
-      "prefs": {
-        "clear_formatting": 109,
-        "complete": 143,
-        "creative": 39,
-        "incorrect": 43,
-        "instructions_not_followed": 30,
-        "positive_prefs_ratio": 0.776536312849162,
-        "superficial": 47,
-        "total_prefs": 537,
-        "useful": 126
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2203,7 +1299,6 @@
       "active_params": 40,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2220,7 +1315,6 @@
       "new": true,
       "organisation": "Zhipu",
       "params": 744,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -2237,7 +1331,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": null,
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "S",
@@ -2248,7 +1341,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 55,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2265,21 +1357,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 1031,
-        "mean_win_prob": 0.5406766528753802,
-        "n_match": 7173,
-        "rank": 38,
-        "rank_p2_5": 35,
-        "rank_p97_5": 41,
-        "score_p2_5": 1024,
-        "score_p97_5": 1038,
-        "trust_range": [
-          3,
-          3
-        ],
-        "win_rate": 0.5152977269557941
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2296,17 +1373,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 75,
-      "prefs": {
-        "clear_formatting": 1010,
-        "complete": 945,
-        "creative": 286,
-        "incorrect": 244,
-        "instructions_not_followed": 97,
-        "positive_prefs_ratio": 0.8133208255159474,
-        "superficial": 455,
-        "total_prefs": 4264,
-        "useful": 1227
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2323,21 +1389,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 977,
-        "mean_win_prob": 0.4665744648024418,
-        "n_match": 5717,
-        "rank": 62,
-        "rank_p2_5": 58,
-        "rank_p97_5": 67,
-        "score_p2_5": 969,
-        "score_p97_5": 985,
-        "trust_range": [
-          4,
-          5
-        ],
-        "win_rate": 0.46743047052649994
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2354,17 +1405,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 23,
-      "prefs": {
-        "clear_formatting": 649,
-        "complete": 529,
-        "creative": 159,
-        "incorrect": 276,
-        "instructions_not_followed": 103,
-        "positive_prefs_ratio": 0.732535575679172,
-        "superficial": 448,
-        "total_prefs": 3092,
-        "useful": 928
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2381,21 +1421,6 @@
       "active_params": 137.5,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 961,
-        "mean_win_prob": 0.4441278834897516,
-        "n_match": 5896,
-        "rank": 70,
-        "rank_p2_5": 66,
-        "rank_p97_5": 73,
-        "score_p2_5": 952,
-        "score_p97_5": 970,
-        "trust_range": [
-          4,
-          3
-        ],
-        "win_rate": 0.48863297150610585
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "XL",
@@ -2406,17 +1431,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 440,
-      "prefs": {
-        "clear_formatting": 1002,
-        "complete": 593,
-        "creative": 243,
-        "incorrect": 275,
-        "instructions_not_followed": 115,
-        "positive_prefs_ratio": 0.7579051383399209,
-        "superficial": 590,
-        "total_prefs": 4048,
-        "useful": 1230
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2433,21 +1447,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 981,
-        "mean_win_prob": 0.47132620703894984,
-        "n_match": 6990,
-        "rank": 60,
-        "rank_p2_5": 56,
-        "rank_p97_5": 65,
-        "score_p2_5": 974,
-        "score_p97_5": 988,
-        "trust_range": [
-          4,
-          5
-        ],
-        "win_rate": 0.49947067238912735
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "S",
@@ -2458,17 +1457,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 18,
-      "prefs": {
-        "clear_formatting": 1282,
-        "complete": 856,
-        "creative": 319,
-        "incorrect": 369,
-        "instructions_not_followed": 110,
-        "positive_prefs_ratio": 0.7855153203342619,
-        "superficial": 599,
-        "total_prefs": 5026,
-        "useful": 1491
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2485,21 +1473,6 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 999,
-        "mean_win_prob": 0.4971582561736023,
-        "n_match": 3843,
-        "rank": 52,
-        "rank_p2_5": 48,
-        "rank_p97_5": 55,
-        "score_p2_5": 989,
-        "score_p97_5": 1009,
-        "trust_range": [
-          4,
-          3
-        ],
-        "win_rate": 0.45334721499219155
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2516,17 +1489,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 300,
-      "prefs": {
-        "clear_formatting": 68,
-        "complete": 158,
-        "creative": 54,
-        "incorrect": 29,
-        "instructions_not_followed": 32,
-        "positive_prefs_ratio": 0.7822878228782287,
-        "superficial": 57,
-        "total_prefs": 542,
-        "useful": 144
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2543,21 +1505,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 1012,
-        "mean_win_prob": 0.5147685698572521,
-        "n_match": 4459,
-        "rank": 47,
-        "rank_p2_5": 42,
-        "rank_p97_5": 50,
-        "score_p2_5": 1004,
-        "score_p97_5": 1021,
-        "trust_range": [
-          5,
-          3
-        ],
-        "win_rate": 0.473140421713773
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2574,17 +1521,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 47,
-      "prefs": {
-        "clear_formatting": 285,
-        "complete": 468,
-        "creative": 111,
-        "incorrect": 122,
-        "instructions_not_followed": 123,
-        "positive_prefs_ratio": 0.7479085331846068,
-        "superficial": 207,
-        "total_prefs": 1793,
-        "useful": 477
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2601,21 +1537,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 945,
-        "mean_win_prob": 0.4221567817453329,
-        "n_match": 3583,
-        "rank": 76,
-        "rank_p2_5": 72,
-        "rank_p97_5": 79,
-        "score_p2_5": 934,
-        "score_p97_5": 955,
-        "trust_range": [
-          4,
-          3
-        ],
-        "win_rate": 0.39687412782584425
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2632,17 +1553,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 11,
-      "prefs": {
-        "clear_formatting": 182,
-        "complete": 282,
-        "creative": 69,
-        "incorrect": 147,
-        "instructions_not_followed": 166,
-        "positive_prefs_ratio": 0.625,
-        "superficial": 188,
-        "total_prefs": 1336,
-        "useful": 302
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2659,21 +1569,6 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1075,
-        "mean_win_prob": 0.6005713831907888,
-        "n_match": 3189,
-        "rank": 14,
-        "rank_p2_5": 11,
-        "rank_p97_5": 21,
-        "score_p2_5": 1065,
-        "score_p97_5": 1085,
-        "trust_range": [
-          3,
-          7
-        ],
-        "win_rate": 0.5270429601756036
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2690,17 +1585,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 300,
-      "prefs": {
-        "clear_formatting": 393,
-        "complete": 473,
-        "creative": 138,
-        "incorrect": 79,
-        "instructions_not_followed": 63,
-        "positive_prefs_ratio": 0.8383668903803132,
-        "superficial": 147,
-        "total_prefs": 1788,
-        "useful": 495
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2717,21 +1601,6 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1069,
-        "mean_win_prob": 0.5929233837228672,
-        "n_match": 2832,
-        "rank": 18,
-        "rank_p2_5": 13,
-        "rank_p97_5": 26,
-        "score_p2_5": 1059,
-        "score_p97_5": 1079,
-        "trust_range": [
-          5,
-          8
-        ],
-        "win_rate": 0.5164548022598869
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2748,17 +1617,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 300,
-      "prefs": {
-        "clear_formatting": 438,
-        "complete": 452,
-        "creative": 126,
-        "incorrect": 92,
-        "instructions_not_followed": 70,
-        "positive_prefs_ratio": 0.815668202764977,
-        "superficial": 198,
-        "total_prefs": 1953,
-        "useful": 577
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2775,7 +1633,6 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2792,7 +1649,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 300,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -2843,21 +1699,6 @@
       "active_params": 5.1,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1065,
-        "mean_win_prob": 0.5868560289633313,
-        "n_match": 2315,
-        "rank": 21,
-        "rank_p2_5": 14,
-        "rank_p97_5": 29,
-        "score_p2_5": 1052,
-        "score_p97_5": 1077,
-        "trust_range": [
-          7,
-          8
-        ],
-        "win_rate": 0.5229299913569576
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2874,17 +1715,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 117,
-      "prefs": {
-        "clear_formatting": 310,
-        "complete": 459,
-        "creative": 119,
-        "incorrect": 134,
-        "instructions_not_followed": 76,
-        "positive_prefs_ratio": 0.7975499677627337,
-        "superficial": 104,
-        "total_prefs": 1551,
-        "useful": 349
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -2901,21 +1731,6 @@
       "active_params": 3.6,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1014,
-        "mean_win_prob": 0.5180611754067206,
-        "n_match": 2719,
-        "rank": 45,
-        "rank_p2_5": 40,
-        "rank_p97_5": 50,
-        "score_p2_5": 1003,
-        "score_p97_5": 1024,
-        "trust_range": [
-          5,
-          5
-        ],
-        "win_rate": 0.45679911699779246
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2932,17 +1747,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 21,
-      "prefs": {
-        "clear_formatting": 268,
-        "complete": 319,
-        "creative": 103,
-        "incorrect": 159,
-        "instructions_not_followed": 98,
-        "positive_prefs_ratio": 0.7162162162162162,
-        "superficial": 142,
-        "total_prefs": 1406,
-        "useful": 317
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -2959,21 +1763,6 @@
       "active_params": 22,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1060,
-        "mean_win_prob": 0.5810320019634347,
-        "n_match": 1537,
-        "rank": 25,
-        "rank_p2_5": 15,
-        "rank_p97_5": 32,
-        "score_p2_5": 1046,
-        "score_p97_5": 1075,
-        "trust_range": [
-          10,
-          7
-        ],
-        "win_rate": 0.5305338541666668
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -2990,17 +1779,6 @@
       "new": false,
       "organisation": "xAI",
       "params": 180,
-      "prefs": {
-        "clear_formatting": 320,
-        "complete": 350,
-        "creative": 102,
-        "incorrect": 102,
-        "instructions_not_followed": 47,
-        "positive_prefs_ratio": 0.8218029350104822,
-        "superficial": 106,
-        "total_prefs": 1431,
-        "useful": 404
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -3017,21 +1795,6 @@
       "active_params": 121,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1063,
-        "mean_win_prob": 0.5847097813311337,
-        "n_match": 2623,
-        "rank": 22,
-        "rank_p2_5": 15,
-        "rank_p97_5": 29,
-        "score_p2_5": 1052,
-        "score_p97_5": 1075,
-        "trust_range": [
-          7,
-          7
-        ],
-        "win_rate": 0.5293971766501335
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -3048,17 +1811,6 @@
       "new": false,
       "organisation": "xAI",
       "params": 1700,
-      "prefs": {
-        "clear_formatting": 137,
-        "complete": 176,
-        "creative": 53,
-        "incorrect": 61,
-        "instructions_not_followed": 20,
-        "positive_prefs_ratio": 0.8170563961485557,
-        "superficial": 52,
-        "total_prefs": 727,
-        "useful": 228
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3075,21 +1827,6 @@
       "active_params": 121,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1066,
-        "mean_win_prob": 0.5890709388552419,
-        "n_match": 2553,
-        "rank": 20,
-        "rank_p2_5": 14,
-        "rank_p97_5": 28,
-        "score_p2_5": 1054,
-        "score_p97_5": 1078,
-        "trust_range": [
-          6,
-          8
-        ],
-        "win_rate": 0.5295064629847238
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -3106,17 +1843,6 @@
       "new": false,
       "organisation": "xAI",
       "params": 1700,
-      "prefs": {
-        "clear_formatting": 336,
-        "complete": 377,
-        "creative": 167,
-        "incorrect": 127,
-        "instructions_not_followed": 55,
-        "positive_prefs_ratio": 0.8077611940298507,
-        "superficial": 140,
-        "total_prefs": 1675,
-        "useful": 473
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3133,21 +1859,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 940,
-        "mean_win_prob": 0.41593264110506944,
-        "n_match": 6735,
-        "rank": 78,
-        "rank_p2_5": 74,
-        "rank_p97_5": 79,
-        "score_p2_5": 933,
-        "score_p97_5": 947,
-        "trust_range": [
-          4,
-          1
-        ],
-        "win_rate": 0.46634743875278395
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XL",
@@ -3158,17 +1869,6 @@
       "new": false,
       "organisation": "Nous",
       "params": 405,
-      "prefs": {
-        "clear_formatting": 1109,
-        "complete": 830,
-        "creative": 285,
-        "incorrect": 426,
-        "instructions_not_followed": 184,
-        "positive_prefs_ratio": 0.7294024220766329,
-        "superficial": 753,
-        "total_prefs": 5037,
-        "useful": 1450
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3185,21 +1885,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 934,
-        "mean_win_prob": 0.4080584620780003,
-        "n_match": 3199,
-        "rank": 79,
-        "rank_p2_5": 75,
-        "rank_p97_5": 83,
-        "score_p2_5": 923,
-        "score_p97_5": 945,
-        "trust_range": [
-          4,
-          4
-        ],
-        "win_rate": 0.37180907668231616
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3216,17 +1901,6 @@
       "new": false,
       "organisation": "Nous",
       "params": 70,
-      "prefs": {
-        "clear_formatting": 179,
-        "complete": 133,
-        "creative": 56,
-        "incorrect": 168,
-        "instructions_not_followed": 110,
-        "positive_prefs_ratio": 0.5445544554455446,
-        "superficial": 274,
-        "total_prefs": 1212,
-        "useful": 292
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3243,21 +1917,6 @@
       "active_params": 94,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 970,
-        "mean_win_prob": 0.45707915723429754,
-        "n_match": 172,
-        "rank": 66,
-        "rank_p2_5": 45,
-        "rank_p97_5": 82,
-        "score_p2_5": 922,
-        "score_p97_5": 1016,
-        "trust_range": [
-          21,
-          16
-        ],
-        "win_rate": 0.5449418604651162
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XL",
@@ -3268,17 +1927,6 @@
       "new": false,
       "organisation": "AI21",
       "params": 400,
-      "prefs": {
-        "clear_formatting": 57,
-        "complete": 18,
-        "creative": 11,
-        "incorrect": 15,
-        "instructions_not_followed": 4,
-        "positive_prefs_ratio": 0.8024691358024691,
-        "superficial": 13,
-        "total_prefs": 162,
-        "useful": 44
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3295,21 +1943,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1057,
-        "mean_win_prob": 0.5759855189845751,
-        "n_match": 1746,
-        "rank": 27,
-        "rank_p2_5": 18,
-        "rank_p97_5": 33,
-        "score_p2_5": 1045,
-        "score_p97_5": 1071,
-        "trust_range": [
-          9,
-          6
-        ],
-        "win_rate": 0.5120103388856978
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3326,17 +1959,6 @@
       "new": false,
       "organisation": "Moonshot AI",
       "params": 1000,
-      "prefs": {
-        "clear_formatting": 242,
-        "complete": 247,
-        "creative": 114,
-        "incorrect": 87,
-        "instructions_not_followed": 35,
-        "positive_prefs_ratio": 0.8083197389885808,
-        "superficial": 113,
-        "total_prefs": 1226,
-        "useful": 388
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -3353,21 +1975,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1068,
-        "mean_win_prob": 0.5911595008562106,
-        "n_match": 1304,
-        "rank": 19,
-        "rank_p2_5": 11,
-        "rank_p97_5": 29,
-        "score_p2_5": 1052,
-        "score_p97_5": 1083,
-        "trust_range": [
-          8,
-          10
-        ],
-        "win_rate": 0.5399769938650306
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3384,17 +1991,6 @@
       "new": false,
       "organisation": "Moonshot AI",
       "params": 1000,
-      "prefs": {
-        "clear_formatting": 199,
-        "complete": 251,
-        "creative": 58,
-        "incorrect": 65,
-        "instructions_not_followed": 48,
-        "positive_prefs_ratio": 0.7981366459627329,
-        "superficial": 82,
-        "total_prefs": 966,
-        "useful": 263
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -3411,7 +2007,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3428,7 +2023,6 @@
       "new": false,
       "organisation": "Moonshot AI",
       "params": 1000,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -3445,21 +2039,6 @@
       "active_params": 12,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 880,
-        "mean_win_prob": 0.3382348009721951,
-        "n_match": 3578,
-        "rank": 85,
-        "rank_p2_5": 84,
-        "rank_p97_5": 86,
-        "score_p2_5": 869,
-        "score_p97_5": 891,
-        "trust_range": [
-          1,
-          1
-        ],
-        "win_rate": 0.416296813862493
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "S",
@@ -3470,17 +2049,6 @@
       "new": false,
       "organisation": "Liquid",
       "params": 40,
-      "prefs": {
-        "clear_formatting": 647,
-        "complete": 419,
-        "creative": 166,
-        "incorrect": 357,
-        "instructions_not_followed": 121,
-        "positive_prefs_ratio": 0.6637848222862632,
-        "superficial": 572,
-        "total_prefs": 3123,
-        "useful": 841
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3497,21 +2065,6 @@
       "active_params": 1.5,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 996,
-        "mean_win_prob": 0.4922311821608464,
-        "n_match": 2276,
-        "rank": 53,
-        "rank_p2_5": 49,
-        "rank_p97_5": 58,
-        "score_p2_5": 984,
-        "score_p97_5": 1008,
-        "trust_range": [
-          4,
-          5
-        ],
-        "win_rate": 0.4696990333919156
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3528,17 +2081,6 @@
       "new": false,
       "organisation": "Liquid",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 232,
-        "complete": 199,
-        "creative": 56,
-        "incorrect": 190,
-        "instructions_not_followed": 86,
-        "positive_prefs_ratio": 0.6336311941510967,
-        "superficial": 175,
-        "total_prefs": 1231,
-        "useful": 293
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3555,21 +2097,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 956,
-        "mean_win_prob": 0.4372064150532003,
-        "n_match": 9973,
-        "rank": 73,
-        "rank_p2_5": 69,
-        "rank_p97_5": 75,
-        "score_p2_5": 950,
-        "score_p97_5": 963,
-        "trust_range": [
-          4,
-          2
-        ],
-        "win_rate": 0.4950747166783673
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3586,17 +2113,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 405,
-      "prefs": {
-        "clear_formatting": 1788,
-        "complete": 1579,
-        "creative": 556,
-        "incorrect": 947,
-        "instructions_not_followed": 437,
-        "positive_prefs_ratio": 0.7299608122550766,
-        "superficial": 890,
-        "total_prefs": 8421,
-        "useful": 2224
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3613,21 +2129,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 971,
-        "mean_win_prob": 0.45844663659701973,
-        "n_match": 5583,
-        "rank": 65,
-        "rank_p2_5": 61,
-        "rank_p97_5": 69,
-        "score_p2_5": 963,
-        "score_p97_5": 980,
-        "trust_range": [
-          4,
-          4
-        ],
-        "win_rate": 0.530445996775927
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "M",
@@ -3638,17 +2139,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 70,
-      "prefs": {
-        "clear_formatting": 1305,
-        "complete": 1047,
-        "creative": 365,
-        "incorrect": 463,
-        "instructions_not_followed": 177,
-        "positive_prefs_ratio": 0.7711433756805808,
-        "superficial": 621,
-        "total_prefs": 5510,
-        "useful": 1532
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3665,21 +2155,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 932,
-        "mean_win_prob": 0.405144013473085,
-        "n_match": 10444,
-        "rank": 80,
-        "rank_p2_5": 77,
-        "rank_p97_5": 82,
-        "score_p2_5": 926,
-        "score_p97_5": 938,
-        "trust_range": [
-          3,
-          2
-        ],
-        "win_rate": 0.4424234009957871
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": "https://albert.api.etalab.gouv.fr/v1/",
@@ -3696,17 +2171,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 1159,
-        "complete": 1014,
-        "creative": 373,
-        "incorrect": 1043,
-        "instructions_not_followed": 404,
-        "positive_prefs_ratio": 0.6275533712179389,
-        "superficial": 978,
-        "total_prefs": 6511,
-        "useful": 1540
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3723,21 +2187,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1043,
-        "mean_win_prob": 0.557921563104075,
-        "n_match": 6709,
-        "rank": 34,
-        "rank_p2_5": 30,
-        "rank_p97_5": 36,
-        "score_p2_5": 1036,
-        "score_p97_5": 1051,
-        "trust_range": [
-          4,
-          2
-        ],
-        "win_rate": 0.5452863107664778
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3754,17 +2203,6 @@
       "new": false,
       "organisation": "Nvidia",
       "params": 70,
-      "prefs": {
-        "clear_formatting": 1431,
-        "complete": 1473,
-        "creative": 487,
-        "incorrect": 381,
-        "instructions_not_followed": 136,
-        "positive_prefs_ratio": 0.8440225756798359,
-        "superficial": 395,
-        "total_prefs": 5847,
-        "useful": 1544
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3781,21 +2219,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 986,
-        "mean_win_prob": 0.4788765433374813,
-        "n_match": 9845,
-        "rank": 57,
-        "rank_p2_5": 54,
-        "rank_p97_5": 62,
-        "score_p2_5": 980,
-        "score_p97_5": 992,
-        "trust_range": [
-          3,
-          5
-        ],
-        "win_rate": 0.47193905535804975
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3812,17 +2235,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 70,
-      "prefs": {
-        "clear_formatting": 1223,
-        "complete": 1272,
-        "creative": 340,
-        "incorrect": 556,
-        "instructions_not_followed": 191,
-        "positive_prefs_ratio": 0.7444721529509559,
-        "superficial": 790,
-        "total_prefs": 6015,
-        "useful": 1643
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3839,21 +2251,6 @@
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1010,
-        "mean_win_prob": 0.5123785468735157,
-        "n_match": 6565,
-        "rank": 48,
-        "rank_p2_5": 43,
-        "rank_p97_5": 51,
-        "score_p2_5": 1003,
-        "score_p97_5": 1017,
-        "trust_range": [
-          5,
-          3
-        ],
-        "win_rate": 0.4864204112718964
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3870,17 +2267,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 109,
-      "prefs": {
-        "clear_formatting": 807,
-        "complete": 846,
-        "creative": 224,
-        "incorrect": 355,
-        "instructions_not_followed": 143,
-        "positive_prefs_ratio": 0.7429749935550399,
-        "superficial": 499,
-        "total_prefs": 3879,
-        "useful": 1005
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3897,21 +2283,6 @@
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1015,
-        "mean_win_prob": 0.5185264225483007,
-        "n_match": 3849,
-        "rank": 44,
-        "rank_p2_5": 40,
-        "rank_p97_5": 49,
-        "score_p2_5": 1006,
-        "score_p97_5": 1025,
-        "trust_range": [
-          4,
-          5
-        ],
-        "win_rate": 0.48251234086775785
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -3928,17 +2299,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 400,
-      "prefs": {
-        "clear_formatting": 306,
-        "complete": 321,
-        "creative": 86,
-        "incorrect": 137,
-        "instructions_not_followed": 76,
-        "positive_prefs_ratio": 0.7171464330413017,
-        "superficial": 239,
-        "total_prefs": 1598,
-        "useful": 433
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -3955,21 +2315,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 1089,
-        "mean_win_prob": 0.6190814217227704,
-        "n_match": 2207,
-        "rank": 10,
-        "rank_p2_5": 7,
-        "rank_p97_5": 14,
-        "score_p2_5": 1076,
-        "score_p97_5": 1101,
-        "trust_range": [
-          3,
-          4
-        ],
-        "win_rate": 0.5809968282736747
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -3986,17 +2331,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 123,
-      "prefs": {
-        "clear_formatting": 104,
-        "complete": 150,
-        "creative": 41,
-        "incorrect": 50,
-        "instructions_not_followed": 3,
-        "positive_prefs_ratio": 0.8448275862068966,
-        "superficial": 28,
-        "total_prefs": 522,
-        "useful": 146
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4013,21 +2347,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1049,
-        "mean_win_prob": 0.5656657968772842,
-        "n_match": 3147,
-        "rank": 30,
-        "rank_p2_5": 26,
-        "rank_p97_5": 35,
-        "score_p2_5": 1038,
-        "score_p97_5": 1059,
-        "trust_range": [
-          4,
-          5
-        ],
-        "win_rate": 0.52184361093452
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -4044,17 +2363,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 24,
-      "prefs": {
-        "clear_formatting": 181,
-        "complete": 198,
-        "creative": 53,
-        "incorrect": 88,
-        "instructions_not_followed": 32,
-        "positive_prefs_ratio": 0.7692307692307693,
-        "superficial": 84,
-        "total_prefs": 884,
-        "useful": 248
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4071,7 +2379,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "M",
@@ -4082,7 +2389,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 70,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4099,7 +2405,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -4110,7 +2415,6 @@
       "new": false,
       "organisation": "Meta",
       "params": 8,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4127,21 +2431,6 @@
       "active_params": 10,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 976,
-        "mean_win_prob": 0.4653418021375933,
-        "n_match": 2160,
-        "rank": 63,
-        "rank_p2_5": 55,
-        "rank_p97_5": 69,
-        "score_p2_5": 964,
-        "score_p97_5": 989,
-        "trust_range": [
-          8,
-          6
-        ],
-        "win_rate": 0.4370324074074074
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -4158,17 +2447,6 @@
       "new": false,
       "organisation": "MiniMax",
       "params": 230,
-      "prefs": {
-        "clear_formatting": 166,
-        "complete": 234,
-        "creative": 66,
-        "incorrect": 127,
-        "instructions_not_followed": 75,
-        "positive_prefs_ratio": 0.6854545454545454,
-        "superficial": 144,
-        "total_prefs": 1100,
-        "useful": 288
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4185,7 +2463,6 @@
       "active_params": 10,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -4202,7 +2479,6 @@
       "new": true,
       "organisation": "MiniMax",
       "params": 229,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -4219,21 +2495,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": {
-        "elo": 962,
-        "mean_win_prob": 0.4455187602323125,
-        "n_match": 9278,
-        "rank": 69,
-        "rank_p2_5": 67,
-        "rank_p97_5": 72,
-        "score_p2_5": 956,
-        "score_p97_5": 969,
-        "trust_range": [
-          2,
-          3
-        ],
-        "win_rate": 0.47576819407008086
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -4244,17 +2505,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 1695,
-        "complete": 1332,
-        "creative": 412,
-        "incorrect": 876,
-        "instructions_not_followed": 274,
-        "positive_prefs_ratio": 0.7159463894967177,
-        "superficial": 927,
-        "total_prefs": 7312,
-        "useful": 1796
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4271,21 +2521,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": false,
-      "data": {
-        "elo": 1018,
-        "mean_win_prob": 0.5229610244104481,
-        "n_match": 8829,
-        "rank": 43,
-        "rank_p2_5": 40,
-        "rank_p97_5": 47,
-        "score_p2_5": 1011,
-        "score_p97_5": 1025,
-        "trust_range": [
-          3,
-          4
-        ],
-        "win_rate": 0.5274413863404689
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "L",
@@ -4296,17 +2531,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 123,
-      "prefs": {
-        "clear_formatting": 1608,
-        "complete": 1451,
-        "creative": 355,
-        "incorrect": 393,
-        "instructions_not_followed": 140,
-        "positive_prefs_ratio": 0.8158500998310552,
-        "superficial": 666,
-        "total_prefs": 6511,
-        "useful": 1898
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4323,21 +2547,6 @@
       "active_params": 41,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1122,
-        "mean_win_prob": 0.6618490883409148,
-        "n_match": 3140,
-        "rank": 3,
-        "rank_p2_5": 1,
-        "rank_p97_5": 4,
-        "score_p2_5": 1111,
-        "score_p97_5": 1133,
-        "trust_range": [
-          2,
-          1
-        ],
-        "win_rate": 0.5630509554140127
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -4354,17 +2563,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 675,
-      "prefs": {
-        "clear_formatting": 568,
-        "complete": 741,
-        "creative": 217,
-        "incorrect": 140,
-        "instructions_not_followed": 88,
-        "positive_prefs_ratio": 0.8645088445615355,
-        "superficial": 132,
-        "total_prefs": 2657,
-        "useful": 771
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4381,21 +2579,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 1118,
-        "mean_win_prob": 0.6569260462960075,
-        "n_match": 6358,
-        "rank": 4,
-        "rank_p2_5": 2,
-        "rank_p97_5": 4,
-        "score_p2_5": 1110,
-        "score_p97_5": 1126,
-        "trust_range": [
-          2,
-          0
-        ],
-        "win_rate": 0.5899433695139217
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -4412,17 +2595,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 123,
-      "prefs": {
-        "clear_formatting": 670,
-        "complete": 818,
-        "creative": 235,
-        "incorrect": 192,
-        "instructions_not_followed": 85,
-        "positive_prefs_ratio": 0.8535370308867486,
-        "superficial": 164,
-        "total_prefs": 3011,
-        "useful": 847
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4439,21 +2611,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 850,
-        "mean_win_prob": 0.3023279790045121,
-        "n_match": 6251,
-        "rank": 88,
-        "rank_p2_5": 87,
-        "rank_p97_5": 89,
-        "score_p2_5": 841,
-        "score_p97_5": 860,
-        "trust_range": [
-          1,
-          1
-        ],
-        "win_rate": 0.37482482802751566
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -4464,17 +2621,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 12,
-      "prefs": {
-        "clear_formatting": 900,
-        "complete": 661,
-        "creative": 225,
-        "incorrect": 638,
-        "instructions_not_followed": 292,
-        "positive_prefs_ratio": 0.6131876557408472,
-        "superficial": 1088,
-        "total_prefs": 5217,
-        "useful": 1413
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4491,21 +2637,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 1014,
-        "mean_win_prob": 0.5179736182228161,
-        "n_match": 4934,
-        "rank": 46,
-        "rank_p2_5": 41,
-        "rank_p97_5": 49,
-        "score_p2_5": 1006,
-        "score_p97_5": 1023,
-        "trust_range": [
-          5,
-          3
-        ],
-        "win_rate": 0.48257855260490573
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -4522,17 +2653,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 24,
-      "prefs": {
-        "clear_formatting": 586,
-        "complete": 587,
-        "creative": 170,
-        "incorrect": 241,
-        "instructions_not_followed": 113,
-        "positive_prefs_ratio": 0.751349406261245,
-        "superficial": 337,
-        "total_prefs": 2779,
-        "useful": 745
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4549,21 +2669,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 984,
-        "mean_win_prob": 0.47639783839994443,
-        "n_match": 3318,
-        "rank": 58,
-        "rank_p2_5": 53,
-        "rank_p97_5": 64,
-        "score_p2_5": 974,
-        "score_p97_5": 994,
-        "trust_range": [
-          5,
-          6
-        ],
-        "win_rate": 0.4952350813743219
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -4574,17 +2679,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 24,
-      "prefs": {
-        "clear_formatting": 656,
-        "complete": 536,
-        "creative": 155,
-        "incorrect": 204,
-        "instructions_not_followed": 71,
-        "positive_prefs_ratio": 0.7823485415108452,
-        "superficial": 307,
-        "total_prefs": 2674,
-        "useful": 745
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4601,21 +2695,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1059,
-        "mean_win_prob": 0.5787279715419086,
-        "n_match": 5510,
-        "rank": 26,
-        "rank_p2_5": 20,
-        "rank_p97_5": 30,
-        "score_p2_5": 1051,
-        "score_p97_5": 1067,
-        "trust_range": [
-          6,
-          4
-        ],
-        "win_rate": 0.5236805807622504
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -4632,17 +2711,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 24,
-      "prefs": {
-        "clear_formatting": 544,
-        "complete": 551,
-        "creative": 172,
-        "incorrect": 243,
-        "instructions_not_followed": 76,
-        "positive_prefs_ratio": 0.7788884446221511,
-        "superficial": 234,
-        "total_prefs": 2501,
-        "useful": 681
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4659,21 +2727,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1004,
-        "mean_win_prob": 0.5041806219854251,
-        "n_match": 5079,
-        "rank": 49,
-        "rank_p2_5": 46,
-        "rank_p97_5": 53,
-        "score_p2_5": 997,
-        "score_p97_5": 1013,
-        "trust_range": [
-          3,
-          4
-        ],
-        "win_rate": 0.4945107304587517
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -4684,17 +2737,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 24,
-      "prefs": {
-        "clear_formatting": 916,
-        "complete": 791,
-        "creative": 247,
-        "incorrect": 268,
-        "instructions_not_followed": 130,
-        "positive_prefs_ratio": 0.787146529562982,
-        "superficial": 430,
-        "total_prefs": 3890,
-        "useful": 1108
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4711,7 +2753,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -4722,7 +2763,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 24,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4739,21 +2779,6 @@
       "active_params": 44,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 840,
-        "mean_win_prob": 0.2899370564206755,
-        "n_match": 5455,
-        "rank": 89,
-        "rank_p2_5": 88,
-        "rank_p97_5": 90,
-        "score_p2_5": 830,
-        "score_p97_5": 849,
-        "trust_range": [
-          1,
-          1
-        ],
-        "win_rate": 0.36710357470210814
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "L",
@@ -4764,17 +2789,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 176,
-      "prefs": {
-        "clear_formatting": 702,
-        "complete": 516,
-        "creative": 203,
-        "incorrect": 535,
-        "instructions_not_followed": 276,
-        "positive_prefs_ratio": 0.5925752976885361,
-        "superficial": 934,
-        "total_prefs": 4283,
-        "useful": 1117
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4791,21 +2805,6 @@
       "active_params": 14,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 883,
-        "mean_win_prob": 0.34170176350917003,
-        "n_match": 2560,
-        "rank": 84,
-        "rank_p2_5": 84,
-        "rank_p97_5": 86,
-        "score_p2_5": 869,
-        "score_p97_5": 896,
-        "trust_range": [
-          0,
-          2
-        ],
-        "win_rate": 0.43488671874999996
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -4816,17 +2815,6 @@
       "new": false,
       "organisation": "Mistral AI",
       "params": 56,
-      "prefs": {
-        "clear_formatting": 503,
-        "complete": 375,
-        "creative": 164,
-        "incorrect": 256,
-        "instructions_not_followed": 159,
-        "positive_prefs_ratio": 0.687524290711232,
-        "superficial": 389,
-        "total_prefs": 2573,
-        "useful": 727
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -4877,21 +2865,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 981,
-        "mean_win_prob": 0.47144303296775514,
-        "n_match": 1619,
-        "rank": 59,
-        "rank_p2_5": 53,
-        "rank_p97_5": 68,
-        "score_p2_5": 967,
-        "score_p97_5": 995,
-        "trust_range": [
-          6,
-          9
-        ],
-        "win_rate": 0.51142063001853
-      },
       "distribution": "api-only",
       "endpoint": null,
       "friendly_size": "S",
@@ -4902,17 +2875,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 18,
-      "prefs": {
-        "clear_formatting": 230,
-        "complete": 254,
-        "creative": 85,
-        "incorrect": 49,
-        "instructions_not_followed": 28,
-        "positive_prefs_ratio": 0.8139946855624446,
-        "superficial": 133,
-        "total_prefs": 1129,
-        "useful": 350
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -4929,21 +2891,6 @@
       "active_params": null,
       "arch": "maybe-dense",
       "commercial_use": null,
-      "data": {
-        "elo": 1002,
-        "mean_win_prob": 0.5008963606355553,
-        "n_match": 2830,
-        "rank": 50,
-        "rank_p2_5": 47,
-        "rank_p97_5": 55,
-        "score_p2_5": 991,
-        "score_p97_5": 1012,
-        "trust_range": [
-          3,
-          5
-        ],
-        "win_rate": 0.4738494167550371
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -4960,17 +2907,6 @@
       "new": false,
       "organisation": "OpenAI",
       "params": 18,
-      "prefs": {
-        "clear_formatting": 286,
-        "complete": 374,
-        "creative": 111,
-        "incorrect": 133,
-        "instructions_not_followed": 45,
-        "positive_prefs_ratio": 0.7698695136417556,
-        "superficial": 210,
-        "total_prefs": 1686,
-        "useful": 527
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -4987,7 +2923,6 @@
       "active_params": null,
       "arch": "maybe-moe",
       "commercial_use": false,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": "https://api.ordbogen.ai/v1",
@@ -5004,7 +2939,6 @@
       "new": true,
       "organisation": "Ordbogen",
       "params": 358,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5023,7 +2957,6 @@
       "active_params": null,
       "arch": "maybe-moe",
       "commercial_use": false,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": "https://api.ordbogen.ai/v1",
@@ -5040,7 +2973,6 @@
       "new": true,
       "organisation": "Ordbogen",
       "params": 358,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5059,7 +2991,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "fully-open-source",
       "endpoint": null,
       "friendly_size": "S",
@@ -5070,7 +3001,6 @@
       "new": false,
       "organisation": "Ai2",
       "params": 32,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5087,21 +3017,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 868,
-        "mean_win_prob": 0.32319439223691965,
-        "n_match": 1196,
-        "rank": 86,
-        "rank_p2_5": 84,
-        "rank_p97_5": 88,
-        "score_p2_5": 850,
-        "score_p97_5": 886,
-        "trust_range": [
-          2,
-          2
-        ],
-        "win_rate": 0.3349247491638796
-      },
       "distribution": "fully-open-source",
       "endpoint": {
         "api_base": null,
@@ -5118,17 +3033,6 @@
       "new": false,
       "organisation": "Ai2",
       "params": 32,
-      "prefs": {
-        "clear_formatting": 59,
-        "complete": 99,
-        "creative": 33,
-        "incorrect": 117,
-        "instructions_not_followed": 107,
-        "positive_prefs_ratio": 0.4840764331210191,
-        "superficial": 100,
-        "total_prefs": 628,
-        "useful": 113
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -5145,7 +3049,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -5156,7 +3059,6 @@
       "new": false,
       "organisation": "Microsoft",
       "params": 3.8,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5173,7 +3075,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -5184,7 +3085,6 @@
       "new": false,
       "organisation": "Microsoft",
       "params": 7,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5201,21 +3101,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 860,
-        "mean_win_prob": 0.3138985932327813,
-        "n_match": 2535,
-        "rank": 87,
-        "rank_p2_5": 86,
-        "rank_p97_5": 88,
-        "score_p2_5": 845,
-        "score_p97_5": 874,
-        "trust_range": [
-          1,
-          1
-        ],
-        "win_rate": 0.4021104536489152
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -5226,17 +3111,6 @@
       "new": false,
       "organisation": "Microsoft",
       "params": 3.8,
-      "prefs": {
-        "clear_formatting": 533,
-        "complete": 477,
-        "creative": 226,
-        "incorrect": 428,
-        "instructions_not_followed": 300,
-        "positive_prefs_ratio": 0.6139717940308298,
-        "superficial": 449,
-        "total_prefs": 3049,
-        "useful": 636
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5253,21 +3127,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 966,
-        "mean_win_prob": 0.4508925178341852,
-        "n_match": 9968,
-        "rank": 68,
-        "rank_p2_5": 65,
-        "rank_p97_5": 71,
-        "score_p2_5": 960,
-        "score_p97_5": 972,
-        "trust_range": [
-          3,
-          3
-        ],
-        "win_rate": 0.46780074245008524
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5284,17 +3143,6 @@
       "new": false,
       "organisation": "Microsoft",
       "params": 14,
-      "prefs": {
-        "clear_formatting": 1311,
-        "complete": 1193,
-        "creative": 336,
-        "incorrect": 731,
-        "instructions_not_followed": 253,
-        "positive_prefs_ratio": 0.7191626409017713,
-        "superficial": 760,
-        "total_prefs": 6210,
-        "useful": 1626
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5311,21 +3159,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 988,
-        "mean_win_prob": 0.4809162135045945,
-        "n_match": 3245,
-        "rank": 56,
-        "rank_p2_5": 52,
-        "rank_p97_5": 63,
-        "score_p2_5": 977,
-        "score_p97_5": 999,
-        "trust_range": [
-          4,
-          7
-        ],
-        "win_rate": 0.4323697996918336
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5342,17 +3175,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 8,
-      "prefs": {
-        "clear_formatting": 222,
-        "complete": 314,
-        "creative": 84,
-        "incorrect": 247,
-        "instructions_not_followed": 99,
-        "positive_prefs_ratio": 0.651048951048951,
-        "superficial": 153,
-        "total_prefs": 1430,
-        "useful": 311
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5369,7 +3191,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -5380,7 +3201,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 32,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5397,7 +3217,6 @@
       "active_params": 14,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -5408,7 +3227,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 57,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5425,7 +3243,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "M",
@@ -5436,7 +3253,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 72,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5453,21 +3269,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 727,
-        "mean_win_prob": 0.17852204152240891,
-        "n_match": 80,
-        "rank": 93,
-        "rank_p2_5": 91,
-        "rank_p97_5": 93,
-        "score_p2_5": 630,
-        "score_p97_5": 810,
-        "trust_range": [
-          2,
-          0
-        ],
-        "win_rate": 0.2525
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -5478,17 +3279,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 7,
-      "prefs": {
-        "clear_formatting": 22,
-        "complete": 12,
-        "creative": 4,
-        "incorrect": 11,
-        "instructions_not_followed": 7,
-        "positive_prefs_ratio": 0.6404494382022472,
-        "superficial": 14,
-        "total_prefs": 89,
-        "useful": 19
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5505,21 +3295,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 959,
-        "mean_win_prob": 0.44154711922363155,
-        "n_match": 142,
-        "rank": 72,
-        "rank_p2_5": 44,
-        "rank_p97_5": 83,
-        "score_p2_5": 897,
-        "score_p97_5": 1016,
-        "trust_range": [
-          28,
-          11
-        ],
-        "win_rate": 0.5557042253521126
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -5530,17 +3305,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 32,
-      "prefs": {
-        "clear_formatting": 57,
-        "complete": 43,
-        "creative": 16,
-        "incorrect": 13,
-        "instructions_not_followed": 15,
-        "positive_prefs_ratio": 0.7741935483870968,
-        "superficial": 21,
-        "total_prefs": 217,
-        "useful": 52
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5557,21 +3321,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 925,
-        "mean_win_prob": 0.39571107140389744,
-        "n_match": 1417,
-        "rank": 82,
-        "rank_p2_5": 76,
-        "rank_p97_5": 83,
-        "score_p2_5": 906,
-        "score_p97_5": 942,
-        "trust_range": [
-          6,
-          1
-        ],
-        "win_rate": 0.49383909668313336
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -5582,17 +3331,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 7,
-      "prefs": {
-        "clear_formatting": 380,
-        "complete": 284,
-        "creative": 104,
-        "incorrect": 231,
-        "instructions_not_followed": 88,
-        "positive_prefs_ratio": 0.6914893617021277,
-        "superficial": 203,
-        "total_prefs": 1692,
-        "useful": 402
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5609,21 +3347,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 924,
-        "mean_win_prob": 0.3951786628063842,
-        "n_match": 7299,
-        "rank": 83,
-        "rank_p2_5": 79,
-        "rank_p97_5": 83,
-        "score_p2_5": 918,
-        "score_p97_5": 932,
-        "trust_range": [
-          4,
-          0
-        ],
-        "win_rate": 0.43789423208658723
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "S",
@@ -5634,17 +3357,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 32,
-      "prefs": {
-        "clear_formatting": 1142,
-        "complete": 923,
-        "creative": 293,
-        "incorrect": 790,
-        "instructions_not_followed": 234,
-        "positive_prefs_ratio": 0.6790841359258586,
-        "superficial": 742,
-        "total_prefs": 5503,
-        "useful": 1379
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5661,21 +3373,6 @@
       "active_params": 3.3,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 988,
-        "mean_win_prob": 0.48116116666937253,
-        "n_match": 3825,
-        "rank": 55,
-        "rank_p2_5": 52,
-        "rank_p97_5": 62,
-        "score_p2_5": 979,
-        "score_p97_5": 997,
-        "trust_range": [
-          3,
-          7
-        ],
-        "win_rate": 0.454989539748954
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5692,17 +3389,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 30,
-      "prefs": {
-        "clear_formatting": 287,
-        "complete": 375,
-        "creative": 92,
-        "incorrect": 225,
-        "instructions_not_followed": 112,
-        "positive_prefs_ratio": 0.6758747697974218,
-        "superficial": 191,
-        "total_prefs": 1629,
-        "useful": 347
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5719,21 +3405,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 1020,
-        "mean_win_prob": 0.5256039722598065,
-        "n_match": 2352,
-        "rank": 42,
-        "rank_p2_5": 39,
-        "rank_p97_5": 48,
-        "score_p2_5": 1008,
-        "score_p97_5": 1030,
-        "trust_range": [
-          3,
-          6
-        ],
-        "win_rate": 0.5059914893617021
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5750,17 +3421,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 32,
-      "prefs": {
-        "clear_formatting": 323,
-        "complete": 420,
-        "creative": 145,
-        "incorrect": 208,
-        "instructions_not_followed": 97,
-        "positive_prefs_ratio": 0.7435082140964494,
-        "superficial": 179,
-        "total_prefs": 1887,
-        "useful": 515
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -5777,21 +3437,6 @@
       "active_params": 35,
       "arch": "moe",
       "commercial_use": true,
-      "data": {
-        "elo": 1047,
-        "mean_win_prob": 0.5626803248042114,
-        "n_match": 1557,
-        "rank": 32,
-        "rank_p2_5": 24,
-        "rank_p97_5": 37,
-        "score_p2_5": 1033,
-        "score_p97_5": 1062,
-        "trust_range": [
-          8,
-          5
-        ],
-        "win_rate": 0.5199228295819935
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5808,17 +3453,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 480,
-      "prefs": {
-        "clear_formatting": 245,
-        "complete": 217,
-        "creative": 74,
-        "incorrect": 73,
-        "instructions_not_followed": 39,
-        "positive_prefs_ratio": 0.7925581395348837,
-        "superficial": 111,
-        "total_prefs": 1075,
-        "useful": 316
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -5835,7 +3469,6 @@
       "active_params": 3,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5852,7 +3485,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 80,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5869,21 +3501,6 @@
       "active_params": 32,
       "arch": "moe",
       "commercial_use": null,
-      "data": {
-        "elo": 1101,
-        "mean_win_prob": 0.6346198758377717,
-        "n_match": 3283,
-        "rank": 7,
-        "rank_p2_5": 5,
-        "rank_p97_5": 9,
-        "score_p2_5": 1091,
-        "score_p97_5": 1111,
-        "trust_range": [
-          2,
-          2
-        ],
-        "win_rate": 0.5672212065813528
-      },
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -5900,17 +3517,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 1000,
-      "prefs": {
-        "clear_formatting": 376,
-        "complete": 385,
-        "creative": 136,
-        "incorrect": 144,
-        "instructions_not_followed": 50,
-        "positive_prefs_ratio": 0.8136419001218027,
-        "superficial": 112,
-        "total_prefs": 1642,
-        "useful": 439
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -5927,7 +3533,6 @@
       "active_params": 3,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5944,7 +3549,6 @@
       "new": true,
       "organisation": "Alibaba",
       "params": 35,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -5961,7 +3565,6 @@
       "active_params": 17,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -5978,7 +3581,6 @@
       "new": true,
       "organisation": "Alibaba",
       "params": 397,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -5995,21 +3597,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 947,
-        "mean_win_prob": 0.4253287566739331,
-        "n_match": 1566,
-        "rank": 75,
-        "rank_p2_5": 70,
-        "rank_p97_5": 80,
-        "score_p2_5": 932,
-        "score_p97_5": 963,
-        "trust_range": [
-          5,
-          5
-        ],
-        "win_rate": 0.4485997442455243
-      },
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -6026,17 +3613,6 @@
       "new": false,
       "organisation": "Alibaba",
       "params": 32,
-      "prefs": {
-        "clear_formatting": 233,
-        "complete": 343,
-        "creative": 139,
-        "incorrect": 140,
-        "instructions_not_followed": 92,
-        "positive_prefs_ratio": 0.7490692479523455,
-        "superficial": 105,
-        "total_prefs": 1343,
-        "useful": 291
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -6053,7 +3629,6 @@
       "active_params": 13,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -6070,7 +3645,6 @@
       "new": false,
       "organisation": "Arcee",
       "params": 398,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": false,
@@ -6087,21 +3661,6 @@
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
-      "data": {
-        "elo": 764,
-        "mean_win_prob": 0.21100247288159402,
-        "n_match": 65,
-        "rank": 91,
-        "rank_p2_5": 88,
-        "rank_p97_5": 93,
-        "score_p2_5": 661,
-        "score_p97_5": 854,
-        "trust_range": [
-          3,
-          2
-        ],
-        "win_rate": 0.32599999999999996
-      },
       "distribution": "open-weights",
       "endpoint": null,
       "friendly_size": "XS",
@@ -6112,17 +3671,6 @@
       "new": false,
       "organisation": "01-ai",
       "params": 9,
-      "prefs": {
-        "clear_formatting": 19,
-        "complete": 14,
-        "creative": 5,
-        "incorrect": 12,
-        "instructions_not_followed": 14,
-        "positive_prefs_ratio": 0.5567010309278351,
-        "superficial": 17,
-        "total_prefs": 97,
-        "useful": 16
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
