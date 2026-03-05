@@ -50,7 +50,7 @@ def country_portal_from_locale(locale: str = Header(..., alias="X-Locale")) -> s
 CountryPortalAnno = Annotated[CountryPortal, Depends(country_portal_from_locale)]
 
 
-def get_country_portal_count(country_code: CountryPortal, ttl: int = 1200) -> int:
+def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
 
