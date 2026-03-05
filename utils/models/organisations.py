@@ -109,7 +109,6 @@ class Organisation(RawOrganisation):
     @classmethod
     def enhance_models(cls, value: Any, info: ValidationInfo) -> list[LLMDataRawBase]:
         assert info.context is not None
-        assert info.context["data"] is not None
         assert info.context["licenses"] is not None
 
         for model in value:
@@ -129,19 +128,6 @@ class Organisation(RawOrganisation):
             if model["license"] == "proprietary":
                 model["reuse"] = info.data["proprietary_reuse"]
                 model["commercial_use"] = info.data["proprietary_commercial_use"]
-
-            # inject ranking/prefs data
-            dataset_data = info.context["data"].get(model["id"])
-
-            if dataset_data:
-                warning_infos = f"'{model["id"]}' (status: {model.get("status")})"
-                model["data"] = dataset_data.data
-                if not dataset_data.data:
-                    logger.warning(f"No ranking data for {warning_infos}")
-
-                model["prefs"] = dataset_data.prefs
-                if not dataset_data.prefs:
-                    logger.warning(f"No preferences data for {warning_infos}")
 
         return value
 
