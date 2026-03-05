@@ -24,7 +24,13 @@ def _load_spam_patterns() -> list[re.Pattern]:
         logger.warning(f"Spam patterns file not found: {patterns_file}")
         return []
 
-    flag_map = {"IGNORECASE": re.IGNORECASE, "MULTILINE": re.MULTILINE, "DOTALL": re.DOTALL, "ASCII": re.ASCII, "VERBOSE": re.VERBOSE}
+    flag_map = {
+        "IGNORECASE": re.IGNORECASE,
+        "MULTILINE": re.MULTILINE,
+        "DOTALL": re.DOTALL,
+        "ASCII": re.ASCII,
+        "VERBOSE": re.VERBOSE,
+    }
 
     try:
         with open(patterns_file, "r", encoding="utf-8") as f:
@@ -37,7 +43,10 @@ def _load_spam_patterns() -> list[re.Pattern]:
 
             name = pattern_def["name"]
             regex = pattern_def["regex"]
-            flags = sum(flag_map.get(f.strip(), 0) for f in pattern_def.get("flags", "").split("|"))
+            flags = sum(
+                flag_map.get(f.strip(), 0)
+                for f in pattern_def.get("flags", "").split("|")
+            )
 
             try:
                 compiled_pattern = re.compile(regex, flags)

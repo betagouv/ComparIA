@@ -5,12 +5,13 @@ This script creates a DuckDB database with the locally exported datasets.
 Use start_duckdb.sh to launch the DuckDB CLI.
 """
 
-import duckdb
 from pathlib import Path
 
-print("="*80)
+import duckdb
+
+print("=" * 80)
 print("PREPARING DUCKDB WITH COMPARIA LOCAL DATASETS")
-print("="*80)
+print("=" * 80)
 
 # Paths - parquets are in subdirectories from dry-run export
 local_dataset_dir = Path(__file__).parent
@@ -39,7 +40,9 @@ else:
     print("   Run: uv run python ../export_dataset.py --dry-run")
 
 # Load conversations
-conversations_parquet = local_dataset_dir / "comparia-conversations" / "conversations.parquet"
+conversations_parquet = (
+    local_dataset_dir / "comparia-conversations" / "conversations.parquet"
+)
 if conversations_parquet.exists():
     print(f"\n📊 Loading conversations from: {conversations_parquet}")
     con.execute(f"""
@@ -148,7 +151,9 @@ if reactions_parquet.exists():
     print(f"  Reactions: {reactions_count:,}")
 
 if conversations_parquet.exists():
-    conversations_count = con.execute("SELECT COUNT(*) FROM conversations").fetchone()[0]
+    conversations_count = con.execute("SELECT COUNT(*) FROM conversations").fetchone()[
+        0
+    ]
     print(f"  Conversations: {conversations_count:,}")
 
 if votes_parquet.exists():
@@ -160,9 +165,9 @@ print("\nℹ️  To verify data quality, run queries from: verify_dataset.sql")
 # Close connection
 con.close()
 
-print("\n" + "="*80)
+print("\n" + "=" * 80)
 print("DATABASE READY")
-print("="*80)
+print("=" * 80)
 print(f"""
 Database created: {db_path.absolute()}
 

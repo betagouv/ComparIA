@@ -10,7 +10,14 @@ from functools import cached_property
 from typing import Annotated, Literal, TypedDict, Union, get_args
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, computed_field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PlainSerializer,
+    computed_field,
+    field_validator,
+)
 
 from backend.arena.spam_detection import is_spam
 from backend.config import (
@@ -297,7 +304,9 @@ class AddFirstTextBody(BaseModel):
     @classmethod
     def check_spam(cls, v: str) -> str:
         if is_spam(v):
-            raise ValueError("This prompt format is not allowed. Please use natural language.")
+            raise ValueError(
+                "This prompt format is not allowed. Please use natural language."
+            )
         return v
 
 
@@ -310,7 +319,9 @@ class AddTextBody(BaseModel):
     @classmethod
     def check_spam(cls, v: str) -> str:
         if is_spam(v):
-            raise ValueError("This prompt format is not allowed. Please use natural language.")
+            raise ValueError(
+                "This prompt format is not allowed. Please use natural language."
+            )
         return v
 
 

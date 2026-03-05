@@ -11,9 +11,7 @@ ROOT_DIR = BACKEND_DIR.parent
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=ROOT_DIR / ".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
+        env_file=ROOT_DIR / ".env", env_file_encoding="utf-8", extra="ignore"
     )
     LANGUIA_DEBUG: bool = False
     LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
