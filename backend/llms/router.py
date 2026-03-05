@@ -24,8 +24,7 @@ async def get_available_models(country_portal: CountryPortalAnno):
     models_list = []
     for model in models.all.values():
         model_dict = model.model_dump()
-        # When dynamic rankings are active, replace static data entirely:
-        # models with votes get dynamic data, others get null
+        # Populate model definitions with ranking and prefs data if available
         model_dict["data"] = (
             data.rankings[model.id] if model.id in data.rankings else None
         )
