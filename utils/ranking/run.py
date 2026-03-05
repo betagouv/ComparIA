@@ -49,7 +49,7 @@ def store_to_redis(group: DataGroup, data: RankingResult) -> None:
         raise
 
 
-def main(mode: Literal["all", "redis", "json"] = "all") -> None:
+def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
     """
     Compute per group (portals + "all") `RankingResult` in redis/as file depending on mode.
     """
