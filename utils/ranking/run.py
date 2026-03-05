@@ -12,9 +12,15 @@ import cyclopts
 from fastapi.encoders import jsonable_encoder
 
 from utils.storage.redis import REDIS_RANKING_KEY, get_redis_client
-from utils.utils import configure_logger, write_json
+from utils.utils import (
+    LLMS_GENERATED_DATA_FILE,
+    configure_logger,
+    read_json,
+    write_json,
+)
 
 from .compute import DataGroup, RankingResult, compute_all_rankings
+from .monitor import monitor
 
 logger = configure_logger(logging.getLogger("ranking.run"))
 
@@ -56,6 +62,9 @@ def main(mode: Literal["all", "redis", "json"] = "all") -> None:
     if mode in ("all", "redis"):
         for k in data.keys():
             store_to_redis(k, jsonable_encoder(data[k]))
+
+    llms = read_json(LLMS_GENERATED_DATA_FILE)["models"]
+    monitor(llms, data["all"])
 
 
 if __name__ == "__main__":
