@@ -117,26 +117,30 @@
   <div class="fr-container">
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
-    <Tabs {tabs} noBorders kind="nav">
-      {#snippet tab({ id })}
-        {#if id === 'ranking'}
-          <p class="mb-12! text-dark-grey text-[14px]!">
-            {@html sanitize(
-              m['ranking.ranking.desc']({
-                linkProps: externalLinkProps('https://www.peren.gouv.fr/')
-              })
-            )}
-          </p>
+    {#if lastUpdateDate}
+      <Tabs {tabs} noBorders kind="nav">
+        {#snippet tab({ id })}
+          {#if id === 'ranking'}
+            <p class="mb-12! text-dark-grey text-[14px]!">
+              {@html sanitize(
+                m['ranking.ranking.desc']({
+                  linkProps: externalLinkProps('https://www.peren.gouv.fr/')
+                })
+              )}
+            </p>
 
-          <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
-        {:else if id === 'energy'}
-          <Energy onDownloadData={() => onDownloadData('energy')} />
-          <!-- {:else if id === 'preferences'}
+            <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
+          {:else if id === 'energy'}
+            <Energy onDownloadData={() => onDownloadData('energy')} />
+            <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
-        {:else if id === 'methodo'}
-          <Methodology />
-        {/if}
-      {/snippet}
-    </Tabs>
+          {:else if id === 'methodo'}
+            <Methodology />
+          {/if}
+        {/snippet}
+      </Tabs>
+    {:else}
+      <p>{m['ranking.no_data']()}</p>
+    {/if}
   </div>
 </main>
