@@ -1,0 +1,95 @@
+name: Check Missing Translations
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/locales/messages/fr.json'
+      - 'frontend/locales/messages/en.json'
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  check-translations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check missing translations
+        id: check
+        run: |
+          python3 << 'EOF'
+          import json
+          import os
+
+          def get_leaf_keys(d, parent_key=""):
+              keys = set()
+              for k, v in d.items():
+                  key = f"{parent_key}.{k}" if parent_key else k
+                  if isinstance(v, dict):
+                      keys |= get_leaf_keys(v, key)
+                  else:
+                      keys.add(key)
+              return keys
+
+          fr = json.loads(open("frontend/locales/messages/fr.json").read())
+          da = json.loads(open("frontend/locales/messages/da.json").read())
+
+          fr_keys = get_leaf_keys(fr)
+          da_keys = get_leaf_keys(da)
+
+          missing_in_da = sorted(fr_keys - da_keys)
+          missing_in_fr = sorted(da_keys - fr_keys)
+
+          body_parts = []
+
+          if missing_in_da:
+              items = "\n".join(f"- `{k}`" for k in missing_in_da)
+              body_parts.append(
+                  f"### Danish (`da.json`) is missing {len(missing_in_da)} key(s) present in `fr.json`\n\n"
+                  f"@KennethEnevoldsen could you add the Danish translations for these keys?\n\n"
+                  f"{items}"
+              )
+
+          if missing_in_fr:
+              items = "\n".join(f"- `{k}`" for k in missing_in_fr)
+              body_parts.append(
+                  f"### French (`fr.json`) is missing {len(missing_in_fr)} key(s) present in `da.json`\n\n"
+                  f"@simonaszilinskas could you add the French translations for these keys?\n\n"
+                  f"{items}"
+              )
+
+          if body_parts:
+              body = "## Missing Translations\n\n" + "\n\n".join(body_parts)
+              status = "found"
+          else:
+              body = ""
+              status = "ok"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"status={status}\n")
+
+          # Write body to a file to avoid escaping issues
+          with open("/tmp/comment-body.md", "w") as f:
+              f.write(body)
+          EOF
+
+      - name: Find existing comment
+        if: steps.check.outputs.status == 'found'
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '## Missing Translations'
+
+      - name: Post or update PR comment
+        if: steps.check.outputs.status == 'found'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: /tmp/comment-body.md
+          edit-mode: replace

@@ -1,4 +1,5 @@
 {
+    "_ci_test": "clé temporaire pour tester le workflow CI",
     "a11y": {
         "energyGraphDesc": "Nuage de points : chaque modèle est positionné selon son score de préférence en ordonnée et sa consommation énergétique en abscisse. Les mêmes données sont disponibles sous forme de tableau.",
         "externalLink": "{text} (nouvelle fenêtre)",
