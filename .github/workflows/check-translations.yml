@@ -5,6 +5,7 @@ on:
     paths:
       - 'frontend/locales/messages/fr.json'
       - 'frontend/locales/messages/en.json'
+      - '.github/workflows/check-translations.yml'
     types: [opened, synchronize, reopened]
 
 permissions:
