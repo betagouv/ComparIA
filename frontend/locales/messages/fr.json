@@ -1,4 +1,5 @@
 {
+    "_ci_test": "clé temporaire pour tester le workflow CI",
     "a11y": {
         "externalLink": "{text}"
     },
