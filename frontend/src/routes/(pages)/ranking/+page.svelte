@@ -80,9 +80,9 @@
   //     { key: 'total_prefs' as const, label: 'total prefs' },
   //     { key: 'total_positive_prefs' as const, label: 'total positive' },
   //     { key: 'total_negative_prefs' as const, label: 'total negative' },
-  //     ...[...APIPositiveReactions, ...APINegativeReactions].map((reaction) => ({
-  //       key: reaction,
-  //       label: reaction.replaceAll('_', ' ')
+  //     ...[...APIPositivePrefs, ...APINegativePrefs].map((pref) => ({
+  //       key: pref,
+  //       label: pref.replaceAll('_', ' ')
   //     }))
   //   ]
 
@@ -96,9 +96,9 @@
   //             if (col.key === 'id') {
   //               return m[col.key]
   //             } else if (col.key === 'total_positive_prefs') {
-  //               return APIPositiveReactions.reduce((acc, v) => acc + m.prefs[v], 0)
+  //               return APIPositivePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
   //             } else if (col.key === 'total_negative_prefs') {
-  //               return APINegativeReactions.reduce((acc, v) => acc + m.prefs[v], 0)
+  //               return APINegativePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
   //             } else {
   //               return m.prefs[col.key]
   //             }
