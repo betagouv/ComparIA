@@ -39,10 +39,17 @@ def monitor(llms: dict[str, Any], data: RankingResult):
     """
 
     llm_ids = set(llms.keys())
+    db_llm_ids = get_conversations_llm_ids()
     new_llm_ids = set([id_ for id_ in llm_ids if llms[id_]["new"]])
     archived_llm_ids = set(
         [id_ for id_ in llm_ids if llms[id_]["status"] == "archived"]
     )
+    in_db_but_not_in_list = db_llm_ids.difference(llm_ids)
+
+    if in_db_but_not_in_list:
+        logger.error(
+            f"There is LLMs names in DB but not in '{LLMS_RAW_DATA_FILE.relative_to(ROOT_DIR)}': {in_db_but_not_in_list}"
+        )
 
     for kind in ("rankings", "preferences"):
         data_llm_ids = set(getattr(data, kind).keys())
@@ -67,8 +74,7 @@ def monitor(llms: dict[str, Any], data: RankingResult):
             )
 
         # Try to find if there's some LLMs that do not ends up in dataset data
-        in_db_but_no_data_ids = get_conversations_llm_ids().difference(data_llm_ids)
-        if in_db_but_no_data_ids:
+        if in_db_but_no_data_ids := in_db_but_not_in_list.difference(data_llm_ids):
             logger.error(
                 f"LLMs are in db but not in '{kind}' data: {in_db_but_no_data_ids}"
             )
