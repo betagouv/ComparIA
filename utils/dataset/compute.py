@@ -30,13 +30,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 from backend.arena.spam_detection import is_spam
-from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 from utils.logger import configure_logger
-from utils.utils import LLMS_GENERATED_DATA_FILE, UTILS_DIR
+from utils.utils import UTILS_DIR
+
+from .queries import get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
-MODELS_DATA = {}
 
 logger = configure_logger(logging.getLogger("datasets"))
 
@@ -213,15 +213,13 @@ def calculate_kwh(model_name, tokens):
     Calculate energy consumption in kWh for a model based on token output.
     Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
     """
-    if tokens is None:
+    llm_data = get_llms_data().get(model_name)
+
+    if tokens is None or not llm_data:
+        # FIXME llm can be disabled and therefore excluded from get_llms_data
         return None
 
-    wh_per_million = (
-        MODELS_DATA[model_name.lower()].wh_per_million_token
-        if model_name.lower() in MODELS_DATA
-        else 0
-    )
-    return (wh_per_million / 1_000_000) * tokens / 1_000
+    return (llm_data.wh_per_million_token / 1_000_000) * tokens / 1_000
 
 
 def conversation_contains_spam(conversation_json) -> bool:
@@ -272,34 +270,6 @@ def conversation_contains_spam(conversation_json) -> bool:
     except (json.JSONDecodeError, TypeError, AttributeError) as e:
         logger.debug(f"Failed to parse conversation for spam detection: {e}")
         return False
-
-
-def load_models_data():
-    """
-    Load the generated models JSON data.
-    Used to enrich conversations with model metadata (params count, energy consumption).
-    """
-    global MODELS_DATA
-    try:
-        with open(LLMS_GENERATED_DATA_FILE, "r") as f:
-            models_data = json.load(f)
-            # Access the nested "models" key in the JSON structure
-            if "models" in models_data:
-                MODELS_DATA = {
-                    k.lower(): LLMData.model_validate(v)
-                    for k, v in models_data["models"].items()
-                    if v.get("status") in ("enabled", "archived")
-                }
-            else:
-                MODELS_DATA = {
-                    k.lower(): LLMData.model_validate(v)
-                    for k, v in models_data.items()
-                    if v.get("status") in ("enabled", "archived")
-                }
-    except FileNotFoundError:
-        logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
-    except json.JSONDecodeError:
-        logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
 
 
 def fetch_and_transform_data(conn, table_name, query=None):
@@ -374,32 +344,34 @@ def fetch_and_transform_data(conn, table_name, query=None):
         # Add model metadata for conversations dataset
         if table_name == "conversations":
             logger.info("Adding model infos...")
+            llms_data = get_llms_data()
+
             # Add parameter counts (total and active) - only for models that exist in MODELS_DATA
             dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
                 lambda x: (
-                    get_total_params(MODELS_DATA[x.lower()])
-                    if x.lower() in MODELS_DATA
+                    get_total_params(llms_data[x.lower()])
+                    if x.lower() in llms_data
                     else None
                 )
             )
             dataframe["model_b_total_params"] = dataframe["model_b_name"].apply(
                 lambda x: (
-                    get_total_params(MODELS_DATA[x.lower()])
-                    if x.lower() in MODELS_DATA
+                    get_total_params(llms_data[x.lower()])
+                    if x.lower() in llms_data
                     else None
                 )
             )
             dataframe["model_a_active_params"] = dataframe["model_a_name"].apply(
                 lambda x: (
-                    get_active_params(MODELS_DATA[x.lower()])
-                    if x.lower() in MODELS_DATA
+                    get_active_params(llms_data[x.lower()])
+                    if x.lower() in llms_data
                     else None
                 )
             )
             dataframe["model_b_active_params"] = dataframe["model_b_name"].apply(
                 lambda x: (
-                    get_active_params(MODELS_DATA[x.lower()])
-                    if x.lower() in MODELS_DATA
+                    get_active_params(llms_data[x.lower()])
+                    if x.lower() in llms_data
                     else None
                 )
             )
@@ -711,7 +683,6 @@ def main():
 
     # Load lookup tables for data enrichment
     load_session_hash_ip()
-    load_models_data()
 
     # Log spam detection info
     logger.info("Spam detection enabled for filtering dataset")
