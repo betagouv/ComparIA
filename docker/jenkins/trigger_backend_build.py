@@ -105,8 +105,8 @@ class JenkinsBackendBuilder:
                 build_number = self._wait_for_build_start(queue_number)
                 if build_number:
                     logger.info(f"Build #{build_number} démarré")
-                    self._monitor_build(build_number)
-                    return build_number
+                    success = self._monitor_build(build_number)
+                    return build_number if success else None
             else:
                 logger.info(
                     f"✅ Build lancé (queue #{queue_number}). Utilisez --wait pour suivre la progression."
@@ -158,8 +158,8 @@ class JenkinsBackendBuilder:
         logger.warning(f"Timeout: le build n'a pas démarré après {max_wait}s")
         return None
 
-    def _monitor_build(self, build_number: int):
-        """Surveille la progression d'un build"""
+    def _monitor_build(self, build_number: int) -> bool:
+        """Surveille la progression d'un build et retourne True si succès"""
         logger.info(f"Surveillance du build #{build_number}...")
 
         while True:
@@ -176,23 +176,24 @@ class JenkinsBackendBuilder:
                     result = build_info.get("result", "UNKNOWN")
                     duration = build_info.get("duration", 0) / 1000
 
+                    # URL du build
+                    build_url = build_info.get("url", "N/A")
+                    logger.info(f"   URL: {build_url}")
+
                     if result == "SUCCESS":
                         logger.info(
                             f"✅ Build #{build_number} réussi! (durée: {duration:.0f}s)"
                         )
+                        return True
                     else:
                         logger.error(
                             f"❌ Build #{build_number} échoué: {result} (durée: {duration:.0f}s)"
                         )
-
-                    # URL du build
-                    build_url = build_info.get("url", "N/A")
-                    logger.info(f"   URL: {build_url}")
-                    break
+                        return False
 
             except Exception as e:
                 logger.error(f"❌ Erreur lors de la surveillance: {e}")
-                break
+                return False
 
     def get_last_build_info(self) -> Optional[Dict[str, Any]]:
         """Récupère les informations du dernier build"""

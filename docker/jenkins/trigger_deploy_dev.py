@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script pour lancer le job de build de l'image Docker frontend
+Script pour lancer le job de déploiement Kustomize dev
 Utilise un token API pour l'authentification (méthode recommandée)
 """
 
@@ -26,15 +26,15 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class JenkinsFrontendBuilder:
-    """Classe pour lancer le build du frontend Docker sur Jenkins"""
+class JenkinsDeployDevTrigger:
+    """Classe pour lancer le déploiement Kustomize dev sur Jenkins"""
 
     def __init__(
         self,
         jenkins_url: str,
         username: str,
         api_token: str,
-        job_name: str = "atnum/dev/languia/languia-dev-image-frontend",
+        job_name: str = "atnum/dev/languia/languia-kustomize-dev",
         timeout: int = 30,
     ):
         self.jenkins_url = jenkins_url.rstrip("/")
@@ -69,15 +69,16 @@ class JenkinsFrontendBuilder:
             logger.error(f"❌ Erreur de connexion: {e}")
             return False
 
-    def trigger_build(
-        self, ref_to_build: str = "develop", wait: bool = False
+    def trigger_deploy(
+        self, image_tag: str, force_delete: bool = False, wait: bool = False
     ) -> Optional[int]:
         """
-        Lance le build du frontend Docker
+        Lance le déploiement Kustomize dev
 
         Args:
-            ref_to_build: Branche ou ref Git à builder (défaut: develop)
-            wait: Si True, attend la fin du build (défaut: False)
+            image_tag: Tag de l'image (commit hash)
+            force_delete: Forcer la suppression des ressources avant déploiement
+            wait: Si True, attend la fin du déploiement (défaut: False)
 
         Returns:
             Numéro du build lancé ou None en cas d'erreur
@@ -91,11 +92,13 @@ class JenkinsFrontendBuilder:
             job_info = self.server.get_job_info(self.job_name)
             logger.info(f"Job trouvé: {self.job_name}")
 
-            # Paramètres du build
-            parameters = {"REF_TO_BUILD": ref_to_build}
+            # Paramètres du déploiement
+            parameters = {"IMAGE_TAG": image_tag, "FORCE_DELETE": force_delete}
 
-            # Lance le build
-            logger.info(f"Lancement du build avec REF_TO_BUILD='{ref_to_build}'...")
+            # Lance le déploiement
+            logger.info(
+                f"Lancement du déploiement avec IMAGE_TAG='{image_tag}', FORCE_DELETE={force_delete}..."
+            )
             queue_number = self.server.build_job(self.job_name, parameters=parameters)
 
             # Récupère le numéro du build à partir de la queue
@@ -109,16 +112,16 @@ class JenkinsFrontendBuilder:
                     return build_number if success else None
             else:
                 logger.info(
-                    f"✅ Build lancé (queue #{queue_number}). Utilisez --wait pour suivre la progression."
+                    f"✅ Déploiement lancé (queue #{queue_number}). Utilisez --wait pour suivre la progression."
                 )
 
             return queue_number
 
         except jenkins.JenkinsException as e:
-            logger.error(f"❌ Erreur Jenkins lors du build: {e}")
+            logger.error(f"❌ Erreur Jenkins lors du déploiement: {e}")
             return None
         except Exception as e:
-            logger.error(f"❌ Erreur lors du lancement du build: {e}")
+            logger.error(f"❌ Erreur lors du lancement du déploiement: {e}")
             return None
 
     def _wait_for_build_start(
@@ -195,36 +198,11 @@ class JenkinsFrontendBuilder:
                 logger.error(f"❌ Erreur lors de la surveillance: {e}")
                 return False
 
-    def get_last_build_info(self) -> Optional[Dict[str, Any]]:
-        """Récupère les informations du dernier build"""
-        if not self.server:
-            logger.error("❌ Pas de connexion établie")
-            return None
-
-        try:
-            job_info = self.server.get_job_info(self.job_name)
-            if job_info.get("lastBuild"):
-                build_number = job_info["lastBuild"]["number"]
-                build_info = self.server.get_build_info(self.job_name, build_number)
-
-                logger.info(f"Dernier build: #{build_number}")
-                logger.info(f"  Statut: {build_info.get('result', 'N/A')}")
-                logger.info(f"  URL: {build_info.get('url', 'N/A')}")
-
-                return build_info
-            else:
-                logger.info("Aucun build trouvé pour ce job")
-                return None
-
-        except Exception as e:
-            logger.error(f"❌ Erreur lors de la récupération du dernier build: {e}")
-            return None
-
 
 def main():
     """Fonction principale"""
     parser = argparse.ArgumentParser(
-        description="Lance le job de build Docker frontend sur Jenkins",
+        description="Lance le job de déploiement Kustomize dev sur Jenkins",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples d'utilisation:
@@ -232,16 +210,13 @@ Exemples d'utilisation:
   export JENKINS_URL="https://ogehguvsgm-jenkins.services.clever-cloud.com"
   export JENKINS_USERNAME="admin"
   export JENKINS_API_TOKEN="votre_token_ici"
-  python trigger_frontend_build.py
+  python trigger_deploy_dev.py --image-tag abc123def
 
   # Avec arguments en ligne de commande
-  python trigger_frontend_build.py --url https://ogehguvsgm-jenkins.services.clever-cloud.com --username admin --token votre_token
+  python trigger_deploy_dev.py --url https://ogehguvsgm-jenkins.services.clever-cloud.com --username admin --token votre_token --image-tag abc123def
 
-  # Builder une branche spécifique et attendre la fin
-  python trigger_frontend_build.py --ref feature/my-branch --wait
-
-  # Voir les informations du dernier build
-  python trigger_frontend_build.py --last-build-info
+  # Avec force delete et attente
+  python trigger_deploy_dev.py --image-tag abc123def --force-delete --wait
         """,
     )
 
@@ -260,23 +235,21 @@ Exemples d'utilisation:
     )
     parser.add_argument(
         "--job",
-        default="atnum/dev/languia/languia-dev-image-frontend",
-        help="Nom du job Jenkins (défaut: atnum/dev/languia/languia-dev-image-frontend)",
+        default="atnum/dev/languia/languia-kustomize-dev",
+        help="Nom du job Jenkins (défaut: atnum/dev/languia/languia-kustomize-dev)",
     )
     parser.add_argument(
-        "--ref",
-        default="develop",
-        help="Branche ou ref Git à builder (défaut: develop)",
+        "--image-tag", required=True, help="Tag de l'image (commit hash)"
+    )
+    parser.add_argument(
+        "--force-delete",
+        action="store_true",
+        help="Forcer la suppression des ressources avant déploiement",
     )
     parser.add_argument(
         "--wait",
         action="store_true",
-        help="Attendre la fin du build et afficher le résultat",
-    )
-    parser.add_argument(
-        "--last-build-info",
-        action="store_true",
-        help="Afficher les informations du dernier build (sans lancer de nouveau build)",
+        help="Attendre la fin du déploiement et afficher le résultat",
     )
     parser.add_argument(
         "--timeout",
@@ -312,8 +285,8 @@ Exemples d'utilisation:
         )
         sys.exit(1)
 
-    # Création du builder
-    builder = JenkinsFrontendBuilder(
+    # Création du trigger
+    trigger = JenkinsDeployDevTrigger(
         jenkins_url=args.url,
         username=args.username,
         api_token=args.token,
@@ -322,26 +295,23 @@ Exemples d'utilisation:
     )
 
     # Connexion
-    if not builder.connect():
+    if not trigger.connect():
         logger.error("❌ Impossible de se connecter à Jenkins")
         sys.exit(1)
 
-    # Affichage des infos du dernier build seulement
-    if args.last_build_info:
-        builder.get_last_build_info()
-        sys.exit(0)
-
-    # Lancement du build
+    # Lancement du déploiement
     logger.info("=" * 50)
-    build_result = builder.trigger_build(ref_to_build=args.ref, wait=args.wait)
+    deploy_result = trigger.trigger_deploy(
+        image_tag=args.image_tag, force_delete=args.force_delete, wait=args.wait
+    )
 
-    if build_result:
+    if deploy_result:
         logger.info("=" * 50)
-        logger.info("🎯 Build lancé avec succès!")
+        logger.info("🎯 Déploiement lancé avec succès!")
         sys.exit(0)
     else:
         logger.error("=" * 50)
-        logger.error("❌ Échec du lancement du build")
+        logger.error("❌ Échec du lancement du déploiement")
         sys.exit(1)
 
 
