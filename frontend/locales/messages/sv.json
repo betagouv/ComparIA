@@ -1405,14 +1405,6 @@
                 "label": "Mängd koldioxid",
                 "tooltip": "Med mängden koldioxid menar vi de koldioxidutsläpp som globalt motsvaras av den energi som används för att köra modellen. Den återspeglar miljöpåverkan kopplad till energiförbrukningen. De verkliga utsläppen skiljer sig beroende på energiproduktionen i varje land, och de servrar som används för beräkningarna finns i olika länder. Ekvivalensberäkningen baseras på den globala genomsnittliga CO<sub>2</sub>-utsläppsmängden per förbrukad energi."
             },
-            "lightbulb": {
-                "label": "LED-lampa",
-                "tooltip": "Baserat på förbrukningen av en vanlig 5W LED-lampa (E14)"
-            },
-            "streaming": {
-                "label": "onlinevideor",
-                "tooltip": "Data beräknad baserat på koldioxidutsläpp från en timmes onlinevideo i hög upplösning, på en TV, med Wi-Fi-anslutning (källa <a {linkProps}>ADEME</a>)"
-            },
             "title": "Vilket motsvarar:"
         },
         "feedback": {

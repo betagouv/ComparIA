@@ -547,6 +547,9 @@
                 "Mistral AI Research License": {
                     "license_desc": "<p>Denne ikke-eksklusive og royalty-fri licens tillader brug, kopiering, modificering og distribution af Mistral-modellerne og deres afledte versioner (inklusiv modificerede eller fintuned versioner). Den er dog strengt begrænset til forskningsformål.</p>",
                     "reuse_specificities": "men kun til ikke-kommercielle formål"
+                },
+                "Modified MIT": {
+                    "license_desc": "<p>Variant af MIT-licensen. MIT-licensen er en tilladende fri softwarelicens: den giver alle ret til at genbruge, modificere og distribuere modellen, også til kommercielle formål, forudsat at den originale licens og ophavsretsnotiser inkluderes.</p>"
                 }
             },
             "proprio": {
@@ -585,7 +588,7 @@
                 "size_desc": "<p>Med 70 milliarder parametre hører denne model til de små modeller. Den kan bruges lokalt på en kraftig computer, hvilket garanterer databeskyttelse, eller hostes på en server udstyret med et enkelt grafikkort, hvilket begrænser infrastrukturomkostningerne. Dens kontekstvindue på 65.536 tokens gør det muligt at behandle længere dokumenter.</p>"
             },
             "Apertus 8B Instruct": {
-                "desc": "<p>Lille semi-åben og reproducerbar model, udviklet af et konsortium af schweiziske institutioner. Dens vægte og træningskode er publiceret under liberal licens. Den er blevet trænet på mere end 1.800 sprog på over 15.000 milliarder tokens. Træningen fandt sted på CSCS' supercomputer Alps i Lugano, drevet af CO2-neutralt vandkraft.</p>",
+                "desc": "<p>Lille open-source og reproducerbar model, udviklet af et konsortium af schweiziske institutioner. Dens vægte og træningskode er publiceret under liberal licens. Den er blevet trænet på mere end 1.800 sprog på over 15.000 milliarder tokens. Træningen fandt sted på CSCS' supercomputer Alps i Lugano, drevet af CO2-neutralt vandkraft.</p>",
                 "fyi": "<p>Modellen er blevet trænet på supercomputeren Alps i Lugano ved hjælp af mere end 10 millioner GPU-timer drevet af CO2-neutral vandkraft. Modellen er blevet prætrænet på 15.000 milliarder tokens udelukkende fra offentlige og permissive kilder, der dækker mere end 1.800 sprog, hvoraf en betydelig del er underrepræsenterede sprog.</p>\n<p>Apertus bygger på en byte-level BPE-tokenizer med 131.000 indgange, afledt af Mistral AI's \"tekken\"-tokenizer, optimeret til flersprogethed, kode og matematiske udtryk. Arkitekturen kombinerer flere innovationer: Rotary Positional Embeddings (RoPE) med udvidet base og NTK-aware justering til lange kontekster, Grouped Query Attention (GQA) for bedre hukommelseseffektivitet, QK-Norm normalisering til at stabilisere træningen, og en xIELU-aktiveringsfunktion (extended Integrated ELU), der forbedrer MLP'ernes performance.</p>\n<p>Modellens endelige finjustering bygger på en alignment-algoritme kaldet QRPO (Quantile Reward-Preferring Optimization), et alternativ til klassisk RLHF, som bruger absolutte belønningssignaler til en mere stabil indlæring, der er bedre alignet med menneskelige præferencer. Selvom den ikke konkurrerer direkte med de mest avancerede proprietære modeller, skiller Apertus sig ud ved sin totale åbenhed, videnskabelige stringens og eksemplariske tilgang til gennemsigtighed og regulatorisk compliance.</p>",
                 "size_desc": "<p>Med 8 milliarder parametre hører denne model til de små modeller. Den kan bruges lokalt på en kraftig computer, hvilket garanterer databeskyttelse, eller hostes på en server udstyret med et enkelt grafikkort, hvilket begrænser infrastrukturomkostningerne. Dens kontekstvindue på 65.536 tokens gør det muligt at behandle ret lange dokumenter.</p>"
             },
@@ -638,6 +641,11 @@
                 "desc": "<p>Meget stor multimodal og multilingual model, ekstremt ydeevnestærk inden for kodning, ræsonnement og matematik. Brugeren eller udvikleren, som anvender denne model, kan vælge mellem flere niveauer af ræsonnement.</p>",
                 "fyi": "<p>Claude Sonnet 4.5 er en direkte evolution af Sonnet 4. \".5\" betegner de store ændringer, der er introduceret under post-træningen, som resulterer i betydelige forbedringer inden for ræsonnement, matematik og især i den konkrete brug af computere. På tidspunktet for lanceringen betragtes den som verdens bedste model til kodning og udmærker sig i løsning af lange og komplekse flertrinsopgaver. Dens præstationer på benchmarks som SWE-bench Verified og OSWorld markerer en klar fremgang sammenlignet med tidligere versioner, med en evne til at opretholde sin \"koncentration\" i mere end tredive timer på det samme problem.</p>",
                 "size_desc": "<p>Den nøjagtige størrelse er ikke kendt. Alt tyder på, at det er en meget stor model, der kræver servere udstyret med flere kraftfulde grafikkort for at få den til at fungere. Estimaterne af størrelse og energiforbrug er baseret på indirekte indicier som inferensomkostninger og observeret latens. Claude Sonnet 4.5 har et kontekstvindue på op til 1.000.000 tokens, egnet til analyse af hele kode-repositories eller meget store dokumenter.</p>"
+            },
+            "Claude 4.6 Sonnet": {
+                "desc": "<p>Meget stor multimodal og flersproget model, som er højtydende inden for kode, autonom computerbrug og ræsonnering. Brugeren eller udvikleren kan vælge mellem flere niveauer af ræsonnering.</p>",
+                "fyi": "<p>Claude Sonnet 4.6 afløser Sonnet 4.5 og udgør en større opgradering af Anthropics mellemklassesortiment. Modellen opnår 79,6 % på SWE-bench Verified, en referencescore for kodegenerering, og 72,5 % på OSWorld for computerbrug, og nærmer sig Opus 4.6 til en pris der er fem gange lavere. Matematikpræstationerne (89 %) er også steget markant sammenlignet med forgængeren.</p>\n<p>Modellen understøtter en adaptiv ræsonneringstilstand, der gør det muligt at modulere tankeindsatsen efter opgavens kompleksitet. Kontekstvinduet når op på 1.000.000 tokens i betaversionen – en nyskabelse for en model i Sonnet-serien – hvilket gør det muligt at behandle hele kodebaser eller store dokumentsamlinger i én enkelt forespørgsel. Ved interne sammenligningstest foretrak brugerne Sonnet 4.6 frem for Sonnet 4.5 i cirka 70 % af tilfældene.</p>",
+                "size_desc": "<p>Den nøjagtige størrelse er ikke kendt. Alt tyder på, at der er tale om en meget stor model, som kræver servere udstyret med flere kraftfulde grafikkort for at kunne køre. Estimater over størrelse og energiforbrug er baseret på indirekte indikatorer som inferensomkostninger og observeret latenstid. Claude Sonnet 4.6 råder over et kontekstvindue på op til 1.000.000 tokens, velegnet til analyse af hele kodelagre eller meget omfangsrige dokumenter.</p>"
             },
             "Command A": {
                 "desc": "<p>Stor model, ydeevnestærk til programmering, brug af eksterne værktøjer og \"retrieval augmented generation\" (RAG).</p>",
@@ -709,6 +717,11 @@
                 "fyi": "<p> Denne model har gode agentiske evner, hvilket gør det muligt at foretage funktionskald med høj pålidelighed. Dens kodeydeevne er høj, og modellen har en god evne til at skabe applikationer og grænseflader. Til træning blev en specifik forstærkningslæringsinfrastruktur ved navn Slime designet til at optimere ydeevnen på komplekse og agentiske opgaver ved effektivt at håndtere lange arbejdsgange—modellen er i stand til at håndtere komplekse og langvarige opgaver, såsom at skabe en applikation fra start til slut, gøre den bedste brug af sine værktøjer og forblive konsistent fra begyndelse til slut. </p>",
                 "size_desc": "<p>Med 357 milliarder parametre placerer denne model sig i kategorien af meget store modeller. Takket være en mixture of experts (MoE)-arkitektur er den mere effektiv end visse andre modeller af tilsvarende størrelse, men den kræver stadig en server udstyret med flere meget kraftfulde grafikkort at hoste. Dens kontekstvindue går op til 200.000 tokens, hvilket gør det muligt at behandle meget lange dokumenter.</p>"
             },
+            "GLM 5": {
+                "desc": "<p>Meget stor model designet til komplekse opgaver: softwareudvikling, agentisk orkestrering og avanceret ræsonnering. Den simulerer et ræsonneringstrin inden den genererer sit svar.</p>",
+                "fyi": "<p>GLM 5 er flagskibsmodellen fra Zhipu AI, en kinesisk udgiver grundlagt i 2019 af professorer fra Tsinghua Universitet. Den bygger på en mixture of experts-arkitektur (MoE) med i alt 744 milliarder parametre, men aktiverer kun 40 milliarder pr. genereret token takket være 256 ekspertmoduler, hvoraf 8 udvælges ved hvert trin. Fortræningen omfattede 28,5 billioner tokens, en stigning fra de 23 billioner i den foregående generation (GLM 4.5). Modellen integrerer DeepSeek Sparse Attention-mekanismen (DSA), som reducerer implementeringsomkostningerne og samtidig bevarer evnen til at behandle lange kontekster.</p>\n<p>Til efterttræning udviklede Zhipu en asynkron forstærkningslæringsinfrastruktur kaldet slime, som afkobler datagenerering fra politikopdateringer og opnår en gennemstrømning op til tre gange højere end klassiske synkrone metoder. Denne ramme er særligt velegnet til langvarige agentiske opgaver. GLM 5 skiller sig ud på evalueringer inden for kode (SWE-bench Verified: 77,8 %) og webnavigation (BrowseComp: 75,9 %). Modellen blev trænet på Huawei Ascend-chips med MindSpore-frameworket.</p>",
+                "size_desc": "<p>Med 744 milliarder parametre hører GLM 5 til de meget store modeller. Mixture of experts-arkitekturen (MoE) – 256 eksperter hvoraf 8 aktiveres pr. token – gør det muligt kun at anvende 40 milliarder parametre pr. inferens, hvilket reducerer footprint sammenlignet med en tæt model af samme størrelse, men kræver stadig en server udstyret med flere kraftfulde grafikkort. Kontekstvinduet når op på cirka 200.000 tokens, hvilket er nyttigt til analyse af meget lange dokumenter eller kodebaser. Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
+            },
             "GPT 4.1 Nano": {
                 "desc": "<p>Mindre lettet version af GPT 4.1-modellen, designet til at begrænse omkostninger, samtidig med at den forbliver konkurrencedygtig på de fleste opgaver. Modellen accepterer meget lange forespørgsler, hvilket gør det muligt at bruge den for eksempel til analyse af dokumentkorpusser.</p>",
                 "fyi": "<p>Det er en destilleret version af en større model med en delvis overførsel af dens viden. Den kan behandle tekst, billeder og lyd. Dens kontekstvindue kan nå op til 1 million tokens, hvilket gør den særligt velegnet til analyse af tekstkorpusser eller meget lange koderepositories.</p>",
@@ -738,6 +751,11 @@
                 "desc": "<p> Tredje iteration af GPT 5, med særlig opmærksomhed på dens anvendelighed i professionelle opgaver. </p>",
                 "fyi": "<p>Modellen blev præsenteret som værende i stand til at opnå eller endda overgå niveauet af menneskelige eksperters ydeevne på GDPval-benchmarket, som evaluerer veldefinerede digitale professionelle opgaver. Den tilbyder forskellige niveauer af ræsonneringsindsats, der kan konfigureres af brugeren eller udvikleren, hvilket gør det muligt at afbalancere mellem omkostninger, latenstid og kvalitet af svar afhængigt af opgavens kompleksitet. GPT 5.2 udmærker sig også ved sin evne til at finde præcise oplysninger inden for meget store kontekster, selv når disse er sjældne og spredt i lange korpora (needle in the haystack).</p>",
                 "size_desc": "<p> Modelstørrelserne bag GPT-5.2-systemet er ikke kendte. Arkitekturen er sandsynligvis baseret på en \"mixture of experts\" (MoE), hvilket betyder, at kun en delmængde af parametre aktiveres for hver forespørgsel. Dette muliggør større energieffektivitet og høj ydeevne. Tilgængelige estimater af modelstørrelser bygger på offentligt tilgængelig information og indirekte indikatorer såsom inferensomkostninger og svarlatentstid. </p>"
+            },
+            "GPT 5.3": {
+                "desc": "<p>Fjerde iteration af GPT 5, med fokus på samtalemæssig flydende. Sammenlignet med GPT 5.2 reducerer den ifølge udgiveren hallucinationer og anlægger en mere direkte stil med færre unødvendige forbehold.</p>",
+                "fyi": "<p>GPT 5.3, kaldt \"Instant\" af OpenAI, præsenteres som en opdatering med fokus på samtalepålidelighed og naturlighed. Ifølge udgiveren er hallucinationer reduceret med 26,8 % ved brug af websøgning og 19,7 % med udelukkende modellens interne viden, sammenlignet med GPT 5.2. Modellen anlægger en mindre moraliserende tone med færre formuleringer af typen \"Stop. Træk vejret.\" og overflødige forbehold, der kendetegnede tidligere versioner.</p>\n<p>API'et tilbyder en ny verbositetsparameter (low, medium, high), der giver udviklere mulighed for at styre svarenes længde. Modellen forbedrer også integrationen af websøgning ved bedre at kontekstualisere online fundne resultater frem for blot at opsummere dem.</p>",
+                "size_desc": "<p>Størrelsen på modellerne bag GPT 5.3-systemet er ikke kendt. Arkitekturen er sandsynligvis baseret på en mixture of experts-tilgang (MoE), hvilket betyder, at kun en del af parametrene aktiveres for hver forespørgsel. Dette muliggør bedre energieffektivitet og høj ydeevne. Tilgængelige estimater af modellernes størrelse bygger på offentlige oplysninger og indirekte indikatorer såsom inferensomkostninger og svarlatens. GPT 5.3 understøtter et kontekstvindue på 128.000 tokens.</p>"
             },
             "GPT OSS-120B": {
                 "desc": "<p>Den største af de to første semi-åbne modeller fra OpenAI siden GPT-2. Designet som svar på fremgangen for open source-aktører som Meta (LLaMA) og Mistral, er det en performant ræsonneringsmodel, især til komplekse opgaver og i \"agentiske\" miljøer.</p>",
@@ -793,6 +811,16 @@
                 "desc": "<p>Stor multimodal og flersproget model. Den integrerer en avanceret ræsonneringskapacitet (\"Deep Think\"), der kan aktiveres efter behov til komplekse opgaver (matematik, logik, kodning), som er adskilt fra dens hurtigere standard genereringskapacitet. Modellen understøtter tekst, kode, lyd, billede, video og 3D.</p>",
                 "fyi": "<p>Modellen er blevet trænet på en infrastruktur udelukkende bestående af TPU'er (Tensor Processing Units). På tidspunktet for dens udgivelse markerer modellen et meget stort fremskridt i forhold til evalueringerne - for eksempel på Humanity's Last Exam, ARC-AGI-2 og MathArena Apex. Modellen er optimeret til \"agentisk\" brug: den er blevet trænet til at simulere trin af planlægning, værktøjsbrug, kodeudførelse og selvkorrigering inden for kodemiljøer. Dens multimodale forståelse er blevet finjusteret for at reducere antallet af tokens, der er nødvendige til video- og lydkodning.</p>",
                 "size_desc": "<p>Den nøjagtige størrelse af modellen er ikke offentliggjort, men den er baseret på en Mixture of Experts (MoE)-arkitektur. Denne arkitektur aktiverer kun en delmængde af parametre for hvert input-token, hvilket kræver mindre regnekraft til at generere. Dens kontekstvindue strækker sig op til 1 million tokens, velegnet til analyse af store dokumentsamlinger, herunder hele kode-repositories og videofiler.</p>"
+            },
+            "Gemini 3.1 Flash Lite": {
+                "desc": "<p>Mellemstor, multimodal og hurtig model, egnet til automatiseret brug eller relativt simple opgaver: oversættelse, klassificering, indholdsmoderationering. Den tilbyder justerbare niveauer af ræsonnering, fra minimal til mere dybdegående.</p>",
+                "fyi": "<p>Denne model er afledt af Gemini 3 Pro og anvender en mixture of experts-arkitektur (MoE). Dens særlige kendetegn er justerbare niveauer af ræsonnering: minimal (standard), lav, mellem og høj. Denne funktionalitet giver udviklere mulighed for præcist at styre afvejningen mellem hastighed og ræsonneringsdybde afhængigt af opgavens kompleksitet. Den accepterer tekst, billeder, lyd, video og PDF-dokumenter som input, men producerer kun tekst som output.</p>\n<p>Modellen er trænet på Googles TPU-processorer med JAX- og ML Pathways-frameworksene og er designet til storvolumenapplikationer. Ifølge udgiveren er den 2,5 gange hurtigere end Gemini 2.5 Flash for tid til første svar og 45 % hurtigere i outputgennemstrømning. På evalueringstests opnår den 86,9 % på GPQA Diamond og 88,9 % på MMMLU, scorer der ligger tæt på dyrere modeller.</p>",
+                "size_desc": "<p>Den præcise størrelse af denne model er ikke offentligt kendt. Dens mixture of experts-arkitektur (MoE) muliggør, at kun en del af parametrene aktiveres ved hver forespørgsel, hvilket gør den meget hurtig og ressourceeffektiv. Dens kontekstvindue når op på 1.048.576 tokens som input, hvilket gør det muligt at behandle meget lange dokumenter. Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
+            },
+            "Gemini 3.1 Pro": {
+                "desc": "<p>Meget stor multimodal og flersproget model, en videreudvikling af Gemini 3 Pro. Den bibeholder de samme multimodale egenskaber og ræsonneringstilstanden (\"Deep Think\"), og tilføjer et tredje mellemliggende ræsonneringsniveau samt forbedringer inden for planlægningsopgaver og værktøjsbrug.</p>",
+                "fyi": "<p>Gemini 3.1 Pro viderefører MoE-arkitekturen og de native multimodale egenskaber fra Gemini 3 Pro (tekst, billeder, lyd, video, PDF op til 1.000 sider), samt træning på TPU og optimering til agentiske anvendelser.</p>\n<p>Den vigtigste nyhed er tilføjelsen af et mellemliggende ræsonneringsniveau (\"medium\") til Deep Think-tilstanden, som tidligere kun tilbød to niveauer (lavt og højt). Dette niveau sigter mod et kompromis mellem svarkvalitet og latenstid. Modellen introducerer også \"tankesignaturer\" (thought signatures), krypterede repræsentationer af mellemliggende ræsonnering, der gør det muligt at bevare refleksionskonteksten ved flertrinssinteraktioner. Ifølge udgiveren resulterer disse udviklinger i en relativ forbedring på 40-60 % på komplekse planlægningsopgaver sammenlignet med den foregående generation, samt bedre modstandsdygtighed over for hallucinationer. Den opnår 77,1 % på ARC-AGI-2, 94,3 % på GPQA Diamond og 80,6 % på SWE-Bench Verified.</p>",
+                "size_desc": "<p>Modellens nøjagtige størrelse oplyses ikke, men den bygger på den samme mixture of experts-arkitektur (MoE) som Gemini 3 Pro. Denne arkitektur aktiverer kun en delmængde af parametrene for hvert token, hvilket reducerer den nødvendige beregningskraft sammenlignet med en tæt model af tilsvarende størrelse. Kontekstvinduet strækker sig op til 1 million tokens som input og 65.000 tokens som output. Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
             },
             "Gemma 2 27B": {
                 "desc": "<p>Performant model med en passende størrelse, dens relativt høje omkostninger gør den egnet til specifikke anvendelser, der kræver høj præcision.</p>",
@@ -869,6 +897,11 @@
                 "fyi": "<p>Modellen synes at demonstrere øgede præstationer ved lange ræsonnementer og opgaver, der kræver trin med værktøjsbrug. Disse karakteristika formodes at fremme en forlænget \"autonomi\" i udførelsen af opgaver.</p>",
                 "size_desc": "<p>Med 1 billion parametre (hvoraf 32 milliarder er aktive per token) er denne model blandt de allerstørste modeller. Dens Mixture of Experts (MoE)-arkitektur giver dog en bedre effektivitet sammenlignet med visse modeller af tilsvarende størrelse. Desuden er den blevet kvantificeret native på INT4-niveau. Denne kvantificering, som består i at \"afrunde\" modellens vægte til færre cifre for at forenkle beregningerne, præsenteres af Moonshot AI som værende i stand til at reducere inferenstiden med en faktor 2. Kontekstvinduet når op på 256.000 tokens, hvilket giver mulighed for at behandle meget lange dokumenter eller store kodebase.</p>"
             },
+            "Kimi K2.5": {
+                "desc": "<p>Med udgangspunkt i Kimi K2 har udgiveren fortsat fortræningen på cirka 15 billioner yderligere tokens, der blander tekst og visuelle data. Udgiveren fremhæver dens native multimodalitet samt dens agentiske egenskaber, der er særligt velegnede til opgaver som softwareudvikling.</p>",
+                "fyi": "<p>Modellen blev trænet med en specifik tilstand kaldet \"Agent Swarm\" (agentsværm). I denne orkestreringstilstand løses problemet ikke strengt sekventielt, men opdeles i flere delopgaver der udføres parallelt af underagenter. Modellen har under træningen lært at agere som en primær agent: den analyserer forespørgslen, beslutter hvor mange underagenter der skal igangsættes, tildeler dem mål og aggregerer derefter deres resultater. Denne egenskab blev opnået gennem metoder til multi-agent forstærkningslæring, hvor orkestratoren blev belønnet når den valgte en god problemdekomponering og effektiv koordinering mellem agenter, og straffet når den anlagde en for lineær eller redundant ræsonnering.</p>",
+                "size_desc": "<p>Med i alt 1 billion parametre, hvoraf cirka 32 milliarder aktiveres for hvert genereret token, hører denne model til de meget store modeller. Dens mixture of experts-arkitektur (MoE) muliggør dog en mere effektiv ressourceudnyttelse end tætte modeller af sammenlignelig størrelse. Modellen er desuden nativt kvantiseret i INT4, en teknik der reducerer præcisionen af vægtene for at forenkle beregningerne og begrænse beregningstiden ved inferens. Kontekstvinduet kan nå op på 256.000 tokens, hvilket muliggør behandling af meget omfangsrige dokumenter eller omfattende kodebaser.</p>"
+            },
             "LFM 2 8B A1B": {
                 "desc": "<p>En model specifikt designet til effektiv inferens på lokale enheder (on-device deployment). Dens arkitektur sigter mod at tilbyde en outputkvalitet, der er konkurrencedygtig med større dense modeller, samtidig med at latency og krav til computeressourcer minimeres.</p>",
                 "fyi": "<p>LFM2-8B-A1B er baseret på en hybrid arkitektur, der integrerer convolutionsblokke samt Grouped Query Attention (GQA)-mekanismer. Mixture of Experts (MoE)-implementeringen består af 32 eksperter per transformerblok. \"Routeren\" udvælger og aktiverer de 4 bedste eksperter (top-4 gating) til behandling af hvert token. Dette design sigter mod at etablere en reference for Mixture of Experts-modeller, der er optimeret til lokal inferens.</p>",
@@ -933,6 +966,11 @@
                 "desc": "<p>Model specialiseret i kode med et meget konkurrencedygtigt forhold mellem kvalitet/hastighed/pris. Den er blevet designet af MiniMax, et selskab baseret i Shanghai i Kina.</p>",
                 "fyi": "<p>Model designet specifikt til agentiske opgaver (især kode), med træning til at respektere strenge protokoller for agentkontrol (planlægning, værktøjskald, verifikation).</p>",
                 "size_desc": "<p>Mixture of Experts-arkitekturmodel med 230 milliarder parametre (hvoraf 10 milliarder er aktive per token-generering). Kontekstvinduet er på 200.000 tokens, hvilket gør det muligt at behandle hele kodebase og lange dokumenter.</p>"
+            },
+            "MiniMax M2.5": {
+                "desc": "<p>Meget stor semi-åben model specialiseret i kode og agentiske opgaver, med en integreret ræsonneringstilstand. Den er udviklet af MiniMax, en virksomhed med base i Shanghai, Kina.</p>",
+                "fyi": "<p>Denne model anvender en MoE-arkitektur med 256 eksperter, hvoraf 8 aktiveres pr. token. Dens træning bygger på Forge, et agentisk forstærkningslæringsframework udviklet af MiniMax, som afkobler træning fra inferens og gør det muligt at optimere modellen på mere end 200.000 virkelige miljøer (kodelagre, webbrowsere, skrivebordsapplikationer). CISPO-algoritmen (Clipped Importance Sampling Policy Optimization) sikrer stabiliteten af MoE-træning i stor skala. En træbaseret fusionsmekanisme for stikprøver accelererer træningen med cirka 40 gange.</p>\n<p>Modellen opnår 80,2 % på SWE-Bench Verified (automatisk løsning af softwareproblemer) og 51,3 % på Multi-SWE-Bench. Den integrerer også kontorprogramegenskaber (Word, PowerPoint, Excel). Dens særkende er at udarbejde specifikationer inden den begynder at kode, og derved nedbryde komplekse opgaver i deltrin.</p>",
+                "size_desc": "<p>Med 229 milliarder parametre er MiniMax M2.5 en meget stor model. Mixture of experts-arkitekturen (MoE) gør det muligt kun at aktivere 10 milliarder parametre pr. genereret token, hvilket reducerer footprint betydeligt sammenlignet med en tæt model af samme størrelse. Kontekstvinduet når op på cirka 200.000 tokens. Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
             },
             "Ministral": {
                 "desc": "<p>Lille flersproget model designet til at køre på en bærbar computer uden forbindelse til en server, samtidig med at den tilbyder gode kapaciteter til tekstsyntese, besvarelse af simple spørgsmål og brug af værktøjer.</p>",
@@ -1004,6 +1042,16 @@
                 "fyi": "<p>OLMo 2 32B er en fuldt open source-model: korpusset og træningskoden er fuldstændig tilgængelige. Denne OLMo-modelfamilie er blevet designet af Allen Institute for AI (Ai2).</p>",
                 "size_desc": "<p>De mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og performance: de forbruger langt færre ressourcer end de store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnering.</p>"
             },
+            "Odin Large": {
+                "desc": "<p>Den store version af Odin-modellerne fra det danske selskab Ordbogen.com.</p>",
+                "fyi": "<p>Dette er den første model der kommercialiseres af dette selskab, som omfatter to modeller, hvoraf denne er den største.</p>",
+                "size_desc": "<p>Størrelsen på de modeller der anvendes i Odin-systemet er ikke kendt. Arkitekturen er sandsynligvis baseret på en \"mixture of experts\" (MoE), hvilket betyder at kun en del af parametrene aktiveres for hver forespørgsel. Dette muliggør bedre energieffektivitet og høj ydeevne. De tilgængelige estimater over modellernes størrelse bygger på offentlige oplysninger og indirekte indikatorer.</p>"
+            },
+            "Odin Medium": {
+                "desc": "<p>Den mellemstore version af Odin-modellerne fra det danske selskab Ordbogen.com.</p>",
+                "fyi": "<p>Dette er den første model der kommercialiseres af dette selskab, som omfatter to modeller, hvoraf denne er den mindste.</p>",
+                "size_desc": "<p>Størrelsen på de modeller der anvendes i Odin-systemet er ikke kendt. Arkitekturen er sandsynligvis baseret på en \"mixture of experts\" (MoE), hvilket betyder, at kun en del af parametrene aktiveres for hver forespørgsel. Dette muliggør bedre energieffektivitet og høj ydeevne. De tilgængelige estimater over modellernes størrelse bygger på offentlige oplysninger og indirekte indikatorer.</p>"
+            },
             "Olmo 3 32B Think": {
                 "desc": "<p>Ræsonneringsmodel, hvis kode og data er fuldstændig åbne. Den er blevet trænet af AI2, et nonprofit-forskningsinstitut.</p>",
                 "fyi": "<p>Denne model er et sjældent eksempel på total gennemsigtighed. Koden, dataene (6 billioner tokens), trænings-\"checkpoints\" og evalueringsopskrifterne er alle offentlige. Selvom den fuldstændige reproduktion af træningen er dyr i infrastruktur og sandsynligvis sjælden, gør denne gennemsigtighed det muligt for udviklere bedre at genoptræne (fine-tune) modellen til specifikke opgaver, især ved at blande data med den ønskede adfærd med det eksisterende datasæt, hvilket sikrer mere stabil træning.</p>",
@@ -1054,6 +1102,16 @@
                 "fyi": "<p>Denne model er blevet trænet på 36 billioner tokens, næsten det dobbelte af Qwen 2.5, og den er officielt i stand til at svare på 100 sprog.</p>",
                 "size_desc": "<p>Den nøjagtige størrelse er ikke kendt. Tegn peger på, at det er en meget stor model, der kræver servere udstyret med flere kraftfulde grafikkort for at fungere. De tilgængelige estimater er baseret på indirekte tegn såsom inferensomkostninger og svarlatens. Modellen har et kontekstvindue på op til 256.000 tokens, velegnet til analyse af lange dokumenter eller kodedepoter.</p>"
             },
+            "Qwen 3.5 35B A3B": {
+                "desc": "<p>Mellemstor multimodal, flersproget model med en ræsonneringstilstand. På trods af sin beskedne størrelse konkurrerer den med langt større modeller takket være en ultra-sparse arkitektur, der kun aktiverer en lille brøkdel af sine parametre for hvert token.</p>",
+                "fyi": "<p>Denne model bygger på Qwen 3.5's hybridarkitektur, der kombinerer Gated DeltaNet (lineær attention i O(n)) og klassisk attention med en ultra-sparse mixture of experts: 256 eksperter i alt, hvoraf 8 rutede og 1 delt aktiveres per token. Netværket består af 40 lag organiseret i blokke af 4: 3 Gated DeltaNet-lag efterfulgt af 1 klassisk attention-lag, hver tilknyttet et MoE-modul.</p>\n<p>Den er nativt multimodal og trænet med early fusion på multimodale tokens (tekst, billeder og videoer) og understøtter 201 sprog og dialekter. Ifølge udgiveren overgår den Qwen3-235B-A22B fra den foregående generation på de vigtigste evalueringstests, samtidig med at den er mere end 7 gange mere effektiv målt på aktiverede parametre.</p>",
+                "size_desc": "<p>Med 35 milliarder parametre er Qwen 3.5 35B A3B en mellemstor model, men den ultra-sparse mixture of experts-arkitektur (MoE) muliggør, at kun 3 milliarder parametre aktiveres per genereret token, hvilket betydeligt reducerer behovet for regnekraft. Den kan køre lokalt på high-end forbrugerhardware. Det native kontekstvindue når op på 262.144 tokens og kan udvides til cirka 1 million ved hjælp af ekstrapolationsteknikker (YaRN). Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
+            },
+            "Qwen 3.5 397B": {
+                "desc": "<p>En meget stor, multimodal og flersproget model med en ræsonneringstilstand. Takket være en hybridarkitektur der kombinerer lineær opmærksomhed (Gated DeltaNet) og ekspertblanding, aktiverer den kun 17 milliarder parametre ud af i alt 397 milliarder.</p>",
+                "fyi": "<p>Denne model bygger på en innovativ hybridarkitektur der kombinerer Gated DeltaNet (lineær opmærksomhed) og klassisk opmærksomhed med en blanding af ultra-sparsomme eksperter: i alt 512 eksperter, hvoraf kun 10 ruterede og 1 delt aktiveres pr. token. Netværket har 60 lag organiseret i blokke af 4: 3 Gated DeltaNet-lag efterfulgt af 1 klassisk opmærksomhedslag, hvert tilknyttet et MoE-modul. Dette design reducerer inferensomkostningerne betydeligt og bevarer samtidig modellens evne til at håndtere komplekse ræsonneringsopgaver.</p>\n<p>Qwen 3.5 er nativt multimodal, trænet med early fusion på billioner af multimodale tokens (tekst og billeder). Den understøtter 201 sprog og dialekter. Efterttræningen anvender forstærkningslæring i stor skala, udrullet på massivt parallelle miljøer (million-agent-miljøer), med opgavefordelinger af stigende kompleksitet. Træningsinfrastrukturen anvender en FP8-pipeline og et asynkront forstærkningslæringsframework for at optimere effektiviteten.</p>",
+                "size_desc": "<p>Med 397 milliarder parametre er Qwen 3.5 en meget stor model, der kræver flere kraftfulde grafikkort for at kunne køre. Mixture of Experts-arkitekturen (MoE) gør det dog muligt kun at aktivere 17 milliarder parametre pr. genereret token, hvilket reducerer footprint sammenlignet med en tæt model af samme størrelse. Det native kontekstvindue når op på 262.144 tokens og kan udvides til cirka 1 million ved hjælp af ekstrapolationsteknikker (YaRN). Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
+            },
             "Qwen1.5-32B": {
                 "desc": "<p>Mellemstor model med en træningsproces, der er meget målrettet tilpasning til brugerpræferencer.</p>",
                 "fyi": "<p>Modellen har gennemgået en alignment-fase med brugerpræferencer via teknikker som DPO (Direct Preference Optimization) og PPO (Proximal Policy Optimization). Ud over disse teknikker, som var meget innovative på tidspunktet for modellens design, har Alibaba-teamet også optimeret træningsdataene for at gøre dem meget flersprogede, især på europæiske, østasiatiske og sydøstasiatiske sprog.</p>",
@@ -1088,6 +1146,16 @@
                 "desc": "<p>Meget stor model specialiseret i kodegenerering, analyse af hele repositories og løsning af multi-trins problemer. Denne version er særligt stærk i brug af værktøjer og kan simulere en ræsonneringsfase, før den leverer det endelige svar.</p>",
                 "fyi": "<p>Denne model er blevet prætrænet på 7,5 billioner tokens (hvoraf 70% er kode) og bruger en avanceret post-træningsproces - Code RL (Hard to Solve, Easy to Verify) til at styrke korrekt kodeudførelse og Agent RL (long-horizon reinforcement learning) til at optimere løsning af multi-turn softwareopgaver med et massivt parallelt miljø (20.000 parallelle simuleringer på Alibaba Cloud).</p>",
                 "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct er en meget stor model, der kræver flere grafikkort for at fungere. Mixture of Experts-arkitekturen (MoE) gør det dog muligt kun at aktivere en brøkdel af parametrene (35 mia. ud af 480 mia.), hvilket reducerer miljøpåvirkningen og omkostningerne betydeligt sammenlignet med en tilsvarende dense model.\nKontekstvinduet når native op på 256.000 tokens og kan udvides til op til 1 million takket være ekstrapoleringsteknikker (YaRN), hvilket er ideelt til analyse af store kodebaser.</p>"
+            },
+            "Qwen3 Coder Next": {
+                "desc": "<p>En model designet specifikt til kode (særligt til lokal udvikling). Takket være en hybridarkitektur der kombinerer Gated DeltaNet, Gated Attention og MoE, opnår den præstationer sammenlignelige med langt større modeller, mens den kun aktiverer 3 milliarder parametre ud af i alt 80 milliarder.</p>",
+                "fyi": "<p>Denne model er trænet på over 800.000 verificerbare kodeopgaver via en forstærkningslæringsproces. Den udmærker sig ved langsigtet ræsonnering, brug af komplekse værktøjer og håndtering af udførelsesfejl.</p>",
+                "size_desc": "<p>Qwen3-Coder-Next anvender en ultra-sparse Mixture of Experts-arkitektur (MoE) med 512 eksperter, hvoraf kun 10 aktiveres pr. token. Dette design gør det muligt at køre modellen på avanceret men mainstream hardware (MacBook 64 GB, RTX 5090 eller AMD Radeon 7900 XTX) og samtidig bevare et native kontekstvindue på 256.000 tokens.</p>"
+            },
+            "Trinity Large": {
+                "desc": "<p>En semi-åben amerikansk model skabt af Arcee AI, en startup med 30 ansatte.</p>",
+                "fyi": "<p>Trinity Large blev designet og trænet udelukkende i USA af Arcee AI, en startup med 30 ansatte. Den blev trænet på 17 billioner tokens.</p>\n<p>Den komplette træning blev gennemført over 33 dage på 2.048 Nvidia B300 GPU'er til en omkostning på cirka 20 millioner dollars. Arkitekturen inkorporerer fremskridt som gated attention og Muon.</p>",
+                "size_desc": "<p>Med 398 milliarder parametre er Trinity Large en meget stor model. Ikke desto mindre aktiverer den takket være sin højt optimerede Mixture of Experts-arkitektur (MoE) kun 13 milliarder parametre pr. genereret token, hvilket reducerer dens energifodaftryk og inferensomkostninger betydeligt sammenlignet med en tilsvarende tæt model. Kontekstvinduet når op på 512.000 tokens, hvilket gør den særligt velegnet til analyse af meget lange dokumenter eller massive kodebaser.</p>"
             },
             "Yi-1.5 9B": {
                 "desc": "<p>Yi 1.5 er en model fra den kinesiske virksomhed 01-ai, specialiseret i kode, matematik, ræsonnement, instruktionsfølgning, med en solid forståelse af sprog.</p>",
@@ -1134,7 +1202,7 @@
         "homeTitle": "Hjem - compar:IA",
         "logoAlt": "Den Franske Republik",
         "menu": "Menu",
-        "startDiscussion": "Start samtalen",
+        "startDiscussion": "Start en samtale",
         "subtitle": "Sammenlign svar fra chatbots",
         "title": "AI-Arenaen",
         "votes": {
@@ -1811,17 +1879,38 @@
         "equivalent": {
             "co2": {
                 "label": "CO <sub> 2 </sub> udledt",
-                "tooltip": "Den udledte CO <sub> 2 </sub> svarer til den mængde kuldioxid, der udledes ved den energi, der bruges til at drive modellen. Den afspejler den miljømæssige påvirkning, der er forbundet med energiforbruget. Beregningen af watt-time/CO <sub> 2 </sub>-ækvivalensen varierer afhængigt af hvert lands energimix. De servere, der anvendes til modelinferens, er dog ikke alle placeret i Europa. Ækvivalensberegningen er således baseret på den globale gennemsnitlige CO <sub> 2 </sub>-emissionsrate pr. forbrugt energi."
+                "tooltip": "Den udledte CO <sub> 2 </sub> svarer til den mængde kuldioxid, der udledes ved den energi, der bruges til at drive modellen. Den afspejler den miljømæssige påvirkning, der er forbundet med energiforbruget. Beregningen af watt-time/CO <sub> 2 </sub>-ækvivalensen varierer afhængigt af hvert lands energimix. De servere, der anvendes til modelinferens, er dog ikke alle placeret i Europa. Ækvivalensberegningen er således baseret på den globale gennemsnitlige CO <sub> 2 </sub>-emissionsrate pr. forbrugt energi.",
+                "unit": "ton"
             },
-            "lightbulb": {
-                "label": "LED-pære",
-                "tooltip": "Data beregnet på baggrund af forbruget af en standard 5W LED-pære (E14)"
+            "desc": "Hvis alle danskere der bruger generativ AI (48%) havde haft denne samtale, ville det svare til:",
+            "scales": {
+                "baguette_production": {
+                    "tooltip": "Data beregnet ud fra kulstofsaftrykket ved produktion af traditionelle baguettes. (kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Producerede brød"
+                },
+                "mango_import": {
+                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen fra produktion til levering af mango importeret med fly. (kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Importerede mango"
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "Estimat baseret på et gennemsnit: et modent træ absorberer ~22 kg CO₂/år (≈48 lb). Resultatet er et størrelsesordensestimat: det varierer afhængigt af art, alder, klima og jordbund. (Kilde <a {linkProps}>USDA</a>)",
+                    "unit": "Træer til at absorbere CO₂ i 1 år"
+                },
+                "package_delivery": {
+                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved hjemmelevering af pakker på 1 kg. (kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Pakkeleveringer"
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved en tur-retur flyvning Paris-New York med langrutefly. (kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Tur-retur Paris - NYC med fly"
+                },
+                "pool_filing": {
+                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved fyldning af en privat pool på 8 x 4 m. (kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Poolfyldninger"
+                }
             },
-            "streaming": {
-                "label": "online videoer",
-                "tooltip": "Data beregnet på baggrund af CO2-aftrykket fra en times streaming af video i høj opløsning på et fjernsyn med Wi-Fi-forbindelse (kilde <a {linkProps}>ADEME</a>)"
-            },
-            "title": "Hvilket svarer til:"
+            "title": "Ækvivalenser i ton CO₂",
+            "title_tooltip": "Ækvivalenserne er projektioner for at illustrere masseeffekten – vi har ganget virkningen af din samtale med denne model op til samtlige AI-brugere i Danmark: 48% af danskerne erklærer i dag at benytte generativ AI, og aldrig tidligere er en digital teknologi blevet adopteret så hurtigt. (kilde <a {linkProps}>Baromètre du numérique fra CREDOC</a>)"
         },
         "feedback": {
             "description": "Del AI Arena'en med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
@@ -1832,7 +1921,7 @@
         "impacts": {
             "energy": {
                 "label": "energiforbrug",
-                "tooltip": "Målt i watt-timer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Generelt gælder det, at jo større en model er (i milliarder af parametre), jo mere energi kræves der for at producere et token."
+                "tooltip": "Målt i milliwatttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Jo større en model er (i milliarder af parametre), desto mere energi kræves der for at producere et token."
             },
             "size": {
                 "count": "milliarder parametre.",

@@ -752,6 +752,11 @@
                 "fyi": "<p> The model has been presented as reaching, or even exceeding, the performance level of human experts on the GDPval benchmark, which evaluates well-defined digital professional tasks. It offers different levels of reasoning effort configurable by the user or developer, allowing for trade-offs between cost, latency, and quality of responses depending on the complexity of the task. GPT 5.2 also stands out for its ability to retrieve precise information within very large contexts, including when such information is scarce and scattered across long corpora (needle in the haystack). </p>",
                 "size_desc": "<p> The model sizes behind the GPT-5.2 system are not known. The architecture is likely based on a \"mixture of experts\" (MoE), meaning that only a subset of parameters are enabled for each query. This allows for greater energy efficiency and high performance. Available estimates of model sizes rely on publicly available information and indirect indicators such as inference costs and response latency. </p>"
             },
+            "GPT 5.3": {
+                "desc": "<p>Fourth iteration of GPT 5, focused on conversational fluidity. Compared to GPT 5.2, it reduces, according to the publisher, hallucinations and adopts a more direct style, with fewer unnecessary safeguards.</p>",
+                "fyi": "<p>GPT 5.3, nicknamed \"Instant\" by OpenAI, is presented as an update focused on the reliability and naturalness of conversations. According to the editor, hallucinations are reduced by 26.8% when using web search and by 19.7% with only the model's internal knowledge, compared to GPT 5.2. The model adopts a less moralizing tone, with fewer formulations like \"Stop. Breathe.\" and unnecessary warnings that characterized previous versions.</p>",
+                "size_desc": "<p>The sizes of the models behind the GPT 5.3 system are unknown. The architecture is likely based on a \"mixture of experts\" (MoE, Mixture of Experts), which means that only a portion of the parameters is activated for each request. This allows for better energy efficiency and high performance. Available estimates on model sizes are based on public information and indirect indicators such as inference costs and response latency. GPT 5.3 supports a context window of 128,000 tokens.</p>"
+            },
             "GPT OSS-120B": {
                 "desc": "<p> The larger of OpenAI's first two open-weight models since GPT-2. Designed in response to the rise of open source players like Meta (LLaMA) and Mistral, it is a powerful reasoning model, particularly on complex tasks and in \"agentic\" environments. </p>",
                 "fyi": "<p> This model can run on a single 80GB GPU (like the NVIDIA H100). It has a context window of 131,000 tokens, making it ideal for analyzing large documents. </p>\n <p> In the model configurations, it is possible to choose between three levels of reasoning ( <em> low </em> , <em> medium </em> , and <em> high </em> ) which determine the verbosity of the model. </p>",
@@ -806,6 +811,16 @@
                 "desc": "<p> Large, natively multimodal, and multilingual model. It integrates an advanced reasoning capability (\"Deep Think\") that can be activated on demand for complex tasks (mathematics, logic, coding), separate from its faster, standard generation capability. The model natively supports text, code, audio, images, video, and 3D. </p>",
                 "fyi": "<p> The model was trained on an infrastructure composed solely of Tensor Processing Units (TPUs). At the time of its release, the model represents a significant leap forward in assessments—for example, on Humanity's Last Exam, ARC-AGI-2, and MathArena Apex. The model is optimized for agentic use: it has been trained to simulate planning, tool usage, code execution, and self-correction within coding environments. Its multimodal understanding has been refined to significantly reduce the number of tokens required for video and audio encoding. </p>",
                 "size_desc": "<p> The exact size of the model is not disclosed, but it is based on a mixture of experts (MoE) architecture. This architecture activates only a subset of parameters for each input token, requiring less computing power to generate. Its context window extends to 1 million tokens, suitable for analyzing large document sets, including entire code repositories and video files. </p>"
+            },
+            "Gemini 3.1 Flash Lite": {
+                "desc": "<p> A medium-sized, multimodal and fast model, suitable for automated use or relatively simple tasks: translation, classification, content moderation. It offers adjustable levels of reasoning, from minimal to in depth.</p>",
+                "fyi": "<p> This model is derived from Gemini 3 Pro and uses a Mixture of Experts (MoE) architecture. Its distinguishing feature is the ability to offer adjustable levels of reasoning: minimal (default), low, medium, and high. This functionality allows developers to fine-tune the trade-off between speed and depth of reasoning depending on the complexity of the task. It accepts text, images, audio, video, and PDF documents as input, but only outputs text. </p>\n<p>This model is derived from Gemini 3 Pro and uses a Mixture of Experts (MoE) architecture. Its distinctive feature is the ability to offer adjustable reasoning levels: minimal (by default), low, medium, and high. This functionality allows developers to finely control the trade-off between speed and depth of reasoning depending on the task's complexity. It accepts text, images, audio, video, and PDF documents as input, but only produces text as output.</p>\n\n<p>Trained on Google TPU processors with the JAX and ML Pathways frameworks, the model is designed for high-volume applications. According to the publisher, it is 2.5 times faster than Gemini 2.5 Flash in first response time and 45% faster in output throughput. On evaluation tests, it achieved 86.9% on GPQA Diamond and 88.9% on MMLU, scores close to those of more expensive models.</p>",
+                "size_desc": "<p>The exact size of this model is not publicly known. Its Mixture of Experts (MoE) architecture allows activating only a portion of the parameters for each request, making it very fast and cost-effective. Its context window reaches 1,048,576 tokens on input, allowing it to process very long documents. This type of reasoning model takes longer to produce a response, which increases energy consumption.</p>"
+            },
+            "Gemini 3.1 Pro": {
+                "desc": "<p>Very large natively multimodal and multilingual model, an evolution of Gemini 3 Pro. It inherits the same multimodal capabilities and reasoning mode (\"Deep Think\"), with intermediate steps and improvements in planning and tool-use tasks.</p>",
+                "fyi": "<p>Gemini 3.1 Pro retains the MoE architecture and native multimodal capabilities of Gemini 3 Pro (text, images, audio, video, PDFs up to 1,000 pages), as well as training on TPU and optimization for agentic use cases.</p>\n\n<p>The main novelty is the addition of an intermediate reasoning level (\"medium\") to Deep Think mode, which previously only offered two levels (low and high). This level aims for a compromise between response quality and latency. The model also introduces \"thought signatures,\" encrypted representations of intermediate reasoning that allow controlling multi-step interactions. According to the publisher, these improvements result in a relative improvement of 40 to 60% on complex planning tasks compared to the previous generation, and better resistance to hallucinations. It achieves 77.1% on ARC-AGI-2, 94.3% on GPQA Diamond, and 80.6% on SWE-Bench Verified.</p>",
+                "size_desc": "<p>The exact model size is not disclosed, but it is based on the same Mixture of Experts (MoE) architecture as Gemini 3 Pro. This architecture activates only a subset of parameters for each token, reducing the computational power required compared to an equivalent-sized dense model. Its context window extends up to 1 million tokens on input and 65,000 tokens on output. This type of reasoning model takes longer to produce a response, which increases energy consumption.</p>"
             },
             "Gemma 2 27B": {
                 "desc": "<p> A high-performance model with a decent size, allowing it to tackle specific use cases requiring great precision. </p>",
@@ -1027,6 +1042,16 @@
                 "fyi": "<p> OLMo 2 32B is a fully open source model: both the corpus and the training code are fully accessible. This OLMo model family was designed by the Allen Institute for AI (Ai2). </p>",
                 "size_desc": "<p>Medium-sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.</p>"
             },
+            "Odin Large": {
+                "desc": "<p>The large version of the Odin models by the Danish company Ordbogen.com.</p>",
+                "fyi": "<p>This is the company's first model release which includes two models, where this is the largest of the two.</p>",
+                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
+            },
+            "Odin Medium": {
+                "desc": "<p>The medium version of the Odin models by the Danish company Ordbogen.com.</p>",
+                "fyi": "<p>This is the company's first model release which includes two models, where this is the smallest of the two.</p>",
+                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
+            },
             "Olmo 3 32B Think": {
                 "desc": "<p> A reasoning model whose code and data are completely open. It was trained by AI2, a non-profit research institute. </p>",
                 "fyi": "<p> This model is a rare example of total transparency. The code, the data (6 trillion tokens), the training checkpoints, and the evaluation recipes are all public. While fully reproducing the training is infrastructure-intensive and likely rare, this availability of checkpoints and the base models allows developers to fine-tune the model for specific tasks, notably by blending specific data with the existing dataset, thus ensuring more stable training. </p>",
@@ -1076,6 +1101,11 @@
                 "desc": "<p> Among Qwen's few proprietary models, this is the largest and most powerful of the third generation. It has been trained with particular attention to enterprise usage and agentic use cases. </p>",
                 "fyi": "<p> This model was trained on 36 trillion tokens, almost double that of Qwen 2.5, and is officially capable of responding in 100 languages. </p>",
                 "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 256,000 tokens, suitable for analyzing long documents or code repositories. </p>"
+            },
+            "Qwen 3.5 35B A3B": {
+                "desc": "<p>A medium-sized multimodal, multilingual model with reasoning capabilities. Despite its modest size, it competes with much larger models thanks to an ultra-sparse architecture that only activates a small fraction of its parameters with each token.</p>",
+                "fyi": "<p>This model is based on Qwen 3.5's hybrid architecture, combining Gated DeltaNet (linear attention in O(n)) and classical attention with an ultra-sparse mixture of experts: 256 experts in total, of which 8 routed and 1 shared are activated per token. The network has 40 layers organized in blocks of 4: 3 Gated DeltaNet layers followed by 1 classical attention layer, each associated with an MoE module.</p><p>Natively multimodal, it is trained with early fusion on multimodal tokens (text, images, and videos), and supports 201 languages and dialects. According to the editor, it surpasses the previous generation Qwen3-235B-A228 on the main evaluation tests, while being over 7 times more efficient in terms of active parameters.</p>",
+                "size_desc": "<p>With 35 billion parameters, Qwen 3.5 35B A3B is a medium-sized model, but the ultra-sparse mixture of experts (MoE, Mixture of Experts) architecture allows only 3 billion parameters to be activated per token generated, significantly reducing computational power requirements. It can run locally on high-end consumer hardware. The native context window reaches 262,144 tokens and can be extended to approximately 1 million thanks to extrapolation techniques (YaRN). Reasoning models of this type take longer to produce a response, which increases energy consumption.</p>"
             },
             "Qwen 3.5 397B": {
                 "desc": "<p>A very large, multimodal, and multilingual model with a reasoning mode. Thanks to a hybrid architecture combining linear attention (Gated DeltaNet) and expert mixing, it activates only 17 billion parameters out of a total of 397 billion.</p>",
@@ -1141,16 +1171,6 @@
                 "desc": "<p> Very large reasoning model, suitable for complex scientific and technological tasks and questions. </p>",
                 "fyi": "<p> This model is very powerful for analyzing images and graphs. It has also been trained to interact with other tools via function calls, making it suitable for agentic use cases. As a very powerful reasoning model, it can be used to distribute tasks among several smaller and/or more specialized models. It has a context window of up to 200,000 tokens, making it easy to analyze long documents. </p>",
                 "size_desc": "<p> Despite its name and the fact that the exact size is unknown, o4 mini is most likely a large model requiring servers equipped with multiple graphics cards. Reasoning models like o4 mini require more time to respond because a reasoning phase precedes the generation of the final result, which increases their energy consumption. However, the assumed Mixture of Experts (MoE) architecture only activates a subset of the parameters to generate each token, thus limiting its energy footprint. Size estimates rely on indirect indices such as inference costs and response latency. </p>"
-            },
-            "Odin Large": {
-                "desc": "<p>The large version of the Odin models by the Danish company Ordbogen.com.</p>",
-                "fyi": "<p>This is the company's first model release which includes two models, where this is the largest of the two.</p>",
-                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
-            },
-            "Odin Medium": {
-                "desc": "<p>The medium version of the Odin models by the Danish company Ordbogen.com.</p>",
-                "fyi": "<p>This is the company's first model release which includes two models, where this is the smallest of the two.</p>",
-                "size_desc": "<p>The sizes of the models behind the Odin system are not known. The architecture is probably based on a 'Mixture of Experts' (MoE), which means that only a portion of the parameters is activated for each query. This allows for better energy efficiency and high performance. Available estimates on model size rely on public information and indirect clues.</p>"
             },
             "qwq 32B": {
                 "desc": "<p> Medium-sized reasoning model specialized and highly efficient in mathematics, code generation, and logical problem solving. </p>",
@@ -1856,6 +1876,42 @@
         "title": "From votes to a leaderboard"
     },
     "reveal": {
+        "equivalent": {
+            "co2": {
+                "label": "CO <sub>2</sub> emitted",
+                "tooltip": "The CO<sub>2</sub> emitted is equivalent to the carbon dioxide emissions produced by the energy used to run the model. It reflects the environmental impact linked to energy consumption. The Watt-hour/CO<sub>2</sub> equivalence calculation differs depending on the energy mix of each country. However, the servers used for model inference are not all located in Europe. Thus, the equivalence calculation is based on the global average CO<sub>2</sub> emission rate per energy consumed.",
+                "unit": "tons"
+            },
+            "desc": "If all French people who use generative AI (48%) had had this discussion, it would represent:",
+            "scales": {
+                "baguette_production": {
+                    "tooltip": "Data calculated based on the carbon footprint of baguette production. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Baguettes produced"
+                },
+                "mango_import": {
+                    "tooltip": "Data calculated based on the carbon footprint from production to delivery of mangoes imported by air. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Imported mangoes"
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "Estimate based on an average: a mature tree absorbs ~22 kg CO₂/year (≈48 lb). This result is an order of magnitude; it varies depending on the species, age, climate, and soil. (Source <a {linkProps}>USDA</a>)",
+                    "unit": "Trees to absorb CO2 for 1 year"
+                },
+                "package_delivery": {
+                    "tooltip": "Data calculated based on the carbon footprint of home deliveries of 1kg parcels. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Parcel deliveries"
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "Data calculated based on the carbon footprint of a round trip between Paris and New York on a long-haul flight. (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Round trip Paris - NYC by plane"
+                },
+                "pool_filing": {
+                    "tooltip": "Data calculated based on the carbon impact of filling a private 8 x 4m swimming pool (source <a {linkProps}>ADEME</a>)",
+                    "unit": "Swimming pool refills"
+                }
+            },
+            "title": "Equivalents in tons of CO2",
+            "title_tooltip": "The equivalencies are projections to illustrate the mass effect; we have multiplied the impact of your discussion with this model to all AI users in France: 48% of French people now report using generative AI; never before has a digital technology been adopted so quickly (source <a {linkProps}>CREDOC Digital Barometer</a>)"
+        },
         "feedback": {
             "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
             "example": "Example of shared results",
@@ -1865,7 +1921,7 @@
         "impacts": {
             "energy": {
                 "label": "energy consumed",
-                "tooltip": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
+                "tooltip": "Measured in milliwatt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
             },
             "size": {
                 "count": "billion param.",
