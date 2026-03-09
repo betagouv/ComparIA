@@ -2,20 +2,24 @@ import logging
 import os
 import subprocess
 from pathlib import Path
+from typing import Literal
 
 import cyclopts
 
+from backend.config import CountryPortal
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
 
-from .compute import DATASET_CONFIG, count_dataset_rows, process_dataset
+from .compute import count_dataset_rows, process_dataset
+from .queries import Datasets, get_dataset_queries
 
 logger = configure_logger(logging.getLogger("dataset.export"))
 
 
 def main(
     export_base_path: Path = UTILS_DIR / "local_dataset",
-    dataset: str | None = None,
+    country_portal: Literal[CountryPortal, "all"] | None = "all",
+    dataset: Literal[Datasets, "all"] | None = "all",
     dry_run: bool = False,
     count: bool = False,
 ):
@@ -26,23 +30,21 @@ def main(
     ----------
     export_base_path: str
         Directory for local export (default: utils/local_dataset)
+    country_portal: CountryPortal
+        Specific dataset portal to export
     dataset: str
         Specific dataset to export (conversations, votes, reactions, conversations_raw). Default: all
     dry_run: bool
         Skip HuggingFace upload (only export to utils/local_dataset/)
     count: bool
         Display row counts for each dataset without exporting
-
-
-    Examples:
-        python export_dataset.py ./exports conversations
-        python export_dataset.py --dry-run
-        python export_dataset.py ./exports --dry-run
     """
+    country_portal = None if country_portal == "all" else country_portal
+    dataset = None if dataset == "all" else dataset
 
     # If --count flag is set, display counts and exit
     if count:
-        count_dataset_rows()
+        count_dataset_rows(country_portal)
         return
 
     # Log spam detection info
@@ -75,9 +77,17 @@ def main(
 
     # Process each dataset (or just the specified one)
     try:
-        for dataset_name, config in DATASET_CONFIG.items():
+        dataset_queries = get_dataset_queries(country_portal)
+
+        for dataset_name, query in dataset_queries.items():
             if not dataset or dataset == dataset_name:
-                process_dataset(dataset_name, config, export_base_path, dry_run=dry_run)
+                process_dataset(
+                    dataset_name,
+                    query,
+                    country_portal,
+                    export_base_path,
+                    dry_run=dry_run,
+                )
 
         logger.info("Finished processing all datasets.")
     except KeyboardInterrupt:

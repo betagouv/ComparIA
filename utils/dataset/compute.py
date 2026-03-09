@@ -30,151 +30,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 from backend.arena.spam_detection import is_spam
+from backend.config import PORTAL_DATASET_INFOS, CountryPortal
 from backend.llms.utils import get_active_params, get_total_params
 from utils.logger import configure_logger
 
-from .queries import get_llms_data
+from .queries import get_dataset_queries, get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
 logger = configure_logger(logging.getLogger("dataset.compute"))
 
 COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
-
-REPO_ORG = os.getenv("REPO_ORG", "ministere-culture")
-
-# Dataset queries - filter out PII, archived data, and specific cohorts
-# All queries exclude: archived=TRUE, contains_pii=TRUE, cohorts matching 'pix' or 'do-not-track'
-conversations_db_query = """
-SELECT
-    id,
-    timestamp,
-    model_a_name,
-    model_b_name,
-    conversation_a,
-    conversation_b,
-    conv_turns,
-    conversation_pair_id,
-    conv_a_id,
-    conv_b_id,
-    session_hash,
-    visitor_id,
-    model_pair_name,
-    opening_msg,
-    system_prompt_a,
-    system_prompt_b,
-    mode,
-    custom_models_selection,
-    short_summary,
-    keywords,
-    categories,
-    languages,
-    total_conv_a_output_tokens,
-    total_conv_b_output_tokens,
-    ip
-FROM conversations
-WHERE archived = FALSE
--- Filter out rows potentially containing PII
-AND pii_analyzed = TRUE
-AND contains_pii = FALSE
-AND postprocess_failed = FALSE
--- Filter out rows excluded because of their cohort (only pix for now)
-AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
--- Filter out non-recoverable ModelResponseStream in JSONB conversations
-AND conversation_a::text NOT LIKE '%%ModelResponseStream%%'
-AND conversation_b::text NOT LIKE '%%ModelResponseStream%%'
-;
-"""
-
-votes_db_query = """
-SELECT v.*
-FROM votes v
-WHERE v.archived = FALSE
-AND EXISTS (
-    SELECT 1
-    FROM conversations c
-    WHERE c.conversation_pair_id = v.conversation_pair_id
-    AND c.pii_analyzed = TRUE
-    AND c.contains_pii = FALSE
-    AND c.postprocess_failed = FALSE
-    AND (COALESCE(cohorts, '') NOT LIKE '%%pix%%')
-)
-;
-"""
-
-reactions_db_query = """
-SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg,
-    conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id,
-    conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content,
-    liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial,
-    instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
-
-FROM reactions r
-
-WHERE r.archived = FALSE
-
--- Filter potentially incoherent data
-  -- 1. msg_index referencing a conversation must be within conversation bounds
-  AND r.msg_index < LEAST(
-      jsonb_array_length(r.conversation_a),
-      jsonb_array_length(r.conversation_b)
-  )
-  -- 2. Message at reacted to (at msg_index) must be from assistant role
-  -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
-  AND (
-    CASE
-        WHEN r.refers_to_conv_id = r.conv_a_id THEN
-            (r.conversation_a->r.msg_index->>'role' = 'assistant')
-        WHEN r.refers_to_conv_id = r.conv_b_id THEN
-            (r.conversation_b->r.msg_index->>'role' = 'assistant')
-        ELSE FALSE
-    END
-  )
-  -- 3. Filter out eventual ModelResponseStream corrupted content
-  AND (r.response_content NOT LIKE '%%ModelResponseStream%%' OR r.response_content IS NULL)
-  AND r.conversation_a::text NOT LIKE '%%ModelResponseStream%%'
-  AND r.conversation_b::text NOT LIKE '%%ModelResponseStream%%'
-
-
--- Filtering reactions with PII, or excluded cohorts
-AND EXISTS (
-    SELECT 1
-    FROM conversations c
-
-    WHERE c.conversation_pair_id = r.conversation_pair_id
-    AND c.contains_pii = FALSE
-    AND c.pii_analyzed = TRUE
-    AND c.postprocess_failed = FALSE
-    AND (COALESCE(c.cohorts, '') NOT LIKE '%%pix%%')
-)
-;
-"""
-
-conversations_raw_db_query = """
-SELECT *
-FROM conversations
-WHERE archived = FALSE
-;
-"""
-
-DATASET_CONFIG = {
-    "conversations": {
-        "query": conversations_db_query,
-        "repo": "comparia-conversations",
-    },
-    "votes": {
-        "query": votes_db_query,
-        "repo": "comparia-votes",
-    },
-    "reactions": {
-        "query": reactions_db_query,
-        "repo": "comparia-reactions",
-    },
-    "conversations_raw": {
-        "query": conversations_raw_db_query,
-        "repo": "comparia-conversations_raw",
-    },
-}
 
 
 @lru_cache
@@ -513,7 +379,7 @@ def commit_and_push(repo_org, repo_name, repo_path):
         return False
 
 
-def count_dataset_rows():
+def count_dataset_rows(country_portal: CountryPortal | None):
     """Display row counts for each dataset without performing export."""
     if not COMPARIA_DB_URI:
         logger.error("Cannot count rows: no $COMPARIA_DB_URI")
@@ -528,8 +394,9 @@ def count_dataset_rows():
             print("Dataset Row Counts")
             print("=" * 60)
 
-            for dataset_name, config in DATASET_CONFIG.items():
-                query = config.get("query")
+            dataset_queries = get_dataset_queries(country_portal)
+
+            for dataset_name, query in dataset_queries.items():
                 if not query:
                     logger.warning(f"No query defined for {dataset_name}")
                     continue
@@ -562,7 +429,13 @@ def count_dataset_rows():
             engine.dispose()
 
 
-def process_dataset(dataset_name, dataset_config, export_base_path, dry_run=False):
+def process_dataset(
+    dataset_name,
+    query,
+    country_portal: CountryPortal | None,
+    export_base_path,
+    dry_run=False,
+):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
     Export to multiple formats (parquet, jsonl, samples), and push to HF Hub.
@@ -579,12 +452,12 @@ def process_dataset(dataset_name, dataset_config, export_base_path, dry_run=Fals
         logger.error(f"Cannot process {dataset_name}: no $COMPARIA_DB_URI")
         return False
 
-    repo_name = dataset_config.get("repo")
-    query = dataset_config.get("query")
-
-    if not repo_name:
-        logger.error(f"No repository defined for dataset: {dataset_name}")
-        return False
+    repo = (
+        PORTAL_DATASET_INFOS[country_portal]
+        if country_portal
+        else {"org": None, "name": "all"}
+    )
+    repo_name = f"{repo["name"]}-{dataset_name}"
 
     logger.info(f"Folder defined for dataset: {export_base_path}")
 
@@ -617,7 +490,7 @@ def process_dataset(dataset_name, dataset_config, export_base_path, dry_run=Fals
                 logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
                 return True
             else:
-                push_success = commit_and_push(REPO_ORG, repo_name, repo_path)
+                push_success = commit_and_push(repo["org"], repo_name, repo_path)
                 return push_success
 
     except OperationalError as e:
