@@ -178,7 +178,6 @@ compute-rankings: ## Execute the ranking pipeline (see notebooks for more option
 	
 	@echo "Compute rankings..."
 	$(UV) run python -m utils.ranking.run
-	@$(MAKE) models-build
 
 # Cleanup
 clean: ## Clean generated files
