@@ -100,6 +100,15 @@ wheels = [
 ]
 
 [[package]]
+name = "altcha"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fb/0e/ec05af090d38d74e9a6ea55ce606549a4b13c3d62e340387f772ffc634e4/altcha-1.0.0.tar.gz", hash = "sha256:33056826a60efdc3d9651d5a13d72d7c8ee1c7f4456b9c9db65838f47fac9082", size = 11244, upload-time = "2025-12-14T05:30:31.127Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/88/19/978dac535829b3e9175427d4d91a34b0ec6e120375a38fabd9840acf32ca/altcha-1.0.0-py3-none-any.whl", hash = "sha256:78cc0fd3ba907d069252e4ea47e0dd981d4d9bd41f360333cc76ca2ce2d2a46c", size = 9161, upload-time = "2025-12-14T05:30:29.815Z" },
+]
+
+[[package]]
 name = "annotated-doc"
 version = "0.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1092,6 +1101,7 @@ name = "languia"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "altcha" },
     { name = "ecologits" },
     { name = "fastapi" },
     { name = "google-auth" },
@@ -1133,6 +1143,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "altcha", specifier = ">=1.0.0" },
     { name = "ecologits", specifier = "==0.9.2" },
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "google-auth", specifier = ">=2.38.0" },

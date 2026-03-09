@@ -20,6 +20,7 @@ dependencies = [
     "rich>=14.2.0",
     "sentry-sdk>=2.50.0",
     "uvicorn>=0.40.0",
+    "altcha>=1.0.0",
 ]
 
 [dependency-groups]

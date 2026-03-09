@@ -19,6 +19,7 @@ from pydantic import (
     field_validator,
 )
 
+from backend.arena.captcha import verify_altcha_token
 from backend.arena.spam_detection import is_spam
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -299,6 +300,7 @@ class AddFirstTextBody(BaseModel):
     custom_models_selection: CustomModelsSelection = None
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
+    altcha_token: str
 
     @field_validator("prompt_value")
     @classmethod
@@ -309,11 +311,20 @@ class AddFirstTextBody(BaseModel):
             )
         return v
 
+    @field_validator("altcha_token")
+    @classmethod
+    def check_altcha(cls, v: str) -> str:
+        ok, error = verify_altcha_token(v)
+        if not ok:
+            raise ValueError(f"Vérification anti-robot échouée : {error}")
+        return v
+
 
 class AddTextBody(BaseModel):
     """Request body for add_text endpoint."""
 
     message: str = PromptField
+    altcha_token: str
 
     @field_validator("message")
     @classmethod
@@ -322,6 +333,14 @@ class AddTextBody(BaseModel):
             raise ValueError(
                 "This prompt format is not allowed. Please use natural language."
             )
+        return v
+
+    @field_validator("altcha_token")
+    @classmethod
+    def check_altcha(cls, v: str) -> str:
+        ok, error = verify_altcha_token(v)
+        if not ok:
+            raise ValueError(f"Vérification anti-robot échouée : {error}")
         return v
 
 

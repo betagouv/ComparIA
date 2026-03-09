@@ -1,3 +1,4 @@
+import { consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError, type AnySSEEvent } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import type { APIBotModel, BotModel } from '$lib/models'
@@ -237,7 +238,8 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
       prompt_value: args.prompt_value,
       mode: args.mode,
       custom_models_selection: args.custom_models_selection,
-      cohorts
+      cohorts,
+      altcha_token: consumeAltchaToken()
     })
 
     // Stream from FastAPI endpoint
@@ -275,7 +277,8 @@ export async function askChatBots(text: string): Promise<string | undefined> {
   try {
     // Stream from FastAPI endpoint
     for await (const event of api.stream('/arena/add_text', {
-      message: text
+      message: text,
+      altcha_token: consumeAltchaToken()
     })) {
       onSSEEvent(event)
     }
