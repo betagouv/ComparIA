@@ -24,6 +24,7 @@ import logging
 import os
 import subprocess
 from datetime import datetime
+from functools import lru_cache
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -178,9 +179,9 @@ DATASET_CONFIG = {
 }
 
 
-def load_session_hash_ip():
+@lru_cache
+def get_session_hash_to_ip_map():
     """Load session hash to IP map from database for visitor_id fallback."""
-    global session_hash_to_ip_map
     if not COMPARIA_DB_URI:
         logger.error("Cannot connect to the database: no configuration provided")
         return False
@@ -193,7 +194,7 @@ def load_session_hash_ip():
                 "SELECT ip_map, session_hash FROM conversations", conn
             )
             # Convert DataFrame to dictionary for efficient lookup when visitor_id is missing
-            session_hash_to_ip_map = dict(zip(df["session_hash"], df["ip_map"]))
+            return dict(zip(df["session_hash"], df["ip_map"]))
         return True
 
     except Exception as e:
@@ -331,6 +332,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
             )
             # Fallback: use hashed IP map for rows without visitor_id
             logger.info("Replacing missing visitor_id with hashed IP map ID...")
+            session_hash_to_ip_map = get_session_hash_to_ip_map()
             dataframe["visitor_id"] = dataframe.apply(
                 lambda row: (
                     hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
@@ -680,9 +682,6 @@ def main():
     if args.count:
         count_dataset_rows()
         return
-
-    # Load lookup tables for data enrichment
-    load_session_hash_ip()
 
     # Log spam detection info
     logger.info("Spam detection enabled for filtering dataset")
