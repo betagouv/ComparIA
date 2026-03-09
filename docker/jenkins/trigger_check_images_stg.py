@@ -34,7 +34,7 @@ class JenkinsCheckImagesStgTrigger:
         jenkins_url: str,
         username: str,
         api_token: str,
-        job_name: str = "atnum/stg/check-image-exists",
+        job_name: str = "atnum/stg/check-images",
         timeout: int = 30,
     ):
         self.jenkins_url = jenkins_url.rstrip("/")
@@ -227,8 +227,8 @@ Exemples d'utilisation:
     )
     parser.add_argument(
         "--job",
-        default="atnum/stg/check-image-exists",
-        help="Nom du job Jenkins (défaut: atnum/stg/check-image-exists)",
+        default="atnum/stg/check-images",
+        help="Nom du job Jenkins (défaut: atnum/stg/check-images)",
     )
     parser.add_argument(
         "--commit-hash", required=True, help="Hash du commit (tag de l'image)"
