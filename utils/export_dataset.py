@@ -32,15 +32,14 @@ from sqlalchemy.exc import OperationalError
 from backend.arena.spam_detection import is_spam
 from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
+from utils.logger import configure_logger
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 # FIXME import path from 'utils.utils'
 LLMS_GENERATED_DATA_FILE = os.path.join(SCRIPT_DIR, "models", "generated-models.json")
 MODELS_DATA = {}
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+logger = configure_logger(logging.getLogger("datasets"))
 
 COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
 
