@@ -23,12 +23,7 @@ import json
 import logging
 import os
 import subprocess
-import sys
 from datetime import datetime
-
-# Add the parent directory to the Python path BEFORE importing backend modules
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.abspath(os.path.join(SCRIPT_DIR, "..")))
 
 import pandas as pd
 from sqlalchemy import create_engine
