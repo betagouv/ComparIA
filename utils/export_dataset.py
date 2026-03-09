@@ -33,10 +33,9 @@ from backend.arena.spam_detection import is_spam
 from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 from utils.logger import configure_logger
+from utils.utils import LLMS_GENERATED_DATA_FILE, UTILS_DIR
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
-# FIXME import path from 'utils.utils'
-LLMS_GENERATED_DATA_FILE = os.path.join(SCRIPT_DIR, "models", "generated-models.json")
 MODELS_DATA = {}
 
 logger = configure_logger(logging.getLogger("datasets"))
@@ -682,7 +681,7 @@ def main():
         "export_base_path",
         nargs="?",
         type=str,
-        default=os.path.join(SCRIPT_DIR, "local_dataset"),
+        default=UTILS_DIR / "local_dataset",
         help="Directory for local export (default: utils/local_dataset)",
     )
     parser.add_argument(
