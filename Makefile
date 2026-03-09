@@ -158,7 +158,7 @@ dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY 
 		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
 		exit 1; \
 	fi
-	$(UV) run python -m utils.export_dataset
+	$(UV) run python -m utils.dataset.run
 
 # Ranking methods (Poetry subproject)
 ranking-install: ## Install ranking_methods project dependencies (via Poetry)
