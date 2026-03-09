@@ -4981,7 +4981,7 @@
       "specific_portals": [
         "da"
       ],
-      "status": "enabled",
+      "status": "disabled",
       "url": "https://www.ordbogen.ai/",
       "wh_per_million_token": 8221.378715262475
     },
@@ -5017,7 +5017,7 @@
       "specific_portals": [
         "da"
       ],
-      "status": "enabled",
+      "status": "disabled",
       "url": "https://www.ordbogen.ai/",
       "wh_per_million_token": 8221.378715262475
     },

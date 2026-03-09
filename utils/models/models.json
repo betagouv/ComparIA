@@ -2066,6 +2066,7 @@
     "models": [
       {
         "new": true,
+        "status": "disabled",
         "id": "odin-large",
         "simple_name": "Odin Large",
         "license": "proprietary",
@@ -2084,6 +2085,7 @@
       },
       {
         "new": true,
+        "status": "disabled",
         "id": "odin-medium",
         "simple_name": "Odin Medium",
         "license": "proprietary",
