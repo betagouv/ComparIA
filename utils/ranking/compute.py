@@ -83,7 +83,9 @@ def _reactions_to_battles(reactions: list[dict]) -> list[tuple[str, str, str]]:
     return battles
 
 
-def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
+def _aggregate_preferences(
+    votes: list[dict], reactions: list[dict]
+) -> dict[str, PreferencesData]:
     """Aggregate preference booleans from votes per model."""
     counts: dict[str, dict[str, int]] = defaultdict(lambda: {f: 0 for f in PREF_FIELDS})
     total: dict[str, int] = defaultdict(int)
@@ -95,6 +97,17 @@ def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
             for pref_field in PREF_FIELDS:
                 if v.get(f"conv_{pref_field}_{side}"):
                     counts[model][pref_field] += 1
+
+    for r in reactions:
+        if not r["liked"] and not r["disliked"]:
+            continue
+
+        model = r["refers_to_model"]
+        total[model] += 1
+        fields = POSITIVE_PREFS if r["liked"] else NEGATIVE_PREFS
+        for pref_field in fields:
+            if r[pref_field]:
+                counts[model][pref_field] += 1
 
     result = {}
     for model in total:
@@ -188,7 +201,7 @@ def _compute_rankings_for_group(
             win_rate=round(wins / n_match, 4) if n_match > 0 else 0.0,
         )
 
-    preferences = _aggregate_preferences(votes)
+    preferences = _aggregate_preferences(votes, reactions)
 
     return RankingResult(
         timestamp=time.time(),
