@@ -20,7 +20,6 @@ from fastapi import Request
 from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer
 
 from backend.arena.models import (
-    ALL_PREFS,
     BotPos,
     Conversation,
     Conversations,
@@ -28,7 +27,7 @@ from backend.arena.models import (
     ReactionData,
     VoteBody,
 )
-from backend.config import CountryPortal, SelectionMode, settings
+from backend.config import ALL_PREFS, CountryPortal, SelectionMode, settings
 
 logger = logging.getLogger("languia")
 

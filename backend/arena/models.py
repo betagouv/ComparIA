@@ -25,6 +25,8 @@ from backend.config import (
     DEFAULT_SELECTION_MODE,
     CountryPortal,
     CustomModelsSelection,
+    NegativePref,
+    PositivePref,
     SelectionMode,
 )
 from backend.llms.data import get_llms_data
@@ -335,13 +337,6 @@ class AddTextBody(BaseModel):
                 "This prompt format is not allowed. Please use natural language."
             )
         return v
-
-
-PositivePref = Literal["useful", "complete", "creative", "clear_formatting"]
-POSITIVE_PREFS: tuple[PositivePref, ...] = get_args(PositivePref)
-NegativePref = Literal["incorrect", "superficial", "instructions_not_followed"]
-NEGATIVE_PREFS: tuple[NegativePref, ...] = get_args(NegativePref)
-ALL_PREFS = POSITIVE_PREFS + NEGATIVE_PREFS
 
 
 class ReactionBody(BaseModel):

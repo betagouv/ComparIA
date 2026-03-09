@@ -53,6 +53,13 @@ os.makedirs(settings.LOGDIR, exist_ok=True)
 # Structure: total timeout, read, write, connect (all in seconds)
 GLOBAL_TIMEOUT = Timeout(15.0, read=15.0, write=5.0, connect=15.0)
 
+# Preferences
+PositivePref = Literal["useful", "complete", "creative", "clear_formatting"]
+POSITIVE_PREFS: tuple[PositivePref, ...] = get_args(PositivePref)
+NegativePref = Literal["incorrect", "superficial", "instructions_not_followed"]
+NEGATIVE_PREFS: tuple[NegativePref, ...] = get_args(NegativePref)
+ALL_PREFS = POSITIVE_PREFS + NEGATIVE_PREFS
+
 # Available country portals
 CountryPortal = Literal["fr", "da"]
 COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)

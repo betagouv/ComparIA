@@ -12,27 +12,13 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Literal
 
-from backend.config import CountryPortal
+from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS, CountryPortal
 from backend.llms.models import DatasetData, PreferencesData
 from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_reactions, fetch_votes
 from utils.utils import configure_logger
 
 logger = configure_logger(logging.getLogger("ranking.compute"))
-
-# Preference fields tracked on votes (boolean columns per side a/b)
-PREF_FIELDS = [
-    "useful",
-    "complete",
-    "creative",
-    "clear_formatting",
-    "incorrect",
-    "superficial",
-    "instructions_not_followed",
-]
-
-POSITIVE_PREFS = {"useful", "complete", "creative", "clear_formatting"}
-NEGATIVE_PREFS = {"incorrect", "superficial", "instructions_not_followed"}
 
 DataGroup = Literal[CountryPortal, "all"]
 
@@ -87,14 +73,14 @@ def _aggregate_preferences(
     votes: list[dict], reactions: list[dict]
 ) -> dict[str, PreferencesData]:
     """Aggregate preference booleans from votes per model."""
-    counts: dict[str, dict[str, int]] = defaultdict(lambda: {f: 0 for f in PREF_FIELDS})
+    counts: dict[str, dict[str, int]] = defaultdict(lambda: {f: 0 for f in ALL_PREFS})
     total: dict[str, int] = defaultdict(int)
 
     for v in votes:
         for side in ("a", "b"):
             model = v[f"model_{side}_name"]
             total[model] += 1
-            for pref_field in PREF_FIELDS:
+            for pref_field in ALL_PREFS:
                 if v.get(f"conv_{pref_field}_{side}"):
                     counts[model][pref_field] += 1
 
