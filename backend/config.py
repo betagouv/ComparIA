@@ -34,6 +34,8 @@ class Settings(BaseSettings):
     HF_PUSH_DATASET_KEY_DA: str = ""
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
+    REPO_ORG: str = "ministere-culture"
+    ALTCHA_HMAC_KEY: str = ""
 
     enable_postgres_handler: bool = True
 
@@ -45,6 +47,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Generate a random HMAC key if not configured (dev mode)
+if not settings.ALTCHA_HMAC_KEY:
+    import secrets
+
+    settings.ALTCHA_HMAC_KEY = secrets.token_hex(32)
 
 # Create directory for JSON backup files
 os.makedirs(settings.LOGDIR, exist_ok=True)
@@ -109,3 +117,8 @@ RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+
+# Altcha PoW CAPTCHA settings
+ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end
+ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
+ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
