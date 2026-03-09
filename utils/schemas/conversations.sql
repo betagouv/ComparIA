@@ -79,3 +79,8 @@ ALTER TABLE conversations DROP COLUMN city;
 -- comma separated
 ALTER TABLE conversations ADD COLUMN cohorts TEXT;
 ALTER TABLE conversations ADD COLUMN country_portal VARCHAR(255);
+
+-- 09/03/2026
+-- Track whether responses were served from cache
+ALTER TABLE conversations ADD COLUMN cached_response_a BOOLEAN DEFAULT FALSE;
+ALTER TABLE conversations ADD COLUMN cached_response_b BOOLEAN DEFAULT FALSE;

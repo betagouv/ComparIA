@@ -7,6 +7,7 @@ handling streaming responses, token counting, and message tracking.
 Uses Pydantic Conversation model update and validation during streaming.
 """
 
+import asyncio
 import logging
 import time
 from typing import AsyncGenerator
@@ -14,20 +15,81 @@ from typing import AsyncGenerator
 from fastapi import Request
 from litellm.litellm_core_utils.token_counter import token_counter
 
+from backend.arena.cache import CachedResponse, get_cached_response, store_cached_response
 from backend.arena.litellm import litellm_stream_iter
 from backend.arena.models import (
     AnyMessage,
     AssistantMessage,
     AssistantMessageMetadata,
+    BotPos,
     Conversation,
+    SystemMessage,
 )
 from backend.errors import EmptyResponseError
 
 logger = logging.getLogger("languia")
 
 
+def _is_first_turn(state: Conversation) -> bool:
+    """Check if this is the first turn (no assistant messages yet)."""
+    return not any(isinstance(m, AssistantMessage) for m in state.messages)
+
+
+def _get_user_prompt(state: Conversation) -> str:
+    """Get the first user message content for cache key."""
+    for msg in state.messages:
+        if not isinstance(msg, SystemMessage):
+            return msg.content
+    return ""
+
+
+async def _stream_cached_response(
+    position: BotPos,
+    state: Conversation,
+    cached: CachedResponse,
+) -> AsyncGenerator[list[AnyMessage]]:
+    """
+    Simulate streaming from a cached response.
+
+    Chunks the cached content and yields with small delays to mimic
+    real streaming behavior for consistent UX.
+    """
+    metadata = AssistantMessageMetadata(
+        generation_id="cached",
+        bot=position,
+        output_tokens=cached["output_tokens"],
+        is_cached=True,
+    )
+    current_msg = AssistantMessage(metadata=metadata)
+    state.messages.append(current_msg)
+
+    start_tstamp = time.time()
+
+    content = cached["content"]
+    reasoning = cached["reasoning"].strip()
+
+    if reasoning:
+        current_msg.reasoning = reasoning
+
+    # Simulate streaming: emit content in chunks
+    chunk_size = max(20, len(content) // 15)  # ~15 chunks
+    emitted = 0
+    while emitted < len(content):
+        end = min(emitted + chunk_size, len(content))
+        current_msg.content = content[:end].strip()
+        if current_msg.content or current_msg.reasoning:
+            yield state.messages
+        emitted = end
+        await asyncio.sleep(0.03)
+
+    # Final yield with complete content and timing
+    current_msg.content = content.strip()
+    current_msg.metadata.duration = time.time() - start_tstamp
+    yield state.messages
+
+
 async def bot_response_async(
-    position,
+    position: BotPos,
     state: Conversation,
     request: Request,
     temperature=0.7,
@@ -52,6 +114,21 @@ async def bot_response_async(
     Raises:
         EmptyResponseError: If model returns empty response
     """
+    is_first_turn = _is_first_turn(state)
+
+    # Try cache on first turn only
+    if is_first_turn:
+        prompt = _get_user_prompt(state)
+        cached = get_cached_response(state.model_name, prompt)
+        if cached:
+            logger.info(
+                f"[CACHE] Serving cached response for {state.model_name}",
+                extra={"request": request},
+            )
+            async for messages in _stream_cached_response(position, state, cached):
+                yield messages
+            return
+
     # Add new partial AssistantMessage to chat
     metadata = AssistantMessageMetadata(generation_id="", bot=position)
     current_msg = AssistantMessage(metadata=metadata)
@@ -113,3 +190,15 @@ async def bot_response_async(
 
     # Final update with complete response and timing data
     yield state.messages
+
+    # Store successful response in cache (first turn only)
+    if is_first_turn:
+        store_cached_response(
+            state.model_name,
+            _get_user_prompt(state),
+            CachedResponse(
+                content=data["content"],
+                reasoning=data["reasoning"],
+                output_tokens=data["output_tokens"],
+            ),
+        )

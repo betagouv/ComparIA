@@ -279,6 +279,8 @@ def upsert_conv_to_db(data: dict) -> dict:
                 conv_turns = EXCLUDED.conv_turns,
                 total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
                 total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
+                cached_response_a = EXCLUDED.cached_response_a,
+                cached_response_b = EXCLUDED.cached_response_b,
                 cohorts = EXCLUDED.cohorts
         """)
 
@@ -641,6 +643,7 @@ class ConversationMessageRecord(BaseModel):
         duration: (
             float | None
         )  # FIXME could make it required if failed message is deleted before recording
+        is_cached: bool = False
 
     role: MessageRole
     content: str
@@ -705,6 +708,8 @@ class ConversationsRecord(BaseModel):
     conversation_b: Annotated[list[ConversationMessageRecord], JSONModelSerializer]
     total_conv_a_output_tokens: int
     total_conv_b_output_tokens: int
+    cached_response_a: bool = False
+    cached_response_b: bool = False
 
     # Additional? (not found in record_conversations but present in conversations.sql)
     # archived: bool = False
@@ -753,6 +758,9 @@ def record_conversations(
             ("tokens", "total_conv_{}_output_tokens"),
         ]:
             convs_data[db_key.format(pos)] = conv[data_key]
+        # Check if any assistant message in this conversation was cached
+        conv_obj = getattr(conversations, f"conversation_{pos}")
+        convs_data[f"cached_response_{pos}"] = conv_obj.has_cached_response
 
     convs_record = ConversationsRecord(**convs_data)
 
