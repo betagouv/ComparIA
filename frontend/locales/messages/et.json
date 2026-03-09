@@ -1596,11 +1596,6 @@
         "title": "Häältest edetabelini"
     },
     "reveal": {
-        "equivalent": {
-            "streaming": {
-                "label": "veebivideod"
-            }
-        },
         "feedback": {
             "example": "Näited jagatud tulemustest",
             "moreOnVotes": "Loe häälte kohta lisaks",
