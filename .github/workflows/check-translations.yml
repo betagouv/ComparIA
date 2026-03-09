@@ -2,9 +2,9 @@ name: Check Missing Translations
 
 on:
   pull_request:
+    branches: [main]
     paths:
-      - 'frontend/locales/messages/fr.json'
-      - 'frontend/locales/messages/en.json'
+      - 'frontend/locales/messages/*.json'
       - '.github/workflows/check-translations.yml'
     types: [opened, synchronize, reopened]
 
@@ -19,11 +19,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check missing translations
-        id: check
         run: |
           python3 << 'EOF'
           import json
           import os
+          import glob
 
           def get_leaf_keys(d, parent_key=""):
               keys = set()
@@ -36,49 +36,46 @@ jobs:
               return keys
 
           fr = json.loads(open("frontend/locales/messages/fr.json").read())
-          da = json.loads(open("frontend/locales/messages/da.json").read())
-
           fr_keys = get_leaf_keys(fr)
-          da_keys = get_leaf_keys(da)
 
-          missing_in_da = sorted(fr_keys - da_keys)
-          missing_in_fr = sorted(da_keys - fr_keys)
-
+          locale_files = sorted(glob.glob("frontend/locales/messages/*.json"))
           body_parts = []
 
-          if missing_in_da:
-              items = "\n".join(f"- `{k}`" for k in missing_in_da)
-              body_parts.append(
-                  f"### Danish (`da.json`) is missing {len(missing_in_da)} key(s) present in `fr.json`\n\n"
-                  f"@KennethEnevoldsen could you add the Danish translations for these keys?\n\n"
-                  f"{items}"
-              )
+          for filepath in locale_files:
+              lang_code = os.path.basename(filepath).replace(".json", "")
+              if lang_code == "fr":
+                  continue
 
-          if missing_in_fr:
-              items = "\n".join(f"- `{k}`" for k in missing_in_fr)
-              body_parts.append(
-                  f"### French (`fr.json`) is missing {len(missing_in_fr)} key(s) present in `da.json`\n\n"
-                  f"@simonaszilinskas could you add the French translations for these keys?\n\n"
-                  f"{items}"
-              )
+              other = json.loads(open(filepath).read())
+              other_keys = get_leaf_keys(other)
+
+              missing = sorted(fr_keys - other_keys)
+              obsolete = sorted(other_keys - fr_keys)
+
+              if missing:
+                  items = "\n".join(f"- `{k}`" for k in missing)
+                  body_parts.append(
+                      f"### `{lang_code}.json` is missing {len(missing)} key(s) present in `fr.json`\n\n"
+                      f"{items}"
+                  )
+
+              if obsolete:
+                  items = "\n".join(f"- `{k}`" for k in obsolete)
+                  body_parts.append(
+                      f"### `{lang_code}.json` has {len(obsolete)} obsolete key(s) not in `fr.json` (should be removed)\n\n"
+                      f"{items}"
+                  )
 
           if body_parts:
               body = "## Missing Translations\n\n" + "\n\n".join(body_parts)
-              status = "found"
           else:
-              body = ""
-              status = "ok"
+              body = "## Missing Translations\n\nAll locale files are in sync with `fr.json`!"
 
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"status={status}\n")
-
-          # Write body to a file to avoid escaping issues
           with open("/tmp/comment-body.md", "w") as f:
               f.write(body)
           EOF
 
       - name: Find existing comment
-        if: steps.check.outputs.status == 'found'
         uses: peter-evans/find-comment@v3
         id: find-comment
         with:
@@ -87,7 +84,6 @@ jobs:
           body-includes: '## Missing Translations'
 
       - name: Post or update PR comment
-        if: steps.check.outputs.status == 'found'
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
