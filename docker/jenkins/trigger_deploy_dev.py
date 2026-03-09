@@ -34,7 +34,7 @@ class JenkinsDeployDevTrigger:
         jenkins_url: str,
         username: str,
         api_token: str,
-        job_name: str = "atnum/dev/languia/languia-kustomize-dev",
+        job_name: str = "atnum/dev/languia/deploy-dev",
         timeout: int = 30,
     ):
         self.jenkins_url = jenkins_url.rstrip("/")
@@ -235,8 +235,8 @@ Exemples d'utilisation:
     )
     parser.add_argument(
         "--job",
-        default="atnum/dev/languia/languia-kustomize-dev",
-        help="Nom du job Jenkins (défaut: atnum/dev/languia/languia-kustomize-dev)",
+        default="atnum/dev/languia/deploy-dev",
+        help="Nom du job Jenkins (défaut: atnum/dev/languia/deploy-dev)",
     )
     parser.add_argument(
         "--image-tag", required=True, help="Tag de l'image (commit hash)"
