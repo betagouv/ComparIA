@@ -1,10 +1,10 @@
 import logging
 import os
-import subprocess
 from pathlib import Path
 from typing import Literal
 
 import cyclopts
+from huggingface_hub import login
 
 from backend.config import CountryPortal
 from utils.logger import configure_logger
@@ -52,23 +52,8 @@ def main(
 
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not dry_run:
-        logger.info("hf auth login --token $HF_PUSH_DATASET_KEY")
-
-        _login_result = subprocess.run(
-            args=[
-                "hf",
-                "auth",
-                "login",
-                "--token",
-                os.getenv("HF_PUSH_DATASET_KEY", ""),
-            ]
-        )
-
-        if _login_result.returncode == 0:
-            logger.info("Logged in")
-        else:
-            logger.error(f"Failed to login: {_login_result.stderr}")
-            return False
+        logger.info("Login in to HuggingFace $HF_PUSH_DATASET_KEY")
+        login(os.getenv("HF_PUSH_DATASET_KEY"))
     else:
         logger.info("[DRY RUN] Skipping HuggingFace authentication")
 
