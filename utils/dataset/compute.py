@@ -337,7 +337,7 @@ def count_dataset_rows(country_portal: CountryPortal | None):
 def process_dataset(
     dataset_name,
     query,
-    country_portal: CountryPortal | None,
+    country_portal: CountryPortal,
     export_base_path,
     dry_run=False,
 ):
@@ -357,11 +357,7 @@ def process_dataset(
         logger.error(f"Cannot process {dataset_name}: no $COMPARIA_DB_URI")
         return False
 
-    repo = (
-        PORTAL_DATASET_INFOS[country_portal]
-        if country_portal
-        else {"org": None, "name": "all"}
-    )
+    repo = PORTAL_DATASET_INFOS[country_portal]
     repo_name = f"{repo["name"]}-{dataset_name}"
 
     logger.info(f"Folder defined for dataset: {export_base_path}")

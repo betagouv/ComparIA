@@ -38,9 +38,7 @@ def get_llms_data() -> dict[str, LLMData]:
         raise
 
 
-def get_dataset_queries(
-    country_portal: CountryPortal | None = None,
-) -> dict[Datasets, str]:
+def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
     """
     Get dataset queries - filter out PII, archived data, and specific cohorts
     All queries exclude: archived=TRUE, contains_pii=TRUE, cohorts matching 'pix' or 'do-not-track'

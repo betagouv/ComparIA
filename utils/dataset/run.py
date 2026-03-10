@@ -17,8 +17,8 @@ logger = configure_logger(logging.getLogger("dataset"))
 
 
 def main(
+    country_portal: CountryPortal,
     export_base_path: Path = UTILS_DIR / "local_dataset",
-    country_portal: Literal[CountryPortal, "all"] | None = "all",
     dataset: Literal[Datasets, "all"] | None = "all",
     dry_run: bool = False,
     count: bool = False,
@@ -28,10 +28,10 @@ def main(
 
     Parameters
     ----------
-    export_base_path: str
-        Directory for local export (default: utils/local_dataset)
     country_portal: CountryPortal
         Specific dataset portal to export
+    export_base_path: str
+        Directory for local export (default: utils/local_dataset)
     dataset: str
         Specific dataset to export (conversations, votes, reactions, conversations_raw). Default: all
     dry_run: bool
