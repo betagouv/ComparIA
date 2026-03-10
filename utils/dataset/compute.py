@@ -24,12 +24,11 @@ import os
 from functools import lru_cache
 
 import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy.exc import OperationalError
 
 from backend.arena.spam_detection import is_spam
 from backend.config import PORTAL_DATASET_INFOS, CountryPortal, settings
 from backend.llms.utils import get_active_params, get_total_params
+from utils.utils import db_connection
 
 from .export import commit_and_push, export_data
 from .queries import get_dataset_queries, get_llms_data
@@ -44,14 +43,8 @@ COMPARIA_DB_URI = settings.COMPARIA_DB_URI
 @lru_cache
 def get_session_hash_to_ip_map():
     """Load session hash to IP map from database for visitor_id fallback."""
-    if not COMPARIA_DB_URI:
-        logger.error("Cannot connect to the database: no configuration provided")
-        return False
-
-    engine = create_engine(COMPARIA_DB_URI, execution_options={"stream_results": True})
-
     try:
-        with engine.connect() as conn:
+        with db_connection(stream=True) as conn:
             df = pd.read_sql_query(
                 "SELECT ip_map, session_hash FROM conversations", conn
             )
@@ -286,14 +279,8 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
 def count_dataset_rows(country_portal: CountryPortal):
     """Display row counts for each dataset without performing export."""
-    if not COMPARIA_DB_URI:
-        logger.error("Cannot count rows: no $COMPARIA_DB_URI")
-        return False
-
-    engine = None
     try:
-        engine = create_engine(COMPARIA_DB_URI)
-        with engine.connect() as conn:
+        with db_connection(stream=True) as conn:
             logger.info("Counting rows for each dataset...")
             print("\n" + "=" * 60)
             print("Dataset Row Counts")
@@ -323,15 +310,9 @@ def count_dataset_rows(country_portal: CountryPortal):
             print("=" * 60 + "\n")
             return True
 
-    except OperationalError as e:
-        logger.error(f"Database connection error: {e}")
-        return False
     except Exception as e:
         logger.error(f"An error occurred while counting rows: {e}")
         return False
-    finally:
-        if engine:
-            engine.dispose()
 
 
 def process_dataset(
@@ -353,9 +334,6 @@ def process_dataset(
     """
 
     logger.info(f"Starting processing for dataset: {dataset_name}")
-    if not COMPARIA_DB_URI:
-        logger.error(f"Cannot process {dataset_name}: no $COMPARIA_DB_URI")
-        return False
 
     repo = PORTAL_DATASET_INFOS[country_portal]
     repo_name = f"{repo["name"]}-{dataset_name}"
@@ -364,13 +342,8 @@ def process_dataset(
 
     repo_path = os.path.join(export_base_path, repo_name)
 
-    engine = None
-    conn = None
     try:
-        engine = create_engine(
-            COMPARIA_DB_URI, execution_options={"stream_results": True}
-        )
-        with engine.connect() as conn:
+        with db_connection(stream=True) as conn:
             logger.info(f"Database connection established for dataset: {dataset_name}")
 
             # Fetch and transform data
@@ -396,13 +369,6 @@ def process_dataset(
                 )
                 return push_success
 
-    except OperationalError as e:
-        logger.error(f"Database connection error for dataset {dataset_name}: {e}")
-        return False
     except Exception as e:
         logger.error(f"An error occurred while processing dataset {dataset_name}: {e}")
         return False
-    finally:
-        if engine:
-            engine.dispose()
-            logger.info(f"Database connection closed for dataset: {dataset_name}")
