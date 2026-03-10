@@ -1,0 +1,304 @@
+#!/usr/bin/env python3
+"""
+Script pour lancer le job de vérification des images stg
+Utilise un token API pour l'authentification (méthode recommandée)
+"""
+
+import os
+import sys
+import argparse
+import logging
+from typing import Optional
+import time
+
+try:
+    import jenkins
+except ImportError:
+    print("ERREUR: La librairie 'python-jenkins' n'est pas installée.")
+    print("Installez-la avec: pip install python-jenkins")
+    sys.exit(1)
+
+
+# Configuration du logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+
+class JenkinsCheckImagesStgTrigger:
+    """Classe pour lancer la vérification des images stg sur Jenkins"""
+
+    def __init__(
+        self,
+        jenkins_url: str,
+        username: str,
+        api_token: str,
+        job_name: str = "atnum/stg/languia/check-images",
+        timeout: int = 30,
+    ):
+        self.jenkins_url = jenkins_url.rstrip("/")
+        self.username = username
+        self.api_token = api_token
+        self.job_name = job_name
+        self.timeout = timeout
+        self.server = None
+
+    def connect(self) -> bool:
+        """Établit la connexion à Jenkins"""
+        try:
+            logger.info(f"Connexion à {self.jenkins_url}...")
+
+            self.server = jenkins.Jenkins(
+                self.jenkins_url,
+                username=self.username,
+                password=self.api_token,
+                timeout=self.timeout,
+            )
+
+            # Test de connexion
+            user = self.server.get_whoami()
+            logger.info(f"✅ Connecté en tant que: {user.get('fullName', 'N/A')}")
+
+            return True
+
+        except jenkins.JenkinsException as e:
+            logger.error(f"❌ Erreur Jenkins: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"❌ Erreur de connexion: {e}")
+            return False
+
+    def trigger_check(self, commit_hash: str, wait: bool = True) -> Optional[int]:
+        """
+        Lance la vérification des images
+
+        Args:
+            commit_hash: Hash du commit (tag de l'image)
+            wait: Si True, attend la fin de la vérification (défaut: True)
+
+        Returns:
+            Numéro du build lancé ou None en cas d'erreur
+        """
+        if not self.server:
+            logger.error("❌ Pas de connexion établie")
+            return None
+
+        try:
+            # Vérifie que le job existe
+            job_info = self.server.get_job_info(self.job_name)
+            logger.info(f"Job trouvé: {self.job_name}")
+
+            # Paramètres de la vérification
+            parameters = {"COMMIT_HASH": commit_hash}
+
+            # Lance la vérification
+            logger.info(f"Lancement de la vérification avec COMMIT_HASH='{commit_hash}'...")
+            queue_number = self.server.build_job(self.job_name, parameters=parameters)
+
+            # Récupère le numéro du build à partir de la queue
+            logger.info(f"Build en queue: #{queue_number}")
+
+            if wait:
+                build_number = self._wait_for_build_start(queue_number)
+                if build_number:
+                    logger.info(f"Build #{build_number} démarré")
+                    success = self._monitor_build(build_number)
+                    return build_number if success else None
+            else:
+                logger.info(
+                    f"✅ Vérification lancée (queue #{queue_number}). Utilisez --wait pour suivre la progression."
+                )
+
+            return queue_number
+
+        except jenkins.JenkinsException as e:
+            logger.error(f"❌ Erreur Jenkins lors de la vérification: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"❌ Erreur lors du lancement de la vérification: {e}")
+            return None
+
+    def _wait_for_build_start(
+        self, queue_number: int, max_wait: int = 300
+    ) -> Optional[int]:
+        """Attend que le build sorte de la queue et récupère son numéro"""
+        logger.info("En attente du démarrage du build...")
+        start_time = time.time()
+
+        while time.time() - start_time < max_wait:
+            try:
+                queue_item = self.server.get_queue_item(queue_number)
+
+                # Si le build est sorti de la queue
+                if "executable" in queue_item:
+                    build_number = queue_item["executable"]["number"]
+                    return build_number
+
+                # Si encore en queue
+                if queue_item.get("blocked") or queue_item.get("stuck"):
+                    logger.info(
+                        f"  Build en attente (raison: {queue_item.get('why', 'N/A')})"
+                    )
+
+                time.sleep(5)
+
+            except jenkins.NotFoundException:
+                # Le job n'est plus en queue, cherche le dernier build
+                job_info = self.server.get_job_info(self.job_name)
+                if job_info.get("lastBuild"):
+                    return job_info["lastBuild"]["number"]
+
+            except Exception as e:
+                logger.warning(f"Erreur lors de la vérification de la queue: {e}")
+                time.sleep(5)
+
+        logger.warning(f"Timeout: le build n'a pas démarré après {max_wait}s")
+        return None
+
+    def _monitor_build(self, build_number: int) -> bool:
+        """Surveille la progression d'un build et retourne True si succès"""
+        logger.info(f"Surveillance du build #{build_number}...")
+
+        while True:
+            try:
+                build_info = self.server.get_build_info(self.job_name, build_number)
+
+                if build_info["building"]:
+                    # En cours
+                    duration = build_info.get("duration", 0) / 1000  # ms vers s
+                    logger.info(f"  Build en cours... ({duration:.0f}s)")
+                    time.sleep(10)
+                else:
+                    # Terminé
+                    result = build_info.get("result", "UNKNOWN")
+                    duration = build_info.get("duration", 0) / 1000
+
+                    # URL du build
+                    build_url = build_info.get("url", "N/A")
+                    logger.info(f"   URL: {build_url}")
+
+                    if result == "SUCCESS":
+                        logger.info(
+                            f"✅ Build #{build_number} réussi! (durée: {duration:.0f}s)"
+                        )
+                        return True
+                    else:
+                        logger.error(
+                            f"❌ Build #{build_number} échoué: {result} (durée: {duration:.0f}s)"
+                        )
+                        return False
+
+            except Exception as e:
+                logger.error(f"❌ Erreur lors de la surveillance: {e}")
+                return False
+
+
+def main():
+    """Fonction principale"""
+    parser = argparse.ArgumentParser(
+        description="Lance le job de vérification des images stg sur Jenkins",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Exemples d'utilisation:
+  # Avec variables d'environnement
+  export JENKINS_URL="https://ogehguvsgm-jenkins.services.clever-cloud.com"
+  export JENKINS_USERNAME="admin"
+  export JENKINS_API_TOKEN="votre_token_ici"
+  python trigger_check_images_stg.py --commit-hash abc123def
+
+  # Avec arguments en ligne de commande
+  python trigger_check_images_stg.py --url https://ogehguvsgm-jenkins.services.clever-cloud.com --username admin --token votre_token --commit-hash abc123def
+        """,
+    )
+
+    parser.add_argument(
+        "--url",
+        default=os.getenv("JENKINS_URL"),
+        help="URL du serveur Jenkins (ex: http://localhost:8080)",
+    )
+    parser.add_argument(
+        "--username",
+        default=os.getenv("JENKINS_USERNAME"),
+        help="Nom d'utilisateur Jenkins",
+    )
+    parser.add_argument(
+        "--token", default=os.getenv("JENKINS_API_TOKEN"), help="Token API Jenkins"
+    )
+    parser.add_argument(
+        "--job",
+        default="atnum/stg/languia/check-images",
+        help="Nom du job Jenkins (défaut: atnum/stg/languia/check-images)",
+    )
+    parser.add_argument(
+        "--commit-hash", required=True, help="Hash du commit (tag de l'image)"
+    )
+    parser.add_argument(
+        "--no-wait",
+        action="store_true",
+        help="Ne pas attendre la fin de la vérification",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=30,
+        help="Timeout de connexion en secondes (défaut: 30)",
+    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Mode verbeux")
+
+    args = parser.parse_args()
+
+    # Configuration du niveau de log
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    # Validation des arguments
+    if not args.url:
+        logger.error("❌ L'URL Jenkins est requise (--url ou variable JENKINS_URL)")
+        sys.exit(1)
+
+    if not args.username:
+        logger.error(
+            "❌ Le nom d'utilisateur est requis (--username ou variable JENKINS_USERNAME)"
+        )
+        sys.exit(1)
+
+    if not args.token:
+        logger.error(
+            "❌ Le token API est requis (--token ou variable JENKINS_API_TOKEN)"
+        )
+        logger.error(
+            "   Pour générer un token: Jenkins > [Votre utilisateur] > Configure > Add new Token"
+        )
+        sys.exit(1)
+
+    # Création du trigger
+    trigger = JenkinsCheckImagesStgTrigger(
+        jenkins_url=args.url,
+        username=args.username,
+        api_token=args.token,
+        job_name=args.job,
+        timeout=args.timeout,
+    )
+
+    # Connexion
+    if not trigger.connect():
+        logger.error("❌ Impossible de se connecter à Jenkins")
+        sys.exit(1)
+
+    # Lancement de la vérification
+    logger.info("=" * 50)
+    check_result = trigger.trigger_check(commit_hash=args.commit_hash, wait=not args.no_wait)
+
+    if check_result:
+        logger.info("=" * 50)
+        logger.info("🎯 Vérification réussie!")
+        sys.exit(0)
+    else:
+        logger.error("=" * 50)
+        logger.error("❌ Vérification échouée")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
