@@ -5,7 +5,6 @@ from typing import Literal
 
 from backend.config import CountryPortal
 from backend.llms.models import LLMData
-from utils.logger import configure_logger
 from utils.storage.queries import (
     get_conversations_db_query,
     get_reactions_db_query,
