@@ -5,6 +5,7 @@ from typing import Any
 
 import markdown
 from pydantic import FieldSerializationInfo, PlainSerializer
+from sqlalchemy import Engine, create_engine
 
 from backend.config import settings
 from utils.logger import configure_logger
@@ -60,12 +61,12 @@ def sort_dict(data: Obj, deep: bool = True) -> Obj:
     return dict(sorted(items, key=lambda i: i[0].lower()))
 
 
-def get_db_engine():
-    from sqlalchemy import create_engine
-
+def get_db_engine(stream: bool = False) -> Engine:
     if not settings.COMPARIA_DB_URI:
         raise Exception(
             "Cannot connect to the database: no $COMPARIA_DB_URI configuration provided."
         )
 
-    return create_engine(settings.COMPARIA_DB_URI)
+    return create_engine(
+        settings.COMPARIA_DB_URI, execution_options={"stream_results": stream}
+    )
