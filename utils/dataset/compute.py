@@ -38,7 +38,7 @@ from .queries import get_dataset_queries, get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
-logger = configure_logger(logging.getLogger("dataset.compute"))
+logger = logging.getLogger("dataset")
 
 COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
 

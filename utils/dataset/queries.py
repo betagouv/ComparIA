@@ -13,7 +13,7 @@ from utils.storage.queries import (
 )
 from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
 
-logger = configure_logger(logging.getLogger("dataset.queries"))
+logger = logging.getLogger("dataset")
 
 Datasets = Literal["conversations", "votes", "reactions", "conversations_raw"]
 
