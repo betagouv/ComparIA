@@ -1,7 +1,8 @@
 import logging
 import os
-import subprocess
 from datetime import datetime
+
+from huggingface_hub import HfApi
 
 logger = logging.getLogger("dataset")
 
@@ -66,34 +67,27 @@ def export_data(dataframe, table_name, export_dir):
         logger.error(traceback.format_exc())
 
 
-def commit_and_push(repo_org, repo_name, repo_path, repo_token):
+def commit_and_push(repo_org, repo_name, repo_path):
     """
     Upload exported files to HuggingFace Hub repository.
-    Uses 'hf upload' CLI command with timestamped commit message.
+    Uses HF upload_folder method with timestamped commit message.
     """
     commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     logger.info(
-        f"hf upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'"
+        f"Uploading {repo_path} to HF {repo_org}/{repo_name} with commit message: '{commit_message}'"
     )
 
-    push_result = subprocess.run(
-        [
-            "hf",
-            "upload",
-            (repo_org + "/" + repo_name),
-            repo_path,
-            "--token",
-            repo_token,
-            "--repo-type",
-            "dataset",
-            "--commit-message",
-            commit_message,
-        ]
-    )
-
-    if push_result.returncode == 0:
-        logger.info(f"Successfully pushed changes for {repo_path}")
+    try:
+        commit_link = HfApi().upload_folder(
+            folder_path=repo_path,
+            repo_id=f"{repo_org}/{repo_name}",
+            repo_type="dataset",
+            commit_message=commit_message,
+        )
+        logger.info(
+            f"Successfully pushed changes for {repo_path}, commit: {commit_link}"
+        )
         return True
-    else:
-        logger.error(f"Failed to push changes for {repo_path}: {push_result.stderr}")
+    except Exception as e:
+        logger.error(f"Failed to push changes for {repo_path}: {e}")
         return False

@@ -364,9 +364,7 @@ def process_dataset(
                 logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
                 return True
             else:
-                push_success = commit_and_push(
-                    repo["org"], repo_name, repo_path, repo["token"]
-                )
+                push_success = commit_and_push(repo["org"], repo_name, repo_path)
                 return push_success
 
     except Exception as e:
