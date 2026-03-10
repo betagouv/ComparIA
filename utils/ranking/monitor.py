@@ -3,7 +3,7 @@ from typing import Any
 
 from utils.logger import configure_logger
 from utils.models.organisations import LLMS_RAW_DATA_FILE
-from utils.utils import ROOT_DIR, get_db_engine
+from utils.utils import ROOT_DIR, db_connection
 
 from .compute import RankingResult
 
@@ -17,7 +17,7 @@ def get_conversations_llm_ids() -> set[str]:
 
     query = "SELECT DISTINCT model_a_name as model_id FROM conversations UNION SELECT DISTINCT model_b_name as model_id FROM conversations"
     try:
-        with get_db_engine().connect() as conn:
+        with db_connection() as conn:
             df = pl.read_database(query=query, connection=conn)
             # Filter out None values if any
             model_ids = df["model_id"].drop_nulls().unique().to_list()
