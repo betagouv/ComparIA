@@ -28,7 +28,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 from backend.arena.spam_detection import is_spam
-from backend.config import PORTAL_DATASET_INFOS, CountryPortal
+from backend.config import PORTAL_DATASET_INFOS, CountryPortal, settings
 from backend.llms.utils import get_active_params, get_total_params
 
 from .export import commit_and_push, export_data
@@ -38,7 +38,7 @@ from .queries import get_dataset_queries, get_llms_data
 
 logger = logging.getLogger("dataset")
 
-COMPARIA_DB_URI = os.getenv("COMPARIA_DB_URI")
+COMPARIA_DB_URI = settings.COMPARIA_DB_URI
 
 
 @lru_cache
@@ -284,7 +284,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
         return None
 
 
-def count_dataset_rows(country_portal: CountryPortal | None):
+def count_dataset_rows(country_portal: CountryPortal):
     """Display row counts for each dataset without performing export."""
     if not COMPARIA_DB_URI:
         logger.error("Cannot count rows: no $COMPARIA_DB_URI")
@@ -391,7 +391,9 @@ def process_dataset(
                 logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
                 return True
             else:
-                push_success = commit_and_push(repo["org"], repo_name, repo_path)
+                push_success = commit_and_push(
+                    repo["org"], repo_name, repo_path, repo["token"]
+                )
                 return push_success
 
     except OperationalError as e:

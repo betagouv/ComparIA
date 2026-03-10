@@ -66,7 +66,7 @@ def export_data(dataframe, table_name, export_dir):
         logger.error(traceback.format_exc())
 
 
-def commit_and_push(repo_org, repo_name, repo_path):
+def commit_and_push(repo_org, repo_name, repo_path, repo_token):
     """
     Upload exported files to HuggingFace Hub repository.
     Uses 'hf upload' CLI command with timestamped commit message.
@@ -83,7 +83,7 @@ def commit_and_push(repo_org, repo_name, repo_path):
             (repo_org + "/" + repo_name),
             repo_path,
             "--token",
-            os.getenv("HF_PUSH_DATASET_KEY", ""),
+            repo_token,
             "--repo-type",
             "dataset",
             "--commit-message",

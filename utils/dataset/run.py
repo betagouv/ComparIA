@@ -6,7 +6,7 @@ from typing import Literal
 import cyclopts
 from huggingface_hub import login
 
-from backend.config import CountryPortal
+from backend.config import PORTAL_DATASET_INFOS, CountryPortal
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
 
@@ -53,7 +53,7 @@ def main(
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not dry_run:
         logger.info("Login in to HuggingFace $HF_PUSH_DATASET_KEY")
-        login(os.getenv("HF_PUSH_DATASET_KEY"))
+        login(PORTAL_DATASET_INFOS[country_portal]["token"])
     else:
         logger.info("[DRY RUN] Skipping HuggingFace authentication")
 

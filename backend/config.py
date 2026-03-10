@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
     HF_PUSH_DATASET_KEY: str = ""
+    HF_PUSH_DATASET_KEY_DA: str = ""
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
 
@@ -72,11 +73,20 @@ OBJECTIVES: dict[CountryPortal, int] = {"fr": 300_000, "da": 10_000}
 class PortalRepo(TypedDict):
     org: str | None
     name: str
+    token: str
 
 
 PORTAL_DATASET_INFOS: dict[CountryPortal, PortalRepo] = {
-    "fr": {"org": "ministere-culture", "name": "comparia"},
-    "da": {"org": None, "name": "ai-arenaen"},
+    "fr": {
+        "org": "ministere-culture",
+        "name": "comparia",
+        "token": settings.HF_PUSH_DATASET_KEY,
+    },
+    "da": {
+        "org": "danish-foundation-models",
+        "name": "ai-arenaen",
+        "token": settings.HF_PUSH_DATASET_KEY_DA,
+    },
 }
 
 # Language model selection modes
