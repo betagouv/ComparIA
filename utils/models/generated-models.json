@@ -797,7 +797,7 @@
       "reuse": true,
       "simple_name": "Command A",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
       "wh_per_million_token": 856.5235870184582
     },
