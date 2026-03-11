@@ -34,7 +34,7 @@ class JenkinsDeployPrdTrigger:
         jenkins_url: str,
         username: str,
         api_token: str,
-        job_name: str = "atnum/prd/languia/deploy-prd",
+        job_name: str = "atnum/prd/ComparIA/deploy-prd",
         timeout: int = 30,
     ):
         self.jenkins_url = jenkins_url.rstrip("/")
@@ -235,8 +235,8 @@ Exemples d'utilisation:
     )
     parser.add_argument(
         "--job",
-        default="atnum/prd/languia/deploy-prd",
-        help="Nom du job Jenkins (défaut: atnum/prd/languia/deploy-prd)",
+        default="atnum/prd/ComparIA/deploy-prd",
+        help="Nom du job Jenkins (défaut: atnum/prd/ComparIA/deploy-prd)",
     )
     parser.add_argument(
         "--image-tag", required=True, help="Tag de l'image (commit hash)"
