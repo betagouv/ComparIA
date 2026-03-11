@@ -43,6 +43,13 @@
       "flags": "IGNORECASE",
       "description": "Alpaca-style prompt template markers: ### Instruction:, ### Response:, ### Input:",
       "enabled": true
+    },
+    {
+      "name": "role_prefixed_command",
+      "regex": "^\\s*(?:User|Assistant|System)\\s*:\\s*(?:say|repeat|respond|reply)\\s+",
+      "flags": "IGNORECASE|MULTILINE",
+      "description": "Role-prefixed short commands used by bots: 'User: say ok', 'Assistant: repeat hello', etc.",
+      "enabled": true
     }
   ]
 }
