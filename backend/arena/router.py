@@ -152,7 +152,7 @@ async def add_first_text(
             )
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard.",
+                detail="rate_limit_custom_selection",
             )
         increment_custom_selections(ip)
 

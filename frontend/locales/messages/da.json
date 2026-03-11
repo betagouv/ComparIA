@@ -43,7 +43,10 @@
             "generateAnother": "Generér en ny prompt",
             "title": "Foreslåede prompts"
         },
-        "title": "Hvordan kan jeg hjælpe dig i dag?"
+        "title": "Hvordan kan jeg hjælpe dig i dag?",
+        "errors": {
+            "rateLimitCustomSelection": "Modelvalg er begrænset for at sikre fair adgang for alle. Du kan fortsætte med at bruge tilfældig tilstand eller prøve igen senere."
+        }
     },
     "chatbot": {
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
