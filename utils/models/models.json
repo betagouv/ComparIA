@@ -259,6 +259,7 @@
     "icon_path": "cohere-color",
     "models": [
       {
+        "status": "archived",
         "id": "command-a",
         "simple_name": "Command A",
         "license": "CC-BY-NC-4.0",
