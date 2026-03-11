@@ -25,7 +25,13 @@ from backend.arena.persistence import (
 )
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.captcha import generate_challenge, verify_altcha_token
-from backend.arena.session import create_session, increment_input_chars, is_ratelimited
+from backend.arena.session import (
+    create_session,
+    increment_custom_selections,
+    increment_input_chars,
+    is_custom_selection_ratelimited,
+    is_ratelimited,
+)
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
 from backend.llms.data import get_llms_data
 from backend.utils.countries import CountryPortalAnno
@@ -136,6 +142,19 @@ async def add_first_text(
         extra={"request": request},
     )
     logger.info(f"country_portal: {country_portal}")
+
+    if args.mode == "custom" and args.custom_models_selection:
+        ip = get_ip(request)
+        if is_custom_selection_ratelimited(ip):
+            logger.error(
+                f"Too many custom model selections for ip {ip}",
+                extra={"request": request},
+            )
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard.",
+            )
+        increment_custom_selections(ip)
 
     # Select models
     models = get_llms_data(country_portal)

@@ -115,6 +115,10 @@ BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 # Rate limiting specifically for expensive models (openai models, etc.)
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
+# Rate limiting for custom model selection per IP
+RATELIMIT_CUSTOM_SELECTION_PER_HOUR = 3
+RATELIMIT_CUSTOM_SELECTION_PER_DAY = 5
+
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
 
