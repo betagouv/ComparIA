@@ -1090,6 +1090,25 @@
         "desc": "Grand modèle entraîné à partir de Llama 3.1 70B. Cette version réentraînée (fine-tune) a tendance à détailler davantage et fournir des réponses plus structurées.",
         "size_desc": "Avec 70 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite plusieurs cartes graphiques puissantes pour fonctionner, ce qui entraîne des coûts d’exploitation notables.",
         "fyi": "Ce modèle est issu d’un réentraînement du Llama 3.1 70B, d'où la présence de son modèle-source dans son nom ! Il introduit des améliorations grâce à l’apprentissage par renforcement avec retour humain (RLHF) et à l’algorithme REINFORCE : le modèle explore différentes réponses, reçoit des retours sous forme de récompenses, puis ajuste ses choix progressivement pour mieux répondre aux attentes des utilisateurs. Ce processus d'alignement est souvent utilisé quand on veut que le modèle s’adapte à des préférences humaines ou qu’il optimise ses réponses selon des critères spécifiques."
+      },
+      {
+        "new": true,
+        "id": "nemotron-3-super-120b-a12b",
+        "simple_name": "Nemotron 3 Super 120B-A12B",
+        "license": "Nemotron Open",
+        "release_date": "03/2026",
+        "arch": "moe",
+        "params": 120,
+        "active_params": 12,
+        "reasoning": true,
+        "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "nvidia/nemotron-3-super-120b-a12b"
+        },
+        "desc": "Grand modèle de Nvidia, le fabricant de cartes graphiques, fondé sur une architecture hybride qui combine différents types de couches pour traiter efficacement de très longs documents tout en limitant le coût de calcul. Nvidia publie les poids, les recettes d'entraînement et une grande partie des données d'entraînement.",
+        "size_desc": "Avec 120 milliards de paramètres au total dont 12 milliards activés par jeton, ce modèle nécessite plusieurs cartes graphiques puissantes pour fonctionner. L'architecture de mélange d'experts (MoE, Mixture of Experts) permet de n'activer qu'une fraction des paramètres, ce qui réduit l'empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte native atteint 1 million de jetons, ce qui le rend adapté à l'analyse de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Nemotron 3 Super se distingue par son architecture hybride à 88 couches, qui combine des couches Mamba-2 (traitement linéaire des séquences, moins coûteux que l'attention classique sur de longs contextes), des couches d'attention Transformer (pour la recherche précise d'informations) et des couches de mélange d'experts latents (LatentMoE). Le LatentMoE projette les représentations des jetons dans un espace compressé avant le routage, ce qui permet de consulter 512 experts (dont 22 activés par jeton), soit bien plus que les architectures MoE classiques (~128 experts, 6 à 8 activés), sans surcoût de calcul. Le modèle intègre également la prédiction multi-jetons (MTP, Multi-Token Prediction), qui permet un décodage spéculatif natif et accélère l'inférence.\n\nL'entraînement s'est déroulé en trois phases : un pré-entraînement sur 25 billions de jetons (dont 10 billions de jetons uniques sélectionnés), un affinage supervisé (SFT) sur environ 7 millions d'exemples couvrant le code, les mathématiques, l'utilisation d'outils et le suivi d'instructions, puis un apprentissage par renforcement multi-environnement (GRPO, Group Relative Policy Optimization) avec plus de 1,2 million de trajectoires sur 21 configurations différentes. Le modèle a été pré-entraîné nativement en précision NVFP4 à l'aide du framework Megatron-LM. Une part importante des données d'entraînement est synthétique, générée à partir de modèles tiers (GPT-OSS, Qwen3, DeepSeek), ce qui soulève des questions sur l'origine réelle des capacités du modèle.\n\nCôté ouverture, Nvidia publie non seulement les poids du modèle sous licence Nemotron Open (usage commercial autorisé), mais aussi les recettes d'entraînement complètes et une grande partie des données d'entraînement sur HuggingFace, ce qui est rare pour un modèle de cette envergure. Certains jeux de données restent toutefois sous accès restreint. À noter : le modèle a tendance à produire des réponses particulièrement longues, ce qui peut réduire en pratique les gains de vitesse liés à son architecture."
       }
     ]
   },

@@ -95,5 +95,12 @@
     "reuse": true,
     "commercial_use": true,
     "license_desc": "Cette licence mondiale, gratuite et non-exclusive autorise l’usage, la modification et la redistribution du modèle et de ses dérivés, y compris la réutilisation des sorties pour entraîner d’autres modèles. Elle reste permissive, mais limite tout usage commercial aux organisations dont les revenus annuels sont inférieurs à 10 millions de dollars, au-delà desquels l’usage n’est plus couvert."
+  },
+  {
+    "license": "Nemotron Open",
+    "distribution": "open-weights",
+    "reuse": true,
+    "commercial_use": true,
+    "license_desc": "Cette licence mondiale, gratuite et sans redevance permet d’utiliser, reproduire, modifier et distribuer librement le modèle et ses dérivés, y compris à des fins commerciales, sans restriction de seuil de revenus ou d’utilisateurs. NVIDIA ne revendique aucun droit sur les contenus générés par le modèle. La licence inclut une clause de terminaison automatique en cas de poursuite judiciaire contre NVIDIA pour violation de brevet liée au modèle."
   }
 ]
