@@ -1104,7 +1104,7 @@
         "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "nvidia/nemotron-3-super-120b-a12b"
+          "api_model_id": "nvidia/nemotron-3-super-120b-a12b:free"
         },
         "desc": "Grand modèle de Nvidia, le fabricant de cartes graphiques, fondé sur une architecture hybride qui combine différents types de couches pour traiter efficacement de très longs documents tout en limitant le coût de calcul. Nvidia publie les poids, les recettes d'entraînement et une grande partie des données d'entraînement.",
         "size_desc": "Avec 120 milliards de paramètres au total dont 12 milliards activés par jeton, ce modèle nécessite plusieurs cartes graphiques puissantes pour fonctionner. L'architecture de mélange d'experts (MoE, Mixture of Experts) permet de n'activer qu'une fraction des paramètres, ce qui réduit l'empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte native atteint 1 million de jetons, ce qui le rend adapté à l'analyse de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
