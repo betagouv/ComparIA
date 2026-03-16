@@ -1,5 +1,5 @@
 {
-  "timestamp": 1772721356.518107,
+  "timestamp": 1773670397.914851,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -1665,7 +1665,6 @@
       "active_params": 94,
       "arch": "maybe-moe",
       "commercial_use": null,
-      "data": null,
       "distribution": "api-only",
       "endpoint": {
         "api_base": null,
@@ -1682,7 +1681,6 @@
       "new": true,
       "organisation": "OpenAI",
       "params": 300,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
@@ -2933,7 +2931,6 @@
       "active_params": 12,
       "arch": "moe",
       "commercial_use": true,
-      "data": null,
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
@@ -2950,7 +2947,6 @@
       "new": true,
       "organisation": "Nvidia",
       "params": 120,
-      "prefs": null,
       "pricey": false,
       "quantization": null,
       "reasoning": true,
