@@ -15,7 +15,11 @@ from typing import AsyncGenerator
 from fastapi import Request
 from litellm.litellm_core_utils.token_counter import token_counter
 
-from backend.arena.cache import CachedResponse, get_cached_response, store_cached_response
+from backend.arena.cache import (
+    CachedResponse,
+    get_cached_response,
+    store_cached_response,
+)
 from backend.arena.litellm import litellm_stream_iter
 from backend.arena.models import (
     AnyMessage,
@@ -80,7 +84,14 @@ async def _stream_cached_response(
         if current_msg.content or current_msg.reasoning:
             yield state.messages
         emitted = end
-        await asyncio.sleep(0.03)
+
+        try:
+            await asyncio.sleep(0.2)
+        except asyncio.CancelledError:
+            logger.exception("CANCELLED")
+            # Sleep can be cancelled and raise StopAsyncGenerator error
+            # Simply silence error
+            pass
 
     # Final yield with complete content and timing
     current_msg.content = content.strip()
