@@ -13,11 +13,9 @@ import random
 from typing import Any, TypedDict, cast
 
 from backend.config import settings
-from backend.session import get_redis_client
+from utils.storage.redis import REDIS_LLM_RESPONSES_KEY, get_redis_client
 
 logger = logging.getLogger("languia")
-
-CACHE_KEY_PREFIX = "llm_cache"
 
 
 class CachedResponse(TypedDict):
@@ -30,7 +28,9 @@ def _cache_key(model_name: str, prompt: str) -> str:
     """Build a Redis key from model name and normalized prompt."""
     normalized = prompt.strip().lower()
     prompt_hash = hashlib.sha256(normalized.encode()).hexdigest()[:16]
-    return f"{CACHE_KEY_PREFIX}:{model_name}:{prompt_hash}"
+    return REDIS_LLM_RESPONSES_KEY.format(
+        model_name=model_name, prompt_hash=prompt_hash
+    )
 
 
 def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:

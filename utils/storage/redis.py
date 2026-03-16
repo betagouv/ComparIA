@@ -10,6 +10,7 @@ REDIS_CONVERSATIONS_KEY: Final[str] = "session:{session_hash}"
 REDIS_USER_CHAR_COUNT: Final[str] = "ip:{ip}"
 REDIS_VOTE_COUNT_KEY: Final[str] = "{country_code}_count"
 REDIS_RANKING_KEY: Final[str] = "rankings_and_prefs:{country_portal}"
+REDIS_LLM_RESPONSES_KEY: Final[str] = "llm_cache:{model_name}:{prompt_hash}"
 
 
 @lru_cache
