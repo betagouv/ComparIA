@@ -1,39 +1,5 @@
 <script lang="ts">
-  import { Button, Icon, Link } from '$components/dsfr'
-  import { useToast } from '$lib/helpers/useToast.svelte'
-
-  async function handleNewsletterSubmit(e: SubmitEvent) {
-    e.preventDefault() // Prevent the default form submission
-    const form = e.target as HTMLFormElement
-    const formData = new FormData(form)
-
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        // @ts-expect-error (legit)
-        body: new URLSearchParams(formData).toString()
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const responseText = await response.text()
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(responseText, 'text/html')
-      const completedDiv = doc.querySelector('.formCompleted')
-
-      if (completedDiv) {
-        useToast('Merci, votre inscription à la newsletter a été prise en compte.', 2000)
-      } else {
-        useToast("Erreur lors de l'inscription à la newsletter.", 2000, 'error')
-      }
-    } catch (error) {
-      console.error('Newsletter subscription error:', error)
-      useToast("Echec de l'inscription.", 2000, 'error')
-    }
-  }
+  import { Icon, Link } from '$components/dsfr'
 </script>
 
 <div class="mt-3 text-center">
@@ -42,52 +8,29 @@
   </div>
 </div>
 <section class="fr-container--fluid bg-light-info">
-  <div class="fr-container pb-10 pt-8 lg:grid lg:grid-cols-2 lg:gap-6">
-    <div>
+  <div class="fr-container pb-10 pt-8">
+    <div class="mb-4">
       <h5 class="mb-2! flex items-center">
         <Icon icon="i-ri-mail-line" size="lg" block class="text-primary me-2" />
-        Abonnez-vous à notre lettre d’information
+        Abonnez-vous à notre lettre d'information
       </h5>
-      <p class="text-sm! lg:mb-0!">
+      <p class="text-sm!">
         Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux
         modèles, publications de jeux de données et nouvelles fonctionnalités !
       </p>
     </div>
-    <div class="">
-      <form
-        id="newletter"
-        name="mbform"
-        method="POST"
-        target="_blank"
-        action="https://infolettres.duministeredelaculture.fr/form/65547/40/form.aspx"
-        class="flex h-full items-center"
-        onsubmit={handleNewsletterSubmit}
-      >
-        <input
-          type="email"
-          id="formItem-mbtext-email"
-          name="formItem-mbtext-email"
-          value=""
-          data-value="**MBV_EMAIL**"
-          placeholder="Votre adresse électronique"
-          class="fr-input bg-white! rounded-tl-sm"
-        />
-        <input type="hidden" name="required-formItem-mbtext-email" value="true" />
-        <Button
-          type="submit"
-          text="S’abonner"
-          data-contentparameter-formsubmit="S’abonner"
-          data-contentparameter-formsubmit-type="50"
-          data-parameter-responsivefont-size=""
-          data-parameter-responsivefont-size-type="30"
-          data-parameter-responsiveline-height=""
-          data-parameter-responsiveline-height-type="30"
-          cornered
-          class="rounded-tr-sm"
-        />
-        <input type="hidden" name="status" id="status" value="submit" />
-        <input type="hidden" name="accountidhidden" id="accountidhidden" value="65547" />
-      </form>
+    <div>
+      <iframe
+        data-tally-src="https://tally.so/embed/zxKR40?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+        loading="lazy"
+        width="100%"
+        height="380"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+        title="Infolettre compar:IA"
+        class="outline-none!"
+      ></iframe>
     </div>
   </div>
 </section>
