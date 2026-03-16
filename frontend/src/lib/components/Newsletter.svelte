@@ -29,8 +29,14 @@
         marginheight="0"
         marginwidth="0"
         title="Infolettre compar:IA"
-        class="outline-none!"
+        class="outline-none! dark:invert"
       ></iframe>
     </div>
   </div>
 </section>
+
+<style>
+  iframe {
+    color-scheme: light;
+  }
+</style>
