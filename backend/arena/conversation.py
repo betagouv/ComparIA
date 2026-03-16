@@ -208,8 +208,8 @@ async def bot_response_async(
             state.model_name,
             _get_user_prompt(state),
             CachedResponse(
-                content=data["content"],
-                reasoning=data["reasoning"],
-                output_tokens=data["output_tokens"],
+                content=current_msg.content,
+                reasoning=current_msg.reasoning,
+                output_tokens=current_msg.metadata.output_tokens,
             ),
         )
