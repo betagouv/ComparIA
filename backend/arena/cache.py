@@ -10,7 +10,7 @@ import hashlib
 import json
 import logging
 import random
-from typing import TypedDict
+from typing import Any, TypedDict, cast
 
 from backend.config import settings
 from backend.session import get_redis_client
@@ -50,7 +50,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
     try:
         client = get_redis_client()
         key = _cache_key(model_name, prompt)
-        data = client.get(key)
+        data = cast(Any, client.get(key))
         if not data:
             return None
 
@@ -63,9 +63,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
         # Refresh TTL on hit — popular prompts stay cached as long as they're asked
         client.expire(key, settings.CACHE_TTL)
 
-        logger.info(
-            f"[CACHE] Hit for {model_name} (pool size: {len(responses)})"
-        )
+        logger.info(f"[CACHE] Hit for {model_name} (pool size: {len(responses)})")
         return chosen
 
     except Exception as e:
@@ -89,7 +87,7 @@ def store_cached_response(
         client = get_redis_client()
         key = _cache_key(model_name, prompt)
 
-        existing_data = client.get(key)
+        existing_data = cast(Any, client.get(key))
         responses: list[CachedResponse] = (
             json.loads(existing_data) if existing_data else []
         )
