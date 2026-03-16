@@ -708,8 +708,8 @@ class ConversationsRecord(BaseModel):
     conversation_b: Annotated[list[ConversationMessageRecord], JSONModelSerializer]
     total_conv_a_output_tokens: int
     total_conv_b_output_tokens: int
-    cached_response_a: bool = False
-    cached_response_b: bool = False
+    cached_response_a: bool
+    cached_response_b: bool
 
     # Additional? (not found in record_conversations but present in conversations.sql)
     # archived: bool = False
