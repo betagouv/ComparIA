@@ -88,7 +88,6 @@ async def _stream_cached_response(
         try:
             await asyncio.sleep(0.2)
         except asyncio.CancelledError:
-            logger.exception("CANCELLED")
             # Sleep can be cancelled and raise StopAsyncGenerator error
             # Simply silence error
             pass
