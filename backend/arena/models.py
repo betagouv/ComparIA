@@ -76,6 +76,8 @@ class AssistantMessageMetadata(BaseModel):
     output_tokens: int | None = None
     # Computed after response
     duration: float | None = None
+    # Whether this response was served from cache
+    is_cached: bool = False
 
 
 class AssistantMessage(BaseMessage):
@@ -133,6 +135,16 @@ class Conversation(BaseModel):
             msg.metadata.output_tokens
             for msg in self.messages
             if isinstance(msg, AssistantMessage) and msg.metadata.output_tokens
+        )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def has_cached_response(self) -> bool:
+        """Whether any assistant message in this conversation was served from cache."""
+        return any(
+            msg.metadata.is_cached
+            for msg in self.messages
+            if isinstance(msg, AssistantMessage)
         )
 
     @property
