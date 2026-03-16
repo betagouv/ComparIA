@@ -22,6 +22,8 @@
   const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
+    if (modelsData.length === 0) return
+
     const csvCols = [
       { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
