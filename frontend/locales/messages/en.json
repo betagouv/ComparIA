@@ -1418,7 +1418,7 @@
                 "ram": "RAM (random access memory) stores data processed by an LLM in real time. The larger the model, the more RAM it needs to run."
             }
         },
-        "parameters": "{number} parameters",
+        "parameters": "{number}B parameters",
         "ram": "{min} to {max} GB",
         "release": "Released on {date}",
         "size": {
