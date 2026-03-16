@@ -643,7 +643,7 @@ class ConversationMessageRecord(BaseModel):
         duration: (
             float | None
         )  # FIXME could make it required if failed message is deleted before recording
-        is_cached: bool = False
+        is_cached: bool
 
     role: MessageRole
     content: str
