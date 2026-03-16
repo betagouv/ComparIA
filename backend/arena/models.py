@@ -137,6 +137,7 @@ class Conversation(BaseModel):
             if isinstance(msg, AssistantMessage) and msg.metadata.output_tokens
         )
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def has_cached_response(self) -> bool:
         """Whether any assistant message in this conversation was served from cache."""

@@ -756,11 +756,10 @@ def record_conversations(
             ("system_msg", "system_prompt_{}"),
             ("messages", "conversation_{}"),
             ("tokens", "total_conv_{}_output_tokens"),
+            # Check if any assistant message in this conversation was cached
+            ("has_cached_response", "cached_response_{}"),
         ]:
             convs_data[db_key.format(pos)] = conv[data_key]
-        # Check if any assistant message in this conversation was cached
-        conv_obj = getattr(conversations, f"conversation_{pos}")
-        convs_data[f"cached_response_{pos}"] = conv_obj.has_cached_response
 
     convs_record = ConversationsRecord(**convs_data)
 
