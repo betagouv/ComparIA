@@ -1,5 +1,5 @@
 {
-  "timestamp": 1773670397.914851,
+  "timestamp": 1773765955.759668,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -2720,6 +2720,38 @@
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 108.56669130284031
+    },
+    "mistral-small-2603": {
+      "active_params": 6,
+      "arch": "moe",
+      "commercial_use": true,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "mistralai/mistral-small-2603",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "mistral-color",
+      "id": "mistral-small-2603",
+      "license": "Apache 2.0",
+      "new": true,
+      "organisation": "Mistral AI",
+      "params": 119,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "03/2026",
+      "required_ram": 119,
+      "reuse": true,
+      "simple_name": "Mistral Small 4",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/mistralai/Mistral-Small-4-119B-2603",
+      "wh_per_million_token": 346.90328483747913
     },
     "mistral-small-3.1-24b": {
       "active_params": null,
