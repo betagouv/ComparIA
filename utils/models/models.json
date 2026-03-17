@@ -1400,6 +1400,25 @@
         "fyi": "Ce modèle a été entraîné sur 3 000 GPU Nvidia H200. Il se positionne en concurrence directe avec les modèles semi-ouverts chinois. À sa sortie, il est compétitif avec DeepSeek V3.1, Kimi K2, GLM 4.6 et d’autres références en termes de code et cas d'usages généralistes."
       },
       {
+        "new": true,
+        "id": "mistral-small-2603",
+        "simple_name": "Mistral Small 4",
+        "license": "Apache 2.0",
+        "release_date": "03/2026",
+        "arch": "moe",
+        "params": 119,
+        "active_params": 6,
+        "reasoning": true,
+        "url": "https://huggingface.co/mistralai/Mistral-Small-4-119B-2603",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "mistralai/mistral-small-2603"
+        },
+        "desc": "Grand modèle semi-ouvert multimodal unifiant les capacités d'instruction, de raisonnement et de programmation agentique. Il simule une étape de raisonnement avant de générer sa réponse, avec un effort de raisonnement configurable.",
+        "size_desc": "Avec 119 milliards de paramètres au total mais seulement 6,5 milliards activés par jeton, ce modèle se situe dans la catégorie des grands modèles. L'architecture de mélange d'experts (MoE, Mixture of Experts) avec 128 experts routés et 1 expert partagé permet de n'activer qu'une fraction des paramètres à chaque jeton, ce qui réduit fortement les coûts de calcul par rapport à un modèle dense de taille équivalente. Il nécessite tout de même plusieurs cartes graphiques puissantes pour fonctionner. Sa fenêtre de contexte atteint 256 000 jetons. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. Selon l'éditeur, ce modèle produit néanmoins des réponses plus concises que ses concurrents à performance équivalente.",
+        "fyi": "Ce modèle repose sur une architecture de mélange d'experts (MoE) comptant 119 milliards de paramètres répartis sur 128 experts routés et 1 expert partagé, dont 4 experts routés sont activés par jeton, soit environ 6,5 milliards de paramètres actifs (8 milliards en incluant les couches d'entrée et de sortie). Il intègre un encodeur de vision Pixtral pour le traitement natif d'images. L'attention utilise 32 têtes avec une dimension de 128, sans recours au partage de clés/valeurs (GQA). L'extension de contexte repose sur YARN RoPE.\n\nMistral Small 4 unifie dans un seul modèle les capacités auparavant réparties entre Magistral (raisonnement), Pixtral (vision) et Devstral (programmation agentique). Le paramètre « reasoning_effort » permet de moduler la profondeur de raisonnement par requête : en mode désactivé, le modèle répond rapidement comme un modèle d'instruction classique ; en mode élevé, il simule un raisonnement étape par étape. Malgré le nom « Small », le passage de 24 milliards de paramètres denses (Mistral Small 3.2) à 119 milliards en MoE représente un changement architectural majeur. Selon l'éditeur, le modèle réduit la latence de 40 % et multiplie le débit par trois par rapport à la génération précédente."
+      },
+      {
         "id": "mistral-medium-2508",
         "simple_name": "Mistral Medium 3.1",
         "license": "proprietary",
