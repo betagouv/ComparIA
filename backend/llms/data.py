@@ -184,10 +184,15 @@ class LLMsData(BaseModel):
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
-            # User-selected models
-            # FIXME: input sanitization needed
-            # if any(mode[1], not in models):
-            #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+            if unknown_llms := [
+                llm_id
+                for llm_id in custom_selection
+                if llm_id not in self.random_models
+            ]:
+                logger.error(
+                    f"`custom_models_selection` with unavailable LLM ids: {unknown_llms}"
+                )
+                raise ValueError(f"Custom LLMs selection contains unavailable LLMs")
 
             if len(custom_selection) == 1:
                 # One model chosen by user, pair with random model
