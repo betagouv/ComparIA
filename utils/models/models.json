@@ -540,7 +540,6 @@
         "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio."
       },
       {
-        "new": true,
         "id": "gemini-3.1-pro-preview",
         "simple_name": "Gemini 3.1 Pro",
         "license": "proprietary",
@@ -745,7 +744,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
         "id": "qwen3.5-397b-a17b",
         "simple_name": "Qwen 3.5 397B",
         "license": "Apache 2.0",
@@ -764,7 +762,6 @@
         "fyi": "Ce modèle repose sur une architecture hybride innovante combinant Gated DeltaNet (attention linéaire) et attention classique avec un mélange d'experts ultra-sparse : 512 experts au total, dont seulement 10 routés et 1 partagé sont activés par jeton. Le réseau compte 60 couches organisées en blocs de 4 : 3 couches Gated DeltaNet suivies d'1 couche d'attention classique, chacune associée à un module MoE. Cette conception réduit considérablement le coût d'inférence tout en préservant la capacité du modèle sur les tâches de raisonnement complexes.\n\nQwen 3.5 est nativement multimodal, entraîné en fusion précoce (early fusion) sur des billions de jetons multimodaux (texte et images). Il prend en charge 201 langues et dialectes. Le post-entraînement fait appel à un apprentissage par renforcement à grande échelle, déployé sur des environnements massivement parallèles (million-agent environments), avec des distributions de tâches de complexité progressive. L'infrastructure d'entraînement utilise un pipeline FP8 et un cadre d'apprentissage par renforcement asynchrone pour optimiser l'efficacité."
       },
       {
-        "new": true,
         "id": "qwen3.5-35b-a3b",
         "simple_name": "Qwen 3.5 35B A3B",
         "license": "Apache 2.0",
@@ -1137,6 +1134,44 @@
         "fyi": "GPT 5.4 est le premier modèle généraliste d'OpenAI doté de capacités natives d'utilisation d'un ordinateur (computer use), permettant à des agents d'interagir directement avec des logiciels. Il unifie les gammes GPT et Codex en un seul modèle. Selon l'éditeur, il réduit de 33 % les affirmations erronées et de 18 % les réponses contenant des erreurs par rapport à GPT 5.2. Le modèle se distingue également par son efficacité en jetons, avec une réduction de 47 % de la consommation sur les tâches impliquant de nombreux outils. OpenAI met en avant ses performances sur des tâches professionnelles : sur un test interne de modélisation de tableurs, GPT 5.4 atteint 87,3 %, contre 68,4 % pour GPT 5.2.\n\nLe raisonnement est configurable via plusieurs niveaux d'effort (low, medium, high, xhigh), permettant d'arbitrer entre coût, latence et qualité des réponses. Le modèle accepte des entrées textuelles et visuelles. Sur les benchmarks de code, il surpasse GPT 5.3-Codex, le modèle spécialisé précédent, ce qui interroge sur la pérennité de la gamme Codex en tant que ligne distincte. La fenêtre de contexte standard est de 272 000 jetons, extensible jusqu'à 1 050 000 jetons avec un surcoût tarifaire."
       },
       {
+        "new": true,
+        "id": "gpt-5.4-mini",
+        "simple_name": "GPT 5.4 Mini",
+        "license": "proprietary",
+        "release_date": "03/2026",
+        "arch": "maybe-moe",
+        "params": 47,
+        "active_params": 16,
+        "reasoning": true,
+        "url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.4-mini"
+        },
+        "desc": "Version compacte de GPT 5.4, conçue pour offrir un bon compromis entre performances et coût. Adapté à la génération de code, aux systèmes agentiques et à l'utilisation autonome d'un ordinateur. Il peut simuler une étape de raisonnement avant de générer sa réponse.",
+        "size_desc": "Les tailles des modèles derrière le système GPT 5.4 Mini ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Le modèle prend en charge une fenêtre de contexte de 400 000 jetons, ce qui est adapté à l'analyse de longs documents ou de bases de code. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "GPT 5.4 Mini est la première déclinaison compacte de GPT 5.4, lancée en même temps que GPT 5.4 Nano. Selon OpenAI, le modèle est plus de deux fois plus rapide que GPT 5 Mini tout en le surpassant sur de nombreux tests. Sur SWE-Bench Pro (test de résolution automatique de bugs dans des dépôts logiciels), il atteint 54,4 % contre 45,7 % pour GPT 5 Mini. Il obtient 88,0 % sur GPQA Diamond (questions scientifiques de niveau doctoral) et 72,1 % sur OSWorld-Verified (tâches d'utilisation d'un ordinateur).\n\nLe modèle accepte des entrées textuelles et visuelles et prend en charge l'utilisation autonome d'un ordinateur (computer use), l'appel d'outils et la génération de sorties structurées. Le raisonnement est configurable. La fenêtre de contexte atteint 400 000 jetons, mais les performances de récupération d'information dans de très longs contextes sont en retrait par rapport au modèle complet GPT 5.4 (47,7 % contre 86,0 % sur le test MRCR v2)."
+      },
+      {
+        "new": true,
+        "id": "gpt-5.4-nano",
+        "simple_name": "GPT 5.4 Nano",
+        "license": "proprietary",
+        "release_date": "03/2026",
+        "arch": "maybe-moe",
+        "params": 11,
+        "active_params": 4,
+        "reasoning": true,
+        "url": "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.4-nano"
+        },
+        "desc": "Plus petit et plus économique modèle de la famille GPT 5.4, conçu pour les tâches à fort volume comme la classification, l'extraction de données ou le tri. Il peut simuler une étape de raisonnement avant de générer sa réponse.",
+        "size_desc": "Les tailles des modèles derrière le système GPT 5.4 Nano ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Ce modèle est optimisé pour une latence et un coût d'inférence les plus faibles possibles. Il prend en charge une fenêtre de contexte de 400 000 jetons. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "GPT 5.4 Nano est le modèle le plus compact et le moins coûteux de la gamme GPT 5.4, lancé en même temps que GPT 5.4 Mini. Il est principalement destiné aux cas d'usage à fort volume nécessitant un coût unitaire très faible : classification, extraction de données, automatisation légère. Sur SWE-Bench Pro, il atteint 52,4 %, un score remarquable pour un modèle de cette catégorie de prix, proche de GPT 5.4 Mini (54,4 %).\n\nLe modèle accepte des entrées textuelles et visuelles, prend en charge l'appel d'outils, la génération de sorties structurées et le raisonnement configurable. Sa fenêtre de contexte atteint 400 000 jetons avec une sortie maximale de 128 000 jetons."
+      },
+      {
         "id": "gpt-5.3",
         "simple_name": "GPT 5.3",
         "license": "proprietary",
@@ -1238,12 +1273,14 @@
         "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (*jailbreaking*)."
       },
       {
+        "status": "archived",
         "id": "gpt-5-mini",
         "simple_name": "GPT 5 Mini",
         "license": "proprietary",
         "release_date": "08/2025",
-        "arch": "maybe-dense",
+        "arch": "maybe-moe",
         "params": 47,
+        "active_params": 16,
         "url": "https://platform.openai.com/docs/models/gpt-5-mini",
         "endpoint": {
           "api_type": "openrouter",
@@ -1254,12 +1291,14 @@
         "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical."
       },
       {
+        "status": "archived",
         "id": "gpt-5-nano",
         "simple_name": "GPT 5 Nano",
         "license": "proprietary",
         "release_date": "04/2025",
-        "arch": "maybe-dense",
+        "arch": "maybe-moe",
         "params": 11,
+        "active_params": 4,
         "url": "https://platform.openai.com/docs/models/gpt-5-nano",
         "endpoint": {
           "api_type": "openrouter",
@@ -1629,7 +1668,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
         "id": "claude-4-6-sonnet",
         "simple_name": "Claude 4.6 Sonnet",
         "license": "proprietary",
@@ -1714,7 +1752,6 @@
     "icon_path": "zhipu-color",
     "models": [
       {
-        "new": true,
         "id": "glm-5",
         "simple_name": "GLM 5",
         "license": "MIT",
@@ -2037,7 +2074,6 @@
     "icon_path": "minimax-color",
     "models": [
       {
-        "new": true,
         "id": "minimax-m2.5",
         "simple_name": "MiniMax M2.5",
         "license": "Modified MIT",
