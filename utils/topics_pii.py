@@ -92,13 +92,14 @@ class Config:
 
             Conversation A: {conversation_a}
             Conversation B: {conversation_b}
-
-            Return the response in the following JSON schema:
-            {json.dumps(self.response_schema, indent=2)}
             """
 
             response = model.generate_content(
-                prompt, generation_config={"response_mime_type": "application/json"}
+                prompt,
+                generation_config={
+                    "response_mime_type": "application/json",
+                    "response_schema": self.response_schema,
+                },
             )
             print("Gemini API response received.")
             try:
