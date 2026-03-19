@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
@@ -8,6 +9,12 @@ from typing import List, Optional, Tuple
 import psycopg2
 import vertexai
 from vertexai.generative_models import GenerativeModel
+
+# Add the parent directory to the Python path for backend imports
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(SCRIPT_DIR, "..")))
+
+from backend.arena.spam_detection import is_spam
 
 # Used in kubernetes (cron job)
 # FIXME: change model for cheeper model? (still gemini)
@@ -132,6 +139,18 @@ class Config:
             return None, None, None, None, None
 
 
+def conversation_contains_spam(messages: List[dict]) -> bool:
+    """Check if any user message in a conversation matches spam patterns."""
+    if not messages or not isinstance(messages, list):
+        return False
+    for message in messages:
+        if isinstance(message, dict) and message.get("role") == "user":
+            content = message.get("content", "")
+            if content and is_spam(str(content)):
+                return True
+    return False
+
+
 def process_conversation(conversation, analyzer, db_params):
     conn = None
     conversation_pair_id = conversation[0]  # Extract ID early
@@ -178,16 +197,23 @@ def process_conversation(conversation, analyzer, db_params):
             )
             # If llm call worked, insert metadata in db
             if contains_pii is not None:
+                # Run spam detection (regex-based, no API call)
+                has_spam = conversation_contains_spam(
+                    conversation_a
+                ) or conversation_contains_spam(conversation_b)
+
                 print(f"Data to be inserted for {conversation_pair_id}:")
                 print(f"  Short Summary: {short_summary}")
                 print(f"  Keywords: {keywords}")
                 print(f"  Languages: {languages}")
                 print(f"  categories: {categories}")
                 print(f"  Contains PII: {contains_pii}")
+                print(f"  Contains Spam: {has_spam}")
                 cursor.execute(
-                    "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s, postprocess_failed = FALSE WHERE conversation_pair_id = %s;",
+                    "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, contains_spam = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s, postprocess_failed = FALSE WHERE conversation_pair_id = %s;",
                     (
                         contains_pii,
+                        has_spam,
                         short_summary,
                         json.dumps(keywords),
                         json.dumps(categories),
@@ -306,6 +332,14 @@ def process_conversations(db_params, analyzer: Config):
         pii_analyzed_true_count = cursor.fetchone()[0]
         print(
             f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
+        )
+
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE contains_spam = TRUE AND postprocess_failed = FALSE;"
+        )
+        contains_spam_true_count = cursor.fetchone()[0]
+        print(
+            f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed."
         )
 
         # Include the postprocess_failed field in the select statement and filter
