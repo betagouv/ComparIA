@@ -252,83 +252,38 @@ def process_conversations(db_params, analyzer: Config):
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE short_summary IS NULL AND postprocess_failed = FALSE;"
-        )
-        no_summary_count = cursor.fetchone()[0]
-        print(
-            f"{no_summary_count} conversations with no short summary and not marked as failed."
-        )
+        cursor.execute("""
+            SELECT
+                COUNT(*) FILTER (WHERE short_summary IS NULL AND NOT postprocess_failed) AS no_summary,
+                COUNT(*) FILTER (WHERE short_summary IS NOT NULL AND NOT postprocess_failed) AS has_summary,
+                COUNT(*) FILTER (WHERE keywords IS NULL AND NOT postprocess_failed) AS no_keywords,
+                COUNT(*) FILTER (WHERE keywords IS NOT NULL AND NOT postprocess_failed) AS has_keywords,
+                COUNT(*) FILTER (WHERE contains_pii = FALSE AND NOT postprocess_failed) AS pii_false,
+                COUNT(*) FILTER (WHERE contains_pii = TRUE AND NOT postprocess_failed) AS pii_true,
+                COUNT(*) FILTER (WHERE contains_pii IS NULL AND NOT postprocess_failed) AS pii_null,
+                COUNT(*) FILTER (WHERE NOT pii_analyzed AND NOT postprocess_failed) AS pii_not_analyzed,
+                COUNT(*) FILTER (WHERE pii_analyzed AND NOT postprocess_failed) AS pii_analyzed,
+                COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
+            FROM conversations;
+        """)
+        (
+            no_summary_count, summary_count,
+            no_keywords_count, keywords_count,
+            contains_pii_false_count, contains_pii_true_count, contains_pii_null_count,
+            pii_analyzed_false_count, pii_analyzed_true_count,
+            contains_spam_true_count,
+        ) = cursor.fetchone()
 
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE keywords IS NULL AND postprocess_failed = FALSE;"
-        )
-        no_keywords_count = cursor.fetchone()[0]
-        print(
-            f"{no_keywords_count} conversations with no keywords and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE short_summary IS NOT NULL AND postprocess_failed = FALSE;"
-        )
-        summary_count = cursor.fetchone()[0]
-        print(
-            f"{summary_count} conversations with a short summary and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE keywords IS NOT NULL AND postprocess_failed = FALSE;"
-        )
-        keywords_count = cursor.fetchone()[0]
+        print(f"{no_summary_count} conversations with no short summary and not marked as failed.")
+        print(f"{summary_count} conversations with a short summary and not marked as failed.")
+        print(f"{no_keywords_count} conversations with no keywords and not marked as failed.")
         print(f"{keywords_count} conversations with keywords and not marked as failed.")
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE contains_pii = FALSE AND postprocess_failed = FALSE;"
-        )
-        contains_pii_false_count = cursor.fetchone()[0]
-        print(
-            f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE contains_pii = TRUE AND postprocess_failed = FALSE;"
-        )
-        contains_pii_true_count = cursor.fetchone()[0]
-        print(
-            f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE contains_pii IS NULL AND postprocess_failed = FALSE;"
-        )
-        contains_pii_null_count = cursor.fetchone()[0]
-        print(
-            f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE pii_analyzed = FALSE AND postprocess_failed = FALSE;"
-        )
-        pii_analyzed_false_count = cursor.fetchone()[0]
-        print(
-            f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE pii_analyzed = TRUE AND postprocess_failed = FALSE;"
-        )
-        pii_analyzed_true_count = cursor.fetchone()[0]
-        print(
-            f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
-        )
-
-        cursor.execute(
-            "SELECT count(*) FROM conversations WHERE contains_spam = TRUE AND postprocess_failed = FALSE;"
-        )
-        contains_spam_true_count = cursor.fetchone()[0]
-        print(
-            f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed."
-        )
+        print(f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed.")
+        print(f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed.")
+        print(f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed.")
+        print(f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed.")
+        print(f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed.")
+        print(f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed.")
 
         # Include the postprocess_failed field in the select statement and filter
         cursor.execute(
