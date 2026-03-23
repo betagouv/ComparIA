@@ -88,7 +88,7 @@
       aria-controls="modal-mode-selection"
       {disabled}
       data-fr-opened="false"
-      class="bg-white! px-3! text-sm! text-dark-grey! md:w-auto! w-full! justify-start"
+      class="bg-white! px-3! text-sm! text-dark-grey! md:w-auto! xl:max-w-[260px] w-full! justify-start"
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >

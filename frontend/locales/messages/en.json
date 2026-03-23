@@ -45,7 +45,13 @@
             "generateAnother": "Generate another prompt",
             "title": "Suggested prompts"
         },
-        "title": "How can I help you today?"
+        "title": "How can I help you today?",
+        "webSearch": {
+            "label": "Web search",
+            "enabled": "Web search enabled",
+            "disabled": "Web search disabled",
+            "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
+        }
     },
     "chatbot": {
         "continuePrompt": "Continue the chat with the AI models",
