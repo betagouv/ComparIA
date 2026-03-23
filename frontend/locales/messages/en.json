@@ -73,7 +73,10 @@
             "finished": "Reasoning completed",
             "inProgress": "Reasoning in progress…"
         },
-        "revealButton": "Reveal the models"
+        "revealButton": "Reveal the models",
+        "webSearch": {
+            "label": "Associated Web search results."
+        }
     },
     "closeModal": "Close the popup",
     "components": {

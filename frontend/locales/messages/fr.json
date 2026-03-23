@@ -75,7 +75,10 @@
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
-        "revealButton": "Terminer la discussion et découvrir les deux modèles"
+        "revealButton": "Terminer la discussion et découvrir les deux modèles",
+        "webSearch": {
+            "label": "Résultats de recherche Web associés."
+        }
     },
     "closeModal": "Fermer la fenêtre modale",
     "components": {
