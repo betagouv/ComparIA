@@ -29,9 +29,19 @@ export type ModeInfos = {
 // COMPARISON
 
 export type Bot = 'a' | 'b'
+
+export interface WebSearchResults {
+  type: 'text'
+  name: string
+  url: string
+  content: string
+  favicon: string
+}
+
 export interface UserMessage {
   role: 'user'
   content: string
+  web_search_results: WebSearchResults[] | null
 }
 export interface AssistantMessage {
   role: 'assistant'
