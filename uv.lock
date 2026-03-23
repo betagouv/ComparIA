@@ -1256,6 +1256,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "google-auth" },
     { name = "json5" },
+    { name = "linkup-sdk" },
     { name = "litellm" },
     { name = "markdown" },
     { name = "numpy" },
@@ -1309,6 +1310,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "google-auth", specifier = ">=2.38.0" },
     { name = "json5", specifier = ">=0.13.0" },
+    { name = "linkup-sdk", specifier = ">=0.13.0" },
     { name = "litellm", specifier = "==1.86.0" },
     { name = "markdown", specifier = ">=3.10.1" },
     { name = "numpy", specifier = ">=2.4.1" },
@@ -1399,6 +1401,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b9/eb/7697f60fbe7042ab4e88f4ee6af496b7f222fffb0a4e3593ef1f29f81652/librt-0.8.1-cp314-cp314t-win32.whl", hash = "sha256:738f08021b3142c2918c03692608baed43bc51144c29e35807682f8070ee2a3a", size = 51328, upload-time = "2026-02-17T16:12:45.148Z" },
     { url = "https://files.pythonhosted.org/packages/7c/72/34bf2eb7a15414a23e5e70ecb9440c1d3179f393d9349338a91e2781c0fb/librt-0.8.1-cp314-cp314t-win_amd64.whl", hash = "sha256:89815a22daf9c51884fb5dbe4f1ef65ee6a146e0b6a8df05f753e2e4a9359bf4", size = 58722, upload-time = "2026-02-17T16:12:46.85Z" },
     { url = "https://files.pythonhosted.org/packages/b2/c8/d148e041732d631fc76036f8b30fae4e77b027a1e95b7a84bb522481a940/librt-0.8.1-cp314-cp314t-win_arm64.whl", hash = "sha256:bf512a71a23504ed08103a13c941f763db13fb11177beb3d9244c98c29fb4a61", size = 48755, upload-time = "2026-02-17T16:12:47.943Z" },
+]
+
+[[package]]
+name = "linkup-sdk"
+version = "0.13.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/10/fa/d54d7086ceb8e8aa3777ae82f9876ceb7d15a6f583bbebf2fc2bea4cf69c/linkup_sdk-0.13.0.tar.gz", hash = "sha256:dab3f516bb955bdb9dd5815445bfdc7a2c9803dc57c3b4be4038d9e40f3d096a", size = 76440, upload-time = "2026-03-02T13:09:25.665Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4c/b8/9a8be932db54dc673c0a2f033831e9963cb4395352ce5a54a423e2fb58de/linkup_sdk-0.13.0-py3-none-any.whl", hash = "sha256:d4f5f4698cbaf4711a3296473f6030613c9c8ac829c83172a51c34c6e653808a", size = 11750, upload-time = "2026-03-02T13:09:24.553Z" },
 ]
 
 [[package]]
