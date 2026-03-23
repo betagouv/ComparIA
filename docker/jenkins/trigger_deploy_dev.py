@@ -4,20 +4,9 @@ Script pour lancer le job de déploiement Kustomize dev
 Utilise un token API pour l'authentification (méthode recommandée)
 """
 
-import os
 import sys
-import argparse
 import logging
-from typing import Optional, Dict, Any
-import time
-
-try:
-    import jenkins
-except ImportError:
-    print("ERREUR: La librairie 'python-jenkins' n'est pas installée.")
-    print("Installez-la avec: pip install python-jenkins")
-    sys.exit(1)
-
+from docker.jenkins.jenkins_common import JenkinsDeployJobTrigger, JenkinsJobTrigger
 
 # Configuration du logging
 logging.basicConfig(
@@ -25,185 +14,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-class JenkinsDeployDevTrigger:
-    """Classe pour lancer le déploiement Kustomize dev sur Jenkins"""
-
-    def __init__(
-        self,
-        jenkins_url: str,
-        username: str,
-        api_token: str,
-        job_name: str = "atnum/dev/languia/deploy-dev",
-        timeout: int = 30,
-    ):
-        self.jenkins_url = jenkins_url.rstrip("/")
-        self.username = username
-        self.api_token = api_token
-        self.job_name = job_name
-        self.timeout = timeout
-        self.server = None
-
-    def connect(self) -> bool:
-        """Établit la connexion à Jenkins"""
-        try:
-            logger.info(f"Connexion à {self.jenkins_url}...")
-
-            self.server = jenkins.Jenkins(
-                self.jenkins_url,
-                username=self.username,
-                password=self.api_token,
-                timeout=self.timeout,
-            )
-
-            # Test de connexion
-            user = self.server.get_whoami()
-            logger.info(f"✅ Connecté en tant que: {user.get('fullName', 'N/A')}")
-
-            return True
-
-        except jenkins.JenkinsException as e:
-            logger.error(f"❌ Erreur Jenkins: {e}")
-            return False
-        except Exception as e:
-            logger.error(f"❌ Erreur de connexion: {e}")
-            return False
-
-    def trigger_deploy(
-        self, image_tag: str, force_delete: bool = False, wait: bool = False
-    ) -> Optional[int]:
-        """
-        Lance le déploiement Kustomize dev
-
-        Args:
-            image_tag: Tag de l'image (commit hash)
-            force_delete: Forcer la suppression des ressources avant déploiement
-            wait: Si True, attend la fin du déploiement (défaut: False)
-
-        Returns:
-            Numéro du build lancé ou None en cas d'erreur
-        """
-        if not self.server:
-            logger.error("❌ Pas de connexion établie")
-            return None
-
-        try:
-            # Vérifie que le job existe
-            job_info = self.server.get_job_info(self.job_name)
-            logger.info(f"Job trouvé: {self.job_name}")
-
-            # Paramètres du déploiement
-            parameters = {"IMAGE_TAG": image_tag, "FORCE_DELETE": force_delete}
-
-            # Lance le déploiement
-            logger.info(
-                f"Lancement du déploiement avec IMAGE_TAG='{image_tag}', FORCE_DELETE={force_delete}..."
-            )
-            queue_number = self.server.build_job(self.job_name, parameters=parameters)
-
-            # Récupère le numéro du build à partir de la queue
-            logger.info(f"Build en queue: #{queue_number}")
-
-            if wait:
-                build_number = self._wait_for_build_start(queue_number)
-                if build_number:
-                    logger.info(f"Build #{build_number} démarré")
-                    success = self._monitor_build(build_number)
-                    return build_number if success else None
-            else:
-                logger.info(
-                    f"✅ Déploiement lancé (queue #{queue_number}). Utilisez --wait pour suivre la progression."
-                )
-
-            return queue_number
-
-        except jenkins.JenkinsException as e:
-            logger.error(f"❌ Erreur Jenkins lors du déploiement: {e}")
-            return None
-        except Exception as e:
-            logger.error(f"❌ Erreur lors du lancement du déploiement: {e}")
-            return None
-
-    def _wait_for_build_start(
-        self, queue_number: int, max_wait: int = 300
-    ) -> Optional[int]:
-        """Attend que le build sorte de la queue et récupère son numéro"""
-        logger.info("En attente du démarrage du build...")
-        start_time = time.time()
-
-        while time.time() - start_time < max_wait:
-            try:
-                queue_item = self.server.get_queue_item(queue_number)
-
-                # Si le build est sorti de la queue
-                if "executable" in queue_item:
-                    build_number = queue_item["executable"]["number"]
-                    return build_number
-
-                # Si encore en queue
-                if queue_item.get("blocked") or queue_item.get("stuck"):
-                    logger.info(
-                        f"  Build en attente (raison: {queue_item.get('why', 'N/A')})"
-                    )
-
-                time.sleep(5)
-
-            except jenkins.NotFoundException:
-                # Le job n'est plus en queue, cherche le dernier build
-                job_info = self.server.get_job_info(self.job_name)
-                if job_info.get("lastBuild"):
-                    return job_info["lastBuild"]["number"]
-
-            except Exception as e:
-                logger.warning(f"Erreur lors de la vérification de la queue: {e}")
-                time.sleep(5)
-
-        logger.warning(f"Timeout: le build n'a pas démarré après {max_wait}s")
-        return None
-
-    def _monitor_build(self, build_number: int) -> bool:
-        """Surveille la progression d'un build et retourne True si succès"""
-        logger.info(f"Surveillance du build #{build_number}...")
-
-        while True:
-            try:
-                build_info = self.server.get_build_info(self.job_name, build_number)
-
-                if build_info["building"]:
-                    # En cours
-                    duration = build_info.get("duration", 0) / 1000  # ms vers s
-                    logger.info(f"  Build en cours... ({duration:.0f}s)")
-                    time.sleep(10)
-                else:
-                    # Terminé
-                    result = build_info.get("result", "UNKNOWN")
-                    duration = build_info.get("duration", 0) / 1000
-
-                    # URL du build
-                    build_url = build_info.get("url", "N/A")
-                    logger.info(f"   URL: {build_url}")
-
-                    if result == "SUCCESS":
-                        logger.info(
-                            f"✅ Build #{build_number} réussi! (durée: {duration:.0f}s)"
-                        )
-                        return True
-                    else:
-                        logger.error(
-                            f"❌ Build #{build_number} échoué: {result} (durée: {duration:.0f}s)"
-                        )
-                        return False
-
-            except Exception as e:
-                logger.error(f"❌ Erreur lors de la surveillance: {e}")
-                return False
+DEFAULT_JOB_NAME = "atnum/dev/languia/deploy-dev"
 
 
 def main():
     """Fonction principale"""
-    parser = argparse.ArgumentParser(
+    parser = JenkinsJobTrigger.create_argument_parser(
         description="Lance le job de déploiement Kustomize dev sur Jenkins",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples d'utilisation:
   # Avec variables d'environnement
@@ -218,26 +35,10 @@ Exemples d'utilisation:
   # Avec force delete et attente
   python trigger_deploy_dev.py --image-tag abc123def --force-delete --wait
         """,
+        default_job_name=DEFAULT_JOB_NAME,
     )
 
-    parser.add_argument(
-        "--url",
-        default=os.getenv("JENKINS_URL"),
-        help="URL du serveur Jenkins (ex: http://localhost:8080)",
-    )
-    parser.add_argument(
-        "--username",
-        default=os.getenv("JENKINS_USERNAME"),
-        help="Nom d'utilisateur Jenkins",
-    )
-    parser.add_argument(
-        "--token", default=os.getenv("JENKINS_API_TOKEN"), help="Token API Jenkins"
-    )
-    parser.add_argument(
-        "--job",
-        default="atnum/dev/languia/deploy-dev",
-        help="Nom du job Jenkins (défaut: atnum/dev/languia/deploy-dev)",
-    )
+    # Arguments spécifiques au déploiement
     parser.add_argument(
         "--image-tag", required=True, help="Tag de l'image (commit hash)"
     )
@@ -251,42 +52,14 @@ Exemples d'utilisation:
         action="store_true",
         help="Attendre la fin du déploiement et afficher le résultat",
     )
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=30,
-        help="Timeout de connexion en secondes (défaut: 30)",
-    )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Mode verbeux")
 
     args = parser.parse_args()
 
-    # Configuration du niveau de log
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
-
-    # Validation des arguments
-    if not args.url:
-        logger.error("❌ L'URL Jenkins est requise (--url ou variable JENKINS_URL)")
-        sys.exit(1)
-
-    if not args.username:
-        logger.error(
-            "❌ Le nom d'utilisateur est requis (--username ou variable JENKINS_USERNAME)"
-        )
-        sys.exit(1)
-
-    if not args.token:
-        logger.error(
-            "❌ Le token API est requis (--token ou variable JENKINS_API_TOKEN)"
-        )
-        logger.error(
-            "   Pour générer un token: Jenkins > [Votre utilisateur] > Configure > Add new Token"
-        )
-        sys.exit(1)
+    # Validation commune
+    JenkinsJobTrigger.validate_common_args(args)
 
     # Création du trigger
-    trigger = JenkinsDeployDevTrigger(
+    trigger = JenkinsDeployJobTrigger(
         jenkins_url=args.url,
         username=args.username,
         api_token=args.token,
@@ -301,18 +74,17 @@ Exemples d'utilisation:
 
     # Lancement du déploiement
     logger.info("=" * 50)
-    deploy_result = trigger.trigger_deploy(
-        image_tag=args.image_tag, force_delete=args.force_delete, wait=args.wait
+    result = trigger.trigger(
+        image_tag=args.image_tag,
+        force_delete=args.force_delete,
+        wait=args.wait
     )
 
-    if deploy_result:
-        logger.info("=" * 50)
-        logger.info("🎯 Déploiement lancé avec succès!")
-        sys.exit(0)
-    else:
-        logger.error("=" * 50)
-        logger.error("❌ Échec du lancement du déploiement")
-        sys.exit(1)
+    trigger.execute_main_workflow(
+        result,
+        success_message="Déploiement lancé avec succès!",
+        error_message="Échec du lancement du déploiement"
+    )
 
 
 if __name__ == "__main__":
