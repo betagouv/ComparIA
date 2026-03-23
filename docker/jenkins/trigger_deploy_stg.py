@@ -6,7 +6,7 @@ Utilise un token API pour l'authentification (méthode recommandée)
 
 import sys
 import logging
-from docker.jenkins.jenkins_common import JenkinsDeployJobTrigger, JenkinsJobTrigger
+from jenkins_common import JenkinsDeployJobTrigger, JenkinsJobTrigger
 
 # Configuration du logging
 logging.basicConfig(
