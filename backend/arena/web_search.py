@@ -2,7 +2,7 @@ import logging
 
 from linkup import LinkupClient, LinkupSearchResults, LinkupSearchTextResult
 
-from backend.config import settings
+from backend.config import WEB_SEARCH_INTRO, settings
 
 logger = logging.getLogger("languia")
 
@@ -35,3 +35,20 @@ async def search_web(content: str) -> list[LinkupSearchTextResult] | None:
         # Only use text results (skip images)
         if result.type == "text" and result.content
     ]
+
+
+def merge_web_search_with_content(
+    content: str, web_search_results: list[LinkupSearchTextResult]
+) -> str:
+    return "\n\n".join(
+        [
+            content,
+            WEB_SEARCH_INTRO,
+            "\n\n---\n\n".join(
+                [
+                    f"Source: {result.name} ({result.url})\n{result.content}".strip()
+                    for result in web_search_results
+                ]
+            ),
+        ]
+    )
