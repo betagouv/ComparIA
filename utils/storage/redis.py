@@ -1,3 +1,4 @@
+import hashlib
 from functools import lru_cache
 from typing import Final
 
@@ -40,3 +41,9 @@ def get_redis_client() -> redis.Redis:
         return client
     except Exception as e:
         raise Exception(f"Redis Connection Error: {e}")
+
+
+def hash_content(content: str) -> str:
+    """Normalize and hash content."""
+    normalized = content.strip().lower()
+    return hashlib.sha256(normalized.encode()).hexdigest()[:16]

@@ -6,14 +6,13 @@ Stores multiple responses per key to preserve diversity, and serves cached
 responses with configurable probability to avoid determinism.
 """
 
-import hashlib
 import json
 import logging
 import random
 from typing import Any, TypedDict, cast
 
 from backend.config import settings
-from utils.storage.redis import REDIS_LLM_RESPONSES_KEY, get_redis_client
+from utils.storage.redis import REDIS_LLM_RESPONSES_KEY, get_redis_client, hash_content
 
 logger = logging.getLogger("languia")
 
@@ -22,15 +21,6 @@ class CachedResponse(TypedDict):
     content: str
     reasoning: str
     output_tokens: int | None
-
-
-def _cache_key(model_name: str, prompt: str) -> str:
-    """Build a Redis key from model name and normalized prompt."""
-    normalized = prompt.strip().lower()
-    prompt_hash = hashlib.sha256(normalized.encode()).hexdigest()[:16]
-    return REDIS_LLM_RESPONSES_KEY.format(
-        model_name=model_name, prompt_hash=prompt_hash
-    )
 
 
 def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
@@ -49,7 +39,9 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
 
     try:
         client = get_redis_client()
-        key = _cache_key(model_name, prompt)
+        key = REDIS_LLM_RESPONSES_KEY.format(
+            model_name=model_name, prompt_hash=hash_content(prompt)
+        )
         data = cast(Any, client.get(key))
         if not data:
             return None
@@ -85,7 +77,9 @@ def store_cached_response(
 
     try:
         client = get_redis_client()
-        key = _cache_key(model_name, prompt)
+        key = REDIS_LLM_RESPONSES_KEY.format(
+            model_name=model_name, prompt_hash=hash_content(prompt)
+        )
 
         existing_data = cast(Any, client.get(key))
         responses: list[CachedResponse] = (
