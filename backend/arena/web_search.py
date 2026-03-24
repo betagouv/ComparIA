@@ -14,7 +14,9 @@ from utils.storage.redis import REDIS_WEB_SEARCH_KEY, get_redis_client, hash_con
 logger = logging.getLogger("languia")
 
 
-async def search_web(content: str) -> list[LinkupSearchTextResult] | None:
+async def search_web(
+    content: str, use_cache: bool = True
+) -> list[LinkupSearchTextResult] | None:
     """
     Search the web using Linkup.
 
@@ -24,6 +26,10 @@ async def search_web(content: str) -> list[LinkupSearchTextResult] | None:
         logger.error("LINKUP_API_KEY not configured, skipping web search")
         return None
 
+    if use_cache:
+        if cached_results := get_cached_web_search(content):
+            return cached_results
+
     try:
         client = LinkupClient(api_key=settings.LINKUP_API_KEY)
         response: LinkupSearchResults = await client.async_search(
@@ -32,16 +38,21 @@ async def search_web(content: str) -> list[LinkupSearchTextResult] | None:
             output_type="searchResults",
             include_images=False,
         )
+        results = [
+            result
+            for result in response.results
+            # Only use text results (skip images)
+            if result.type == "text" and result.content
+        ]
+
+        if use_cache:
+            store_cached_search_results(content, results)
+
+        return results
+
     except Exception:
         logger.exception("Linkup web search failed")
         return None
-
-    return [
-        result
-        for result in response.results
-        # Only use text results (skip images)
-        if result.type == "text" and result.content
-    ]
 
 
 def merge_web_search_with_content(
