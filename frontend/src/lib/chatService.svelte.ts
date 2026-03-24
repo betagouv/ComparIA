@@ -41,6 +41,7 @@ export interface WebSearchResults {
 export interface UserMessage {
   role: 'user'
   content: string
+  user_content: string
   web_search_results: WebSearchResults[] | null
 }
 export interface AssistantMessage {
