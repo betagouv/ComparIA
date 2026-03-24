@@ -2,7 +2,7 @@ import uuid
 from typing import Annotated, Literal
 
 from linkup import LinkupSearchTextResult
-from pydantic import FieldSerializationInfo, field_serializer
+from pydantic import FieldSerializationInfo, computed_field, field_serializer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -32,6 +32,11 @@ class UserMessageCreate(UserMessageBase):
 
 
 class UserMessageRead(UserMessageBase):
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def user_content(self) -> str:
+        return self.content
 
     @field_serializer("content", mode="plain")
     def override_content(self, content: str, info: FieldSerializationInfo) -> str:
