@@ -15,7 +15,7 @@ def db_cursor(action: str, logger: Logger, cursor_factory: Any = None) -> Any:
     try:
         logger.debug(f"[DB] Try to {action} data")
 
-        with psycopg2.connect(settings.COMPARIA_DB_URI) as conn:
+        with psycopg2.connect(settings.COMPARIA_DB_URI, connect_timeout=5) as conn:
             with conn.cursor(cursor_factory=cursor_factory) as cursor:
                 yield cursor
 
