@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private'
 import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
+import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle } from '@sveltejs/kit'
 
 const MATOMO_ID = env.MATOMO_ID || ''
@@ -42,4 +43,30 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
   })
 }
 
-export const handle: Handle = paraglideHandle
+// Metrics middleware
+const metricsHandle: Handle = async ({ event, resolve }) => {
+	// Skip metrics endpoint itself
+	if (event.url.pathname === '/metrics') {
+		return resolve(event)
+	}
+
+	const start = Date.now()
+	const response = await resolve(event)
+	const duration = (Date.now() - start) / 1000
+
+	const labels = {
+		method: event.request.method,
+		route: event.route?.id || event.url.pathname,
+		status: response.status.toString()
+	}
+
+	httpRequestCounter.inc(labels)
+	httpRequestDuration.observe(labels, duration)
+
+	return response
+}
+
+// Compose handles: metrics first, then paraglide
+export const handle: Handle = async ({ event, resolve }) => {
+	return metricsHandle({ event, resolve: (e) => paraglideHandle({ event: e, resolve }) })
+}
