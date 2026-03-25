@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private'
 import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
+import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle } from '@sveltejs/kit'
 
@@ -62,6 +63,16 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
 
 	httpRequestCounter.inc(labels)
 	httpRequestDuration.observe(labels, duration)
+
+	// Log request to Custom Logger
+	logger.info('HTTP request', {
+		method: event.request.method,
+		path: event.url.pathname,
+		route: event.route?.id,
+		status: response.status,
+		duration_ms: Math.round((Date.now() - start)),
+		user_agent: event.request.headers.get('user-agent')
+	})
 
 	return response
 }
