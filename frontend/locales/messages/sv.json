@@ -45,6 +45,12 @@
         "title": "Hur kan jag hjälpa dig idag?",
         "errors": {
             "rateLimitCustomSelection": "Modellval är begränsat för att säkerställa rättvis åtkomst för alla. Du kan fortsätta använda slumpmässigt läge eller försöka igen senare."
+        },
+        "webSearch": {
+            "label": "Webbsökning",
+            "enabled": "Webbsökning aktiverad",
+            "disabled": "Webbsökning inaktiverad",
+            "tooltip": "Aktivera webbsökning för att låta modellerna använda onlinekällor och citera mer aktuell information.<br><strong>Utan webbsökning</strong> svarar modellerna baserat på vad de lärde sig under träning (deras träningsdata). De kan inte verifiera information online, så mycket nya eller specifika fakta kan vara ofullständiga."
         }
     },
     "chatbot": {
@@ -67,7 +73,10 @@
             "finished": "Resonemang avslutat",
             "inProgress": "Resonemang pågår…"
         },
-        "revealButton": "Visa vilka modeller som användes"
+        "revealButton": "Visa vilka modeller som användes",
+        "webSearch": {
+            "label": "Tillhörande webbsökresultat."
+        }
     },
     "closeModal": "Stäng modalfönstret",
     "components": {
