@@ -219,7 +219,7 @@ def configure_logger() -> logging.Logger:
     custom_logger_url = os.getenv("CUSTOM_LOGGER_URL")
     if custom_logger_url:
         loki_handler = BaseLokiHandler(
-            url=f"{custom_logger_url}/custom-logger/api/v1/push",
+            url=f"{custom_logger_url}/loki/api/v1/push",
             tags={"app": "comparia-backend", "environment": os.getenv("ENVIR", "dev")},
             version="1",
         )
@@ -296,7 +296,7 @@ def configure_uvicorn_logging() -> None:
         custom_logger_url = os.getenv("CUSTOM_LOGGER_URL")
         if custom_logger_url:
             loki_handler = BaseLokiHandler(
-                url=f"{custom_logger_url}/custom-logger/api/v1/push",
+                url=f"{custom_logger_url}/loki/api/v1/push",
                 tags={
                     "app": "comparia-backend-uvicorn",
                     "environment": os.getenv("ENVIR", "dev"),
