@@ -340,6 +340,11 @@
             "privacyDesc": "The service does not process personal data as defined by the CNIL, meaning any information relating to an identifiable natural person, directly or indirectly.",
             "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
             "privacyTitle": "Do we process personal data?",
+            "tallyData": "",
+            "tallyDesc": "",
+            "tallyFeedback": "",
+            "tallyNewsletter": "",
+            "tallyTitle": "",
             "title": "Privacy policy"
         },
         "rgesn": {
@@ -509,75 +514,196 @@
         "licenses": {
             "os": {
                 "Apache 2.0": {
-                    "license_desc": "<p> This license allows you to freely use, modify, and distribute the model, including for commercial purposes. In addition to freedom of use, it guarantees legal protection by including a patent grant clause that acts as insurance: if you use this model, the contributors agree not to sue you for violating their patents related to the project. This mutual protection avoids legal conflicts between users and developers. When distributing modified versions, significant changes must be indicated with appropriate notices, ensuring transparency for the user. </p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p> This license allows you to freely use, modify, and distribute the model, including for commercial purposes. In addition to freedom of use, it guarantees legal protection by including a patent grant clause that acts as insurance: if you use this model, the contributors agree not to sue you for violating their patents related to the project. This mutual protection avoids legal conflicts between users and developers. When distributing modified versions, significant changes must be indicated with appropriate notices, ensuring transparency for the user. </p>",
+                    "reuse_specificities": ""
                 },
                 "CC-BY-NC-4.0": {
+                    "commercial_use_specificities": "",
                     "license_desc": "<p> This license allows you to freely share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights. </p>",
                     "reuse_specificities": "but only for non-commercial uses"
                 },
                 "Gemma": {
-                    "license_desc": "<p> This license is designed to encourage the use, modification, and redistribution of the software, but includes a clause stating that all modified or improved versions must be shared with the community under the same source license, thus promoting collaboration and transparency in software development. </p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p> This license is designed to encourage the use, modification, and redistribution of the software, but includes a clause stating that all modified or improved versions must be shared with the community under the same source license, thus promoting collaboration and transparency in software development. </p>",
+                    "reuse_specificities": ""
                 },
                 "Jamba Open Model": {
                     "commercial_use_specificities": "below $50 million in annual revenue",
-                    "license_desc": "<p> This license allows free use, reproduction, modification, and distribution of the code with attribution, but imposes restrictions for organizations exceeding $50 million in annual revenue. </p>"
+                    "license_desc": "<p> This license allows free use, reproduction, modification, and distribution of the code with attribution, but imposes restrictions for organizations exceeding $50 million in annual revenue. </p>",
+                    "reuse_specificities": ""
                 },
                 "LFM 1.0": {
-                    "license_desc": "<p> This worldwide, free, and non-exclusive license allows the use, modification, and redistribution of the model and its derivatives, including the reuse of outputs to train other models. It remains permissive but limits commercial use to organizations with annual revenues below $10 million; beyond this threshold, usage is no longer covered. </p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p> This worldwide, free, and non-exclusive license allows the use, modification, and redistribution of the model and its derivatives, including the reuse of outputs to train other models. It remains permissive but limits commercial use to organizations with annual revenues below $10 million; beyond this threshold, usage is no longer covered. </p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3 Community": {
                     "commercial_use_specificities": "under 700 million users",
-                    "license_desc": "<p> This license allows free use, modification, and distribution of the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users and prohibits reuse of the code or generated content for training or improving competing models, thus protecting Meta's technology investments and brand. </p>"
+                    "license_desc": "<p> This license allows free use, modification, and distribution of the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users and prohibits reuse of the code or generated content for training or improving competing models, thus protecting Meta's technology investments and brand. </p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3.1": {
                     "commercial_use_specificities": "below 700 million users",
-                    "license_desc": "<p> This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution. </p>"
+                    "license_desc": "<p> This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution. </p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3.3": {
                     "commercial_use_specificities": "below 700 million users",
-                    "license_desc": "<p> This <strong> non-exclusive, worldwide, royalty-free </strong> license allows you to freely use, reproduce, modify, and distribute the Llama 3.3 code and Materials with attribution. It notably permits reuse for improving derivative models, but imposes restrictions on very large-scale commercial operations. </p>"
+                    "license_desc": "<p> This <strong> non-exclusive, worldwide, royalty-free </strong> license allows you to freely use, reproduce, modify, and distribute the Llama 3.3 code and Materials with attribution. It notably permits reuse for improving derivative models, but imposes restrictions on very large-scale commercial operations. </p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 4": {
                     "commercial_use_specificities": "below 700 million users\n",
-                    "license_desc": "<p> This non-exclusive, worldwide, royalty-free license allows you to use, reproduce, modify, and distribute the Llama 4 Materials (models and documentation) with attribution. However, it imposes two major restrictions: (1) companies exceeding 700 million monthly active users must obtain a special license from Meta, and (2) <strong> total exclusion </strong> of EU residents and companies headquartered in the EU from directly using the multimodal models, due to regulatory uncertainties related to the European AI Act. European end users may nevertheless access services integrating Llama 4, provided they are provided from outside the EU. </p>"
+                    "license_desc": "<p> This non-exclusive, worldwide, royalty-free license allows you to use, reproduce, modify, and distribute the Llama 4 Materials (models and documentation) with attribution. However, it imposes two major restrictions: (1) companies exceeding 700 million monthly active users must obtain a special license from Meta, and (2) <strong> total exclusion </strong> of EU residents and companies headquartered in the EU from directly using the multimodal models, due to regulatory uncertainties related to the European AI Act. European end users may nevertheless access services integrating Llama 4, provided they are provided from outside the EU. </p>",
+                    "reuse_specificities": ""
                 },
                 "MIT": {
-                    "license_desc": "<p> The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices. </p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p> The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices. </p>",
+                    "reuse_specificities": ""
                 },
                 "Mistral AI Research License": {
+                    "commercial_use_specificities": "",
                     "license_desc": "<p> This non-exclusive, royalty-free license authorizes the use, copying, modification, and distribution of Mistral models and their derivatives (including modified or refined versions). However, it is strictly limited to research purposes. </p>",
                     "reuse_specificities": "but only for non-commercial uses"
                 },
                 "Modified MIT": {
-                    "license_desc": "<p>A variant of the MIT license. The MIT license is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>A variant of the MIT license. The MIT license is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices.</p>",
+                    "reuse_specificities": ""
+                },
+                "Nemotron Open": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 }
             },
             "proprio": {
+                "01-ai": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "AI21": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Ai2": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "Alibaba": {
-                    "license_desc": "The model is available under paid license and accessible via API on Alibaba company platforms, requiring pay-per-use based on the number of tokens processed or the infrastructure reserved."
+                    "commercial_use_specificities": "",
+                    "license_desc": "The model is available under paid license and accessible via API on Alibaba company platforms, requiring pay-per-use based on the number of tokens processed or the infrastructure reserved.",
+                    "reuse_specificities": ""
                 },
                 "Amazon": {
+                    "commercial_use_specificities": "",
                     "license_desc": "The model is available under paid licensing and accessed through Amazon Bedrock, requiring to pay-as-you-go based on the number of tokens processed or infrastructure reserved.",
                     "reuse_specificities": "except to distill or train other models on Amazon's platforms."
                 },
                 "Anthropic": {
-                    "license_desc": "The model is available under paid license and accessible via API on the Anthropic platform or partner platforms, requiring to pay-per-use based on the number of tokens processed or based on the infrastructure reserved to host the model."
+                    "commercial_use_specificities": "",
+                    "license_desc": "The model is available under paid license and accessible via API on the Anthropic platform or partner platforms, requiring to pay-per-use based on the number of tokens processed or based on the infrastructure reserved to host the model.",
+                    "reuse_specificities": ""
+                },
+                "Arcee": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Cohere": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "DeepSeek": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "EuroLLM": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Google": {
+                    "commercial_use_specificities": "",
                     "license_desc": "The model is available under paid license and accessible via API on Google platforms, requiring to pay-per-use based on the number of tokens processed or on infrastructure reserved.",
                     "reuse_specificities": "except for training other models on Vertex AI"
                 },
                 "Liquid": {
-                    "license_desc": "This model is available under paid license and accessible via API from platforms by Liquid AI and partners, requiring to pay by token or infrastructure reserved."
+                    "commercial_use_specificities": "",
+                    "license_desc": "This model is available under paid license and accessible via API from platforms by Liquid AI and partners, requiring to pay by token or infrastructure reserved.",
+                    "reuse_specificities": ""
+                },
+                "Meta": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Microsoft": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "MiniMax": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Mistral AI": {
-                    "license_desc": "The model is available under a paid license and accessible via the Mistral API, Amazon Sagemaker, and several other infrastructure providers, requiring to pay-per-use based on the number of tokens processed or the infrastructure reserved."
+                    "commercial_use_specificities": "",
+                    "license_desc": "The model is available under a paid license and accessible via the Mistral API, Amazon Sagemaker, and several other infrastructure providers, requiring to pay-per-use based on the number of tokens processed or the infrastructure reserved.",
+                    "reuse_specificities": ""
+                },
+                "Moonshot AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nous": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nvidia": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "OpenAI": {
-                    "license_desc": "The model is available under a paid license and accessible via API on OpenAI's platforms or through Microsoft Azure services, requiring to pay-per-use based on the number of tokens processed or the infrastructure reserved."
+                    "commercial_use_specificities": "",
+                    "license_desc": "The model is available under a paid license and accessible via API on OpenAI's platforms or through Microsoft Azure services, requiring to pay-per-use based on the number of tokens processed or the infrastructure reserved.",
+                    "reuse_specificities": ""
+                },
+                "Ordbogen": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Swiss AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Zhipu": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "jpacifico": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "xAI": {
-                    "license_desc": "The model is available under a paid license and accessible via X and xAI, requiring to pay-per-use based on the number of tokens processed or infrastructure reserved."
+                    "commercial_use_specificities": "",
+                    "license_desc": "The model is available under a paid license and accessible via X and xAI, requiring to pay-per-use based on the number of tokens processed or infrastructure reserved.",
+                    "reuse_specificities": ""
                 }
             }
         },
@@ -756,6 +882,11 @@
                 "desc": "<p>Fourth iteration of GPT 5, focused on conversational fluidity. Compared to GPT 5.2, it reduces, according to the publisher, hallucinations and adopts a more direct style, with fewer unnecessary safeguards.</p>",
                 "fyi": "<p>GPT 5.3, nicknamed \"Instant\" by OpenAI, is presented as an update focused on the reliability and naturalness of conversations. According to the editor, hallucinations are reduced by 26.8% when using web search and by 19.7% with only the model's internal knowledge, compared to GPT 5.2. The model adopts a less moralizing tone, with fewer formulations like \"Stop. Breathe.\" and unnecessary warnings that characterized previous versions.</p>",
                 "size_desc": "<p>The sizes of the models behind the GPT 5.3 system are unknown. The architecture is likely based on a \"mixture of experts\" (MoE, Mixture of Experts), which means that only a portion of the parameters is activated for each request. This allows for better energy efficiency and high performance. Available estimates on model sizes are based on public information and indirect indicators such as inference costs and response latency. GPT 5.3 supports a context window of 128,000 tokens.</p>"
+            },
+            "GPT 5.4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "GPT OSS-120B": {
                 "desc": "<p> The larger of OpenAI's first two open-weight models since GPT-2. Designed in response to the rise of open source players like Meta (LLaMA) and Mistral, it is a powerful reasoning model, particularly on complex tasks and in \"agentic\" environments. </p>",
@@ -1022,6 +1153,11 @@
                 "fyi": "<p> Mistral Small 3.2 24B Instruct is a multimodal model that delivers state-of-the-art performance in text- and vision-based reasoning tasks, including image analysis, programming, mathematical reasoning, and multilingual support for dozens of languages. </p>",
                 "size_desc": "<p>Medium-sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.</p>"
             },
+            "Mistral Small 4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Mixtral 8x22B": {
                 "desc": "<p> This multilingual model, released in April 2024, has been specifically trained in English, French, German, Italian, and Spanish, as well as on math, programming, and reasoning tasks. </p>",
                 "fyi": "<p> This model's SMoE (sparse mixture of experts) architecture makes it faster and optimizes its size-to-cost ratio. Only 39 billion parameters are active out of 141 billion. The 64,000-token pop-up window allows for precise information recall from large documents. Released in April 2024. </p>",
@@ -1031,6 +1167,11 @@
                 "desc": "<p> This model trained on a multilingual corpus is effective for varied and low-complexity tasks. </p>",
                 "fyi": "<p> The younger brother of the Mixtral family, this model is capable of processing contexts of 32,000 tokens and supports English, French, Italian, German, and Spanish. Thanks to the SMoE (sparse mixture of experts) architecture, only a fraction of the parameters are activated for each inference, thus reducing costs and latency. </p>",
                 "size_desc": "<p>Medium-sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.</p>"
+            },
+            "Nemotron 3 Super 120B-A12B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "Nemotron Llama 3.1 70B": {
                 "desc": "<p> Large model trained from Llama 3.1 70B. This retrained (fine-tune) version tends to detail more and provide more structured responses. </p>",
@@ -1786,6 +1927,7 @@
             },
             "methods": {
                 "cons": "Main problems",
+                "def": "",
                 "elo": {
                     "def": "<strong> Definition </strong>: Ranking system where the gain or loss of points depends on the result (victory/defeat/draw <strong> and </strong> the estimated level of the opponent: if a weaker model beats a stronger model, its progression in the ranking is greater.",
                     "list": {
