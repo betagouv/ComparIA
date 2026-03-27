@@ -340,6 +340,11 @@
             "privacyDesc": "Tjenesten behandler ikke personoplysninger som defineret af CNIL, dvs. oplysninger, der direkte eller indirekte kan henføres til en identificerbar fysisk person.",
             "privacyResp": "Brugeren er ansvarlig for de data eller det indhold, som vedkommende indtaster i den prompt, som platformen stiller til rådighed. Ved at acceptere <a {linkProps}>brugsbetingelserne</a> accepterer brugeren ikke at overføre oplysninger, der kan identificere vedkommende selv eller en tredjepart.",
             "privacyTitle": "Behandler vi personoplysninger?",
+            "tallyData": "",
+            "tallyDesc": "",
+            "tallyFeedback": "",
+            "tallyNewsletter": "",
+            "tallyTitle": "",
             "title": "Fortrolighedspolitik"
         },
         "rgesn": {
@@ -509,75 +514,196 @@
         "licenses": {
             "os": {
                 "Apache 2.0": {
-                    "license_desc": "<p>Denne licens gør det muligt at bruge, modificere og distribuere modellen frit, herunder til kommercielle formål. Ud over brugsfriheden garanterer den juridisk beskyttelse ved at inkludere en patentlicensklausul, der fungerer som en forsikring: hvis du bruger denne model, forpligter bidragyderne sig til ikke at sagsøge dig for krænkelse af deres patenter relateret til projektet. Denne gensidige beskyttelse undgår juridiske konflikter mellem brugere og udviklere. Ved distribution af modificerede versioner skal betydelige ændringer angives med passende bemærkninger, hvilket garanterer gennemsigtighed for brugeren.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>Denne licens gør det muligt at bruge, modificere og distribuere modellen frit, herunder til kommercielle formål. Ud over brugsfriheden garanterer den juridisk beskyttelse ved at inkludere en patentlicensklausul, der fungerer som en forsikring: hvis du bruger denne model, forpligter bidragyderne sig til ikke at sagsøge dig for krænkelse af deres patenter relateret til projektet. Denne gensidige beskyttelse undgår juridiske konflikter mellem brugere og udviklere. Ved distribution af modificerede versioner skal betydelige ændringer angives med passende bemærkninger, hvilket garanterer gennemsigtighed for brugeren.</p>",
+                    "reuse_specificities": ""
                 },
                 "CC-BY-NC-4.0": {
+                    "commercial_use_specificities": "",
                     "license_desc": "<p>Denne licens gør det muligt at dele og tilpasse indholdet frit, forudsat at man krediterer ophavsmanden, men forbyder enhver kommerciel brug. Den tilbyder fleksibilitet til ikke-kommercielle formål, samtidig med at den beskytter ophavsmandens rettigheder.</p>",
                     "reuse_specificities": "men kun til ikke-kommercielle formål"
                 },
                 "Gemma": {
-                    "license_desc": "<p>Denne licens er designet til at tilskynde til brug, modificering og redistribution af software, men inkluderer en klausul, der fastslår, at alle modificerede eller forbedrede versioner skal deles med fællesskabet under den samme kildelicens, hvilket således fremmer samarbejde og gennemsigtighed i softwareudvikling.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>Denne licens er designet til at tilskynde til brug, modificering og redistribution af software, men inkluderer en klausul, der fastslår, at alle modificerede eller forbedrede versioner skal deles med fællesskabet under den samme kildelicens, hvilket således fremmer samarbejde og gennemsigtighed i softwareudvikling.</p>",
+                    "reuse_specificities": ""
                 },
                 "Jamba Open Model": {
                     "commercial_use_specificities": "under 50 millioner dollars i årlig omsætning",
-                    "license_desc": "<p>Denne licens gør det muligt at bruge, reproducere, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for organisationer, der overstiger 50 millioner dollars i årlig omsætning.</p>"
+                    "license_desc": "<p>Denne licens gør det muligt at bruge, reproducere, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for organisationer, der overstiger 50 millioner dollars i årlig omsætning.</p>",
+                    "reuse_specificities": ""
                 },
                 "LFM 1.0": {
-                    "license_desc": "<p>Denne verdensomspændende, gratis og ikke-eksklusive licens tillader brugen, modifikationen og redistributionen af modellen og dens afledte værker, herunder genanvendelse af outputs til at træne andre modeller. Den forbliver liberal, men begrænser enhver kommerciel brug til organisationer, hvis årlige indtægter er under 10 millioner dollars, hvorefter brugen ikke længere er dækket.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>Denne verdensomspændende, gratis og ikke-eksklusive licens tillader brugen, modifikationen og redistributionen af modellen og dens afledte værker, herunder genanvendelse af outputs til at træne andre modeller. Den forbliver liberal, men begrænser enhver kommerciel brug til organisationer, hvis årlige indtægter er under 10 millioner dollars, hvorefter brugen ikke længere er dækket.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3 Community": {
                     "commercial_use_specificities": "Under 700 millioner brugere",
-                    "license_desc": "<p>Denne licens gør det muligt at bruge, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for operationer, der overstiger 700 millioner månedlige brugere, og forbyder genanvendelse af koden eller det genererede indhold til træning eller forbedring af konkurrerende modeller, hvilket således beskytter Metas teknologiske investeringer og brand.</p>"
+                    "license_desc": "<p>Denne licens gør det muligt at bruge, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for operationer, der overstiger 700 millioner månedlige brugere, og forbyder genanvendelse af koden eller det genererede indhold til træning eller forbedring af konkurrerende modeller, hvilket således beskytter Metas teknologiske investeringer og brand.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3.1": {
                     "commercial_use_specificities": "Under 700 millioner brugere",
-                    "license_desc": "<p>Denne licens gør det muligt at bruge, reproducere, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for operationer, der overstiger 700 millioner månedlige brugere. Genanvendelse af koden eller det genererede indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at man viser \"built with llama\" og inkluderer \"Llama\" i deres navn ved enhver distribution.</p>"
+                    "license_desc": "<p>Denne licens gør det muligt at bruge, reproducere, modificere og distribuere koden frit med kreditering, men pålægger restriktioner for operationer, der overstiger 700 millioner månedlige brugere. Genanvendelse af koden eller det genererede indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at man viser \"built with llama\" og inkluderer \"Llama\" i deres navn ved enhver distribution.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3.3": {
                     "commercial_use_specificities": "under 700 millioner brugere",
-                    "license_desc": "<p>Denne <strong>ikke-eksklusive, globale og royalty-fri</strong> licens gør det muligt at bruge, reproducere, modificere og distribuere koden og Llama 3.3-materialerne frit med kreditering. Den tillader især genanvendelse til forbedring af afledte modeller, men pålægger restriktioner for kommercielle operationer af meget stor skala.</p>"
+                    "license_desc": "<p>Denne <strong>ikke-eksklusive, globale og royalty-fri</strong> licens gør det muligt at bruge, reproducere, modificere og distribuere koden og Llama 3.3-materialerne frit med kreditering. Den tillader især genanvendelse til forbedring af afledte modeller, men pålægger restriktioner for kommercielle operationer af meget stor skala.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 4": {
                     "commercial_use_specificities": "under 700 millioner brugere\n",
-                    "license_desc": "<p>Denne ikke-eksklusive, globale og royalty-fri licens gør det muligt at bruge, reproducere, modificere og distribuere Llama 4-materialerne (modeller og dokumentation) med kreditering. Den pålægger dog to væsentlige restriktioner: (1) virksomheder, der overstiger 700 millioner aktive månedlige brugere, skal indhente en særlig licens fra Meta, og (2) <strong>total udelukkelse</strong> af personer bosiddende i EU og virksomheder med hovedsæde i EU fra direkte brug af de multimodale modeller på grund af regulatorisk usikkerhed relateret til den europæiske AI Act. Europæiske slutbrugere kan dog få adgang til tjenester, der integrerer Llama 4, forudsat at de leveres fra uden for EU.</p>"
+                    "license_desc": "<p>Denne ikke-eksklusive, globale og royalty-fri licens gør det muligt at bruge, reproducere, modificere og distribuere Llama 4-materialerne (modeller og dokumentation) med kreditering. Den pålægger dog to væsentlige restriktioner: (1) virksomheder, der overstiger 700 millioner aktive månedlige brugere, skal indhente en særlig licens fra Meta, og (2) <strong>total udelukkelse</strong> af personer bosiddende i EU og virksomheder med hovedsæde i EU fra direkte brug af de multimodale modeller på grund af regulatorisk usikkerhed relateret til den europæiske AI Act. Europæiske slutbrugere kan dog få adgang til tjenester, der integrerer Llama 4, forudsat at de leveres fra uden for EU.</p>",
+                    "reuse_specificities": ""
                 },
                 "MIT": {
-                    "license_desc": "<p>MIT-licensen er en permissiv fri software-licens: den tillader enhver at genbruge, modificere og distribuere modellen, selv til kommercielle formål, forudsat at den oprindelige licens og ophavsretsnoter inkluderes.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>MIT-licensen er en permissiv fri software-licens: den tillader enhver at genbruge, modificere og distribuere modellen, selv til kommercielle formål, forudsat at den oprindelige licens og ophavsretsnoter inkluderes.</p>",
+                    "reuse_specificities": ""
                 },
                 "Mistral AI Research License": {
+                    "commercial_use_specificities": "",
                     "license_desc": "<p>Denne ikke-eksklusive og royalty-fri licens tillader brug, kopiering, modificering og distribution af Mistral-modellerne og deres afledte versioner (inklusiv modificerede eller fintuned versioner). Den er dog strengt begrænset til forskningsformål.</p>",
                     "reuse_specificities": "men kun til ikke-kommercielle formål"
                 },
                 "Modified MIT": {
-                    "license_desc": "<p>Variant af MIT-licensen. MIT-licensen er en tilladende fri softwarelicens: den giver alle ret til at genbruge, modificere og distribuere modellen, også til kommercielle formål, forudsat at den originale licens og ophavsretsnotiser inkluderes.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>Variant af MIT-licensen. MIT-licensen er en tilladende fri softwarelicens: den giver alle ret til at genbruge, modificere og distribuere modellen, også til kommercielle formål, forudsat at den originale licens og ophavsretsnotiser inkluderes.</p>",
+                    "reuse_specificities": ""
+                },
+                "Nemotron Open": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 }
             },
             "proprio": {
+                "01-ai": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "AI21": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Ai2": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "Alibaba": {
-                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Alibaba-selskabets platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Alibaba-selskabets platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur.",
+                    "reuse_specificities": ""
                 },
                 "Amazon": {
+                    "commercial_use_specificities": "",
                     "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via Amazon Bedrock, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur.",
                     "reuse_specificities": "undtagen til at destillere eller træne andre modeller på Amazons platforme."
                 },
                 "Anthropic": {
-                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Anthropic-selskabets platforme eller partnerselskabers platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Anthropic-selskabets platforme eller partnerselskabers platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur.",
+                    "reuse_specificities": ""
+                },
+                "Arcee": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Cohere": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "DeepSeek": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "EuroLLM": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Google": {
+                    "commercial_use_specificities": "",
                     "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Google-selskabets platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på Googles reserverede infrastruktur.",
                     "reuse_specificities": "undtagen til at træne andre modeller på Vertex AI"
                 },
                 "Liquid": {
-                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Liquid AI-selskabets platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på Liquid AI-selskabets platforme, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens.",
+                    "reuse_specificities": ""
+                },
+                "Meta": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Microsoft": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "MiniMax": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Mistral AI": {
-                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via Mistral API, Amazon Sagemaker og flere andre hosting-udbydere, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via Mistral API, Amazon Sagemaker og flere andre hosting-udbydere, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur.",
+                    "reuse_specificities": ""
+                },
+                "Moonshot AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nous": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nvidia": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "OpenAI": {
-                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på OpenAI-selskabets platforme eller via Microsoft Azure-tjenesterne, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via API på OpenAI-selskabets platforme eller via Microsoft Azure-tjenesterne, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur.",
+                    "reuse_specificities": ""
+                },
+                "Ordbogen": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Swiss AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Zhipu": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "jpacifico": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "xAI": {
-                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via X og xAI, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen er tilgængelig under en betalt licens og tilgængelig via X og xAI, hvilket kræver betaling pr. brug baseret på antallet af behandlede tokens eller på den reserverede infrastruktur.",
+                    "reuse_specificities": ""
                 }
             }
         },
@@ -756,6 +882,11 @@
                 "desc": "<p>Fjerde iteration af GPT 5, med fokus på samtalemæssig flydende. Sammenlignet med GPT 5.2 reducerer den ifølge udgiveren hallucinationer og anlægger en mere direkte stil med færre unødvendige forbehold.</p>",
                 "fyi": "<p>GPT 5.3, kaldt \"Instant\" af OpenAI, præsenteres som en opdatering med fokus på samtalepålidelighed og naturlighed. Ifølge udgiveren er hallucinationer reduceret med 26,8 % ved brug af websøgning og 19,7 % med udelukkende modellens interne viden, sammenlignet med GPT 5.2. Modellen anlægger en mindre moraliserende tone med færre formuleringer af typen \"Stop. Træk vejret.\" og overflødige forbehold, der kendetegnede tidligere versioner.</p>\n<p>API'et tilbyder en ny verbositetsparameter (low, medium, high), der giver udviklere mulighed for at styre svarenes længde. Modellen forbedrer også integrationen af websøgning ved bedre at kontekstualisere online fundne resultater frem for blot at opsummere dem.</p>",
                 "size_desc": "<p>Størrelsen på modellerne bag GPT 5.3-systemet er ikke kendt. Arkitekturen er sandsynligvis baseret på en mixture of experts-tilgang (MoE), hvilket betyder, at kun en del af parametrene aktiveres for hver forespørgsel. Dette muliggør bedre energieffektivitet og høj ydeevne. Tilgængelige estimater af modellernes størrelse bygger på offentlige oplysninger og indirekte indikatorer såsom inferensomkostninger og svarlatens. GPT 5.3 understøtter et kontekstvindue på 128.000 tokens.</p>"
+            },
+            "GPT 5.4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "GPT OSS-120B": {
                 "desc": "<p>Den største af de to første semi-åbne modeller fra OpenAI siden GPT-2. Designet som svar på fremgangen for open source-aktører som Meta (LLaMA) og Mistral, er det en performant ræsonneringsmodel, især til komplekse opgaver og i \"agentiske\" miljøer.</p>",
@@ -1022,6 +1153,11 @@
                 "fyi": "<p>Mistral Small 3.2 24B Instruct er en multimodal model, der tilbyder topmoderne præstationer i opgaver baseret på tekst- og synsbaseret ræsonnement, herunder billedanalyse, programmering, matematisk ræsonnement og flersproget support for snesevis af sprog.</p>",
                 "size_desc": "<p>Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og præstation: de er langt mindre ressourcekrævende end store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.</p>"
             },
+            "Mistral Small 4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Mixtral 8x22B": {
                 "desc": "<p>Denne flersprogede model, der blev udgivet i april 2024, er især blevet trænet på engelsk, fransk, tysk, italiensk og spansk samt på opgaver inden for matematik, programmering og ræsonnement.</p>",
                 "fyi": "<p>SMoE-arkitekturen (sparse mixture of experts) i denne model gør den hurtigere og optimerer forholdet mellem dens størrelse og omkostninger. Kun 39 mia. parametre er aktive ud af 141 mia. Kontekstvinduet på 64.000 tokens gør det muligt at hente præcise oplysninger fra store dokumenter. Udgivet i april 2024.</p>",
@@ -1031,6 +1167,11 @@
                 "desc": "<p>Denne model, der er trænet på et flersproget korpus, er effektiv til varierede og mindre komplekse opgaver.</p>",
                 "fyi": "<p>Lillebror i Mixtral-familien, denne model kan behandle kontekster på 32.000 tokens og understøtter engelsk, fransk, italiensk, tysk og spansk. Takket være SMoE-arkitekturen (sparse mixture of experts) aktiveres kun en brøkdel af parametrene ved hver inferens, hvilket reducerer omkostninger og latens.</p>",
                 "size_desc": "<p>Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og præstation: de er langt mindre ressourcekrævende end store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.</p>"
+            },
+            "Nemotron 3 Super 120B-A12B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "Nemotron Llama 3.1 70B": {
                 "desc": "<p>Stor model trænet ud fra Llama 3.1 70B. Denne genoptrænte version (fine-tune) har en tendens til at give flere detaljer og levere mere strukturerede svar.</p>",
@@ -1786,6 +1927,7 @@
             },
             "methods": {
                 "cons": "Hovedproblemer",
+                "def": "",
                 "elo": {
                     "def": "<strong>Definition</strong>: Rangordningssystem, hvor gevinst eller tab af point afhænger af resultatet (sejr/nederlag/uafgjort) <strong>og</strong> det estimerede niveau af modstanderen: hvis en svagere model slår en stærkere model, er dens fremgang i rangordningen større.",
                     "list": {
