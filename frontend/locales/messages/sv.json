@@ -254,6 +254,7 @@
     },
     "footer": {
         "backHome": "Tillbaka till startsidan",
+        "dpg": "",
         "helpUs": "Hjälp oss att förbättra den här tjänsten!",
         "license": {
             "linkTitle": "Etalab-licens – nytt fönster",
@@ -263,6 +264,7 @@
             "accessibility": "Brister i tillgänglighet",
             "legal": "Rättsliga meddelanden",
             "privacy": "Integritetspolicy",
+            "rgesn": "",
             "sources": "Källkod",
             "tos": "Användarvillkor"
         },
@@ -338,7 +340,103 @@
             "privacyDesc": "Tjänsten behandlar inte personuppgifter enligt CNIL:s definition, nämligen information som rör en fysisk person som kan identifieras, direkt eller indirekt.",
             "privacyResp": "Användaren ansvarar för de uppgifter eller det innehåll som de anger i de frågor som erbjuds av plattformen. Genom att acceptera <a {linkProps}>användarvillkoren</a> samtycker användaren till att inte överföra någon information som kan identifiera dem eller en tredje part.",
             "privacyTitle": "Behandlar vi personuppgifter?",
+            "tallyData": "",
+            "tallyDesc": "",
+            "tallyFeedback": "",
+            "tallyNewsletter": "",
+            "tallyTitle": "",
             "title": "Integritetspolicy"
+        },
+        "rgesn": {
+            "1": {
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": "",
+                "title": ""
+            },
+            "2": {
+                "1": "",
+                "2": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "title": ""
+                },
+                "3": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "title": ""
+                },
+                "4": "",
+                "title": ""
+            },
+            "3": {
+                "1": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "5": "",
+                    "6": "",
+                    "title": ""
+                },
+                "title": ""
+            },
+            "4": {
+                "1": "",
+                "title": ""
+            },
+            "5": {
+                "1": {
+                    "1": "",
+                    "title": ""
+                },
+                "2": "",
+                "3": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "5": "",
+                    "6": "",
+                    "7": "",
+                    "8": "",
+                    "9": "",
+                    "title": ""
+                },
+                "4": {
+                    "date": "",
+                    "title": ""
+                },
+                "title": ""
+            },
+            "6": {
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": "",
+                "title": ""
+            },
+            "7": {
+                "1": "",
+                "2": "",
+                "3": {
+                    "1": "",
+                    "2": "",
+                    "title": ""
+                },
+                "4": "",
+                "5": "",
+                "6": "",
+                "desc": "",
+                "title": ""
+            },
+            "desc": "",
+            "title": ""
         },
         "tos": {
             "contactDesc": "Om du har frågor om tjänsten kan du skriva till <a {linkProps}>{contactLink}</a>.",
@@ -416,69 +514,196 @@
         "licenses": {
             "os": {
                 "Apache 2.0": {
-                    "license_desc": "<p> Denna licens ger dig rätt att fritt använda, modifiera och distribuera modellen, inklusive för kommersiella ändamål. Förutom användningsfrihet garanterar den rättsligt skydd genom att inkludera en patentklausul som fungerar som en försäkring: om du använder modellen samtycker bidragsgivarna till att inte stämma dig för brott mot deras patent relaterade till projektet. Detta ömsesidiga skydd undviker juridiska konflikter mellan användare och utvecklare. Vid distribution av modifierade versioner måste betydande ändringar meddelas, vilket säkerställer transparens för användaren. </p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p> Denna licens ger dig rätt att fritt använda, modifiera och distribuera modellen, inklusive för kommersiella ändamål. Förutom användningsfrihet garanterar den rättsligt skydd genom att inkludera en patentklausul som fungerar som en försäkring: om du använder modellen samtycker bidragsgivarna till att inte stämma dig för brott mot deras patent relaterade till projektet. Detta ömsesidiga skydd undviker juridiska konflikter mellan användare och utvecklare. Vid distribution av modifierade versioner måste betydande ändringar meddelas, vilket säkerställer transparens för användaren. </p>",
+                    "reuse_specificities": ""
                 },
                 "CC-BY-NC-4.0": {
+                    "commercial_use_specificities": "",
                     "license_desc": "<p> Denna licens tillåter dig att fritt dela och anpassa innehållet så länge du anger upphovsmannen, men förbjuder all kommersiell användning. Den ger flexibilitet för icke-kommersiell användning samtidigt som skaparens rättigheter skyddas. </p>",
                     "reuse_specificities": "men endast för icke-kommersiellt bruk"
                 },
                 "Gemma": {
-                    "license_desc": "<p>Denna licens är skapad för att uppmuntra att mjukvaran används, ändras och sprids, men innehåller en klausul som säger att alla ändrade versioner måste delas under samma licens, för att främja samarbete och transparens inom mjukvaruutveckling.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>Denna licens är skapad för att uppmuntra att mjukvaran används, ändras och sprids, men innehåller en klausul som säger att alla ändrade versioner måste delas under samma licens, för att främja samarbete och transparens inom mjukvaruutveckling.</p>",
+                    "reuse_specificities": ""
                 },
                 "Jamba Open Model": {
                     "commercial_use_specificities": "under 50 miljoner USD i årliga intäkter",
-                    "license_desc": "<p>Denna licens tillåter att koden fritt används, reproduceras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för organisationer vars omsättning överskrider 50 miljoner USD.</p>"
+                    "license_desc": "<p>Denna licens tillåter att koden fritt används, reproduceras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för organisationer vars omsättning överskrider 50 miljoner USD.</p>",
+                    "reuse_specificities": ""
+                },
+                "LFM 1.0": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Llama 3 Community": {
                     "commercial_use_specificities": "under 700 miljoner användare",
-                    "license_desc": "<p>Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad, och förbjuder att kod eller genererat material återanvänds för att träna eller utveckla konkurrerande modeller, för att därigenom skydda Metas investeringar och varumärke.</p>"
+                    "license_desc": "<p>Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad, och förbjuder att kod eller genererat material återanvänds för att träna eller utveckla konkurrerande modeller, för att därigenom skydda Metas investeringar och varumärke.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3.1": {
                     "commercial_use_specificities": "under 700 miljoner användare",
-                    "license_desc": "<p>Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad. Kod och genererat material får återanvändas för att träna eller utveckla modeller som bygger vidare på denna, så länge texten \"built with llama\" visas och ordet \"Llama\" ingår i titeln.</p>"
+                    "license_desc": "<p>Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad. Kod och genererat material får återanvändas för att träna eller utveckla modeller som bygger vidare på denna, så länge texten \"built with llama\" visas och ordet \"Llama\" ingår i titeln.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 3.3": {
                     "commercial_use_specificities": "under 700 miljoner användare",
-                    "license_desc": "Denna <p><strong>icke-exklusiva, globala, royaltyfria</strong> licens tillåter dig att fritt använda, reproducera, modifiera och distribuera Llama 3.3 med tillhörande kod och material, så länge upphovsmannen nämns. Den tillåter specifikt återanvändning för att förbättra derivatmodeller, men sätter begränsningar för mycket storskaliga kommersiella verksamheter.</p>"
+                    "license_desc": "Denna <p><strong>icke-exklusiva, globala, royaltyfria</strong> licens tillåter dig att fritt använda, reproducera, modifiera och distribuera Llama 3.3 med tillhörande kod och material, så länge upphovsmannen nämns. Den tillåter specifikt återanvändning för att förbättra derivatmodeller, men sätter begränsningar för mycket storskaliga kommersiella verksamheter.</p>",
+                    "reuse_specificities": ""
                 },
                 "Llama 4": {
                     "commercial_use_specificities": "under 700 miljoner användare\n",
-                    "license_desc": "<p>Denna icke-exklusiva, globala, royaltyfria licens tillåter dig att använda, reproducera, modifiera och distribuera Llama 4-materialet (modeller och dokumentation) förutsatt att upphovsmannen nämns. Den sätter dock två huvudsakliga begränsningar: (1) företag med över 700 miljoner månatliga aktiva användare måste erhålla en särskild licens från Meta, och (2) <strong>totalt uteslutande</strong> av EU-invånare och företag med huvudkontor i EU från att direkt använda de multimodala modellerna, på grund av regulatoriska osäkerheter relaterade till den europeiska AI-lagen. Europeiska slutanvändare kan ändå få tillgång till tjänster som integrerar Llama 4, förutsatt att de tillhandahålls utanför EU.</p>"
+                    "license_desc": "<p>Denna icke-exklusiva, globala, royaltyfria licens tillåter dig att använda, reproducera, modifiera och distribuera Llama 4-materialet (modeller och dokumentation) förutsatt att upphovsmannen nämns. Den sätter dock två huvudsakliga begränsningar: (1) företag med över 700 miljoner månatliga aktiva användare måste erhålla en särskild licens från Meta, och (2) <strong>totalt uteslutande</strong> av EU-invånare och företag med huvudkontor i EU från att direkt använda de multimodala modellerna, på grund av regulatoriska osäkerheter relaterade till den europeiska AI-lagen. Europeiska slutanvändare kan ändå få tillgång till tjänster som integrerar Llama 4, förutsatt att de tillhandahålls utanför EU.</p>",
+                    "reuse_specificities": ""
                 },
                 "MIT": {
-                    "license_desc": "<p>MIT-licensen är en licens för fri programvara. Den tillåter att vem som helst återanvänder, ändrar eller sprider en modell, även för kommersiella ändamål, förutsatt att den ursprungliga licensen och upphovsrättstexten skickas med.</p>"
+                    "commercial_use_specificities": "",
+                    "license_desc": "<p>MIT-licensen är en licens för fri programvara. Den tillåter att vem som helst återanvänder, ändrar eller sprider en modell, även för kommersiella ändamål, förutsatt att den ursprungliga licensen och upphovsrättstexten skickas med.</p>",
+                    "reuse_specificities": ""
                 },
                 "Mistral AI Research License": {
+                    "commercial_use_specificities": "",
                     "license_desc": "<p>Denna icke-exklusiva, royaltyfria licens tillåter användning, kopiering, modifiering och distribution av Mistral-modeller och deras derivat (inklusive modifierade versioner). Den är dock strikt begränsad till forskningsändamål.</p>",
                     "reuse_specificities": "men endast för icke-kommersiellt bruk"
+                },
+                "Modified MIT": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nemotron Open": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 }
             },
             "proprio": {
+                "01-ai": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "AI21": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Ai2": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "Alibaba": {
-                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Alibabas företagsplattformar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Alibabas företagsplattformar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen.",
+                    "reuse_specificities": ""
                 },
                 "Amazon": {
+                    "commercial_use_specificities": "",
                     "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via Amazon Bedrock, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur.",
                     "reuse_specificities": "förutom för att destillera eller träna andra modeller på Amazons plattformar."
                 },
                 "Anthropic": {
-                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Anthropic-företagets eller partnerföretagens plattformar, vilket kräver en betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Anthropic-företagets eller partnerföretagens plattformar, vilket kräver en betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen.",
+                    "reuse_specificities": ""
+                },
+                "Arcee": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Cohere": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "DeepSeek": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "EuroLLM": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Google": {
+                    "commercial_use_specificities": "",
                     "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Googles företagsplattformar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur.",
                     "reuse_specificities": "förutom för att träna andra modeller på Vertex AI"
                 },
                 "Liquid": {
-                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via API på Liquid AIs plattformar. Den kräver en avgift per användning baserad på antalet bearbetade tokens."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via API på Liquid AIs plattformar. Den kräver en avgift per användning baserad på antalet bearbetade tokens.",
+                    "reuse_specificities": ""
+                },
+                "Meta": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Microsoft": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "MiniMax": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "Mistral AI": {
-                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via Mistral API, Amazon Sagemaker, och flera andra värdar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via Mistral API, Amazon Sagemaker, och flera andra värdar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen.",
+                    "reuse_specificities": ""
+                },
+                "Moonshot AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nous": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nvidia": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "OpenAI": {
-                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via API på OpenAI:s plattformar eller via Microsoft Azure-tjänster, vilket kräver en avgift per användning baserad på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via API på OpenAI:s plattformar eller via Microsoft Azure-tjänster, vilket kräver en avgift per användning baserad på antalet bearbetade tokens eller den reserverade infrastrukturen.",
+                    "reuse_specificities": ""
+                },
+                "Ordbogen": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Swiss AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Zhipu": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "jpacifico": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
                 },
                 "xAI": {
-                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via X och xAI, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur."
+                    "commercial_use_specificities": "",
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via X och xAI, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur.",
+                    "reuse_specificities": ""
                 }
             }
         },
@@ -543,6 +768,11 @@
                 "fyi": "<p>Claude Sonnet 4.5 är en direkt utveckling av Sonnet 4. \".5\" syftar på förändringar som introducerades i efterträningen, och som resulterar i betydande vinster inom resonemang, matematik och särskilt i den praktiska användningen av datorer. Vid tidpunkten för lanseringen ansågs den vara den bästa modellen i världen för kodning och utmärker sig på att lösa långa och komplexa flerstegsuppgifter. Dess prestanda på benchmarktester som SWE-bench Verified och OSWorld visar en markant förbättring jämfört med tidigare versioner, med förmågan att bibehålla \"fokus\" i mer än trettio timmar på ett enda problem.</p>",
                 "size_desc": "<p>Den exakta storleken är okänd. Allt tyder på att det är en mycket stor modell, som kräver servrar utrustade med flera kraftfulla grafikkort för att köras. Uppskattningar av storlek och strömförbrukning baseras på indirekta indikatorer som inferenskostnader och observerad latens. Claude Sonnet 4.5 har ett kontextfönster på upp till 1 000 000 tokens, lämpligt för att analysera hela koddatabaser eller mycket stora dokument.</p>"
             },
+            "Claude 4.6 Sonnet": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Command A": {
                 "desc": "<p>Stor modell, effektiv för programmering, användning av externa verktyg, och \"retrieval augmented generation\" (RAG).</p>",
                 "fyi": "<p>Cohere, det kanadensiska företaget bakom denna modell, grundades 2019 av tidigare Google Brain-forskare, inklusive Aidan Gomez, medförfattare till den berömda artikeln <a href=\"https://arxiv.org/abs/1706.03762\">\"Attention Is All You Need\"</a> som publicerades 2017 och som revolutionerade AI. Företaget utmärker sig för sitt exklusiva fokus på generativ AI för företag, särskilt reglerade sektorer som finans, sjukvård, tillverkningsindustri och energi, samt den offentliga sektorn. Företaget är också en pionjär inom flerspråkiga metoder och har ett ideellt forskningslabb för stödja öppen innovation.</p>\n<p>Denna modell är utformad för att fungera på fler än 23 språk och för att enkelt integreras i företagssystem. Det är en av få modeller som distribueras under <strong>CC-BY-NC 4.0-licensen, som tillåter delning och modifiering men förbjuder all kommersiell användning.</strong> Detta licensval återspeglar Coheres önskan att bidra till forskning och öppen källkod, samtidigt som man bibehåller kontrollen över kommersiell användning för att skydda sin affärsmodell. Detta utesluter till exempel integrationen av modellen i produkter eller tjänster som säljs av ett företag till kunder, men tillåter akademisk användning, testning eller interna projekt, begränsade till ett icke-kommersiellt ramverk.</p>",
@@ -578,6 +808,11 @@
                 "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur med 671 miljarder parametrar, men aktiverar endast 37 miljarder per genererad token. Den är effektiv för verktygsanrop, generering av strukturerad utdata (JSON) och kodgenerering.</p>",
                 "size_desc": "<p>DeepSeek V3 är en mycket stor modell som kräver flera grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) tillåter dock bara att en del av parametrarna aktiveras, vilket minskar minneskraven jämfört med en tät modell av samma storlek.</p>\n<p> Kontextfönstret når 128 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
             },
+            "DeepSeek V3.2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "DeepSeek v3": {
                 "desc": "<p>DeepSeek V3-modellen, som släpptes i december 2024, har en Mixture-of-Experts-arkitektur, vilket gör att den kan vara mycket stor samtidigt som inferenskostnaderna minskas.</p>",
                 "fyi": "<p>Denna flaggskeppsmodell från det kinesiska företaget DeepSeek släpptes i december 2024 och har en Mixture-of-Experts-arkitektur, vilket gör att den kan vara mycket stor samtidigt som inferenskostnaderna minskas.</p>",
@@ -588,6 +823,11 @@
                 "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur, med 671 miljarder parametrar men där bara 37 miljarder aktiveras per genererad token. Den är effektiv för verktygsanrop, generering av strukturerad utdata (JSON) och generering av kod. Träningen använder FP8-mikroskalning, vilket minskar beräknings- och minneskostnader samtidigt som noggrannheten bibehålls. Modellen tränades i två faser: först på sekvenser om 32 000 tokens, och sedan skalad till 163 000 tokens, vilket möjliggör större stabilitet och förbättrad prestanda i mycket långa kontexter.</p>",
                 "size_desc": "<p>DeepSeek V3.1 är en mycket stor modell som kräver flera grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) tillåter dock endast att vissa parametrar aktiveras, vilket minskar belastningen jämfört med en kompakt modell av samma storlek.</p>\n<p>Kontextfönstret rymmer nu 163 000 tokens, jämfört med 128 000 i den tidigare versionen, vilket förbättrar analysen av mycket långa dokument.</p>"
             },
+            "EuroLLM 22B Instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "GLM 4.5": {
                 "desc": "<p>En mycket stor modell skapad av Zhipu AI, en kinesisk AI-modelltillverkare som grundades 2019 av professorer vid universitetet i Tsinghua och stöds av stora aktörer som Alibaba och Tencent. Modellen har två svarslägen: Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att direkt generera det slutliga svaret.</p>",
                 "fyi": "<p>Denna modell har goda agentfunktioner, vilket gör att den kan göra funktionsanrop med hög tillförlitlighet. Dess kodningsprestanda är hög, och modellen har en god förmåga att skapa kompletta webbapplikationer och generera artefakter, vilket är program med en enda fil som kan användas i gränssnitten för konversationsagenter. För träning utformades en specifik infrastruktur för förstärkningsinlärning, kallad slime, för att optimera prestandan för komplexa uppgifter och agentuppgifter genom att effektivt hantera långa arbetsflöden – modellen kan hantera komplexa och långvariga uppgifter, som att skapa en applikation från grunden, utnyttja sina verktyg på bästa sätt och förbli konsekvent från början till slut.</p>",
@@ -597,6 +837,16 @@
                 "desc": "<p>Uppdatering av den stora modellen skapad av Zhipu AI - GLM 4.6, en kinesisk AI-modellredigerare som skapades 2019 av professorer från Tsinghua University och stöds av stora aktörer som Alibaba och Tencent. Denna uppdatering ökar storleken på kontextfönstret, förbättrar dess kodprestanda, anpassar sig närmare mänskliga preferenser och är mer kapabel i agent-/verktygsanvändningsscenarier.</p>",
                 "fyi": "<p>Denna modell har goda agentfunktioner, vilket gör att den kan göra funktionsanrop med hög tillförlitlighet. Dess kodningsprestanda är hög, och modellen har en god förmåga att skapa kompletta webbapplikationer och generera artefakter, vilket är program med en enda fil som kan användas i gränssnitten för konversationsagenter. För träning utformades en specifik infrastruktur för förstärkningsinlärning, kallad slime, för att optimera prestandan för komplexa uppgifter och agentuppgifter genom att effektivt hantera långa arbetsflöden – modellen kan hantera komplexa och långvariga uppgifter, som att skapa en applikation från grunden, utnyttja sina verktyg på bästa sätt och förbli konsekvent från början till slut.</p>",
                 "size_desc": "<p>Med 357 miljarder parametrar faller den här modellen inom kategorin mycket stora modeller. Tack vare en Mixture of Experts (MoE)-arkitektur är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster kan innehålla upp till 200 000 tokens, vilket gör att den kan bearbeta mycket långa dokument.</p>"
+            },
+            "GLM 4.7": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GLM 5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "GPT 4.1 Nano": {
                 "desc": "<p>Mindre, lättare version av GPT 4.1-modellen, utformad för att hålla nere kostnaderna samtidigt som den förblir konkurrenskraftig på de flesta uppgifter. Modellen stöder mycket långa frågor, vilket gör den lämplig för användning vid exempelvis korpusanalys med långa dokument.</p>",
@@ -617,6 +867,26 @@
                 "desc": "<p>GPT-5 Nano är den minsta och snabbaste versionen av GPT-5s resonemangsmodell. Den är utformad för sammanhang där mycket låg latens eller kostnad krävs. Tack vare sitt kontextfönster på 400 000 tokens kan den acceptera långa frågor, vilket gör det möjligt att analysera flera dokument samtidigt.</p>",
                 "fyi": "<p>Systemet använder en ny säkerhetsmetod som kallas \"safe-completions\" för att förhindra obehörigt innehåll i svarsfasen snarare än när förfrågan görs.</p>",
                 "size_desc": "<p>Nano-modellen är den mest kompakta i GPT-5-familjen (den hamnar en ligt uppskattningar i kategorin små modeller). Den väljs av routingsystemet för frågor som kräver mycket låg latens och omedelbara svar. Dess arkitektur är sannolikt baserad på en \"Mixture of Experts\" (MoE), vilket möjliggör bättre energieffektivitet och prestanda, även på frågor som kräver snabba svar.</p>"
+            },
+            "GPT 5.1": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.3": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "GPT OSS-120B": {
                 "desc": "<p>Den större av OpenAI:s två första halvöppna modeller sedan GPT-2. Den skapades som svar på det växande antalet aktörer som använder öppen källkod, däribland Meta (LLaMA) och Mistral, och är en kraftfull resonemangsmodell, särskilt för komplexa uppgifter och i \"agentiska\" miljöer. </p>",
@@ -663,6 +933,26 @@
                 "fyi": "<p>Denna modell är baserad på en \"Mixture of Experts\"-arkitektur (MoE) och har destillerats genom att endast behålla en approximation av förutsägelserna från lärarmodellen – Gemini 2.5 Pro. Den har tränats på en TPUv5p-arkitektur som innehåller möjligheten att fortsätta träningen automatiskt även vid träningsfel, datakorruption eller minnesproblem.</p>\n<p>Gemini 2.5 Flash stöder kontexter med upp till 1 miljon tokens och tre timmar videoinnehåll. Optimerad bildbehandling möjliggör bearbetning av ungefär tre gånger längre video i samma kontextfönster; endast 66 visuella tokens behövs för att generera en bildruta, jämfört med 258 tidigare. Denna modell har också inbyggt stöd för att generera ljud för dialog och talsyntes.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en stor modell som kräver flera kraftfulla grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens. Dess kontextfönster sträcker sig upp till 1 miljon tokens, vilket gör att den kan bearbeta mycket stora dokumentkorpusar.</p>"
             },
+            "Gemini 3 Flash": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3 Pro": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3.1 Flash Lite": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3.1 Pro": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Gemma 2 27B": {
                 "desc": "<p>En högpresterande modell med rimlig storlek. Dess relativt höga kostnad gör den lämplig för specifika användningsområden som kräver hög precision.</p>",
                 "fyi": "<p>Med tre gånger fler parametrar än sin lillebror i Gemma 2-familjen är den här modellen mer exakt i sin respons på instruktioner. Modellen som används här är den kvantiserade versionen (q8).</p>",
@@ -708,6 +998,11 @@
                 "fyi": "<p>Modellens exakta storlek är okänd. Trots namnet är Grok 4 Fast utan tvekan en mycket stor modell som kräver flera kraftfulla grafikkort för att fungera. Dessutom innehåller den en valbar resonemangsfas, vilket innebär en längre genereringstid och därmed högre strömförbrukning. Tillgängliga uppskattningar bygger på indirekta indikatorer som inferenskostnader och svarslatens.</p>\n<p>Tränad med hjälp av förstärkningsinlärning uppnår Grok 4 Fast poäng nära den ännu större modellen – Grok 4 – samtidigt som den är mer energieffektiv. Den har tränats för att prestera bra vid webbsurfning, särskilt på X-plattformen, såväl som i verktygsanrop som kodkörningsfunktioner.</p>",
                 "size_desc": "<p>Med ett kontextfönster på 2 miljoner tokens kombinerar Grok 4 Fast ett resonemangsläge och ett direktresponsläge i en enda modell. Den använder cirka 40 % färre resonemangstokens än Grok 4, vilket resulterar i en betydande minskning av exekveringskostnader och latens.</p>"
             },
+            "Grok 4.1 Fast": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Hermes 3 405B": {
                 "desc": "<p>Mycket stor modell omtränad från Llama 3.1 405B, justerad för att bättre möta användarnas krav och underlätta användningen av externa verktyg.</p>",
                 "fyi": "<p> Denna modell är resultatet av omträning av parameteruppsättningen för Llama 3.1 405B för att göra dess beteende mindre begränsat och bättre ta hänsyn till nyanserna i användar- och systemprompter, vilket ger användaren större kontroll över modellens \"personlighet\" och beteende. Specifika resonemangsfunktioner som <strong><code>&lt;SCRATCHPAD&gt;</code></strong>, <strong><code>&lt;REASONING&gt;</code></strong> och <strong><code>&lt;THINKING&gt;</code></strong> har lagts till för att simulera resonemang kring komplexa uppgifter. Träningen använde verktyget AdamW (inlärningshastighet på 3.5×10⁻⁶), vilket hjälper modellen att lära sig effektivt genom att gradvis justera dess parametrar. Sedan finjusterades den med en metod som kallas DPO (direkt preferensoptimering), vilket förbättrar dess svar baserat på specifika preferenser. För att göra denna träning enklare och snabbare användes LoRA-adaptrar; dessa är mindre moduler som bara modifierar en del av modellen, vilket undviker behovet av att omarbeta alla parametrar samtidigt.</p>",
@@ -727,6 +1022,21 @@
                 "desc": "<p>Kimi K2, som utvecklades av Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), ett Pekingbaserat företag, är en mycket stor kodorienterad och agentbaserad modell. Den är känd för utvecklingsuppgifter i agentiska sammanhang (t.ex. i Cursor eller Windsurf). Den har inte ett explicit \"resonemangsläge\", men för stora uppgifter delar den upp sitt svar i steg och växlar mellan åtgärder (verktygsanrop) och textskrivning.</p>",
                 "fyi": "<p>För att stabilisera träning i mycket stor skala introducerade Moonshot AI MuonClip, en \"hastighetsbegränsare\" för träningsfasen som möjliggör träning av en modell av denna storlek och på en samling av 15,5 biljoner tokens utan att träningen spårar ur.</p>\n<p>På datasidan har K2 ofta arbetat med en \"simulator\" med riktiga verktyg (webbläsare, terminal, kodexekverare, API:er etc.). På samma sätt som en pilot i en simulator lär sig modellen genom att planera, försöka, misslyckas, och försöka igen, och att kedja ihop flera åtgärder för att uppnå ett mål. Som ett resultat är den särskilt bra på att kombinera verktyg och utföra uppgifter i flera steg.</p>",
                 "size_desc": "<p>Med 1 biljon parametrar är den här modellen en av de största. Tack vare en Mixture of Experts-arkitektur (MoE) är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster går upp till 128 000 tokens, vilket gör att den kan bearbeta ganska långa dokument.</p>"
+            },
+            "Kimi K2 Thinking": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Kimi K2.5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "LFM 2 8B A1B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "LFM 40B": {
                 "desc": "<p>Denna modell från det amerikanska företaget Liquid, som släpptes i september 2024, är en Mixture of Experts-modell, vars arkitektur syftar till att utnyttja antalet parametrar maximalt.</p>",
@@ -783,10 +1093,25 @@
                 "fyi": "<p>Denna modell är en del av Mistral AI:s första generation av resonemangsmodeller (sommaren 2025). Till skillnad från </p> flesta andra resonemangsmodeller kan den här modellen resonera på flera språk, inklusive engelska, franska, spanska, tyska, italienska, arabiska, ryska och förenklad kinesiska.\n<p> Träningen genomfördes i två faser. Den första, kallad <em>kallstart</em> genom destillation (från Mistral Medium 3 och OpenThoughts/OpenR1), gör det möjligt för modellen att bygga upp grundläggande resonemangsförmågor från allmän instruktionsdata (10%). Den andra är en fas med förstärkningsinlärning (RL, <em>reinforcement learning</em>) med hög entropi, där modellen uppmuntras att utforska olika och varierade lösningar snarare än att konvergera kring ett enda svar, och att generera långa kompletteringar (upp till 32 000 tokens), vilket möjliggör utveckling av resonemangsförmågor som överstiger undervisningsmodellens. </p>",
                 "size_desc": "<p>Med 24 miljarder parametrar betraktas denna modell som en medelstor modell. Den kräver ett enda kraftfullt grafikkort för att köras. Resonemangsmodeller tar också längre tid att producera ett svar, vilket ökar deras strömförbrukning.</p>\n<p> Den har ett kontextfönster på upp till 40 000 tokens, användbart för att analysera korta dokument men otillräckligt för att analysera stora korpusar.</p>"
             },
+            "MiniMax M2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "MiniMax M2.5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Ministral": {
                 "desc": "<p>Liten flerspråkig modell utformad för att köras på en bärbar dator utan serveranslutning, samtidigt som den erbjuder bra funktioner för textsyntes, enkla frågor och verktygsanvändning.</p>",
                 "fyi": "<p>Denna modell använder en GQA-metod (Grouped query attention) för att begränsa den analyserade texten vid varje generationssteg och förbättra hastighet och minnesanvändning. Beräkningstiderna minskas utan att kvaliteten påverkas. Uppmärksamhetsmekanismen förbättras genom att man använder fönster i olika storlekar, vilket möjliggör hantering av stora kontexter (upp till 128 000 tokens) samtidigt som modellen förblir lättviktig. Den stora tokeniseraren (V3-Tekken) komprimerar språk och kod bättre, vilket förbättrar dess prestanda för flerspråkiga uppgifter.</p>",
                 "size_desc": "<p>Med sina 8 miljarder parametrar tillhör den här modellen kategorin små modeller (mellan 7 och 20 miljarder parametrar). Den kan köras lokalt på en ganska kraftfull dator, vilket säkerställer datakonfidentialitet, eller på en server med ett enda grafikkort för att begränsa infrastrukturkostnaderna.</p>"
+            },
+            "Mistral 3 Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "Mistral Large 2": {
                 "desc": "<p>Stor modell utformad för att hantera komplexa frågor och uppgifter, till exempel kodgenerering, verktygsanvändning, analys av långa dokument eller domänspecifik språkförståelse.</p>",
@@ -828,8 +1153,25 @@
                 "fyi": "<p>Mistral Small 3.2 24B Instruct är en multimodal modell som levererar modern prestanda för text- och bildbaserade resonemangsuppgifter, med bland annat bildanalys, programmering, matematik, och flerspråkigt stöd för dussintals språk.</p>",
                 "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
             },
+            "Mistral Small 4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Mixtral 8x22B": {
-                "desc": "<p>Denna flerspråkiga modell, som släpptes i april 2024, har specifikt tränats i engelska, franska, tyska, italienska och spanska, samt i uppgifter som involverar matematik, programmering och resonemang.</p>"
+                "desc": "<p>Denna flerspråkiga modell, som släpptes i april 2024, har specifikt tränats i engelska, franska, tyska, italienska och spanska, samt i uppgifter som involverar matematik, programmering och resonemang.</p>",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mixtral-8x7B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Nemotron 3 Super 120B-A12B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "Nemotron Llama 3.1 70B": {
                 "desc": "<p>Stor modell baserad på Llama 3.1 70B. Denna omtränade (fine-tune) version är ofta mer detaljerad och ger mer strukturerade svar.</p>",
@@ -840,6 +1182,21 @@
                 "desc": "<p>OLMo 2 32B är en helt öppen källkodsmodell (inklusive korpus och träningskod) skapad av Allen AI Institute (Ai2), släppt i mars 2025.</p>",
                 "fyi": "<p>OLMo 2 32B är en helt öppen källkodsmodell – både korpusen och träningskoden är helt tillgängliga. Denna OLMo-modellfamilj designades av Allen Institute for AI (Ai2).</p>",
                 "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Odin Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Odin Medium": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Olmo 3 32B Think": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "Phi-3-Mini": {
                 "desc": "<p>Denna kompakta modell fungerar bra för kodgenerering och sammanfattningsuppgifter och stöder en begränsad kontext på 4000 tokens.</p>",
@@ -886,6 +1243,16 @@
                 "fyi": "<p>Denna modell har tränats på 36 biljoner tokens, nästan dubbelt så många som Qwen 2.5, och klarar officiellt 100 språk.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till 256 000 tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
             },
+            "Qwen 3.5 35B A3B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3.5 397B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
             "Qwen1.5-32B": {
                 "desc": "<p>Medelstor modell med en träningsprocess som är starkt fokuserad på att anpassa sig till användarnas preferenser.</p>",
                 "fyi": "<p>Modellen genomgick en fas av anpassning till användarnas preferenser genom tekniker som DPO (Direct Preference Optimization) och PPO (Proximal Policy Optimization). Utöver dessa tekniker, som var mycket innovativa när modellen utformades, optimerade Alibabas team även träningsdata för att göra den mycket flerspråkig, inklusive europeiska, östasiatiska och sydostasiatiska språk.</p>",
@@ -893,9 +1260,51 @@
             },
             "Qwen2-57B-A14B-Instruct": {
                 "desc": "<p>Medelstor modell med en expertmixarkitektur, som presterar bra inom kod, matematik och flerspråkiga uppgifter.</p>",
-                "fyi": "<p>Denna version av Qwen-modellerna har längre kontextfönster.</p>"
+                "fyi": "<p>Denna version av Qwen-modellerna har längre kontextfönster.</p>",
+                "size_desc": ""
+            },
+            "Qwen2-72b-instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2-7B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2.5-32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2.5-7B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen3 Coder 480B A35B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen3 Coder Next": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Trinity Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Yi-1.5 9B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
             },
             "o3-mini": {
+                "desc": "",
                 "fyi": "<p>Modell som är optimerad för och utmärker sig inom kodning och resonemangsuppgifter inom naturvetenskap och teknik.</p>",
                 "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
             },
@@ -965,13 +1374,16 @@
             "steps": {
                 "a11yDesc": "1. Chatta med två anonyma AI:er: Chatta så länge du vill. 2. Ge din åsikt: Du bidrar till att förbättra AI-modeller. 3. Modellerna avslöjas: Lär dig mer om AI-modeller och deras egenskaper.",
                 "one": {
+                    "desc": "",
                     "title": ""
                 },
                 "three": {
+                    "desc": "",
                     "title": ""
                 },
                 "title": "Hur det fungerar",
                 "two": {
+                    "desc": "",
                     "title": ""
                 }
             },
@@ -1068,6 +1480,14 @@
                 "forbidden": "Förbjuden"
             }
         },
+        "conso": {
+            "count": {
+                "L": "",
+                "M": "",
+                "S": ""
+            },
+            "filterLegend": ""
+        },
         "extra": {
             "experts": {
                 "api-only": "För att lära dig mer, titta på <a {linkProps}>modellens officiella webbplats</a>",
@@ -1085,6 +1505,12 @@
         },
         "list": {
             "filters": {
+                "archived": {
+                    "checkedLabel": "",
+                    "help": "",
+                    "label": "",
+                    "uncheckedLabel": ""
+                },
                 "display": "Visa filter",
                 "editor": {
                     "legend": "Utgivare"
@@ -1137,6 +1563,13 @@
         "ram": "{min} till {max} GB",
         "release": "Utgiven {date}",
         "size": {
+            "count": {
+                "L": "",
+                "M": "",
+                "S": "",
+                "XL": "",
+                "XS": ""
+            },
             "estimated": "Uppskattad storlek ({size})",
             "title": "Storlek"
         }
@@ -1174,6 +1607,49 @@
         }
     },
     "product": {
+        "community": {
+            "countries": {
+                "da": "",
+                "fr": ""
+            },
+            "tabLabel": "",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "elie": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "hadrien": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "lucie": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "mathilde": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "nicolas": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "simonas": {
+                            "date": "",
+                            "job": ""
+                        }
+                    },
+                    "title": ""
+                }
+            },
+            "title": ""
+        },
         "comparator": {
             "challenges": {
                 "bias": {
@@ -1201,6 +1677,7 @@
                 "desc": "Jämförelsemodellen görs tillgänglig för medborgare i flera länder på deras nationella språk. Målet är att skapa datamängder för att förbättra framtida AI-modeller på dessa europeiska språk.",
                 "title": "Jämföraren <span {props}>blir europeisk</span>!"
             },
+            "screenshotAlt": "",
             "tabLabel": "Jämföraren",
             "title": "Jämföraren låter dig skapa <span {props}>datamängder</span>, helst med fokus på <span {props}>verkliga användningsområden</span> uttryckta på <span {props}>europeiska språk</span>."
         },
@@ -1208,7 +1685,97 @@
             "tabLabel": "Vanliga frågor"
         },
         "history": {
-            "tabLabel": "Projekthistorik"
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "2": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "3": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "2": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "3": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "4": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "2": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "3": {
+                            "desc": "",
+                            "title": ""
+                        },
+                        "4": {
+                            "desc": "",
+                            "title": ""
+                        },
+                        "5": {
+                            "desc": "",
+                            "title": ""
+                        },
+                        "6": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                }
+            },
+            "tabLabel": "Projekthistorik",
+            "title": ""
         },
         "partners": {
             "academy": {
@@ -1282,15 +1849,55 @@
     },
     "ranking": {
         "energy": {
+            "desc": "",
+            "tabLabel": "",
+            "title": "",
             "views": {
                 "graph": {
+                    "desc": "",
+                    "legends": {
+                        "arch": "",
+                        "size": "",
+                        "sizeSub": ""
+                    },
+                    "tabLabel": "",
+                    "title": "",
                     "tooltip": {
+                        "active_params": "",
+                        "arch": "",
                         "consumption": "Genomsnittlig förbrukning (mWh)",
                         "elo": "BT-poäng",
                         "params": "Parametrar (i miljarder)"
                     },
                     "xLabel": "Genomsnittlig förbrukning per 1000 tokens (mWh)",
                     "yLabel": "Bradley-Terry-poäng"
+                },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "",
+                            "2": "",
+                            "3": ""
+                        },
+                        "subTitle": "",
+                        "title": ""
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "",
+                            "2": ""
+                        },
+                        "title": ""
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "",
+                            "2": "",
+                            "3": "",
+                            "4": ""
+                        },
+                        "title": ""
+                    }
                 },
                 "table": {
                     "title": "Data från grafen i tabellformat"
@@ -1320,6 +1927,7 @@
             },
             "methods": {
                 "cons": "Huvudproblem",
+                "def": "",
                 "elo": {
                     "def": "<strong>Definition</strong>: Rankningssystem där poängvinsten eller -förlusten beror på resultatet (vinst/förlust/oavgjort) <strong>och</strong> motståndarens uppskattade nivå – om en svagare modell slår en starkare modell, gör den större framsteg i rankingen.",
                     "list": {
@@ -1396,6 +2004,7 @@
                 "estimation": "(uppskattning)",
                 "tooltips": {
                     "arch": "Arkitekturen för en LLM-modell syftar på de designprinciper som definierar hur komponenterna i ett neuralt nätverk är arrangerade och interagerar för att omvandla indata till prediktiva resultat, inklusive läget för parameteraktivering (tät vs. gles), komponentspecialisering och informationsbehandlingsmekanismer (transformatorer, konvolutionella nätverk, hybridarkitekturer).",
+                    "consumption": "",
                     "elo": "Den statistiska poängen, uppskattad enligt Bradley-Terry-modellen, återspeglar sannolikheten att en modell föredras framför en annan. Denna poäng beräknas utifrån alla användarröster och reaktioner. För mer information, gå in på fliken \"metod\".",
                     "rank": "Rankning enligt Bradley-Terry-nöjdhetspoängen",
                     "size": "Modellstorleken i miljarder parametrar, kategoriserad i fem klasser. För proprietära modeller anges inte denna storlek.",
@@ -1412,9 +2021,38 @@
         "equivalent": {
             "co2": {
                 "label": "Mängd koldioxid",
-                "tooltip": "Med mängden koldioxid menar vi de koldioxidutsläpp som globalt motsvaras av den energi som används för att köra modellen. Den återspeglar miljöpåverkan kopplad till energiförbrukningen. De verkliga utsläppen skiljer sig beroende på energiproduktionen i varje land, och de servrar som används för beräkningarna finns i olika länder. Ekvivalensberäkningen baseras på den globala genomsnittliga CO<sub>2</sub>-utsläppsmängden per förbrukad energi."
+                "tooltip": "Med mängden koldioxid menar vi de koldioxidutsläpp som globalt motsvaras av den energi som används för att köra modellen. Den återspeglar miljöpåverkan kopplad till energiförbrukningen. De verkliga utsläppen skiljer sig beroende på energiproduktionen i varje land, och de servrar som används för beräkningarna finns i olika länder. Ekvivalensberäkningen baseras på den globala genomsnittliga CO<sub>2</sub>-utsläppsmängden per förbrukad energi.",
+                "unit": ""
             },
-            "title": "Vilket motsvarar:"
+            "desc": "",
+            "scales": {
+                "baguette_production": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "mango_import": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "package_delivery": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "pool_filing": {
+                    "tooltip": "",
+                    "unit": ""
+                }
+            },
+            "title": "Vilket motsvarar:",
+            "title_tooltip": ""
         },
         "feedback": {
             "description": "Dela compar:AI med andra genom att dela AI-modellerna du har interagerat med! Endast namnen och energipåverkan från diskussionen kommer att synas via den här länken – din text visas inte.",
@@ -1438,7 +2076,15 @@
                 "label": "textstorlek",
                 "tokens": "tokens",
                 "tooltip": "AI analyserar och genererar meningar från ord eller orddelar på ungefär fyra bokstäver. Denna textenhet kallas token. Ju längre text, desto fler tokens."
-            }
+            },
+            "tooltip": ""
+        },
+        "thanks": {
+            "cta": "",
+            "desc": "",
+            "graphAlt": "",
+            "rankingAlt": "",
+            "title": ""
         }
     },
     "seo": {
@@ -1447,6 +2093,7 @@
         "titles": {
             "accessibilite": "Tillgänglighetspolicy",
             "arene": "Chat",
+            "community": "",
             "comparator": "Jämföraren",
             "datasets": "Datamängder",
             "donnees-personnelles": "Integritetspolicy",
@@ -1462,6 +2109,7 @@
             "problem": "Det inledande problemet",
             "product": "Produkt och partners",
             "ranking": "Rankning",
+            "rgesn": "",
             "share": "Mina resultat"
         }
     },
@@ -1475,6 +2123,7 @@
                 "question": "Varför var du inte nöjd med svaret?",
                 "superficial": "Ytligt"
             },
+            "other": "",
             "positive": {
                 "clear_formatting": "Rensa formatering",
                 "complete": "Komplett",
