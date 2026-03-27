@@ -3,6 +3,7 @@
         "externalLink": "{text}"
     },
     "actions": {
+        "accessData": "",
         "contact": "Kontaktai",
         "contactUs": "Susisiekite su mumis",
         "copyLink": {
@@ -13,8 +14,12 @@
             "do": "Kopijuoti žinutę",
             "done": "Žinutė nukopijuota"
         },
+        "downloadData": "",
         "home": "Pagrindinis puslapis",
         "returnHome": "Grįžti į pagrindinį puslapį",
+        "scrollLeft": "",
+        "scrollRight": "",
+        "searchModel": "",
         "seeMore": "Matyti daugiau",
         "selectLanguage": "Pasirinkite kalbą",
         "vote": "Pateikti savo nuomonę"
@@ -198,13 +203,1985 @@
                     "title": "Kaip renkatės modelius, kurie pateikiami palyginimo lentelėje?"
                 },
                 "2": {
+                    "desc": "",
                     "title": "Kaip jums pavyksta išlaikyti šią paslaugą nemokamą?"
+                },
+                "3": {
+                    "desc": "",
+                    "title": ""
+                },
+                "4": {
+                    "desc": "",
+                    "title": ""
+                },
+                "5": {
+                    "desc": "",
+                    "title": ""
                 }
             },
             "title": "Modeliai"
+        },
+        "title": "",
+        "usage": {
+            "questions": {
+                "1": {
+                    "desc": "",
+                    "title": ""
+                },
+                "2": {
+                    "desc": "",
+                    "title": ""
+                },
+                "3": {
+                    "desc": "",
+                    "title": ""
+                },
+                "4": {
+                    "desc": "",
+                    "title": ""
+                },
+                "5": {
+                    "desc": "",
+                    "title": ""
+                },
+                "6": {
+                    "desc": "",
+                    "title": ""
+                }
+            },
+            "title": ""
+        }
+    },
+    "footer": {
+        "backHome": "",
+        "dpg": "",
+        "helpUs": "",
+        "license": {
+            "linkTitle": "",
+            "mention": ""
+        },
+        "links": {
+            "accessibility": "",
+            "legal": "",
+            "privacy": "",
+            "rgesn": "",
+            "sources": "",
+            "tos": ""
+        },
+        "writeUs": ""
+    },
+    "general": {
+        "a11y": {
+            "desc": "",
+            "disclaimer": "",
+            "improveAdress": "",
+            "improveDelay": "",
+            "improveDesc": "",
+            "improveMail": "",
+            "improveTitle": "",
+            "remedyAdvocate": "",
+            "remedyAdvocateAdress": "",
+            "remedyDelegateAdvocate": "",
+            "remedyDesc": "",
+            "remedyList": "",
+            "remedyTitle": "",
+            "stateDesc": "",
+            "stateNavigate": "",
+            "statePrefs": "",
+            "stateScreenReader": "",
+            "stateTitle": "",
+            "title": ""
+        },
+        "legal": {
+            "a11yDesc": "",
+            "a11yTitle": "",
+            "directorDesc": "",
+            "directorTitle": "",
+            "editorDesc": "",
+            "editorTitle": "",
+            "hostingDesc": "",
+            "hostingTitle": "",
+            "reportA11y": "",
+            "reportA11yDesc": "",
+            "reportDesc": "",
+            "reportTitle": "",
+            "securityCertif": "",
+            "securityNoMail": "",
+            "securityTitle": "",
+            "sources": "",
+            "title": ""
+        },
+        "privacy": {
+            "cookiesBannerDesc": "",
+            "cookiesBannerNoNeed": "",
+            "cookiesBannerTitle": "",
+            "cookiesBannerTools": "",
+            "cookiesDesc": "",
+            "cookiesDescMore": "",
+            "cookiesTitle": "",
+            "dataAccessDatasets": "",
+            "dataAccessDesc": "",
+            "dataAccessTitle": "",
+            "dataExtraCountry": "",
+            "dataExtraHost": "",
+            "dataExtraTitle": "",
+            "dataExtraWarranty": "",
+            "dataExtraWhat": "",
+            "dataRespDesc": "",
+            "dataRespTitle": "",
+            "dataTimeDesc": "",
+            "dataTimeTitle": "",
+            "dataUseDesc": "",
+            "dataUseTitle": "",
+            "desc": "",
+            "privacyData": "",
+            "privacyDataArena": "",
+            "privacyDataForm": "",
+            "privacyDesc": "",
+            "privacyResp": "",
+            "privacyTitle": "",
+            "tallyData": "",
+            "tallyDesc": "",
+            "tallyFeedback": "",
+            "tallyNewsletter": "",
+            "tallyTitle": "",
+            "title": ""
+        },
+        "rgesn": {
+            "1": {
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": "",
+                "title": ""
+            },
+            "2": {
+                "1": "",
+                "2": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "title": ""
+                },
+                "3": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "title": ""
+                },
+                "4": "",
+                "title": ""
+            },
+            "3": {
+                "1": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "5": "",
+                    "6": "",
+                    "title": ""
+                },
+                "title": ""
+            },
+            "4": {
+                "1": "",
+                "title": ""
+            },
+            "5": {
+                "1": {
+                    "1": "",
+                    "title": ""
+                },
+                "2": "",
+                "3": {
+                    "1": "",
+                    "2": "",
+                    "3": "",
+                    "4": "",
+                    "5": "",
+                    "6": "",
+                    "7": "",
+                    "8": "",
+                    "9": "",
+                    "title": ""
+                },
+                "4": {
+                    "date": "",
+                    "title": ""
+                },
+                "title": ""
+            },
+            "6": {
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": "",
+                "title": ""
+            },
+            "7": {
+                "1": "",
+                "2": "",
+                "3": {
+                    "1": "",
+                    "2": "",
+                    "title": ""
+                },
+                "4": "",
+                "5": "",
+                "6": "",
+                "desc": "",
+                "title": ""
+            },
+            "desc": "",
+            "title": ""
+        },
+        "tos": {
+            "contactDesc": "",
+            "contactTitle": "",
+            "defsEditor": "",
+            "defsModels": "",
+            "defsPlatform": "",
+            "defsServices": "",
+            "defsTitle": "",
+            "defsUser": "",
+            "descDatasets": "",
+            "descEditor": "",
+            "descTitle": "",
+            "descUse": "",
+            "dispoDesc": "",
+            "dispoResp": "",
+            "dispoRight": "",
+            "dispoTitle": "",
+            "dispoWarranty": "",
+            "evoDesc": "",
+            "evoDescMore": "",
+            "evoTitle": "",
+            "featuresDatasets": "",
+            "featuresDatasetsMore": "",
+            "featuresDesc": "",
+            "featuresDescMore": "",
+            "featuresModels": "",
+            "featuresModelsMore": "",
+            "featuresTitle": "",
+            "featuresVote": "",
+            "featuresVoteMore": "",
+            "licenceCode": "",
+            "licenceLLM": "",
+            "licenceLLMEvolution": "",
+            "licenceLLMLicence": "",
+            "licenceLLMModel": "",
+            "licenceLLMNoticeLink": "",
+            "licenceLLMUnavailable": "",
+            "licenceTitle": "",
+            "respEditor": "",
+            "respLegal": "",
+            "respLegalMore": "",
+            "respPrivacy": "",
+            "respPrivacyMore": "",
+            "respTitle": "",
+            "respUser": "",
+            "scopeDesc": "",
+            "scopeTitle": "",
+            "title": ""
+        }
+    },
+    "generated": {
+        "archs": {
+            "dense": {
+                "desc": "",
+                "name": "",
+                "title": ""
+            },
+            "matformer": {
+                "desc": "",
+                "name": "",
+                "title": ""
+            },
+            "moe": {
+                "desc": "",
+                "name": "",
+                "title": ""
+            },
+            "na": {
+                "desc": "",
+                "name": "",
+                "title": ""
+            }
+        },
+        "licenses": {
+            "os": {
+                "Apache 2.0": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "CC-BY-NC-4.0": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Gemma": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "LFM 1.0": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Llama 3 Community": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Llama 3.1": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Llama 3.3": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Llama 4": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "MIT": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Mistral AI Research License": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Modified MIT": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nemotron Open": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                }
+            },
+            "proprio": {
+                "01-ai": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "AI21": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Ai2": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Alibaba": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Amazon": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Anthropic": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Arcee": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Cohere": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "DeepSeek": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "EuroLLM": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Google": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Liquid": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Meta": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Microsoft": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "MiniMax": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Mistral AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Moonshot AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nous": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Nvidia": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "OpenAI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Ordbogen": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Swiss AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Zhipu": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "jpacifico": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "xAI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                }
+            }
+        },
+        "models": {
+            "Apertus 70B Instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Apertus 8B Instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Aya 23 8B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Aya Expanse 32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Aya Expanse 8B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Aya23-35B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Chocolatine 14B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Chocolatine 2 14B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Claude 3.5 Sonnet v2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Claude 4 Sonnet": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Claude 4.5 Sonnet": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Claude 4.6 Sonnet": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Command A": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Command R": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Command R+": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek R1": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek R1 0528": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek R1 Llama 70B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek V3": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek V3.2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek v3": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "DeepSeek v3.1": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "EuroLLM 22B Instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GLM 4.5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GLM 4.6": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GLM 4.7": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GLM 5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 4.1 Nano": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5 Mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5 Nano": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.1": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.3": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT 5.4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT OSS-120B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT OSS-20B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT-3.5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT-4.1 Mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT-4o": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "GPT-4o mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 1.5 Pro": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 2.0 Flash": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 2.5 Flash": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3 Flash": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3 Pro": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3.1 Flash Lite": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemini 3.1 Pro": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 2 27B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 2 2B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 2 9B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 3 12B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 3 27B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 3 4B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Gemma 3n 4B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Grok 3 Mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Grok 4 Fast": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Grok 4.1 Fast": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Hermes 3 405B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Hermes 4 70B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Jamba 1.5 Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Kimi K2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Kimi K2 Thinking": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Kimi K2.5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "LFM 2 8B A1B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "LFM 40B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 3 70B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 3 8B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 3.1 405B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 3.1 70B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 3.1 8B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 3.3 70B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 4 Maverick": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Llama 4 Scout": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Magistral Medium": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Magistral Small": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "MiniMax M2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "MiniMax M2.5": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Ministral": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral 3 Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Large 2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Medium 3.1": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Nemo": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Saba": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Small 3": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Small 3.1 24B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Small 3.2": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Small 3.2 24B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mistral Small 4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mixtral 8x22B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Mixtral-8x7B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Nemotron 3 Super 120B-A12B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Nemotron Llama 3.1 70B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "OLMo-2 32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Odin Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Odin Medium": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Olmo 3 32B Think": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Phi-3-Mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Phi-3-small-8k-Instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Phi-3.5-mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Phi-4": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 2.5 Coder 32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3 30B A3B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3 32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3 8B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3 Max": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3.5 35B A3B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen 3.5 397B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen1.5-32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2-57B-A14B-Instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2-72b-instruct": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2-7B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2.5-32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen2.5-7B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen3 Coder 480B A35B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Qwen3 Coder Next": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Trinity Large": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "Yi-1.5 9B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "o3-mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "o4 mini": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            },
+            "qwq 32B": {
+                "desc": "",
+                "fyi": "",
+                "size_desc": ""
+            }
         }
     },
     "header": {
-        "title": "palyginti:AI"
+        "banner": "",
+        "chatbot": {
+            "newDiscussion": "",
+            "step": "",
+            "stepOne": {
+                "description": "",
+                "title": ""
+            },
+            "stepTwo": {
+                "description": "",
+                "title": ""
+            }
+        },
+        "help": {
+            "link": {
+                "content": "",
+                "title": ""
+            }
+        },
+        "homeTitle": "",
+        "logoAlt": "",
+        "menu": "",
+        "startDiscussion": "",
+        "subtitle": "",
+        "title": "palyginti:AI",
+        "votes": {
+            "count": "",
+            "legend": "",
+            "objective": "",
+            "tooltip": ""
+        }
+    },
+    "home": {
+        "europe": {
+            "desc": "",
+            "languages": {
+                "da": "",
+                "fr": "",
+                "lt": "",
+                "sv": ""
+            },
+            "question": "",
+            "title": ""
+        },
+        "faq": {
+            "discover": "",
+            "title": ""
+        },
+        "intro": {
+            "desc": "",
+            "steps": {
+                "a11yDesc": "",
+                "one": {
+                    "desc": "",
+                    "title": ""
+                },
+                "three": {
+                    "desc": "",
+                    "title": ""
+                },
+                "title": "",
+                "two": {
+                    "desc": "",
+                    "title": ""
+                }
+            },
+            "title": "",
+            "tos": {
+                "accept": "",
+                "error": "",
+                "help": ""
+            }
+        },
+        "origin": {
+            "project": {
+                "desc": "",
+                "title": ""
+            },
+            "team": {
+                "desc": "",
+                "title": ""
+            }
+        },
+        "usage": {
+            "desc": "",
+            "educate": {
+                "desc": "",
+                "title": ""
+            },
+            "explore": {
+                "desc": "",
+                "title": ""
+            },
+            "title": "",
+            "use": {
+                "desc": "",
+                "title": ""
+            }
+        },
+        "use": {
+            "compare": {
+                "alt": "",
+                "desc": "",
+                "title": ""
+            },
+            "desc": "",
+            "measure": {
+                "alt": "",
+                "desc": "",
+                "title": ""
+            },
+            "test": {
+                "alt": "",
+                "desc": "",
+                "title": ""
+            },
+            "title": ""
+        },
+        "vote": {
+            "datasetAccess": "",
+            "desc": "",
+            "steps": {
+                "datasets": {
+                    "desc": "",
+                    "title": ""
+                },
+                "finetune": {
+                    "desc": "",
+                    "title": ""
+                },
+                "prefs": {
+                    "desc": "",
+                    "title": ""
+                }
+            },
+            "title": ""
+        }
+    },
+    "models": {
+        "arch": {
+            "title": ""
+        },
+        "conditions": {
+            "commercialUse": {
+                "question": "",
+                "title": ""
+            },
+            "reuse": {
+                "question": "",
+                "subTitle": "",
+                "title": ""
+            },
+            "title": "",
+            "types": {
+                "allowed": "",
+                "conditions": "",
+                "forbidden": ""
+            }
+        },
+        "conso": {
+            "count": {
+                "L": "",
+                "M": "",
+                "S": ""
+            },
+            "filterLegend": ""
+        },
+        "extra": {
+            "experts": {
+                "api-only": "",
+                "open-weights": ""
+            },
+            "impacts": "",
+            "title": ""
+        },
+        "licenses": {
+            "type": {
+                "openSource": "",
+                "proprietary": "",
+                "semiOpen": ""
+            }
+        },
+        "list": {
+            "filters": {
+                "archived": {
+                    "checkedLabel": "",
+                    "help": "",
+                    "label": "",
+                    "uncheckedLabel": ""
+                },
+                "display": "",
+                "editor": {
+                    "legend": ""
+                },
+                "license": {
+                    "legend": ""
+                },
+                "reset": "",
+                "size": {
+                    "labels": {
+                        "L": "",
+                        "M": "",
+                        "S": "",
+                        "XL": "",
+                        "XS": ""
+                    },
+                    "legend": ""
+                }
+            },
+            "intro": "",
+            "model": "",
+            "models": "",
+            "noresults": "",
+            "title": "",
+            "triage": {
+                "label": "",
+                "options": {
+                    "date-desc": "",
+                    "name-asc": "",
+                    "org-asc": "",
+                    "params-asc": ""
+                }
+            }
+        },
+        "names": {
+            "a": "",
+            "b": ""
+        },
+        "openWeight": {
+            "tooltips": {
+                "copyleft": "",
+                "free": "",
+                "openSource": "",
+                "openWeight": "",
+                "params": "",
+                "ram": ""
+            }
+        },
+        "parameters": "",
+        "ram": "",
+        "release": "",
+        "size": {
+            "count": {
+                "L": "",
+                "M": "",
+                "S": "",
+                "XL": "",
+                "XS": ""
+            },
+            "estimated": "",
+            "title": ""
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "",
+            "description": "",
+            "label": "",
+            "title": ""
+        },
+        "custom": {
+            "altLabel": "",
+            "description": "",
+            "label": "",
+            "title": ""
+        },
+        "random": {
+            "altLabel": "",
+            "description": "",
+            "label": "",
+            "title": ""
+        },
+        "reasoning": {
+            "altLabel": "",
+            "description": "",
+            "label": "",
+            "title": ""
+        },
+        "small-models": {
+            "altLabel": "",
+            "description": "",
+            "label": "",
+            "title": ""
+        }
+    },
+    "product": {
+        "community": {
+            "countries": {
+                "da": "",
+                "fr": ""
+            },
+            "tabLabel": "",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "elie": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "hadrien": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "lucie": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "mathilde": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "nicolas": {
+                            "date": "",
+                            "job": ""
+                        },
+                        "simonas": {
+                            "date": "",
+                            "job": ""
+                        }
+                    },
+                    "title": ""
+                }
+            },
+            "title": ""
+        },
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "",
+                    "title": ""
+                },
+                "impacts": {
+                    "desc": "",
+                    "title": ""
+                },
+                "pluralism": {
+                    "desc": "",
+                    "title": ""
+                },
+                "thinking": {
+                    "desc": "",
+                    "title": ""
+                },
+                "title": ""
+            },
+            "cta": "",
+            "europe": {
+                "adventure": "",
+                "catch": "",
+                "desc": "",
+                "title": ""
+            },
+            "screenshotAlt": "",
+            "tabLabel": "",
+            "title": ""
+        },
+        "faq": {
+            "tabLabel": ""
+        },
+        "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "2": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "3": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "2": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "3": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "4": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "2": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        },
+                        "3": {
+                            "desc": "",
+                            "title": ""
+                        },
+                        "4": {
+                            "desc": "",
+                            "title": ""
+                        },
+                        "5": {
+                            "desc": "",
+                            "title": ""
+                        },
+                        "6": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "",
+                            "desc": "",
+                            "title": ""
+                        }
+                    },
+                    "tag": ""
+                }
+            },
+            "tabLabel": "",
+            "title": ""
+        },
+        "partners": {
+            "academy": {
+                "catch": "",
+                "desc": "",
+                "title": ""
+            },
+            "diffusion": {
+                "catch": "",
+                "cta": "",
+                "desc": "",
+                "title": ""
+            },
+            "institution": {
+                "title": ""
+            },
+            "services": {
+                "desc": "",
+                "title": ""
+            },
+            "tabLabel": ""
+        },
+        "problem": {
+            "alignment": {
+                "alignment": {
+                    "a": "",
+                    "b": "",
+                    "c": "",
+                    "title": ""
+                },
+                "datasets": {
+                    "a": "",
+                    "b": "",
+                    "c": "",
+                    "title": ""
+                },
+                "desc": "",
+                "diversity": {
+                    "a": "",
+                    "b": "",
+                    "c": "",
+                    "d": "",
+                    "title": ""
+                },
+                "english": {
+                    "a": "",
+                    "b": "",
+                    "c": "",
+                    "title": ""
+                },
+                "title": ""
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "",
+                    "title": ""
+                },
+                "english": {
+                    "desc": "",
+                    "title": ""
+                },
+                "stereotypes": {
+                    "desc": "",
+                    "title": ""
+                }
+            },
+            "tabLabel": "",
+            "title": ""
+        },
+        "title": ""
+    },
+    "ranking": {
+        "energy": {
+            "desc": "",
+            "tabLabel": "",
+            "title": "",
+            "views": {
+                "graph": {
+                    "desc": "",
+                    "legends": {
+                        "arch": "",
+                        "size": "",
+                        "sizeSub": ""
+                    },
+                    "tabLabel": "",
+                    "title": "",
+                    "tooltip": {
+                        "active_params": "",
+                        "arch": "",
+                        "consumption": "",
+                        "elo": "",
+                        "params": ""
+                    },
+                    "xLabel": "",
+                    "yLabel": ""
+                },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "",
+                            "2": "",
+                            "3": ""
+                        },
+                        "subTitle": "",
+                        "title": ""
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "",
+                            "2": ""
+                        },
+                        "title": ""
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "",
+                            "2": "",
+                            "3": "",
+                            "4": ""
+                        },
+                        "title": ""
+                    }
+                },
+                "table": {
+                    "title": ""
+                }
+            }
+        },
+        "methodo": {
+            "desc": {
+                "1": "",
+                "2": ""
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": ""
+                    },
+                    "title": ""
+                },
+                "title": "",
+                "winrate": {
+                    "desc": {
+                        "1": "",
+                        "2": ""
+                    },
+                    "title": ""
+                }
+            },
+            "methods": {
+                "cons": "",
+                "def": "",
+                "elo": {
+                    "def": "",
+                    "list": {
+                        "1": "",
+                        "2": "",
+                        "3": ""
+                    },
+                    "title": ""
+                },
+                "pros": "",
+                "title": "",
+                "winrate": {
+                    "def": "",
+                    "list": {
+                        "1": "",
+                        "2": "",
+                        "3": ""
+                    },
+                    "title": ""
+                }
+            },
+            "tabLabel": "",
+            "title": ""
+        },
+        "preferences": {
+            "desc": "",
+            "modal": {
+                "cta": "",
+                "title": ""
+            },
+            "tabLabel": "",
+            "table": {
+                "cols": {
+                    "clear_formatting": "",
+                    "complete": "",
+                    "creative": "",
+                    "incorrect": "",
+                    "instructions_not_followed": "",
+                    "n_match": "",
+                    "name": "",
+                    "positive_prefs_ratio": "",
+                    "superficial": "",
+                    "total_negative_prefs": "",
+                    "total_positive_prefs": "",
+                    "useful": ""
+                },
+                "percentLabel": "",
+                "tooltips": {
+                    "positive_prefs_ratio": ""
+                }
+            },
+            "title": ""
+        },
+        "ranking": {
+            "desc": "",
+            "tabLabel": ""
+        },
+        "table": {
+            "data": {
+                "billions": "",
+                "cols": {
+                    "arch": "",
+                    "consumption": "",
+                    "elo": "",
+                    "license": "",
+                    "n_match": "",
+                    "name": "",
+                    "organisation": "",
+                    "rank": "",
+                    "release": "",
+                    "size": "",
+                    "trust_range": ""
+                },
+                "estimation": "",
+                "tooltips": {
+                    "arch": "",
+                    "consumption": "",
+                    "elo": "",
+                    "rank": "",
+                    "size": "",
+                    "trust_range": ""
+                }
+            },
+            "lastUpdate": "",
+            "totalModels": "",
+            "totalVotes": ""
+        },
+        "title": ""
+    },
+    "reveal": {
+        "equivalent": {
+            "co2": {
+                "label": "",
+                "tooltip": "",
+                "unit": ""
+            },
+            "desc": "",
+            "scales": {
+                "baguette_production": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "mango_import": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "package_delivery": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "",
+                    "unit": ""
+                },
+                "pool_filing": {
+                    "tooltip": "",
+                    "unit": ""
+                }
+            },
+            "title": "",
+            "title_tooltip": ""
+        },
+        "feedback": {
+            "description": "",
+            "example": "",
+            "moreOnVotes": "",
+            "shareResult": ""
+        },
+        "impacts": {
+            "energy": {
+                "label": "",
+                "tooltip": ""
+            },
+            "size": {
+                "count": "",
+                "estimated": "",
+                "label": "",
+                "quantized": ""
+            },
+            "title": "",
+            "tokens": {
+                "label": "",
+                "tokens": "",
+                "tooltip": ""
+            },
+            "tooltip": ""
+        },
+        "thanks": {
+            "cta": "",
+            "desc": "",
+            "graphAlt": "",
+            "rankingAlt": "",
+            "title": ""
+        }
+    },
+    "seo": {
+        "desc": "",
+        "title": "",
+        "titles": {
+            "accessibilite": "",
+            "arene": "",
+            "community": "",
+            "comparator": "",
+            "datasets": "",
+            "donnees-personnelles": "",
+            "duel": "",
+            "faq": "",
+            "history": "",
+            "home": "",
+            "mentions-legales": "",
+            "modalites": "",
+            "modeles": "",
+            "news": "",
+            "partners": "",
+            "problem": "",
+            "product": "",
+            "ranking": "",
+            "rgesn": "",
+            "share": ""
+        }
+    },
+    "vote": {
+        "bothEqual": "",
+        "choices": {
+            "altText": "",
+            "negative": {
+                "incorrect": "",
+                "instructions_not_followed": "",
+                "question": "",
+                "superficial": ""
+            },
+            "other": "",
+            "positive": {
+                "clear_formatting": "",
+                "complete": "",
+                "creative": "",
+                "question": "",
+                "useful": ""
+            }
+        },
+        "comment": {
+            "add": "",
+            "placeholder": ""
+        },
+        "dislike": {
+            "label": "",
+            "selectedLabel": ""
+        },
+        "introA": "",
+        "introB": "",
+        "like": {
+            "label": "",
+            "selectedLabel": ""
+        },
+        "qualify": {
+            "addDetails": "",
+            "placeholder": "",
+            "question": ""
+        },
+        "title": "",
+        "yours": ""
+    },
+    "welcome": {
+        "errors": "",
+        "go": "",
+        "privacy": "",
+        "title": "",
+        "tos": {
+            "desc": "",
+            "moreInfos": ""
+        },
+        "use": ""
+    },
+    "words": {
+        "NA": "",
+        "activated": "",
+        "archived": "",
+        "back": "",
+        "close": "",
+        "deactivated": "",
+        "loading": "",
+        "new": "",
+        "random": "",
+        "regenerate": "",
+        "reset": "",
+        "restart": "",
+        "retry": "",
+        "search": "",
+        "send": "",
+        "tooltip": "",
+        "validate": ""
     }
 }
