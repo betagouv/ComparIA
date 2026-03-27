@@ -964,7 +964,16 @@
             "desc": "Chatta med två okända AI:er och utvärdera deras svar",
             "steps": {
                 "a11yDesc": "1. Chatta med två anonyma AI:er: Chatta så länge du vill. 2. Ge din åsikt: Du bidrar till att förbättra AI-modeller. 3. Modellerna avslöjas: Lär dig mer om AI-modeller och deras egenskaper.",
-                "title": "Hur det fungerar"
+                "one": {
+                    "title": ""
+                },
+                "three": {
+                    "title": ""
+                },
+                "title": "Hur det fungerar",
+                "two": {
+                    "title": ""
+                }
             },
             "title": "Lita inte på svaren från <span {props}>en enda AI</span>",
             "tos": {
