@@ -46,6 +46,6 @@ app.include_router(arena_router)
 @app.get("/counter")
 async def get_counter(country_portal: CountryPortalAnno):
     return {
-        "count": get_country_portal_count(country_portal),
+        "count": await get_country_portal_count(country_portal),
         "objective": OBJECTIVES[country_portal],
     }

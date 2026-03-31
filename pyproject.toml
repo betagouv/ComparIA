@@ -13,7 +13,7 @@ dependencies = [
     "markdown>=3.10.1",
     "numpy>=2.4.1",
     "prometheus-fastapi-instrumentator>=7.0.0",
-    "psycopg2-binary>=2.9.11",
+    "psycopg[binary]>=3.2.0",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
     "python-logging-loki>=0.3.1",
@@ -30,7 +30,7 @@ data = [
     "duckdb>=1.1.0",
     "pandas>=3.0.0",
     "polars>=1.37.1",
-    "psycopg2-binary>=2.9.11",
+    "psycopg[binary]>=3.2.0",
     "pyarrow>=23.0.0",
     "sqlalchemy>=2.0.46",
     "huggingface_hub>=1.4",
@@ -44,7 +44,7 @@ dev = [
     "mypy>=1.19.1",
     "python-jenkins>=1.8.3",
     "types-markdown>=3.10.0.20251106",
-    "types-psycopg2>=2.9.21.20251012",
+    "psycopg[binary]>=3.2.0",
     "types-requests>=2.32.4.20260107",
 ]
 

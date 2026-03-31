@@ -11,11 +11,11 @@ This module handles:
 
 import json
 import logging
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Annotated, Any, Iterator
+from typing import Annotated, Any, AsyncIterator
 
-import psycopg2
+import psycopg
 from fastapi import Request
 from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer
 
@@ -39,16 +39,13 @@ def is_not(v: Any) -> bool:
     return not v
 
 
-@contextmanager
-def db(
+@asynccontextmanager
+async def db(
     data: dict,
     action: str,
-) -> Iterator[tuple[Any, str, str]]:
+) -> AsyncIterator[tuple[Any, str, str]]:
     """
-    Simple db context manager yielding cursor and data field/values strings.
-    Also log error for convinience.
-    Important: Every keys/values from `data` will be passed to the query string,
-    make sure `data` datastructure reflects the related db model.
+    Async db context manager yielding cursor and data field/values strings.
 
     Args:
         data: Pydantic model dump that will be passed to query
@@ -56,183 +53,97 @@ def db(
 
     Yields:
         Tuple with:
-            - cursor: db connection cursor
+            - cursor: async db connection cursor
             - str: comma separated list of field keys
             - str: comma separated list of fields Values keys (%(key)s)
-
-    Raises:
-        psycopg2.Error: If database operation fails
     """
     try:
         logger.debug(f"[DB] Try to {action} data")
 
-        with psycopg2.connect(settings.COMPARIA_DB_URI) as conn:
-            with conn.cursor() as cursor:
+        async with await psycopg.AsyncConnection.connect(settings.COMPARIA_DB_URI) as conn:
+            async with conn.cursor() as cursor:
                 data_keys = list(data.keys())
                 field_keys = ", ".join(data_keys)
                 value_keys = ", ".join(f"%({k})s" for k in data_keys)
                 yield (cursor, field_keys, value_keys)
 
-    except psycopg2.Error as e:
+    except psycopg.Error as e:
         logger.error(f"[DB] Error couldn't {action} data: {e}", exc_info=True)
-        # FIXME Previous code never raise db error, raise it?
 
 
-def save_vote_to_db(data: dict) -> dict:
-    """
-    Save a vote to the database.
-
-    Inserts or updates a vote record with comprehensive preference data.
-    This function handles the final vote when a user selects a preferred model
-    or marks them as equal, along with detailed preference ratings.
-
-    Args:
-        data: Vote data dict with all fields
-
-    Returns:
-        dict: The saved vote data with conversation_pair_id
-
-    Raises:
-        psycopg2.Error: If database operation fails
-    """
-
-    with db(data, "save 'vote'") as (cursor, fields, values):
-        # SQL INSERT for votes table
-        insert_statement = psycopg2.sql.SQL(f"""
-            INSERT INTO votes ({fields})
-            VALUES ({values})
-        """)
-
-        cursor.execute(insert_statement, data)
-
-        # TODO: also increment redis counter
-        # if data.get("country_portal") == "da":
-        #     from languia.session import r
-
-        #     if r:
-        #         try:
-        #             r.incr("danish_count")
-        #         except Exception as e:
-        #             logger.error(f"Error incrementing danish count in Redis: {e}")
+async def save_vote_to_db(data: dict) -> dict:
+    async with db(data, "save 'vote'") as (cursor, fields, values):
+        await cursor.execute(
+            psycopg.sql.SQL(f"INSERT INTO votes ({fields}) VALUES ({values})"),
+            data,
+        )
 
     logger.info(f"[DB] Saved vote for {data['conversation_pair_id']}")
-
     return data
 
 
-def upsert_reaction_to_db(data: dict) -> dict:
-    """
-    UPSERT a reaction to the database.
-
-    Uses ON CONFLICT to update existing reactions or insert new ones.
-
-    Args:
-        data: Reaction data dict (see record_reaction for fields)
-
-    Returns:
-        dict: The saved reaction data
-
-    Database Operation:
-        - Uses PostgreSQL UPSERT (INSERT ... ON CONFLICT ... DO UPDATE)
-        - Key conflict: (refers_to_conv_id, msg_index)
-        - Updates all fields except timestamps on conflict
-    """
-    with db(data, "upsert 'reaction'") as (cursor, fields, values):
-        data_keys = list(data.keys())
-        # SQL UPSERT for reactions table
-        query = psycopg2.sql.SQL(f"""
-            INSERT INTO reactions ({fields})
-            VALUES ({values})
-            ON CONFLICT (refers_to_conv_id, msg_index) 
-            DO UPDATE SET
-                model_a_name = EXCLUDED.model_a_name,
-                model_b_name = EXCLUDED.model_b_name,
-                refers_to_model = EXCLUDED.refers_to_model,
-                opening_msg = EXCLUDED.opening_msg,
-                conversation_a = EXCLUDED.conversation_a,
-                conversation_b = EXCLUDED.conversation_b,
-                model_pos = EXCLUDED.model_pos,
-                conv_turns = EXCLUDED.conv_turns,
-                system_prompt = EXCLUDED.system_prompt,
-                conv_a_id = EXCLUDED.conv_a_id,
-                conv_b_id = EXCLUDED.conv_b_id,
-                conversation_pair_id = EXCLUDED.conversation_pair_id,
-                session_hash = EXCLUDED.session_hash,
-                visitor_id = EXCLUDED.visitor_id,
-                ip = EXCLUDED.ip,
-                response_content = EXCLUDED.response_content,
-                question_content = EXCLUDED.question_content,
-                liked = EXCLUDED.liked,
-                disliked = EXCLUDED.disliked,
-                comment = EXCLUDED.comment,
-                useful = EXCLUDED.useful,
-                complete = EXCLUDED.complete,
-                creative = EXCLUDED.creative,
-                clear_formatting = EXCLUDED.clear_formatting,
-                incorrect = EXCLUDED.incorrect,
-                superficial = EXCLUDED.superficial,
-                instructions_not_followed = EXCLUDED.instructions_not_followed,
-                model_pair_name = EXCLUDED.model_pair_name,
-                msg_rank = EXCLUDED.msg_rank,
-                chatbot_index = EXCLUDED.chatbot_index,
-                question_id = EXCLUDED.question_id;
-        """)
-        # TODO: fixes some edge case
-        #     RETURNING
-        # (CASE
-        #     WHEN (pg_trigger_depth() = 0) THEN 'inserted'
-        #     ELSE 'updated'
-        # END) AS operation;
-
-        cursor.execute(query, data)
-
-        # TODO: also increment redis counter
-        # country_portal = request.query_params.get(
-        #     "country_portal"
-        # ) or request.query_params.get("locale")
-        # if country_portal == "da":
-        #     from languia.session import r
-
-        #     if r:
-        #         try:
-        #             r.incr("danish_count")
-        #         except Exception as e:
-        #             logger.error(f"Error incrementing danish count in Redis: {e}")
+async def upsert_reaction_to_db(data: dict) -> dict:
+    async with db(data, "upsert 'reaction'") as (cursor, fields, values):
+        await cursor.execute(
+            psycopg.sql.SQL(f"""
+                INSERT INTO reactions ({fields})
+                VALUES ({values})
+                ON CONFLICT (refers_to_conv_id, msg_index)
+                DO UPDATE SET
+                    model_a_name = EXCLUDED.model_a_name,
+                    model_b_name = EXCLUDED.model_b_name,
+                    refers_to_model = EXCLUDED.refers_to_model,
+                    opening_msg = EXCLUDED.opening_msg,
+                    conversation_a = EXCLUDED.conversation_a,
+                    conversation_b = EXCLUDED.conversation_b,
+                    model_pos = EXCLUDED.model_pos,
+                    conv_turns = EXCLUDED.conv_turns,
+                    system_prompt = EXCLUDED.system_prompt,
+                    conv_a_id = EXCLUDED.conv_a_id,
+                    conv_b_id = EXCLUDED.conv_b_id,
+                    conversation_pair_id = EXCLUDED.conversation_pair_id,
+                    session_hash = EXCLUDED.session_hash,
+                    visitor_id = EXCLUDED.visitor_id,
+                    ip = EXCLUDED.ip,
+                    response_content = EXCLUDED.response_content,
+                    question_content = EXCLUDED.question_content,
+                    liked = EXCLUDED.liked,
+                    disliked = EXCLUDED.disliked,
+                    comment = EXCLUDED.comment,
+                    useful = EXCLUDED.useful,
+                    complete = EXCLUDED.complete,
+                    creative = EXCLUDED.creative,
+                    clear_formatting = EXCLUDED.clear_formatting,
+                    incorrect = EXCLUDED.incorrect,
+                    superficial = EXCLUDED.superficial,
+                    instructions_not_followed = EXCLUDED.instructions_not_followed,
+                    model_pair_name = EXCLUDED.model_pair_name,
+                    msg_rank = EXCLUDED.msg_rank,
+                    chatbot_index = EXCLUDED.chatbot_index,
+                    question_id = EXCLUDED.question_id
+            """),
+            data,
+        )
 
     logger.info(
         f"[DB] Upserted reaction for {data['refers_to_conv_id']} msg_index={data['msg_index']}"
     )
-
     return data
 
 
-def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
-    """
-    Delete a reaction from the database.
-
-    Args:
-        msg_index: Message index (position in conversation)
-        refers_to_conv_id: Conversation ID this reaction refers to
-
-    Returns:
-        dict: Result with deleted count
-
-    Raises:
-        psycopg2.Error: If database operation fails
-    """
-    with db({}, "delete 'reaction'") as (cursor, _, __):
-        delete_query = psycopg2.sql.SQL("""
-            DELETE FROM reactions
-            WHERE refers_to_conv_id = %s AND msg_index = %s
-    """)
-
-        cursor.execute(delete_query, (refers_to_conv_id, msg_index))
+async def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
+    async with db({}, "delete 'reaction'") as (cursor, _, __):
+        await cursor.execute(
+            psycopg.sql.SQL(
+                "DELETE FROM reactions WHERE refers_to_conv_id = %s AND msg_index = %s"
+            ),
+            (refers_to_conv_id, msg_index),
+        )
         deleted_count = cursor.rowcount
 
     logger.info(
         f"[DB] Deleted reaction for {refers_to_conv_id} msg_index={msg_index} (count={deleted_count})"
     )
-
     return {
         "deleted": deleted_count,
         "refers_to_conv_id": refers_to_conv_id,
@@ -240,53 +151,28 @@ def delete_reaction_in_db(msg_index: int, refers_to_conv_id: str) -> dict:
     }
 
 
-def upsert_conv_to_db(data: dict) -> dict:
-    """
-    Insert or update a conversation record in PostgreSQL using UPSERT.
-
-    Allows conversation data to be updated as users continue chatting.
-    Uses conversation_pair_id as the unique key. Updates token counts and
-    message histories while preserving other metadata.
-
-    Args:
-        data: Conversation data dict with all fields
-
-    Returns:
-        dict: The saved conversation data
-
-    Raises:
-        psycopg2.Error: If database operation fails
-
-    Database Operation:
-        - Key: conversation_pair_id (text, unique)
-        - On conflict: Updates message histories and token counts
-        - On conflict: Updates country_portal only if EXCLUDED value exists
-        - Preserves initial timestamps on updates
-    """
-    with db(data, "upsert 'conversations'") as (cursor, fields, values):
-        # FIXME add tstamp?
-        data_keys = list(data.keys())
-        # SQL UPSERT for conversations table
-        upsert_query = psycopg2.sql.SQL(f"""
-            INSERT INTO conversations ({fields})
-            VALUES ({values})
-            ON CONFLICT (conversation_pair_id)
-            DO UPDATE SET
-                country_portal =  coalesce(EXCLUDED.country_portal, conversations.country_portal),
-                conversation_a = EXCLUDED.conversation_a,
-                conversation_b = EXCLUDED.conversation_b,
-                conv_turns = EXCLUDED.conv_turns,
-                total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
-                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
-                cached_response_a = EXCLUDED.cached_response_a,
-                cached_response_b = EXCLUDED.cached_response_b,
-                cohorts = EXCLUDED.cohorts
-        """)
-
-        cursor.execute(upsert_query, data)
+async def upsert_conv_to_db(data: dict) -> dict:
+    async with db(data, "upsert 'conversations'") as (cursor, fields, values):
+        await cursor.execute(
+            psycopg.sql.SQL(f"""
+                INSERT INTO conversations ({fields})
+                VALUES ({values})
+                ON CONFLICT (conversation_pair_id)
+                DO UPDATE SET
+                    country_portal = coalesce(EXCLUDED.country_portal, conversations.country_portal),
+                    conversation_a = EXCLUDED.conversation_a,
+                    conversation_b = EXCLUDED.conversation_b,
+                    conv_turns = EXCLUDED.conv_turns,
+                    total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
+                    total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
+                    cached_response_a = EXCLUDED.cached_response_a,
+                    cached_response_b = EXCLUDED.cached_response_b,
+                    cohorts = EXCLUDED.cohorts
+            """),
+            data,
+        )
 
     logger.info(f"[DB] Upserted conversation {data['conversation_pair_id']}")
-
     return data
 
 
@@ -365,7 +251,7 @@ class VoteRecord(BaseModel):
     # archived: bool = False
 
 
-def record_vote(
+async def record_vote(
     conversations: Conversations,
     vote: VoteBody,
     request: Request,
@@ -442,7 +328,7 @@ def record_vote(
                 )
         fout.write(json.dumps(db_data) + "\n")
 
-    return save_vote_to_db(db_data)
+    return await save_vote_to_db(db_data)
 
 
 # TODO since we can postprocess data from Conversations we could remove:
@@ -525,7 +411,7 @@ class ReactionRecord(BaseModel):
     # cohorts: str
 
 
-def delete_reaction(conv: Conversation, msg_index: int) -> dict:
+async def delete_reaction(conv: Conversation, msg_index: int) -> dict:
     """
     Delete a single message's reaction when the user removes feedback (like == None).
 
@@ -535,7 +421,7 @@ def delete_reaction(conv: Conversation, msg_index: int) -> dict:
      Returns:
         dict: delete result
     """
-    delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
+    await delete_reaction_in_db(msg_index=msg_index, refers_to_conv_id=conv.conv_id)
 
     return {
         "msg_index": msg_index,
@@ -543,7 +429,7 @@ def delete_reaction(conv: Conversation, msg_index: int) -> dict:
     }
 
 
-def record_reaction(
+async def record_reaction(
     conversations: Conversations,
     reaction: ReactionData,
     msg_index: int,
@@ -623,7 +509,7 @@ def record_reaction(
         fout.write(json.dumps(db_data) + "\n")
     logger.info(f"saved_reaction: {json.dumps(db_data)}", extra={"request": request})
 
-    return upsert_reaction_to_db(db_data)
+    return await upsert_reaction_to_db(db_data)
 
 
 class ConversationMessageRecord(BaseModel):
@@ -726,7 +612,7 @@ class ConversationsRecord(BaseModel):
     # TODO: add `error: boolean` or `error_message: str`, `conv_a|b_error: str`?
 
 
-def record_conversations(
+async def record_conversations(
     conversations: Conversations,
 ) -> dict:
     """
@@ -772,4 +658,4 @@ def record_conversations(
     # Always rewrite the file
     conv_log_path.write_text(json.dumps(db_data) + "\n")
 
-    return upsert_conv_to_db(db_data)
+    return await upsert_conv_to_db(db_data)

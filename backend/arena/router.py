@@ -187,7 +187,7 @@ async def add_first_text(
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
-    record_conversations(conversations)
+    await record_conversations(conversations)
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
@@ -208,7 +208,7 @@ async def add_first_text(
         conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
-        record_conversations(conversations)
+        await record_conversations(conversations)
 
     return create_sse_response(event_stream())
 
@@ -247,7 +247,7 @@ async def add_text(
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
-    record_conversations(conversations)
+    await record_conversations(conversations)
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
@@ -262,7 +262,7 @@ async def add_text(
         conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
-        record_conversations(conversations)
+        await record_conversations(conversations)
 
     return create_sse_response(event_stream())
 
@@ -364,7 +364,7 @@ async def retry(
     # Store Conversations to redis/db/logs
     conversations.store_to_session()
     # Record for questions only dataset and stats on ppl abandoning before generation completion
-    record_conversations(conversations)
+    await record_conversations(conversations)
 
     logger.info(
         f"retry with user message: {last_user_msg.content}", extra={"request": request}
@@ -383,7 +383,7 @@ async def retry(
         conversations.is_streaming = False
         # After streaming completes, store Conversations to redis/db/logs
         conversations.store_to_session()
-        record_conversations(conversations)
+        await record_conversations(conversations)
 
     return create_sse_response(event_stream())
 
@@ -445,7 +445,7 @@ async def react(
         # Store conversations with removed reaction
         conversations.store_to_session()
         # Delete db reaction
-        delete_reaction(conv, msg_index)
+        await delete_reaction(conv, msg_index)
 
         return {"reaction": None}
 
@@ -457,7 +457,7 @@ async def react(
     # Store conversations with updated reaction to redis
     conversations.store_to_session()
     # Store reaction to db/logs
-    reaction_record = record_reaction(
+    reaction_record = await record_reaction(
         conversations=conversations,
         reaction=reaction,
         msg_index=msg_index,
@@ -510,7 +510,7 @@ async def vote(
     conversations.store_to_session()
 
     # Save vote to database with prefs and comments
-    record_vote(
+    await record_vote(
         conversations=conversations,
         vote=vote_body,
         request=request,

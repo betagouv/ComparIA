@@ -1,13 +1,6 @@
-"""
-Database queries for fetching vote and reaction data for ranking computation.
-
-Uses psycopg2 with RealDictCursor, matching the existing pattern
-from backend/arena/persistence.py and backend/utils/countries.py.
-"""
-
 import logging
 
-from psycopg2.extras import RealDictCursor
+from psycopg.rows import dict_row
 
 from utils.storage.db import db_cursor
 from utils.storage.queries import get_reactions_db_query, get_votes_db_query
@@ -27,7 +20,7 @@ def fetch_votes() -> list[dict]:
         conv_incorrect_a, conv_incorrect_b, conv_superficial_a, conv_superficial_b,
         conv_instructions_not_followed_a, conv_instructions_not_followed_b, country_portal.
     """
-    with db_cursor("get votes", logger, cursor_factory=RealDictCursor) as cursor:
+    with db_cursor("get votes", logger, cursor_factory=dict_row) as cursor:
         cursor.execute(
             get_votes_db_query(
                 columns={
@@ -69,7 +62,7 @@ def fetch_reactions() -> list[dict]:
         List of dicts with keys: model_a_name, model_b_name, refers_to_model,
         liked, disliked, country_portal.
     """
-    with db_cursor("get reactions", logger, cursor_factory=RealDictCursor) as cursor:
+    with db_cursor("get reactions", logger, cursor_factory=dict_row) as cursor:
         cursor.execute(
             get_reactions_db_query(
                 columns={

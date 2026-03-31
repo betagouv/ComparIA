@@ -6,7 +6,7 @@ import sys
 from logging.handlers import WatchedFileHandler
 from typing import Any
 
-import psycopg2
+import psycopg
 from fastapi import Request
 from logging_loki import LokiHandler as BaseLokiHandler
 
@@ -20,7 +20,7 @@ class LokiHandler(BaseLokiHandler):
 
     def handleError(self, record: logging.LogRecord) -> None:
         pass
-from psycopg2 import sql
+from psycopg import sql
 from rich.logging import RichHandler
 
 from backend.config import settings
@@ -93,8 +93,8 @@ class PostgresHandler(logging.Handler):
         """Connect to PostgreSQL database, reconnecting if connection is closed."""
         if not self.connection or self.connection.closed:
             try:
-                self.connection = psycopg2.connect(self.dsn)
-            except psycopg2.Error as e:
+                self.connection = psycopg.connect(self.dsn)
+            except psycopg.Error as e:
                 print(f"Error connecting to database: {e}")
 
     def emit(self, record) -> None:
@@ -147,7 +147,7 @@ class PostgresHandler(logging.Handler):
 
                     cursor.execute(insert_statement, values)
                     self.connection.commit()
-        except psycopg2.Error as e:
+        except psycopg.Error as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
             # Could do:

@@ -11,7 +11,7 @@ from backend.config import (
     settings,
 )
 from utils.ranking.compute import RankingResult
-from utils.storage.db import db_cursor
+from utils.storage.db import async_db_cursor
 from utils.storage.redis import (
     REDIS_RANKING_KEY,
     REDIS_VOTE_COUNT_KEY,
@@ -49,7 +49,7 @@ def country_portal_from_locale(locale: str = Header(..., alias="X-Locale")) -> s
 CountryPortalAnno = Annotated[CountryPortal, Depends(country_portal_from_locale)]
 
 
-def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
+async def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
 
@@ -60,7 +60,7 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
     Returns:
         The count of votes and reactions for the specified country portal
     """
-    from psycopg2 import sql
+    from psycopg import sql
 
     cache_key = REDIS_VOTE_COUNT_KEY.format(country_code=country_code)
     # Try Redis first
@@ -79,8 +79,8 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         return 0
 
     # Count votes and reactions linked to conversations with country_portal
-    with db_cursor("get votes and reactions count", logger) as cursor:
-        cursor.execute(
+    async with async_db_cursor("get votes and reactions count", logger) as cursor:
+        await cursor.execute(
             sql.SQL("""
                 SELECT
                     (SELECT COUNT(*) FROM votes v
@@ -94,7 +94,7 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
             (country_code, country_code),
         )
         # FIXME raise error if None?
-        res = cursor.fetchone()
+        res = await cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
 
         try:
