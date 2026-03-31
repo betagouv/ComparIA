@@ -519,13 +519,13 @@
     comment-json "^4.2.3"
 
 "@inlang/sdk@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.npmjs.org/@inlang/sdk/-/sdk-2.7.0.tgz"
-  integrity sha512-yJNBD0o8i29TTJqWX5uDRHxnalDGcsUDctxepzFXsUfkzqGWfiFBxODdxvReqvM2CuKAAOo/kib/F1UcgdYFNQ==
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/@inlang/sdk/-/sdk-2.9.1.tgz#903700db506b0c7acd39b81918b34e7cfa2c4fe4"
+  integrity sha512-y0C3xaKo6pSGDr3p5OdreRVT3THJpgKVe1lLvG3BE4v9lskp3UfI9cPCbN8X2dpfLt/4ljtehMb5SykpMfJrMg==
   dependencies:
-    "@lix-js/sdk" "0.4.7"
+    "@lix-js/sdk" "0.4.9"
     "@sinclair/typebox" "^0.31.17"
-    kysely "^0.27.4"
+    kysely "^0.28.12"
     sqlite-wasm-kysely "0.3.0"
     uuid "^13.0.0"
 
@@ -563,16 +563,16 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@lix-js/sdk@0.4.7":
-  version "0.4.7"
-  resolved "https://registry.npmjs.org/@lix-js/sdk/-/sdk-0.4.7.tgz"
-  integrity sha512-pRbW+joG12L0ULfMiWYosIW0plmW4AsUdiPCp+Z8rAsElJ+wJ6in58zhD3UwUcd4BNcpldEGjg6PdA7e0RgsDQ==
+"@lix-js/sdk@0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@lix-js/sdk/-/sdk-0.4.9.tgz#a01201f9a39f183b763092ced3f58f1fb1587849"
+  integrity sha512-30mDkXpx704359oRrJI42bjfCspCiaMItngVBbPkiTGypS7xX4jYbHWQkXI8XuJ7VDB69D0MsVU6xfrBAIrM4A==
   dependencies:
     "@lix-js/server-protocol-schema" "0.1.1"
     dedent "1.5.1"
     human-id "^4.1.1"
     js-sha256 "^0.11.0"
-    kysely "^0.27.4"
+    kysely "^0.28.12"
     sqlite-wasm-kysely "0.3.0"
     uuid "^10.0.0"
 
@@ -3210,10 +3210,10 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
-kysely@^0.27.4:
-  version "0.27.6"
-  resolved "https://registry.npmjs.org/kysely/-/kysely-0.27.6.tgz"
-  integrity sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==
+kysely@^0.28.12:
+  version "0.28.15"
+  resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.28.15.tgz#29c3db0e92fca6115e0846b9e34c2f79ecd317ec"
+  integrity sha512-r2clcf7HLWvDXaVUEvQymXJY4i3bSOIV3xsL/Upy3ZfSv5HeKsk9tsqbBptLvth5qHEIhxeHTA2jNLyQABkLBA==
 
 langium@^4.0.0:
   version "4.2.1"
