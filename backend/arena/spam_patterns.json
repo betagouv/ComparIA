@@ -50,6 +50,20 @@
       "flags": "IGNORECASE|MULTILINE",
       "description": "Role-prefixed short commands used by bots: 'User: say ok', 'Assistant: repeat hello', etc.",
       "enabled": true
+    },
+    {
+      "name": "system_prefix",
+      "regex": "^\\s*System\\s*:",
+      "flags": "IGNORECASE",
+      "description": "Messages starting with 'System:' — used to inject fake system prompts. Legitimate users don't prefix messages this way.",
+      "enabled": true
+    },
+    {
+      "name": "roleplay_injection_tags",
+      "regex": "<[^>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Roleplay injection XML tags: <...Persona>, <Scenario>, <UserPersona>, <example_dialogs>, etc. Used in jailbreak prompts pasted from character.ai-style platforms.",
+      "enabled": true
     }
   ]
 }
