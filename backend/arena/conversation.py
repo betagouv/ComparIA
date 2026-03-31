@@ -139,7 +139,10 @@ async def bot_response_async(
                 yield messages
             return
 
-    # Add new partial AssistantMessage to chat
+    # Capture messages to send to the API (before appending the empty assistant placeholder)
+    messages_for_api = list(state.messages)
+
+    # Add new partial AssistantMessage to chat (for accumulating streamed response)
     metadata = AssistantMessageMetadata(generation_id="", bot=position)
     current_msg = AssistantMessage(metadata=metadata)
     state.messages.append(current_msg)
@@ -148,10 +151,12 @@ async def bot_response_async(
     start_tstamp = time.time()
 
     # Initialize streaming iterator from LiteLLM
+    # Use messages_for_api to avoid sending the empty AssistantMessage placeholder
+    # (some providers like Cohere reject messages with empty content)
     stream_iter = litellm_stream_iter(
         model_name=state.model_name,
         endpoint=state.llm.endpoint,
-        messages=state.messages,
+        messages=messages_for_api,
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         request=request,

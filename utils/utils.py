@@ -1,12 +1,12 @@
 import json
 import logging
-import os
 from pathlib import Path
 from typing import Any
 
 import markdown
 from pydantic import FieldSerializationInfo, PlainSerializer
 
+from backend.config import settings
 from utils.logger import configure_logger
 
 Obj = dict[str, Any]
@@ -63,11 +63,9 @@ def sort_dict(data: Obj, deep: bool = True) -> Obj:
 def get_db_engine():
     from sqlalchemy import create_engine
 
-    uri = os.getenv("COMPARIA_DB_URI")
-
-    if not uri:
+    if not settings.COMPARIA_DB_URI:
         raise Exception(
             "Cannot connect to the database: no $COMPARIA_DB_URI configuration provided."
         )
 
-    return create_engine(uri)
+    return create_engine(settings.COMPARIA_DB_URI)

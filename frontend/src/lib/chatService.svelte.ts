@@ -65,15 +65,9 @@ export interface ChatRound {
 
 // REACTIONS
 
-export const APIPositiveReactions = ['useful', 'complete', 'creative', 'clear_formatting'] as const
-export const APINegativeReactions = [
-  'incorrect',
-  'superficial',
-  'instructions_not_followed'
-] as const
-export type APIReactionPref =
-  | (typeof APIPositiveReactions)[number]
-  | (typeof APINegativeReactions)[number]
+export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
+export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
+export type APIReactionPref = (typeof APIPositivePrefs)[number] | (typeof APINegativePrefs)[number]
 
 export type ReactionKind = 'like' | 'comment'
 export type APIReactionData = {

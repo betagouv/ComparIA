@@ -20,7 +20,6 @@ from fastapi import Request
 from pydantic import BaseModel, Field, PlainSerializer, WrapSerializer
 
 from backend.arena.models import (
-    REACTIONS,
     BotPos,
     Conversation,
     Conversations,
@@ -28,7 +27,7 @@ from backend.arena.models import (
     ReactionData,
     VoteBody,
 )
-from backend.config import CountryPortal, SelectionMode, settings
+from backend.config import ALL_PREFS, CountryPortal, SelectionMode, settings
 
 logger = logging.getLogger("languia")
 
@@ -414,7 +413,7 @@ def record_vote(
     for pos in {"a", "b"}:
         # Vote
         vote_data[f"conv_comments_{pos}"] = getattr(vote, f"comment_{pos}")
-        for key in REACTIONS:
+        for key in ALL_PREFS:
             vote_data[f"conv_{key}_{pos}"] = key in getattr(vote, f"prefs_{pos}")
 
         # Language model pairs specific
@@ -601,7 +600,7 @@ def record_reaction(
         | {
             # Reaction
             key: key in reaction.prefs
-            for key in REACTIONS
+            for key in ALL_PREFS
         }
     )
 

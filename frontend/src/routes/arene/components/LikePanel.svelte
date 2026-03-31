@@ -1,11 +1,7 @@
 <script lang="ts">
   import { Button, Icon } from '$components/dsfr'
   import Selector from '$components/Selector.svelte'
-  import {
-    APINegativeReactions,
-    APIPositiveReactions,
-    type APIReactionPref
-  } from '$lib/chatService.svelte'
+  import { APINegativePrefs, APIPositivePrefs, type APIReactionPref } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { noop } from '$lib/utils/commons'
 
@@ -42,7 +38,7 @@
     like: {
       label: m['vote.choices.positive.question'](),
       icon: 'thumb-up-fill',
-      choices: APIPositiveReactions.map((value) => ({
+      choices: APIPositivePrefs.map((value) => ({
         value,
         label: m[`vote.choices.positive.${value}`]()
       })) as { value: APIReactionPref; label: string }[]
@@ -50,7 +46,7 @@
     dislike: {
       label: m['vote.choices.negative.question'](),
       icon: 'thumb-down-fill',
-      choices: APINegativeReactions.map((value) => ({
+      choices: APINegativePrefs.map((value) => ({
         value,
         label: m[`vote.choices.negative.${value}`]()
       })) as { value: APIReactionPref; label: string }[]
