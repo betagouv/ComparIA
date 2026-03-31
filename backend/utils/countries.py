@@ -12,7 +12,6 @@ from backend.config import (
 )
 from utils.ranking.compute import RankingResult
 from utils.storage.db import db_cursor
-from utils.storage.queries import get_reactions_db_query, get_votes_db_query
 from utils.storage.redis import (
     REDIS_RANKING_KEY,
     REDIS_VOTE_COUNT_KEY,
@@ -81,14 +80,18 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
 
     # Count votes and reactions linked to conversations with country_portal
     with db_cursor("get votes and reactions count", logger) as cursor:
-        votes_query = get_votes_db_query(
-            country_portal=country_code, count=True, exclude_pii=False
-        )
-        reactions_query = get_reactions_db_query(
-            country_portal=country_code, count=True, exclude_pii=False
-        )
         cursor.execute(
-            sql.SQL(f"SELECT ({votes_query}) + ({reactions_query}) as total;")
+            sql.SQL("""
+                SELECT
+                    (SELECT COUNT(*) FROM votes v
+                     JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
+                     WHERE c.country_portal = %s AND v.archived = FALSE) +
+                    (SELECT COUNT(*) FROM reactions r
+                     JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
+                     WHERE c.country_portal = %s AND r.archived = FALSE)
+                AS total
+            """),
+            (country_code, country_code),
         )
         # FIXME raise error if None?
         res = cursor.fetchone()

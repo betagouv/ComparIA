@@ -8,6 +8,18 @@ from typing import Any
 
 import psycopg2
 from fastapi import Request
+from logging_loki import LokiHandler as BaseLokiHandler
+
+
+class LokiHandler(BaseLokiHandler):
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            super().emit(record)
+        except Exception:
+            pass
+
+    def handleError(self, record: logging.LogRecord) -> None:
+        pass
 from psycopg2 import sql
 from rich.logging import RichHandler
 
@@ -214,6 +226,19 @@ def configure_logger() -> logging.Logger:
         postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
         logger.addHandler(postgres_handler)
 
+    # Custom Logger (Loki) handler for centralized logging
+    custom_logger_url = os.getenv("CUSTOM_LOGGER_URL")
+    if custom_logger_url:
+        try:
+            loki_handler = LokiHandler(
+                url=f"{custom_logger_url}/loki/api/v1/push",
+                tags={"app": "comparia-backend", "environment": os.getenv("ENVIR", "dev")},
+                version="1",
+            )
+            logger.addHandler(loki_handler)
+        except Exception as e:
+            print(f"Loki handler unavailable, skipping: {e}")
+
     return logger
 
 
@@ -280,3 +305,19 @@ def configure_uvicorn_logging() -> None:
         if settings.COMPARIA_DB_URI and settings.enable_postgres_handler:
             postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
             uvicorn_logger.addHandler(postgres_handler)
+
+        # Custom Logger (Loki) handler
+        custom_logger_url = os.getenv("CUSTOM_LOGGER_URL")
+        if custom_logger_url:
+            try:
+                loki_handler = LokiHandler(
+                    url=f"{custom_logger_url}/loki/api/v1/push",
+                    tags={
+                        "app": "comparia-backend-uvicorn",
+                        "environment": os.getenv("ENVIR", "dev"),
+                    },
+                    version="1",
+                )
+                uvicorn_logger.addHandler(loki_handler)
+            except Exception as e:
+                print(f"Loki handler unavailable for uvicorn, skipping: {e}")
