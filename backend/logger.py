@@ -17,6 +17,9 @@ class LokiHandler(BaseLokiHandler):
             super().emit(record)
         except Exception:
             pass
+
+    def handleError(self, record: logging.LogRecord) -> None:
+        pass
 from psycopg2 import sql
 from rich.logging import RichHandler
 
