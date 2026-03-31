@@ -2,11 +2,7 @@
   import AILogo from '$components/AILogo.svelte'
   import { Link, Table, Toggle } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import {
-    APINegativeReactions,
-    APIPositiveReactions,
-    type APIReactionPref
-  } from '$lib/chatService.svelte'
+  import { APINegativePrefs, APIPositivePrefs, type APIReactionPref } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
@@ -44,13 +40,13 @@
       },
       { id: 'total_positive_prefs' },
       { id: 'total_negative_prefs' },
-      ...APIPositiveReactions.map((reaction) => ({
-        id: reaction,
+      ...APIPositivePrefs.map((pref) => ({
+        id: pref,
         colHeaderClass: 'bg-[--green-emeraude-975-75]!',
         orderable: true
       })),
-      ...APINegativeReactions.map((reaction) => ({
-        id: reaction,
+      ...APINegativePrefs.map((pref) => ({
+        id: pref,
         colHeaderClass: 'bg-[--warning-950-100]!',
         orderable: true
       }))
@@ -79,8 +75,8 @@
       icon_path: model.icon_path,
       organisation: model.organisation,
       ...model.prefs,
-      total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs[v], 0),
-      total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs[v], 0),
+      total_positive_prefs: APIPositivePrefs.reduce((acc, v) => acc + model.prefs[v], 0),
+      total_negative_prefs: APINegativePrefs.reduce((acc, v) => acc + model.prefs[v], 0),
       search: model.search
     }))
   })
@@ -111,7 +107,7 @@
   {#snippet headerLeft()}
     <div class="fr-table__detail mb-0! gap-5 flex">
       <p class="mb-0! text-[14px]!">
-        {m['ranking.table.lastUpdate']({ date: lastUpdateDate })}
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate! })}
       </p>
 
       <Link
