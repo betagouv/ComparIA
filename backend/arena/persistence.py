@@ -28,6 +28,7 @@ from backend.arena.models import (
     VoteBody,
 )
 from backend.config import ALL_PREFS, CountryPortal, SelectionMode, settings
+from utils.storage.db import async_db_cursor
 
 logger = logging.getLogger("languia")
 
@@ -57,18 +58,11 @@ async def db(
             - str: comma separated list of field keys
             - str: comma separated list of fields Values keys (%(key)s)
     """
-    try:
-        logger.debug(f"[DB] Try to {action} data")
-
-        async with await psycopg.AsyncConnection.connect(settings.COMPARIA_DB_URI) as conn:
-            async with conn.cursor() as cursor:
-                data_keys = list(data.keys())
-                field_keys = ", ".join(data_keys)
-                value_keys = ", ".join(f"%({k})s" for k in data_keys)
-                yield (cursor, field_keys, value_keys)
-
-    except psycopg.Error as e:
-        logger.error(f"[DB] Error couldn't {action} data: {e}", exc_info=True)
+    data_keys = list(data.keys())
+    field_keys = ", ".join(data_keys)
+    value_keys = ", ".join(f"%({k})s" for k in data_keys)
+    async with async_db_cursor(action, logger) as cursor:
+        yield (cursor, field_keys, value_keys)
 
 
 async def save_vote_to_db(data: dict) -> dict:

@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -8,8 +10,17 @@ from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
 from backend.utils.countries import CountryPortalAnno, get_country_portal_count
+from utils.storage.db import close_async_pool, open_async_pool
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await open_async_pool()
+    yield
+    await close_async_pool()
+
+
+app = FastAPI(lifespan=lifespan)
 
 logger = configure_logger()
 configure_uvicorn_logging()
