@@ -43,6 +43,7 @@ def get_conversations_filters(
     exclude_pii: bool = True,
     exclude_cohorts: bool = True,
     as_exists: bool = False,
+    k: Literal["v", "r"] | None = None,
 ) -> str:
     base = f"""
     c.archived = FALSE
@@ -60,7 +61,7 @@ def get_conversations_filters(
             SELECT 1
             FROM conversations c
             WHERE
-                c.conversation_pair_id = v.conversation_pair_id
+                c.conversation_pair_id = {k}.conversation_pair_id
                 AND {base}
         )
         """
@@ -104,7 +105,7 @@ def get_votes_db_query(
     {JOIN_CONVERSATIONS.format(k="v") if join else ""}
     WHERE
         v.archived = FALSE
-        AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join)}
+        AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join, k="v")}
     """
 
 
@@ -151,5 +152,5 @@ def get_reactions_db_query(
         -- AND r.conversation_b::text NOT LIKE '%%ModelResponseStream%%'
 
         -- Filtering reactions with PII, or excluded cohorts
-        AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join)}
+        AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join, k="r")}
     """
