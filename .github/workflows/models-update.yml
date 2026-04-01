@@ -34,7 +34,7 @@ jobs:
           cache-dependency-glob: "uv.lock"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --group data
 
       - name: Run model builder
         run: uv run python -m utils.models.build_models

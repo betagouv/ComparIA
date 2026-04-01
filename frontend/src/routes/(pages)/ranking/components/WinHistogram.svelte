@@ -10,10 +10,10 @@
 
   const padding = { top: 20, bottom: 130, left: 50, right: 20 }
 
-  let minMaxX = $derived(extent(range(11)) as [number, number])
+  let minMaxX = $derived(extent(range(data.length + 1)) as [number, number])
   let xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
   let yScale = $derived(scaleLinear(minMaxY, [height - padding.bottom, padding.top]))
-  const xTicks = $derived(ticks(0, 9, 10))
+  const xTicks = $derived(range(data.length))
   const yTicks = $derived(ticks(...minMaxY, 6))
 
   onMount(resize)
@@ -57,7 +57,7 @@
       <g class="axis" transform="translate({xScale(x)},0)">
         <!-- <line y2="6" /> -->
         <text x={barWidth / 2} class="rotated">
-          {data[i].x}
+          {data[i]?.x ?? ''}
         </text>
       </g>
     {/each}

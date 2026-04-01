@@ -22,6 +22,8 @@
   const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
+    if (modelsData.length === 0) return
+
     const csvCols = [
       { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
@@ -80,9 +82,9 @@
   //     { key: 'total_prefs' as const, label: 'total prefs' },
   //     { key: 'total_positive_prefs' as const, label: 'total positive' },
   //     { key: 'total_negative_prefs' as const, label: 'total negative' },
-  //     ...[...APIPositiveReactions, ...APINegativeReactions].map((reaction) => ({
-  //       key: reaction,
-  //       label: reaction.replaceAll('_', ' ')
+  //     ...[...APIPositivePrefs, ...APINegativePrefs].map((pref) => ({
+  //       key: pref,
+  //       label: pref.replaceAll('_', ' ')
   //     }))
   //   ]
 
@@ -96,9 +98,9 @@
   //             if (col.key === 'id') {
   //               return m[col.key]
   //             } else if (col.key === 'total_positive_prefs') {
-  //               return APIPositiveReactions.reduce((acc, v) => acc + m.prefs[v], 0)
+  //               return APIPositivePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
   //             } else if (col.key === 'total_negative_prefs') {
-  //               return APINegativeReactions.reduce((acc, v) => acc + m.prefs[v], 0)
+  //               return APINegativePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
   //             } else {
   //               return m.prefs[col.key]
   //             }
@@ -117,26 +119,30 @@
   <div class="fr-container">
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
-    <Tabs {tabs} noBorders kind="nav">
-      {#snippet tab({ id })}
-        {#if id === 'ranking'}
-          <p class="mb-12! text-dark-grey text-[14px]!">
-            {@html sanitize(
-              m['ranking.ranking.desc']({
-                linkProps: externalLinkProps('https://www.peren.gouv.fr/')
-              })
-            )}
-          </p>
+    {#if lastUpdateDate}
+      <Tabs {tabs} noBorders kind="nav">
+        {#snippet tab({ id })}
+          {#if id === 'ranking'}
+            <p class="mb-12! text-dark-grey text-[14px]!">
+              {@html sanitize(
+                m['ranking.ranking.desc']({
+                  linkProps: externalLinkProps('https://www.peren.gouv.fr/')
+                })
+              )}
+            </p>
 
-          <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
-        {:else if id === 'energy'}
-          <Energy onDownloadData={() => onDownloadData('energy')} />
-          <!-- {:else if id === 'preferences'}
+            <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
+          {:else if id === 'energy'}
+            <Energy onDownloadData={() => onDownloadData('energy')} />
+            <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
-        {:else if id === 'methodo'}
-          <Methodology />
-        {/if}
-      {/snippet}
-    </Tabs>
+          {:else if id === 'methodo'}
+            <Methodology />
+          {/if}
+        {/snippet}
+      </Tabs>
+    {:else}
+      <p>{m['ranking.no_data']()}</p>
+    {/if}
   </div>
 </main>

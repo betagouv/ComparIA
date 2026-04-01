@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Annotated, Awaitable, cast
 
@@ -8,6 +9,13 @@ from backend.config import (
     DEFAULT_COUNTRY_PORTAL,
     CountryPortal,
     settings,
+)
+from utils.ranking.compute import RankingResult
+from utils.storage.db import db_cursor
+from utils.storage.redis import (
+    REDIS_RANKING_KEY,
+    REDIS_VOTE_COUNT_KEY,
+    get_redis_client,
 )
 
 logger = logging.getLogger("languia")
@@ -52,12 +60,9 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
     Returns:
         The count of votes and reactions for the specified country portal
     """
-    import psycopg2
     from psycopg2 import sql
 
-    from backend.session import get_redis_client
-
-    cache_key = f"{country_code}_count"
+    cache_key = REDIS_VOTE_COUNT_KEY.format(country_code=country_code)
     # Try Redis first
     client = get_redis_client()
     try:
@@ -73,24 +78,22 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         logger.warning("Cannot log to db: no db configured")
         return 0
 
-    conn = None
-    cursor = None
-    result = 0
-    try:
-        conn = psycopg2.connect(settings.COMPARIA_DB_URI)
-        cursor = conn.cursor()
-        # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL("""
-            SELECT
-                (SELECT COUNT(*) FROM votes v
-                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s) +
-                (SELECT COUNT(*) FROM reactions r
-                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-                 WHERE c.country_portal = %s)
-            as total;
-        """)
-        cursor.execute(query, (country_code, country_code))
+    # Count votes and reactions linked to conversations with country_portal
+    with db_cursor("get votes and reactions count", logger) as cursor:
+        cursor.execute(
+            sql.SQL("""
+                SELECT
+                    (SELECT COUNT(*) FROM votes v
+                     JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
+                     WHERE c.country_portal = %s AND v.archived = FALSE) +
+                    (SELECT COUNT(*) FROM reactions r
+                     JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
+                     WHERE c.country_portal = %s AND r.archived = FALSE)
+                AS total
+            """),
+            (country_code, country_code),
+        )
+        # FIXME raise error if None?
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
 
@@ -100,11 +103,34 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
             logger.error(f"Error setting {country_code} count in Redis: {e}")
 
         return result
+
+    return 0
+
+
+def get_country_portal_ranking(country_portal: CountryPortal) -> RankingResult | None:
+    """
+    Get ranking and preference data for a specific portal from redis cache.
+
+    Args:
+        country_portal: The country portal to filter by (e.g., 'da' for Danish)
+    """
+
+    data_info = f"ranking and prefs data for country_portal: {country_portal}"
+
+    try:
+        client = get_redis_client()
+        data = client.get(REDIS_RANKING_KEY.format(country_portal=country_portal))
+        assert not isinstance(data, Awaitable)
+
+        if data is None:
+            logger.error(f"[REDIS] No cached {data_info}")
+            return None
+
+        logger.info(f"[REDIS] Retrieved {data_info}")
+        return RankingResult(**json.loads(data))
+    except json.JSONDecodeError as e:
+        logger.error(f"[REDIS] Error decoding {data_info}: {e}", exc_info=True)
+        return None
     except Exception as e:
-        logger.error(f"Error getting {country_code} count from db: {e}")
-        return 0
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+        logger.error(f"[REDIS] Error retrieving {data_info}: {e}", exc_info=True)
+        return None

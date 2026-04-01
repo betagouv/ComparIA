@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Literal, TypedDict, get_args
 
 from httpx import Timeout
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -31,7 +31,9 @@ class Settings(BaseSettings):
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
     HF_PUSH_DATASET_KEY: str = ""
-    REPO_ORG: str = "ministere-culture"
+    HF_PUSH_DATASET_KEY_DA: str = ""
+
+    RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
 
     enable_postgres_handler: bool = True
 
@@ -51,13 +53,41 @@ os.makedirs(settings.LOGDIR, exist_ok=True)
 # Structure: total timeout, read, write, connect (all in seconds)
 GLOBAL_TIMEOUT = Timeout(15.0, read=15.0, write=5.0, connect=15.0)
 
+# Preferences
+PositivePref = Literal["useful", "complete", "creative", "clear_formatting"]
+POSITIVE_PREFS: tuple[PositivePref, ...] = get_args(PositivePref)
+NegativePref = Literal["incorrect", "superficial", "instructions_not_followed"]
+NEGATIVE_PREFS: tuple[NegativePref, ...] = get_args(NegativePref)
+ALL_PREFS = POSITIVE_PREFS + NEGATIVE_PREFS
+
 # Available country portals
 CountryPortal = Literal["fr", "da"]
 COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
 DEFAULT_COUNTRY_PORTAL: CountryPortal = "fr"
 
-# Per-country objectives for data collection (rows to collect)
+# Per-portal objectives for data collection (rows to collect)
 OBJECTIVES: dict[CountryPortal, int] = {"fr": 300_000, "da": 10_000}
+
+
+# Per-portal dataset infos
+class PortalRepo(TypedDict):
+    org: str | None
+    name: str
+    token: str
+
+
+PORTAL_DATASET_INFOS: dict[CountryPortal, PortalRepo] = {
+    "fr": {
+        "org": "ministere-culture",
+        "name": "comparia",
+        "token": settings.HF_PUSH_DATASET_KEY,
+    },
+    "da": {
+        "org": "danish-foundation-models",
+        "name": "ai-arenaen",
+        "token": settings.HF_PUSH_DATASET_KEY_DA,
+    },
+}
 
 # Language model selection modes
 SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
