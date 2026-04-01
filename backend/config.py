@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Literal, TypedDict, get_args
 
 from httpx import Timeout
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
     HF_PUSH_DATASET_KEY: str = ""
-    REPO_ORG: str = "ministere-culture"
+    HF_PUSH_DATASET_KEY_DA: str = ""
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
 
@@ -65,8 +65,29 @@ CountryPortal = Literal["fr", "da"]
 COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
 DEFAULT_COUNTRY_PORTAL: CountryPortal = "fr"
 
-# Per-country objectives for data collection (rows to collect)
+# Per-portal objectives for data collection (rows to collect)
 OBJECTIVES: dict[CountryPortal, int] = {"fr": 300_000, "da": 10_000}
+
+
+# Per-portal dataset infos
+class PortalRepo(TypedDict):
+    org: str | None
+    name: str
+    token: str
+
+
+PORTAL_DATASET_INFOS: dict[CountryPortal, PortalRepo] = {
+    "fr": {
+        "org": "ministere-culture",
+        "name": "comparia",
+        "token": settings.HF_PUSH_DATASET_KEY,
+    },
+    "da": {
+        "org": "danish-foundation-models",
+        "name": "ai-arenaen",
+        "token": settings.HF_PUSH_DATASET_KEY_DA,
+    },
+}
 
 # Language model selection modes
 SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
