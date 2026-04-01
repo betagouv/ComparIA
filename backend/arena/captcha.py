@@ -15,7 +15,7 @@ from backend.config import (
     ALTCHA_REPLAY_TTL_SECONDS,
     settings,
 )
-from backend.session import get_redis_client
+from utils.storage.redis import get_redis_client
 
 logger = logging.getLogger("languia")
 
