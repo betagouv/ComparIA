@@ -49,6 +49,10 @@
     }
   }
 
+  const errorMessages: Record<string, () => string> = {
+    rate_limit_custom_selection: () => m['arenaHome.errors.rateLimitCustomSelection']()
+  }
+
   async function dispatchSubmit(): void {
     disabled = true
     const validationError = await runChatBots({
@@ -57,7 +61,7 @@
       prompt_value: prompt
     })
     if (validationError) {
-      promptError = validationError
+      promptError = errorMessages[validationError]?.() ?? validationError
       disabled = false
     }
   }

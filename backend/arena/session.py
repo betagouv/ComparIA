@@ -9,12 +9,17 @@ import logging
 from typing import Awaitable
 from uuid import uuid4
 
-from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
 from utils.storage.redis import (
     REDIS_CONVERSATIONS_KEY,
     REDIS_USER_CHAR_COUNT,
     get_redis_client,
 )
+from backend.config import (
+    RATELIMIT_CUSTOM_SELECTION_PER_DAY,
+    RATELIMIT_CUSTOM_SELECTION_PER_HOUR,
+    RATELIMIT_PRICEY_MODELS_INPUT,
+)
+
 
 logger = logging.getLogger("languia")
 
@@ -133,6 +138,46 @@ def increment_input_chars(ip: str, input_chars: int) -> None:
     client.incrby(REDIS_USER_CHAR_COUNT.format(ip=ip), input_chars)
     # Set counter to expire in 2 hours (3600 * 2 seconds)
     client.expire(REDIS_USER_CHAR_COUNT.format(ip=ip), 3600 * 2)
+
+
+def increment_custom_selections(ip: str) -> None:
+    """
+    Track custom model selection count per IP address for rate limiting.
+
+    Increments two Redis counters: hourly (1h expiry) and daily (24h expiry).
+
+    Args:
+        ip: User's IP address
+    """
+    client = get_redis_client()
+    client.incr(f"custom_hourly:{ip}")
+    client.expire(f"custom_hourly:{ip}", 3600)
+    client.incr(f"custom_daily:{ip}")
+    client.expire(f"custom_daily:{ip}", 86400)
+
+
+def is_custom_selection_ratelimited(ip: str) -> bool:
+    """
+    Check if an IP address has exceeded rate limit for custom model selections.
+
+    Checks both hourly and daily limits.
+
+    Args:
+        ip: User's IP address
+
+    Returns:
+        bool: True if either hourly or daily limit is exceeded
+    """
+    client = get_redis_client()
+    hourly = client.get(f"custom_hourly:{ip}")
+    assert not isinstance(hourly, Awaitable)
+    if hourly and int(hourly) >= RATELIMIT_CUSTOM_SELECTION_PER_HOUR:
+        return True
+    daily = client.get(f"custom_daily:{ip}")
+    assert not isinstance(daily, Awaitable)
+    if daily and int(daily) >= RATELIMIT_CUSTOM_SELECTION_PER_DAY:
+        return True
+    return False
 
 
 def is_ratelimited(ip: str) -> bool:
