@@ -1,5 +1,5 @@
 {
-  "timestamp": 1774957610.575952,
+  "timestamp": 1775030927.199495,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -3038,7 +3038,9 @@
       "required_ram": 358,
       "reuse": false,
       "simple_name": "Odin Large",
-      "specific_portals": ["da"],
+      "specific_portals": [
+        "da"
+      ],
       "status": "disabled",
       "url": "https://www.ordbogen.ai/",
       "wh_per_million_token": 8221.378715262475
@@ -3070,7 +3072,9 @@
       "required_ram": 358,
       "reuse": false,
       "simple_name": "Odin Medium",
-      "specific_portals": ["da"],
+      "specific_portals": [
+        "da"
+      ],
       "status": "disabled",
       "url": "https://www.ordbogen.ai/",
       "wh_per_million_token": 8221.378715262475
