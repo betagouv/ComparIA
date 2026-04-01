@@ -15,7 +15,7 @@ from vertexai.generative_models import GenerativeModel
 
 class Config:
     PROJECT_ID = "languia-430909"
-    LOCATION = "europe-west1"
+    LOCATION = "global"
     MODEL_NAME = "gemini-3.1-flash-lite-preview"
     MAX_RETRIES = 3
     RETRY_DELAY = 1
