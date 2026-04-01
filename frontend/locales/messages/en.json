@@ -43,7 +43,10 @@
             "generateAnother": "Generate another prompt",
             "title": "Suggested prompts"
         },
-        "title": "How can I help you today?"
+        "title": "How can I help you today?",
+        "errors": {
+            "rateLimitCustomSelection": "Model selection is limited to ensure fair access for everyone. You can continue using random mode, or try again later."
+        }
     },
     "chatbot": {
         "continuePrompt": "Continue the chat with the AI models",

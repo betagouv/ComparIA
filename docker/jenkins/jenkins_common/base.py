@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Script pour lancer le job de promotion d'images vers atnum-release
-Utilise un token API pour l'authentification (méthode recommandée)
+Classe de base abstraite pour tous les triggers Jenkins
 """
 
 import os
 import sys
-import argparse
 import logging
-from typing import Optional
 import time
+import argparse
+from typing import Optional, Dict, Any
+from abc import ABC, abstractmethod
 
 try:
     import jenkins
@@ -18,23 +18,18 @@ except ImportError:
     print("Installez-la avec: pip install python-jenkins")
     sys.exit(1)
 
-
-# Configuration du logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
 logger = logging.getLogger(__name__)
 
 
-class JenkinsImagePromotionTrigger:
-    """Classe pour lancer la promotion d'images sur Jenkins"""
+class JenkinsJobTrigger(ABC):
+    """Classe de base abstraite pour déclencher des jobs Jenkins"""
 
     def __init__(
         self,
         jenkins_url: str,
         username: str,
         api_token: str,
-        job_name: str = "atnum/stg/languia/languia-image-promotion",
+        job_name: str,
         timeout: int = 30,
     ):
         self.jenkins_url = jenkins_url.rstrip("/")
@@ -69,16 +64,38 @@ class JenkinsImagePromotionTrigger:
             logger.error(f"❌ Erreur de connexion: {e}")
             return False
 
-    def trigger_promotion(
-        self, source_tag: str, target_tag: str, wait: bool = True
-    ) -> Optional[int]:
+    @abstractmethod
+    def trigger(self, wait: bool = False, **kwargs) -> Optional[int]:
         """
-        Lance la promotion d'images
+        Lance le job Jenkins
 
         Args:
-            source_tag: Tag source (commit hash dans atnum)
-            target_tag: Tag cible (commit hash dans atnum-release)
-            wait: Si True, attend la fin de la promotion (défaut: True)
+            wait: Si True, attend la fin du job
+            **kwargs: Paramètres spécifiques au job
+
+        Returns:
+            Numéro du build lancé ou None en cas d'erreur
+        """
+        pass
+
+    @abstractmethod
+    def get_job_parameters(self, **kwargs) -> Dict[str, Any]:
+        """Retourne les paramètres du job Jenkins"""
+        pass
+
+    def _execute_job(
+        self,
+        parameters: Dict[str, Any],
+        wait: bool,
+        action_name: str = "job"
+    ) -> Optional[int]:
+        """
+        Logique commune d'exécution d'un job
+
+        Args:
+            parameters: Paramètres du job
+            wait: Attendre la fin du job
+            action_name: Nom de l'action (pour les logs)
 
         Returns:
             Numéro du build lancé ou None en cas d'erreur
@@ -92,16 +109,11 @@ class JenkinsImagePromotionTrigger:
             job_info = self.server.get_job_info(self.job_name)
             logger.info(f"Job trouvé: {self.job_name}")
 
-            # Paramètres de la promotion
-            parameters = {"SOURCE_TAG": source_tag, "TARGET_TAG": target_tag}
-
-            # Lance la promotion
-            logger.info(
-                f"Lancement de la promotion avec SOURCE_TAG='{source_tag}', TARGET_TAG='{target_tag}'..."
-            )
+            # Lance le job
+            params_str = ", ".join(f"{k}='{v}'" for k, v in parameters.items())
+            logger.info(f"Lancement du {action_name} avec {params_str}...")
             queue_number = self.server.build_job(self.job_name, parameters=parameters)
 
-            # Récupère le numéro du build à partir de la queue
             logger.info(f"Build en queue: #{queue_number}")
 
             if wait:
@@ -112,16 +124,17 @@ class JenkinsImagePromotionTrigger:
                     return build_number if success else None
             else:
                 logger.info(
-                    f"✅ Promotion lancée (queue #{queue_number}). Utilisez --wait pour suivre la progression."
+                    f"✅ {action_name.capitalize()} lancé (queue #{queue_number}). "
+                    "Utilisez --wait pour suivre la progression."
                 )
 
             return queue_number
 
         except jenkins.JenkinsException as e:
-            logger.error(f"❌ Erreur Jenkins lors de la promotion: {e}")
+            logger.error(f"❌ Erreur Jenkins lors du {action_name}: {e}")
             return None
         except Exception as e:
-            logger.error(f"❌ Erreur lors du lancement de la promotion: {e}")
+            logger.error(f"❌ Erreur lors du lancement du {action_name}: {e}")
             return None
 
     def _wait_for_build_start(
@@ -198,117 +211,93 @@ class JenkinsImagePromotionTrigger:
                 logger.error(f"❌ Erreur lors de la surveillance: {e}")
                 return False
 
-
-def main():
-    """Fonction principale"""
-    parser = argparse.ArgumentParser(
-        description="Lance le job de promotion d'images sur Jenkins",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Exemples d'utilisation:
-  # Avec variables d'environnement
-  export JENKINS_URL="https://ogehguvsgm-jenkins.services.clever-cloud.com"
-  export JENKINS_USERNAME="admin"
-  export JENKINS_API_TOKEN="votre_token_ici"
-  python trigger_image_promotion.py --source-tag abc123 --target-tag abc123
-
-  # Avec arguments en ligne de commande
-  python trigger_image_promotion.py --url https://ogehguvsgm-jenkins.services.clever-cloud.com --username admin --token votre_token --source-tag abc123 --target-tag abc123
-        """,
-    )
-
-    parser.add_argument(
-        "--url",
-        default=os.getenv("JENKINS_URL"),
-        help="URL du serveur Jenkins (ex: http://localhost:8080)",
-    )
-    parser.add_argument(
-        "--username",
-        default=os.getenv("JENKINS_USERNAME"),
-        help="Nom d'utilisateur Jenkins",
-    )
-    parser.add_argument(
-        "--token", default=os.getenv("JENKINS_API_TOKEN"), help="Token API Jenkins"
-    )
-    parser.add_argument(
-        "--job",
-        default="atnum/stg/languia/languia-image-promotion",
-        help="Nom du job Jenkins (défaut: atnum/stg/languia/languia-image-promotion)",
-    )
-    parser.add_argument(
-        "--source-tag", required=True, help="Tag source (commit hash dans atnum)"
-    )
-    parser.add_argument(
-        "--target-tag", required=True, help="Tag cible (commit hash dans atnum-release)"
-    )
-    parser.add_argument(
-        "--no-wait",
-        action="store_true",
-        help="Ne pas attendre la fin de la promotion",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=30,
-        help="Timeout de connexion en secondes (défaut: 30)",
-    )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Mode verbeux")
-
-    args = parser.parse_args()
-
-    # Configuration du niveau de log
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
-
-    # Validation des arguments
-    if not args.url:
-        logger.error("❌ L'URL Jenkins est requise (--url ou variable JENKINS_URL)")
-        sys.exit(1)
-
-    if not args.username:
-        logger.error(
-            "❌ Le nom d'utilisateur est requis (--username ou variable JENKINS_USERNAME)"
+    @staticmethod
+    def create_argument_parser(
+        description: str,
+        epilog: str,
+        default_job_name: str,
+    ):
+        """Crée un parser d'arguments avec les options communes"""
+        parser = argparse.ArgumentParser(
+            description=description,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            epilog=epilog,
         )
-        sys.exit(1)
 
-    if not args.token:
-        logger.error(
-            "❌ Le token API est requis (--token ou variable JENKINS_API_TOKEN)"
+        # Arguments communs
+        parser.add_argument(
+            "--url",
+            default=os.getenv("JENKINS_URL"),
+            help="URL du serveur Jenkins (ex: http://localhost:8080)",
         )
-        logger.error(
-            "   Pour générer un token: Jenkins > [Votre utilisateur] > Configure > Add new Token"
+        parser.add_argument(
+            "--username",
+            default=os.getenv("JENKINS_USERNAME"),
+            help="Nom d'utilisateur Jenkins",
         )
-        sys.exit(1)
+        parser.add_argument(
+            "--token",
+            default=os.getenv("JENKINS_API_TOKEN"),
+            help="Token API Jenkins"
+        )
+        parser.add_argument(
+            "--job",
+            default=default_job_name,
+            help=f"Nom du job Jenkins (défaut: {default_job_name})",
+        )
+        parser.add_argument(
+            "--timeout",
+            type=int,
+            default=30,
+            help="Timeout de connexion en secondes (défaut: 30)",
+        )
+        parser.add_argument(
+            "--verbose", "-v",
+            action="store_true",
+            help="Mode verbeux"
+        )
 
-    # Création du trigger
-    trigger = JenkinsImagePromotionTrigger(
-        jenkins_url=args.url,
-        username=args.username,
-        api_token=args.token,
-        job_name=args.job,
-        timeout=args.timeout,
-    )
+        return parser
 
-    # Connexion
-    if not trigger.connect():
-        logger.error("❌ Impossible de se connecter à Jenkins")
-        sys.exit(1)
+    @staticmethod
+    def validate_common_args(args):
+        """Valide les arguments communs et configure le logging"""
+        # Configuration du niveau de log
+        if args.verbose:
+            logging.getLogger().setLevel(logging.DEBUG)
 
-    # Lancement de la promotion
-    logger.info("=" * 50)
-    promotion_result = trigger.trigger_promotion(
-        source_tag=args.source_tag, target_tag=args.target_tag, wait=not args.no_wait
-    )
+        # Validation
+        if not args.url:
+            logger.error("❌ L'URL Jenkins est requise (--url ou variable JENKINS_URL)")
+            sys.exit(1)
 
-    if promotion_result:
-        logger.info("=" * 50)
-        logger.info("🎯 Promotion réussie!")
-        sys.exit(0)
-    else:
-        logger.error("=" * 50)
-        logger.error("❌ Promotion échouée")
-        sys.exit(1)
+        if not args.username:
+            logger.error(
+                "❌ Le nom d'utilisateur est requis (--username ou variable JENKINS_USERNAME)"
+            )
+            sys.exit(1)
 
+        if not args.token:
+            logger.error(
+                "❌ Le token API est requis (--token ou variable JENKINS_API_TOKEN)"
+            )
+            logger.error(
+                "   Pour générer un token: Jenkins > [Votre utilisateur] > Configure > Add new Token"
+            )
+            sys.exit(1)
 
-if __name__ == "__main__":
-    main()
+    def execute_main_workflow(
+        self,
+        trigger_result: Optional[int],
+        success_message: str,
+        error_message: str
+    ):
+        """Workflow standard de fin d'exécution"""
+        if trigger_result:
+            logger.info("=" * 50)
+            logger.info(f"🎯 {success_message}")
+            sys.exit(0)
+        else:
+            logger.error("=" * 50)
+            logger.error(f"❌ {error_message}")
+            sys.exit(1)

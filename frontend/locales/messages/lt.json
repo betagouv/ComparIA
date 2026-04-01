@@ -38,7 +38,10 @@
             "generateAnother": "Sukurti dar vieną užklausą",
             "title": "Siūlomos užklausos"
         },
-        "title": "Kaip galime Jums padėti?"
+        "title": "Kaip galime Jums padėti?",
+        "errors": {
+            "rateLimitCustomSelection": "Modelių pasirinkimas yra ribotas, kad būtų užtikrinta vienoda prieiga visiems. Galite toliau naudoti atsitiktinį režimą arba bandyti vėliau."
+        }
     },
     "chatbot": {
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",

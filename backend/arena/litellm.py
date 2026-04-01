@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Generator, TypedDict, Union, cast
 
 import litellm
 
-from backend.config import GLOBAL_TIMEOUT, settings
+from backend.config import GLOBAL_TIMEOUT, ORDBOGEN_GLOBAL_TIMEOUT, ORDBOGEN_STREAM_TIMEOUT, STREAM_TIMEOUT, settings
 from backend.errors import ContextTooLongError
 
 if TYPE_CHECKING:
@@ -134,10 +134,12 @@ def litellm_stream_iter(
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
 
+    is_ordbogen = endpoint.api_base and "ordbogen.ai" in endpoint.api_base
+
     # Build parameters for LiteLLM API call
     kwargs = {
-        "timeout": GLOBAL_TIMEOUT,
-        "stream_timeout": 30,
+        "timeout": ORDBOGEN_GLOBAL_TIMEOUT if is_ordbogen else GLOBAL_TIMEOUT,
+        "stream_timeout": ORDBOGEN_STREAM_TIMEOUT if is_ordbogen else STREAM_TIMEOUT,
         "api_version": endpoint.api_version,
         "base_url": endpoint.api_base,
         "api_key": api_key,
