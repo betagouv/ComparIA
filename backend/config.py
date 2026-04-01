@@ -52,6 +52,9 @@ os.makedirs(settings.LOGDIR, exist_ok=True)
 # HTTP timeout for API calls to LLM providers
 # Structure: total timeout, read, write, connect (all in seconds)
 GLOBAL_TIMEOUT = Timeout(15.0, read=15.0, write=5.0, connect=15.0)
+STREAM_TIMEOUT = 30
+ORDBOGEN_GLOBAL_TIMEOUT = Timeout(60.0, read=60.0, write=5.0, connect=15.0)
+ORDBOGEN_STREAM_TIMEOUT = 60
 
 # Preferences
 PositivePref = Literal["useful", "complete", "creative", "clear_formatting"]
