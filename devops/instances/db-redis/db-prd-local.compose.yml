@@ -1,6 +1,6 @@
 # Local PostgreSQL container with production data restore
-# Place your backup.dump file in ./data/ before running
-# Usage: docker compose -f prd-db-local.compose.yml up
+# Place prd-backup.dump in devops/docker/ before running
+# Usage: docker compose -f db-prd-local.compose.yml up
 services:
   postgres-prd:
     image: postgres:16
@@ -11,8 +11,8 @@ services:
       POSTGRES_DB: languia
     volumes:
       - prd-db-data:/var/lib/postgresql/data
-      - ./prd-backup.dump:/backup/backup.dump:ro
-      - ./restore-backup.sh:/docker-entrypoint-initdb.d/restore-backup.sh:ro
+      - ../../docker/prd-backup.dump:/backup/backup.dump:ro
+      - ../../docker/restore-backup.sh:/docker-entrypoint-initdb.d/restore-backup.sh:ro
     ports:
       - "127.0.0.1:5433:5432"
     healthcheck:

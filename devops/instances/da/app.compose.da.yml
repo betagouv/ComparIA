@@ -34,7 +34,7 @@ services:
       POSTGRES_DB: comparia_da
     volumes:
       - db-data-da:/var/lib/postgresql/data
-      - ../../docker/db-init/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../db-init/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "127.0.0.1:5434:5432"
 
