@@ -57,3 +57,30 @@ def archive(
             )
 
         return results.rowcount
+
+
+def reset_archived():
+    """
+    Reset all conversations, votes and reaction 'archived' column to NULL if FALSE.
+    Used to run db linting in hard mode (reanalyzing).
+    """
+    query = """
+        UPDATE
+            {table_name}
+        SET
+            archived = NULL
+        WHERE
+            archived = FALSE
+        ;
+    """
+    with db_connection() as conn:
+        for table_name in TABLE_NAMES:
+            logger.info(
+                f"Resetting 'achived=FALSE' to 'archived=NULL' in {table_name}."
+            )
+            results = conn.execute(text(query.format(table_name=table_name)))
+
+            conn.commit()
+            logger.info(
+                f"Resetted {results.rowcount} 'archived' to NULL on {table_name}."
+            )
