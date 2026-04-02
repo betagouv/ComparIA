@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     HF_PUSH_DATASET_KEY: str = ""
     HF_PUSH_DATASET_KEY_DA: str = ""
 
+    DEFAULT_COUNTRY_PORTAL: str = "fr"
+
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
     ALTCHA_HMAC_KEY: str = ""
@@ -72,7 +74,7 @@ ALL_PREFS = POSITIVE_PREFS + NEGATIVE_PREFS
 # Available country portals
 CountryPortal = Literal["fr", "da"]
 COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
-DEFAULT_COUNTRY_PORTAL: CountryPortal = "fr"
+DEFAULT_COUNTRY_PORTAL: CountryPortal = settings.DEFAULT_COUNTRY_PORTAL  # type: ignore[assignment]
 
 # Per-portal objectives for data collection (rows to collect)
 OBJECTIVES: dict[CountryPortal, int] = {"fr": 300_000, "da": 10_000}
