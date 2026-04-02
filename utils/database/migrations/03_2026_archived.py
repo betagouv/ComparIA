@@ -7,6 +7,8 @@ from sqlalchemy.exc import ProgrammingError
 from utils.logger import configure_logger
 from utils.utils import db_connection
 
+from ..actions import rename_llm
+
 MIGRATION_FILE = Path(__file__).parent / "03_2026_archived.sql"
 
 SET_ARCHIVED_REASON_UNKNOWN = """
