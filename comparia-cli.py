@@ -1,0 +1,9 @@
+from cyclopts import App
+
+from utils.database.cli import cli_db
+
+cli = App()
+cli.command(cli_db)
+
+if __name__ == "__main__":
+    cli()
