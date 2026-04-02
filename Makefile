@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc 
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr up-da down-da logs-da dataset-export-fr
 
 # Variables
 PYTHON := python3
@@ -54,6 +54,38 @@ db-prd-local:
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
 	cd devops && docker compose -f docker-compose-dev.yml up redis -d
+
+up-fr: ## Launch FR instance (frontend + backend + postgres + redis)
+	@$(MAKE) db-generate-init
+	cd docker && docker compose -f app.compose.fr.yml up -d --build
+
+down-fr: ## Stop FR instance
+	cd docker && docker compose -f app.compose.fr.yml down
+
+logs-fr: ## Show logs for FR instance
+	cd docker && docker compose -f app.compose.fr.yml logs -f
+
+up-da: ## Launch DA instance (frontend + backend + postgres + redis)
+	@$(MAKE) db-generate-init
+	cd docker && docker compose -f app.compose.da.yml up -d --build
+
+down-da: ## Stop DA instance
+	cd docker && docker compose -f app.compose.da.yml down
+
+logs-da: ## Show logs for DA instance
+	cd docker && docker compose -f app.compose.da.yml logs -f
+
+dataset-export-fr: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and COMPARIA_DB_URI)
+	@echo "Exporting datasets..."
+	@if [ -z "$$COMPARIA_DB_URI" ]; then \
+		echo "Error: COMPARIA_DB_URI is not defined"; \
+		exit 1; \
+	fi
+	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
+		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
+		exit 1; \
+	fi
+	$(UV) run python -m utils.dataset.run fr
 
 docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
 	@$(MAKE) db-generate-init
