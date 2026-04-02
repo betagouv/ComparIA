@@ -56,7 +56,7 @@ serve_images
 val2014
 vqa_examples
 devops/docker/.env
-devops/docker/db-init/init-db.sql
+devops/db-init/init-db.sql
 devops/instances/fr/.env.fr
 devops/instances/da/.env.da
 

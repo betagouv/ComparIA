@@ -1,5 +1,4 @@
 # Base compose with infrastructure services only (postgres, redis)
-# For full stack, use: docker compose -f docker-compose-dev.yml -f app.compose.override.yml up
 services:
   postgres:
     image: postgres:16
@@ -23,7 +22,7 @@ services:
     #   - log_line_prefix=%t [%p] %u@%d [%a]
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./db-init/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../db-init/init-db.sql:/docker-entrypoint-initdb.d/init.sql
       - pglogs:/var/log/postgresql # Nouveau volume pour les logs
     ports:
       - "127.0.0.1:5432:5432"

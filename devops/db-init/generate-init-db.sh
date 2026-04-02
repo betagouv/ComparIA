@@ -5,10 +5,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SCHEMAS_DIR="$PROJECT_ROOT/utils/schemas"
 MIGRATIONS_DIR="$SCHEMAS_DIR/migrations"
-OUTPUT_FILE="$SCRIPT_DIR/db-init/init-db.sql"
+OUTPUT_FILE="$SCRIPT_DIR/init-db.sql"
 
 # Exit silently if init-db.sql already exists
 if [ -f "$OUTPUT_FILE" ]; then
