@@ -1,0 +1,26 @@
+[
+  {
+    "id": "global_summarizer",
+    "name": "Global Summarizer AI",
+    "description": "AI-powered text summarization tool",
+    "endpoint": "https://example.com/mcp/global-summarizer",
+    "transport": "streamablehttp",
+    "auth": {
+      "type": "bearer",
+      "token": "REPLACE_WITH_ACTUAL_TOKEN"
+    },
+    "tools": ["*"]
+  },
+  {
+    "id": "clarifeye_memos",
+    "name": "Clarifeye Memos",
+    "description": "Structured memo extraction and analysis",
+    "endpoint": "https://example.com/mcp/clarifeye-memos",
+    "transport": "streamablehttp",
+    "auth": {
+      "type": "bearer",
+      "token": "REPLACE_WITH_ACTUAL_TOKEN"
+    },
+    "tools": ["extract_memo", "summarize"]
+  }
+]
