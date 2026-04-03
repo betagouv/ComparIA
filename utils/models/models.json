@@ -593,6 +593,24 @@
         "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
       },
       {
+        "id": "gemma-4-31b-it",
+        "simple_name": "Gemma 4 31B",
+        "license": "Apache 2.0",
+        "release_date": "04/2026",
+        "arch": "dense",
+        "params": 31,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/google/gemma-4-31b-it",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemma-4-31b-it"
+        },
+        "desc": "Modèle de taille moyenne multimodal performant en génération de code, raisonnement et compréhension de documents. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "Avec 31 milliards de paramètres, ce modèle se place dans la catégorie des modèles de taille moyenne. Il peut être hébergé sur un serveur équipé d'une seule carte graphique puissante, ce qui contribue à limiter les coûts d'infrastructure.\n\nSa fenêtre de contexte atteint 256 000 jetons, ce qui est adapté à l'analyse de longs documents.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Développé par Google DeepMind et publié sous licence Apache 2.0 (contrairement aux versions précédentes sous licence propriétaire Gemma), ce modèle repose sur une architecture dense de 60 couches combinant attention locale à fenêtre glissante (1 024 jetons) et attention globale sur l'ensemble du contexte.\n\nIl intègre un encodeur visuel d'environ 550 millions de paramètres capable de traiter des images à résolution variable et des vidéos jusqu'à 60 secondes. Il prend en charge plus de 140 langues et dispose d'appels de fonctions natifs, ce qui le rend utilisable dans des contextes agentiques.\n\nSes performances sont remarquables pour sa taille : sur le classement Arena AI, il se place au 3e rang mondial des modèles ouverts, rivalisant avec des modèles 20 fois plus volumineux comme Kimi K2.5 (744 milliards de paramètres) ou GLM-5 (1 000 milliards de paramètres). Selon l'éditeur, il obtient 89,2 % sur AIME 2026 (raisonnement mathématique), 85,2 % sur MMLU Pro, 84,3 % sur GPQA Diamond (raisonnement scientifique) et 80,0 % sur LiveCodeBench v6, avec un score Codeforces de 2 150."
+      },
+      {
         "id": "gemma-3n-e4b-it",
         "simple_name": "Gemma 3n 4B",
         "license": "Gemma",
