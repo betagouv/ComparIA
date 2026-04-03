@@ -37,6 +37,10 @@ data = [
     "google-cloud-aiplatform>=1.75.0",
     "cyclopts>=4.7.0",
 ]
+devops = [
+    "cyclopts>=4.7.0",
+    "pykeepass>=4.0.0",
+]
 dev = [
     "autoflake>=2.3.1",
     "black>=26.1.0",
