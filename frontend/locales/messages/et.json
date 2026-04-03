@@ -43,7 +43,10 @@
             "generateAnother": "Genereeri veel üks viip",
             "title": "Soovitatud viibad"
         },
-        "title": "Millega sind täna aidata saan?"
+        "title": "Millega sind täna aidata saan?",
+        "errors": {
+            "rateLimitCustomSelection": "Mudelite valik on piiratud, et tagada kõigile võrdne juurdepääs. Saad jätkata juhusliku režiimi kasutamist või proovida hiljem uuesti."
+        }
     },
     "chatbot": {
         "continuePrompt": "Jätka nende keelemudelitega vestlemist",

@@ -43,7 +43,10 @@
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
-        "title": "Comment puis-je vous aider aujourd'hui ?"
+        "title": "Comment puis-je vous aider aujourd'hui ?",
+        "errors": {
+            "rateLimitCustomSelection": "Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard."
+        }
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter avec les modèles",

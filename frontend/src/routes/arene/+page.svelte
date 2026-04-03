@@ -2,9 +2,13 @@
   import { Icon, Link, Tooltip } from '$components/dsfr'
   import Header from '$components/header/Header.svelte'
   import SeoHead from '$components/SEOHead.svelte'
+  import { fetchAndSolve } from '$lib/captcha.svelte'
   import { arena, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
+
+  // Start solving Altcha challenge on page load (runs in background)
+  fetchAndSolve()
 
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
   let toggled = $state(false)
