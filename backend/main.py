@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from backend.arena.router import router as arena_router
+from backend.tool_arena.router import router as tool_arena_router
 from backend.config import OBJECTIVES
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
@@ -41,6 +42,7 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 app.include_router(models_router)
 app.include_router(arena_router)
+app.include_router(tool_arena_router)
 
 
 @app.get("/counter")
