@@ -1,3 +1,6 @@
 {
-  "framework": "sveltekit"
+  "framework": "sveltekit",
+  "redirects": [
+    { "source": "/", "destination": "/tool-arena", "permanent": false }
+  ]
 }
