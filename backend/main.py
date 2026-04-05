@@ -7,6 +7,7 @@ from backend.tool_arena.router import router as tool_arena_router
 from backend.config import OBJECTIVES
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
+from backend.cors_utils import build_origins, get_origins
 from backend.sentry import init_sentry
 from backend.utils.countries import CountryPortalAnno, get_country_portal_count
 
@@ -20,14 +21,7 @@ logger.info("=" * 80)
 init_sentry()
 
 
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:8000",
-    "http://localhost:8001",
-]
+origins = get_origins()
 
 app.add_middleware(
     CORSMiddleware,

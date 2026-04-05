@@ -18,8 +18,8 @@ function getBackendUrl(): string {
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
     return 'http://localhost:8001'
   } else {
-    // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    // Client-side: use public URL or origin (PUBLIC_API_URL takes priority)
+    return publicEnv.PUBLIC_API_URL || window.location.origin || 'http://localhost:8001'
   }
 }
 
