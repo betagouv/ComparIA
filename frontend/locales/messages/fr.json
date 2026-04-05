@@ -114,7 +114,7 @@
                 }
             },
             "share": "Partagez-nous vos réutilisations",
-            "title": "Accédez aux jeux de données compar:IA"
+            "title": "Accédez aux jeux de données CompaRAG"
         },
         "reuse": {
             "bunka": {
@@ -129,7 +129,7 @@
                 "desc": "L'équipe Bunka.ai a mené une étude approfondie sur les interactions entre les utilisateurs de la plateforme Compar:IA et les modèles d'IA, examinant les thématiques privilégiées, les tâches principales et déterminant si ces modèles fonctionnent avant tout comme des outils d'automatisation ou d'augmentation des capacités humaines. Cette analyse repose sur un large échantillon de 25 000 conversations.",
                 "method": "En savoir plus sur la méthodologie"
             },
-            "desc": "Exemples de réutilisation des jeux de données compar:IA",
+            "desc": "Exemples de réutilisation des jeux de données CompaRAG",
             "title": "Comment ces données sont-elles utilisées ?"
         }
     },
@@ -152,16 +152,16 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p>Les données de préférence servent à améliorer les modèles lors d'entraînements futurs.</p><p>En comparant à l'aveugle les réponses de deux modèles, les utilisateurs de compar:IA expriment leurs préférences, indiquant ainsi quelles réponses sont les plus pertinentes. Ces données de préférence peuvent être utilisées pour affiner l'alignement des modèles, c'est-à-dire pour les entraîner à générer des réponses plus conformes aux attentes et aux préférences des utilisateurs.</p><p>Il s'agit d'un processus itératif, où le modèle apprend progressivement à générer de meilleures réponses en fonction des retours formulés par les humains sur la qualité des réponses. En étant exposés à des données de préférence, les modèles apprennent à les intégrer dans leur processus de génération de réponses.</p>",
+                    "desc": "<p>Les données de comparaison servent à évaluer les outils MCP sur des tâches réelles.</p><p>En comparant à l’aveugle les résultats de deux outils MCP, les utilisateurs de CompaRAG expriment leurs préférences, indiquant ainsi quels résultats sont les plus pertinents. Ces données de comparaison peuvent être utilisées pour évaluer la performance relative des outils MCP sur différents types de tâches.</p><p>Il s’agit d’un processus continu, où les préférences des utilisateurs permettent de mieux comprendre les forces et faiblesses de chaque outil MCP.</p>",
                     "title": "Les données de préférence ont-elles un effet immédiat pour améliorer les modèles?"
                 },
                 "2": {
-                    "desc": "<p>La spécificité des données collectées sur la plateforme compar:IA est qu’elles sont en français et qu’elles correspondent à des tâches réelles des utilisateurs. Ces données reflètent des préférences humaines dans un contexte linguistique et culturel précis. Elles permettent dans un second temps d'ajuster les modèles pour qu’ils soient plus pertinents, précis et adaptés aux usages des utilisateurs, tout en comblant les éventuels biais ou lacunes des modèles actuels.</p>",
-                    "title": "Pourquoi les données de préférence collectées sur compar:IA ont-elles de la valeur ?"
+                    "desc": "<p>La spécificité des données collectées sur la plateforme CompaRAG est qu’elles correspondent à des tâches réelles des utilisateurs. Ces données reflètent des préférences humaines dans des contextes métier précis. Elles permettent d’évaluer les outils MCP sur leur capacité à répondre aux besoins concrets des utilisateurs.</p>",
+                    "title": "Pourquoi les données de comparaison collectées sur CompaRAG ont-elles de la valeur ?"
                 },
                 "3": {
-                    "desc": "<p>compar:IA se positionne comme un outil d'évaluation et d'alignement spécifique au français, axé sur la qualité des réponses et la collecte de données de préférence, se distinguant ainsi de l'approche de classement global de <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> développé par <a href='http://lmsys.org' target='_blank'>lmsys.org</a> et de l'alignement éthique des modèles d’IA de <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
-                    "title": "Quelle est la spécificité de compar:IA par rapport à d’autres initiatives similaires ?"
+                    "desc": "<p>CompaRAG se positionne comme un outil d’évaluation comparative des outils MCP, axé sur la performance réelle mesurée par les préférences des utilisateurs, se distinguant ainsi d’autres outils d’évaluation MCP par son approche en aveugle et sa mesure centrée sur les cas d’usage réels.</p>",
+                    "title": "Quelle est la spécificité de CompaRAG par rapport à d’autres outils d’évaluation MCP ?"
                 }
             },
             "title": "Jeu de données"
@@ -169,32 +169,16 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p>compar:IA utilise la méthodologie développée par <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> pour fournir un bilan énergétique qui permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.</p><p>Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO 14044 en se concentrant pour le moment sur l'impact de <strong>l'inférence</strong> (c'est-à-dire l'utilisation des modèles pour répondre aux requêtes) et de la <strong>fabrication des cartes graphiques</strong> (extraction des ressources, fabrication et transport).</p><p>La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que la taille du modèle d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens de sortie. Le calcul de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de la mesure de consommation électrique du modèle.</p><p>Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA sont encore en développement.</p>",
-                    "title": "Comment les indicateurs écologiques sont-ils calculés ?"
+                    "title": "Pourquoi la latence des outils MCP varie-t-elle ?",
+                    "desc": "<p>Chaque outil MCP appelle des services externes (bases de données, API, modèles d’embedding) avec des temps de réponse variables selon la charge et l’infrastructure du fournisseur.</p>"
                 },
                 "2": {
-                    "desc": "<p>La localisation des centres de données joue un rôle dans l'empreinte carbone de l'IA. Si un modèle est entraîné ou utilisé dans un pays fortement dépendant des énergies fossiles, son impact environnemental sera plus important que s'il est hébergé dans un pays utilisant majoritairement des énergies renouvelables.</p><p>La méthode d'analyse de l'impact environnemental de l'IA développée par <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (de GenAI Impact)</a>, intègre des données sur le mix énergétique des différents pays où se situent les serveurs. Cela permet d'obtenir une estimation plus précise et nuancée de l'empreinte carbone réelle de l’inférence sur les différents modèles d’IA générative.</p>",
-                    "title": "Les indicateurs écologiques tiennent-ils compte du mix énergétique des différents pays ?"
-                },
-                "3": {
-                    "desc": "<p>Les indicateurs d'impact écologique actuels se focalisent principalement sur l'impact de <strong>l'inférence</strong>, c'est-à-dire l'utilisation des modèles d'IA pour répondre aux requêtes. Cette approche peut donner l'illusion que l'inférence est moins énergivore que l'entraînement des modèles. Cependant, <strong>la réalité est plus complexe.</strong> Prenons l'analogie de la voiture :</p><ul><li>Construire une voiture (l'entraînement) est un processus ponctuel et gourmand en ressources.</li><li>Chaque trajet en voiture (l'inférence) consomme moins d'énergie, mais ces trajets sont répétés quotidiennement, et leur nombre est potentiellement immense.</li></ul><p>De la même manière, <strong>l'impact cumulé de l'inférence, à l'échelle de millions d'utilisateurs effectuant des requêtes quotidiennement, peut s'avérer supérieur à l'impact de l'entraînement initial.</strong> C'est pourquoi il est crucial que les outils d'évaluation de l'empreinte carbone de l'IA prennent en compte <strong>l'ensemble du cycle de vie</strong> des modèles, de l'entraînement à l'utilisation en production</p>",
-                    "title": "Les indicateurs d’impact écologique tiennent-ils compte des ressources utilisées pour entraîner les modèles ?"
+                    "title": "Comment évaluer le risque de dépendance fournisseur ?",
+                    "desc": "<p>CompaRAG vous permet de tester plusieurs outils MCP sur la même tâche et de comparer leur fiabilité. Un outil performant sur vos cas d’usage réels réduit le risque de dépendance à un fournisseur unique.</p>"
                 }
             },
-            "title": "Indicateurs écologiques"
-        },
-        "i18n": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Oui, l'internationalisation de compar:IA est en cours. Nous commençons par un élargissement à trois pays pilotes : la Lituanie, la Suède et le Danemark. Cette première phase permet de tester l’approche et d'adapter l’interface à différents contextes linguistiques et culturels européens. À terme, le cercle pourra s'étendre à davantage de langues européennes selon les retours d'expérience de ces pays pilotes. L'objectif est de construire progressivement un véritable commun numérique européen pour l'évaluation humaine des IA conversationelles, avec une gouvernance collaborative qui reste encore à définir entre les différents pays participants.</p>",
-                    "title": "compar:IA s’est d’abord concentré sur le français : y a-t-il des plans pour d'autres langues européennes ?"
-                },
-                "2": {
-                    "desc": "<p>Le développement d’un plateforme européenne de comparaison des modèles d’IA conversationnelle offre plusieurs avantages concrets. Elle permet de collecter des données de préférence reflétant les besoins réels des utilisateurs européens, améliorant ainsi la pertinence des modèles pour ce public. Elle garantit ainsi une meilleure représentation des langues et cultures européennes, souvent sous-représentées dans les évaluations globales dominées par l'anglais. Elle assure aussi une conformité avec les réglementations européennes (RGPD, AI Act) et intègre des critères d'évaluation alignés sur les priorités européennes comme la durabilité environnementale et la transparence algorithmique. Enfin, elle favorise l'émergence d'un écosystème d'IA européen compétitif et autonome.</p>",
-                    "title": "Quels sont les avantages d'une plateforme de collecte de préférences spécifiquement européenne ?"
-                }
-            },
-            "title": "Internationalisation"
+            "title": "Performance et fiabilité des outils MCP",
+            "desc": "CompaRAG mesure la performance relative des outils MCP selon les préférences des utilisateurs : latence de réponse, fiabilité et variance des résultats selon les tâches."
         },
         "models": {
             "questions": {
@@ -253,7 +237,7 @@
         }
     },
     "footer": {
-        "backHome": "Retour à l'accueil du site - compar:IA",
+        "backHome": "Retour à l’accueil du site - CompaRAG",
         "dpg": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods",
         "helpUs": "Aidez-nous à améliorer ce service !",
         "license": {
@@ -273,7 +257,7 @@
     "general": {
         "a11y": {
             "desc": "Cette déclaration d’accessibilité s’applique au site <strong>comparia.beta.gouv.fr</strong>.",
-            "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
+            "disclaimer": "<strong>CompaRAG</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
             "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
@@ -336,10 +320,10 @@
             "desc": "Le service est édité par le service du numérique du ministère de la Culture.",
             "privacyData": "Les données collectées sur le site sont les suivantes :",
             "privacyDataArena": "Données relatives aux conversations des utilisateurs avec les modèles : questions posées par les utilisateurs, réponses des modèles et préférence exprimée par l’utilisateur sur les deux modèles",
-            "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer compar:IA ».",
+            "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer CompaRAG ».",
             "tallyTitle": "Formulaires Tally",
             "tallyDesc": "Ce site utilise <a {tallyLinkProps}>Tally</a>, un service de création de formulaires en ligne, pour deux fonctionnalités :",
-            "tallyNewsletter": "Le formulaire d'inscription à la lettre d'information (infolettre) compar:IA",
+            "tallyNewsletter": "Le formulaire d'inscription à la lettre d'information (infolettre) CompaRAG",
             "tallyFeedback": "Le formulaire « Votre avis » permettant de recueillir vos retours sur le service",
             "tallyData": "Lorsque vous remplissez l'un de ces formulaires, les données saisies sont transmises et hébergées par Tally (Tally BV, Belgique). Tally s'engage à ne pas utiliser vos données à des fins commerciales et à respecter le RGPD. Pour plus d'informations, consultez la <a {tallyPrivacyLinkProps}>politique de confidentialité de Tally</a>.",
             "privacyDesc": "Le service ne traite pas de données à caractère personnel telles que définies par la CNIL, à savoir toute information relative à une personne physique susceptible d'être identifiée, directement ou indirectement.",
@@ -349,10 +333,10 @@
         },
         "rgesn": {
             "1": {
-                "1": "Le site compar:IA permet de donner accès simplement et gratuitement à une très grande diversité de modèles d'IA conversationnelle et ainsi de sensibiliser les citoyens aux divers enjeux des IA génératives : diversité, biais, impact environnemental. Par ailleurs, les jeux de données de questions et de préférences constitués sont partagés en open source sous licence MIT/Etalab 2.0.",
+                "1": "Le site CompaRAG permet de donner accès simplement et gratuitement à une très grande diversité de modèles d'IA conversationnelle et ainsi de sensibiliser les citoyens aux divers enjeux des IA génératives : diversité, biais, impact environnemental. Par ailleurs, les jeux de données de questions et de préférences constitués sont partagés en open source sous licence MIT/Etalab 2.0.",
                 "2": "Les cibles utilisatrices du service Compar:IA ont été identifiées en procédant à des entretiens utilisateurs et une phase préalable d'investigation des besoins.",
                 "3": "Ainsi, tous les citoyens sont concernés comme utilisateurs potentiels, mais particulièrement les professeurs, élèves, étudiants, médiateurs numériques, formateurs IA, ainsi que chercheurs (computer sciences, IA, SHS) et entreprises intéressées par l'analyse ou l’utilisation des jeux de données partagés en open source.<br> En cohérence, le service numérique répond à leurs besoins grâce aux fonctionnalités suivantes : tester et comparer gratuitement les modèles, utiliser les données partagées en open source.",
-                "4": "Le service compar:IA s’inscrit dans une démarche d’écoconception visant à réduire les impacts environnementaux. À cette fin, la déclaration a été rédigée dans le cadre de la mise en œuvre du référentiel général de l’écoconception des services numériques (RGESN, version 2024).<br> Le RGESN, réalisé par l’Arcep et l’Arcom, en collaboration avec l’ADEME, la DINUM, la CNIL et l’Inria, est disponible sur le <a {linkProps}>site web de l’Arcep</a>.",
+                "4": "Le service CompaRAG s’inscrit dans une démarche d’écoconception visant à réduire les impacts environnementaux. À cette fin, la déclaration a été rédigée dans le cadre de la mise en œuvre du référentiel général de l’écoconception des services numériques (RGESN, version 2024).<br> Le RGESN, réalisé par l’Arcep et l’Arcom, en collaboration avec l’ADEME, la DINUM, la CNIL et l’Inria, est disponible sur le <a {linkProps}>site web de l’Arcep</a>.",
                 "title": "Raison d’être de ce service"
             },
             "2": {
@@ -382,7 +366,7 @@
                     "4": "Navigation la plus intuitive possible pour réduire le temps passé à trouver une information.",
                     "5": "Conception « mobile first » : tous les contenus sont consultables a minima sur mobile. Le site s’adapte à toutes les tailles d’écran.",
                     "6": "Exclusion de l’intégration des vidéos sur le site.",
-                    "title": "L’enjeu principal consiste à ce que le service compar:IA fonctionne sur les terminaux utilisateurs les plus anciens possibles, dans des conditions de connectivité variées. Plusieurs mesures ont été mise en œuvre lors de la conception, parmi lesquelles :"
+                    "title": "L’enjeu principal consiste à ce que le service CompaRAG fonctionne sur les terminaux utilisateurs les plus anciens possibles, dans des conditions de connectivité variées. Plusieurs mesures ont été mise en œuvre lors de la conception, parmi lesquelles :"
                 },
                 "title": "Stratégie mise en œuvre et objectifs en matière de réduction ou de limitation des impacts environnementaux"
             },
@@ -395,7 +379,7 @@
                     "1": "Score d’avancement dans la mise en œuvre du RGESN, le 10/12/2025 : 89%",
                     "title": "L’auto-diagnostic donne un taux de conformité au <a {linkProps}>RGESN</a> (référentiel général d’écoconception) de 89%."
                 },
-                "2": "Le service numérique compar:IA vise une amélioration de ce score d’avancement pour atteindre 95% en 2027.",
+                "2": "Le service numérique CompaRAG vise une amélioration de ce score d’avancement pour atteindre 95% en 2027.",
                 "3": {
                     "1": "Stratégie : 100 %",
                     "2": "Spécifications : 78 %",
@@ -1331,7 +1315,7 @@
         }
     },
     "header": {
-        "banner": "🏆 Le classement des modèles est maintenant disponible ! Découvrir le classement.",
+        "banner": "🏆 Comparez vos outils MCP en aveugle — votez et consultez le classement !",
         "chatbot": {
             "newDiscussion": "Nouvelle discussion",
             "step": "Étape",
@@ -1350,17 +1334,17 @@
                 "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre"
             }
         },
-        "homeTitle": "Accueil - compar:IA",
+        "homeTitle": "Accueil - CompaRAG",
         "logoAlt": "République Française",
         "menu": "Menu",
         "startDiscussion": "Commencer à discuter",
-        "subtitle": "Le comparateur d’IA conversationnelles",
-        "title": "compar:IA",
+        "subtitle": "Le comparateur d’outils MCP",
+        "title": "CompaRAG",
         "votes": {
             "count": "{count} votes",
             "legend": "Légende",
             "objective": "Obj : {count}",
-            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données CompaRAG mis à disposition librement pour évaluer les outils MCP.<br />Ce commun numérique contribue à une meilleure <strong>évaluation objective des outils MCP.</strong>"
         }
     },
     "home": {
@@ -1380,7 +1364,7 @@
             "title": "Vos questions les plus courantes"
         },
         "intro": {
-            "desc": "Discutez avec deux IA à l’aveugle et évaluez leurs réponses",
+            "desc": "Comparez deux outils MCP à l’aveugle et évaluez leurs résultats",
             "steps": {
                 "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA. 3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.",
                 "one": {
@@ -1397,7 +1381,7 @@
                     "title": "Je donne mon avis"
                 }
             },
-            "title": "Ne vous fiez pas aux réponses <span {props}>d’une seule IA</span>",
+            "title": "Ne vous fiez pas aux résultats <span {props}>d’un seul outil MCP</span>",
             "tos": {
                 "accept": "J'accepte les <a {linkProps}>conditions générales d’utilisation</a>",
                 "error": "Vous devez accepter les modalités d'utilisation pour continuer",
@@ -1424,37 +1408,37 @@
                 "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles",
                 "title": "Explorer les modèles"
             },
-            "title": "Les usages spécifiques de compar:IA",
+            "title": "Les usages spécifiques de CompaRAG",
             "use": {
-                "desc": "Développeurs, chercheurs, éditeurs de modèles… accédez aux jeux de données compar:IA pour améliorer les modèles",
+                "desc": "Développeurs, architectes, équipes produit… accédez aux données de comparaison CompaRAG pour évaluer les outils MCP sur vos propres critères.",
                 "title": "Exploiter les données"
             }
         },
         "use": {
             "compare": {
                 "alt": "Comparer",
-                "desc": "Discutez et développez votre esprit critique en donnant votre préférence",
-                "title": "Comparer les réponses de différents modèles d’IA"
+                "desc": "Soumettez la même tâche à deux outils et choisissez le meilleur résultat",
+                "title": "Comparer les résultats de différents outils MCP"
             },
-            "desc": "compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux.",
+            "desc": "CompaRAG est un outil gratuit qui permet de comparer objectivement les outils MCP et de découvrir leurs forces respectives.",
             "measure": {
                 "alt": "Mesurer",
-                "desc": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
-                "title": "Mesurer l’empreinte écologique des questions posées aux IA"
+                "desc": "Découvrez quel outil répond le mieux à vos besoins métier",
+                "title": "Mesurer la performance des outils sur vos cas d’usage"
             },
             "test": {
                 "alt": "Tester",
-                "desc": "Testez différents modèles, propriétaires ou non, de petites et grandes tailles...",
-                "title": "Tester au même endroit les dernières IA de l’écosystème"
+                "desc": "Testez différents outils MCP, quel que soit leur fournisseur, sur vos propres cas d’usage.",
+                "title": "Tester au même endroit les outils MCP de l’écosystème"
             },
-            "title": "À quoi sert compar:IA ?"
+            "title": "À quoi sert CompaRAG ?"
         },
         "vote": {
             "datasetAccess": "Accéder aux jeux de données",
             "desc": "L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus spécifiques",
             "steps": {
                 "datasets": {
-                    "desc": "Toutes les questions posées et les votes sont compilés dans des jeux de données et publiés librement après anonymisation.",
+                    "desc": "Toutes les tâches soumises et les votes sont compilés dans des jeux de données et publiés librement après anonymisation.",
                     "title": "Les jeux de données par langue"
                 },
                 "finetune": {
@@ -1655,7 +1639,7 @@
                             "job": "Chef de produit - ex chargé de déploiement"
                         }
                     },
-                    "title": "L’équipe compar:IA - France"
+                    "title": "L’équipe CompaRAG"
                 }
             },
             "title": "Les partenaires"
@@ -1663,16 +1647,16 @@
         "comparator": {
             "challenges": {
                 "bias": {
-                    "desc": "Mettre en avant les biais de l'IA liés à la sous-représentation des données non anglophones dans les modèles et sensibiliser à leurs conséquences.",
-                    "title": "Biais culturels et linguistiques"
+                    "desc": "Comparer objectivement les outils MCP sur des tâches réelles pour identifier les outils les plus fiables selon les cas d’usage.",
+                    "title": "Fiabilité variable selon les fournisseurs d’outils MCP"
                 },
                 "impacts": {
-                    "desc": "Révéler les effets écologiques de l'IA générative, encore largement méconnus du grand public.",
-                    "title": "Impact environnemental"
+                    "desc": "Évaluer plusieurs outils MCP sur la même tâche pour réduire le risque de dépendance à un fournisseur unique et faciliter la portabilité.",
+                    "title": "Dépendance fournisseur et portabilité des outils"
                 },
                 "pluralism": {
-                    "desc": "Assurer aux citoyens l'accès à une diversité de modèles d'IA afin qu'ils puissent faire des choix éclairés et développer un regard critique sur ces technologies.",
-                    "title": "Pluralisme des modèles"
+                    "desc": "Mesurer la variance de performance des outils MCP selon les types de tâches pour choisir l’outil le mieux adapté à chaque besoin.",
+                    "title": "Variance de performance selon les cas d’usage"
                 },
                 "thinking": {
                     "desc": "Inciter au questionnement critique sur la place de l’IA générative dans les pratiques personnelles et professionnelles (éducation, travail).",
@@ -1687,7 +1671,7 @@
                 "desc": "Le comparateur sera mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
                 "title": "Le comparateur <span {props}>devient européen</span> !"
             },
-            "screenshotAlt": "Capture d'écran de l'arène compar:ia, avec la question initiale, les deux réponses des modèles et les boutons de vote.",
+            "screenshotAlt": "Capture d’écran de l’arène CompaRAG, avec la question initiale, les deux résultats des outils et les boutons de vote.",
             "tabLabel": "Le comparateur",
             "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
         },
@@ -1700,7 +1684,7 @@
                     "items": {
                         "1": {
                             "date": "Mars 2025",
-                            "desc": "Création et mise à disposition du premier jeu de données compar:IA en français regroupant les questions et préférences des utilisateurs de la plateforme.",
+                            "desc": "Création et mise à disposition du premier jeu de données CompaRAG en français regroupant les questions et préférences des utilisateurs de la plateforme.",
                             "title": "50 000 votes sur le comparateur !"
                         },
                         "2": {
@@ -1711,7 +1695,7 @@
                         "3": {
                             "date": "Juin 2025",
                             "desc": "Mise à disposition de ces trois jeux de données, conversations, réactions, votes, sur <a {hgLinkProps}>HuggingFace</a> et <a {dataLinkProps}>Data.gouv.fr</a>.",
-                            "title": "Publication des trois jeux de données compar:IA"
+                            "title": "Publication des trois jeux de données CompaRAG"
                         }
                     },
                     "tag": "Accélération"
@@ -1731,7 +1715,7 @@
                         "3": {
                             "date": "Janvier 2025",
                             "desc": "Lancement de la nouvelle fonctionnalité de choix du mode de sélection des modèles.",
-                            "title": "compar:IA v2"
+                            "title": "CompaRAG v2"
                         },
                         "4": {
                             "date": "Février 2025",
@@ -1754,20 +1738,20 @@
                             "title": "Lancement des <a {linkProps}>« Duels de l’IA »</a>"
                         },
                         "3": {
-                            "desc": "Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement compar:IA repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.",
-                            "title": "Publication du <a {linkProps}>classement compar:IA</a>"
+                            "desc": "Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement CompaRAG repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.",
+                            "title": "Publication du <a {linkProps}>classement CompaRAG</a>"
                         },
                         "4": {
                             "desc": "Le Danemark rejoint l’aventure en proposant le comparateur dans sa langue national avec un nom de domaine dédié.",
-                            "title": "Ouverture de compar:IA <a {linkProps}>en danois</a>"
+                            "title": "Ouverture de CompaRAG <a {linkProps}>en danois</a>"
                         },
                         "5": {
                             "desc": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods.",
-                            "title": "compar:IA reconnu comme <a {linkProps}>Bien Commun numérique</a>"
+                            "title": "CompaRAG reconnu comme <a {linkProps}>Bien Commun numérique</a>"
                         },
                         "6": {
                             "date": "Novembre 2025",
-                            "desc": "Avec plus de 500 000 conversations uniques depuis le lancement de compar:IA.",
+                            "desc": "Avec plus de 500 000 conversations uniques depuis le lancement de CompaRAG.",
                             "title": "Objectif des 200 000 votes atteint !"
                         }
                     },
@@ -1785,7 +1769,7 @@
                 }
             },
             "tabLabel": "Dates clés",
-            "title": "compar:IA en quelques dates"
+            "title": "CompaRAG en quelques dates"
         },
         "partners": {
             "academy": {
@@ -1859,9 +1843,9 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
-            "tabLabel": "Focus énergie",
-            "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
+            "desc": "Classement des outils MCP selon leur performance mesurée sur les tâches soumises par les utilisateurs. Inclut la latence médiane et le taux de fiabilité.",
+            "tabLabel": "Performance",
+            "title": "Performance des outils",
             "views": {
                 "graph": {
                     "desc": "Sélectionnez un modèle pour connaitre son score Bradley-Terry (BT) et sa consommation énergétique",
@@ -1901,7 +1885,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "compar:IA utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
+                            "1": "CompaRAG utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
                             "2": "Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO 14044 en se concentrant pour le moment sur l'impact de l'inférence (c'est-à-dire l'utilisation des modèles pour répondre aux requêtes) et de la <strong>fabrication des cartes graphiques</strong> (extraction des ressources, fabrication et transport).",
                             "3": "La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que la taille et l’architecture du modèle d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens de sortie. Le calcul de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de la mesure de consommation électrique du modèle.",
                             "4": "Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA sont encore en développement."
@@ -1916,7 +1900,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
+                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé CompaRAG pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
                 "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {notebookLinkProps}>carnet méthodologique</a>."
             },
             "impacts": {
@@ -1993,7 +1977,7 @@
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
-            "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions issus de la <strong>comparaison à l'aveugle </strong> des modèles et collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
+            "desc": "Merci pour vos contributions !<br> Le classement <strong>CompaRAG</strong> repose sur l’ensemble des votes et réactions issus de la <strong>comparaison à l'aveugle </strong> des modèles et collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement CompaRAG n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
             "tabLabel": "Classement"
         },
         "table": {
@@ -2026,7 +2010,8 @@
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
-        "title": "Des votes… au classement des modèles"
+        "title": "Des votes… au classement des modèles",
+        "desc": "Merci pour vos contributions !<br> Le classement <strong>CompaRAG</strong> repose sur l’ensemble des votes issus de la <strong>comparaison à l’aveugle</strong> des outils MCP.<br> Construit pour évaluer objectivement les outils MCP, le classement est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>.<br> Le classement CompaRAG reflète les <strong>préférences des utilisateurs</strong> sur leurs propres tâches."
     },
     "reveal": {
         "equivalent": {
@@ -2066,7 +2051,7 @@
             "title_tooltip": "Les équivalences sont des projections pour illustrer l'effet de masse, nous avons multiplié l'impact de votre discussion avec ce modèle à l'ensemble des utilisateurs d'IA en France : 48% des Français déclarent aujourd’hui avoir recours à l’IA générative, jamais une technologie numérique n'avait été adoptée aussi vite.(source <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
         },
         "feedback": {
-            "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
+            "description": "Faites découvrir CompaRAG en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
             "example": "Exemple de partage de résultat",
             "moreOnVotes": "En savoir plus sur les votes",
             "shareResult": "Partager votre résultat"
@@ -2092,15 +2077,15 @@
         },
         "thanks": {
             "cta": "Accéder au classement",
-            "desc": "Découvrez comment votre préférence se situe par rapport au classement général des modèles dans compar:IA.",
+            "desc": "Découvrez comment votre préférence se situe par rapport au classement général des modèles dans CompaRAG.",
             "graphAlt": "Aperçu du graphique représentant le score et la consommation d'électricité des modèles",
             "rankingAlt": "Aperçu du classement sous forme de tableau",
             "title": "Merci pour votre contribution !"
         }
     },
     "seo": {
-        "desc": "compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
-        "title": "compar:IA, le comparateur d'IA conversationnelles",
+        "desc": "CompaRAG est un outil permettant de comparer à l’aveugle différents outils MCP pour évaluer leur performance sur une même tâche.",
+        "title": "CompaRAG, le comparateur d’outils MCP",
         "titles": {
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
@@ -2122,7 +2107,7 @@
             "ranking": "Classement",
             "rgesn": "Déclaration d’écoconception",
             "share": "Mon bilan",
-            "tool-arena": "Comparateur d’outils"
+            "tool-arena": "Arène des outils"
         }
     },
     "toolArena": {
@@ -2181,7 +2166,7 @@
             "selectedLabel": "je n'apprécie pas (sélectionné)"
         },
         "introA": "Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.",
-        "introB": "Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
+        "introB": "Elle permet d'enrichir les jeux de données CompaRAG dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
         "like": {
             "label": "j'apprécie",
             "selectedLabel": "j'apprécie (sélectionné)"
@@ -2198,9 +2183,9 @@
         "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées.",
         "go": "C'est parti",
         "privacy": "Ne communiquez pas d’informations personnelles comme votre nom, prénom ou adresse.",
-        "title": "Bienvenue sur compar:IA !",
+        "title": "Bienvenue sur CompaRAG !",
         "tos": {
-            "desc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d’IA plus inclusifs.",
+            "desc": "Les comparaisons et les votes que vous effectuez sur CompaRAG sont utilisés de manière anonyme pour constituer des données de performance des outils MCP.",
             "moreInfos": "En savoir plus sur le projet."
         },
         "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
