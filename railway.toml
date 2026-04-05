@@ -1,0 +1,21 @@
+# Backend service Railway config
+# Config file path must be set in Railway dashboard:
+#   Service Settings > Config File Path = CompaRAG/railway.toml
+#
+# DO NOT set rootDirectory here — the Dockerfile copies backend/, utils/, templates/
+# relative to the repo root. rootDirectory would break the build context.
+# Leave rootDirectory unset; set it only in Railway dashboard if needed (don't).
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "docker/Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+preDeployCommand = [
+  "psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/001_create_tool_calls.sql",
+  "psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/002_create_tool_votes.sql"
+]
