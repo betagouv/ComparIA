@@ -28,7 +28,6 @@ COPY backend /app/backend
 COPY utils /app/utils
 COPY templates /app/templates
 
-VOLUME /data
 EXPOSE 80
 
 ARG GIT_COMMIT
