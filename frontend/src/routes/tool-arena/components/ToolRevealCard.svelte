@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Badge } from '$components/dsfr'
+
   let {
     pos,
     name,
@@ -23,31 +25,35 @@
 </script>
 
 <div
-  class="cg-border rounded-lg bg-white p-4 md:p-6 flex flex-col gap-3 {selected ? 'border-green-500 border-2' : ''}"
+  class="cg-border gap-4 rounded-lg! bg-white p-4 md:rounded-lg md:px-6 md:py-8 flex w-full flex-col"
+  class:border-blue-france={selected}
 >
-  <div class="flex items-center gap-2">
-    <div class="c-bot-disk-{pos.toLowerCase()}"></div>
-    <p class="mb-0! font-bold">Tool {pos.toUpperCase()}</p>
+  <div class="flex items-center justify-between">
+    <div class="flex items-center">
+      <div class="c-bot-disk-{pos}"></div>
+      <p class="ms-1! mb-0! font-bold">Tool {pos.toUpperCase()}</p>
+    </div>
     {#if selected}
-      <span class="ml-auto px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-bold border border-green-300">
-        Winner
-      </span>
+      <Badge small type="success">Winner</Badge>
     {/if}
   </div>
 
   <div>
-    <h5 class="text-base font-bold text-dark-grey mb-1">{name}</h5>
-    <p class="text-sm text-grey mb-0!">{description}</p>
+    <p class="mb-1! font-bold text-dark-grey">{name}</p>
+    <p class="fr-text--sm text-grey mb-0!">{description}</p>
   </div>
 
-  {#if error}
-    <div class="rounded bg-red-50 border border-red-200 p-3">
-      <p class="text-xs text-red-700 mb-0!">Error: {error}</p>
-    </div>
-  {:else}
-    <div class="flex items-center gap-2 text-sm text-grey">
-      <span class="font-medium">Response time:</span>
-      <span class="font-bold text-dark-grey">{durationLabel}</span>
-    </div>
-  {/if}
+  <div class="flex items-center gap-2 mt-auto">
+    {#if error}
+      <Badge small type="error">Error</Badge>
+    {:else}
+      <Badge small type="info">{durationLabel}</Badge>
+    {/if}
+  </div>
 </div>
+
+<style>
+  .border-blue-france {
+    border: 2px solid var(--blue-france-main-525);
+  }
+</style>
