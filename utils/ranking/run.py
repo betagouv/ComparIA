@@ -11,7 +11,7 @@ from typing import Literal
 import cyclopts
 from fastapi.encoders import jsonable_encoder
 
-from utils.storage.redis import REDIS_RANKING_KEY, get_redis_client
+from utils.storage.redis import REDIS_RANKING_KEY, REDIS_TOOL_RANKING_KEY, get_redis_client
 from utils.utils import (
     LLMS_GENERATED_DATA_FILE,
     configure_logger,
@@ -21,6 +21,7 @@ from utils.utils import (
 
 from .compute import DataGroup, RankingResult, compute_all_rankings
 from .monitor import monitor
+from .tool_compute import compute_tool_rankings
 
 logger = configure_logger(logging.getLogger("ranking.run"))
 
@@ -65,6 +66,25 @@ def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
 
     llms = read_json(LLMS_GENERATED_DATA_FILE)["models"]
     monitor(llms, data["all"])
+
+    compute_and_store_tool_rankings()
+
+
+def compute_and_store_tool_rankings() -> None:
+    """Compute tool rankings and store to Redis under REDIS_TOOL_RANKING_KEY."""
+    try:
+        result = compute_tool_rankings()
+        if result is None:
+            return
+        client = get_redis_client()
+        client.setex(
+            REDIS_TOOL_RANKING_KEY,
+            time=3600 * 24,
+            value=json.dumps(jsonable_encoder(result)),
+        )
+        logger.info("[ToolRanking] Stored tool rankings to Redis")
+    except Exception as e:
+        logger.error(f"[ToolRanking] Error storing tool rankings: {e}")
 
 
 if __name__ == "__main__":
