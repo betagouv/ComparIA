@@ -34,4 +34,4 @@ EXPOSE 80
 ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
 
-CMD ["uv", "run", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["sh", "-c", "uv run uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-80}"]
