@@ -26,6 +26,7 @@ class ToolVoteRecord(BaseModel):
     task: str
     goal: str
     timestamp: str       # ISO format
+    competitor_type: str = "tool"
 
 
 def save_tool_vote_to_db(data: dict) -> dict:

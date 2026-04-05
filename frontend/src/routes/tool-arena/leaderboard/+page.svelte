@@ -101,7 +101,7 @@
       </div>
       <p class="fr-text--xs text-grey mt-3">
         ELO scores computed using the Bradley-Terry model with bootstrap confidence intervals (p2.5 – p97.5).
-        Tools marked "Provisional" have fewer than 10 matches.
+        Tools marked "Provisional" have fewer than 50 matches.
       </p>
     {/if}
   </div>
