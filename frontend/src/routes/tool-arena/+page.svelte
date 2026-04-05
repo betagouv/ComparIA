@@ -1,6 +1,7 @@
 <script lang="ts">
   import { api } from '$lib/fastapi-client'
-  import { ToolArenaForm, ToolResultCard, ToolRevealCard, ToolVoteArea } from './components'
+  import { ToolArenaForm, ToolArenaHeader, ToolResultCard, ToolRevealCard, ToolVoteArea } from './components'
+  import { Button } from '$components/dsfr'
 
   type CompareResponse = {
     session_hash: string
@@ -35,7 +36,7 @@
 
   const bothFailed = $derived(!!errorA && !!errorB && !resultA && !resultB)
 
-  async function handleCompare(task: string, goal: string) {
+  async function handleCompare(task: string, goal: string, documentContent: string = '') {
     phase = 'loading'
     compareError = null
 
@@ -43,7 +44,7 @@
       const data = await api.request<CompareResponse>('/tool-arena/compare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task, goal })
+        body: JSON.stringify({ task, goal, document_content: documentContent })
       })
 
       sessionHash = data.session_hash
@@ -88,65 +89,123 @@
   }
 </script>
 
-<div class="fr-container py-8">
-  <h1 class="fr-h3 text-center mb-6">Tool Arena</h1>
-  <p class="text-center text-grey mb-8">Compare two MCP tools on the same task</p>
+<ToolArenaHeader />
 
+<div class="fr-container pt-4 pb-0 flex justify-end">
+  <a href="/tool-arena/leaderboard" class="fr-link fr-text--sm">
+    View Leaderboard &rarr;
+  </a>
+</div>
+
+<main class="bg-very-light-grey relative min-h-screen">
   {#if phase === 'input'}
-    {#if compareError}
-      <div class="mb-6 rounded bg-red-50 border border-red-200 p-4 text-center">
-        <p class="text-sm text-red-700 mb-0!">Error: {compareError}</p>
+    <div id="prompt-area" class="fr-container py-10 md:py-24">
+      <div class="fr-col-xl-8 m-auto">
+        <h2 class="mb-0! text-center" style="font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;">
+          Which tool does it better?
+        </h2>
+
+        {#if compareError}
+          <div class="mb-6 mt-4 cg-border rounded-lg! bg-white p-4 text-center">
+            <p class="fr-text--sm text-red-600 mb-0!">{compareError}</p>
+          </div>
+        {/if}
+
+        <ToolArenaForm onsubmit={handleCompare} />
       </div>
-    {/if}
-    <ToolArenaForm onsubmit={handleCompare} />
+    </div>
 
   {:else if phase === 'loading'}
-    <div class="text-center py-20">
-      <p class="text-lg text-grey animate-pulse">Comparing tools...</p>
-      <p class="text-sm text-grey mt-2">This may take up to 30 seconds</p>
+    <div class="fr-container py-10 md:py-24">
+      <div class="fr-col-xl-8 m-auto text-center">
+        <h2 class="mb-4!" style="font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;">
+          Comparing tools...
+        </h2>
+        <div class="py-16">
+          <div class="flex justify-center mb-6">
+            <div class="flex gap-2">
+              <div class="c-bot-disk-a animate-pulse"></div>
+              <span class="text-grey animate-pulse">vs</span>
+              <div class="c-bot-disk-b animate-pulse"></div>
+            </div>
+          </div>
+          <p class="fr-text--sm text-grey">This may take up to 30 seconds</p>
+        </div>
+      </div>
     </div>
 
   {:else if phase === 'results'}
-    <div class="gap-10 md:grid-cols-2 md:gap-6 grid mb-8">
-      <ToolResultCard label="A" result={resultA} error={errorA} />
-      <ToolResultCard label="B" result={resultB} error={errorB} />
+    <div class="fr-container--fluid bg-light-grey sticky z-3 top-0">
+      <div class="fr-container">
+        <div class="py-3 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div class="c-bot-disk-a"></div>
+              <span class="font-medium fr-text--sm">Tool A</span>
+            </div>
+            <span class="text-grey">vs</span>
+            <div class="flex items-center gap-2">
+              <div class="c-bot-disk-b"></div>
+              <span class="font-medium fr-text--sm">Tool B</span>
+            </div>
+          </div>
+          <span class="fr-text--sm text-grey">Vote below to reveal identities</span>
+        </div>
+      </div>
     </div>
 
-    {#if bothFailed}
-      <div class="text-center">
-        <p class="text-red-600 mb-4">Both tools encountered errors.</p>
-        <button
-          onclick={() => (phase = 'input')}
-          class="px-6 py-3 rounded-lg border border-grey text-grey hover:bg-light-grey transition-colors"
-        >
-          Try Again
-        </button>
+    <div class="fr-container py-8 md:py-12">
+      <div class="gap-10 md:grid-cols-2 md:gap-6 grid mb-8">
+        <ToolResultCard label="A" result={resultA} error={errorA} />
+        <ToolResultCard label="B" result={resultB} error={errorB} />
       </div>
-    {:else}
-      <ToolVoteArea onvote={handleVote} />
-    {/if}
+
+      {#if bothFailed}
+        <div class="text-center py-7">
+          <p class="fr-text--sm text-red-600 mb-4">Both tools encountered errors.</p>
+          <Button onclick={() => (phase = 'input')}>Try Again</Button>
+        </div>
+      {:else}
+        <ToolVoteArea onvote={handleVote} />
+      {/if}
+    </div>
 
   {:else if phase === 'revealed'}
-    <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid grid-cols-1 mb-8">
-      <ToolRevealCard
-        {...revealData!.tool_a}
-        selected={revealData!.chosen === 'a'}
-      />
-      <ToolRevealCard
-        {...revealData!.tool_b}
-        selected={revealData!.chosen === 'b'}
-      />
+    <div class="fr-container--fluid bg-light-grey sticky z-3 top-0">
+      <div class="fr-container">
+        <div class="py-3 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div class="c-bot-disk-a"></div>
+              <span class="font-medium fr-text--sm">{revealData!.tool_a.name}</span>
+            </div>
+            <span class="text-grey">vs</span>
+            <div class="flex items-center gap-2">
+              <div class="c-bot-disk-b"></div>
+              <span class="font-medium fr-text--sm">{revealData!.tool_b.name}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    {#if revealData!.chosen === 'tie'}
-      <p class="text-center text-grey mb-4">You voted: Tie</p>
-    {/if}
-    <div class="text-center mt-6">
-      <button
-        onclick={resetArena}
-        class="px-6 py-3 rounded-lg border border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors"
-      >
-        New Comparison
-      </button>
+
+    <div class="fr-container py-8 md:py-12">
+      <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid grid-cols-1 mb-8">
+        <ToolRevealCard
+          {...revealData!.tool_a}
+          selected={revealData!.chosen === 'a'}
+        />
+        <ToolRevealCard
+          {...revealData!.tool_b}
+          selected={revealData!.chosen === 'b'}
+        />
+      </div>
+      {#if revealData!.chosen === 'tie'}
+        <p class="fr-text--sm text-grey text-center mb-4">You voted: Tie</p>
+      {/if}
+      <div class="text-center mt-8 mb-8">
+        <Button onclick={resetArena}>New Comparison</Button>
+      </div>
     </div>
   {/if}
-</div>
+</main>
