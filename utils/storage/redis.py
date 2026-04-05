@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from typing import Final
 
@@ -21,6 +22,7 @@ def get_redis_client() -> redis.Redis:
         client = redis.Redis(
             host=settings.COMPARIA_REDIS_HOST,
             port=6379,
+            password=os.environ.get("COMPARIA_REDIS_PASSWORD") or None,
             decode_responses=True,  # returns strings instead of bytes
         )
 
