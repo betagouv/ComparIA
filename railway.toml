@@ -15,4 +15,4 @@ healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
-preDeployCommand = "sh -c 'psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/001_create_tool_calls.sql && psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/002_create_tool_votes.sql'"
+preDeployCommand = "sh -c 'psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/001_create_tool_calls.sql && psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/002_create_tool_votes.sql && psql $COMPARIA_DB_URI -f backend/tool_arena/migrations/003_create_logs.sql'"
