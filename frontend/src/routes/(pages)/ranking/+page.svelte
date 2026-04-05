@@ -72,7 +72,7 @@
         })
     ].join('\n')
 
-    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
+    downloadTextFile(data, `comparag_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
   }
 
   // function onDownloadPrefsData() {
@@ -109,7 +109,7 @@
   //       })
   //   ].join('\n')
 
-  //   downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}-license_Etalab_2_0`)
+  //   downloadTextFile(data, `comparag_model-preferences-${lastUpdateDate}-license_Etalab_2_0`)
   // }
 </script>
 

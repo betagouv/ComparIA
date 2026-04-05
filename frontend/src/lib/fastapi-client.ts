@@ -1,5 +1,5 @@
 /**
- * FastAPI client for ComparIA backend.
+ * FastAPI client for CompaRAG backend.
  *
  * Replaces Gradio client with native HTTP/SSE implementation.
  */

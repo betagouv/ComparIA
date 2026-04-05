@@ -14,7 +14,7 @@ if (env.CUSTOM_LOGGER_URL) {
 		new LokiTransport({
 			host: env.CUSTOM_LOGGER_URL,
 			labels: {
-				app: 'comparia-frontend',
+				app: 'comparag-frontend',
 				environment: env.ENVIR || 'dev'
 			},
 			json: true,

@@ -31,7 +31,7 @@
       variant: 'light-info',
       icon: 'i-ri-book-ai-fill',
       subKinds: [
-        { id: 'comparia', label: 'Organisé par compar:IA' },
+        { id: 'comparia', label: 'Organisé par CompaRAG' },
         { id: 'blog', label: 'Billet de blog' },
         { id: 'kit', label: 'Kit de communication' }
       ]

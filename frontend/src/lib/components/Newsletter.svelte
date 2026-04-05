@@ -28,7 +28,7 @@
         frameborder="0"
         marginheight="0"
         marginwidth="0"
-        title="Infolettre compar:IA"
+        title="Infolettre CompaRAG"
         class="outline-none! dark:invert"
       ></iframe>
     </div>
