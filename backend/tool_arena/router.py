@@ -13,6 +13,7 @@ Per D-04: session hash passed via X-Session-Hash header.
 Zero imports from backend.arena.
 """
 
+import json
 import logging
 from datetime import datetime
 from typing import Literal
@@ -22,6 +23,7 @@ from pydantic import BaseModel
 
 from backend.config import settings
 from backend.tool_arena.dispatcher import MCPDispatcher
+from utils.storage.redis import REDIS_TOOL_RANKING_KEY, get_redis_client
 from backend.tool_arena.models import save_tool_call_to_db, ToolCallRecord
 from backend.tool_arena.persistence import ToolVoteRecord, save_tool_vote_to_db
 from backend.tool_arena.session import (
@@ -43,6 +45,7 @@ router = APIRouter(prefix="/tool-arena", tags=["tool-arena"])
 class CompareRequest(BaseModel):
     task: str
     goal: str
+    document_content: str = ""
 
 
 class CompareResponse(BaseModel):
@@ -126,6 +129,34 @@ def _build_reveal_response(session: dict, chosen: str) -> ToolRevealResponse:
 
 
 # ---------------------------------------------------------------------------
+# Endpoint 0: GET /tool-arena/leaderboard
+# ---------------------------------------------------------------------------
+
+
+@router.get("/leaderboard")
+async def get_tool_leaderboard():
+    """
+    Return current tool rankings from Redis.
+
+    Response shape: {data_timestamp: float|null, tools: [{tool_id, elo, ...}, ...]}
+    Returns empty tools list if Redis is unavailable or no data exists yet.
+    """
+    try:
+        client = get_redis_client()
+        raw = client.get(REDIS_TOOL_RANKING_KEY)
+    except Exception:
+        return {"data_timestamp": None, "tools": []}
+    if not raw:
+        return {"data_timestamp": None, "tools": []}
+    data = json.loads(raw)
+    rankings = data.get("rankings", {})
+    return {
+        "data_timestamp": data.get("timestamp"),
+        "tools": list(rankings.values()),
+    }
+
+
+# ---------------------------------------------------------------------------
 # Endpoint 1: POST /tool-arena/session
 # ---------------------------------------------------------------------------
 
@@ -159,6 +190,7 @@ async def compare(body: CompareRequest):
         goal=body.goal,
         llm_id=llm_id,
         session_id=session_hash,
+        document_content=body.document_content,
     )
 
     # Persist both tool calls to DB early (don't lose data if user never votes)
