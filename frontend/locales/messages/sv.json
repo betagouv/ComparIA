@@ -114,7 +114,7 @@
                 }
             },
             "share": "Visa hur du använder datan",
-            "title": "Åtkomst till datauppsättningar från compar:IA"
+            "title": "Åtkomst till datauppsättningar från CompaRAG"
         },
         "reuse": {
             "bunka": {
@@ -129,7 +129,7 @@
                 "desc": "Bunka.ai-teamet genomförde en djupgående studie av interaktioner mellan användare av Compar:AI-plattformen och AI-modeller, där de undersökte vilka ämnen man föredrog, vilka frågor som ställdes, och ifall modellerna främst användes som automatiseringsverktyg eller för att assistera användaren. Denna analys baseras på ett stort urval av 25 000 konversationer.",
                 "method": "Läs mer om metoderna"
             },
-            "desc": "Exempel på användning av datamängder från compar:IA",
+            "desc": "Exempel på användning av datamängder från CompaRAG",
             "title": "Hur används dessa uppgifter?"
         }
     },
@@ -152,16 +152,16 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p>Preferensdata används för att förbättra modeller under framtida träning.</p><p>Genom att blint jämföra svaren från två modeller uttrycker compar:IA-användare sina preferenser och anger vilka svar som är mest relevanta. Dessa preferensdata kan användas för att finjustera modellen – det vill säga att träna dem att generera svar som är mer i linje med användarnas förväntningar och preferenser.</p><p>Detta är en iterativ process där modellen gradvis lär sig att generera bättre svar baserat på feedback från människor om svarens kvalitet. Genom att ges tillgång till preferensdata lär sig modellerna att ta med den i sin svarsgenereringsprocess.</p>",
+                    "desc": "<p>Preferensdata används för att förbättra modeller under framtida träning.</p><p>Genom att blint jämföra svaren från två modeller uttrycker CompaRAG-användare sina preferenser och anger vilka svar som är mest relevanta. Dessa preferensdata kan användas för att finjustera modellen – det vill säga att träna dem att generera svar som är mer i linje med användarnas förväntningar och preferenser.</p><p>Detta är en iterativ process där modellen gradvis lär sig att generera bättre svar baserat på feedback från människor om svarens kvalitet. Genom att ges tillgång till preferensdata lär sig modellerna att ta med den i sin svarsgenereringsprocess.</p>",
                     "title": "Har preferensdata en omedelbar effekt på modellernas prestanda?"
                 },
                 "2": {
-                    "desc": "<p>Det unika med data som samlas in på compar:IA-plattformen är att de använder språk med mindre resurser, och motsvarar verkliga användaruppgifter. Denna data återspeglar mänskliga preferenser i ett specifikt språkligt och kulturellt sammanhang. Den gör det möjligt att justera modellerna för att göra dem mer relevanta, korrekta och anpassade till användarnas behov, samtidigt som vi åtgärdar eventuell bias eller luckor i nuvarande modeller.</p>",
-                    "title": "Varför är preferensdata som samlas in på compar:IA värdefull?"
+                    "desc": "<p>Det unika med data som samlas in på CompaRAG-plattformen är att de använder språk med mindre resurser, och motsvarar verkliga användaruppgifter. Denna data återspeglar mänskliga preferenser i ett specifikt språkligt och kulturellt sammanhang. Den gör det möjligt att justera modellerna för att göra dem mer relevanta, korrekta och anpassade till användarnas behov, samtidigt som vi åtgärdar eventuell bias eller luckor i nuvarande modeller.</p>",
+                    "title": "Varför är preferensdata som samlas in på CompaRAG värdefull?"
                 },
                 "3": {
-                    "desc": "<p>compar:IA positionerar sig som ett bedömnings- och anpassningsverktyg för språk med mindre resurser, fokuserat på svarskvalitet och insamling av preferensdata, och skiljer sig därmed från den globala rankningsmetoden från <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> utvecklad av <a href='http://lmsys.org' target='_blank'>lmsys.org</a> och den etiska anpassningen av AI-modeller från <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
-                    "title": "Vad skiljer compar:IA från andra liknande initiativ?"
+                    "desc": "<p>CompaRAG positionerar sig som ett bedömnings- och anpassningsverktyg för språk med mindre resurser, fokuserat på svarskvalitet och insamling av preferensdata, och skiljer sig därmed från den globala rankningsmetoden från <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> utvecklad av <a href='http://lmsys.org' target='_blank'>lmsys.org</a> och den etiska anpassningen av AI-modeller från <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
+                    "title": "Vad skiljer CompaRAG från andra liknande initiativ?"
                 }
             },
             "title": "Datamängd"
@@ -169,7 +169,7 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p> compar:AI använder den metod som utvecklats av <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> för att ge en uppskattning av energiförbrukning så att användare kan jämföra miljöpåverkan av olika AI-modeller för samma fråga. Denna transparens är avgörande för att uppmuntra utveckling och införande av mer miljövänliga AI-modeller.</p><p>Ecologits tillämpar principerna för livscykelanalys (LCA) i enlighet med ISO 14044, med fokus för tillfället på effekten av <strong>inferens</strong> (dvs. användningen av modeller för att besvara frågor) och <strong>tillverkningen av grafikkort</strong> (resursutvinning, tillverkning och transport).</p><p>Modellens strömförbrukning uppskattas genom olika parametrar, som storleken på den AI-modell som används, platsen för servrarna där modellerna körs, och antalet utdatatokens. Beräkningen av indikatorn för global uppvärmningspotential uttryckt i CO2-ekvivalenter härleds från modellens strömförbrukningsmätning.</p><p>Det är viktigt att notera att metoder för att bedöma miljöpåverkan av AI fortfarande är under utveckling.</p>",
+                    "desc": "<p> CompaRAG använder den metod som utvecklats av <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> för att ge en uppskattning av energiförbrukning så att användare kan jämföra miljöpåverkan av olika AI-modeller för samma fråga. Denna transparens är avgörande för att uppmuntra utveckling och införande av mer miljövänliga AI-modeller.</p><p>Ecologits tillämpar principerna för livscykelanalys (LCA) i enlighet med ISO 14044, med fokus för tillfället på effekten av <strong>inferens</strong> (dvs. användningen av modeller för att besvara frågor) och <strong>tillverkningen av grafikkort</strong> (resursutvinning, tillverkning och transport).</p><p>Modellens strömförbrukning uppskattas genom olika parametrar, som storleken på den AI-modell som används, platsen för servrarna där modellerna körs, och antalet utdatatokens. Beräkningen av indikatorn för global uppvärmningspotential uttryckt i CO2-ekvivalenter härleds från modellens strömförbrukningsmätning.</p><p>Det är viktigt att notera att metoder för att bedöma miljöpåverkan av AI fortfarande är under utveckling.</p>",
                     "title": "Hur beräknas miljömässiga indikatorer?"
                 },
                 "2": {
@@ -186,8 +186,8 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p> Ja, internationaliseringen av compar:AI är igång. Vi börjar med en expansion till tre pilotländer: Litauen, Sverige och Danmark. Denna första fas kommer att göra det möjligt för oss att testa tillvägagångssättet och anpassa gränssnittet till olika europeiska språkliga och kulturella sammanhang. Så småningom kan vi expandera till fler europeiska språk baserat på feedback från dessa pilotländer. Målet är att gradvis bygga en gemensam europeisk digital plattform för mänsklig utvärdering av konversationsbaserad AI, med samarbetsinriktad styrning som återstår att definiera mellan de olika deltagande länderna. </p>",
-                    "title": "compar:IA fokuserade från början på franska – finns det planer för andra europeiska språk?"
+                    "desc": "<p> Ja, internationaliseringen av CompaRAG är igång. Vi börjar med en expansion till tre pilotländer: Litauen, Sverige och Danmark. Denna första fas kommer att göra det möjligt för oss att testa tillvägagångssättet och anpassa gränssnittet till olika europeiska språkliga och kulturella sammanhang. Så småningom kan vi expandera till fler europeiska språk baserat på feedback från dessa pilotländer. Målet är att gradvis bygga en gemensam europeisk digital plattform för mänsklig utvärdering av konversationsbaserad AI, med samarbetsinriktad styrning som återstår att definiera mellan de olika deltagande länderna. </p>",
+                    "title": "CompaRAG fokuserade från början på franska – finns det planer för andra europeiska språk?"
                 },
                 "2": {
                     "desc": "<p>Utvecklingen av en europeisk plattform för att jämföra konversationsbaserade AI-modeller erbjuder flera konkreta fördelar. Den möjliggör insamling av preferensdata som återspeglar de europeiska användarnas verkliga behov, vilket förbättrar modellernas relevans för denna publik. Den garanterar därmed bättre representation av europeiska språk och kulturer, som ofta är underrepresenterade i globala utvärderingar som domineras av engelska. Den säkerställer också efterlevnad av europeiska bestämmelser (GDPR, AI-lagen) och integrerar utvärderingskriterier som är i linje med europeiska prioriteringar som miljömässig hållbarhet och algoritmisk transparens. Slutligen främjar den framväxten av ett konkurrenskraftigt och autonomt europeiskt AI-ekosystem.</p>",
@@ -271,7 +271,7 @@
     "general": {
         "a11y": {
             "desc": "Denna tillgänglighetspolicy gäller webbplatsen <strong>comparia.beta.gouv.fr</strong>.",
-            "disclaimer": "<strong> compar:IA </strong> åtar sig att göra sina digitala tjänster tillgängliga, i enlighet med artikel 47 i lag nr 2005-102 av den 11 februari 2005.",
+            "disclaimer": "<strong> CompaRAG </strong> åtar sig att göra sina digitala tjänster tillgängliga, i enlighet med artikel 47 i lag nr 2005-102 av den 11 februari 2005.",
             "improveAdress": "Adress: DINUM, 20 avenue de Ségur, 75007 Paris",
             "improveDelay": "Vi försöker svara inom 2 arbetsdagar.",
             "improveDesc": "Om du har problem att komma åt innehåll eller tjänst kan du kontakta administratören för beta.gouv.fr, för att bli hänvisad till ett tillgängligt alternativ eller få innehållet i ett annat format.",
@@ -334,7 +334,7 @@
             "desc": "Tjänsten publiceras av franska kulturministeriets digitala avdelning.",
             "privacyData": "Uppgifterna som samlas in på webbplatsen är följande:",
             "privacyDataArena": "Data relaterade till användarkonversationer med modeller: frågor ställda av användare, svar från modeller, och vilken av de två modellerna användaren föredrar",
-            "privacyDataForm": "Data relaterade till frågeformuläret ”Hjälp oss att förbättra compar:IA”.",
+            "privacyDataForm": "Data relaterade till frågeformuläret ”Hjälp oss att förbättra CompaRAG”.",
             "privacyDesc": "Tjänsten behandlar inte personuppgifter enligt CNIL:s definition, nämligen information som rör en fysisk person som kan identifieras, direkt eller indirekt.",
             "privacyResp": "Användaren ansvarar för de uppgifter eller det innehåll som de anger i de frågor som erbjuds av plattformen. Genom att acceptera <a {linkProps}>användarvillkoren</a> samtycker användaren till att inte överföra någon information som kan identifiera dem eller en tredje part.",
             "privacyTitle": "Behandlar vi personuppgifter?",
@@ -931,7 +931,7 @@
                 "title": "Ge din åsikt om jämförelseprogrammet (öppnar ett nytt fönster)"
             }
         },
-        "homeTitle": "Hem – compar:IA",
+        "homeTitle": "Hem – CompaRAG",
         "logoAlt": "Republiken Frankrike",
         "menu": "Meny",
         "startDiscussion": "Börja chatta",
@@ -941,7 +941,7 @@
             "count": "{count} röster",
             "legend": "Teckenförklaring",
             "objective": "Mål: {count}",
-            "tooltip": "Diskutera, rösta och hjälp oss att uppnå detta mål!<br /><strong>Dina röster är viktiga</strong> – de bidrar till compar:IA-datasetet som görs fritt tillgängligt för att förfina framtida modeller många olika språk.<br />Denna digitala allmänning bidrar till bästa <strong>respekt för den språkliga och kulturella mångfalden i framtida språkmodeller.</strong>"
+            "tooltip": "Diskutera, rösta och hjälp oss att uppnå detta mål!<br /><strong>Dina röster är viktiga</strong> – de bidrar till CompaRAG-datasetet som görs fritt tillgängligt för att förfina framtida modeller många olika språk.<br />Denna digitala allmänning bidrar till bästa <strong>respekt för den språkliga och kulturella mångfalden i framtida språkmodeller.</strong>"
         }
     },
     "home": {
@@ -993,9 +993,9 @@
                 "desc": "Se alla modellernas egenskaper och användarsvillkor på ett ställe",
                 "title": "Utforska modellerna"
             },
-            "title": "Specifika användningsområden för compar:IA",
+            "title": "Specifika användningsområden för CompaRAG",
             "use": {
-                "desc": "Utvecklare, forskare, modellskapare – få tillgång till compar:IAs datamängder för att förbättra modeller",
+                "desc": "Utvecklare, forskare, modellskapare – få tillgång till CompaRAGs datamängder för att förbättra modeller",
                 "title": "Utnyttjande av data"
             }
         },
@@ -1005,7 +1005,7 @@
                 "desc": "Diskutera och utveckla ditt kritiska tänkande genom att ange dina preferenser",
                 "title": "Jämför svaren från olika AI-modeller"
             },
-            "desc": "compar:IA är ett gratis verktyg som hjälper till att öka medvetenheten bland medborgare om generativ AI och dess utmaningar.",
+            "desc": "CompaRAG är ett gratis verktyg som hjälper till att öka medvetenheten bland medborgare om generativ AI och dess utmaningar.",
             "measure": {
                 "alt": "Mät",
                 "desc": "Upptäck vilken miljöpåverkan dina diskussioner har för varje modell",
@@ -1016,7 +1016,7 @@
                 "desc": "Testa olika modeller, proprietära eller ej, små eller stora...",
                 "title": "Testa de senaste AI-modellerna på ett enda ställe"
             },
-            "title": "Vad används compar:IA till?"
+            "title": "Vad används CompaRAG till?"
         },
         "vote": {
             "datasetAccess": "Åtkomst till datamängderna",
@@ -1290,7 +1290,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Sedan 2024 har tusentals användare använt compar:IA för att jämföra svaren från olika modeller, vilket genererat hundratusentals röster. Att bara räkna antalet vinster räcker inte för att fastställa en ranking. Ett rättvist system måste vara statistiskt robust, justera efter varje jämförelse och verkligen återspegla värdet av de prestationer som uppnåtts.",
+                "1": "Sedan 2024 har tusentals användare använt CompaRAG för att jämföra svaren från olika modeller, vilket genererat hundratusentals röster. Att bara räkna antalet vinster räcker inte för att fastställa en ranking. Ett rättvist system måste vara statistiskt robust, justera efter varje jämförelse och verkligen återspegla värdet av de prestationer som uppnåtts.",
                 "2": "Det är med detta i åtanke som en <strong>rankning baserad på Bradley-Terry-modellen</strong> upprättades, utvecklad i samarbete med <strong>teamen vid Digital Regulation Expertise Center (PEReN)</strong>, med hjälp av alla röster och reaktioner som samlats in på plattformen. För att lära dig mer, se vår <a {linkProps}>metodguide</a>."
             },
             "impacts": {
@@ -1408,7 +1408,7 @@
             "title": "Vilket motsvarar:"
         },
         "feedback": {
-            "description": "Dela compar:AI med andra genom att dela AI-modellerna du har interagerat med! Endast namnen och energipåverkan från diskussionen kommer att synas via den här länken – din text visas inte.",
+            "description": "Dela CompaRAG med andra genom att dela AI-modellerna du har interagerat med! Endast namnen och energipåverkan från diskussionen kommer att synas via den här länken – din text visas inte.",
             "example": "Exempel på delade resultat",
             "moreOnVotes": "Läs mer om att rösta",
             "shareResult": "Dela ditt resultat"
@@ -1433,8 +1433,8 @@
         }
     },
     "seo": {
-        "desc": "compar:IA är ett verktyg för att jämföra olika konversationsbaserade AI-modeller, för att öka medvetenheten om utmaningarna med generativ AI (bias, miljöpåverkan) och för att skapa datamängder för språk med begränsade resurser.",
-        "title": "compar:IA, jämförelseverktyget för konversations-AI",
+        "desc": "CompaRAG är ett verktyg för att jämföra olika konversationsbaserade AI-modeller, för att öka medvetenheten om utmaningarna med generativ AI (bias, miljöpåverkan) och för att skapa datamängder för språk med begränsade resurser.",
+        "title": "CompaRAG, jämförelseverktyget för konversations-AI",
         "titles": {
             "accessibilite": "Tillgänglighetspolicy",
             "arene": "Chat",
@@ -1512,7 +1512,7 @@
             "selectedLabel": "Jag gillar inte (vald)"
         },
         "introA": "Innan vi tar avslöjar vilka modellerna var behöver vi dina preferenser.",
-        "introB": "Det gör det möjligt för oss att berika compar:IA-datauppsättningarna, vars mål är att förfina framtida AI-modeller på språk med begränsade resurser",
+        "introB": "Det gör det möjligt för oss att berika CompaRAG-datauppsättningarna, vars mål är att förfina framtida AI-modeller på språk med begränsade resurser",
         "like": {
             "label": "Jag uppskattar",
             "selectedLabel": "Jag uppskattar (vald)"
@@ -1529,9 +1529,9 @@
         "errors": "AI kan göra misstag! Vi uppmuntrar dig att verifiera information du får från AI-modellerna.",
         "go": "Nu kör vi",
         "privacy": "Dela inte personlig information som förnamn, efternamn eller adress.",
-        "title": "Välkommen till compar:IA!",
+        "title": "Välkommen till CompaRAG!",
         "tos": {
-            "desc": "Dina konversationer på compar:IA och de preferenser du uttrycker används anonymt för att skapa datamängder som är representativa för europeiska språk och språkbruk, i syfte att minska kulturell bias och skapa mer inkluderande framtida AI-modeller.",
+            "desc": "Dina konversationer på CompaRAG och de preferenser du uttrycker används anonymt för att skapa datamängder som är representativa för europeiska språk och språkbruk, i syfte att minska kulturell bias och skapa mer inkluderande framtida AI-modeller.",
             "moreInfos": "Läs mer om projektet."
         },
         "use": "Använd inte verktyget för olagliga eller skadliga ändamål."

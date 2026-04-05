@@ -129,7 +129,7 @@
                 "desc": "Bunka.ai meeskond viis Compar:AI platvormil läbi ulatusliku kasutajate ja tehisaru vaheliste interaktsioonide uuringu, kaardistades peamised teemad, ülesanded ning tasakaalu automatiseerimise ja inimeste võimestamise vahel. Nende 25 000 reaalsel vestlusel põhinev analüüs pakub haruldast empiirilist ülevaadet sellest, kuidas inimesed tehisaru tegelikult kasutavad.",
                 "method": "Lisateave metoodika kohta"
             },
-            "desc": "Näited compar:IA andmestiku kasutamisest",
+            "desc": "Näited CompaRAG andmestiku kasutamisest",
             "title": "Kuidas neid andmeid kasutatakse?"
         }
     },
@@ -160,7 +160,7 @@
                     "title": "Miks on baromeeter.ai platvormil kogutud hääled kasulikud?"
                 },
                 "3": {
-                    "desc": "<p>compar:IA positsioneerib end väheste ressurssidega keelte hindamise ja kasutaja ootustega vastavusse viimise tööriistana keelemudelite jaoks, keskendudes vastuste kvaliteedile ja eelistusandmete kogumisele. Sellega eristub see <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> globaalse järjestamise lähenemisest, mille on välja töötanud <a href='http://lmsys.org' target='_blank'>lmsys.org</a>, ning <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>i tehisintellekti mudelite eetilise vastavusse viimise lähenemisest.</p>",
+                    "desc": "<p>CompaRAG positsioneerib end väheste ressurssidega keelte hindamise ja kasutaja ootustega vastavusse viimise tööriistana keelemudelite jaoks, keskendudes vastuste kvaliteedile ja eelistusandmete kogumisele. Sellega eristub see <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> globaalse järjestamise lähenemisest, mille on välja töötanud <a href='http://lmsys.org' target='_blank'>lmsys.org</a>, ning <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>i tehisintellekti mudelite eetilise vastavusse viimise lähenemisest.</p>",
                     "title": "Kuidas baromeeter.ai teistest samalaadsetest ettevõtmistest erineb?"
                 }
             },
@@ -169,7 +169,7 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p>compar:AI kasutab <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologitsi</strong> (GenAI Impact) poolt välja töötatud energiatarbimisele hinnangu andmise metoodikat </a>, mis võimaldab kasutajatel võrrelda erinevate tehisaru mudelite keskkonnamõju sama päringu puhul. Selline läbipaistvus on oluline soodustamaks keskkonnateadlikumate tehisaru mudelite arendamist ja kasutuselevõttu.</p> <p>Ecologits rakendab elutsükli hindamise (Life Cycle Assessment, LCA) põhimõtteid vastavalt ISO 14044 standardile, keskendudes praegu <strong>järeldamisele</strong> (st mudelite kasutamisele päringutele vastamiseks) ning <strong>graafikakaartide tootmisele</strong> (ressursside kaevandamine, tootmine ja transport).</p> <p>Mudeli energiatarbimist hinnatakse mitmesuguseid parameetreid arvesse võttes. Seesuguste parameetrite hulka kuuluvad näiteks tehisaru mudeli suurus, serverite asukoht, kus mudeleid käitatakse, ning väljundtookenite arv. Globaalse soojenemise potentsiaali näitaja, mida väljendatakse CO2-ekvivalendina, tuletatakse mudeli energiatarbimise mõõtmise põhjal.</p> <p>Oluline on märkida, et tehisaru keskkonnamõju hindamise metoodikad on alles väljatöötamisel.</p>",
+                    "desc": "<p>CompaRAG kasutab <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologitsi</strong> (GenAI Impact) poolt välja töötatud energiatarbimisele hinnangu andmise metoodikat </a>, mis võimaldab kasutajatel võrrelda erinevate tehisaru mudelite keskkonnamõju sama päringu puhul. Selline läbipaistvus on oluline soodustamaks keskkonnateadlikumate tehisaru mudelite arendamist ja kasutuselevõttu.</p> <p>Ecologits rakendab elutsükli hindamise (Life Cycle Assessment, LCA) põhimõtteid vastavalt ISO 14044 standardile, keskendudes praegu <strong>järeldamisele</strong> (st mudelite kasutamisele päringutele vastamiseks) ning <strong>graafikakaartide tootmisele</strong> (ressursside kaevandamine, tootmine ja transport).</p> <p>Mudeli energiatarbimist hinnatakse mitmesuguseid parameetreid arvesse võttes. Seesuguste parameetrite hulka kuuluvad näiteks tehisaru mudeli suurus, serverite asukoht, kus mudeleid käitatakse, ning väljundtookenite arv. Globaalse soojenemise potentsiaali näitaja, mida väljendatakse CO2-ekvivalendina, tuletatakse mudeli energiatarbimise mõõtmise põhjal.</p> <p>Oluline on märkida, et tehisaru keskkonnamõju hindamise metoodikad on alles väljatöötamisel.</p>",
                     "title": "Kuidas keskkonnamõõdikuid arvutatakse?"
                 },
                 "2": {
@@ -186,7 +186,7 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p>Jah, compar:AI rahvusvahelistamine on käimas. Alustame laienemist kolme pilootriiki: Leetu, Rootsi ja Taani. See esimene etapp võimaldab meil lähenemist testida ning kasutajaliidest erinevate Euroopa keeleliste ja kultuuriliste kontekstidega kohandada. Edaspidi võib ring laieneda ka teistele Euroopa keeltele, lähtudes nende pilootriikide tagasisidest. Eesmärk on järk-järgult üles ehitada tõeline Euroopa digitaalne ühisvara keelemudelite inimhindamiseks, mille koostööpõhise juhtimismudeli panevad paika osalevad riigid. </p>",
+                    "desc": "<p>Jah, CompaRAG rahvusvahelistamine on käimas. Alustame laienemist kolme pilootriiki: Leetu, Rootsi ja Taani. See esimene etapp võimaldab meil lähenemist testida ning kasutajaliidest erinevate Euroopa keeleliste ja kultuuriliste kontekstidega kohandada. Edaspidi võib ring laieneda ka teistele Euroopa keeltele, lähtudes nende pilootriikide tagasisidest. Eesmärk on järk-järgult üles ehitada tõeline Euroopa digitaalne ühisvara keelemudelite inimhindamiseks, mille koostööpõhise juhtimismudeli panevad paika osalevad riigid. </p>",
                     "title": "Compar:AI keskendus algselt prantsuse keelele: kas on kavas lisada ka teisi Euroopa keeli?"
                 },
                 "2": {
@@ -314,7 +314,7 @@
             "dataUseTitle": "Kuidas vestlusandmeid töödeldakse?",
             "privacyData": "Leheküljel kogutakse järgnevaid andmeid:",
             "privacyDataArena": "Kasutajate mudelitega vestlemise andmed: kasutajate esitatud küsimused, mudelite vastused ning kasutajate vastuse eelistused",
-            "privacyDataForm": "Küsimustiku \"Aita meil compar:IA-d paremaks muuta\" andmed.",
+            "privacyDataForm": "Küsimustiku \"Aita meil CompaRAG-d paremaks muuta\" andmed.",
             "privacyDesc": "See teenus ei töötle andmeid, mis CNILi määratluse kohaselt klassifitseeruvad isikuandmeteks, st teabeks, mis puudutab otseselt või kaudselt tuvastatavat füüsilist isikut.",
             "privacyResp": "Kasutaja vastutab andmete või sisu eest, mida ta platvormi pakutud viipa sisestab. <a {linkProps}>Kasutustingimustega</a> nõustudes kohustub kasutaja mitte edastama teavet, mille põhjal võiks tuvastada teda ennast või kolmandat isikut.",
             "privacyTitle": "Kas me töötleme isikuandmeid?",
@@ -322,7 +322,7 @@
         },
         "rgesn": {
             "1": {
-                "1": "Veebileht compar:IA võimaldab lihtsat ja tasuta juurdepääsu väga laiale valikule keelemudelitele ning aitab seeläbi tõsta kodanike teadlikkust generatiivse tehisaru erinevatest aspektidest, nagu mitmekesisus, kallutatus ja keskkonnamõju. Lisaks jagatakse koostatud viipade ja eelistuste andmekogumeid avatud lähtekoodina MIT/Etalab 2.0 litsentsi alusel.",
+                "1": "Veebileht CompaRAG võimaldab lihtsat ja tasuta juurdepääsu väga laiale valikule keelemudelitele ning aitab seeläbi tõsta kodanike teadlikkust generatiivse tehisaru erinevatest aspektidest, nagu mitmekesisus, kallutatus ja keskkonnamõju. Lisaks jagatakse koostatud viipade ja eelistuste andmekogumeid avatud lähtekoodina MIT/Etalab 2.0 litsentsi alusel.",
                 "2": "Teenuse Compar:IA kasutajate sihtgrupid tuvastati kasutajaintervjuude ning vajaduste kaardistamise etapi kaudu.",
                 "3": "Seega kuuluvad potentsiaalsete kasutajate hulka kõik kodanikud, kuid eelkõige õpetajad, õpilased, üliõpilased, digivahendajad, tehisaru koolitajad ning ka teadlased (arvutiteadus, tehisaru, sotsiaal- ja humanitaarteadused) ja ettevõtted, kes on huvitatud avatud lähtekoodina jagatud andmekogumite analüüsimisest või kasutamisest.<br> Sellega kooskõlas vastab digiteenus nende vajadustele järgmiste funktsioonide kaudu: mudelite tasuta testimine ja võrdlemine ning avatud lähtekoodina jagatud andmete kasutamine.",
                 "title": "Teenuse eesmärk"
@@ -1323,7 +1323,7 @@
                     "items": {
                         "1": {
                             "date": "Märts 2025",
-                            "desc": "Platvormi kasutajate küsimusi ja eelistusi hõlmava esimese prantsuskeelse compar:IA andmestiku loomine ja avaldamine.",
+                            "desc": "Platvormi kasutajate küsimusi ja eelistusi hõlmava esimese prantsuskeelse CompaRAG andmestiku loomine ja avaldamine.",
                             "title": "Kogutud on 50 000 häält!"
                         },
                         "2": {
@@ -1376,11 +1376,11 @@
                         },
                         "5": {
                             "desc": "Teenus on Digital Public Goods Alliance'i poolt digitaalse avaliku hüvena tunnustatud.",
-                            "title": "compar:IA on tunnustatud kui <a {linkProps}>digitaalne ühisvara</a>"
+                            "title": "CompaRAG on tunnustatud kui <a {linkProps}>digitaalne ühisvara</a>"
                         },
                         "6": {
                             "date": "November 2025",
-                            "desc": "Alates compar:IA käivitamisest on toimunud üle 500 000 unikaalse vestluse.",
+                            "desc": "Alates CompaRAG käivitamisest on toimunud üle 500 000 unikaalse vestluse.",
                             "title": "200 000 hääle eesmärk täidetud!"
                         }
                     },
@@ -1397,7 +1397,7 @@
                 }
             },
             "tabLabel": "Olulised kuupäevad",
-            "title": "compar:AI mõningad tähtsamad kuupäevad"
+            "title": "CompaRAG mõningad tähtsamad kuupäevad"
         },
         "partners": {
             "academy": {

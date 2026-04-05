@@ -114,7 +114,7 @@
                 }
             },
             "share": "Show us how you’re using the data",
-            "title": "Access compar:IA datasets"
+            "title": "Access CompaRAG datasets"
         },
         "reuse": {
             "bunka": {
@@ -129,7 +129,7 @@
                 "desc": "The Bunka.ai team conducted a large-scale study of user-AI interactions on the chatbot arena, mapping out dominant themes, key tasks, and the balance between automation vs. human augmentation. Their analysis based on 25,000 real conversations offers rare empirical insight into how people actually use AI.",
                 "method": "Learn more about the methodology"
             },
-            "desc": "Examples of compar:IA dataset reuses",
+            "desc": "Examples of CompaRAG dataset reuses",
             "title": "How is this data used?"
         }
     },
@@ -152,16 +152,16 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p> Preference data is used to improve models during future training. </p> <p> By blindly comparing the responses of two models, compar:IA users express their preferences, indicating which responses are most relevant. This preference data can be used to improve model alignment—that is, to train them to generate responses that are more in line with user expectations and preferences. </p> <p> This is an iterative process, where the model gradually learns to generate better responses based on feedback from humans on the quality of the responses. By being exposed to preference data, models adjust their response style. </p>",
+                    "desc": "<p> Preference data is used to improve models during future training. </p> <p> By blindly comparing the responses of two models, CompaRAG users express their preferences, indicating which responses are most relevant. This preference data can be used to improve model alignment—that is, to train them to generate responses that are more in line with user expectations and preferences. </p> <p> This is an iterative process, where the model gradually learns to generate better responses based on feedback from humans on the quality of the responses. By being exposed to preference data, models adjust their response style. </p>",
                     "title": "Does preference data have an immediate effect on model performance?"
                 },
                 "2": {
-                    "desc": "<p> The uniqueness of the data collected on the compar:IA platform is that it is in lower ressourced languages and corresponds to real-life user tasks. This data reflects human preferences in specific linguistic and cultural contexts. This data allows us to adjust the models to make them more relevant, accurate, and adapted to user needs, while attempting to address any biases or gaps. </p>",
-                    "title": "Why are the votes on compar:IA useful?"
+                    "desc": "<p> The uniqueness of the data collected on the CompaRAG platform is that it is in lower ressourced languages and corresponds to real-life user tasks. This data reflects human preferences in specific linguistic and cultural contexts. This data allows us to adjust the models to make them more relevant, accurate, and adapted to user needs, while attempting to address any biases or gaps. </p>",
+                    "title": "Why is comparison data collected on CompaRAG valuable?"
                 },
                 "3": {
-                    "desc": "<p> compar:IA positions itself as a low-ressourced language assessment and alignment tool for language models, focused on response quality and preference data collection, thus distinguishing itself from the global ranking approach of <a href='https://lmarena.ai/' target='_blank'> chatbot arena </a> developed by <a href='http://lmsys.org' target='_blank'> lmsys.org </a> and the ethical alignment of AI models of <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a> . </p>",
-                    "title": "What makes compar:IA different from other similar initiatives?"
+                    "desc": "<p> CompaRAG positions itself as a low-ressourced language assessment and alignment tool for language models, focused on response quality and preference data collection, thus distinguishing itself from the global ranking approach of <a href='https://lmarena.ai/' target='_blank'> chatbot arena </a> developed by <a href='http://lmsys.org' target='_blank'> lmsys.org </a> and the ethical alignment of AI models of <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a> . </p>",
+                    "title": "What makes CompaRAG different from other MCP evaluation tools?"
                 }
             },
             "title": "Dataset"
@@ -169,32 +169,16 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p> compar:AI uses the methodology developed by <a target='_blank' href='https://ecologits.ai/latest/'> <strong> Ecologits </strong> (GenAI Impact) </a> to provide an estimation for energy consumed that allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-responsible AI models. </p> <p> Ecologits applies the principles of Life Cycle Assessment (LCA) in accordance with ISO 14044, focusing for the moment on the impact of <strong> inference </strong> (i.e., the use of models to answer queries) and the <strong> manufacturing of graphics cards </strong> (resource extraction, manufacturing, and transportation). </p> <p> The model's power consumption is estimated by taking into account various parameters such as the size of the AI model used, the location of the servers where the models are deployed, and the number of output tokens. The calculation of the global warming potential indicator expressed in CO2 equivalent is derived from the model's power consumption measurement. </p> <p> It is important to note that methodologies for assessing the environmental impact of AI are still under development. </p>",
-                    "title": "How are environmental metrics calculated?"
+                    "title": "Why does MCP tool latency vary?",
+                    "desc": "<p>Each MCP tool calls external services (databases, APIs, embedding models) with variable response times depending on provider load and infrastructure.</p>"
                 },
                 "2": {
-                    "desc": "<p> Data center locations play a very significant role in AI's carbon footprint. If a model is trained or used in a country heavily dependent on fossil fuels, its environmental impact will be greater than if it is hosted in a country that uses mostly renewable energy. </p> <p> The AI environmental impact analysis method developed by <a target='_blank' href='https://ecologits.ai/latest/'> Ecologits (from GenAI Impact) </a> incorporates data on the energy mix of the different countries where the servers are located. This allows for a more accurate and nuanced estimate of the actual carbon footprint of inference on different generative AI models. </p>",
-                    "title": "Do environmental metrics take into account the energy mix of different countries?"
-                },
-                "3": {
-                    "desc": "<p> Many environmental impact metrics focus primarily on the impact of <strong> inference </strong> , that is, the use of AI models to answer queries. This approach may give the illusion that inference is less energy-intensive than model training. However, <strong> the reality is more complex. </strong> Consider the car analogy: </p> <ul> <li> Building a car (training) is a one-time, resource-intensive process. </li> <li> Each car journey (inference) uses less energy, but these journeys are repeated daily, and their number is potentially immense. </li> </ul> <p> Similarly <strong> the cumulative impact of inference, across millions of users querying daily, is often signficantly greater than the impact of initial training <strong> This is why it is crucial that AI carbon footprint assessment tools consider the entire lifecycle </strong> models, from training to inference </strong>  </p>",
-                    "title": "Do environmental impact estimations take into account the resources used to train the models?"
+                    "title": "How can I assess vendor lock-in risk?",
+                    "desc": "<p>CompaRAG lets you test multiple MCP tools on the same task and compare their reliability. A tool that performs well on your real use cases reduces the risk of dependence on a single vendor.</p>"
                 }
             },
-            "title": "Environmental data"
-        },
-        "i18n": {
-            "questions": {
-                "1": {
-                    "desc": "<p> Yes, the internationalization of compar:AI is underway. We are starting with an expansion to three pilot countries: Lithuania, Sweden, and Denmark. This first phase will allow us to test the approach and adapt the interface to different European linguistic and cultural contexts. Eventually, the circle may expand to more European languages based on feedback from these pilot countries. The objective is to gradually build a true European digital common for human evaluation of conversational AI, with collaborative governance that remains to be defined between the different participating countries. </p>",
-                    "title": "compar:IA initially focused on French: are there plans for other European languages?"
-                },
-                "2": {
-                    "desc": "<p> The development of a European platform for comparing conversational AI models offers several concrete advantages. It allows for the collection of preference data reflecting the real needs of European users, thus improving the relevance of model answers for this userbase. The publication of the datasets guarantees better representation of European languages and cultures, often underrepresented in global datasets and evaluations dominated by English. It also ensures compliance with European regulations (GDPR, AI Act) and integrates evaluation criteria aligned with European priorities such as environmental impact reduction and algorithmic transparency. Finally, it fosters the emergence of a competitive and autonomous European AI ecosystem. </p>",
-                    "title": "What are the advantages of a specifically European preference collection platform?"
-                }
-            },
-            "title": "Internationalization"
+            "title": "MCP tool performance and reliability",
+            "desc": "CompaRAG measures the relative performance of MCP tools based on user preferences: response latency, reliability and variance of results across tasks."
         },
         "models": {
             "questions": {
@@ -253,7 +237,7 @@
         }
     },
     "footer": {
-        "backHome": "Back to home - compar:IA",
+        "backHome": "Back to the home page - CompaRAG",
         "dpg": "The service is recognized as a digital public good by the Digital Public Goods Alliance",
         "helpUs": "Help us improve the product!",
         "license": {
@@ -272,8 +256,8 @@
     },
     "general": {
         "a11y": {
-            "desc": "This accessibility statement applies to the website <strong> comparia.beta.gouv.fr </strong> .",
-            "disclaimer": "<strong> compar:IA </strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
+            "desc": "This accessibility statement applies to the website <strong> comparag.beta.gouv.fr </strong> .",
+            "disclaimer": "<strong> CompaRAG </strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
             "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "We try to respond within 2 business days.",
             "improveDesc": "If you are unable to access any content or service, you can contact the manager of beta.gouv.fr to be directed to an accessible alternative or obtain the content in another format.",
@@ -285,7 +269,7 @@
             "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
             "remedyList": "You can :",
             "remedyTitle": "Appeal",
-            "stateDesc": "The comparia.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
+            "stateDesc": "The comparag.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
             "stateNavigate": "navigate all pages of the site using a keyboard",
             "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
             "stateScreenReader": "view the website with a screen reader.",
@@ -336,7 +320,7 @@
             "desc": "The service is published by the Digital Department of the French Ministry of Culture.",
             "privacyData": "The data collected on the site are as follows:",
             "privacyDataArena": "Data related to user conversations with the models: questions asked by users, model responses, and user preferences expressed between the two models",
-            "privacyDataForm": "Data related to the questionnaire \"Help us improve compar:IA\".",
+            "privacyDataForm": "Data related to the questionnaire \"Help us improve CompaRAG\".",
             "privacyDesc": "The service does not process personal data as defined by the CNIL, meaning any information relating to an identifiable natural person, directly or indirectly.",
             "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
             "privacyTitle": "Do we process personal data?",
@@ -344,10 +328,10 @@
         },
         "rgesn": {
             "1": {
-                "1": "The compar:IA website provides easy and free access to a wide variety of conversational AI models, raising public awareness of the various challenges of generative AI: diversity, bias, and environmental impact. Furthermore, the datasets of questions and preferences compiled are shared as open source under the MIT/Etalab 2.0 license.",
+                "1": "The CompaRAG website provides easy and free access to a wide variety of conversational AI models, raising public awareness of the various challenges of generative AI: diversity, bias, and environmental impact. Furthermore, the datasets of questions and preferences compiled are shared as open source under the MIT/Etalab 2.0 license.",
                 "2": "The target users of the Compar:IA service were identified by conducting user interviews and a preliminary phase of needs investigation.",
                 "3": "Thus, all citizens are concerned as potential users, but particularly teachers, pupils, students, workshop facilitators, AI trainers, as well as researchers (computer science, AI, humanities and social sciences) and companies interested in analyzing or using open-source shared datasets. Accordingly, the digital service meets their needs through the following features: testing and comparing models for free, and using open-source shared data.",
-                "4": "The compar:IA service is part of an eco-design approach aimed at reducing environmental impacts. To this end, this declaration was drafted within the framework of the implementation of the General Eco-design Framework for Digital Services (RGESN, version 2024). The RGESN, produced by Arcep and Arcom, in collaboration with ADEME, DINUM, CNIL, and Inria, is available on the <a {linkProps}>Arcep website</a>.",
+                "4": "The CompaRAG service is part of an eco-design approach aimed at reducing environmental impacts. To this end, this declaration was drafted within the framework of the implementation of the General Eco-design Framework for Digital Services (RGESN, version 2024). The RGESN, produced by Arcep and Arcom, in collaboration with ADEME, DINUM, CNIL, and Inria, is available on the <a {linkProps}>Arcep website</a>.",
                 "title": "Purpose of this service"
             },
             "2": {
@@ -377,7 +361,7 @@
                     "4": "The most intuitive navigation possible to reduce the time spent finding information.",
                     "5": "Mobile-first design: all content is viewable on mobile devices. The site adapts to all screen sizes.",
                     "6": "Exclusion of video integration on the site.",
-                    "title": "The main challenge is to ensure that the compar:IA service works on the oldest possible user devices, under varying connectivity conditions. Several measures were implemented during the design phase, including:"
+                    "title": "The main challenge is to ensure that the CompaRAG service works on the oldest possible user devices, under varying connectivity conditions. Several measures were implemented during the design phase, including:"
                 },
                 "title": "Strategy implemented and objectives regarding the reduction or limitation of environmental impacts"
             },
@@ -390,7 +374,7 @@
                     "1": "Progress score in the implementation of the RGESN, as of 10/12/2025: 89%",
                     "title": "The self-diagnosis gives a compliance rate with the <a {linkProps}>RGESN</a> (general ecodesign reference) of 89%."
                 },
-                "2": "The digital service compar:IA aims to improve this progress score to reach 95% by 2027.",
+                "2": "The digital service CompaRAG aims to improve this progress score to reach 95% by 2027.",
                 "3": {
                     "1": "Strategy: 100%",
                     "2": "Specifications: 78%",
@@ -1180,7 +1164,7 @@
         }
     },
     "header": {
-        "banner": "New models just joined the arena!",
+        "banner": "🏆 Compare your MCP tools blind — vote and see the ranking!",
         "chatbot": {
             "newDiscussion": "New chat",
             "step": "Step",
@@ -1195,21 +1179,21 @@
         },
         "help": {
             "link": {
-                "content": "Help us improve compar:IA",
+                "content": "Help us improve CompaRAG",
                 "title": "Give feedback on the arena – opens a new window"
             }
         },
-        "homeTitle": "Home - compar:IA",
+        "homeTitle": "Home - CompaRAG",
         "logoAlt": "French Republic",
         "menu": "Menu",
         "startDiscussion": "New chat",
-        "subtitle": "The chatbot arena",
-        "title": "compar:AI",
+        "subtitle": "The MCP tool arena",
+        "title": "CompaRAG",
         "votes": {
             "count": "{count} votes",
             "legend": "Legend",
             "objective": "Goal: {count}",
-            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the compar:IA dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
+            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the CompaRAG dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
         }
     },
     "home": {
@@ -1229,7 +1213,7 @@
             "title": "Your frequently asked questions"
         },
         "intro": {
-            "desc": "Have a blind discussion with two AIs and evaluate their answers",
+            "desc": "Compare two MCP tools blind and evaluate their results",
             "steps": {
                 "a11yDesc": "1. I chat with two hidden AIs: Chat for as long as you like. 2. I give my preference: By doing so, you'll help improve the AI models. 3. The model identities are revealed: Learn more about them and their characteristics.",
                 "one": {
@@ -1246,7 +1230,7 @@
                     "title": "I give my preference"
                 }
             },
-            "title": "Don't trust the answers <span {props}>of a single AI</span>",
+            "title": "Don't rely on the results <span {props}>of a single MCP tool</span>",
             "tos": {
                 "accept": "I accept the <a {linkProps}>terms of use</a>",
                 "error": "You must accept the terms of use to continue",
@@ -1273,30 +1257,30 @@
                 "desc": "Find all model specifications and terms of use in one place",
                 "title": "Explore the models"
             },
-            "title": "Specific use cases of compar:IA",
+            "title": "Specific uses of CompaRAG",
             "use": {
-                "desc": "Developers, researchers, model publishers - access compar:IA’s datasets to enhance models for low-resource languages",
+                "desc": "Developers, architects, product teams... access CompaRAG comparison data to evaluate MCP tools on your own criteria.",
                 "title": "Reuse the data"
             }
         },
         "use": {
             "compare": {
                 "alt": "Compare",
-                "desc": "Discuss and develop your critical thinking by giving your preference",
-                "title": "Compare the responses of different AI models"
+                "desc": "Submit the same task to two tools and choose the best result",
+                "title": "Compare results from different MCP tools"
             },
-            "desc": "compar:IA is a free tool that helps raise awareness among citizens about generative AI and its challenges.",
+            "desc": "CompaRAG is a free tool for objectively comparing MCP tools and discovering their respective strengths.",
             "measure": {
                 "alt": "Measure",
-                "desc": "Discover the environmental impact of your conversations with each model",
-                "title": "Measure the environmental footprint of questions asked to AI"
+                "desc": "Discover which tool best meets your business needs",
+                "title": "Measure tool performance on your use cases"
             },
             "test": {
                 "alt": "Test",
-                "desc": "Test different models: open, proprietary, small, large...",
-                "title": "Test the latest AI in the ecosystem in one place"
+                "desc": "Test different MCP tools, regardless of provider, on your own use cases.",
+                "title": "Test MCP tools from the ecosystem in one place"
             },
-            "title": "What is compar:AI for?"
+            "title": "What is CompaRAG for?"
         },
         "vote": {
             "datasetAccess": "Access the datasets",
@@ -1504,7 +1488,7 @@
                             "job": "Product Manager - ex-deployment manager"
                         }
                     },
-                    "title": "The compar:IA France team"
+                    "title": "The CompaRAG France team"
                 }
             },
             "title": "Partners"
@@ -1549,7 +1533,7 @@
                     "items": {
                         "1": {
                             "date": "March 2025",
-                            "desc": "Creation and publishing of the first compar:IA dataset in French including the questions and preferences of the platform's users.",
+                            "desc": "Creation and publishing of the first CompaRAG dataset in French including the questions and preferences of the platform's users.",
                             "title": "50,000 votes on the arena!"
                         },
                         "2": {
@@ -1612,11 +1596,11 @@
                         },
                         "5": {
                             "desc": "The service is recognized as a digital public good by the Digital Public Goods Alliance",
-                            "title": "compar:AI recognized as a <a {linkProps}>Digital Public Good</a>"
+                            "title": "CompaRAG recognized as a <a {linkProps}>Digital Public Good</a>"
                         },
                         "6": {
                             "date": "November 2025",
-                            "desc": "With over 500,000 unique conversations since the launch of compar:IA.",
+                            "desc": "With over 500,000 unique conversations since the launch of CompaRAG.",
                             "title": "Goal of 200,000 votes reached!"
                         }
                     },
@@ -1682,7 +1666,7 @@
                 "english": {
                     "a": "Preference data is expensive to produce because <strong>each example requires skilled human evaluation</strong>. Platforms like chat.lmsys.org help crowdsource these datasets—but few users contribute in their native language, leaving low-resource languages underrepresented.",
                     "b": "Preference datasets for European languages are scarce - or nonexistent. In LMSYS’s dataset, for instance, French queries represent less than 1% of the total.",
-                    "c": "compar:IA is a chatbot arena designed to gather multilingual conversations - capturing region-specific cultural references like daily tasks, local culinary traditions, education systems, or historical and literary touchstones.",
+                    "c": "CompaRAG is a chatbot arena designed to gather multilingual conversations - capturing region-specific cultural references like daily tasks, local culinary traditions, education systems, or historical and literary touchstones.",
                     "title": "European languages suffer from a shortage of preference data"
                 },
                 "title": "How can we reduce cultural and linguistic biases in these models?"
@@ -1840,7 +1824,7 @@
             "title": "How are user preferences distributed?"
         },
         "ranking": {
-            "desc": "Thank you for your contributions!<br> The <strong>arena ranking</strong> is based on all votes and reactions from the <strong>blind comparison</strong> of the models, collected since the service opened to the public in October 2024.<br>Developed in partnership with the Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), the model ranking is based on the <strong>satisfaction score</strong> calculated using the <strong>Bradley Terry</strong> statistical model, a widely used method for converting binary votes into a probabilistic ranking.<br> The compar:IA ranking is not intended to be an official recommendation or to evaluate the technical performance of the models. It reflects the <strong>subjective preferences</strong> of the platform's users and not the factual accuracy or veracity of the responses.",
+            "desc": "Thank you for your contributions!<br> The <strong>arena ranking</strong> is based on all votes and reactions from the <strong>blind comparison</strong> of the models, collected since the service opened to the public in October 2024.<br>Developed in partnership with the Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), the model ranking is based on the <strong>satisfaction score</strong> calculated using the <strong>Bradley Terry</strong> statistical model, a widely used method for converting binary votes into a probabilistic ranking.<br> The CompaRAG ranking is not intended to be an official recommendation or to evaluate the technical performance of the models. It reflects the <strong>subjective preferences</strong> of the platform's users and not the factual accuracy or veracity of the responses.",
             "tabLabel": "Leaderboard"
         },
         "table": {
@@ -1913,7 +1897,7 @@
             "title_tooltip": "The equivalencies are projections to illustrate the mass effect; we have multiplied the impact of your discussion with this model to all AI users in France: 48% of French people now report using generative AI; never before has a digital technology been adopted so quickly (source <a {linkProps}>CREDOC Digital Barometer</a>)"
         },
         "feedback": {
-            "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
+            "description": "Share CompaRAG with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
             "example": "Example of shared results",
             "moreOnVotes": "Learn more about votes",
             "shareResult": "Share your result"
@@ -1946,8 +1930,8 @@
         }
     },
     "seo": {
-        "desc": "compar:IA is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
-        "title": "compar:IA, the AI chatbot arena",
+        "desc": "CompaRAG enables blind comparison of MCP tools to evaluate which best achieves a given task.",
+        "title": "CompaRAG, the MCP tool arena",
         "titles": {
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
@@ -2028,7 +2012,7 @@
             "selectedLabel": "I dislike (selected)"
         },
         "introA": "Before finding out the identity of the models, we need your vote.",
-        "introB": "It allows us to improve the compar:IA datasets, the objective of which is to refine future AI models on less-resourced languages",
+        "introB": "It allows us to improve the CompaRAG datasets, the objective of which is to refine future AI models on less-resourced languages",
         "like": {
             "label": "I like",
             "selectedLabel": "I like (selected)"
@@ -2045,9 +2029,9 @@
         "errors": "AI can make mistakes: we encourage you to check the information provided",
         "go": "Here we go",
         "privacy": "Do not share personal information such as your name, surname or address.",
-        "title": "Welcome to compar:IA!",
+        "title": "Welcome to CompaRAG!",
         "tos": {
-            "desc": "The conversations and preferences you express on compar:IA are used anonymously to create datasets representative of European languages and usage, in order to reduce cultural bias and propose more inclusive future AI models.",
+            "desc": "Comparisons and votes you submit on CompaRAG are used anonymously to build MCP tool performance data.",
             "moreInfos": "Learn more about the project."
         },
         "use": "Do not use the comparator for illegal or harmful purposes"

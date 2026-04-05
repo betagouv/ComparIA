@@ -109,7 +109,7 @@
                 }
             },
             "share": "Parodyk mums, kaip panaudoji duomenis",
-            "title": "Prieiga prie compar:IA duomenų rinkinių"
+            "title": "Prieiga prie CompaRAG duomenų rinkinių"
         },
         "reuse": {
             "bunka": {
@@ -124,7 +124,7 @@
                 "desc": "Bunka.ai komanda atliko išsamų tyrimą apie Compar:IA platformos naudotojų ir AI modelių sąveiką, nagrinėdama populiariausias temas, pagrindines užduotis ir nustatydama, ar šie modeliai veikia pirmiausia kaip automatizavimo ar žmogaus gebėjimų didinimo įrankiai. Ši analizė pagrįsta dideliu 25 000 pokalbių imties dydžiu.",
                 "method": "Sužinokite daugiau apie metodiką"
             },
-            "desc": "Pavyzdžiai, kaip pakartotinai naudojami compar:IA duomenų rinkiniai",
+            "desc": "Pavyzdžiai, kaip pakartotinai naudojami CompaRAG duomenų rinkiniai",
             "title": "Kaip šie duomenys naudojami?"
         }
     },
@@ -147,7 +147,7 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p> Pasirinkimo duomenys naudojami modeliams tobulinti ateityje. </p> <p> Aklai lygindami dviejų modelių atsakymus, compar:IA naudotojai išreiškia savo pasirinkimus, nurodydami, kurie atsakymai yra labiausiai tinkami. Šie pasirinkimo duomenys gali būti naudojami modelių suderinimui tobulinti, t. y. juos mokyti generuoti atsakymus, kurie labiau atitinka naudotojų lūkesčius ir pasirinkimus. </p> <p> Tai yra pakartotinis procesas, kurio metu modelis palaipsniui mokosi generuoti geresnius atsakymus, remdamasis žmonių atsiliepimais apie atsakymų kokybę. Susipažindami su pasirinkimų duomenimis, modeliai koreguoja savo atsakymų stilių. </p>",
+                    "desc": "<p> Pasirinkimo duomenys naudojami modeliams tobulinti ateityje. </p> <p> Aklai lygindami dviejų modelių atsakymus, CompaRAG naudotojai išreiškia savo pasirinkimus, nurodydami, kurie atsakymai yra labiausiai tinkami. Šie pasirinkimo duomenys gali būti naudojami modelių suderinimui tobulinti, t. y. juos mokyti generuoti atsakymus, kurie labiau atitinka naudotojų lūkesčius ir pasirinkimus. </p> <p> Tai yra pakartotinis procesas, kurio metu modelis palaipsniui mokosi generuoti geresnius atsakymus, remdamasis žmonių atsiliepimais apie atsakymų kokybę. Susipažindami su pasirinkimų duomenimis, modeliai koreguoja savo atsakymų stilių. </p>",
                     "title": "Ar pasirinkimo duomenys turi tiesioginį poveikį modelio veikimui?"
                 },
                 "2": {
@@ -181,8 +181,8 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p>Taip, compar:AI internacionalizacija jau vyksta. Pradedame nuo plėtros į tris bandomąsias šalis: Lietuvą, Švediją ir Daniją. Pirmasis etapas leis mums išbandyti metodą ir pritaikyti sąsają prie skirtingų Europos kalbinių ir kultūrinių kontekstų. Galiausiai, remiantis šių bandomųjų šalių atsiliepimais, ratas gali išsiplėsti ir apimti daugiau Europos kalbų. Tikslas – palaipsniui sukurti tikrą Europos bendrąją erdvę, skirtą žmogaus atliekamam pokalbių AI vertinimui, su bendradarbiavimu pagrįstu valdymu, kuris bus apibrėžtas tarp skirtingų dalyvaujančių šalių.</p>",
-                    "title": "compar:IA iš pradžių daugiausia dėmesio skyrė prancūzų kalbai: ar yra planų įtraukti kitas Europos kalbas?"
+                    "desc": "<p>Taip, CompaRAG internacionalizacija jau vyksta. Pradedame nuo plėtros į tris bandomąsias šalis: Lietuvą, Švediją ir Daniją. Pirmasis etapas leis mums išbandyti metodą ir pritaikyti sąsają prie skirtingų Europos kalbinių ir kultūrinių kontekstų. Galiausiai, remiantis šių bandomųjų šalių atsiliepimais, ratas gali išsiplėsti ir apimti daugiau Europos kalbų. Tikslas – palaipsniui sukurti tikrą Europos bendrąją erdvę, skirtą žmogaus atliekamam pokalbių AI vertinimui, su bendradarbiavimu pagrįstu valdymu, kuris bus apibrėžtas tarp skirtingų dalyvaujančių šalių.</p>",
+                    "title": "CompaRAG iš pradžių daugiausia dėmesio skyrė prancūzų kalbai: ar yra planų įtraukti kitas Europos kalbas?"
                 },
                 "2": {
                     "desc": "<p>Europos platformos, skirtos pokalbių su DI modeliais palyginimui, sukūrimas pateikia keletą konkrečių naudų. Ji leidžia rinkti pasirinkimų duomenis, atspindinčius tikruosius Europos vartotojų poreikius, taip pagerinant modelių atsakymų aktualumą šiai vartotojų grupei. Duomenų rinkinių paskelbimas užtikrina geresnį Europos kalbų ir kultūrų, kurios dažnai yra nepakankamai atstovaujamos pasauliniuose duomenų rinkiniuose ir vertinimuose, kuriuose dominuoja anglų kalba, atstovavimą. Tai taip pat užtikrina atitiktį Europos reglamentams (BDAR, DI aktas) ir integruoja vertinimo kriterijus, suderintus su Europos prioritetais, pvz., poveikio aplinkai mažinimu ir algoritmų skaidrumu. Galiausiai tai skatina konkurencingos ir autonomiškos Europos DI ekosistemos atsiradimą.</p>",

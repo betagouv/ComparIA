@@ -336,7 +336,7 @@
             "desc": "Tjenesten udgives af det franske kulturministeriums digitale afdeling.",
             "privacyData": "De data, der indsamles på hjemmesiden, er følgende:",
             "privacyDataArena": "Data relateret til brugeres samtaler med modellerne: spørgsmål stillet af brugere, modellernes svar og brugerpræferencer udtrykt mellem de to modeller",
-            "privacyDataForm": "Data relateret til spørgeskemaet \"Hjælp os med at forbedre compar:IA\".",
+            "privacyDataForm": "Data relateret til spørgeskemaet \"Hjælp os med at forbedre CompaRAG\".",
             "privacyDesc": "Tjenesten behandler ikke personoplysninger som defineret af CNIL, dvs. oplysninger, der direkte eller indirekte kan henføres til en identificerbar fysisk person.",
             "privacyResp": "Brugeren er ansvarlig for de data eller det indhold, som vedkommende indtaster i den prompt, som platformen stiller til rådighed. Ved at acceptere <a {linkProps}>brugsbetingelserne</a> accepterer brugeren ikke at overføre oplysninger, der kan identificere vedkommende selv eller en tredjepart.",
             "privacyTitle": "Behandler vi personoplysninger?",
@@ -1199,7 +1199,7 @@
                 "title": "Giv feedback på arenaen – åbner et nyt vindue"
             }
         },
-        "homeTitle": "Hjem - compar:IA",
+        "homeTitle": "Hjem - CompaRAG",
         "logoAlt": "Den Franske Republik",
         "menu": "Menu",
         "startDiscussion": "Start en samtale",
@@ -1209,7 +1209,7 @@
             "count": "{count} stemmer",
             "legend": "Legend",
             "objective": "Mål: {count}",
-            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
+            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til CompaRAG-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
         }
     },
     "home": {
@@ -1549,7 +1549,7 @@
                     "items": {
                         "1": {
                             "date": "marts 2025",
-                            "desc": "Oprettelse og tilgængeliggørelse af det første compar:IA-datasæt på fransk, der samler spørgsmål og præferencer fra platformens brugere.",
+                            "desc": "Oprettelse og tilgængeliggørelse af det første CompaRAG-datasæt på fransk, der samler spørgsmål og præferencer fra platformens brugere.",
                             "title": "50.000 stemmer på sammenligningsplatformen!"
                         },
                         "2": {
@@ -1560,7 +1560,7 @@
                         "3": {
                             "date": "Juni 2025",
                             "desc": "Tilgængeliggørelse af disse tre datasæt, samtaler, reaktioner, stemmer, på <a {hgLinkProps}>HuggingFace</a> og <a {dataLinkProps}>Data.gouv.fr</a>.",
-                            "title": "Offentliggørelse af de tre compar:IA-datasæt"
+                            "title": "Offentliggørelse af de tre CompaRAG-datasæt"
                         }
                     },
                     "tag": "Hastighed"
@@ -1603,8 +1603,8 @@
                             "title": "Lancering af <a {linkProps}>\"AI-duellerne\"</a>"
                         },
                         "3": {
-                            "desc": "Bygget i partnerskab med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), er compar:IA-rangeringen baseret på alle stemmer og reaktioner indsamlet siden tjenestens offentlige lancering i oktober 2024.",
-                            "title": "Offentliggørelse af <a {linkProps}>compar:IA-rangeringen</a>"
+                            "desc": "Bygget i partnerskab med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), er CompaRAG-rangeringen baseret på alle stemmer og reaktioner indsamlet siden tjenestens offentlige lancering i oktober 2024.",
+                            "title": "Offentliggørelse af <a {linkProps}>CompaRAG-rangeringen</a>"
                         },
                         "4": {
                             "desc": "Danmark slutter sig til eventyret ved at tilbyde sammenligningsplatformen på sit nationale sprog med et dedikeret domænenavn.",
@@ -1682,7 +1682,7 @@
                 "english": {
                     "a": "Præferencedata er dyre at producere, fordi <strong>hvert eksempel kræver en dygtig menneskelig evaluering</strong>. Platforme som chat.lmsys.org hjælper med at crowdsource disse datasæt, men få brugere bidrager på deres modersmål, hvilket betyder, at sprog med få ressourcer er underrepræsenterede.",
                     "b": "Der findes kun få eller ingen præferencedatasæt for europæiske sprog. I LMSYS' datasæt udgør franske søgninger for eksempel mindre end 1% af det samlede antal.",
-                    "c": "compar:IA er en chatbot-arena, der er designet til at samle multilingvale samtaler, som indfanger regionsspecifikke kulturelle referencer som daglige gøremål, lokale kulinariske traditioner, uddannelsessystemer eller historiske og litterære milepæle.",
+                    "c": "CompaRAG er en chatbot-arena, der er designet til at samle multilingvale samtaler, som indfanger regionsspecifikke kulturelle referencer som daglige gøremål, lokale kulinariske traditioner, uddannelsessystemer eller historiske og litterære milepæle.",
                     "title": "De europæiske sprog lider under en mangel på præferencedata"
                 },
                 "title": "Hvordan kan vi mindske kulturel og sproglig bias i disse modeller?"
@@ -1750,7 +1750,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "compar:IA bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
+                            "1": "CompaRAG bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
                             "2": "Ecologits anvender principperne for livscyklusanalyse (LCA) i overensstemmelse med ISO 14044-standarden ved i første omgang at fokusere på påvirkningen fra inferens (dvs. brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, produktion og transport).",
                             "3": "Modellens elektricitetsforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen og arkitekturen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, samt antallet af output-tokens. Beregningen af indikatoren for global opvarmningspotentiale udtrykt i CO2-ækvivalenter udledes af målingen af modellens elektricitetsforbrug.",
                             "4": "Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling."
@@ -1765,7 +1765,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Siden 2024 har tusindvis af brugere brugt compar:IA til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
+                "1": "Siden 2024 har tusindvis af brugere brugt CompaRAG til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
                 "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {notebookLinkProps}>metodologiske notesbog</a>."
             },
             "impacts": {
@@ -1946,8 +1946,8 @@
         }
     },
     "seo": {
-        "desc": "compar:IA er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
-        "title": "compar:IA, arenaen for AI-chatbots",
+        "desc": "CompaRAG er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
+        "title": "CompaRAG, arenaen for AI-chatbots",
         "titles": {
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
@@ -2028,7 +2028,7 @@
             "selectedLabel": "Jeg kan ikke lide (udvalgt)"
         },
         "introA": "Før vi finder ud af modellernes identitet, har vi brug for din stemme.",
-        "introB": "Det giver os mulighed for at forbedre compar:IA-datasættene, hvis formål er at forfine fremtidige AI-modeller på sprog med færre ressourcer",
+        "introB": "Det giver os mulighed for at forbedre CompaRAG-datasættene, hvis formål er at forfine fremtidige AI-modeller på sprog med færre ressourcer",
         "like": {
             "label": "Jeg kan godt lide",
             "selectedLabel": "Jeg kan godt lide (udvalgte)"

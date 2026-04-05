@@ -114,7 +114,7 @@
                 }
             },
             "share": "Vis oss hvordan du bruker dataene",
-            "title": "Få tilgang til compar:IA-datasett"
+            "title": "Få tilgang til CompaRAG-datasett"
         },
         "reuse": {
             "bunka": {
@@ -129,7 +129,7 @@
                 "desc": "Teamet Bunka.ai gjennomførte en storskala studie av interaksjoner mellom brukere og KI i chatboter, og kartla framtredende temaer, nøkkeloppgaver og balansen mellom automatisering og menneskelig intervensjon. Analysen deres, basert på 25 000 virkelige samtaler, gir en sjelden empirisk innsikt i hvordan folk faktisk bruker KI.",
                 "method": "Lær mer om metoden"
             },
-            "desc": "Eksempler på gjenbruk av datasett fra compar:IA",
+            "desc": "Eksempler på gjenbruk av datasett fra CompaRAG",
             "title": "Hvordan brukes disse dataene?"
         }
     },
@@ -152,16 +152,16 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p> Preferansedata brukes til å forbedre modeller under fremtidig trening.</p> <p> Ved å sammenligne svarene fra to modeller blindt, kan compar:IA-brukerne uttrykke sine preferanser og indikere hvilke svar som er mest relevante. Disse preferansedataene kan brukes til å forbedre tilpasningen av modellene – det vil si å trene dem til å generere svar som er mer i tråd med brukerens forventninger og preferanser.</p> <p> Dette er en iterativ prosess, der modellen gradvis lærer å generere bedre svar basert på tilbakemeldinger fra mennesker angående kvaliteten på svarene. Ved å bli eksponert for preferansedata justerer modellene sin svarstil.</p>",
+                    "desc": "<p> Preferansedata brukes til å forbedre modeller under fremtidig trening.</p> <p> Ved å sammenligne svarene fra to modeller blindt, kan CompaRAG-brukerne uttrykke sine preferanser og indikere hvilke svar som er mest relevante. Disse preferansedataene kan brukes til å forbedre tilpasningen av modellene – det vil si å trene dem til å generere svar som er mer i tråd med brukerens forventninger og preferanser.</p> <p> Dette er en iterativ prosess, der modellen gradvis lærer å generere bedre svar basert på tilbakemeldinger fra mennesker angående kvaliteten på svarene. Ved å bli eksponert for preferansedata justerer modellene sin svarstil.</p>",
                     "title": "Har preferansedata en umiddelbar effekt på modellenes ytelse?"
                 },
                 "2": {
-                    "desc": "<p> Det unike med dataene som samles inn på compar:IA-plattformen er at de er på språk med lavere tilgang på ressurser og samsvarer med virkelige brukeroppgaver. Dataene gjenspeiler menneskelige preferanser i spesifikke språklige og kulturelle kontekster. Dataene lar oss justere modellene for å gjøre dem mer relevante, nøyaktige og tilpasset brukernes behov, samtidig som vi prøver å rette opp i eventuelle skjevheter og mangler.</p>",
-                    "title": "Hvorfor er stemmene som avgis på compar:IA nyttige?"
+                    "desc": "<p> Det unike med dataene som samles inn på CompaRAG-plattformen er at de er på språk med lavere tilgang på ressurser og samsvarer med virkelige brukeroppgaver. Dataene gjenspeiler menneskelige preferanser i spesifikke språklige og kulturelle kontekster. Dataene lar oss justere modellene for å gjøre dem mer relevante, nøyaktige og tilpasset brukernes behov, samtidig som vi prøver å rette opp i eventuelle skjevheter og mangler.</p>",
+                    "title": "Hvorfor er stemmene som avgis på CompaRAG nyttige?"
                 },
                 "3": {
-                    "desc": "<p> compar:IA er et vurderings- og tilpasningsverktøy for språkmodeller, med fokus på responskvalitet og innsamling av preferansedata, og skiller seg dermed fra den globale rangeringstilnærmingen til <a href='https://lmarena.ai/' target='_blank'> chatbot-arenaen </a> utviklet av <a href='http://lmsys.org' target='_blank'> lmsys.org </a> og den etiske tilpasningen av AI-modeller fra <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a>. </p>",
-                    "title": "Hva skiller compar:IA fra andre lignende initiativer?"
+                    "desc": "<p> CompaRAG er et vurderings- og tilpasningsverktøy for språkmodeller, med fokus på responskvalitet og innsamling av preferansedata, og skiller seg dermed fra den globale rangeringstilnærmingen til <a href='https://lmarena.ai/' target='_blank'> chatbot-arenaen </a> utviklet av <a href='http://lmsys.org' target='_blank'> lmsys.org </a> og den etiske tilpasningen av AI-modeller fra <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a>. </p>",
+                    "title": "Hva skiller CompaRAG fra andre lignende initiativer?"
                 }
             },
             "title": "Datasett"
@@ -169,7 +169,7 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p> compar:AI bruker en metode utviklet av <a target='_blank' href='https://ecologits.ai/latest/'> <strong>Ecologits</strong> (GenAI Impact)</a> for å gi et estimat for energiforbruk som lar brukerne sammenligne ulike KI-modellers miljøpåvirkning for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.</p> <p> Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044, som for øyeblikket fokuserer på virkningen av <strong>inferens</strong> (dvs. bruk av modeller for å svare på spørringer) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).</p> <p> En modells strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen på KI-modellen som brukes, plasseringen av serverne der modellene er distribuert og antall tokener i outputen. Beregningen av indikatoren for globalt oppvarmingspotensial uttrykt i CO2-ekvivalenter er avledet fra modellens strømforbruksmåling. </p> <p> Det er viktig å merke seg at metoder for å vurdere miljøpåvirkningen av KI fortsatt er under utvikling. </p>",
+                    "desc": "<p> CompaRAG bruker en metode utviklet av <a target='_blank' href='https://ecologits.ai/latest/'> <strong>Ecologits</strong> (GenAI Impact)</a> for å gi et estimat for energiforbruk som lar brukerne sammenligne ulike KI-modellers miljøpåvirkning for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.</p> <p> Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044, som for øyeblikket fokuserer på virkningen av <strong>inferens</strong> (dvs. bruk av modeller for å svare på spørringer) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).</p> <p> En modells strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen på KI-modellen som brukes, plasseringen av serverne der modellene er distribuert og antall tokener i outputen. Beregningen av indikatoren for globalt oppvarmingspotensial uttrykt i CO2-ekvivalenter er avledet fra modellens strømforbruksmåling. </p> <p> Det er viktig å merke seg at metoder for å vurdere miljøpåvirkningen av KI fortsatt er under utvikling. </p>",
                     "title": "Hvordan beregnes miljøfaktorer?"
                 },
                 "2": {
@@ -186,8 +186,8 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p> Ja, internasjonaliseringen av compar:AI er i gang. Vi starter med en utvidelse til tre pilotland: Litauen, Sverige og Danmark. Denne første fasen vil tillate oss å teste tilnærmingen og tilpasse grensesnittet til ulike europeiske språklige og kulturelle kontekster. Etter hvert kan sirkelen utvides til flere europeiske språk basert på tilbakemeldinger fra pilotlandene. Målet er å gradvis bygge en ekte europeisk digital felles infrastruktur for menneskelig evaluering av konversasjonsbasert KI, med samarbeidende styring som gjenstår å definere mellom de ulike deltakerlandene.</p>",
-                    "title": "compar:IA fokuserte opprinnelig på fransk: finnes det planer for andre europeiske språk?"
+                    "desc": "<p> Ja, internasjonaliseringen av CompaRAG er i gang. Vi starter med en utvidelse til tre pilotland: Litauen, Sverige og Danmark. Denne første fasen vil tillate oss å teste tilnærmingen og tilpasse grensesnittet til ulike europeiske språklige og kulturelle kontekster. Etter hvert kan sirkelen utvides til flere europeiske språk basert på tilbakemeldinger fra pilotlandene. Målet er å gradvis bygge en ekte europeisk digital felles infrastruktur for menneskelig evaluering av konversasjonsbasert KI, med samarbeidende styring som gjenstår å definere mellom de ulike deltakerlandene.</p>",
+                    "title": "CompaRAG fokuserte opprinnelig på fransk: finnes det planer for andre europeiske språk?"
                 },
                 "2": {
                     "desc": "<p> Utviklingen av en europeisk plattform for sammenligning av konversasjonsbaserte KI-modeller gir flere konkrete fordeler. Den muliggjør innsamling av preferansedata som gjenspeiler de reelle behovene til europeiske brukere, og forbedrer dermed relevansen av modellsvar for denne brukerbasen. Publisering av datasettene garanterer bedre representasjon av europeiske språk og kulturer, som ofte er underrepresentert i globale datasett og evalueringer dominert av engelsk. Den sikrer også samsvar med europeiske forskrifter (GDPR, EUs AI Act) og integrerer evalueringskriterier i tråd med europeiske prioriteringer som reduksjon av miljøpåvirkning og åpne algoritmer. Til slutt fremmer den fremveksten av et konkurransedyktig og autonomt europeisk økosystem for kunstig intelligens.</p>",
@@ -253,7 +253,7 @@
         }
     },
     "footer": {
-        "backHome": "Hjem - compar:IA",
+        "backHome": "Hjem - CompaRAG",
         "dpg": "Tjenesten er anerkjent som et digitalt offentlig gode av Digital Public Goods Alliance",
         "helpUs": "Hjelp oss å forbedre produktet!",
         "license": {
@@ -273,7 +273,7 @@
     "general": {
         "a11y": {
             "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong> comparia.beta.gouv.fr </strong>.",
-            "disclaimer": "<strong> compar:IA </strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
+            "disclaimer": "<strong> CompaRAG </strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi prøver å svare innen to virkedager.",
             "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av beta.gouv.fr for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
@@ -336,7 +336,7 @@
             "desc": "Tjenesten publiseres av den digitale enheten i det franske kulturdepartementet.",
             "privacyData": "Dataene som samles inn på nettstedet er som følger:",
             "privacyDataArena": "Data relatert til brukernes samtaler med modellene: spørsmål stilt av brukerne, modellsvar og brukernes preferanser mellom svarene til de to modellene",
-            "privacyDataForm": "Data relatert til spørreskjemaet «Hjelp oss å forbedre compar:IA».",
+            "privacyDataForm": "Data relatert til spørreskjemaet «Hjelp oss å forbedre CompaRAG».",
             "privacyDesc": "Tjenesten behandler ikke personopplysninger som definert av CNIL, det vil si informasjon knyttet til en identifiserbar fysisk person, direkte eller indirekte.",
             "privacyResp": "Brukeren er ansvarlig for dataene eller innholdet brukeren oppgir i prompter som plattformen foreslår. Ved å godta <a {linkProps}>bruksvilkårene</a> samtykker brukeren i å ikke overføre informasjon som kan identifisere brukeren selv eller en tredjepart.",
             "privacyTitle": "Behandler vi personopplysninger?",
@@ -344,10 +344,10 @@
         },
         "rgesn": {
             "1": {
-                "1": "Nettstedet compar:IA gir enkel og gratis tilgang til et bredt utvalg av konversasjonsbaserte KI-modeller, med mål om å øke den offentlig bevisstheten rundt de ulike utfordringene med generativ KI: mangfold, skjevheter og miljøpåvirkning. Videre deles datasettene med spørsmål og preferanser som er samlet inn som åpen kildekode under lisensen MIT/Etalab 2.0.",
+                "1": "Nettstedet CompaRAG gir enkel og gratis tilgang til et bredt utvalg av konversasjonsbaserte KI-modeller, med mål om å øke den offentlig bevisstheten rundt de ulike utfordringene med generativ KI: mangfold, skjevheter og miljøpåvirkning. Videre deles datasettene med spørsmål og preferanser som er samlet inn som åpen kildekode under lisensen MIT/Etalab 2.0.",
                 "2": "Målgruppen av brukere av tjenesten Compar:IA ble identifisert ved å gjennomføre brukerintervjuer og en innledende fase med behovsundersøkelse.",
                 "3": "Dermed er alle borgere ansett som potensielle brukere, men spesielt lærere, elever, studenter, workshop-arrangører, KI-instruktører, samt forskere (innen informatikk, KI, humaniora og samfunnsvitenskap) og bedrifter som er interessert i å analysere eller bruke delte datasett med åpen kildekode. Følgelig dekker den digitale tjenesten deres behov gjennom følgende funksjoner: gratis testing og sammenligning av modeller, og bruk av delte data med åpen kildekode.",
-                "4": "Tjenesten compar:IA er en del av en økodesigntilnærming som tar sikte på å redusere miljøpåvirkning. For dette formålet ble denne erklæringen utarbeidet innenfor rammen av implementeringen av det generelle rammeverket for økodesign for digitale tjenester (RGESN, versjon 2024). RGESN, produsert av Arcep og Arcom, i samarbeid med ADEME, DINUM, CNIL og Inria, er tilgjengelig på <a {linkProps}>Arceps nettsted</a>.",
+                "4": "Tjenesten CompaRAG er en del av en økodesigntilnærming som tar sikte på å redusere miljøpåvirkning. For dette formålet ble denne erklæringen utarbeidet innenfor rammen av implementeringen av det generelle rammeverket for økodesign for digitale tjenester (RGESN, versjon 2024). RGESN, produsert av Arcep og Arcom, i samarbeid med ADEME, DINUM, CNIL og Inria, er tilgjengelig på <a {linkProps}>Arceps nettsted</a>.",
                 "title": "Formålet med denne tjenesten"
             },
             "2": {
@@ -371,13 +371,13 @@
             },
             "3": {
                 "1": {
-                    "1": "Forenkling av brukeropplevelsen: navigasjonsstiene er optimalisert og sentrert rundt de viktigste funksjonene i compar:IA-tjenesten (arena for modeller som skal testes, datasett, rangering) med regelmessig brukertesting.",
+                    "1": "Forenkling av brukeropplevelsen: navigasjonsstiene er optimalisert og sentrert rundt de viktigste funksjonene i CompaRAG-tjenesten (arena for modeller som skal testes, datasett, rangering) med regelmessig brukertesting.",
                     "2": "Øke bevisstheten blant brukerne om tjenestens økologiske fotavtrykk: fremheve indikatorer for energipåvirkning på spørsmål stilt til KI; fremme \"sparsommelig\" bruk, med en modus dedikert til å spørre etter \"små\" konversasjonsbaserte KI-modeller med mindre miljøpåvirkning.",
                     "3": "Bruk av State Design System (DSFR)-grensesnittkomponenter: de er tilgjengelige, og fotavtrykket deres er minimalt.",
                     "4": "Den mest intuitive navigasjonen som er mulig for å redusere tiden man bruker på å finne informasjon.",
                     "5": "Mobilorientert design: mobile enheter kan vise alt innhold. Nettstedet tilpasser seg alle skjermstørrelser.",
                     "6": "Utelukke integrasjon av video på nettstedet.",
-                    "title": "Hovedutfordringen er å sikre at compar:IA fungerer på så gamle enheter som mulig, under varierende tilkoblingsforhold. Flere tiltak ble implementert i designfasen, inkludert:"
+                    "title": "Hovedutfordringen er å sikre at CompaRAG fungerer på så gamle enheter som mulig, under varierende tilkoblingsforhold. Flere tiltak ble implementert i designfasen, inkludert:"
                 },
                 "title": "Strategi implementert og mål for reduksjon eller begrensning av miljøpåvirkninger"
             },
@@ -390,7 +390,7 @@
                     "1": "Score for fremdrift i implementeringen av RGESN per 12.10.2025: 89 %",
                     "title": "Selvdiagnostiseringen gir en grad av samsvar med <a {linkProps}>RGESN</a> (generell referanse for økodesign) på 89 %."
                 },
-                "2": "Den digitale tjenesten compar:IA har som mål å forbedre denne fremdriftsscoren til 95 % innen 2027.",
+                "2": "Den digitale tjenesten CompaRAG har som mål å forbedre denne fremdriftsscoren til 95 % innen 2027.",
                 "3": {
                     "1": "Strategi: 100 %",
                     "2": "Spesifikasjoner: 78 %",
