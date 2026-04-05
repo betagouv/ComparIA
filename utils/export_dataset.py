@@ -165,6 +165,20 @@ WHERE archived = FALSE
 ;
 """
 
+tool_votes_db_query = """
+SELECT
+    session_hash,
+    tool_a_id,
+    tool_b_id,
+    chosen,
+    llm_id,
+    task,
+    goal,
+    timestamp
+FROM tool_votes
+;
+"""
+
 DATASET_CONFIG = {
     "conversations": {
         "query": conversations_db_query,
@@ -182,6 +196,11 @@ DATASET_CONFIG = {
         "query": conversations_raw_db_query,
         "repo": "comparia-conversations_raw",
     },
+}
+
+DATASET_CONFIG["tool_votes"] = {
+    "query": tool_votes_db_query,
+    "repo": "comparia-votes",
 }
 
 
@@ -643,6 +662,10 @@ def process_dataset(dataset_name, dataset_config, export_base_path, dry_run=Fals
                     f"Failed to fetch data for dataset {dataset_name}, aborting export"
                 )
                 return False
+
+            # Add mode column for tool_votes to distinguish from LLM votes in same repo
+            if dataset_name == "tool_votes" and data is not None:
+                data["mode"] = "tool_arena"
 
             # Export data to local files
             export_data(data, dataset_name, repo_path)
