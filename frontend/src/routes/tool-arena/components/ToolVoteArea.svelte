@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
+  import { Button } from '$components/dsfr'
+
   let {
     onvote,
     disabled = false
@@ -7,28 +10,23 @@
     disabled?: boolean
   } = $props()
 
-  let selected = $state<'a' | 'b' | 'tie' | null>(null)
+  let chosen = $state<'a' | 'b' | 'tie' | null>(null)
 
   const choices = [
     { value: 'a' as const, label: 'Tool A' },
-    { value: 'tie' as const, label: 'Tie' },
+    { value: 'tie' as const, label: m['vote.bothEqual']() },
     { value: 'b' as const, label: 'Tool B' }
   ]
-
-  function handleSelect(value: 'a' | 'b' | 'tie') {
-    selected = value
-    onvote(value)
-  }
 </script>
 
 <div id="vote-area" class="fr-container py-7 md:py-20">
   <div class="text-center">
-    <h4 class="fr-h6 mb-2!">Which result is better?</h4>
-    <p class="fr-text--sm text-grey">Select the tool that best achieved the goal</p>
+    <h4 class="fr-h6 mb-2!">{m['toolArena.step1.title']()}</h4>
+    <p class="fr-text--sm text-grey">{m['toolArena.step1.desc']()}</p>
   </div>
 
   <fieldset id="tool-vote-cards" aria-labelledby="tool-vote-legend">
-    <legend class="sr-only" id="tool-vote-legend">Which result is better?</legend>
+    <legend class="sr-only" id="tool-vote-legend">{m['toolArena.step1.title']()}</legend>
 
     <div class="gap-5 md:flex md:justify-center grid auto-rows-max grid-cols-3">
       {#each choices as { value, label } (value)}
@@ -39,8 +37,8 @@
             name="tool-vote-radio-group"
             {value}
             disabled={disabled}
-            checked={selected === value}
-            onchange={() => handleSelect(value)}
+            checked={chosen === value}
+            oninput={() => { chosen = value }}
             class="sr-only"
           />
           <label
@@ -69,6 +67,15 @@
       {/each}
     </div>
   </fieldset>
+
+  <div class="text-center mt-6">
+    <Button
+      onclick={() => { if (chosen !== null) onvote(chosen) }}
+      disabled={disabled || chosen === null}
+    >
+      {m['toolArena.revealButton']()}
+    </Button>
+  </div>
 </div>
 
 <style>

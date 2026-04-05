@@ -1453,8 +1453,37 @@
             "problem": "Det inledande problemet",
             "product": "Produkt och partners",
             "ranking": "Rankning",
-            "share": "Mina resultat"
+            "share": "Mina resultat",
+            "tool-arena": "Tool Arena"
         }
+    },
+    "toolArena": {
+        "step1": {
+            "title": "What do you think of the results?",
+            "desc": "Read both answers and choose the best one"
+        },
+        "step2": {
+            "title": "The tools are revealed!",
+            "desc": "Discover which tools responded"
+        },
+        "newComparison": "New comparison",
+        "form": {
+            "taskLabel": "Describe the task",
+            "goalLabel": "Goal",
+            "submit": "Compare tools",
+            "taskType": "Task type"
+        },
+        "loading": {
+            "title": "Comparing tools...",
+            "subtitle": "This may take up to 30 seconds"
+        },
+        "reveal": {
+            "thanks": {
+                "title": "Thank you for your vote!",
+                "cta": "View leaderboard"
+            }
+        },
+        "revealButton": "Reveal tools"
     },
     "vote": {
         "bothEqual": "Båda är lika bra",

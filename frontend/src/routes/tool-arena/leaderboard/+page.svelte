@@ -1,6 +1,9 @@
 <script lang="ts">
   import { api } from '$lib/fastapi-client'
   import { onMount } from 'svelte'
+  import Header from '$components/header/Header.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
 
   type ToolRanking = {
     tool_id: string
@@ -27,6 +30,10 @@
     }
   })
 </script>
+
+<SeoHead title={m['seo.titles.tool-arena']()} />
+
+<Header hideDiscussBtn hideVoteGauge small />
 
 <main class="bg-very-light-grey min-h-screen">
   <div class="fr-container py-10 md:py-16">

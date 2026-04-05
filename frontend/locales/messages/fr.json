@@ -2121,8 +2121,37 @@
             "product": "À propos",
             "ranking": "Classement",
             "rgesn": "Déclaration d’écoconception",
-            "share": "Mon bilan"
+            "share": "Mon bilan",
+            "tool-arena": "Comparateur d’outils"
         }
+    },
+    "toolArena": {
+        "step1": {
+            "title": "Que pensez-vous des résultats ?",
+            "desc": "Lisez les deux réponses et choisissez la meilleure"
+        },
+        "step2": {
+            "title": "Les outils sont démasqués !",
+            "desc": "Découvrez quels outils ont répondu"
+        },
+        "newComparison": "Nouvelle comparaison",
+        "form": {
+            "taskLabel": "Décrivez la tâche",
+            "goalLabel": "Objectif",
+            "submit": "Comparer les outils",
+            "taskType": "Type de tâche"
+        },
+        "loading": {
+            "title": "Comparaison en cours...",
+            "subtitle": "Cela peut prendre jusqu’à 30 secondes"
+        },
+        "reveal": {
+            "thanks": {
+                "title": "Merci pour votre vote !",
+                "cta": "Voir le classement"
+            }
+        },
+        "revealButton": "Révéler les outils"
     },
     "vote": {
         "bothEqual": "Les deux se valent",

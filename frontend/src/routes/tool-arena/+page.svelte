@@ -1,7 +1,10 @@
 <script lang="ts">
   import { api } from '$lib/fastapi-client'
-  import { ToolArenaForm, ToolArenaHeader, ToolResultCard, ToolRevealCard, ToolVoteArea } from './components'
+  import { ToolArenaForm, ToolResultCard, ToolRevealCard, ToolVoteArea } from './components'
   import { Button } from '$components/dsfr'
+  import Header from '$components/header/Header.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
 
   type CompareResponse = {
     session_hash: string
@@ -33,6 +36,9 @@
   let errorB = $state<string | null>(null)
   let revealData = $state<ToolRevealResponse | null>(null)
   let compareError = $state<string | null>(null)
+
+  let secondHeader = $state<HTMLElement | undefined>(undefined)
+  let secondHeaderSize = $derived(secondHeader?.offsetHeight ?? 0)
 
   const bothFailed = $derived(!!errorA && !!errorB && !resultA && !resultB)
 
@@ -89,20 +95,52 @@
   }
 </script>
 
-<ToolArenaHeader />
+<SeoHead title={m['seo.titles.tool-arena']()} />
+
+<Header hideNavigation={phase !== 'input'} hideDiscussBtn hideVoteGauge small />
+
+{#if phase === 'results' || phase === 'revealed'}
+  <div
+    bind:this={secondHeader}
+    class="fr-container--fluid bg-light-grey sticky z-3 top-0"
+  >
+    <div class="fr-container">
+      <div class="py-3 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <div class="c-bot-disk-a"></div>
+            <span class="font-medium fr-text--sm">
+              {phase === 'revealed' ? revealData!.tool_a.name : 'Tool A'}
+            </span>
+          </div>
+          <span class="text-grey">vs</span>
+          <div class="flex items-center gap-2">
+            <div class="c-bot-disk-b"></div>
+            <span class="font-medium fr-text--sm">
+              {phase === 'revealed' ? revealData!.tool_b.name : 'Tool B'}
+            </span>
+          </div>
+        </div>
+        {#if phase === 'results'}
+          <span class="fr-text--sm text-grey">{m['toolArena.step1.desc']()}</span>
+        {/if}
+      </div>
+    </div>
+  </div>
+{/if}
 
 <div class="fr-container pt-4 pb-0 flex justify-end">
   <a href="/tool-arena/leaderboard" class="fr-link fr-text--sm">
-    View Leaderboard &rarr;
+    {m['toolArena.reveal.thanks.cta']()} &rarr;
   </a>
 </div>
 
-<main class="bg-very-light-grey relative min-h-screen">
+<main class="bg-very-light-grey relative min-h-screen" style="--second-header-size: {secondHeaderSize}px;">
   {#if phase === 'input'}
     <div id="prompt-area" class="fr-container py-10 md:py-24">
       <div class="fr-col-xl-8 m-auto">
         <h2 class="mb-0! text-center" style="font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;">
-          Which tool does it better?
+          {m['toolArena.step1.title']()}
         </h2>
 
         {#if compareError}
@@ -119,7 +157,7 @@
     <div class="fr-container py-10 md:py-24">
       <div class="fr-col-xl-8 m-auto text-center">
         <h2 class="mb-4!" style="font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;">
-          Comparing tools...
+          {m['toolArena.loading.title']()}
         </h2>
         <div class="py-16">
           <div class="flex justify-center mb-6">
@@ -129,31 +167,12 @@
               <div class="c-bot-disk-b animate-pulse"></div>
             </div>
           </div>
-          <p class="fr-text--sm text-grey">This may take up to 30 seconds</p>
+          <p class="fr-text--sm text-grey">{m['toolArena.loading.subtitle']()}</p>
         </div>
       </div>
     </div>
 
   {:else if phase === 'results'}
-    <div class="fr-container--fluid bg-light-grey sticky z-3 top-0">
-      <div class="fr-container">
-        <div class="py-3 flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <div class="c-bot-disk-a"></div>
-              <span class="font-medium fr-text--sm">Tool A</span>
-            </div>
-            <span class="text-grey">vs</span>
-            <div class="flex items-center gap-2">
-              <div class="c-bot-disk-b"></div>
-              <span class="font-medium fr-text--sm">Tool B</span>
-            </div>
-          </div>
-          <span class="fr-text--sm text-grey">Vote below to reveal identities</span>
-        </div>
-      </div>
-    </div>
-
     <div class="fr-container py-8 md:py-12">
       <div class="gap-10 md:grid-cols-2 md:gap-6 grid mb-8">
         <ToolResultCard label="A" result={resultA} error={errorA} />
@@ -171,24 +190,6 @@
     </div>
 
   {:else if phase === 'revealed'}
-    <div class="fr-container--fluid bg-light-grey sticky z-3 top-0">
-      <div class="fr-container">
-        <div class="py-3 flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <div class="c-bot-disk-a"></div>
-              <span class="font-medium fr-text--sm">{revealData!.tool_a.name}</span>
-            </div>
-            <span class="text-grey">vs</span>
-            <div class="flex items-center gap-2">
-              <div class="c-bot-disk-b"></div>
-              <span class="font-medium fr-text--sm">{revealData!.tool_b.name}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="fr-container py-8 md:py-12">
       <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid grid-cols-1 mb-8">
         <ToolRevealCard
@@ -201,10 +202,11 @@
         />
       </div>
       {#if revealData!.chosen === 'tie'}
-        <p class="fr-text--sm text-grey text-center mb-4">You voted: Tie</p>
+        <p class="fr-text--sm text-grey text-center mb-4">{m['vote.bothEqual']()}</p>
       {/if}
       <div class="text-center mt-8 mb-8">
-        <Button onclick={resetArena}>New Comparison</Button>
+        <p class="fr-text--sm text-grey mb-4">{m['toolArena.reveal.thanks.title']()}</p>
+        <Button onclick={resetArena}>{m['toolArena.newComparison']()}</Button>
       </div>
     </div>
   {/if}
