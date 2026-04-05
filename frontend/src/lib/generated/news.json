@@ -38,7 +38,7 @@
   {
     "kind": "resource",
     "subKind": "blog",
-    "title": "Classement compar:IA : des votes des utilisateurs au classement participatif des modèles",
+    "title": "Classement CompaRAG : des votes des utilisateurs au classement participatif des modèles",
     "desc": "Retour sur la démarche de classement des modèles : objectifs, méthodologie, premières analyses et limites.",
     "imgSrc": "ranking.png",
     "href": "https://huggingface.co/blog/comparIA/publication-du-premier-classement",
@@ -66,7 +66,7 @@
   {
     "kind": "media",
     "subKind": "press",
-    "title": "compar:IA au JT de France 2",
+    "title": "CompaRAG au JT de France 2",
     "desc": "« Intelligence artificielle : la riposte de l'école contre la triche »",
     "imgSrc": "jt-france2.jpeg",
     "href": "https://www.franceinfo.fr/internet/intelligence-artificielle/intelligence-artificielle-la-riposte-de-l-ecole-contre-la-triche_7536016.html",
@@ -131,7 +131,7 @@
     "kind": "resource",
     "subKind": "blog",
     "title": "Infolettre #3",
-    "desc": "Le jeu de données compar:IA est publié ! (+ de 130k préférences) 🎉​",
+    "desc": "Le jeu de données CompaRAG est publié ! (+ de 130k préférences) 🎉​",
     "imgSrc": "infolettre3.png",
     "href": "https://infolettres.duministeredelaculture.fr/emailing/65547/144/emailing.aspx",
     "date": 1749592800.0
@@ -139,8 +139,8 @@
   {
     "kind": "resource",
     "subKind": "comparia",
-    "title": "Journée compar:IA à la BNF",
-    "desc": "Redécouvrez les enjeux clés de l’IA générative avec les rediffusions de cet évènement organisé par compar:IA.",
+    "title": "Journée CompaRAG à la BNF",
+    "desc": "Redécouvrez les enjeux clés de l’IA générative avec les rediffusions de cet évènement organisé par CompaRAG.",
     "imgSrc": "bnf.png",
     "href": "/news/bnf",
     "date": 1738882800.0,

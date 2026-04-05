@@ -4,19 +4,19 @@
 
   const publicCards = [
     {
-      desc: 'Pour découvrir concrètement les coulisses de l’IA.',
+      desc: `Pour découvrir concrètement les coulisses de l'IA.`,
       title: 'Collèges et Lycées',
       icon: 'i-ri-school-line',
       variant: 'text-yellow'
     },
     {
-      desc: 'Pour enrichir les discussions sur l’innovation et le développement durable.',
+      desc: `Pour enrichir les discussions sur l'innovation et le développement durable.`,
       title: 'Universités',
       icon: 'i-ri-graduation-cap-fill',
       variant: 'text-red'
     },
     {
-      desc: 'Pour débattre d’un sujet de société en s’appuyant sur un exemple vécu.',
+      desc: `Pour débattre d'un sujet de société en s'appuyant sur un exemple vécu.`,
       title: 'Associations, Médiation numérique',
       icon: 'i-ri-home-smile-2-line',
       variant: 'text-green'
@@ -31,17 +31,17 @@
 
   const workshopSteps = [
     {
-      desc: ‘Présentation rapide de l’IA générative et de la plateforme CompaRAG pour que tout le monde parte du même point, même sans connaissance préalable.’,
+      desc: `Présentation rapide de l'IA générative et de la plateforme CompaRAG pour que tout le monde parte du même point, même sans connaissance préalable.`,
       duration: '(10min)',
       title: 'Introduction'
     },
     {
-      desc: 'Les participants posent la même question à deux modèles d’IA anonymes : un « grand » et un « petit » modèle.',
+      desc: `Les participants posent la même question à deux modèles d'IA anonymes : un « grand » et un « petit » modèle.`,
       duration: '(10-15min)',
       title: 'Le duel'
     },
     {
-      desc: 'Moment d’échange pour réfléchir à la pertinence des réponses au regard des besoins des utilisateurs.',
+      desc: `Moment d'échange pour réfléchir à la pertinence des réponses au regard des besoins des utilisateurs.`,
       duration: '(10min)',
       title: 'Comparaison et vote'
     },
@@ -56,7 +56,7 @@
       title: 'Débat final'
     },
     {
-      desc: 'Partage de quelques gestes simples pour réduire l’impact lié à l’usage de l’IA.',
+      desc: `Partage de quelques gestes simples pour réduire l'impact lié à l'usage de l'IA.`,
       duration: '(5min)',
       title: 'Conclusion et ouverture'
     }
@@ -64,19 +64,18 @@
 
   const faq = [
     {
-      desc: 'Nous avons déjà animé des sessions avec seulement 5 participants, mais aussi devant 300 personnes. Bien sûr, plus le groupe est grand, moins chacun a l’occasion de s’exprimer individuellement. Cela dit, l’atelier reste très flexible : tout dépend de la capacité du facilitateur à gérer le public. Avec un petit groupe, l’expérience est plus personnalisée ; avec un grand nombre de participants, l’énergie et la dynamique sont particulièrement intéressantes.',
+      desc: `Nous avons déjà animé des sessions avec seulement 5 participants, mais aussi devant 300 personnes. Bien sûr, plus le groupe est grand, moins chacun a l'occasion de s'exprimer individuellement. Cela dit, l'atelier reste très flexible : tout dépend de la capacité du facilitateur à gérer le public. Avec un petit groupe, l'expérience est plus personnalisée ; avec un grand nombre de participants, l'énergie et la dynamique sont particulièrement intéressantes.`,
       title: "Combien de personnes peuvent participer à une session des Duels de l'IA ?"
     },
     {
-      desc: 'Pas du tout ! Le guide facilitateur est conçu pour permettre à toute personne intéressée d’animer un duel. Il fournit les éléments clés pour comprendre le sujet, les enjeux et les outils nécessaires au bon déroulement de l’exercice. Bien sûr, avoir déjà expérimenté un peu avec des modèles de langage peut aider, mais ce n’est en aucun cas indispensable.',
+      desc: `Pas du tout ! Le guide facilitateur est conçu pour permettre à toute personne intéressée d'animer un duel. Il fournit les éléments clés pour comprendre le sujet, les enjeux et les outils nécessaires au bon déroulement de l'exercice. Bien sûr, avoir déjà expérimenté un peu avec des modèles de langage peut aider, mais ce n'est en aucun cas indispensable.`,
       title: "Faut-il être expert du sujet pour faciliter un Duel de l'IA ?"
     },
     {
-      desc: 'Les sessions les plus courtes que nous avons menées ont duré 20 à 30 minutes, mais cela limite un peu l’interactivité. Idéalement, un bon duel prend environ 45 minutes. Et si l’on dispose d’1h30, c’est encore mieux : cela permet d’enchaîner plusieurs duels et d’entrer plus en profondeur dans les discussions.',
+      desc: `Les sessions les plus courtes que nous avons menées ont duré 20 à 30 minutes, mais cela limite un peu l'interactivité. Idéalement, un bon duel prend environ 45 minutes. Et si l'on dispose d'1h30, c'est encore mieux : cela permet d'enchaîner plusieurs duels et d'entrer plus en profondeur dans les discussions.`,
       title: 'Combien de temps dure une session des Duels ?'
     }
-  ]
-</script>
+  ]</script>
 
 <main>
   <section class="fr-container--fluid bg-very-light-grey py-15">
