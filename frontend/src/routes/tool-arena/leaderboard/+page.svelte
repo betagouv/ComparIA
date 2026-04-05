@@ -18,8 +18,8 @@
 
   onMount(async () => {
     try {
-      const data = await api.request<ToolRanking[]>('/tool-arena/leaderboard')
-      tools = [...data].sort((a, b) => b.elo - a.elo)
+      const data = await api.request<{ data_timestamp: number | null; tools: ToolRanking[] }>('/tool-arena/leaderboard')
+      tools = [...data.tools].sort((a, b) => b.elo - a.elo)
     } catch (err) {
       error = (err as Error).message || 'Failed to load leaderboard'
     } finally {
