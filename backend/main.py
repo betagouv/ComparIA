@@ -51,3 +51,8 @@ async def get_counter(country_portal: CountryPortalAnno):
         "count": get_country_portal_count(country_portal),
         "objective": OBJECTIVES[country_portal],
     }
+
+
+@app.get("/health")
+async def health() -> dict:
+    return {"status": "ok"}
