@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
-      interval: "every-two-weeks"
+      interval: "weekly"
     groups:
       npm-minor-patch:
         update-types:
@@ -13,7 +13,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "every-two-weeks"
+      interval: "weekly"
     groups:
       pip-minor-patch:
         update-types:
