@@ -8,6 +8,7 @@ Self-contained module — does NOT import from backend.arena or backend.config.
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -17,6 +18,14 @@ from pydantic import BaseModel, HttpUrl, PlainSerializer
 # backend/tool_arena/ -> CompaRAG/
 ROOT_DIR = Path(__file__).parent.parent.parent
 MCP_SERVERS_PATH = ROOT_DIR / "mcp_servers.json"
+
+# Mapping from server id to the env var that overrides its endpoint URL at runtime.
+# Railway-internal hostnames are injected via these env vars; localhost defaults remain
+# in mcp_servers.json for local dev (D-01, D-03).
+_URL_OVERRIDE_ENV_VARS: dict[str, str] = {
+    "langchain_rag": "MCP_LANGCHAIN_RAG_URL",
+    "llamaindex_rag": "MCP_LLAMAINDEX_RAG_URL",
+}
 
 
 class MCPAuth(BaseModel):
@@ -68,6 +77,15 @@ def load_mcp_servers(path: Path | None = None) -> list[MCPServerConfig]:
 
     with open(path) as f:
         raw = json.load(f)  # raises json.JSONDecodeError on malformed JSON
+
+    # Overlay Railway-internal URLs from env vars (D-01)
+    # Falls back to mcp_servers.json values when env var is absent (local dev)
+    for entry in raw:
+        env_var = _URL_OVERRIDE_ENV_VARS.get(entry.get("id", ""))
+        if env_var:
+            override_url = os.getenv(env_var)
+            if override_url:
+                entry["endpoint"] = override_url
 
     servers = [MCPServerConfig(**entry) for entry in raw]  # raises ValidationError on invalid fields
 
