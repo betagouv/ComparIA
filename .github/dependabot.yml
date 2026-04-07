@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "every-two-weeks"
+    groups:
+      npm-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "every-two-weeks"
+    groups:
+      pip-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
