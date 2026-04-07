@@ -1,143 +1,162 @@
 {
-    "a11y": {
-        "externalLink": "{text}"
+  "a11y": {
+    "externalLink": "{text}"
+  },
+  "actions": {
+    "accessData": "Acceder a los datos",
+    "contact": "Contactar",
+    "contactUs": "Ponerse en contacto con nosotros",
+    "copyLink": {
+      "do": "Copiar enlace",
+      "done": "Enlace copiado al portapapeles"
     },
-    "actions": {
-        "accessData": "Acceder a los datos",
-        "contact": "Contactar",
-        "contactUs": "Ponerse en contacto con nosotros",
-        "copyLink": {
-            "do": "Copiar enlace",
-            "done": "Enlace copiado al portapapeles"
-        },
-        "copyMessage": {
-            "do": "Copiar mensaje",
-            "done": "Mensaje copiado"
-        },
-        "downloadData": "Descargar datos",
-        "home": "Página principal",
-        "returnHome": "Regresar a la página principal",
-        "scrollLeft": "Desplazar a la izquierda",
-        "scrollRight": "Desplazar a la derecha",
-        "searchModel": "Buscar un modelo",
-        "seeMore": "Ver más",
-        "selectLanguage": "Seleccionar idioma",
-        "vote": "Dar retroalimentación"
+    "copyMessage": {
+      "do": "Copiar mensaje",
+      "done": "Mensaje copiado"
     },
-    "arenaHome": {
-        "compareModels": {
-            "count": "{count}/2 modelos",
-            "help": "Si elige solo uno, el segundo sera elegido al azar",
-            "question": "¿Qué modelo te gustaría elegir?"
-        },
-        "modelSelection": "Selección de modelo",
-        "prompt": {
-            "label": "Escribir tu primer mensaje",
-            "placeholder": "Escribe tu primer mensaje"
-        },
-        "selectModels": {
-            "help": "Eliga un modo de comparación",
-            "question": "¿Qué modelo le gustaría comparar?"
-        },
-        "suggestions": {
-            "generateAnother": "Generar otra instrucción",
-            "title": "Instrucciones sugeridas"
-        },
-        "title": "¿Cómo puedo ayudarte el día de hoy?"
+    "downloadData": "Descargar datos",
+    "home": "Página principal",
+    "returnHome": "Regresar a la página principal",
+    "scrollLeft": "Desplazar a la izquierda",
+    "scrollRight": "Desplazar a la derecha",
+    "searchModel": "Buscar un modelo",
+    "seeMore": "Ver más",
+    "selectLanguage": "Seleccionar idioma",
+    "vote": "Dar retroalimentación"
+  },
+  "arenaHome": {
+    "compareModels": {
+      "count": "{count}/2 modelos",
+      "help": "Si elige solo uno, el segundo sera elegido al azar",
+      "question": "¿Qué modelo te gustaría elegir?"
     },
-    "chatbot": {
-        "continuePrompt": "Continuar la conversación con los modelos de IA",
-        "conversation": "Conversación",
-        "errors": {
-            "other": {
-                "message": "Se ha producido un error temporal.",
-                "retry": "Puedes volver a intentar y solicitar los modelos nuevamente.",
-                "title": "Oops, error temporal",
-                "vote": "O finaliza tu experiencia dando preferencia a estos modelos."
-            },
-            "tooLong": {
-                "message": "Cada modelo está limitado por el tamaño de conversación que puede manejar.",
-                "retry": "Puedes reiniciar una conversación con dos nuevos modelos.",
-                "title": "Oops, la conversación es muy demasiado larga para uno de los modelos."
-            }
-        },
-        "loading": "Cargando respuestas",
-        "reasoning": {
-            "finished": "Razonamiento completado",
-            "inProgress": "Razonando…"
-        },
-        "revealButton": "Revelar modelos"
+    "modelSelection": "Selección de modelo",
+    "prompt": {
+      "label": "Escribir tu primer mensaje",
+      "placeholder": "Escribe tu primer mensaje"
     },
-    "closeModal": "Cerrar ventana emergente",
-    "components": {
-        "pagination": {
-            "first": "Primera página",
-            "label": "Páginas",
-            "last": "Última página",
-            "next": "Página siguiente",
-            "nth": "Página {count}",
-            "previous": "Página anterior"
-        },
-        "table": {
-            "linePerPage": "Número de líneas por página",
-            "pageCount": "{count} líneas por página",
-            "triage": "Ordenar"
-        },
-        "theme": {
-            "legend": "Eligir un tema para cambiar la apariencia del sitio.",
-            "options": {
-                "dark": "Tema oscuro",
-                "light": "Tema claro",
-                "system": "Sistema"
-            }
-        }
+    "selectModels": {
+      "help": "Eliga un modo de comparación",
+      "question": "¿Qué modelo le gustaría comparar?"
     },
-    "datasets": {
-        "access": {
-            "repos": {
-                "votes": {
-                    "title": "/votos"
-                }
-            },
-            "share": "Comparte con nosotros como usas los datos",
-            "title": "Acceder al conjunto de datos de CompaRAG"
-        }
+    "suggestions": {
+      "generateAnother": "Generar otra instrucción",
+      "title": "Instrucciones sugeridas"
     },
+    "title": "¿Cómo puedo ayudarte el día de hoy?"
+  },
+  "chatbot": {
+    "continuePrompt": "Continuar la conversación con los modelos de IA",
+    "conversation": "Conversación",
     "errors": {
-        "404": {
-            "error": "Error 404",
-            "title": "Página no encontrada"
-        },
-        "unexpected": {
-            "error": "Error {code}"
-        }
+      "other": {
+        "message": "Se ha producido un error temporal.",
+        "retry": "Puedes volver a intentar y solicitar los modelos nuevamente.",
+        "title": "Oops, error temporal",
+        "vote": "O finaliza tu experiencia dando preferencia a estos modelos."
+      },
+      "tooLong": {
+        "message": "Cada modelo está limitado por el tamaño de conversación que puede manejar.",
+        "retry": "Puedes reiniciar una conversación con dos nuevos modelos.",
+        "title": "Oops, la conversación es muy demasiado larga para uno de los modelos."
+      }
     },
-    "toolArena": {
-        "step1": {
-            "title": "What do you think of the results?",
-            "desc": "Read both answers and choose the best one"
-        },
-        "step2": {
-            "title": "The tools are revealed!",
-            "desc": "Discover which tools responded"
-        },
-        "newComparison": "New comparison",
-        "form": {
-            "taskLabel": "Describe the task",
-            "goalLabel": "Goal",
-            "submit": "Compare tools",
-            "taskType": "Task type"
-        },
-        "loading": {
-            "title": "Comparing tools...",
-            "subtitle": "This may take up to 30 seconds"
-        },
-        "reveal": {
-            "thanks": {
-                "title": "Thank you for your vote!",
-                "cta": "View leaderboard"
-            }
-        },
-        "revealButton": "Reveal tools"
+    "loading": "Cargando respuestas",
+    "reasoning": {
+      "finished": "Razonamiento completado",
+      "inProgress": "Razonando…"
+    },
+    "revealButton": "Revelar modelos"
+  },
+  "closeModal": "Cerrar ventana emergente",
+  "components": {
+    "pagination": {
+      "first": "Primera página",
+      "label": "Páginas",
+      "last": "Última página",
+      "next": "Página siguiente",
+      "nth": "Página {count}",
+      "previous": "Página anterior"
+    },
+    "table": {
+      "linePerPage": "Número de líneas por página",
+      "pageCount": "{count} líneas por página",
+      "triage": "Ordenar"
+    },
+    "theme": {
+      "legend": "Eligir un tema para cambiar la apariencia del sitio.",
+      "options": {
+        "dark": "Tema oscuro",
+        "light": "Tema claro",
+        "system": "Sistema"
+      }
     }
+  },
+  "datasets": {
+    "access": {
+      "repos": {
+        "votes": {
+          "title": "/votos"
+        }
+      },
+      "share": "Comparte con nosotros como usas los datos",
+      "title": "Acceder al conjunto de datos de CompaRAG"
+    }
+  },
+  "errors": {
+    "404": {
+      "error": "Error 404",
+      "title": "Página no encontrada"
+    },
+    "unexpected": {
+      "error": "Error {code}"
+    }
+  },
+  "toolArena": {
+    "step1": {
+      "title": "What do you think of the results?",
+      "desc": "Read both answers and choose the best one"
+    },
+    "step2": {
+      "title": "The tools are revealed!",
+      "desc": "Discover which tools responded"
+    },
+    "newComparison": "New comparison",
+    "form": {
+      "taskLabel": "Describe the task",
+      "goalLabel": "Goal",
+      "submit": "Compare tools",
+      "taskType": "Task type"
+    },
+    "loading": {
+      "title": "Comparing tools...",
+      "subtitle": "This may take up to 30 seconds"
+    },
+    "reveal": {
+      "thanks": {
+        "title": "Thank you for your vote!",
+        "cta": "View leaderboard"
+      }
+    },
+    "revealButton": "Reveal tools",
+    "anonymousToolA": "Tool A",
+    "anonymousToolB": "Tool B",
+    "bothToolsFailed": "Both tools encountered errors.",
+    "tryAgain": "Try Again",
+    "errorFallback": "An unexpected error occurred",
+    "leaderboard": {
+      "title": "Tool Arena Leaderboard",
+      "backLink": "Back to Tool Arena",
+      "loading": "Loading rankings...",
+      "empty": "No rankings available yet. Rankings are computed after votes are cast.",
+      "rank": "Rank",
+      "toolName": "Tool Name",
+      "eloScore": "ELO Score",
+      "confidenceInterval": "Confidence Interval",
+      "matches": "Matches",
+      "winRate": "Win Rate",
+      "provisional": "Provisional",
+      "eloExplanation": "ELO scores computed using the Bradley-Terry model with bootstrap confidence intervals (p2.5 – p97.5). Tools marked \"Provisional\" have fewer than 50 matches."
+    }
+  }
 }

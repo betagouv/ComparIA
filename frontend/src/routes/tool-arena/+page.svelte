@@ -61,7 +61,7 @@
       errorB = data.error_b
       phase = 'results'
     } catch (err) {
-      compareError = (err as Error).message || 'An unexpected error occurred'
+      compareError = (err as Error).message || m['toolArena.errorFallback']()
       phase = 'input'
     }
   }
@@ -102,29 +102,33 @@
 {#if phase === 'results' || phase === 'revealed'}
   <div
     bind:this={secondHeader}
-    class="fr-container--fluid bg-light-grey sticky z-3 top-0"
+    id="second-header"
+    class="fr-container--fluid bg-light-grey top-0 py-3 md:py-4 sticky z-3 drop-shadow-[--raised-shadow]"
   >
-    <div class="fr-container">
-      <div class="py-3 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2">
-            <div class="c-bot-disk-a"></div>
-            <span class="font-medium fr-text--sm">
-              {phase === 'revealed' ? revealData!.tool_a.name : 'Tool A'}
-            </span>
-          </div>
-          <span class="text-grey">vs</span>
-          <div class="flex items-center gap-2">
-            <div class="c-bot-disk-b"></div>
-            <span class="font-medium fr-text--sm">
-              {phase === 'revealed' ? revealData!.tool_b.name : 'Tool B'}
-            </span>
-          </div>
+    <div class="fr-container gap-3 md:flex-row flex flex-col items-center">
+      <div class="gap-3 md:flex-row flex basis-2/3 flex-col items-center">
+        <div class="bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-nowrap">
+          {m['header.chatbot.step']()} {phase === 'results' ? 1 : 2}/2
         </div>
-        {#if phase === 'results'}
-          <span class="fr-text--sm text-grey">{m['toolArena.step1.desc']()}</span>
-        {/if}
+        <div class="md:text-left flex flex-col text-center">
+          <strong class="text-dark-grey">
+            {phase === 'results' ? m['toolArena.step1.title']() : m['toolArena.step2.title']()}
+          </strong>
+          <p class="mt-2! mb-0! text-sm! leading-normal! text-grey md:mt-0!">
+            {phase === 'results' ? m['toolArena.step1.desc']() : m['toolArena.step2.desc']()}
+          </p>
+        </div>
       </div>
+      {#if phase === 'revealed'}
+        <div class="md:block hidden w-full basis-1/3 items-center text-right">
+          <button
+            onclick={resetArena}
+            class="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line"
+          >
+            {m['toolArena.newComparison']()}
+          </button>
+        </div>
+      {/if}
     </div>
   </div>
 {/if}
@@ -181,8 +185,8 @@
 
       {#if bothFailed}
         <div class="text-center py-7">
-          <p class="fr-text--sm text-red-600 mb-4">Both tools encountered errors.</p>
-          <Button onclick={() => (phase = 'input')}>Try Again</Button>
+          <p class="fr-text--sm text-red-600 mb-4">{m['toolArena.bothToolsFailed']()}</p>
+          <Button onclick={() => (phase = 'input')}>{m['toolArena.tryAgain']()}</Button>
         </div>
       {:else}
         <ToolVoteArea onvote={handleVote} />

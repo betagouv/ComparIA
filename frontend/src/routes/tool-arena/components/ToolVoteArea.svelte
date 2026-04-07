@@ -13,9 +13,9 @@
   let chosen = $state<'a' | 'b' | 'tie' | null>(null)
 
   const choices = [
-    { value: 'a' as const, label: 'Tool A' },
+    { value: 'a' as const, label: m['toolArena.anonymousToolA']() },
     { value: 'tie' as const, label: m['vote.bothEqual']() },
-    { value: 'b' as const, label: 'Tool B' }
+    { value: 'b' as const, label: m['toolArena.anonymousToolB']() }
   ]
 </script>
 

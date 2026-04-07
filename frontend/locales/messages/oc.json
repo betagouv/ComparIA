@@ -1,37 +1,56 @@
 {
-    "arenaHome": {
-        "title": "Cossí vos pòdi ajudar uèi ?",
-        "modelSelection": "Seleccion dels modèls",
-        "prompt": {
-            "label": "Escrivètz vòstre primièr messatge"
-        }
-    },
-    "toolArena": {
-        "step1": {
-            "title": "What do you think of the results?",
-            "desc": "Read both answers and choose the best one"
-        },
-        "step2": {
-            "title": "The tools are revealed!",
-            "desc": "Discover which tools responded"
-        },
-        "newComparison": "New comparison",
-        "form": {
-            "taskLabel": "Describe the task",
-            "goalLabel": "Goal",
-            "submit": "Compare tools",
-            "taskType": "Task type"
-        },
-        "loading": {
-            "title": "Comparing tools...",
-            "subtitle": "This may take up to 30 seconds"
-        },
-        "reveal": {
-            "thanks": {
-                "title": "Thank you for your vote!",
-                "cta": "View leaderboard"
-            }
-        },
-        "revealButton": "Reveal tools"
+  "arenaHome": {
+    "title": "Cossí vos pòdi ajudar uèi ?",
+    "modelSelection": "Seleccion dels modèls",
+    "prompt": {
+      "label": "Escrivètz vòstre primièr messatge"
     }
+  },
+  "toolArena": {
+    "step1": {
+      "title": "What do you think of the results?",
+      "desc": "Read both answers and choose the best one"
+    },
+    "step2": {
+      "title": "The tools are revealed!",
+      "desc": "Discover which tools responded"
+    },
+    "newComparison": "New comparison",
+    "form": {
+      "taskLabel": "Describe the task",
+      "goalLabel": "Goal",
+      "submit": "Compare tools",
+      "taskType": "Task type"
+    },
+    "loading": {
+      "title": "Comparing tools...",
+      "subtitle": "This may take up to 30 seconds"
+    },
+    "reveal": {
+      "thanks": {
+        "title": "Thank you for your vote!",
+        "cta": "View leaderboard"
+      }
+    },
+    "revealButton": "Reveal tools",
+    "anonymousToolA": "Tool A",
+    "anonymousToolB": "Tool B",
+    "bothToolsFailed": "Both tools encountered errors.",
+    "tryAgain": "Try Again",
+    "errorFallback": "An unexpected error occurred",
+    "leaderboard": {
+      "title": "Tool Arena Leaderboard",
+      "backLink": "Back to Tool Arena",
+      "loading": "Loading rankings...",
+      "empty": "No rankings available yet. Rankings are computed after votes are cast.",
+      "rank": "Rank",
+      "toolName": "Tool Name",
+      "eloScore": "ELO Score",
+      "confidenceInterval": "Confidence Interval",
+      "matches": "Matches",
+      "winRate": "Win Rate",
+      "provisional": "Provisional",
+      "eloExplanation": "ELO scores computed using the Bradley-Terry model with bootstrap confidence intervals (p2.5 – p97.5). Tools marked \"Provisional\" have fewer than 50 matches."
+    }
+  }
 }
