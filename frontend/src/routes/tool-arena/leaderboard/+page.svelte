@@ -24,29 +24,28 @@
       const data = await api.request<{ data_timestamp: number | null; tools: ToolRanking[] }>('/tool-arena/leaderboard')
       tools = [...data.tools].sort((a, b) => b.elo - a.elo)
     } catch (err) {
-      error = (err as Error).message || 'Failed to load leaderboard'
+      error = (err as Error).message || m['toolArena.errorFallback']()
     } finally {
       loading = false
     }
   })
 </script>
 
-<SeoHead title={m['seo.titles.tool-arena']()} />
-
-<Header hideDiscussBtn hideVoteGauge small />
+<SeoHead title={m['toolArena.leaderboard.title']()} />
+<Header small />
 
 <main class="bg-very-light-grey min-h-screen">
   <div class="fr-container py-10 md:py-16">
     <div class="mb-8 flex items-center justify-between">
-      <h1 class="fr-h3 mb-0!">Tool Arena Leaderboard</h1>
+      <h1 class="fr-h3 mb-0!">{m['toolArena.leaderboard.title']()}</h1>
       <a href="/tool-arena" class="fr-link fr-text--sm">
-        &larr; Back to Tool Arena
+        &larr; {m['toolArena.leaderboard.backLink']()}
       </a>
     </div>
 
     {#if loading}
       <div class="text-center py-16">
-        <p class="fr-text--sm text-grey animate-pulse">Loading rankings...</p>
+        <p class="fr-text--sm text-grey animate-pulse">{m['toolArena.leaderboard.loading']()}</p>
       </div>
 
     {:else if error}
@@ -57,7 +56,7 @@
     {:else if tools.length === 0}
       <div class="cg-border rounded-lg bg-white p-8 text-center">
         <p class="fr-text--sm text-grey mb-0!">
-          No rankings available yet. Rankings are computed after votes are cast.
+          {m['toolArena.leaderboard.empty']()}
         </p>
       </div>
 
@@ -66,12 +65,12 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-grey-200">
-              <th class="text-left px-4 py-3 font-semibold text-dark-grey">Rank</th>
-              <th class="text-left px-4 py-3 font-semibold text-dark-grey">Tool Name</th>
-              <th class="text-right px-4 py-3 font-semibold text-dark-grey">ELO Score</th>
-              <th class="text-right px-4 py-3 font-semibold text-dark-grey hidden md:table-cell">Confidence Interval</th>
-              <th class="text-right px-4 py-3 font-semibold text-dark-grey">Matches</th>
-              <th class="text-right px-4 py-3 font-semibold text-dark-grey hidden sm:table-cell">Win Rate</th>
+              <th class="text-left px-4 py-3 font-semibold text-dark-grey">{m['toolArena.leaderboard.rank']()}</th>
+              <th class="text-left px-4 py-3 font-semibold text-dark-grey">{m['toolArena.leaderboard.toolName']()}</th>
+              <th class="text-right px-4 py-3 font-semibold text-dark-grey">{m['toolArena.leaderboard.eloScore']()}</th>
+              <th class="text-right px-4 py-3 font-semibold text-dark-grey hidden md:table-cell">{m['toolArena.leaderboard.confidenceInterval']()}</th>
+              <th class="text-right px-4 py-3 font-semibold text-dark-grey">{m['toolArena.leaderboard.matches']()}</th>
+              <th class="text-right px-4 py-3 font-semibold text-dark-grey hidden sm:table-cell">{m['toolArena.leaderboard.winRate']()}</th>
             </tr>
           </thead>
           <tbody>
@@ -86,7 +85,7 @@
                         class="fr-text--xs px-1.5 py-0.5 rounded"
                         style="background-color: #f5f5fe; color: #6b7280; border: 1px solid #e5e7eb;"
                       >
-                        Provisional
+                        {m['toolArena.leaderboard.provisional']()}
                       </span>
                     {/if}
                   </div>
@@ -107,8 +106,7 @@
         </table>
       </div>
       <p class="fr-text--xs text-grey mt-3">
-        ELO scores computed using the Bradley-Terry model with bootstrap confidence intervals (p2.5 – p97.5).
-        Tools marked "Provisional" have fewer than 50 matches.
+        {m['toolArena.leaderboard.eloExplanation']()}
       </p>
     {/if}
   </div>
