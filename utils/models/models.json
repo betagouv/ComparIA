@@ -524,6 +524,7 @@
       },
       {
         "id": "gemini-3-pro-preview",
+        "status": "archived",
         "simple_name": "Gemini 3 Pro",
         "license": "proprietary",
         "release_date": "11/2025",

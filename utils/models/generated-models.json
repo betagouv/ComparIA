@@ -1,5 +1,5 @@
 {
-  "timestamp": 1775224575.817132,
+  "timestamp": 1775566220.203354,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -899,7 +899,7 @@
       "reuse": false,
       "simple_name": "Gemini 3 Pro",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
       "wh_per_million_token": 4289.5266051804565
     },
