@@ -96,3 +96,28 @@ def reset_archived():
             logger.info(
                 f"Resetted {results.rowcount} 'archived' to NULL on {table_name}."
             )
+
+
+def set_not_archived(timestamp: datetime):
+    """
+    Set all conversations, votes and reaction 'archived' column to FALSE if NULL.
+    Only affects items inserted before given timestamp.
+    Used after linting to mark data as analyzed.
+    """
+    query = """
+        UPDATE {table_name} 
+        SET archived = FALSE
+        WHERE archived IS NULL AND timestamp < TIMESTAMP '{timestamp}';
+    """
+
+    with db_connection() as conn:
+        for table_name in TABLE_NAMES:
+            logger.info(
+                f"Set {table_name} 'archived' to FALSE if timestamp < {timestamp}."
+            )
+            results = conn.execute(
+                text(query.format(table_name=table_name, timestamp=timestamp))
+            )
+
+            conn.commit()
+            logger.info(f"Set {results.rowcount} 'archived' to FALSE on {table_name}.")

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from .actions import (
     archive_corrupted,
@@ -7,7 +8,7 @@ from .actions import (
     archive_spam,
     archive_unknown_llms,
 )
-from .utils import reset_archived
+from .utils import reset_archived, set_not_archived
 
 logger = logging.getLogger("comparia.database")
 
@@ -20,6 +21,8 @@ def lint(*, fix: bool = False, hard: bool = False):
     Will only log what should be archived, use `--fix` to actually archive data.
     Will only check not already analyzed data, use `--hard` to analyze/fix all data except already archived data.
     """
+    start_at = datetime.now()
+
     if hard:
         reset_archived()
 
@@ -28,3 +31,6 @@ def lint(*, fix: bool = False, hard: bool = False):
     archive_unknown_llms(commit=fix and hard)
     archive_duplicate(commit=fix)
     archive_not_archived(commit=fix)
+
+    if fix:
+        set_not_archived(start_at)
