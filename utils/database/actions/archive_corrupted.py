@@ -20,6 +20,13 @@ CORRUPTED_MODEL_STREAM_CONVERSATIONS_QUERY = """
         )
     ;
 """
+CORRUPTED_AGAINST_SELF_CONVERSATIONS_QUERY = """
+    SELECT conversation_pair_id FROM conversations
+    WHERE
+        archived IS NULL
+        AND model_a_name = model_b_name
+    ;
+"""
 
 CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
     SELECT id FROM reactions
@@ -62,6 +69,7 @@ def archive_corrupted(*, commit: bool = False) -> None:
     queries: dict[TableName, dict[ArchivedReason, str]] = {
         "conversations": {
             "corrupted_model_stream": CORRUPTED_MODEL_STREAM_CONVERSATIONS_QUERY,
+            "corrupted_against_self": CORRUPTED_AGAINST_SELF_CONVERSATIONS_QUERY,
         },
         "reactions": {
             "corrupted_out_of_range_reactions": CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY,
