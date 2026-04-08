@@ -1,5 +1,5 @@
 # Overlay for full stack (frontend + backend)
-# Usage: docker compose -f docker-compose.yml -f app.compose.override.yml up
+# Usage: docker compose -f docker-compose-dev.yml -f app.compose.override.yml up
 services:
   frontend:
     build:

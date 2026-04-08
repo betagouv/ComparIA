@@ -42,7 +42,7 @@ db-generate-init: ## Generate devops/data/init-db.sql from schema files
 db:
 	@$(MAKE) db-generate-init
 	@echo "Starting PostgreSQL database..."
-	cd devops && docker compose up postgres -d
+	cd devops && docker compose -f docker-compose-dev.yml up postgres -d
 
 ## Launch and init Postgres database with production data from a backup (result of pg_dump -Fc made with postgres 16)
 # put a prd-backup.dump file in devops folder before launching this
@@ -53,24 +53,24 @@ db-prd-local:
 
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
-	cd devops && docker compose up redis -d
+	cd devops && docker compose -f docker-compose-dev.yml up redis -d
 
 docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
 	@$(MAKE) db-generate-init
 	@echo "Starting full app with Docker..."
-	cd devops && docker compose -f docker-compose.yml -f app.compose.override.yml up -d --build
+	cd devops && docker compose -f docker-compose-dev.yml -f app.compose.override.yml up -d --build
 
 docker-app-down: ## Stop only app services (frontend + backend), keep infra
 	@echo "Stopping app services..."
-	cd devops && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend
+	cd devops && docker compose -f docker-compose-dev.yml -f app.compose.override.yml rm -sf frontend backend
 
 docker-app-logs: ## Show logs for frontend and backend containers
-	cd devops && docker compose -f docker-compose.yml -f app.compose.override.yml logs -f frontend backend
+	cd devops && docker compose -f docker-compose-dev.yml -f app.compose.override.yml logs -f frontend backend
 
 dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA with Postgres and Redis..."
 	@echo "Starting Redis..."
-	@cd devops && docker compose up redis -d || echo "Redis already running or failed to start"
+	@cd devops && docker compose -f docker-compose-dev.yml up redis -d || echo "Redis already running or failed to start"
 	@$(MAKE) db
 	@echo "Backend: http://localhost:$(BACKEND_PORT)"
 	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
