@@ -27,6 +27,16 @@ CORRUPTED_AGAINST_SELF_CONVERSATIONS_QUERY = """
         AND model_a_name = model_b_name
     ;
 """
+CORRUPTED_NO_MODEL_CONVERSATIONS_QUERY = """
+    SELECT conversation_pair_id FROM conversations
+    WHERE
+        archived IS NULL
+        AND (
+            model_a_name IS NULL 
+            OR model_b_name IS NULL
+        )
+    ;
+"""
 
 CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
     SELECT id FROM reactions
@@ -70,6 +80,7 @@ def archive_corrupted(*, commit: bool = False) -> None:
         "conversations": {
             "corrupted_model_stream": CORRUPTED_MODEL_STREAM_CONVERSATIONS_QUERY,
             "corrupted_against_self": CORRUPTED_AGAINST_SELF_CONVERSATIONS_QUERY,
+            "corrupted_no_model": CORRUPTED_NO_MODEL_CONVERSATIONS_QUERY,
         },
         "reactions": {
             "corrupted_out_of_range_reactions": CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY,
