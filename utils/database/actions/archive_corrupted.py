@@ -38,6 +38,17 @@ CORRUPTED_NO_MODEL_CONVERSATIONS_QUERY = """
     ;
 """
 
+CORRUPTED_NO_CHOICE_VOTES_QUERY = """
+    SELECT id FROM votes
+    WHERE
+        archived IS NULL
+        -- votes with neither chosen model nor is both_equal
+        AND (
+            chosen_model_name IS NULL 
+            AND (both_equal = FALSE OR both_equal IS NULL
+        )
+"""
+
 CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
     SELECT id FROM reactions
     WHERE
@@ -86,6 +97,7 @@ def archive_corrupted(*, commit: bool = False) -> None:
             "corrupted_out_of_range_reactions": CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY,
             "corrupted_to_model_msg_reactions": CORRUPTED_TO_MODEL_MSG_REACTIONS_QUERY,
         },
+        "votes": {"corrupted_no_choice_votes": CORRUPTED_NO_CHOICE_VOTES_QUERY},
     }
 
     for table_name, qs in queries.items():
