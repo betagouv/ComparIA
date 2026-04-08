@@ -35,42 +35,42 @@ install-frontend: ## Install npm frontend dependencies
 	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
 # generate the file to init db in postgres docker
-db-generate-init: ## Generate docker/data/init-db.sql from schema files
-	@bash docker/generate-init-db.sh
+db-generate-init: ## Generate devops/data/init-db.sql from schema files
+	@bash devops/generate-init-db.sh
 
 ## Launch and init Postgres database using docker compose
 db:
 	@$(MAKE) db-generate-init
 	@echo "Starting PostgreSQL database..."
-	cd docker && docker compose up postgres -d
+	cd devops && docker compose up postgres -d
 
 ## Launch and init Postgres database with production data from a backup (result of pg_dump -Fc made with postgres 16)
-# put a prd-backup.dump file in docker folder before launching this
+# put a prd-backup.dump file in devops folder before launching this
 # once the container has correctly loaded, the pg_restore log says : Backup restoration completed successfully!
 db-prd-local:
 	@echo "Starting PostgreSQL database with prd dump init..."
-	cd docker && docker compose -f db-prd-local.compose.yml up | grep -E 'pg_restore|successfully'
+	cd devops && docker compose -f db-prd-local.compose.yml up | grep -E 'pg_restore|successfully'
 
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
-	cd docker && docker compose up redis -d
+	cd devops && docker compose up redis -d
 
 docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
 	@$(MAKE) db-generate-init
 	@echo "Starting full app with Docker..."
-	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml up -d --build
+	cd devops && docker compose -f docker-compose.yml -f app.compose.override.yml up -d --build
 
 docker-app-down: ## Stop only app services (frontend + backend), keep infra
 	@echo "Stopping app services..."
-	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend
+	cd devops && docker compose -f docker-compose.yml -f app.compose.override.yml rm -sf frontend backend
 
 docker-app-logs: ## Show logs for frontend and backend containers
-	cd docker && docker compose -f docker-compose.yml -f app.compose.override.yml logs -f frontend backend
+	cd devops && docker compose -f docker-compose.yml -f app.compose.override.yml logs -f frontend backend
 
 dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA with Postgres and Redis..."
 	@echo "Starting Redis..."
-	@cd docker && docker compose up redis -d || echo "Redis already running or failed to start"
+	@cd devops && docker compose up redis -d || echo "Redis already running or failed to start"
 	@$(MAKE) db
 	@echo "Backend: http://localhost:$(BACKEND_PORT)"
 	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
@@ -131,7 +131,7 @@ i18n-build-news: ## generate news files
 
 dev-full-reset-data:
 	@echo "Removing docker dev data (volumes)..."
-	@cd docker && docker down -v
+	@cd devops && docker down -v
 	@$(MAKE) dev-full
 
 # Models utilities
