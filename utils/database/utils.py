@@ -17,6 +17,7 @@ ArchivedReason = Literal[
     "corrupted_to_model_msg_reactions",
     "corrupted_no_choice_votes",
     "duplicate",
+    "duplicate_has_vote",
     "spam",
     "unknown_llm",
     "unknown",

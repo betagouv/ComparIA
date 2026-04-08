@@ -75,9 +75,49 @@ def archive_duplicate_reactions(*, commit: bool = False):
             )
 
 
+def archive_reactions_with_vote(*, commit: bool = False):
+    query = "SELECT id, conversation_pair_id, timestamp FROM {table_name} WHERE archived IS NULL"
+    archived_at = datetime.now()
+
+    with db_connection(stream=True) as conn:
+        votes = pl.read_database(
+            query=query.format(table_name="votes"), connection=conn
+        )
+        reactions = pl.read_database(
+            query=query.format(table_name="reactions"), connection=conn
+        )
+        ids: list[int] = []
+        votes_with_reactions = votes.join(
+            reactions, on="conversation_pair_id", suffix="_reaction"
+        ).group_by("conversation_pair_id")
+
+        for _, df in votes_with_reactions:
+            ids += df["id_reaction"].to_list()
+
+        if not ids:
+            logger.info(f"No vote reactions found!")
+        else:
+            logger.warning(
+                f"Found {len(ids)} reactions on conversations with already a vote."
+            )
+
+            archive(
+                "reactions",
+                ids,
+                "duplicate_has_vote",
+                archived_at,
+                id_key="id",
+                commit=commit,
+            )
+
+
 def archive_duplicate(*, commit: bool = False):
     """
     Archive votes and reaction duplicates, keeping only the last one.
+    Also archive reactions for conversations that also have a vote.
     """
+    logger.info("Searching for duplicate data")
+
     archive_duplicate_votes(commit=commit)
     archive_duplicate_reactions(commit=commit)
+    archive_reactions_with_vote(commit=commit)
