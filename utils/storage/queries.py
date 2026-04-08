@@ -5,9 +5,10 @@ from backend.config import CountryPortal
 Columns = tuple[str, ...]
 
 EXCLUDE_PPI = """
--- Filter out rows potentially containing PII
+-- Filter out rows potentially containing PII or spam
 AND c.pii_analyzed = TRUE
 AND c.contains_pii = FALSE
+AND c.contains_spam = FALSE
 AND c.postprocess_failed = FALSE
 """
 EXCLUDE_COHORTS = """
