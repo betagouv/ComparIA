@@ -1959,6 +1959,7 @@
     "icon_path": "ai2.svg",
     "models": [
       {
+        "status": "archived",
         "id": "olmo-3-32b-think",
         "simple_name": "Olmo 3 32B Think",
         "license": "Apache 2.0",
