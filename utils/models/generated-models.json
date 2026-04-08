@@ -2183,7 +2183,7 @@
       "reuse": true,
       "simple_name": "LFM 2 8B A1B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
       "wh_per_million_token": 80.65891285007238
     },
