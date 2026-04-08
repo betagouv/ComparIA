@@ -21,29 +21,30 @@ CORRUPTED_MODEL_STREAM_CONVERSATIONS_QUERY = """
     ;
 """
 
-CORRUPTED_REACTIONS_QUERY = """
+CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
     SELECT id FROM reactions
     WHERE
         archived IS NULL
-        -- Filter potentially incoherent data
-        AND (
-            -- 1. msg_index referencing a conversation must be within conversation bounds
-            msg_index >= GREATEST(
-                jsonb_array_length(conversation_a),
-                jsonb_array_length(conversation_b)
-            )
-            -- 2. Message at reacted to (at msg_index) must be from assistant role
-            -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
-            OR (
-                CASE
-                    WHEN refers_to_conv_id = conv_a_id THEN
-                        (conversation_a->msg_index->>'role' != 'assistant')
-                    WHEN refers_to_conv_id = conv_b_id THEN
-                        (conversation_b->msg_index->>'role' != 'assistant')
-                    ELSE FALSE
-                END
-            )
+        -- msg_index referencing a conversation is out of range
+        AND msg_index >= GREATEST(
+            jsonb_array_length(conversation_a),
+            jsonb_array_length(conversation_b)
         )
+    ;
+"""
+CORRUPTED_TO_MODEL_MSG_REACTIONS_QUERY = """
+    SELECT id FROM reactions
+    WHERE
+        archived IS NULL
+        -- Message at reacted to (at msg_index) must be from assistant role
+        -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
+        AND CASE
+            WHEN refers_to_conv_id = conv_a_id THEN
+                (conversation_a->msg_index->>'role' != 'assistant')
+            WHEN refers_to_conv_id = conv_b_id THEN
+                (conversation_b->msg_index->>'role' != 'assistant')
+            ELSE FALSE
+        END
     ;
 """
 
@@ -63,7 +64,8 @@ def archive_corrupted(*, commit: bool = False) -> None:
             "corrupted_model_stream": CORRUPTED_MODEL_STREAM_CONVERSATIONS_QUERY,
         },
         "reactions": {
-            "corrupted": CORRUPTED_REACTIONS_QUERY,
+            "corrupted_out_of_range_reactions": CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY,
+            "corrupted_to_model_msg_reactions": CORRUPTED_TO_MODEL_MSG_REACTIONS_QUERY,
         },
     }
 
