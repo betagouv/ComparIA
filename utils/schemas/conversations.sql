@@ -84,3 +84,8 @@ ALTER TABLE conversations ADD COLUMN country_portal VARCHAR(255);
 -- Track whether responses were served from cache
 ALTER TABLE conversations ADD COLUMN cached_response_a BOOLEAN DEFAULT FALSE;
 ALTER TABLE conversations ADD COLUMN cached_response_b BOOLEAN DEFAULT FALSE;
+
+-- 19/03/2026
+-- Persist spam/NSFW detection results (like PII, analyzed during post-processing)
+-- NULL = not yet checked, FALSE = checked and clean, TRUE = checked and is spam/NSFW
+ALTER TABLE conversations ADD COLUMN contains_spam BOOLEAN DEFAULT NULL;
