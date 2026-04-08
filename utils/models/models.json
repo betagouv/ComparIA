@@ -2000,6 +2000,7 @@
     "models": [
       {
         "id": "lfm2-8b-a1b",
+        "status": "archived",
         "simple_name": "LFM 2 8B A1B",
         "license": "LFM 1.0",
         "release_date": "10/2025",
