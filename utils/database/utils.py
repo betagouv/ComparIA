@@ -9,14 +9,24 @@ from utils.utils import db_connection
 TableName = Literal["conversations", "votes", "reactions"]
 TABLE_NAMES: tuple[TableName, ...] = get_args(TableName)
 
-ArchivedReason = Literal["corrupted", "spam", "unknown_llm", "unknown"]
+ArchivedReason = Literal[
+    "corrupted_model_stream",
+    "corrupted_against_self",
+    "corrupted_no_model",
+    "corrupted_out_of_range_reactions",
+    "corrupted_to_model_msg_reactions",
+    "corrupted_no_choice_votes",
+    "spam",
+    "unknown_llm",
+    "unknown",
+]
 
 logger = logging.getLogger("comparia.database")
 
 
 def archive(
     table_name: TableName,
-    ids: Sequence[str],
+    ids: Sequence[str | int],
     archived_reason: ArchivedReason,
     archived_at: datetime,
     id_key: str = "conversation_pair_id",
