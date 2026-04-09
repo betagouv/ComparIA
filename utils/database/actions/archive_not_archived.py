@@ -19,7 +19,7 @@ SHOULD_BE_ARCHIVED_QUERY = """
         conversations c ON d.conversation_pair_id = c.conversation_pair_id
     WHERE
         c.archived = TRUE
-        AND d.archived != TRUE
+        AND (d.archived IS NULL OR d.archived = FALSE)
     ;
 """
 

@@ -18,7 +18,7 @@ SELECT
 FROM 
     conversations 
 WHERE 
-    archived != TRUE
+    (archived IS NULL OR archived IS FALSE)
     AND (
         model_a_name NOT IN ({llm_ids})
         OR model_b_name NOT IN ({llm_ids})

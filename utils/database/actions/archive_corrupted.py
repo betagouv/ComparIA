@@ -45,7 +45,7 @@ CORRUPTED_NO_CHOICE_VOTES_QUERY = """
         -- votes with neither chosen model nor is both_equal
         AND (
             chosen_model_name IS NULL 
-            AND (both_equal = FALSE OR both_equal IS NULL
+            AND (both_equal = FALSE OR both_equal IS NULL)
         )
 """
 
