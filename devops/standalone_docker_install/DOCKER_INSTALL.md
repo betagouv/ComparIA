@@ -39,13 +39,9 @@ Generate random `ALTCHA_HMAC_KEY` with for example:
 openssl rand -hex 32
 ```
 
-**3. Generate the database init file**
+**3. Configure and start the database** — see [Database configuration](#database-configuration) below.
 
-```bash
-bash devops/generate-init-db.sh
-```
-
-**4. Start the stack**
+**4. Start the full stack**
 
 ```bash
 cd devops/standalone_docker_install/
@@ -53,6 +49,62 @@ docker compose --env-file .env up -d
 ```
 
 Caddy will automatically obtain a TLS certificate for your domain on first startup. Make sure ports 80 and 443 are open on your server.
+
+## Database configuration
+
+### Option A: containerized PostgreSQL (default)
+
+The stack includes a PostgreSQL container. Before starting it, generate the schema init file:
+
+```bash
+set -a && source devops/standalone_docker_install/.env && set +a
+bash devops/generate-init-db.sh
+```
+
+`POSTGRES_USER` must be exported so the init script replaces the hardcoded dev role with your actual database user.
+
+Then start the database first and wait for it to be healthy before starting the rest:
+
+```bash
+cd devops/standalone_docker_install/
+docker compose --env-file .env up -d postgres
+docker compose logs -f # to check for correct init or error
+```
+
+Continue to start the full stack part...
+
+### Option B: external PostgreSQL
+
+If you have an existing PostgreSQL instance, set `COMPARIA_DB_URI` in your `.env`:
+
+```
+COMPARIA_DB_URI=postgresql://user:password@host:5432/dbname
+```
+
+Initialize the schema against your external database:
+
+```bash
+set -a && source devops/standalone_docker_install/.env && set +a
+bash devops/generate-init-db.sh
+psql "$COMPARIA_DB_URI" -f devops/data/init-db.sql
+```
+
+Then comment out the `postgres` service and its volume in `docker-compose.yml`:
+
+```yaml
+# postgres:
+#   image: postgres:16
+#   ...
+```
+
+Also remove the `postgres` healthcheck dependency from the `backend` service `depends_on` block.
+
+Then start the stack normally:
+
+```bash
+cd devops/standalone_docker_install/
+docker compose --env-file .env up -d
+```
 
 ## Architecture
 
@@ -94,7 +146,3 @@ make models-build
 ```
 
 Then rebuild the backend image.
-
-## Contact
-
-For questions or support: [contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr)
