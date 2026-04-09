@@ -54,7 +54,7 @@ def archive_or_fix_country_portal(*, commit: bool = False) -> None:
         for k, df in data.group_by("country_portal"):
             ids = df["conversation_pair_id"].to_list()
 
-            if k[0] is None or k[0] in COUNTRY_PORTALS:
+            if k[0] in (None, "en"):
                 logger.warning(
                     f"Found {len(ids)} wrong country_portal '{k[0]}', will update as '{DEFAULT_COUNTRY_PORTAL}'."
                 )
