@@ -25,12 +25,19 @@ cp devops/standalone_docker_install/.env.example devops/standalone_docker_instal
 
 Edit `.env` and fill in at minimum:
 
-| Variable | Description |
-|---|---|
-| `PUBLIC_DOMAIN` | Your domain name, e.g. `comparia.example.com` |
-| `PUBLIC_URL` | Full public URL, e.g. `https://comparia.example.com` |
-| `POSTGRES_PASSWORD` | A strong password for the database |
-| `OPENROUTER_API_KEY` | API key from [openrouter.ai](https://openrouter.ai) |
+| Variable             | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| `PUBLIC_DOMAIN`      | Your domain name, e.g. `comparia.example.com`        |
+| `PUBLIC_URL`         | Full public URL, e.g. `https://comparia.example.com` |
+| `POSTGRES_PASSWORD`  | A strong password for the database                   |
+| `OPENROUTER_API_KEY` | API key from [openrouter.ai](https://openrouter.ai)  |
+| `ALTCHA_HMAC_KEY`    | A random secret key for spam protection              |
+
+Generate random `ALTCHA_HMAC_KEY` with for example:
+
+```bash
+openssl rand -hex 32
+```
 
 **3. Generate the database init file**
 
@@ -41,7 +48,8 @@ bash devops/generate-init-db.sh
 **4. Start the stack**
 
 ```bash
-docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file devops/standalone_docker_install/.env up -d
+cd devops/standalone_docker_install/
+docker compose --env-file .env up -d
 ```
 
 Caddy will automatically obtain a TLS certificate for your domain on first startup. Make sure ports 80 and 443 are open on your server.
@@ -54,11 +62,14 @@ internet → Caddy (80/443, TLS) → frontend (SSR, port 3000)
                                                                → Redis
 ```
 
-## Updating
+## Updating the application
+
+To rebuild and update the app after checking out a new version of the code from the current repository:
 
 ```bash
-docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file devops/standalone_docker_install/.env pull
-docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file devops/standalone_docker_install/.env up -d --build
+cd devops/standalone_docker_install/
+docker compose --env-file .env pull
+docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env up -d --build
 ```
 
 ## Useful commands
@@ -79,7 +90,7 @@ docker compose -f devops/standalone_docker_install/docker-compose.yml down -v
 By default ComparIA uses the models defined in `utils/models/generated-models.json`. To customize the model list, edit `utils/models/models.json` and run:
 
 ```bash
-python -m utils.models.build_models
+make models-build
 ```
 
 Then rebuild the backend image.
