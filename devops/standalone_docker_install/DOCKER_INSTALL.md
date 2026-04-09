@@ -57,7 +57,7 @@ Caddy will automatically obtain a TLS certificate for your domain on first start
 The stack includes a PostgreSQL container. Before starting it, generate the schema init file:
 
 ```bash
-set -a && source devops/standalone_docker_install/.env && set +a
+set -a && source devops/standalone_docker_install/.env && set +ao
 bash devops/generate-init-db.sh
 ```
 
