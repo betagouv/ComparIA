@@ -18,7 +18,7 @@ SET_ARCHIVED_REASON_UNKNOWN = """
         archived_reason = 'unknown'
     WHERE
         archived = TRUE
-        AND archived_reason = NULL
+        AND archived_reason IS NULL
     ;
 """
 
