@@ -10,6 +10,7 @@ from .actions import (
     archive_corrupted,
     archive_duplicate,
     archive_not_archived,
+    archive_or_fix_country_portal,
     archive_spam,
     archive_unknown_llms,
 )
@@ -69,6 +70,7 @@ def lint(*, fix: bool = False, hard: bool = False):
         reset_archived()
 
     archive_spam(commit=fix)
+    archive_or_fix_country_portal(commit=fix)
     archive_corrupted(commit=fix)
     archive_unknown_llms(commit=fix and hard)
     archive_duplicate(commit=fix)
