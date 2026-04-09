@@ -8,6 +8,7 @@ from utils.logger import configure_logger
 from utils.utils import db_connection
 
 from ..actions import rename_llm
+from ..utils import reset_archived
 
 MIGRATION_FILE = Path(__file__).parent / "03_2026_archived.sql"
 
@@ -44,6 +45,9 @@ def migrate():
                 )
             else:
                 raise
+
+    # reset archived=False to NULL
+    reset_archived()
 
     # rename what appears as a forgotten rename
     rename_llm("mistral-medium-3.1", "mistral-medium-2508", commit=True)
