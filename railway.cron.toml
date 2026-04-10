@@ -1,0 +1,14 @@
+# Ranking cron service Railway config
+# In Railway dashboard:
+#   1. Add new service → "Empty service"
+#   2. Connect same repo
+#   3. Set Config File Path = railway.cron.toml
+#   4. Set the cron schedule in Service Settings → Cron Schedule: 0 * * * *
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "docker/Dockerfile"
+
+[deploy]
+startCommand = "uv run python -m utils.ranking.run"
+restartPolicyType = "NEVER"
