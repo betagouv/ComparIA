@@ -147,7 +147,7 @@ def upsert_reaction_to_db(data: dict) -> dict:
             DO UPDATE SET
                 refers_to_model = EXCLUDED.refers_to_model,
                 model_pos = EXCLUDED.model_pos,
-                conv_turns = EXCLUDED.conv_turns,
+                current_conv_turn_when_reacting = EXCLUDED.current_conv_turn_when_reacting,
                 system_prompt = EXCLUDED.system_prompt,
                 conversation_pair_id = EXCLUDED.conversation_pair_id,
                 session_hash = EXCLUDED.session_hash,
@@ -411,10 +411,10 @@ class ReactionRecord(BaseModel):
     session_hash: str
 
     # Conversations
-    conv_turns: int  # TODO rename to current_conv_turn_when_reacting?
     conversation_pair_id: str
 
     # Conversation
+    current_conv_turn_when_reacting: int
     model_pos: BotPos
     refers_to_model: str
     refers_to_conv_id: str
@@ -498,11 +498,10 @@ def record_reaction(
     t = datetime.now()  # FIXME
     reaction_data = (
         # Conversations
-        conversations.model_dump(
-            include={"session_hash", "conv_turns", "conversation_pair_id"}
-        )
+        conversations.model_dump(include={"session_hash", "conversation_pair_id"})
         | {
             # Conversation
+            "current_conv_turn_when_reacting": conversations.conv_turns,
             "model_pos": reaction.bot,
             "refers_to_model": conv.model_name,
             "refers_to_conv_id": conv.conv_id,

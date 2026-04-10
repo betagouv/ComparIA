@@ -99,8 +99,8 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
                     "id",
                     "timestamp",
                     "session_hash",
-                    "conv_turns",
                     "conversation_pair_id",
+                    "current_conv_turn_when_reacting",
                     "model_pos",
                     "refers_to_model",
                     "refers_to_conv_id",
@@ -123,6 +123,7 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
                 ),
                 "c": (
                     "visitor_id",
+                    "conv_turns",
                     "model_pair_name",
                     "opening_msg",
                     "model_a_name",

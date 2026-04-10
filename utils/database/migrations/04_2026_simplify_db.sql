@@ -33,3 +33,6 @@ ALTER TABLE reactions DROP COLUMN chatbot_index;
 -- conv_turn changes
 -- simply drop it on votes since vote can only happen at the end of the conversations
 ALTER TABLE votes DROP COLUMN conv_turns;
+
+-- rename it on reactions since the 'conv_turns' value refers to its value at the time of the reaction
+ALTER TABLE reactions RENAME COLUMN conv_turns TO current_conv_turn_when_reacting;
