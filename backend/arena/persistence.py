@@ -145,21 +145,12 @@ def upsert_reaction_to_db(data: dict) -> dict:
             VALUES ({values})
             ON CONFLICT (refers_to_conv_id, msg_index) 
             DO UPDATE SET
-                model_a_name = EXCLUDED.model_a_name,
-                model_b_name = EXCLUDED.model_b_name,
                 refers_to_model = EXCLUDED.refers_to_model,
-                opening_msg = EXCLUDED.opening_msg,
-                conversation_a = EXCLUDED.conversation_a,
-                conversation_b = EXCLUDED.conversation_b,
                 model_pos = EXCLUDED.model_pos,
                 conv_turns = EXCLUDED.conv_turns,
                 system_prompt = EXCLUDED.system_prompt,
-                conv_a_id = EXCLUDED.conv_a_id,
-                conv_b_id = EXCLUDED.conv_b_id,
                 conversation_pair_id = EXCLUDED.conversation_pair_id,
                 session_hash = EXCLUDED.session_hash,
-                visitor_id = EXCLUDED.visitor_id,
-                ip = EXCLUDED.ip,
                 response_content = EXCLUDED.response_content,
                 question_content = EXCLUDED.question_content,
                 liked = EXCLUDED.liked,
@@ -172,7 +163,6 @@ def upsert_reaction_to_db(data: dict) -> dict:
                 incorrect = EXCLUDED.incorrect,
                 superficial = EXCLUDED.superficial,
                 instructions_not_followed = EXCLUDED.instructions_not_followed,
-                model_pair_name = EXCLUDED.model_pair_name,
                 msg_rank = EXCLUDED.msg_rank,
                 chatbot_index = EXCLUDED.chatbot_index,
                 question_id = EXCLUDED.question_id;
