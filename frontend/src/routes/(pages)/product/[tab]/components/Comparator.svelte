@@ -36,7 +36,7 @@
 
       <Link
         button
-        href="/arene"
+        href="/tool-arena"
         text={m['product.comparator.cta']()}
         class="sm:w-auto! lg:mt-13 w-full!"
       />
