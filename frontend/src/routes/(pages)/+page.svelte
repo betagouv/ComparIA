@@ -294,7 +294,7 @@
             button
             hideExternalIcon
             size="lg"
-            href="https://huggingface.co/collections/comparIA/jeux-de-donnees-compar-ia-67644adf20912236342c3f3b"
+            href="https://huggingface.co/datasets/ArthurSrz/comparag-tool-votes"
             text={m['home.vote.datasetAccess']()}
           />
         </div>

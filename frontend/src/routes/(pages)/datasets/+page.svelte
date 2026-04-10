@@ -14,17 +14,17 @@
       {
         i18nKey: 'conversations',
         img: `/datasets/conversations-${locale === 'fr' ? 'fr' : 'en'}.png`,
-        link: 'https://huggingface.co/datasets/ministere-culture/comparia-conversations'
+        link: 'https://huggingface.co/datasets/ArthurSrz/comparag-tool-votes'
       },
       {
         i18nKey: 'reactions',
         img: `/datasets/reactions-${locale === 'fr' ? 'fr' : 'en'}.png`,
-        link: 'https://huggingface.co/datasets/ministere-culture/comparia-reactions'
+        link: 'https://huggingface.co/datasets/ArthurSrz/comparag-tool-votes'
       },
       {
         i18nKey: 'votes',
         img: `/datasets/votes-${locale === 'fr' ? 'fr' : 'en'}.png`,
-        link: 'https://huggingface.co/datasets/ministere-culture/comparia-votes'
+        link: 'https://huggingface.co/datasets/ArthurSrz/comparag-tool-votes'
       }
     ] as const
   ).map(({ i18nKey, ...card }) => ({
