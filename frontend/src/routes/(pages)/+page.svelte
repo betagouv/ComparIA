@@ -399,7 +399,7 @@
         width: 125px;
         background-image: url('/home/arrow-h.svg');
         left: 0;
-        margin-top: 110px;
+        margin-top: 36px;
       }
     }
   }
