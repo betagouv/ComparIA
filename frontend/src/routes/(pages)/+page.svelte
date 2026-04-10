@@ -25,7 +25,7 @@
 
   function handleRedirect() {
     if (acceptTos.value) {
-      window.location.href = '/arene/?cgu_acceptees'
+      window.location.href = '/tool-arena'
     } else {
       tosError = m['home.intro.tos.error']()
     }
