@@ -1404,11 +1404,11 @@
     },
     "origin": {
       "project": {
-        "desc": "Le comparateur a été conçu et développé dans le cadre d’une start-up d’Etat portée par le ministère de la Culture et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques françaises à construire des services numériques utiles, simples et faciles à utiliser.",
+        "desc": "CompaRAG est un spinoff de <strong>comparIA</strong>, service numérique conçu et développé dans le cadre d’une start-up d’État portée par le <strong>ministère de la Culture</strong> et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM). CompaRAG étend cette initiative en l’orientant vers la comparaison d’outils MCP sur des tâches réelles.",
         "title": "Qui est à l’origine du projet ?"
       },
       "team": {
-        "desc": "Le comparateur est porté au sein du Ministère de la Culture par une équipe pluridisciplinaire réunissant expert en Intelligence artificielle, développeurs, chargé de déploiement, designer, avec pour mission de rendre les IA conversationnelles plus transparentes et accessibles à toutes et tous.",
+        "desc": "CompaRAG est porté par <strong>The Borges Graph</strong>, un collectif d’ingénieurs spécialisés dans la structuration de la connaissance et l’évaluation des systèmes IA. Notre mission : rendre les outils IA comparables, évaluables et transparents.",
         "title": "Qui sommes-nous ?"
       }
     },
