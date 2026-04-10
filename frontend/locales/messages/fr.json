@@ -1453,7 +1453,7 @@
       "steps": {
         "datasets": {
           "desc": "Toutes les tâches soumises et les votes sont compilés dans des jeux de données et publiés librement après anonymisation.",
-          "title": "Les jeux de données par langue"
+          "title": "Jeux de données ouverts"
         },
         "finetune": {
           "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour évaluer et améliorer les outils MCP sur des cas d’usage réels.",
