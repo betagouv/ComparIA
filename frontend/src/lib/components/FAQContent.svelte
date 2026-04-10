@@ -39,7 +39,7 @@
     {
       id: 'i18n',
       label: m['faq.i18n.title'](),
-      qs: (['1', '2'] as const).map((q) => ({
+      qs: (['2'] as const).map((q) => ({
         title: m[`faq.i18n.questions.${q}.title`](),
         desc: m[`faq.i18n.questions.${q}.desc`]()
       }))
