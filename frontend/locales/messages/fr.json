@@ -131,7 +131,8 @@
       },
       "desc": "Exemples de réutilisation des jeux de données CompaRAG",
       "title": "Comment ces données sont-elles utilisées ?"
-    }
+    },
+    "catch": "Editeurs d'outils MCP, chercheurs, chercheuses, entreprises, à vous de jouer !"
   },
   "errors": {
     "404": {
@@ -218,11 +219,11 @@
         },
         "3": {
           "desc": "<p>Si vous intégrez une URL dans une requête, le modèle conversationnel ne peut pas y accéder directement. Les modèles de langage traitent le texte de la requête mais n'ont pas la capacité d'interagir avec le web ou d'ouvrir des liens. Ils sont entraînés sur un ensemble de données textuelles fixes et leurs réponses reposent sur ces données d’entraînement. Lorsqu'une question est posées, les modèles utilisent cet entraînement pour générer une réponse mais ne peuvent pas accéder à de nouvelles informations en ligne.</p><p>Par analogie, imaginez un étudiant passant un examen sans accès à internet. Il peut utiliser ses connaissances acquises pour répondre aux questions, mais ne peut pas consulter de sites web pour obtenir des informations supplémentaires.</p>",
-          "title": "Si j’intègre un lien d’URL dans une requête, le modèle peut-il y accéder ?"
+          "title": "Si j’intègre un lien d’URL dans une requête, l’outil MCP peut-il y accéder ?"
         },
         "4": {
           "desc": "<p>Il arrive que les modèles perdent le fil d'une conversation en raison de leur <strong>fenêtre de contexte limitée.</strong> Cette « fenêtre » représente la quantité d'informations précédentes que le modèle peut retenir, agissant comme une mémoire à court terme. Plus la fenêtre est petite, plus le modèle est susceptible d'oublier des éléments clés de la conversation, conduisant à des réponses incohérentes. Les conversations longues ou complexes peuvent rapidement saturer la fenêtre de contexte, augmentant le risque d'incohérence.</p><p>Par analogie, imaginez une personne qui ne se souvient que des cinq dernières phrases d'une conversation. Si la conversation est courte, la personne peut suivre. Mais si la conversation devient longue, la personne oubliera des informations cruciales, ce qui rendra ses réponses incohérentes. De même, un modèle d'IA avec une petite fenêtre de contexte peut « perdre le fil » d'une conversation lorsque trop d'informations sont échangées, oubliant des éléments clés et produisant des réponses qui n'ont plus de sens.</p>",
-          "title": "Pourquoi certains modèles perdent-ils rapidement le fil de la conversation ?"
+          "title": "Pourquoi l’outil perd-il parfois le fil de la conversation ?"
         },
         "5": {
           "desc": "<p>La formulation des questions, ou « prompts », influence la cohérence de la conversation. Pour obtenir les meilleurs résultats d'un modèle de langage, il est essentiel de maîtriser l'art du <em>prompting</em>, c'est-à-dire la formulation des requêtes ou instructions. <strong>La clarté est primordiale</strong>:</p><ul><li>Utilisez un langage simple et direct, en évitant les questions trop longues ou complexes. Décomposez les requêtes en plusieurs questions plus simples pour des réponses plus précises.</li><li><strong>Précisez si besoin des contraintes de formats spécifiques</strong> : Si vous avez besoin d’une réponse dans un certain format (liste, tableau, résumé, etc.), précisez-le dans le prompt. Vous pouvez également préciser les étapes à suivre et les critères de qualité souhaités.</li><li><strong>Spécifiez le rôle du modèle</strong> : Par exemple, commencez par “Agis comme un expert en…” ou “Imagine que tu es un enseignant…” pour orienter le ton et la perspective de la réponse.</li><li><strong>Contextualisez vos questions</strong> : si nécessaire, fournissez des exemples pertinents pour guider le modèle.</li><li><strong>Encouragez le raisonnement</strong>: utilisez l’incitation au raisonnement pas à pas (<em>Chain-of-Thought Prompting</em>) pour demander au modèle d'expliciter son raisonnement, ce qui rend les réponses plus robustes.</li></ul><p>Les modèles conversationnels sont sensibles aux variations de formulation: un langage simple, des questions courtes et une reformulation si nécessaire peuvent aider à guider le modèle vers des réponses pertinentes. Testez et affinez vos prompts pour trouver la formulation la plus efficace !</p>",
@@ -230,10 +231,23 @@
         },
         "6": {
           "desc": "<p>L'IA conversationnelle répond directement en formulant des phrases à partir d’un grand ensemble de données sur lesquelles le modèle a été entraîné, tandis qu’un moteur de recherche propose des liens et des ressources pour que l’internaute les explore lui-même.</p>",
-          "title": "Quelle est la différence entre poser une question à un modèle d’IA conversationnelle et faire une recherche sur Google ?"
+          "title": "Quelle est la différence entre utiliser un outil IA conversationnel et faire une recherche sur Google ?"
         }
       },
       "title": "Usage"
+    },
+    "i18n": {
+      "title": "Internationalisation",
+      "questions": {
+        "1": {
+          "title": "CompaRAG est-il disponible dans d'autres langues européennes ?",
+          "desc": "<p>Oui, l’internationalisation de CompaRAG est en cours. Nous démarrons avec une extension à trois pays pilotes : la Lituanie, la Suède et le Danemark. Cette première phase permettra de tester l’approche et d’adapter l’interface aux différents contextes linguistiques et culturels européens. Le cercle pourra ensuite s’élargir à d’autres langues européennes.</p>"
+        },
+        "2": {
+          "title": "Quels sont les avantages d'une plateforme européenne de comparaison d'outils MCP ?",
+          "desc": "<p>Une plateforme européenne de comparaison d’outils MCP permet de collecter des données de préférence reflétant les usages réels des utilisateurs européens, d’assurer une meilleure représentation des langues et cultures européennes, et de garantir la conformité aux réglementations européennes (RGPD, AI Act). Elle favorise l’émergence d’un écosystème d’outils IA compétitif et autonome en Europe.</p>"
+        }
+      }
     }
   },
   "footer": {
@@ -1795,49 +1809,49 @@
     "problem": {
       "alignment": {
         "alignment": {
-          "a": "L'alignement intervient après l'étape de pré-entraînement d'un modèle de langage, comme une étape de « finition » ou de « polissage ». Lors de son pré-entrainement, le modèle apprend à prédire le mot suivant et devient capable de générer du texte cohérent.",
-          "b": "L’étape d’alignement consiste à apprendre au modèle à mieux répondre aux besoins humains, c’est à dire à le rendre plus <strong>pertinent</strong> (le modèle répond « mieux » aux questions), <strong>honnête</strong> (capacité à assumer « qu’il ne sait pas répondre » quand il n’y a pas suffisamment de données), et <strong>inoffensif</strong> (éviter de générer des contenus dangereux ou inappropriés).",
-          "c": "<strong>Sans alignement, un LLM pourrait être techniquement compétent mais difficile à utiliser en pratique, car il ne comprendrait pas vraiment ce qu'on attend de lui dans une conversation.</strong>",
-          "title": "L’alignement, étape décisive d’instruction du modèle"
+          "title": "Comparaison en aveugle",
+          "a": "L’utilisateur soumet une tâche. Deux outils MCP y répondent simultanément, sans que leurs identités soient révélées.",
+          "b": "L’utilisateur lit les deux résultats et vote pour le meilleur — ou déclare une égalité.",
+          "c": "<strong>Les identités des outils sont révélées après le vote, éliminant tout biais de préférence de marque.</strong>"
         },
         "datasets": {
-          "a": "L'alignement utilise des données très spécifiques, spécialement créées pour enseigner au modèle comment « bien » se comporter.",
-          "b": "Les <strong>données de préférence</strong> constituent un type particulier de données d’alignement, aux côtés des <strong>données de démonstration</strong> (exemples de conversations entre humains et assistants IA, rédigées par des annotateurs experts selon des consignes précises de ton et de style), des <strong>données de sécurité</strong> (exemples spécifiques enseignant au modèle à éviter les contenus dangereux en montrant comment refuser les demandes problématiques) ou des <strong>données spécialisées</strong> couvrant des domaines spécifiques (médecine, droit, éducation…).",
-          "c": "Les données de préférence présentent plusieurs réponses possibles à une même question, classées par ordre de qualité par des évaluateurs humains : les utilisateurs indiquent quelle réponse est la meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entraîner les modèles en les ajustant selon les préférences exprimées par les utilisateurs.",
-          "title": "Des jeux de données spécifiques"
+          "title": "Des données de préférence réelles",
+          "a": "Chaque vote contribue à un jeu de données de préférence ancré dans des cas d’usage réels.",
+          "b": "Ces données permettent de calculer un classement statistiquement robuste basé sur le modèle Bradley-Terry.",
+          "c": "Les jeux de données sont publiés en open data pour bénéficier à l’ensemble de l’écosystème MCP."
         },
-        "desc": "L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences d’utilisateurs",
+        "desc": "En comparant deux outils MCP à l’aveugle sur des tâches réelles, CompaRAG laisse les utilisateurs décider lequel performe le mieux.",
         "diversity": {
-          "a": "Pour refléter la diversité des cultures et des langues dans les résultats générés par les modèles, <strong>les jeux de données d’alignement doivent inclure une variété de langues</strong>, de contextes et d’exemples issus de tâches courantes des utilisateurs. La diversification des données d'alignement permet d’améliorer à terme les performances d’un modèle à double titre :",
-          "b": "D'une part, elle <strong>réduit les biais culturels</strong> en évitant qu'une seule perspective - souvent anglo-saxonne - domine les réponses de l'IA. Le modèle apprend ainsi à reconnaître qu'il existe plusieurs façons valides d'aborder une même question selon le contexte culturel.",
-          "c": "D'autre part, cette exposition à la diversité de langues et de cultures favorise l’adaptation des réponses à des contextes spécifiques : un utilisateur français recevra des conseils adaptés au système français, tandis qu'un utilisateur danois obtiendra des informations correspondant à son contexte national.",
-          "d": "Le résultat est un modèle d’IA conversationnelle plus inclusif, capable de tenir compte des différentes cultures.",
-          "title": "Diversifier les données pour réduire les biais"
+          "title": "Risque de dépendance fournisseur",
+          "a": "Sans comparaison objective, on se retrouve captif d’un seul outil MCP, souvent choisi par habitude ou par défaut.",
+          "b": "CompaRAG démontre que les outils sont équifinaux : plusieurs peuvent atteindre le même objectif.",
+          "c": "En identifiant le meilleur outil pour chaque type de tâche, CompaRAG réduit la dépendance à un fournisseur unique.",
+          "d": "<strong>Le résultat : des choix éclairés, fondés sur la performance réelle plutôt que sur le marketing.</strong>"
         },
         "english": {
-          "a": "Les données de préférence sont couteuses à produire car <strong>elles nécessitent du travail humain qualifié pour chaque exemple</strong>. Des plateformes telles que https://chat.lmsys.org/ permettent de constituer ces jeux de données de préférence mais peu d’utilisateurs s’en servent dans leur langue d’origine.",
-          "b": "Les jeux de données de préférence sont rares, voire inexistants dans les langues européennes. La part des questions posées en français dans le jeu de données de LMSYS est par exemple inférieure à 1%.",
-          "c": "comparIA est un exemple de dispositif permettant de collecter des conversations dans de multiples langues, incluant des références culturelles spécifiques à chaque région ou pays : tâches courantes, traditions culinaires locales, systèmes éducatifs, références historiques ou littéraires, etc.",
-          "title": "Peu de données de préférence en langues européennes"
+          "title": "Peu de données sur les outils MCP",
+          "a": "L’écosystème MCP est jeune. Les évaluations comparatives manquent, surtout sur des tâches en langue française ou dans des contextes métier spécifiques.",
+          "b": "CompaRAG permet de collecter ces données directement auprès des utilisateurs, dans leurs contextes réels.",
+          "c": "Chaque comparaison enrichit une base de référence unique sur les performances des outils MCP."
         },
-        "title": "Comment réduire les biais culturels et linguistiques de ces modèles ?"
+        "title": "Comment CompaRAG répond à ce problème ?"
       },
       "diversity": {
-        "diversity": {
-          "desc": "Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes négligeant la diversité des langues et des cultures, notamment européennes.",
-          "title": "Diversités culturelles et linguistiques négligées"
+        "stereotypes": {
+          "title": "Des milliers d’outils MCP disponibles",
+          "desc": "Le nombre d’outils MCP explose. Chaque semaine, de nouveaux outils promettent d’accomplir les mêmes tâches mieux que les précédents. Il est impossible de tous les évaluer manuellement."
         },
         "english": {
-          "desc": "Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés principalement sur des données en anglais, ce qui crée des biais linguistiques et culturels dans les résultats qu'ils produisent.",
-          "title": "Données d’entrainement majoritairement en anglais"
+          "title": "Des cas d’usage infiniment variés",
+          "desc": "Chaque tâche peut nécessiter un outil différent. Les millions de cas d’usage réels ne sont pas couverts par les benchmarks existants, qui restent artificiels et déconnectés des usages concrets."
         },
-        "stereotypes": {
-          "desc": "Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais les résultats qu’ils génèrent sont parfois stéréotypés ou discriminants.",
-          "title": "Réponses stéréotypées"
+        "diversity": {
+          "title": "Aucune évaluation sur usage réel",
+          "desc": "Les benchmarks disponibles sont construits sur des données artificielles. Ils ne reflètent pas les préférences d’utilisation concrète des utilisateurs sur leurs propres tâches métier."
         }
       },
       "tabLabel": "Le problème initial",
-      "title": "Les modèles d’IA conversationnelles respectent-ils la <span {props}>diversité</span> des langues européennes ?"
+      "title": "La prolifération des outils MCP : lequel choisir ?"
     },
     "title": "Tout savoir sur le comparateur"
   },
@@ -2125,7 +2139,30 @@
       "taskLabel": "Décrivez la tâche",
       "goalLabel": "Objectif",
       "submit": "Comparer les outils",
-      "taskType": "Type de tâche"
+      "taskType": "Type de tâche",
+      "taskPlaceholder": "Décrivez la tâche à accomplir...",
+      "goalPlaceholder": "Objectif : à quoi ressemble un bon résultat ?",
+      "taskTypes": {
+        "summarize": {
+          "label": "Résumé",
+          "prompt": "Résumez le document ou contenu suivant de manière claire et concise, en capturant les points clés.",
+          "goal": "Un résumé concis et précis qui capture tous les points clés"
+        }
+      },
+      "suggestions": {
+        "1": {
+          "text": "Résumez cet article de presse"
+        },
+        "2": {
+          "text": "Comparez deux sources sur le même sujet"
+        },
+        "3": {
+          "text": "Extrayez les informations clés de ce document"
+        },
+        "4": {
+          "text": "Analysez le ton de ce texte"
+        }
+      }
     },
     "loading": {
       "title": "Comparaison en cours...",

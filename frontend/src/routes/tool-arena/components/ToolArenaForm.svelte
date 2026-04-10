@@ -11,7 +11,7 @@
   } = $props()
 
   const taskTypes = [
-    { value: 'summarize', label: 'Summarize', prompt: 'Summarize the following document or content clearly and concisely, capturing the key points.', goalText: 'A concise, accurate summary that captures all key points' }
+    { value: 'summarize', label: m['toolArena.form.taskTypes.summarize.label'](), prompt: m['toolArena.form.taskTypes.summarize.prompt'](), goalText: m['toolArena.form.taskTypes.summarize.goal']() }
   ]
 
   let selectedTaskType = $state(taskTypes[0].value)
@@ -73,10 +73,10 @@
   }
 
   const suggestions = [
-    { icon: 'fr-icon-search-line', text: 'Explain how Python decorators work' },
-    { icon: 'fr-icon-bar-chart-box-line', text: 'Compare asyncio vs threading' },
-    { icon: 'fr-icon-question-line', text: 'How do context managers work?' },
-    { icon: 'fr-icon-flashlight-line', text: 'Pattern matching in Python 3.10+' }
+    { icon: 'fr-icon-file-text-line', text: m['toolArena.form.suggestions.1.text']() },
+    { icon: 'fr-icon-bar-chart-box-line', text: m['toolArena.form.suggestions.2.text']() },
+    { icon: 'fr-icon-search-line', text: m['toolArena.form.suggestions.3.text']() },
+    { icon: 'fr-icon-question-line', text: m['toolArena.form.suggestions.4.text']() }
   ]
 </script>
 
@@ -128,7 +128,7 @@
       class="fr-input cg-border rounded-t-md! bg-white! rounded-b-none! border-solid!"
       rows="4"
       bind:value={task}
-      placeholder="Describe the task for the tools..."
+      placeholder={m['toolArena.form.taskPlaceholder']()}
       {disabled}
     ></textarea>
   </div>
@@ -141,7 +141,7 @@
         type="text"
         class="fr-input cg-border rounded-md! bg-white! border-solid!"
         bind:value={goal}
-        placeholder="Goal: what does a good result look like?"
+        placeholder={m['toolArena.form.goalPlaceholder']()}
         {disabled}
       />
     </div>
@@ -164,7 +164,7 @@
         onclick={(e) => {
           e.preventDefault()
           task = suggestion.text
-          goal = 'A clear, practical explanation with code examples'
+          goal = m['toolArena.form.taskTypes.summarize.goal']()
         }}
       >
         <span class={['text-primary text-xl', suggestion.icon]} aria-hidden="true"></span>
