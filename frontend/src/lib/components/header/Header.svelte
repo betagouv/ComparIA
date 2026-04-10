@@ -128,7 +128,7 @@
           {#if !hideDiscussBtn}
             <Link
               button
-              href="/arene"
+              href="/tool-arena"
               text={m['header.startDiscussion']()}
               class="whitespace-nowrap"
             />
@@ -170,7 +170,7 @@
         <div class="mt-6! md:mt-0 lg:hidden">
           <Link
             button
-            href="/arene"
+            href="/tool-arena"
             text={m['header.startDiscussion']()}
             class="w-full! whitespace-nowrap"
           />
