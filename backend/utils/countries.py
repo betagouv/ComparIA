@@ -88,7 +88,8 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
                      WHERE c.country_portal = %s AND v.archived = FALSE) +
                     (SELECT COUNT(*) FROM reactions r
                      JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-                     WHERE c.country_portal = %s AND r.archived = FALSE)
+                     WHERE c.country_portal = %s AND r.archived = FALSE) +
+                    (SELECT COUNT(*) FROM tool_votes)
                 AS total
             """),
             (country_code, country_code),
