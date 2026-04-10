@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button } from '$components/dsfr'
+  import { m } from '$lib/i18n/messages'
 
   let {
     onsubmit,
@@ -147,7 +148,7 @@
 
     <div class="md:col-span-2 flex justify-end items-start">
       <Button type="submit" disabled={!canSubmit}>
-        Compare Tools
+        {m['toolArena.form.submit']()}
       </Button>
     </div>
   </div>

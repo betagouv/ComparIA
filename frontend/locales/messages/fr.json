@@ -1369,7 +1369,7 @@
         "a11yDesc": "1. Je compare deux outils MCP anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'évaluation des outils MCP. 3. Les outils sont démasqués : apprenez-en plus sur les outils MCP et leurs caractéristiques.",
         "one": {
           "desc": "Échangez aussi longtemps que vous le souhaitez",
-          "title": "Je compare deux outils MCP anonymes"
+          "title": "Je compare deux outils MCP"
         },
         "three": {
           "desc": "Apprenez-en plus sur les outils MCP et leurs caractéristiques",
@@ -2121,6 +2121,7 @@
     },
     "newComparison": "Nouvelle comparaison",
     "form": {
+      "title": "Comparez deux outils MCP à l’aveugle",
       "taskLabel": "Décrivez la tâche",
       "goalLabel": "Objectif",
       "submit": "Comparer les outils",

@@ -144,7 +144,7 @@
     <div id="prompt-area" class="fr-container py-10 md:py-24">
       <div class="fr-col-xl-8 m-auto">
         <h2 class="mb-0! text-center" style="font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;">
-          {m['toolArena.step1.title']()}
+          {m['toolArena.form.title']()}
         </h2>
 
         {#if compareError}
