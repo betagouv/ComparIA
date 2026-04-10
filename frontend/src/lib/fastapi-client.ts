@@ -83,10 +83,14 @@ export class FastAPIClient {
   }
 
   /**
-   * Get full URL for an endpoint
+   * Get full URL for an endpoint.
+   * Re-resolves the backend URL on every call so that Vercel SSR dynamic env
+   * vars (PUBLIC_API_URL) are picked up at request time rather than at module
+   * initialisation time (when they may not yet be populated).
    */
   private getUrl(path: string): string {
-    return `${this.baseUrl}${path}`
+    const base = getBackendUrl()
+    return `${base}${path}`
   }
 
   /**
