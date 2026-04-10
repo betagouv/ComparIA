@@ -80,6 +80,7 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
                 "c": (
                     "visitor_id",
                     "ip",
+                    "conv_turns",
                     "model_pair_name",
                     "opening_msg",
                     "model_a_name",

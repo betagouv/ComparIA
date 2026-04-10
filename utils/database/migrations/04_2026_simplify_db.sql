@@ -29,3 +29,7 @@ ALTER TABLE votes DROP COLUMN selected_category;
 ALTER TABLE votes DROP COLUMN is_unedited_prompt;
 
 ALTER TABLE reactions DROP COLUMN chatbot_index;
+
+-- conv_turn changes
+-- simply drop it on votes since vote can only happen at the end of the conversations
+ALTER TABLE votes DROP COLUMN conv_turns;

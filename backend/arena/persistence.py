@@ -286,7 +286,6 @@ def upsert_conv_to_db(data: dict) -> dict:
 
 # TODO since we can postprocess data from Conversations we could remove:
 # - timestamp (let the db put a default)
-# - also probably conv_turns since vote can only happen at the end of the Conversations
 class VoteRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
@@ -296,7 +295,6 @@ class VoteRecord(BaseModel):
     session_hash: str
 
     # Conversations
-    conv_turns: int
     conversation_pair_id: str
 
     # Vote
@@ -362,7 +360,7 @@ def record_vote(
     )
 
     vote_data = conversations.model_dump(
-        include={"session_hash", "conv_turns", "conversation_pair_id"}
+        include={"session_hash", "conversation_pair_id"}
     ) | {
         "timestamp": str(t),
         # Vote
