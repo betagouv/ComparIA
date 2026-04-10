@@ -20,6 +20,7 @@ async def single_mcp_call(
     server: MCPServerConfig,
     task: str,
     goal: str,
+    document_content: str = "",
 ) -> tuple[str, int]:
     """Open a fresh MCP session, call tool(s), return (raw_text, duration_ms).
 
@@ -59,7 +60,7 @@ async def single_mcp_call(
             else:
                 tool_name = server.tools[0]
 
-            arguments = {"task": task, "goal": goal}
+            arguments = {"task": task, "goal": goal, "document_content": document_content}
             result = await session.call_tool(tool_name, arguments=arguments)
 
             raw_text = "\n".join(

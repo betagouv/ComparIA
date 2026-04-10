@@ -1,26 +1,18 @@
 [
   {
-    "id": "global_summarizer",
-    "name": "Global Summarizer AI",
-    "description": "AI-powered text summarization tool",
-    "endpoint": "https://example.com/mcp/global-summarizer",
+    "id": "langchain_rag",
+    "name": "LangChain RAG",
+    "description": "RAG pipeline using LangChain with FAISS and RecursiveCharacterTextSplitter",
+    "endpoint": "http://localhost:8010/mcp",
     "transport": "streamablehttp",
-    "auth": {
-      "type": "bearer",
-      "token": "REPLACE_WITH_ACTUAL_TOKEN"
-    },
     "tools": ["*"]
   },
   {
-    "id": "clarifeye_memos",
-    "name": "Clarifeye Memos",
-    "description": "Structured memo extraction and analysis",
-    "endpoint": "https://example.com/mcp/clarifeye-memos",
+    "id": "llamaindex_rag",
+    "name": "LlamaIndex RAG",
+    "description": "RAG pipeline using LlamaIndex with VectorStoreIndex and SimpleDirectoryReader",
+    "endpoint": "http://localhost:8011/mcp",
     "transport": "streamablehttp",
-    "auth": {
-      "type": "bearer",
-      "token": "REPLACE_WITH_ACTUAL_TOKEN"
-    },
-    "tools": ["extract_memo", "summarize"]
+    "tools": ["*"]
   }
 ]

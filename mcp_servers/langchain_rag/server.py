@@ -1,5 +1,6 @@
-"""LangChain RAG MCP Server — FastMCP on port 8010."""
+"""LangChain RAG MCP Server — FastMCP on port 8010 (or $PORT)."""
 
+import os
 from pathlib import Path
 
 from fastmcp import FastMCP
@@ -61,4 +62,4 @@ def rag_query(task: str, goal: str, document_content: str = "") -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=8010)
+    mcp.run(transport="streamable-http", host="0.0.0.0", port=int(os.getenv("PORT", 8010)))

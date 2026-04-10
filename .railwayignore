@@ -1,0 +1,10 @@
+frontend/node_modules
+.venv
+.venv_old
+__pycache__
+**/__pycache__
+*.pyc
+.git
+.planning
+frontend/.svelte-kit
+frontend/build

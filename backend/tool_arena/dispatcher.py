@@ -30,12 +30,12 @@ logger = logging.getLogger("tool_arena")
 MCP_CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))
 
 MEDIATION_PROMPT = """\
-You are given the raw output from a tool that was invoked to complete a task.
-Synthesize the tool output into a clear, concise answer that directly addresses the task and goal.
+You are given the raw output from a RAG tool that retrieved relevant chunks from a document.
+Synthesize the retrieved chunks into a clear, concise answer that directly addresses the task and goal.
 
 Task: {task}
-Goal: {goal}
-Raw tool output:
+Goal: {goal}{document_section}
+Retrieved chunks:
 {raw_result}
 
 Provide a clean, human-readable answer. Do not mention the tool, its name, or any technical identifiers."""
@@ -55,6 +55,7 @@ class MCPDispatcher:
         goal: str,
         llm_id: str,
         session_id: str,
+        document_content: str = "",
     ) -> tuple[MCPToolCall, MCPToolCall]:
         """Run full comparison pipeline: pick servers, call MCP, sanitize, mediate, return.
 
@@ -78,11 +79,11 @@ class MCPDispatcher:
         # asyncio.gather with return_exceptions=True ensures one failure does not discard the other
         raw_results = await asyncio.gather(
             asyncio.wait_for(
-                single_mcp_call(server_a, task, goal),
+                single_mcp_call(server_a, task, goal, document_content),
                 timeout=MCP_CALL_TIMEOUT,
             ),
             asyncio.wait_for(
-                single_mcp_call(server_b, task, goal),
+                single_mcp_call(server_b, task, goal, document_content),
                 timeout=MCP_CALL_TIMEOUT,
             ),
             return_exceptions=True,
@@ -140,7 +141,7 @@ class MCPDispatcher:
         for i, tc in enumerate(tool_calls):
             if tc.error is None:
                 mediation_coros.append(
-                    self._mediate(raw_texts[i], task, goal, llm_id)
+                    self._mediate(raw_texts[i], task, goal, llm_id, document_content)
                 )
                 mediation_indices.append(i)
 
@@ -164,7 +165,7 @@ class MCPDispatcher:
 
         return tool_calls[0], tool_calls[1]
 
-    async def _mediate(self, raw_result: str, task: str, goal: str, llm_id: str) -> str:
+    async def _mediate(self, raw_result: str, task: str, goal: str, llm_id: str, document_content: str = "") -> str:
         """Mediate a single sanitized raw result through the LLM (D-04).
 
         Args:
@@ -176,7 +177,11 @@ class MCPDispatcher:
         Returns:
             LLM-mediated human-readable answer.
         """
-        prompt = MEDIATION_PROMPT.format(task=task, goal=goal, raw_result=raw_result)
+        doc_section = ""
+        if document_content.strip():
+            preview = document_content[:800] + ("..." if len(document_content) > 800 else "")
+            doc_section = f"\nDocument (first 800 chars):\n{preview}"
+        prompt = MEDIATION_PROMPT.format(task=task, goal=goal, document_section=doc_section, raw_result=raw_result)
         response = await litellm.acompletion(
             model=llm_id,
             messages=[{"role": "user", "content": prompt}],

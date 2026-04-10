@@ -31,4 +31,4 @@ COPY mcp_servers/langchain_rag/server.py /app/langchain_rag/server.py
 
 EXPOSE 8010
 
-CMD ["fastmcp", "run", "langchain_rag/server.py", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8010"]
+CMD fastmcp run langchain_rag/server.py --transport streamable-http --host 0.0.0.0 --port ${PORT:-8010}

@@ -31,4 +31,4 @@ COPY mcp_servers/llamaindex_rag/server.py /app/llamaindex_rag/server.py
 
 EXPOSE 8011
 
-CMD ["fastmcp", "run", "llamaindex_rag/server.py", "--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8011"]
+CMD fastmcp run llamaindex_rag/server.py --transport streamable-http --host 0.0.0.0 --port ${PORT:-8011}
