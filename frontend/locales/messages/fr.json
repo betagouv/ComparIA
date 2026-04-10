@@ -153,7 +153,7 @@
       "questions": {
         "1": {
           "desc": "<p>Les données de comparaison servent à évaluer les outils MCP sur des tâches réelles.</p><p>En comparant à l’aveugle les résultats de deux outils MCP, les utilisateurs de CompaRAG expriment leurs préférences, indiquant ainsi quels résultats sont les plus pertinents. Ces données de comparaison peuvent être utilisées pour évaluer la performance relative des outils MCP sur différents types de tâches.</p><p>Il s’agit d’un processus continu, où les préférences des utilisateurs permettent de mieux comprendre les forces et faiblesses de chaque outil MCP.</p>",
-          "title": "Les données de préférence ont-elles un effet immédiat pour améliorer les modèles?"
+          "title": "Les données de préférence ont-elles un effet immédiat pour améliorer les outils MCP ?"
         },
         "2": {
           "desc": "<p>La spécificité des données collectées sur la plateforme CompaRAG est qu’elles correspondent à des tâches réelles des utilisateurs. Ces données reflètent des préférences humaines dans des contextes métier précis. Elles permettent d’évaluer les outils MCP sur leur capacité à répondre aux besoins concrets des utilisateurs.</p>",
@@ -184,7 +184,7 @@
       "questions": {
         "1": {
           "desc": "<p>Nous choisissons les modèles en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des modèles dits <em>open weights</em> (semi-ouverts) et de taille différentes.</p>",
-          "title": "Comment choisissez-vous les modèles présents dans le comparateur ?"
+          "title": "Comment choisissez-vous les outils MCP présents dans le comparateur ?"
         },
         "2": {
           "desc": "<p>L’inférence, c’est-à-dire le fait de pouvoir interroger les modèles, est prise en charge par le projet. Pour la plupart des modèles, nous passons par les API d’Open Router et de Hugging Face et nous réglons les coûts à l’usage, au jeton.</p>",
@@ -203,18 +203,18 @@
           "title": "Peut-on connaître les données d’entraînement des modèles ?"
         }
       },
-      "title": "Modèles"
+      "title": "Outils MCP"
     },
     "title": "Foire aux questions",
     "usage": {
       "questions": {
         "1": {
           "desc": "<p>Les modèles de langage conversationnels actuels sont <strong>incapables de citer les sources</strong> qu'ils ont utilisées pour générer une réponse. Ils fonctionnent en prédisant le mot suivant le plus probable en fonction de la distribution statistique des données d'entraînement. Bien qu'ils puissent synthétiser des informations provenant de diverses sources, ils ne conservent pas la trace de l'origine de ces informations.</p><p>Cependant, il existe des techniques comme la <strong>Génération Augmentée par Récupération (RAG)</strong> qui visent à pallier cette limitation. Le RAG permet aux modèles d'accéder à des bases de connaissances externes et de <strong>fournir des informations contextualisées en citant les sources</strong>. Cette approche est essentielle pour améliorer la transparence et la fiabilité des réponses générées par les modèles.</p>",
-          "title": "Les modèles peuvent-ils citer leurs sources ?"
+          "title": "Les outils MCP peuvent-ils citer leurs sources ?"
         },
         "2": {
           "desc": "<p>Vous avez posé la question suivante “explique-moi la motion de censure à l'œuvre actuellement en France à l'Assemblée nationale et cite-moi tes sources” et avez été déçu·e des réponses ? C’est normal…</p><p><strong>Les modèles d'IA conversationnels “bruts” ne peuvent pas répondre aux questions sur l'actualité la plus récente.</strong> Ils sont entraînés sur des ensembles de données statiques et ne peuvent pas interagir avec le web ou ouvrir des liens. Ils n'ont pas la capacité de se mettre à jour en temps réel avec les événements qui se déroulent dans le monde. Les informations auxquelles le modèle a accès sont limitées à la date de son dernier entraînement.</p><p>Par conséquent, si vous posez une question sur un fait d’actualité récent, le modèle s'appuiera sur des informations potentiellement obsolètes, risquant de générer des réponses inexactes.</p><p>Dans le cas de Perplexity, Copilot ou ChatGPT, les modèles d’IA conversationnelle dits “bruts” sont associés à d’autres briques technologiques qui permettent de se connecter à internet pour accéder à des informations en temps réel. On parle alors “d’agents conversationnels”.</p>",
-          "title": "Si je pose une question sur l’actualité la plus récente, le modèle peut-il répondre ?"
+          "title": "Si je pose une question sur l’actualité la plus récente, l’outil MCP peut-il répondre ?"
         },
         "3": {
           "desc": "<p>Si vous intégrez une URL dans une requête, le modèle conversationnel ne peut pas y accéder directement. Les modèles de langage traitent le texte de la requête mais n'ont pas la capacité d'interagir avec le web ou d'ouvrir des liens. Ils sont entraînés sur un ensemble de données textuelles fixes et leurs réponses reposent sur ces données d’entraînement. Lorsqu'une question est posées, les modèles utilisent cet entraînement pour générer une réponse mais ne peuvent pas accéder à de nouvelles informations en ligne.</p><p>Par analogie, imaginez un étudiant passant un examen sans accès à internet. Il peut utiliser ses connaissances acquises pour répondre aux questions, mais ne peut pas consulter de sites web pour obtenir des informations supplémentaires.</p>",
@@ -1405,8 +1405,8 @@
         "title": "Former et sensibiliser"
       },
       "explore": {
-        "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles",
-        "title": "Explorer les modèles"
+        "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des outils MCP",
+        "title": "Explorer les outils MCP"
       },
       "title": "Les usages spécifiques de CompaRAG",
       "use": {
@@ -2010,7 +2010,7 @@
       "totalModels": "Total modèles :",
       "totalVotes": "Total votes :"
     },
-    "title": "Des votes… au classement des modèles",
+    "title": "Des votes… au classement des outils MCP",
     "desc": "Merci pour vos contributions !<br> Le classement <strong>CompaRAG</strong> repose sur l’ensemble des votes issus de la <strong>comparaison à l’aveugle</strong> des outils MCP.<br> Construit pour évaluer objectivement les outils MCP, le classement est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>.<br> Le classement CompaRAG reflète les <strong>préférences des utilisateurs</strong> sur leurs propres tâches."
   },
   "reveal": {

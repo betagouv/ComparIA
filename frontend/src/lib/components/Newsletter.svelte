@@ -16,7 +16,7 @@
       </h5>
       <p class="text-sm!">
         Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux
-        modèles, publications de jeux de données et nouvelles fonctionnalités !
+        outils MCP, publications de jeux de données et nouvelles fonctionnalités !
       </p>
     </div>
     <div>
