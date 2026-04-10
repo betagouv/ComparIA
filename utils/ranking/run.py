@@ -20,6 +20,7 @@ from utils.utils import (
 )
 
 from .compute import DataGroup, RankingResult, compute_all_rankings
+from .hf_export import export_tool_votes_to_hf
 from .monitor import monitor
 from .tool_compute import compute_tool_rankings
 
@@ -72,6 +73,7 @@ def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
     monitor(llms, data["all"])
 
     compute_and_store_tool_rankings()
+    export_tool_votes_to_hf()
 
 
 def compute_and_store_tool_rankings() -> None:
