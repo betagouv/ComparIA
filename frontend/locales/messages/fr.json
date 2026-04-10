@@ -1366,10 +1366,10 @@
     "intro": {
       "desc": "Comparez deux outils MCP à l’aveugle et évaluez leurs résultats",
       "steps": {
-        "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'évaluation des outils MCP. 3. Les outils sont démasqués : apprenez-en plus sur les outils MCP et leurs caractéristiques.",
+        "a11yDesc": "1. Je compare deux outils MCP anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'évaluation des outils MCP. 3. Les outils sont démasqués : apprenez-en plus sur les outils MCP et leurs caractéristiques.",
         "one": {
           "desc": "Échangez aussi longtemps que vous le souhaitez",
-          "title": "Je discute avec deux IA anonymes"
+          "title": "Je compare deux outils MCP anonymes"
         },
         "three": {
           "desc": "Apprenez-en plus sur les outils MCP et leurs caractéristiques",
@@ -1442,11 +1442,11 @@
           "title": "Les jeux de données par langue"
         },
         "finetune": {
-          "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.",
-          "title": "Des modèles affinés sur la langue spécifique"
+          "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour évaluer et améliorer les outils MCP sur des cas d’usage réels.",
+          "title": "Des outils MCP mieux évalués"
         },
         "prefs": {
-          "desc": "Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères donnés, tels que la pertinence ou l’utilité des réponses.",
+          "desc": "Après avoir soumis une tâche aux deux outils MCP, vous indiquez lequel a fourni le meilleur résultat selon des critères tels que la pertinence ou l’utilité de la réponse.",
           "title": "Vos préférences"
         }
       },
