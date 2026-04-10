@@ -284,12 +284,9 @@ def upsert_conv_to_db(data: dict) -> dict:
 # ============================================================================
 
 
-# TODO since we can postprocess data from Conversations we could remove:
-# - timestamp (let the db put a default)
 class VoteRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
-    timestamp: str
 
     # Session
     session_hash: str
@@ -349,8 +346,6 @@ def record_vote(
         6. Call save_vote_to_db() for database persistence
     """
 
-    t = datetime.now()
-
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
     chosen_model_name = (
@@ -362,7 +357,6 @@ def record_vote(
     vote_data = conversations.model_dump(
         include={"session_hash", "conversation_pair_id"}
     ) | {
-        "timestamp": str(t),
         # Vote
         "chosen_model_name": chosen_model_name,
         "both_equal": vote.chosen_llm == "both_equal",
@@ -377,6 +371,7 @@ def record_vote(
     vote_record = VoteRecord(**vote_data)
     db_data = vote_record.model_dump(mode="json")
 
+    t = datetime.now()
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{conversations.session_hash}.json"
     vote_log_path = settings.LOGDIR / vote_log_filename
     with vote_log_path.open(mode="a") as fout:
@@ -405,7 +400,6 @@ def record_vote(
 class ReactionRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
-    # timestamp: datetime | None = None
 
     # Session
     session_hash: str
@@ -495,7 +489,6 @@ def record_reaction(
     conv_b = conversations.conversation_b
     conv = conv_a if reaction.bot == "a" else conv_b
 
-    t = datetime.now()  # FIXME
     reaction_data = (
         # Conversations
         conversations.model_dump(include={"session_hash", "conversation_pair_id"})
@@ -529,6 +522,7 @@ def record_reaction(
     reaction_record = ReactionRecord(**reaction_data)
     db_data = reaction_record.model_dump(mode="json")
 
+    t = datetime.now()
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{conversations.session_hash}.json"
     reaction_log_path = settings.LOGDIR / reaction_log_filename
     with reaction_log_path.open(mode="a") as fout:
@@ -582,7 +576,6 @@ class ConversationsRecord(BaseModel):
 
     # Set from database defaults, not present in logs?
     # id: int | None = None
-    # timestamp: datetime | None = None
 
     # Session
     session_hash: str
@@ -650,7 +643,6 @@ def record_conversations(
         dict: The saved serialized ConversationsRecord
     """
 
-    t = datetime.now()  # FIXME
     convs_data = conversations.model_dump()
 
     # Language model pairs specific
