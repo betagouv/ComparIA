@@ -1453,11 +1453,11 @@
       "steps": {
         "datasets": {
           "desc": "Toutes les tâches soumises et les votes sont compilés dans des jeux de données et publiés librement après anonymisation.",
-          "title": "Jeux de données ouverts"
+          "title": "Données ouvertes"
         },
         "finetune": {
           "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour évaluer et améliorer les outils MCP sur des cas d’usage réels.",
-          "title": "Des outils MCP mieux évalués"
+          "title": "Outils MCP évalués"
         },
         "prefs": {
           "desc": "Après avoir soumis une tâche aux deux outils MCP, vous indiquez lequel a fourni le meilleur résultat selon des critères tels que la pertinence ou l’utilité de la réponse.",
