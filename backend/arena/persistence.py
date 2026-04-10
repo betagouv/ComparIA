@@ -413,16 +413,6 @@ def record_vote(
 
 
 # TODO since we can postprocess data from Conversations we could remove:
-# - visitor_id
-# - ip
-# - model_pair_name
-# - opening_msg
-# - model_a_name
-# - model_b_name
-# - conv_a_id
-# - conv_b_id
-# - conversation_a
-# - conversation_b
 # Also based on refers_to_conv_id and msg_index we can postprocess:
 # - model_pos
 # - refers_to_model
@@ -439,24 +429,10 @@ class ReactionRecord(BaseModel):
 
     # Session
     session_hash: str
-    visitor_id: str | None
-    ip: str
 
     # Conversations
     conv_turns: int  # TODO rename to current_conv_turn_when_reacting?
     conversation_pair_id: str
-    model_pair_name: Annotated[
-        list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
-    opening_msg: str
-
-    # Language model pairs specific
-    model_a_name: str
-    model_b_name: str
-    conv_a_id: str
-    conv_b_id: str
-    conversation_a: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
-    conversation_b: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
 
     # Conversation
     model_pos: BotPos
@@ -543,7 +519,9 @@ def record_reaction(
     t = datetime.now()  # FIXME
     reaction_data = (
         # Conversations
-        conversations.model_dump()
+        conversations.model_dump(
+            include={"session_hash", "conv_turns", "conversation_pair_id"}
+        )
         | {
             # Conversation
             "model_pos": reaction.bot,
@@ -570,16 +548,6 @@ def record_reaction(
             for key in ALL_PREFS
         }
     )
-
-    # Language model pairs specific
-    for pos in {"a", "b"}:
-        _conv = reaction_data.pop(f"conversation_{pos}")
-        for data_key, db_key in [
-            ("model_name", "model_{}_name"),
-            ("conv_id", "conv_{}_id"),
-            ("messages", "conversation_{}"),
-        ]:
-            reaction_data[db_key.format(pos)] = _conv[data_key]
 
     reaction_record = ReactionRecord(**reaction_data)
     db_data = reaction_record.model_dump(mode="json")
