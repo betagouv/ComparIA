@@ -164,11 +164,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
                     row["model_b_name"], row["total_conv_b_output_tokens"]
                 )
 
-        # Il faudrait supprimer du dataset ces infos un peu legacy
-        # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
-        #     -- selected_category VARCHAR(255), (suggested question category)
-        #     -- is_unedited_prompt BOOLEAN, (if the prompt is exactly a suggestion)
-
         # Drop sensitive columns before export
         # List of sensitive columns :
 

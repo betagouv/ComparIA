@@ -288,9 +288,6 @@ def upsert_conv_to_db(data: dict) -> dict:
 # TODO since we can postprocess data from Conversations we could remove:
 # - timestamp (let the db put a default)
 # - also probably conv_turns since vote can only happen at the end of the Conversations
-# and legacy:
-# - selected_category
-# - is_unedited_prompt
 class VoteRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
@@ -302,8 +299,6 @@ class VoteRecord(BaseModel):
     # Conversations
     conv_turns: int
     conversation_pair_id: str
-    selected_category: str | None = None  # FIXME legacy autofill with None for now
-    is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
 
     # Vote
     chosen_model_name: str | None
@@ -582,9 +577,6 @@ class ConversationMessageRecord(BaseModel):
 # - total_conv_a_output_tokens
 # - total_conv_b_output_tokens
 # - opening_msg
-# And legacy:
-# - selected_category
-# - is_unedited_prompt
 class ConversationsRecord(BaseModel):
     """
     Database/logs record for a paired conversation comparison.
@@ -618,8 +610,6 @@ class ConversationsRecord(BaseModel):
         str
     ]  # FIXME, not sure what serialization is needed, in previous code it was raw array but in db shema it says 'TEXT', and in others 'JSONB'. Replace to string:string ?
     opening_msg: str
-    selected_category: str | None = None  # FIXME legacy autofill with None for now
-    is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
 
     # Language model pairs specific
     model_a_name: str

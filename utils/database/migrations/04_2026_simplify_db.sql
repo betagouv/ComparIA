@@ -20,3 +20,10 @@ ALTER TABLE reactions DROP COLUMN conv_a_id;
 ALTER TABLE reactions DROP COLUMN conv_b_id;
 ALTER TABLE reactions DROP COLUMN conversation_a;
 ALTER TABLE reactions DROP COLUMN conversation_b;
+
+-- Drop legacy
+ALTER TABLE conversations DROP COLUMN selected_category;
+ALTER TABLE conversations DROP COLUMN is_unedited_prompt;
+
+ALTER TABLE votes DROP COLUMN selected_category;
+ALTER TABLE votes DROP COLUMN is_unedited_prompt;
