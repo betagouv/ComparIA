@@ -97,7 +97,7 @@
   },
   "datasets": {
     "access": {
-      "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
+      "catch": "Editeurs d’outils MCP, chercheurs, chercheuses, entreprises, à vous de jouer !",
       "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
       "repos": {
         "conversations": {
@@ -184,11 +184,11 @@
     "models": {
       "questions": {
         "1": {
-          "desc": "<p>Nous choisissons les modèles en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des modèles dits <em>open weights</em> (semi-ouverts) et de taille différentes.</p>",
+          "desc": "<p>Nous choisissons les outils MCP en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des outils open source et de natures différentes.</p>",
           "title": "Comment choisissez-vous les outils MCP présents dans le comparateur ?"
         },
         "2": {
-          "desc": "<p>L’inférence, c’est-à-dire le fait de pouvoir interroger les modèles, est prise en charge par le projet. Pour la plupart des modèles, nous passons par les API d’Open Router et de Hugging Face et nous réglons les coûts à l’usage, au jeton.</p>",
+          "desc": "<p>L’accès aux outils MCP est pris en charge par le projet. Nous intégrons les outils via le protocole MCP et nous réglons les coûts à l’usage.</p>",
           "title": "Comment parvenez-vous à rendre ce service gratuit ?"
         },
         "3": {
