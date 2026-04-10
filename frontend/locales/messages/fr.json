@@ -1325,7 +1325,7 @@
       },
       "stepTwo": {
         "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
-        "title": "Les modèles sont démasqués !"
+        "title": "Les outils sont démasqués !"
       }
     },
     "help": {
@@ -1366,18 +1366,18 @@
     "intro": {
       "desc": "Comparez deux outils MCP à l’aveugle et évaluez leurs résultats",
       "steps": {
-        "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA. 3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.",
+        "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'évaluation des outils MCP. 3. Les outils sont démasqués : apprenez-en plus sur les outils MCP et leurs caractéristiques.",
         "one": {
           "desc": "Échangez aussi longtemps que vous le souhaitez",
           "title": "Je discute avec deux IA anonymes"
         },
         "three": {
-          "desc": "Apprenez en plus sur les modèles d’IA et leurs caractéristiques",
-          "title": "Les modèles sont démasqués !"
+          "desc": "Apprenez-en plus sur les outils MCP et leurs caractéristiques",
+          "title": "Les outils sont démasqués !"
         },
         "title": "Comment ça marche",
         "two": {
-          "desc": "Vous contribuez ainsi à l'amélioration des modèles d’IA",
+          "desc": "Vous contribuez ainsi à l'évaluation des outils MCP",
           "title": "Je donne mon avis"
         }
       },
