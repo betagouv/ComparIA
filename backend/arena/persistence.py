@@ -285,13 +285,8 @@ def upsert_conv_to_db(data: dict) -> dict:
 
 
 class VoteRecord(BaseModel):
-    # Set with database defaults, not present in logs?
-    # id: int | None = None
-
-    # Session
+    # Conversations links
     session_hash: str
-
-    # Conversations
     conversation_pair_id: str
 
     # Vote
@@ -313,9 +308,6 @@ class VoteRecord(BaseModel):
     conv_superficial_b: bool
     conv_instructions_not_followed_a: bool
     conv_instructions_not_followed_b: bool
-
-    # Additional? (not found in record_vote but present in votes.sql)
-    # archived: bool = False
 
 
 def record_vote(
@@ -398,13 +390,8 @@ def record_vote(
 # - question_content
 # Also not sure that `question_id` is usefull
 class ReactionRecord(BaseModel):
-    # Set with database defaults, not present in logs?
-    # id: int | None = None
-
-    # Session
+    # Conversations links
     session_hash: str
-
-    # Conversations
     conversation_pair_id: str
 
     # Conversation
@@ -432,13 +419,6 @@ class ReactionRecord(BaseModel):
     incorrect: bool
     superficial: bool
     instructions_not_followed: bool
-
-    # Additional? (not found in record_reaction but present in reactions.sql)
-    # archived: bool = False
-
-    # FIXME add?
-    # country_portal: CountryPortal
-    # cohorts: str
 
 
 def delete_reaction(conv: Conversation, msg_index: int) -> dict:
@@ -490,7 +470,6 @@ def record_reaction(
     conv = conv_a if reaction.bot == "a" else conv_b
 
     reaction_data = (
-        # Conversations
         conversations.model_dump(include={"session_hash", "conversation_pair_id"})
         | {
             # Conversation
@@ -574,9 +553,6 @@ class ConversationsRecord(BaseModel):
     to make sure data is of database expected type.
     """
 
-    # Set from database defaults, not present in logs?
-    # id: int | None = None
-
     # Session
     session_hash: str
     visitor_id: str | None
@@ -609,18 +585,6 @@ class ConversationsRecord(BaseModel):
     total_conv_b_output_tokens: int
     cached_response_a: bool
     cached_response_b: bool
-
-    # Additional? (not found in record_conversations but present in conversations.sql)
-    # archived: bool = False
-    # short_summary: str | None = None
-    # ip_map: str | None = None
-    # keywords: dict[str, Any] | None = None
-    # categories: dict[str, Any] | None = None
-    # languages: dict[str, Any] | None = None
-    # pii_analyzed: bool = False
-    # contains_pii: bool | None = None
-    # conversation_a_pii_removed: Any = None  # JSONB
-    # conversation_b_pii_removed: Any = None  # JSONB
 
     # TODO: add 'interrupted' bool field?
     # TODO: add `error: boolean` or `error_message: str`, `conv_a|b_error: str`?
