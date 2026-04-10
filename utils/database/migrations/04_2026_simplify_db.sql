@@ -27,3 +27,5 @@ ALTER TABLE conversations DROP COLUMN is_unedited_prompt;
 
 ALTER TABLE votes DROP COLUMN selected_category;
 ALTER TABLE votes DROP COLUMN is_unedited_prompt;
+
+ALTER TABLE reactions DROP COLUMN chatbot_index;

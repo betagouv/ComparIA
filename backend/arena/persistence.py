@@ -164,7 +164,6 @@ def upsert_reaction_to_db(data: dict) -> dict:
                 superficial = EXCLUDED.superficial,
                 instructions_not_followed = EXCLUDED.instructions_not_followed,
                 msg_rank = EXCLUDED.msg_rank,
-                chatbot_index = EXCLUDED.chatbot_index,
                 question_id = EXCLUDED.question_id;
         """)
         # TODO: fixes some edge case
@@ -405,8 +404,6 @@ def record_vote(
 # - response_content
 # - question_content
 # Also not sure that `question_id` is usefull
-# And legacy:
-# - chatbot_index
 class ReactionRecord(BaseModel):
     # Set with database defaults, not present in logs?
     # id: int | None = None
@@ -430,7 +427,6 @@ class ReactionRecord(BaseModel):
     # Liked/disliked message data
     msg_index: int
     msg_rank: int
-    chatbot_index: int
     question_id: str
 
     # Reaction
@@ -520,7 +516,6 @@ def record_reaction(
             "msg_rank": (
                 reaction.index // 2  # Rank begins at zero (not counting system message)
             ),
-            "chatbot_index": reaction.index,  # FIXME legacy to remove index from old front chatbot index
             "question_id": f"{conversations.conversation_pair_id}-{reaction.index // 2}",
             # Reaction
             "liked": reaction.liked is True,

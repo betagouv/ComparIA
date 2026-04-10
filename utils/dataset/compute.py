@@ -171,7 +171,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
             "archived",
             "pii_analyzed",
             "ip",
-            "chatbot_index",
             "conversation_a_pii_removed",
             "conversation_b_pii_removed",
             "opening_msg_pii_removed",
