@@ -74,7 +74,24 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
             ),
             country_portal=country_portal,
         ),
-        "votes": get_votes_db_query(columns="*", country_portal=country_portal),
+        "votes": get_votes_db_query(
+            columns={
+                "v": ("*",),
+                "c": (
+                    "visitor_id",
+                    "ip",
+                    "model_pair_name",
+                    "opening_msg",
+                    "model_a_name",
+                    "model_b_name",
+                    "system_prompt_a",
+                    "system_prompt_b",
+                    "conversation_a",
+                    "conversation_b",
+                ),
+            },
+            country_portal=country_portal,
+        ),
         "reactions": get_reactions_db_query(
             columns=(
                 "id",
