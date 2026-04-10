@@ -297,18 +297,6 @@ def upsert_conv_to_db(data: dict) -> dict:
 
 # TODO since we can postprocess data from Conversations we could remove:
 # - timestamp (let the db put a default)
-# - visitor_id
-# - ip
-# - country_portal
-# - cohorts
-# - model_pair_name
-# - opening_msg
-# - model_a_name
-# - model_b_name
-# - system_prompt_a
-# - system_prompt_b
-# - conversation_a
-# - conversation_b
 # - also probably conv_turns since vote can only happen at the end of the Conversations
 # and legacy:
 # - selected_category
@@ -320,26 +308,12 @@ class VoteRecord(BaseModel):
 
     # Session
     session_hash: str
-    visitor_id: str | None
-    ip: str
 
     # Conversations
     conv_turns: int
     conversation_pair_id: str
-    model_pair_name: Annotated[
-        list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
-    opening_msg: str
     selected_category: str | None = None  # FIXME legacy autofill with None for now
     is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
-
-    # Language model pairs specific
-    model_a_name: str
-    model_b_name: str
-    system_prompt_a: str | None
-    system_prompt_b: str | None
-    conversation_a: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
-    conversation_b: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
 
     # Vote
     chosen_model_name: str | None
@@ -403,7 +377,9 @@ def record_vote(
         else getattr(conversations, f"conversation_{vote.chosen_llm}").model_name
     )
 
-    vote_data = conversations.model_dump() | {
+    vote_data = conversations.model_dump(
+        include={"session_hash", "conv_turns", "conversation_pair_id"}
+    ) | {
         "timestamp": str(t),
         # Vote
         "chosen_model_name": chosen_model_name,
@@ -415,15 +391,6 @@ def record_vote(
         vote_data[f"conv_comments_{pos}"] = getattr(vote, f"comment_{pos}")
         for key in ALL_PREFS:
             vote_data[f"conv_{key}_{pos}"] = key in getattr(vote, f"prefs_{pos}")
-
-        # Language model pairs specific
-        conv = vote_data.pop(f"conversation_{pos}")
-        for data_key, db_key in [
-            ("model_name", "model_{}_name"),
-            ("system_msg", "system_prompt_{}"),
-            ("messages", "conversation_{}"),
-        ]:
-            vote_data[db_key.format(pos)] = conv[data_key]
 
     vote_record = VoteRecord(**vote_data)
     db_data = vote_record.model_dump(mode="json")
