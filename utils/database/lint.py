@@ -26,12 +26,21 @@ logger = logging.getLogger("comparia.database")
 
 
 def log_archived() -> None:
+    """
+    Log archived data infos.
+    """
     query = """
-        SELECT archived_reason FROM {table_name} WHERE archived = TRUE;
+        SELECT 
+            archived_reason, 
+            timestamp 
+        FROM 
+            {table_name} 
+        WHERE archived = TRUE;
     """
     archived_counts: dict[ArchivedReason, dict[TableName, int]] = defaultdict(
         lambda: defaultdict(int)
     )
+    archived_last_time_seen: dict[ArchivedReason, datetime | None] = defaultdict(None)
     total_archived_counts: dict[TableName, int] = defaultdict(int)
     with db_connection(stream=True) as conn:
         for table_name in TABLE_NAMES:
@@ -40,8 +49,20 @@ def log_archived() -> None:
                 connection=conn,
             )
             total_archived_counts[table_name] = len(results)
-            for group in results.group_by("archived_reason").count().to_dicts():
+            for group in (
+                results.group_by("archived_reason")
+                .agg(
+                    count=pl.col("archived_reason").len(),
+                    last_time_seen=pl.col("timestamp").sort().last(),
+                )
+                .to_dicts()
+            ):
                 archived_counts[group["archived_reason"]][table_name] = group["count"]
+
+                if table_name == "conversations":
+                    archived_last_time_seen[group["archived_reason"]] = group[
+                        "last_time_seen"
+                    ]
 
     total_counts = ", ".join(
         f"{total_archived_counts[table_name]} {table_name}"
@@ -53,7 +74,9 @@ def log_archived() -> None:
         counts = ", ".join(
             f"{count} {table_name}" for table_name, count in tables.items()
         )
-        logger.info(f"- '{reason}': {counts}")
+        logger.info(
+            f"  '{reason}': {counts}, last conversation timestamp: {archived_last_time_seen[reason]}"
+        )
 
 
 def lint(*, fix: bool = False, hard: bool = False):
