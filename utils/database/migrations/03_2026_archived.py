@@ -49,8 +49,13 @@ def migrate():
     # reset archived=False to NULL
     reset_archived()
 
-    # rename what appears as a forgotten rename
+    # rename what appears as a forgotten renames
     rename_llm("mistral-medium-3.1", "mistral-medium-2508", commit=True)
+    rename_llm(
+        "mistral-small-24B-Instruct-2501",
+        "mistral-small-24b-instruct-2501",
+        commit=True,
+    )
 
     with db_connection() as conn:
         results = conn.execute(text(SET_ARCHIVED_REASON_UNKNOWN))
