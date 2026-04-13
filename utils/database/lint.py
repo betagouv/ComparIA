@@ -69,7 +69,7 @@ def lint(*, fix: bool = False, hard: bool = False):
     if hard:
         reset_archived()
 
-    archive_spam(commit=fix)
+    # archive_spam(commit=fix) FIXME rm? done in topic_pii.py
     archive_or_fix_country_portal(commit=fix)
     archive_corrupted(commit=fix)
     archive_unknown_llms(commit=fix and hard)
