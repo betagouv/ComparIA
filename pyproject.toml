@@ -44,7 +44,7 @@ dev = [
     "mypy>=1.19.1",
     "python-jenkins>=1.8.3",
     "types-markdown>=3.10.0.20251106",
-    "types-psycopg2>=2.9.21.20251012",
+    "types-psycopg2>=2.9.21.20260408",
     "types-requests>=2.32.4.20260107",
 ]
 
