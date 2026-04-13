@@ -33,7 +33,7 @@ data = [
     "psycopg2-binary>=2.9.11",
     "pyarrow>=23.0.0",
     "sqlalchemy>=2.0.46",
-    "huggingface_hub>=1.4",
+    "huggingface_hub>=1.10.1",
     "google-cloud-aiplatform>=1.75.0",
     "cyclopts>=4.7.0",
 ]
