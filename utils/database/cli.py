@@ -12,7 +12,7 @@ from .actions import (
     archive_unknown_llms,
     rename_llm,
 )
-from .lint import lint
+from .lint import lint, log_archived
 
 configure_logger(logging.getLogger("comparia.database"))
 
@@ -25,6 +25,7 @@ cli_archive.command(archive_not_archived, name="not_archive")
 
 cli_db = App(name="db", help="Database related utilities.")
 cli_db.command(lint)
+cli_db.command(log_archived)
 cli_db.command(rename_llm)
 cli_db.command(cli_archive)
 
