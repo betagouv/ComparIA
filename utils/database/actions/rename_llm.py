@@ -107,12 +107,14 @@ def rename_llm(old_name: str, new_name: str, *, commit: bool = False):
                 )
             )
 
-            if commit:
+            if not results.rowcount:
+                logger.info(f"No {table_name} with LLM '{old_name}' to rename found!")
+            elif commit:
                 conn.commit()
                 logger.info(
-                    f"Successfully renamed LLM {old_name} to {new_name} in {results.rowcount} {table_name}."
+                    f"Successfully renamed LLM '{old_name}' to '{new_name}' in {results.rowcount} {table_name}."
                 )
             else:
-                logger.info(
-                    f"Would have renamed LLM {old_name} to {new_name} in {results.rowcount} {table_name}."
+                logger.warning(
+                    f"Would have renamed LLM '{old_name}' to '{new_name}' in {results.rowcount} {table_name}."
                 )
