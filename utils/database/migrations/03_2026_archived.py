@@ -8,13 +8,13 @@ from utils.logger import configure_logger
 from utils.utils import db_connection
 
 from ..actions import rename_llm
-from ..utils import reset_archived
+from ..utils import TABLE_NAMES, reset_archived
 
 MIGRATION_FILE = Path(__file__).parent / "03_2026_archived.sql"
 
 SET_ARCHIVED_REASON_UNKNOWN = """
     UPDATE
-        conversations
+        {table_name}
     SET
         archived_reason = 'unknown'
     WHERE
@@ -58,11 +58,14 @@ def migrate():
     )
 
     with db_connection() as conn:
-        results = conn.execute(text(SET_ARCHIVED_REASON_UNKNOWN))
-        logger.info(
-            f"Set {results.rowcount} 'archived_reason' to 'unknown' on conversations."
-        )
-        conn.commit()
+        for table_name in TABLE_NAMES:
+            results = conn.execute(
+                text(SET_ARCHIVED_REASON_UNKNOWN.format(table_name=table_name))
+            )
+            logger.info(
+                f"Set {results.rowcount} 'archived_reason' to 'unknown' on {table_name}."
+            )
+            conn.commit()
 
     logger.info("Finished migration '03_2026_archived'.")
 
