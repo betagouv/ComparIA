@@ -40,7 +40,10 @@ def log_archived() -> None:
     archived_counts: dict[ArchivedReason, dict[TableName, int]] = defaultdict(
         lambda: defaultdict(int)
     )
-    archived_last_time_seen: dict[ArchivedReason, datetime | None] = defaultdict(None)
+
+    archived_last_time_seen: dict[ArchivedReason, dict[TableName, datetime]] = (
+        defaultdict(lambda: defaultdict())
+    )
     total_archived_counts: dict[TableName, int] = defaultdict(int)
     with db_connection(stream=True) as conn:
         for table_name in TABLE_NAMES:
@@ -58,25 +61,23 @@ def log_archived() -> None:
                 .to_dicts()
             ):
                 archived_counts[group["archived_reason"]][table_name] = group["count"]
-
-                if table_name == "conversations":
-                    archived_last_time_seen[group["archived_reason"]] = group[
-                        "last_time_seen"
-                    ]
+                archived_last_time_seen[group["archived_reason"]][table_name] = group[
+                    "last_time_seen"
+                ]
 
     total_counts = ", ".join(
         f"{total_archived_counts[table_name]} {table_name}"
         for table_name in TABLE_NAMES
     )
     logger.info(f"Total archived: {total_counts}")
-    logger.info("With reason:")
+    reasons = "With reasons:"
     for reason, tables in archived_counts.items():
-        counts = ", ".join(
-            f"{count} {table_name}" for table_name, count in tables.items()
+        counts = ", \n".join(
+            f"    {count} {table_name} (last timestamp: {archived_last_time_seen[reason][table_name].date()})"
+            for table_name, count in tables.items()
         )
-        logger.info(
-            f"  '{reason}': {counts}, last conversation timestamp: {archived_last_time_seen[reason]}"
-        )
+        reasons += f"\n'{reason}':\n{counts}"
+    logger.info(reasons)
 
 
 def lint(*, fix: bool = False, hard: bool = False):
