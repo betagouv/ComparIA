@@ -25,10 +25,10 @@ CORRUPTED_NO_CHOICE_VOTES_QUERY = """
 """
 
 CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
-    SELECT id FROM reactions
-    JOIN conversations c ON conversation_pair_id = c.conversation_pair_id
+    SELECT r.id FROM reactions r
+    JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
     WHERE
-        archived IS NULL
+        r.archived IS NULL
         -- msg_index referencing a conversation is out of range
         AND msg_index >= GREATEST(
             jsonb_array_length(c.conversation_a),
@@ -37,10 +37,10 @@ CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
     ;
 """
 CORRUPTED_TO_MODEL_MSG_REACTIONS_QUERY = """
-    SELECT id FROM reactions
-    JOIN conversations c ON conversation_pair_id = c.conversation_pair_id
+    SELECT r.id FROM reactions r
+    JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
     WHERE
-        archived IS NULL
+        r.archived IS NULL
         -- Message at reacted to (at msg_index) must be from assistant role
         -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
         AND CASE
