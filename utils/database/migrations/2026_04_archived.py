@@ -10,7 +10,7 @@ from utils.utils import db_connection
 from ..actions import rename_llm
 from ..utils import TABLE_NAMES, reset_archived
 
-MIGRATION_FILE = Path(__file__).parent / "03_2026_archived.sql"
+MIGRATION_FILE = Path(__file__).parent / "2026_04_archived.sql"
 
 SET_ARCHIVED_REASON_UNKNOWN = """
     UPDATE
@@ -27,7 +27,7 @@ logger = logging.getLogger("comparia.database")
 
 
 def migrate():
-    logger.info("Start migration '03_2026_archived'.")
+    logger.info("Start migration '2026_04_archived'.")
 
     with db_connection() as conn:
         try:
@@ -67,7 +67,7 @@ def migrate():
             )
             conn.commit()
 
-    logger.info("Finished migration '03_2026_archived'.")
+    logger.info("Finished migration '2026_04_archived'.")
 
 
 if __name__ == "__main__":
