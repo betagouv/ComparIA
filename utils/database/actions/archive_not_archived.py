@@ -42,7 +42,7 @@ def archive_not_archived(*, commit: bool = False) -> None:
             ).to_dicts()
 
         if not to_archive:
-            logger.info(f"Nothing that should be archived found!")
+            logger.info(f"No {table_name} that should be archived found!")
             return
 
         archive_at = datetime.now()
