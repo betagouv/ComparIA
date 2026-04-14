@@ -25,6 +25,29 @@ from .utils import (
 
 logger = logging.getLogger("comparia.database")
 
+ARCHIVED_CONVERSATIONS_QUERY = """
+    SELECT
+        timestamp,
+        archived,
+        archived_reason,
+        contains_pii,
+        contains_spam
+    FROM conversations;
+"""
+ARCHIVED_QUERY = """
+    SELECT
+        d.archived,
+        d.archived_reason,
+        d.timestamp,
+        c.contains_pii,
+        c.contains_spam
+    FROM 
+        {table_name} d
+    JOIN 
+        conversations c ON d.conversation_pair_id = c.conversation_pair_id
+    ;
+"""
+
 
 def log_archived(
     *,
@@ -45,15 +68,6 @@ def log_archived(
     """
     Log archived data infos.
     """
-    query = """
-        SELECT
-            archived,
-            archived_reason, 
-            timestamp 
-        FROM 
-            {table_name} 
-        ;
-    """
     last_n_date = datetime.combine(date.today(), datetime.min.time()) - timedelta(
         days=days
     )
@@ -64,9 +78,26 @@ def log_archived(
     with db_connection(stream=True) as conn:
         for table_name in TABLE_NAMES:
             all_items = pl.read_database(
-                query=query.format(table_name=table_name),
+                query=(
+                    ARCHIVED_CONVERSATIONS_QUERY
+                    if table_name == "conversations"
+                    else ARCHIVED_QUERY.format(table_name=table_name)
+                ),
                 connection=conn,
             )
+            all_items = all_items.with_columns(
+                archived=pl.col("archived")
+                | pl.col("contains_pii")
+                | pl.col("contains_spam"),
+                archived_reason=pl.when(
+                    ~pl.col("archived") & pl.col("contains_pii").eq(True)
+                )
+                .then(pl.lit("pii"))
+                .when(~pl.col("archived") & pl.col("contains_spam").eq(True))
+                .then(pl.lit("spam"))
+                .otherwise("archived_reason"),
+            )
+
             all_items_count = len(all_items)
             last_items_count = len(all_items.filter(pl.col("timestamp") > last_n_date))
 
