@@ -1,3 +1,5 @@
+#!/usr/bin/env -S uv run --script
+
 from cyclopts import App
 
 from utils.database.cli import cli_db
