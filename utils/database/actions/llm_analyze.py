@@ -3,7 +3,6 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
-from typing import List, Optional, Tuple
 
 import psycopg2
 import vertexai
@@ -74,8 +73,8 @@ class Config:
     }
 
     def _analyze_conversation(
-        self, conversation_a: List[dict], conversation_b: List[dict]
-    ) -> Optional[dict]:
+        self, conversation_a: list[dict], conversation_b: list[dict]
+    ) -> dict | None:
         print("Analyzing conversation...")
         try:
             vertexai.init(project=self.PROJECT_ID, location=self.LOCATION)
@@ -118,16 +117,16 @@ class Config:
 
     def analyze_conversations(
         self,
-        conversation_a: List[dict],
-        conversation_b: List[dict],
+        conversation_a: list[dict],
+        conversation_b: list[dict],
         conversation_pair_id: int,
-    ) -> Tuple[
-        Optional[bool],
-        Optional[bool],
-        Optional[List[str]],
-        Optional[List[str]],
-        Optional[str],
-        Optional[List[str]],
+    ) -> tuple[
+        bool | None,
+        bool | None,
+        list[str] | None,
+        list[str] | None,
+        str | None,
+        list[str] | None,
     ]:
         print(f"Analyzing conversation pair ID: {conversation_pair_id}")
         analysis_result = self._analyze_conversation(conversation_a, conversation_b)
@@ -139,7 +138,14 @@ class Config:
             short_summary = analysis_result.get("short_summary")
             languages = analysis_result.get("languages")
 
-            return contains_pii, contains_spam, categories, keywords, short_summary, languages
+            return (
+                contains_pii,
+                contains_spam,
+                categories,
+                keywords,
+                short_summary,
+                languages,
+            )
         else:
             return None, None, None, None, None, None
 
@@ -183,10 +189,15 @@ def process_conversation(conversation, analyzer, db_params):
             print(
                 f"Attempt {attempt + 1}/{Config.MAX_RETRIES} for conversation pair ID: {conversation_pair_id}"
             )
-            contains_pii, contains_spam, categories, keywords, short_summary, languages = (
-                analyzer.analyze_conversations(
-                    conversation_a, conversation_b, conversation_pair_id
-                )
+            (
+                contains_pii,
+                contains_spam,
+                categories,
+                keywords,
+                short_summary,
+                languages,
+            ) = analyzer.analyze_conversations(
+                conversation_a, conversation_b, conversation_pair_id
             )
             # If llm call worked, insert metadata in db
             if contains_pii is not None:
@@ -252,7 +263,8 @@ def process_conversations(db_params, analyzer: Config):
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 COUNT(*) FILTER (WHERE short_summary IS NULL AND NOT postprocess_failed) AS no_summary,
                 COUNT(*) FILTER (WHERE short_summary IS NOT NULL AND NOT postprocess_failed) AS has_summary,
@@ -265,25 +277,49 @@ def process_conversations(db_params, analyzer: Config):
                 COUNT(*) FILTER (WHERE pii_analyzed AND NOT postprocess_failed) AS pii_analyzed,
                 COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
             FROM conversations;
-        """)
+        """
+        )
         (
-            no_summary_count, summary_count,
-            no_keywords_count, keywords_count,
-            contains_pii_false_count, contains_pii_true_count, contains_pii_null_count,
-            pii_analyzed_false_count, pii_analyzed_true_count,
+            no_summary_count,
+            summary_count,
+            no_keywords_count,
+            keywords_count,
+            contains_pii_false_count,
+            contains_pii_true_count,
+            contains_pii_null_count,
+            pii_analyzed_false_count,
+            pii_analyzed_true_count,
             contains_spam_true_count,
         ) = cursor.fetchone()
 
-        print(f"{no_summary_count} conversations with no short summary and not marked as failed.")
-        print(f"{summary_count} conversations with a short summary and not marked as failed.")
-        print(f"{no_keywords_count} conversations with no keywords and not marked as failed.")
+        print(
+            f"{no_summary_count} conversations with no short summary and not marked as failed."
+        )
+        print(
+            f"{summary_count} conversations with a short summary and not marked as failed."
+        )
+        print(
+            f"{no_keywords_count} conversations with no keywords and not marked as failed."
+        )
         print(f"{keywords_count} conversations with keywords and not marked as failed.")
-        print(f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed.")
-        print(f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed.")
-        print(f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed.")
-        print(f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed.")
-        print(f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed.")
-        print(f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed.")
+        print(
+            f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed."
+        )
+        print(
+            f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed."
+        )
+        print(
+            f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed."
+        )
+        print(
+            f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed."
+        )
+        print(
+            f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
+        )
+        print(
+            f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed."
+        )
 
         # Include the postprocess_failed field in the select statement and filter
         cursor.execute(
