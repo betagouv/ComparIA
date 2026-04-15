@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
@@ -9,6 +10,8 @@ from backend.config import settings
 
 # Used in kubernetes (cron job)
 # FIXME: change model for cheeper model? (still gemini)
+
+logger = logging.getLogger("comparia.database.llm_analyze")
 
 
 class Config:
@@ -77,7 +80,7 @@ class Config:
         import vertexai
         from vertexai.generative_models import GenerativeModel
 
-        print("Analyzing conversation...")
+        logger.debug("Analyzing conversation...")
         try:
             vertexai.init(project=self.PROJECT_ID, location=self.LOCATION)
             model = GenerativeModel(self.MODEL_NAME)
@@ -102,19 +105,19 @@ class Config:
                     "response_schema": self.response_schema,
                 },
             )
-            print("Gemini API response received.")
+            logger.debug("Gemini API response received.")
             try:
                 analysis_result = json.loads(response.text)[0]
-                print("Analysis result parsed successfully.")
+                logger.debug("Analysis result parsed successfully.")
                 return analysis_result
             except json.JSONDecodeError as e:
-                print(
+                logger.error(
                     f"Error decoding JSON response: {e}, response text: {response.text}"
                 )
                 return None
 
         except Exception as e:
-            print(f"Error during analysis: {e}")
+            logger.error(f"Error during analysis: {e}")
             return None
 
     def analyze_conversations(
@@ -130,7 +133,7 @@ class Config:
         str | None,
         list[str] | None,
     ]:
-        print(f"Analyzing conversation pair ID: {conversation_pair_id}")
+        logger.debug(f"Analyzing conversation pair ID: {conversation_pair_id}")
         analysis_result = self._analyze_conversation(conversation_a, conversation_b)
         if analysis_result:
             contains_pii = analysis_result.get("contains_pii")
@@ -171,24 +174,26 @@ def process_conversation(conversation, analyzer, db_params):
             postprocess_failed,  # Retrieve the new field
         ) = conversation
 
-        print(f"Processing conversation pair ID: {conversation_pair_id}")
+        logger.debug(f"Processing conversation pair ID: {conversation_pair_id}")
         if postprocess_failed:
-            print(
+            logger.warning(
                 f"Conversation {conversation_pair_id} marked as postprocess failed, skipping."
             )
             return None
 
         if existing_summary or existing_keywords or existing_languages:
-            print(f"Conversation {conversation_pair_id} already has data:")
-            print(f"  Short Summary: {existing_summary}")
-            print(f"  Keywords: {existing_keywords}")
-            print(f"  Languages: {existing_languages}")
-            print(f"  Contains PII: {existing_contains_pii}")
-            print(f"  PII Analyzed: {existing_pii_analyzed}")
+            logger.warning(
+                f"Conversation {conversation_pair_id} already has data:\n"
+                f"  Short Summary: {existing_summary}\n"
+                f"  Keywords: {existing_keywords}\n"
+                f"  Languages: {existing_languages}\n"
+                f"  Contains PII: {existing_contains_pii}\n"
+                f"  PII Analyzed: {existing_pii_analyzed}"
+            )
             return None  # Indicate no analysis was performed
 
         for attempt in range(Config.MAX_RETRIES):
-            print(
+            logger.debug(
                 f"Attempt {attempt + 1}/{Config.MAX_RETRIES} for conversation pair ID: {conversation_pair_id}"
             )
             (
@@ -203,13 +208,15 @@ def process_conversation(conversation, analyzer, db_params):
             )
             # If llm call worked, insert metadata in db
             if contains_pii is not None:
-                print(f"Data to be inserted for {conversation_pair_id}:")
-                print(f"  Short Summary: {short_summary}")
-                print(f"  Keywords: {keywords}")
-                print(f"  Languages: {languages}")
-                print(f"  categories: {categories}")
-                print(f"  Contains PII: {contains_pii}")
-                print(f"  Contains Spam: {contains_spam}")
+                logger.debug(
+                    f"Data to be inserted for {conversation_pair_id}:\n"
+                    f"  Short Summary: {short_summary}\n"
+                    f"  Keywords: {keywords}\n"
+                    f"  Languages: {languages}\n"
+                    f"  categories: {categories}\n"
+                    f"  Contains PII: {contains_pii}\n"
+                    f"  Contains Spam: {contains_spam}"
+                )
                 cursor.execute(
                     """
                     UPDATE conversations 
@@ -235,20 +242,20 @@ def process_conversation(conversation, analyzer, db_params):
                     ),
                 )
                 conn.commit()
-                print(
+                logger.debug(
                     f"Conversation pair ID: {conversation_pair_id} enriched successfully."
                 )
                 return None  # Return None if successful
             else:
-                print(
+                logger.debug(
                     f"Analysis failed for conversation pair ID: {conversation_pair_id} on attempt {attempt + 1}."
                 )
                 if attempt < Config.MAX_RETRIES - 1:
-                    print(f"Retrying in {Config.RETRY_DELAY} second(s)...")
+                    logger.debug(f"Retrying in {Config.RETRY_DELAY} second(s)...")
                     time.sleep(Config.RETRY_DELAY)
 
         # If all retries failed
-        print(
+        logger.error(
             f"Analysis failed after {Config.MAX_RETRIES} retries for conversation pair ID: {conversation_pair_id}"
         )
         with open("topics-pii-error.log", "a") as f:
@@ -264,7 +271,7 @@ def process_conversation(conversation, analyzer, db_params):
         conn.commit()
         return conversation_pair_id  # return the id of the failed conversation
     except psycopg2.Error as e:
-        print(
+        logger.error(
             f"Database Error in process_conversation for ID {conversation_pair_id}: {e}"
         )
         return conversation_pair_id
@@ -311,32 +318,34 @@ def process_conversations(db_params, analyzer: Config):
             contains_spam_true_count,
         ) = cursor.fetchone()
 
-        print(
+        logger.info(
             f"{no_summary_count} conversations with no short summary and not marked as failed."
         )
-        print(
+        logger.info(
             f"{summary_count} conversations with a short summary and not marked as failed."
         )
-        print(
+        logger.info(
             f"{no_keywords_count} conversations with no keywords and not marked as failed."
         )
-        print(f"{keywords_count} conversations with keywords and not marked as failed.")
-        print(
+        logger.info(
+            f"{keywords_count} conversations with keywords and not marked as failed."
+        )
+        logger.info(
             f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed."
         )
-        print(
+        logger.info(
             f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed."
         )
-        print(
+        logger.info(
             f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed."
         )
-        print(
+        logger.info(
             f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed."
         )
-        print(
+        logger.info(
             f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
         )
-        print(
+        logger.info(
             f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed."
         )
 
@@ -376,16 +385,16 @@ def process_conversations(db_params, analyzer: Config):
                     failed_calls.append(result)
 
         if failed_calls:
-            print(f"Failed calls for conversation_pair_ids: {failed_calls}")
+            logger.error(f"Failed calls for conversation_pair_ids: {failed_calls}")
 
             with open("topics-pii-error.log", "a") as f:
                 f.write(f"{failed_calls}\n")
 
     except psycopg2.Error as e:
-        print(f"Database Error: {e}")
+        logger.error(f"Database Error: {e}")
     finally:
         if failed_calls:
-            print(f"Failed calls for conversation_pair_ids: {failed_calls}")
+            logger.error(f"Failed calls for conversation_pair_ids: {failed_calls}")
             with open("topics-pii-error.log", "a") as f:
                 f.write(f"{failed_calls}\n")
         if conn:
