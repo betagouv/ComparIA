@@ -153,7 +153,7 @@
     "datasets": {
       "questions": {
         "1": {
-          "desc": "<p>Les données de comparaison servent à évaluer les outils RAG sur des tâches réelles.</p><p>En comparant à l’aveugle les résultats de deux outils RAG, les utilisateurs de CompaRAG expriment leurs préférences, indiquant ainsi quels résultats sont les plus pertinents. Ces données de comparaison peuvent être utilisées pour évaluer la performance relative des outils RAG sur différents types de tâches.</p><p>Il s’agit d’un processus continu, où les préférences des utilisateurs permettent de mieux comprendre les forces et faiblesses de chaque outil MCP.</p>",
+          "desc": "<p>Les données de comparaison servent à évaluer les outils RAG sur des tâches réelles.</p><p>En comparant à l’aveugle les résultats de deux outils RAG, les utilisateurs de CompaRAG expriment leurs préférences, indiquant ainsi quels résultats sont les plus pertinents. Ces données de comparaison peuvent être utilisées pour évaluer la performance relative des outils RAG sur différents types de tâches.</p><p>Il s’agit d’un processus continu, où les préférences des utilisateurs permettent de mieux comprendre les forces et faiblesses de chaque outil RAG.</p>",
           "title": "Les données de préférence ont-elles un effet immédiat pour améliorer les outils RAG ?"
         },
         "2": {
@@ -171,7 +171,7 @@
       "questions": {
         "1": {
           "title": "Pourquoi la latence des outils RAG varie-t-elle ?",
-          "desc": "<p>Chaque outil MCP appelle des services externes (bases de données, API, modèles d’embedding) avec des temps de réponse variables selon la charge et l’infrastructure du fournisseur.</p>"
+          "desc": "<p>Chaque outil RAG appelle des services externes (bases de données, API, modèles d’embedding) avec des temps de réponse variables selon la charge et l’infrastructure du fournisseur.</p>"
         },
         "2": {
           "title": "Comment évaluer le risque de dépendance fournisseur ?",
@@ -193,11 +193,11 @@
         },
         "3": {
           "desc": "<p>Les modèles quantisés sont optimisés pour consommer moins de ressources en simplifiant certains calculs tout en visant la meilleure qualité de réponse.</p><p>La quantisation est une technique d'optimisation qui consiste à réduire la précision des nombres utilisés pour représenter les paramètres d'un modèle d'IA. Cela permet de <strong>diminuer la taille du modèle</strong> et <strong>d'accélérer les calculs</strong>, ce qui est particulièrement avantageux pour l'inférence sur des machines limitées en ressources.</p>",
-          "title": "Qu'est-ce qu'un outil MCP quantisé ?"
+          "title": "Qu'est-ce qu'un outil RAG quantisé ?"
         },
         "4": {
-          "desc": "<p><strong>La capacité d'un outil MCP à traiter plusieurs langues dépend des modèles sous-jacents et des données d'entraînement utilisés, pas du pays d'origine de l'éditeur.</strong> Une surreprésentation de l'anglais peut entraîner des limitations dans d'autres langues.</p>",
-          "title": "Y a-t-il un lien entre la nationalité de l'éditeur d'un outil MCP et sa capacité à traiter plusieurs langues ?"
+          "desc": "<p><strong>La capacité d'un outil RAG à traiter plusieurs langues dépend des modèles sous-jacents et des données d'entraînement utilisés, pas du pays d'origine de l'éditeur.</strong> Une surreprésentation de l'anglais peut entraîner des limitations dans d'autres langues.</p>",
+          "title": "Y a-t-il un lien entre la nationalité de l'éditeur d'un outil RAG et sa capacité à traiter plusieurs langues ?"
         },
         "5": {
           "desc": "<p>Rares sont les éditeurs transparents sur les sources de données utilisées. Ces informations sont souvent confidentielles pour des raisons légales et commerciales.</p>",
@@ -215,18 +215,18 @@
         },
         "2": {
           "desc": "<p>Vous avez posé la question suivante “explique-moi la motion de censure à l'œuvre actuellement en France à l'Assemblée nationale et cite-moi tes sources” et avez été déçu·e des réponses ? C’est normal…</p><p><strong>Les modèles d'IA conversationnels “bruts” ne peuvent pas répondre aux questions sur l'actualité la plus récente.</strong> Ils sont entraînés sur des ensembles de données statiques et ne peuvent pas interagir avec le web ou ouvrir des liens. Ils n'ont pas la capacité de se mettre à jour en temps réel avec les événements qui se déroulent dans le monde. Les informations auxquelles le modèle a accès sont limitées à la date de son dernier entraînement.</p><p>Par conséquent, si vous posez une question sur un fait d’actualité récent, l'outil s'appuiera sur des informations potentiellement obsolètes, risquant de générer des réponses inexactes.</p><p>Dans le cas de Perplexity, Copilot ou ChatGPT, les modèles d’IA conversationnelle dits “bruts” sont associés à d’autres briques technologiques qui permettent de se connecter à internet pour accéder à des informations en temps réel. On parle alors “d’agents conversationnels”.</p>",
-          "title": "Si je pose une question sur l’actualité la plus récente, l’outil MCP peut-il répondre ?"
+          "title": "Si je pose une question sur l’actualité la plus récente, l’outil RAG peut-il répondre ?"
         },
         "3": {
-          "desc": "<p>Si vous intégrez une URL dans une requête, l'outil MCP ne peut pas y accéder directement. Les outils traitent le texte de la requête mais n'ont pas la capacité d'interagir avec le web ou d'ouvrir des liens.</p><p>Par analogie, imaginez un étudiant passant un examen sans accès à internet. Il peut utiliser ses connaissances acquises pour répondre aux questions, mais ne peut pas consulter de sites web.</p>",
-          "title": "Si j’intègre un lien d’URL dans une requête, l’outil MCP peut-il y accéder ?"
+          "desc": "<p>Si vous intégrez une URL dans une requête, l'outil RAG ne peut pas y accéder directement. Les outils traitent le texte de la requête mais n'ont pas la capacité d'interagir avec le web ou d'ouvrir des liens.</p><p>Par analogie, imaginez un étudiant passant un examen sans accès à internet. Il peut utiliser ses connaissances acquises pour répondre aux questions, mais ne peut pas consulter de sites web.</p>",
+          "title": "Si j’intègre un lien d’URL dans une requête, l’outil RAG peut-il y accéder ?"
         },
         "4": {
           "desc": "<p>Il arrive que l'outil perde le fil d'une conversation en raison de sa <strong>fenêtre de contexte limitée.</strong> Cette « fenêtre » représente la quantité d'informations précédentes que l'outil peut retenir. Plus la fenêtre est petite, plus l'outil est susceptible d'oublier des éléments clés, conduisant à des réponses incohérentes.</p>",
           "title": "Pourquoi l’outil perd-il parfois le fil de la conversation ?"
         },
         "5": {
-          "desc": "<p>La formulation des questions, ou « prompts », influence la cohérence de la conversation. Pour obtenir les meilleurs résultats d'un outil MCP, il est essentiel de maîtriser l'art du <em>prompting</em>, c'est-à-dire la formulation des requêtes ou instructions. <strong>La clarté est primordiale</strong>:</p><ul><li>Utilisez un langage simple et direct, en évitant les questions trop longues ou complexes. Décomposez les requêtes en plusieurs questions plus simples pour des réponses plus précises.</li><li><strong>Précisez si besoin des contraintes de formats spécifiques</strong> : Si vous avez besoin d’une réponse dans un certain format (liste, tableau, résumé, etc.), précisez-le dans le prompt. Vous pouvez également préciser les étapes à suivre et les critères de qualité souhaités.</li><li><strong>Spécifiez le rôle du modèle</strong> : Par exemple, commencez par “Agis comme un expert en…” ou “Imagine que tu es un enseignant…” pour orienter le ton et la perspective de la réponse.</li><li><strong>Contextualisez vos questions</strong> : si nécessaire, fournissez des exemples pertinents pour guider le modèle.</li><li><strong>Encouragez le raisonnement</strong>: utilisez l’incitation au raisonnement pas à pas (<em>Chain-of-Thought Prompting</em>) pour demander au modèle d'expliciter son raisonnement, ce qui rend les réponses plus robustes.</li></ul><p>Les modèles conversationnels sont sensibles aux variations de formulation: un langage simple, des questions courtes et une reformulation si nécessaire peuvent aider à guider le modèle vers des réponses pertinentes. Testez et affinez vos prompts pour trouver la formulation la plus efficace !</p>",
+          "desc": "<p>La formulation des questions, ou « prompts », influence la cohérence de la conversation. Pour obtenir les meilleurs résultats d'un outil RAG, il est essentiel de maîtriser l'art du <em>prompting</em>, c'est-à-dire la formulation des requêtes ou instructions. <strong>La clarté est primordiale</strong>:</p><ul><li>Utilisez un langage simple et direct, en évitant les questions trop longues ou complexes. Décomposez les requêtes en plusieurs questions plus simples pour des réponses plus précises.</li><li><strong>Précisez si besoin des contraintes de formats spécifiques</strong> : Si vous avez besoin d’une réponse dans un certain format (liste, tableau, résumé, etc.), précisez-le dans le prompt. Vous pouvez également préciser les étapes à suivre et les critères de qualité souhaités.</li><li><strong>Spécifiez le rôle du modèle</strong> : Par exemple, commencez par “Agis comme un expert en…” ou “Imagine que tu es un enseignant…” pour orienter le ton et la perspective de la réponse.</li><li><strong>Contextualisez vos questions</strong> : si nécessaire, fournissez des exemples pertinents pour guider le modèle.</li><li><strong>Encouragez le raisonnement</strong>: utilisez l’incitation au raisonnement pas à pas (<em>Chain-of-Thought Prompting</em>) pour demander au modèle d'expliciter son raisonnement, ce qui rend les réponses plus robustes.</li></ul><p>Les modèles conversationnels sont sensibles aux variations de formulation: un langage simple, des questions courtes et une reformulation si nécessaire peuvent aider à guider le modèle vers des réponses pertinentes. Testez et affinez vos prompts pour trouver la formulation la plus efficace !</p>",
           "title": "Quelles sont les bonnes pratiques pour prompter ?"
         },
         "6": {
@@ -1395,7 +1395,7 @@
           "title": "Je donne mon avis"
         }
       },
-      "title": "Ne vous fiez pas aux résultats <span {props}>d’un seul outil MCP</span>",
+      "title": "Ne vous fiez pas aux résultats <span {props}>d’un seul outil RAG</span>",
       "tos": {
         "accept": "J'accepte les <a {linkProps}>conditions générales d’utilisation</a>",
         "error": "Vous devez accepter les modalités d'utilisation pour continuer",
@@ -1823,7 +1823,7 @@
         "desc": "En comparant deux outils RAG à l’aveugle sur des tâches réelles, CompaRAG laisse les utilisateurs décider lequel performe le mieux.",
         "diversity": {
           "title": "Risque de dépendance fournisseur",
-          "a": "Sans comparaison objective, on se retrouve captif d’un seul outil MCP, souvent choisi par habitude ou par défaut.",
+          "a": "Sans comparaison objective, on se retrouve captif d’un seul outil RAG, souvent choisi par habitude ou par défaut.",
           "b": "CompaRAG démontre que les outils sont équifinaux : plusieurs peuvent atteindre le même objectif.",
           "c": "En identifiant le meilleur outil pour chaque type de tâche, CompaRAG réduit la dépendance à un fournisseur unique.",
           "d": "<strong>Le résultat : des choix éclairés, fondés sur la performance réelle plutôt que sur le marketing.</strong>"
