@@ -10,6 +10,7 @@ from .actions import (
     archive_not_archived,
     archive_spam,
     archive_unknown_llms,
+    llm_analyze,
     rename_llm,
 )
 from .lint import lint, log_archived
@@ -27,6 +28,7 @@ cli_db = App(name="db", help="Database related utilities.")
 cli_db.command(lint)
 cli_db.command(log_archived)
 cli_db.command(rename_llm)
+cli_db.command(llm_analyze)
 cli_db.command(cli_archive)
 
 
