@@ -107,48 +107,17 @@
   </section>
 
   <section class="fr-container mb-20 py-8!">
-    <h2 class="fr-h4 mb-4! text-center">{m['datasets.reuse.title']()}</h2>
-    <p class="mb-10! px-10! text-grey text-center">{m['datasets.reuse.desc']()}</p>
-
-    <div class="fr-container cg-border rounded-2xl bg-light-grey p-5! md:p-10!">
-      <div class="pb-8 md:flex">
-        <img
-          src="/datasets/bunka-ai-logo.jpg"
-          class="mb-2 rounded-2xl md:mr-8 md:mb-0 block h-[100px] w-[100px]"
-          alt="Bunka.ai"
-        />
-        <p class="mb-0!">{m['datasets.reuse.bunka.desc']()}</p>
-      </div>
-
-      <div>
-        <div class="gap-5 md:grid-cols-2 md:grid-rows-1 md:gap-10 grid">
-          {#each bunkaCards as card, i (i)}
-            <div
-              class="fr-container rounded-xl bg-very-light-grey px-3! py-5! md:px-10! md:py-8! flex flex-col"
-            >
-              <div class="px-2 md:p-0">
-                <img src={card.img} class="fr-responsive-img" alt="" aria-hidden="true" />
-                <p class="m-0! py-5! text-sm! text-grey">{card.desc}</p>
-              </div>
-              <Link
-                button
-                href={card.link}
-                text={card.linkTitle}
-                class="mt-auto w-full! text-center!"
-              />
-            </div>
-          {/each}
-        </div>
-
-        <div class="mt-9 text-center">
-          <Link
-            href="https://bunka.ai/fr/articles/french-ai-usage-study"
-            text={m['datasets.reuse.bunka.method']()}
-            class="text-center"
-            native={false}
-          />
-        </div>
-      </div>
+    <div class="fr-container cg-border rounded-2xl bg-light-grey p-8! md:p-14! text-center">
+      <p class="fr-h4 mb-4!">🤝 Vous avez réutilisé ce jeu de données ?</p>
+      <p class="mb-8! text-grey max-w-2xl mx-auto">
+        Ce jeu de données est libre d'accès et conçu pour être réutilisé. Que vous soyez chercheur, développeur ou entreprise, nous vous invitons à explorer ces données et à partager vos analyses, visualisations ou modèles avec la communauté.
+      </p>
+      <Link
+        button
+        href="mailto:{i18nData.contact}"
+        text="Partagez votre réutilisation"
+        class="sm:w-auto! w-full!"
+      />
     </div>
   </section>
 </main>
