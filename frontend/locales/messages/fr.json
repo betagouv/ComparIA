@@ -97,7 +97,7 @@
   },
   "datasets": {
     "access": {
-      "catch": "Editeurs d’outils MCP, chercheurs, chercheuses, entreprises, à vous de jouer !",
+      "catch": "Editeurs d’outils RAG, chercheurs, chercheuses, entreprises, à vous de jouer !",
       "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
       "repos": {
         "conversations": {
@@ -132,7 +132,7 @@
       "desc": "Exemples de réutilisation des jeux de données CompaRAG",
       "title": "Comment ces données sont-elles utilisées ?"
     },
-    "catch": "Editeurs d'outils MCP, chercheurs, chercheuses, entreprises, à vous de jouer !"
+    "catch": "Editeurs d'outils RAG, chercheurs, chercheuses, entreprises, à vous de jouer !"
   },
   "errors": {
     "404": {
@@ -153,15 +153,15 @@
     "datasets": {
       "questions": {
         "1": {
-          "desc": "<p>Les données de comparaison servent à évaluer les outils MCP sur des tâches réelles.</p><p>En comparant à l’aveugle les résultats de deux outils MCP, les utilisateurs de CompaRAG expriment leurs préférences, indiquant ainsi quels résultats sont les plus pertinents. Ces données de comparaison peuvent être utilisées pour évaluer la performance relative des outils MCP sur différents types de tâches.</p><p>Il s’agit d’un processus continu, où les préférences des utilisateurs permettent de mieux comprendre les forces et faiblesses de chaque outil MCP.</p>",
-          "title": "Les données de préférence ont-elles un effet immédiat pour améliorer les outils MCP ?"
+          "desc": "<p>Les données de comparaison servent à évaluer les outils RAG sur des tâches réelles.</p><p>En comparant à l’aveugle les résultats de deux outils RAG, les utilisateurs de CompaRAG expriment leurs préférences, indiquant ainsi quels résultats sont les plus pertinents. Ces données de comparaison peuvent être utilisées pour évaluer la performance relative des outils RAG sur différents types de tâches.</p><p>Il s’agit d’un processus continu, où les préférences des utilisateurs permettent de mieux comprendre les forces et faiblesses de chaque outil MCP.</p>",
+          "title": "Les données de préférence ont-elles un effet immédiat pour améliorer les outils RAG ?"
         },
         "2": {
-          "desc": "<p>La spécificité des données collectées sur la plateforme CompaRAG est qu’elles correspondent à des tâches réelles des utilisateurs. Ces données reflètent des préférences humaines dans des contextes métier précis. Elles permettent d’évaluer les outils MCP sur leur capacité à répondre aux besoins concrets des utilisateurs.</p>",
+          "desc": "<p>La spécificité des données collectées sur la plateforme CompaRAG est qu’elles correspondent à des tâches réelles des utilisateurs. Ces données reflètent des préférences humaines dans des contextes métier précis. Elles permettent d’évaluer les outils RAG sur leur capacité à répondre aux besoins concrets des utilisateurs.</p>",
           "title": "Pourquoi les données de comparaison collectées sur CompaRAG ont-elles de la valeur ?"
         },
         "3": {
-          "desc": "<p>CompaRAG se positionne comme un outil d’évaluation comparative des outils MCP, axé sur la performance réelle mesurée par les préférences des utilisateurs, se distinguant ainsi d’autres outils d’évaluation MCP par son approche en aveugle et sa mesure centrée sur les cas d’usage réels.</p>",
+          "desc": "<p>CompaRAG se positionne comme un outil d’évaluation comparative des outils RAG, axé sur la performance réelle mesurée par les préférences des utilisateurs, se distinguant ainsi d’autres outils d’évaluation MCP par son approche en aveugle et sa mesure centrée sur les cas d’usage réels.</p>",
           "title": "Quelle est la spécificité de CompaRAG par rapport à d’autres outils d’évaluation MCP ?"
         }
       },
@@ -170,25 +170,25 @@
     "ecology": {
       "questions": {
         "1": {
-          "title": "Pourquoi la latence des outils MCP varie-t-elle ?",
+          "title": "Pourquoi la latence des outils RAG varie-t-elle ?",
           "desc": "<p>Chaque outil MCP appelle des services externes (bases de données, API, modèles d’embedding) avec des temps de réponse variables selon la charge et l’infrastructure du fournisseur.</p>"
         },
         "2": {
           "title": "Comment évaluer le risque de dépendance fournisseur ?",
-          "desc": "<p>CompaRAG vous permet de tester plusieurs outils MCP sur la même tâche et de comparer leur fiabilité. Un outil performant sur vos cas d’usage réels réduit le risque de dépendance à un fournisseur unique.</p>"
+          "desc": "<p>CompaRAG vous permet de tester plusieurs outils RAG sur la même tâche et de comparer leur fiabilité. Un outil performant sur vos cas d’usage réels réduit le risque de dépendance à un fournisseur unique.</p>"
         }
       },
-      "title": "Performance et fiabilité des outils MCP",
-      "desc": "CompaRAG mesure la performance relative des outils MCP selon les préférences des utilisateurs : latence de réponse, fiabilité et variance des résultats selon les tâches."
+      "title": "Performance et fiabilité des outils RAG",
+      "desc": "CompaRAG mesure la performance relative des outils RAG selon les préférences des utilisateurs : latence de réponse, fiabilité et variance des résultats selon les tâches."
     },
     "models": {
       "questions": {
         "1": {
-          "desc": "<p>Nous choisissons les outils MCP en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des outils open source et de natures différentes.</p>",
-          "title": "Comment choisissez-vous les outils MCP présents dans le comparateur ?"
+          "desc": "<p>Nous choisissons les outils RAG en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des outils open source et de natures différentes.</p>",
+          "title": "Comment choisissez-vous les outils RAG présents dans le comparateur ?"
         },
         "2": {
-          "desc": "<p>L’accès aux outils MCP est pris en charge par le projet. Nous intégrons les outils via le protocole MCP et nous réglons les coûts à l’usage.</p>",
+          "desc": "<p>L’accès aux outils RAG est pris en charge par le projet. Nous intégrons les outils via le protocole MCP et nous réglons les coûts à l’usage.</p>",
           "title": "Comment parvenez-vous à rendre ce service gratuit ?"
         },
         "3": {
@@ -201,7 +201,7 @@
         },
         "5": {
           "desc": "<p>Rares sont les éditeurs transparents sur les sources de données utilisées. Ces informations sont souvent confidentielles pour des raisons légales et commerciales.</p>",
-          "title": "Peut-on connaître les sources de données utilisées par les outils MCP ?"
+          "title": "Peut-on connaître les sources de données utilisées par les outils RAG ?"
         }
       },
       "title": "Outils MCP"
@@ -210,8 +210,8 @@
     "usage": {
       "questions": {
         "1": {
-          "desc": "<p>Les outils MCP actuels sont <strong>incapables de citer leurs sources</strong>. Ils génèrent des réponses à partir de leurs données d'entraînement sans tracer l'origine des informations.</p><p>Cependant, des techniques comme la <strong>Génération Augmentée par Récupération (RAG)</strong> permettent aux outils d'accéder à des bases de connaissances externes et de <strong>fournir des informations contextualisées en citant les sources</strong>.</p>",
-          "title": "Les outils MCP peuvent-ils citer leurs sources ?"
+          "desc": "<p>Les outils RAG actuels sont <strong>incapables de citer leurs sources</strong>. Ils génèrent des réponses à partir de leurs données d'entraînement sans tracer l'origine des informations.</p><p>Cependant, des techniques comme la <strong>Génération Augmentée par Récupération (RAG)</strong> permettent aux outils d'accéder à des bases de connaissances externes et de <strong>fournir des informations contextualisées en citant les sources</strong>.</p>",
+          "title": "Les outils RAG peuvent-ils citer leurs sources ?"
         },
         "2": {
           "desc": "<p>Vous avez posé la question suivante “explique-moi la motion de censure à l'œuvre actuellement en France à l'Assemblée nationale et cite-moi tes sources” et avez été déçu·e des réponses ? C’est normal…</p><p><strong>Les modèles d'IA conversationnels “bruts” ne peuvent pas répondre aux questions sur l'actualité la plus récente.</strong> Ils sont entraînés sur des ensembles de données statiques et ne peuvent pas interagir avec le web ou ouvrir des liens. Ils n'ont pas la capacité de se mettre à jour en temps réel avec les événements qui se déroulent dans le monde. Les informations auxquelles le modèle a accès sont limitées à la date de son dernier entraînement.</p><p>Par conséquent, si vous posez une question sur un fait d’actualité récent, l'outil s'appuiera sur des informations potentiellement obsolètes, risquant de générer des réponses inexactes.</p><p>Dans le cas de Perplexity, Copilot ou ChatGPT, les modèles d’IA conversationnelle dits “bruts” sont associés à d’autres briques technologiques qui permettent de se connecter à internet pour accéder à des informations en temps réel. On parle alors “d’agents conversationnels”.</p>",
@@ -244,8 +244,8 @@
           "desc": "<p>Oui, l’internationalisation de CompaRAG est en cours. Nous démarrons avec une extension à trois pays pilotes : la Lituanie, la Suède et le Danemark. Cette première phase permettra de tester l’approche et d’adapter l’interface aux différents contextes linguistiques et culturels européens. Le cercle pourra ensuite s’élargir à d’autres langues européennes.</p>"
         },
         "2": {
-          "title": "Quels sont les avantages d'une plateforme européenne de comparaison d'outils MCP ?",
-          "desc": "<p>Une plateforme européenne de comparaison d’outils MCP permet de collecter des données de préférence reflétant les usages réels des utilisateurs européens, d’assurer une meilleure représentation des langues et cultures européennes, et de garantir la conformité aux réglementations européennes (RGPD, AI Act). Elle favorise l’émergence d’un écosystème d’outils IA compétitif et autonome en Europe.</p>"
+          "title": "Quels sont les avantages d'une plateforme européenne de comparaison d'outils RAG ?",
+          "desc": "<p>Une plateforme européenne de comparaison d’outils RAG permet de collecter des données de préférence reflétant les usages réels des utilisateurs européens, d’assurer une meilleure représentation des langues et cultures européennes, et de garantir la conformité aux réglementations européennes (RGPD, AI Act). Elle favorise l’émergence d’un écosystème d’outils IA compétitif et autonome en Europe.</p>"
         }
       }
     }
@@ -1329,7 +1329,7 @@
     }
   },
   "header": {
-    "banner": "🏆 Comparez vos outils MCP en aveugle — votez et consultez le classement !",
+    "banner": "🏆 Comparez vos outils RAG en aveugle — votez et consultez le classement !",
     "chatbot": {
       "newDiscussion": "Nouvelle discussion",
       "step": "Étape",
@@ -1352,13 +1352,13 @@
     "logoAlt": "République Française",
     "menu": "Menu",
     "startDiscussion": "Commencer à discuter",
-    "subtitle": "Le comparateur d’outils MCP",
+    "subtitle": "Le comparateur d’outils RAG",
     "title": "CompaRAG",
     "votes": {
       "count": "{count} votes",
       "legend": "Légende",
       "objective": "Obj : {count}",
-      "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données CompaRAG mis à disposition librement pour évaluer les outils MCP.<br />Ce commun numérique contribue à une meilleure <strong>évaluation objective des outils MCP.</strong>"
+      "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données CompaRAG mis à disposition librement pour évaluer les outils RAG.<br />Ce commun numérique contribue à une meilleure <strong>évaluation objective des outils RAG.</strong>"
     }
   },
   "home": {
@@ -1378,20 +1378,20 @@
       "title": "Vos questions les plus courantes"
     },
     "intro": {
-      "desc": "Comparez deux outils MCP à l’aveugle et évaluez leurs résultats",
+      "desc": "Comparez deux outils RAG à l’aveugle et évaluez leurs résultats",
       "steps": {
-        "a11yDesc": "1. Je compare deux outils MCP anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'évaluation des outils MCP. 3. Les outils sont démasqués : apprenez-en plus sur les outils MCP et leurs caractéristiques.",
+        "a11yDesc": "1. Je compare deux outils RAG anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'évaluation des outils RAG. 3. Les outils sont démasqués : apprenez-en plus sur les outils RAG et leurs caractéristiques.",
         "one": {
           "desc": "Échangez aussi longtemps que vous le souhaitez",
-          "title": "Je compare deux outils MCP"
+          "title": "Je compare deux outils RAG"
         },
         "three": {
-          "desc": "Apprenez-en plus sur les outils MCP et leurs caractéristiques",
+          "desc": "Apprenez-en plus sur les outils RAG et leurs caractéristiques",
           "title": "Les outils sont démasqués !"
         },
         "title": "Comment ça marche",
         "two": {
-          "desc": "Vous contribuez ainsi à l'évaluation des outils MCP",
+          "desc": "Vous contribuez ainsi à l'évaluation des outils RAG",
           "title": "Je donne mon avis"
         }
       },
@@ -1404,7 +1404,7 @@
     },
     "origin": {
       "project": {
-        "desc": "CompaRAG est un spinoff de <strong>comparIA</strong>, service numérique conçu et développé dans le cadre d’une start-up d’État portée par le <strong>ministère de la Culture</strong> et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM). CompaRAG étend cette initiative en l’orientant vers la comparaison d’outils MCP sur des tâches réelles.",
+        "desc": "CompaRAG est un spinoff de <strong>comparIA</strong>, service numérique conçu et développé dans le cadre d’une start-up d’État portée par le <strong>ministère de la Culture</strong> et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM). CompaRAG étend cette initiative en l’orientant vers la comparaison d’outils RAG sur des tâches réelles.",
         "title": "Qui est à l’origine du projet ?"
       },
       "team": {
@@ -1419,12 +1419,12 @@
         "title": "Former et sensibiliser"
       },
       "explore": {
-        "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des outils MCP",
-        "title": "Explorer les outils MCP"
+        "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des outils RAG",
+        "title": "Explorer les outils RAG"
       },
       "title": "Les usages spécifiques de CompaRAG",
       "use": {
-        "desc": "Développeurs, architectes, équipes produit… accédez aux données de comparaison CompaRAG pour évaluer les outils MCP sur vos propres critères.",
+        "desc": "Développeurs, architectes, équipes produit… accédez aux données de comparaison CompaRAG pour évaluer les outils RAG sur vos propres critères.",
         "title": "Exploiter les données"
       }
     },
@@ -1432,9 +1432,9 @@
       "compare": {
         "alt": "Comparer",
         "desc": "Soumettez la même tâche à deux outils et choisissez le meilleur résultat",
-        "title": "Comparer les résultats de différents outils MCP"
+        "title": "Comparer les résultats de différents outils RAG"
       },
-      "desc": "CompaRAG est un outil gratuit qui permet de comparer objectivement les outils MCP et de découvrir leurs forces respectives.",
+      "desc": "CompaRAG est un outil gratuit qui permet de comparer objectivement les outils RAG et de découvrir leurs forces respectives.",
       "measure": {
         "alt": "Mesurer",
         "desc": "Découvrez quel outil répond le mieux à vos besoins métier",
@@ -1442,8 +1442,8 @@
       },
       "test": {
         "alt": "Tester",
-        "desc": "Testez différents outils MCP, quel que soit leur fournisseur, sur vos propres cas d’usage.",
-        "title": "Tester au même endroit les outils MCP de l’écosystème"
+        "desc": "Testez différents outils RAG, quel que soit leur fournisseur, sur vos propres cas d’usage.",
+        "title": "Tester au même endroit les outils RAG de l’écosystème"
       },
       "title": "À quoi sert CompaRAG ?"
     },
@@ -1456,11 +1456,11 @@
           "title": "Données ouvertes"
         },
         "finetune": {
-          "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour évaluer et améliorer les outils MCP sur des cas d’usage réels.",
+          "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour évaluer et améliorer les outils RAG sur des cas d’usage réels.",
           "title": "Outils MCP évalués"
         },
         "prefs": {
-          "desc": "Après avoir soumis une tâche aux deux outils MCP, vous indiquez lequel a fourni le meilleur résultat selon des critères tels que la pertinence ou l’utilité de la réponse.",
+          "desc": "Après avoir soumis une tâche aux deux outils RAG, vous indiquez lequel a fourni le meilleur résultat selon des critères tels que la pertinence ou l’utilité de la réponse.",
           "title": "Vos préférences"
         }
       },
@@ -1661,22 +1661,22 @@
     "comparator": {
       "challenges": {
         "bias": {
-          "desc": "Comparer objectivement les outils MCP sur des tâches réelles pour identifier les outils les plus fiables selon les cas d’usage.",
-          "title": "Fiabilité variable selon les fournisseurs d’outils MCP"
+          "desc": "Chaque outil RAG excelle sur certains types de tâches de connaissance. Identifiez celui qui répond le mieux à vos besoins réels : recherche documentaire, résumé, extraction ou questions-réponses.",
+          "title": "Pertinence selon la tâche de connaissance"
         },
         "impacts": {
-          "desc": "Évaluer plusieurs outils MCP sur la même tâche pour réduire le risque de dépendance à un fournisseur unique et faciliter la portabilité.",
+          "desc": "Évaluer plusieurs outils RAG sur la même tâche pour réduire le risque de dépendance à un fournisseur unique et faciliter la portabilité.",
           "title": "Dépendance fournisseur et portabilité des outils"
         },
         "pluralism": {
-          "desc": "Mesurer la variance de performance des outils MCP selon les types de tâches pour choisir l’outil le mieux adapté à chaque besoin.",
-          "title": "Variance de performance selon les cas d’usage"
+          "desc": "Les performances des outils RAG varient fortement selon qu’il s’agit de questions factuelles, de synthèse ou de recherche de sources. CompaRAG vous aide à mesurer ces écarts.",
+          "title": "Variance selon le type de requête de connaissance"
         },
         "thinking": {
-          "desc": "Inciter au questionnement critique sur la place de l’IA générative dans les pratiques personnelles et professionnelles (éducation, travail).",
-          "title": "Esprit critique et questions sociétales"
+          "desc": "Soumettez vos tâches de connaissance à deux outils RAG simultanément et découvrez lequel cite mieux ses sources, répond avec plus de précision ou s’adapte le mieux à votre contexte.",
+          "title": "Trouver l’outil RAG adapté à votre besoin"
         },
-        "title": "L’application développée répond à plusieurs enjeux"
+        "title": "Quel outil RAG pour vos tâches de connaissance ?"
       },
       "cta": "Accéder au comparateur",
       "europe": {
@@ -1687,7 +1687,7 @@
       },
       "screenshotAlt": "Capture d’écran de l’arène CompaRAG, avec la question initiale, les deux résultats des outils et les boutons de vote.",
       "tabLabel": "Le comparateur",
-      "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
+      "title": "Le comparateur aide à identifier <span {props}>quel outil RAG</span> répond le mieux à vos <span {props}>besoins en traitement de la connaissance</span> — recherche documentaire, questions-réponses factuelles, extraction d'information et <span {props}>citation de sources</span>."
     },
     "faq": {
       "tabLabel": "FAQ"
@@ -1810,7 +1810,7 @@
       "alignment": {
         "alignment": {
           "title": "Comparaison en aveugle",
-          "a": "L’utilisateur soumet une tâche. Deux outils MCP y répondent simultanément, sans que leurs identités soient révélées.",
+          "a": "L’utilisateur soumet une tâche. Deux outils RAG y répondent simultanément, sans que leurs identités soient révélées.",
           "b": "L’utilisateur lit les deux résultats et vote pour le meilleur — ou déclare une égalité.",
           "c": "<strong>Les identités des outils sont révélées après le vote, éliminant tout biais de préférence de marque.</strong>"
         },
@@ -1820,7 +1820,7 @@
           "b": "Ces données permettent de calculer un classement statistiquement robuste basé sur le modèle Bradley-Terry.",
           "c": "Les jeux de données sont publiés en open data pour bénéficier à l’ensemble de l’écosystème MCP."
         },
-        "desc": "En comparant deux outils MCP à l’aveugle sur des tâches réelles, CompaRAG laisse les utilisateurs décider lequel performe le mieux.",
+        "desc": "En comparant deux outils RAG à l’aveugle sur des tâches réelles, CompaRAG laisse les utilisateurs décider lequel performe le mieux.",
         "diversity": {
           "title": "Risque de dépendance fournisseur",
           "a": "Sans comparaison objective, on se retrouve captif d’un seul outil MCP, souvent choisi par habitude ou par défaut.",
@@ -1829,17 +1829,17 @@
           "d": "<strong>Le résultat : des choix éclairés, fondés sur la performance réelle plutôt que sur le marketing.</strong>"
         },
         "english": {
-          "title": "Peu de données sur les outils MCP",
+          "title": "Peu de données sur les outils RAG",
           "a": "L’écosystème MCP est jeune. Les évaluations comparatives manquent, surtout sur des tâches en langue française ou dans des contextes métier spécifiques.",
           "b": "CompaRAG permet de collecter ces données directement auprès des utilisateurs, dans leurs contextes réels.",
-          "c": "Chaque comparaison enrichit une base de référence unique sur les performances des outils MCP."
+          "c": "Chaque comparaison enrichit une base de référence unique sur les performances des outils RAG."
         },
         "title": "Comment CompaRAG répond à ce problème ?"
       },
       "diversity": {
         "stereotypes": {
-          "title": "Des milliers d’outils MCP disponibles",
-          "desc": "Le nombre d’outils MCP explose. Chaque semaine, de nouveaux outils promettent d’accomplir les mêmes tâches mieux que les précédents. Il est impossible de tous les évaluer manuellement."
+          "title": "Des milliers d’outils RAG disponibles",
+          "desc": "Le nombre d’outils RAG explose. Chaque semaine, de nouveaux outils promettent d’accomplir les mêmes tâches mieux que les précédents. Il est impossible de tous les évaluer manuellement."
         },
         "english": {
           "title": "Des cas d’usage infiniment variés",
@@ -1851,13 +1851,13 @@
         }
       },
       "tabLabel": "Le problème initial",
-      "title": "La prolifération des outils MCP : lequel choisir ?"
+      "title": "La prolifération des outils RAG : lequel choisir ?"
     },
     "title": "Tout savoir sur le comparateur"
   },
   "ranking": {
     "energy": {
-      "desc": "Classement des outils MCP selon leur performance mesurée sur les tâches soumises par les utilisateurs. Inclut la latence médiane et le taux de fiabilité.",
+      "desc": "Classement des outils RAG selon leur performance mesurée sur les tâches soumises par les utilisateurs. Inclut la latence médiane et le taux de fiabilité.",
       "tabLabel": "Performance",
       "title": "Performance des outils",
       "views": {
@@ -2024,8 +2024,8 @@
       "totalModels": "Total modèles :",
       "totalVotes": "Total votes :"
     },
-    "title": "Des votes… au classement des outils MCP",
-    "desc": "Merci pour vos contributions !<br> Le classement <strong>CompaRAG</strong> repose sur l’ensemble des votes issus de la <strong>comparaison à l’aveugle</strong> des outils MCP.<br> Construit pour évaluer objectivement les outils MCP, le classement est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>.<br> Le classement CompaRAG reflète les <strong>préférences des utilisateurs</strong> sur leurs propres tâches."
+    "title": "Des votes… au classement des outils RAG",
+    "desc": "Merci pour vos contributions !<br> Le classement <strong>CompaRAG</strong> repose sur l’ensemble des votes issus de la <strong>comparaison à l’aveugle</strong> des outils RAG.<br> Construit pour évaluer objectivement les outils RAG, le classement est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>.<br> Le classement CompaRAG reflète les <strong>préférences des utilisateurs</strong> sur leurs propres tâches."
   },
   "reveal": {
     "equivalent": {
@@ -2098,8 +2098,8 @@
     }
   },
   "seo": {
-    "desc": "CompaRAG est un outil permettant de comparer à l’aveugle différents outils MCP pour évaluer leur performance sur une même tâche.",
-    "title": "CompaRAG, le comparateur d’outils MCP",
+    "desc": "CompaRAG est un outil permettant de comparer à l’aveugle différents outils RAG pour évaluer leur performance sur une même tâche.",
+    "title": "CompaRAG, le comparateur d’outils RAG",
     "titles": {
       "accessibilite": "Déclaration d’accessibilité",
       "arene": "Discussion",
@@ -2135,7 +2135,7 @@
     },
     "newComparison": "Nouvelle comparaison",
     "form": {
-      "title": "Comparez deux outils MCP à l’aveugle",
+      "title": "Comparez deux outils RAG à l’aveugle",
       "taskLabel": "Décrivez la tâche",
       "goalLabel": "Objectif",
       "submit": "Comparer les outils",
@@ -2242,7 +2242,7 @@
     "privacy": "Ne communiquez pas d’informations personnelles comme votre nom, prénom ou adresse.",
     "title": "Bienvenue sur CompaRAG !",
     "tos": {
-      "desc": "Les comparaisons et les votes que vous effectuez sur CompaRAG sont utilisés de manière anonyme pour constituer des données de performance des outils MCP.",
+      "desc": "Les comparaisons et les votes que vous effectuez sur CompaRAG sont utilisés de manière anonyme pour constituer des données de performance des outils RAG.",
       "moreInfos": "En savoir plus sur le projet."
     },
     "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
