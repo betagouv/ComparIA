@@ -60,9 +60,12 @@ export default defineConfig({
   },
   shortcuts: [
     {
-      'cg-border': 'border-1 border-[--grey-925-125] rounded-xl',
-      'c-bot-disk-a': 'w-[26px] h-[26px] rounded-full bg-purple',
-      'c-bot-disk-b': 'w-[26px] h-[26px] rounded-full bg-orange'
+      'cg-border': 'border-1 border-[--grey-925-125]',
+      'c-bot-disk-a': 'w-[26px] h-[26px] bg-purple',
+      'c-bot-disk-b': 'w-[26px] h-[26px] bg-orange',
+      'mistral-hero': 'font-[400] leading-[1.0] tracking-[-2.05px]',
+      'mistral-card': 'bg-[#fffaeb] shadow-[rgba(127,99,21,0.12)_-8px_16px_39px,rgba(127,99,21,0.10)_-33px_64px_72px]',
+      'mistral-section': 'bg-[#fffaeb] py-[80px]'
     }
   ],
   safelist: [

@@ -47,28 +47,12 @@
         >
           <div class="fr-header__brand-top w-auto!">
             <div class="fr-header__logo">
-              {#if locale === 'fr' || locale === 'en'}
-                <p class="fr-logo">
-                  République<br />Française
-                </p>
-              {:else if locale === 'da'}
-                <img
-                  src="/orgs/countries/da-light.png"
-                  alt={m['header.logoAlt']()}
-                  class="max-h-[55px] dark:hidden"
-                />
-                <img
-                  src="/orgs/countries/da-dark.png"
-                  alt={m['header.logoAlt']()}
-                  class="hidden max-h-[55px] dark:block"
-                />
-              {:else}
-                <img
-                  src={`/orgs/countries/${locale}.png`}
-                  alt={m['header.logoAlt']()}
-                  class="max-h-[68px]"
-                />
-              {/if}
+              <span
+                style="font-size:1.25rem;font-weight:400;letter-spacing:-0.04em;color:#1f1f1f;font-family:Arial,sans-serif;line-height:1;"
+                aria-label="CompaRAG"
+              >
+                Compa<span style="color:#fa520f;">RAG</span>
+              </span>
             </div>
           </div>
           <div

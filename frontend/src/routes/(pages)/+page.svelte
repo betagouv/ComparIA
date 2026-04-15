@@ -146,6 +146,7 @@
 </script>
 
 <main id="content" class="">
+  <div class="mistral-block-bar"></div>
   <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
     <div
       class="fr-container gap-20 md:flex-row md:items-center md:gap-0 flex max-w-[1070px]! flex-col"
