@@ -15,8 +15,6 @@ from .actions import (
 )
 from .lint import lint, log_archived
 
-configure_logger(logging.getLogger("comparia.database"))
-
 cli_archive = App(name="archive", help="Individual archival utilities.")
 cli_archive.command(archive_spam, name="spam")
 cli_archive.command(archive_corrupted, name="corrupted")
@@ -33,4 +31,5 @@ cli_db.command(cli_archive)
 
 
 if __name__ == "__main__":
+    configure_logger(logging.getLogger("comparia"))
     cli_db()
