@@ -294,7 +294,8 @@ def process_conversations(db_params, analyzer: Config):
                 COUNT(*) FILTER (WHERE NOT pii_analyzed AND NOT postprocess_failed) AS pii_not_analyzed,
                 COUNT(*) FILTER (WHERE pii_analyzed AND NOT postprocess_failed) AS pii_analyzed,
                 COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
-            FROM conversations;
+            FROM conversations
+            WHERE archived = FALSE;
             """
         )
         (
@@ -356,6 +357,7 @@ def process_conversations(db_params, analyzer: Config):
             WHERE 
                 (pii_analyzed = FALSE OR short_summary IS NULL)
                 AND postprocess_failed = FALSE
+                AND archived = FALSE
             ;
             """
         )
