@@ -18,7 +18,7 @@ from .lint import lint, log_archived
 configure_logger(logging.getLogger("comparia.database"))
 
 cli_archive = App(name="archive", help="Individual archival utilities.")
-# cli_archive.command(archive_spam, name="spam") FIXME rm? done in topic_pii.py
+cli_archive.command(archive_spam, name="spam")
 cli_archive.command(archive_corrupted, name="corrupted")
 cli_archive.command(archive_unknown_llms, name="unknown_llms")
 cli_archive.command(archive_duplicate, name="duplicate")

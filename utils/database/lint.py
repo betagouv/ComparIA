@@ -1,6 +1,6 @@
 import logging
 from datetime import date, datetime, timedelta
-from typing import Literal, TypedDict
+from typing import Literal
 
 import numpy as np
 import polars as pl
@@ -15,13 +15,7 @@ from .actions import (
     archive_spam,
     archive_unknown_llms,
 )
-from .utils import (
-    TABLE_NAMES,
-    ArchivedReason,
-    TableName,
-    reset_archived,
-    set_not_archived,
-)
+from .utils import TABLE_NAMES, reset_archived, set_not_archived
 
 logger = logging.getLogger("comparia.database")
 
@@ -164,7 +158,7 @@ def lint(*, fix: bool = False, hard: bool = False):
     if hard:
         reset_archived()
 
-    # archive_spam(commit=fix) FIXME rm? done in topic_pii.py
+    archive_spam(commit=fix)
     archive_or_fix_country_portal(commit=fix)
     archive_corrupted(commit=fix)
     archive_unknown_llms(commit=fix and hard)
