@@ -98,7 +98,7 @@
   "datasets": {
     "access": {
       "catch": "Editeurs d’outils RAG, chercheurs, chercheuses, entreprises, à vous de jouer !",
-      "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
+      "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>Hugging Face</a>.",
       "repos": {
         "conversations": {
           "desc": "Ensemble des réponses et des questions posées",

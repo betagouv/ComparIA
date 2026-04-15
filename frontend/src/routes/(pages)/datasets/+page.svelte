@@ -65,7 +65,7 @@
             {@html sanitize(
               m['datasets.access.desc']({
                 linkProps: externalLinkProps({
-                  href: 'https://www.data.gouv.fr/datasets/comparag/',
+                  href: 'https://huggingface.co/datasets/ArthurSrz/comparag-tool-votes',
                   class: 'text-primary!'
                 })
               })
