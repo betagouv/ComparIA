@@ -52,4 +52,13 @@ if [ -d "$MIGRATIONS_DIR" ]; then
     done
 fi
 
+# Replace hardcoded k8s roles with POSTGRES_USER if set
+if [ -n "${POSTGRES_USER}" ]; then
+    sed -i \
+        -e "s/\"languia-dev\"/\"${POSTGRES_USER}\"/g" \
+        -e "s/\"languia-prd\"/\"${POSTGRES_USER}\"/g" \
+        -e "s/\"languia\"/\"${POSTGRES_USER}\"/g" \
+        "$OUTPUT_FILE"
+fi
+
 echo "Successfully generated: $OUTPUT_FILE"
