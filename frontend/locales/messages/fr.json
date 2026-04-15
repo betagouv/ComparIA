@@ -204,7 +204,7 @@
           "title": "Peut-on connaître les sources de données utilisées par les outils RAG ?"
         }
       },
-      "title": "Outils MCP"
+      "title": "Outils RAG"
     },
     "title": "Foire aux questions",
     "usage": {
@@ -1457,7 +1457,7 @@
         },
         "finetune": {
           "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour évaluer et améliorer les outils RAG sur des cas d’usage réels.",
-          "title": "Outils MCP évalués"
+          "title": "Outils RAG évalués"
         },
         "prefs": {
           "desc": "Après avoir soumis une tâche aux deux outils RAG, vous indiquez lequel a fourni le meilleur résultat selon des critères tels que la pertinence ou l’utilité de la réponse.",
