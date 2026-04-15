@@ -403,5 +403,10 @@ def process_conversations(db_params, analyzer: Config):
 
 
 def llm_analyze():
+    """
+    Analyze not yet analyzed and archived=FALSE conversations.
+
+    Will analyze if conversations contains pii or spam, define some categories, keywords, summary and language.
+    """
     analyzer = Config()
     process_conversations(settings.COMPARIA_DB_URI, analyzer)

@@ -46,6 +46,8 @@ ARCHIVED_QUERY = """
 
 def log_archived(
     *,
+    days: int = 0,
+    compare: bool = False,
     order_by: Literal[
         "archived_reason",
         "count",
@@ -57,11 +59,20 @@ def log_archived(
         "last_n_days_count_percent",
     ] = "count",
     descending: bool = True,
-    days: int = 0,
-    compare: bool = False,
 ) -> None:
     """
     Log archived data infos.
+
+    Parameters
+    ----------
+    days
+        Display only archived data infos with timestamp within the last n days.
+    compare
+        Display global and last n days archived data infos alongside.
+    order_by
+        Column to sort by.
+    descending: bool
+        Sort in descending order.
     """
     last_n_date = datetime.combine(date.today(), datetime.min.time()) - timedelta(
         days=days
@@ -149,10 +160,20 @@ def log_archived(
 def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = False):
     """
     Run database linting.
+    Checks for spam, corrupted data, odd country_portal, unknown LLMs,
+    duplicates and not archived votes or reaction that should be.
+    Only logs what should be archived if no arg given.
 
-    Will check for spam, corrupted data, unknown LLMs, duplicates and not archived votes or reaction that should be.
-    Will only log what should be archived, use `--fix` to actually archive data.
-    Will only check not already analyzed data, use `--hard` to analyze/fix all data except already archived data.
+    Parameters
+    ----------
+    fix:
+        Actually archive data by setting `archived`, `archive_reason` and
+        `archived_at` fields on not already analyzed data if not given `--hard`.
+    hard:
+        Resets `archived=FALSE` to `NULL` before running checks to recheck
+        everything excepts already archived data.
+    with_llm_analyze:
+        Run LLM analyze on `archived=FALSE` conversations.
     """
     start_at = datetime.now()
 
@@ -169,6 +190,7 @@ def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = Fals
     if fix:
         set_not_archived(start_at)
     if fix and with_llm_analyze:
+        logger.debug("Running LLM analyze on archived=FALSE conversations…")
         llm_analyze()
 
     log_archived()
