@@ -211,7 +211,19 @@ def process_conversation(conversation, analyzer, db_params):
                 print(f"  Contains PII: {contains_pii}")
                 print(f"  Contains Spam: {contains_spam}")
                 cursor.execute(
-                    "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, contains_spam = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s, postprocess_failed = FALSE WHERE conversation_pair_id = %s;",
+                    """
+                    UPDATE conversations 
+                    SET 
+                        pii_analyzed = TRUE,
+                        contains_pii = %s,
+                        contains_spam = %s,
+                        short_summary = %s,
+                        keywords = %s,
+                        categories = %s,
+                        languages = %s,
+                        postprocess_failed = FALSE
+                    WHERE conversation_pair_id = %s;
+                    """,
                     (
                         contains_pii,
                         contains_spam,
@@ -242,7 +254,11 @@ def process_conversation(conversation, analyzer, db_params):
         with open("topics-pii-error.log", "a") as f:
             f.write(f"{conversation_pair_id}\n")
         cursor.execute(
-            "UPDATE conversations SET postprocess_failed = TRUE WHERE conversation_pair_id = %s;",
+            """
+            UPDATE conversations 
+            SET postprocess_failed = TRUE 
+            WHERE conversation_pair_id = %s;
+            """,
             (conversation_pair_id,),
         )
         conn.commit()
@@ -279,7 +295,7 @@ def process_conversations(db_params, analyzer: Config):
                 COUNT(*) FILTER (WHERE pii_analyzed AND NOT postprocess_failed) AS pii_analyzed,
                 COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
             FROM conversations;
-        """
+            """
         )
         (
             no_summary_count,
@@ -325,7 +341,23 @@ def process_conversations(db_params, analyzer: Config):
 
         # Include the postprocess_failed field in the select statement and filter
         cursor.execute(
-            "SELECT conversation_pair_id, conversation_a, conversation_b, short_summary, keywords, languages, contains_pii, pii_analyzed, postprocess_failed FROM conversations WHERE (pii_analyzed = FALSE OR short_summary IS NULL) AND postprocess_failed = FALSE;"
+            """
+            SELECT 
+                conversation_pair_id,
+                conversation_a,
+                conversation_b,
+                short_summary,
+                keywords,
+                languages,
+                contains_pii,
+                pii_analyzed,
+                postprocess_failed
+            FROM conversations
+            WHERE 
+                (pii_analyzed = FALSE OR short_summary IS NULL)
+                AND postprocess_failed = FALSE
+            ;
+            """
         )
 
         conversations_to_process = cursor.fetchall()
