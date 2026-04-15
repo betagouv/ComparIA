@@ -5,8 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 
 import psycopg2
-import vertexai
-from vertexai.generative_models import GenerativeModel
+
+from backend.config import settings
 
 # Used in kubernetes (cron job)
 # FIXME: change model for cheeper model? (still gemini)
@@ -75,6 +75,9 @@ class Config:
     def _analyze_conversation(
         self, conversation_a: list[dict], conversation_b: list[dict]
     ) -> dict | None:
+        import vertexai
+        from vertexai.generative_models import GenerativeModel
+
         print("Analyzing conversation...")
         try:
             vertexai.init(project=self.PROJECT_ID, location=self.LOCATION)
@@ -357,6 +360,6 @@ def process_conversations(db_params, analyzer: Config):
             conn.close()
 
 
-db_params = os.getenv("COMPARIA_DB_URI")
-analyzer = Config()
-process_conversations(db_params, analyzer)
+def llm_analyze():
+    analyzer = Config()
+    process_conversations(settings.COMPARIA_DB_URI, analyzer)
