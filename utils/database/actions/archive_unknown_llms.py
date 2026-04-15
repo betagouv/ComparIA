@@ -7,7 +7,7 @@ from utils.utils import LLMS_GENERATED_DATA_FILE, db_connection, read_json
 
 from ..utils import TABLE_NAMES, archive
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 UNKNOWN_LLM_IDS_CONVERSATIONS_QUERY = """
 SELECT 

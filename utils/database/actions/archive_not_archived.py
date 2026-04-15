@@ -7,7 +7,7 @@ from utils.utils import db_connection
 
 from ..utils import TableName, archive
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 SHOULD_BE_ARCHIVED_QUERY = """
     SELECT

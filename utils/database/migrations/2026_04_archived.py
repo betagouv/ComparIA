@@ -23,7 +23,7 @@ SET_ARCHIVED_REASON_UNKNOWN = """
     ;
 """
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 
 def migrate():

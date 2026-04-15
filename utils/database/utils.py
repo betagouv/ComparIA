@@ -38,7 +38,7 @@ ArchivedReason = Literal[
 #       - update other reactions msg_index accordingly
 # - "corrupted_model_stream": reparse AssistantMessage content
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 
 def archive(

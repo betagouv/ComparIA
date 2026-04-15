@@ -11,7 +11,7 @@ from backend.config import settings
 # Used in kubernetes (cron job)
 # FIXME: change model for cheeper model? (still gemini)
 
-logger = logging.getLogger("comparia.database.llm_analyze")
+logger = logging.getLogger("comparia.db.llm_analyze")
 
 
 class Config:

@@ -10,7 +10,7 @@ from utils.utils import db_connection
 
 from ..utils import TABLE_NAMES, ArchivedReason, TableName, archive
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 
 CORRUPTED_NO_CHOICE_VOTES_QUERY = """

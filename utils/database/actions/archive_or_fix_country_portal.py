@@ -9,7 +9,7 @@ from utils.utils import db_connection
 
 from ..utils import archive
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 GET_ODD_COUNTRY_PORTALS = """
     SELECT

@@ -7,7 +7,7 @@ from utils.utils import db_connection
 
 from ..utils import archive
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 
 def archive_duplicate_votes(*, commit: bool = False) -> None:

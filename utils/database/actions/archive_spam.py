@@ -13,7 +13,7 @@ from ..utils import TABLE_NAMES, archive
 if TYPE_CHECKING:
     pass
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 QUERY = """
     SELECT 

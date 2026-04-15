@@ -6,7 +6,7 @@ from utils.utils import db_connection
 
 from ..utils import TABLE_NAMES, TableName
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 
 RENAME_QUERY: dict[TableName, str] = {

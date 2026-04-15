@@ -18,7 +18,7 @@ from .actions import (
 )
 from .utils import TABLE_NAMES, reset_archived, set_not_archived
 
-logger = logging.getLogger("comparia.database")
+logger = logging.getLogger("comparia.db")
 
 ARCHIVED_CONVERSATIONS_QUERY = """
     SELECT
