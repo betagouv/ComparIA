@@ -14,6 +14,7 @@ from .actions import (
     archive_or_fix_country_portal,
     archive_spam,
     archive_unknown_llms,
+    llm_analyze,
 )
 from .utils import TABLE_NAMES, reset_archived, set_not_archived
 
@@ -145,7 +146,7 @@ def log_archived(
                 )
 
 
-def lint(*, fix: bool = False, hard: bool = False):
+def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = False):
     """
     Run database linting.
 
@@ -167,5 +168,7 @@ def lint(*, fix: bool = False, hard: bool = False):
 
     if fix:
         set_not_archived(start_at)
+    if fix and with_llm_analyze:
+        llm_analyze()
 
     log_archived()
