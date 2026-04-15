@@ -29,8 +29,8 @@
     }
   })
 
-  setVotesContext(data.votes)
-  setModelsContext(data.data)
+  setVotesContext(data.votes ?? { count: 0, objective: 0 })
+  setModelsContext(data.data ?? { data_timestamp: null, models: [] })
   setI18nContext()
   setCohortContext()
 

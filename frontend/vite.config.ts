@@ -18,6 +18,12 @@ export default defineConfig({
   server: {
     fs: {
       allow: ['./static']
+    },
+    proxy: {
+      '/counter': 'http://localhost:8001',
+      '/models': 'http://localhost:8001',
+      '/conversations': 'http://localhost:8001',
+      '/votes': 'http://localhost:8001'
     }
   },
   test: {

@@ -3,18 +3,34 @@
 @import './icons.css';
 
 :root {
-  /* CUSTOM DSFR LIKE ADDITION */
-  --cg-blue-france-main-525-hover: #9898f8;
-  --cg-blue-france-main-525-active: #aeaef9;
-  --outline-color: #0a76f6;
+  /* ── Mistral warm theme overrides ── */
+  /* Remap DSFR blues → Mistral Orange */
+  --blue-france-main-525: #fa520f;
+  --blue-france-sun-113-625: #ffa110;
+  --blue-france-main-525-hover: #fb6424;
+  --blue-france-main-525-active: #ff8105;
 
-  /* CUSTOM */
-  --cg-very-light-grey: #fcfcfd;
-  --cg-light-grey: #f3f5f9;
-  --cg-very-light-blue: #f9fbff;
+  /* Mistral palette tokens */
+  --cg-brand: #fa520f;
+  --cg-brand-flame: #fb6424;
+  --cg-sunshine-700: #ffa110;
+  --cg-sunshine-300: #ffd06a;
+  --cg-ivory: #fffaeb;
+  --cg-cream: #fff0c2;
+  --cg-black: #1f1f1f;
+
+  /* Surfaces — warm ivory replaces cool greys */
+  --cg-very-light-grey: #fffaeb;
+  --cg-light-grey: #fff0c2;
+  --cg-very-light-blue: #fffaeb;
+
+  /* Functional accents */
   --cg-green: #58b77d;
-  --cg-purple: #a96afe;
-  --cg-orange: #ff9575;
+  --outline-color: #fa520f;
+
+  /* Bot arena identifiers — warm palette */
+  --cg-purple: #fa520f;   /* Bot A → Mistral Orange */
+  --cg-orange: #ffd900;   /* Bot B → Bright Yellow */
 
   /* xs breakpoint */
   --text-xs: 0.675rem;
@@ -24,10 +40,112 @@
 }
 
 :root[data-fr-theme='dark'] {
-  --cg-very-light-grey: #0a0a0b;
-  --cg-light-grey: #1c1e22;
-  /* FIXME need equivalent in dark */
-  --cg-very-light-blue: #0a0a0b;
+  --cg-very-light-grey: #1f1f1f;
+  --cg-light-grey: #2a2117;
+  --cg-very-light-blue: #1f1f1f;
+  --cg-ivory: #1f1f1f;
+  --cg-cream: #2a2117;
+}
+
+/* ── Global warm base ── */
+html, body {
+  background-color: #fffaeb;
+  font-family: Arial, ui-sans-serif, system-ui, sans-serif;
+  color: #1f1f1f;
+}
+
+/* ── Mistral typography scale ── */
+h1 {
+  font-size: clamp(1.5rem, 3vw + 0.5rem, 2.75rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+h2 {
+  font-size: clamp(1.75rem, 3.5vw + 0.5rem, 3.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+}
+h3 {
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 2rem);
+  font-weight: 400;
+}
+
+/* ── Sharp corners on all DSFR elements ── */
+.fr-btn,
+.fr-card,
+.fr-badge,
+.fr-alert,
+.fr-input,
+.fr-select,
+.fr-tag,
+.fr-modal__content,
+.fr-callout {
+  border-radius: 0 !important;
+}
+
+/* ── Dark solid primary button ── */
+.fr-btn:not(.fr-btn--secondary):not(.fr-btn--tertiary):not(.fr-btn--tertiary-no-outline):not(.fr-btn--close):not(.fr-btn--menu) {
+  background-color: #1f1f1f !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fr-btn:not(.fr-btn--secondary):not(.fr-btn--tertiary):not(.fr-btn--tertiary-no-outline):not(.fr-btn--close):not(.fr-btn--menu):hover {
+  background-color: #fa520f !important;
+}
+
+/* ── Cream secondary button ── */
+.fr-btn--secondary {
+  background-color: #fff0c2 !important;
+  color: #1f1f1f !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+.fr-btn--secondary:hover {
+  background-color: #ffd06a !important;
+}
+
+/* ── Warm header ── */
+.fr-header {
+  background-color: #fffaeb !important;
+  box-shadow: 0 1px 0 0 rgba(127, 99, 21, 0.18) !important;
+}
+.fr-header__body {
+  background-color: #fffaeb !important;
+}
+
+/* ── Warm footer ── */
+.fr-footer {
+  background: linear-gradient(180deg, #ffa110 0%, #1f1f1f 100%) !important;
+  color: #ffffff !important;
+}
+.fr-footer__bottom-link,
+.fr-footer__content-desc,
+.fr-footer__bottom-copy p {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.fr-footer__bottom-link:hover {
+  color: #ffd900 !important;
+}
+.fr-footer__bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ── Warm card elevation (golden shadow) ── */
+.fr-card {
+  background-color: #fffaeb !important;
+  box-shadow:
+    rgba(127, 99, 21, 0.12) -8px 16px 39px,
+    rgba(127, 99, 21, 0.10) -33px 64px 72px,
+    rgba(127, 99, 21, 0.06) -73px 144px 97px !important;
+}
+
+/* ── Mistral block gradient bar (decorative) ── */
+.mistral-block-bar {
+  height: 6px;
+  background: linear-gradient(90deg, #ffd900, #ffe295, #ffa110, #ff8105, #fb6424, #fa520f);
 }
 
 @media (min-width: 36em) {

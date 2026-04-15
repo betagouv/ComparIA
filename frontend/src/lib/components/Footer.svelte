@@ -34,28 +34,11 @@
         <div class="fr-footer__brand fr-enlarge-link">
           <div class="">
             <a href="/" title={m['footer.backHome']()}>
-              {#if locale === 'fr' || locale === 'en'}
-                <p class="fr-logo">
-                  Ministère<br />de la culture
-                </p>
-              {:else if locale === 'da'}
-                <img
-                  src="/orgs/countries/da-light.png"
-                  alt={m['header.logoAlt']()}
-                  class="max-h-[70px] dark:hidden"
-                />
-                <img
-                  src="/orgs/countries/da-dark.png"
-                  alt={m['header.logoAlt']()}
-                  class="hidden max-h-[70px] dark:block"
-                />
-              {:else}
-                <img
-                  src={`/orgs/countries/${locale}.png`}
-                  alt={m['header.logoAlt']()}
-                  class="max-h-[100px]"
-                />
-              {/if}
+              <span
+                style="font-size:1.5rem;font-weight:400;letter-spacing:-0.04em;color:#ffffff;font-family:Arial,sans-serif;line-height:1;"
+              >
+                Compa<span style="color:#ffd900;">RAG</span>
+              </span>
             </a>
           </div>
         </div>
