@@ -65,33 +65,4 @@
     </div>
   </div>
 
-  <div class="cg-border bg-light-grey gap-10 px-4 py-10 md:grid-cols-2 grid">
-    <div class="flex">
-      <img
-        src="/product/comparia-europe.png"
-        aria-hidden="true"
-        alt=""
-        width="326px"
-        class="m-auto"
-      />
-    </div>
-
-    <div class="lg:pe-17">
-      <h3 class="fr-h4">
-        {@html sanitize(m['product.comparator.europe.title']({ props: 'class="text-primary"' }))}
-      </h3>
-      <p>
-        <strong>{m['product.comparator.europe.adventure']()}</strong>
-        {m['product.comparator.europe.desc']()}
-      </p>
-      <p><strong>{m['product.comparator.europe.catch']()}</strong></p>
-
-      <Link
-        button
-        href="mailto:{i18nData.contact}"
-        text={m['actions.contactUs']()}
-        class="sm:w-auto! w-full!"
-      />
-    </div>
-  </div>
 </div>
