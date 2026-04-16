@@ -43,7 +43,7 @@ def archive_not_archived(*, commit: bool = False) -> None:
 
         if not to_archive:
             logger.info(f"No {table_name} that should be archived found!")
-            return
+            continue
 
         archive_at = datetime.now()
 
