@@ -132,15 +132,20 @@ def archive_corrupted_conversations(*, commit: bool = False) -> None:
 
                     if any(len(msgs) == 0 for msgs in assistant_msgs.values()):
                         reasons["corrupted_no_response"].add(_id)
-                    elif nonish := next(
+                        continue
+
+                    nonish_contents = [
                         has_nonish_content(msgs) for msgs in assistant_msgs.values()
-                    ):
+                    ]
+                    if nonish := next((n for n in nonish_contents if n), None):
                         reason = cast(
                             ArchivedReason,
                             f"corrupted_response_{nonish[0]}_{nonish[1]}",
                         )
                         reasons[reason].add(_id)
-                    elif next(
+                        continue
+
+                    if any(
                         has_model_stream_content(msgs)
                         for msgs in assistant_msgs.values()
                     ):
