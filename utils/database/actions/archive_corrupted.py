@@ -85,7 +85,7 @@ def has_model_stream_content(msgs: list) -> bool:
 
 def not_equal_length(conv_a: list, conv_b: list) -> bool:
     msgs_a = [msg for msg in conv_a if msg["role"] != "system"]
-    msgs_b = [msg for msg in conv_a if msg["role"] != "system"]
+    msgs_b = [msg for msg in conv_b if msg["role"] != "system"]
     if len(msgs_a) != len(msgs_b):
         return True
     return False
@@ -145,7 +145,7 @@ def archive_corrupted_conversations(*, commit: bool = False) -> None:
                         for msgs in assistant_msgs.values()
                     ):
                         reasons["corrupted_model_stream"].add(_id)
-                    elif not_equal_length(row["conversation_a"], row["conversation_a"]):
+                    elif not_equal_length(row["conversation_a"], row["conversation_b"]):
                         reasons["corrupted_not_equal_length"].add(_id)
 
     for reason, ids in reasons.items():
