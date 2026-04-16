@@ -1,5 +1,5 @@
 # Base compose with infrastructure services only (postgres, redis)
-# For full stack, use: docker compose -f docker-compose.yml -f app.compose.override.yml up
+# For full stack, use: docker compose -f docker-compose-dev.yml -f app.compose.override.yml up
 services:
   postgres:
     image: postgres:16

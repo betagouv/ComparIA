@@ -1,0 +1,6 @@
+{$PUBLIC_DOMAIN} {
+    reverse_proxy /counter* backend:80
+    reverse_proxy /models/* backend:80
+    reverse_proxy /arena/* backend:80
+    reverse_proxy frontend:3000
+}

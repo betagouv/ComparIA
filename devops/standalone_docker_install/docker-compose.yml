@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-comparia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-comparia}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../data/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-comparia}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: devops/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      COMPARIA_DB_URI: postgresql://${POSTGRES_USER:-comparia}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-comparia}
+      COMPARIA_REDIS_HOST: redis
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      ALBERT_API_KEY: ${ALBERT_API_KEY:-}
+      ALTCHA_HMAC_KEY: ${ALTCHA_HMAC_KEY:-}
+      CACHE_ENABLED: ${CACHE_ENABLED:-true}
+      CACHE_PROBABILITY: ${CACHE_PROBABILITY:-0.75}
+      CACHE_TTL: ${CACHE_TTL:-172800}
+      CACHE_MAX_RESPONSES: ${CACHE_MAX_RESPONSES:-5}
+      LOG_FORMAT: JSON
+      LOGDIR: /data
+
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../devops/Dockerfile.front
+      args:
+        PUBLIC_API_URL: ${PUBLIC_URL}
+        MATOMO_ID: ${MATOMO_ID:-}
+        MATOMO_URL: ${MATOMO_URL:-}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      PORT: 3000
+      PUBLIC_API_URL: ${PUBLIC_URL}
+      PUBLIC_API_LOCAL_URL: http://backend:80
+      PRIVATE_API_URL: http://backend:80
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  postgres-data:
+  redis-data:
+  caddy-data:
+  caddy-config:

@@ -1,10 +1,10 @@
 # Overlay for full stack (frontend + backend)
-# Usage: docker compose -f docker-compose.yml -f app.compose.override.yml up
+# Usage: docker compose -f docker-compose-dev.yml -f app.compose.override.yml up
 services:
   frontend:
     build:
       context: ../frontend
-      dockerfile: ../docker/Dockerfile.front
+      dockerfile: ../devops/Dockerfile.front
     depends_on:
       - backend
     environment:
@@ -30,7 +30,7 @@ services:
       COMPARIA_REDIS_HOST: redis
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: devops/Dockerfile
       # args:
       #   GIT_COMMIT: ${GIT_COMMIT:-}
       #   PUBLIC_API_URL: ${PUBLIC_API_URL:-}
