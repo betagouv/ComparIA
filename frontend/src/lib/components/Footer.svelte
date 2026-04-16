@@ -36,6 +36,22 @@
       </p>
     </div>
 
+    <div style="border-top:1px solid rgba(255,255,255,0.12);padding:32px 0 24px;margin-bottom:24px;">
+      <p style="font-size:0.95rem;font-weight:400;color:#ffffff;margin:0 0 4px;">Lettre d'information</p>
+      <p style="font-size:0.8rem;color:rgba(255,255,255,0.55);margin:0 0 16px;">Partenariats, nouveaux outils, jeux de données et fonctionnalités.</p>
+      <iframe
+        data-tally-src="https://tally.so/embed/zxKR40?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+        loading="lazy"
+        width="100%"
+        height="120"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+        title="Infolettre CompaRAG"
+        style="outline:none;color-scheme:dark;"
+      ></iframe>
+    </div>
+
     <div style="border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
       <ul style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:16px;">
         {#each links as { label, ...props } (props.href)}
