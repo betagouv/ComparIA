@@ -47,41 +47,29 @@
         >
           <div class="fr-header__brand-top w-auto!">
             <div class="fr-header__logo">
-              <span
-                style="font-size:1.25rem;font-weight:400;letter-spacing:-0.04em;color:#1f1f1f;font-family:Arial,sans-serif;line-height:1;"
-                aria-label="CompaRAG"
+              <a
+                href="/"
+                target={page.url.pathname.includes('arene') ? '_blank' : undefined}
+                title={m['header.homeTitle']()}
+                style="display:inline-flex;align-items:center;"
               >
-                Compa<span style="color:#fa520f;">RAG</span>
-              </span>
+                <img
+                  src="/orgs/comparag-logo.svg"
+                  alt="CompaRAG"
+                  height="36"
+                  style="height:36px;width:auto;"
+                />
+              </a>
             </div>
           </div>
           <div
             class="fr-header__service mx-1! sm:mx-3! sm:w-auto md:px-3! flex w-1/2 grow items-center before:content-none!"
           >
-            <img
-              src="/orgs/comparia.png"
-              aria-hidden="true"
-              alt=""
-              width="46"
-              class="me-4 sm:block hidden h-max"
-            />
-            <div>
-              <p class="fr-header__service-title mb-0! leading-normal!">
-                <a
-                  href="/"
-                  target={page.url.pathname.includes('arene') ? '_blank' : undefined}
-                  title={m['header.homeTitle']()}
-                >
-                  {m['header.title']()}
-                </a>
-              </p>
-
-              <p
-                class="fr-header__service-tagline mb-0! leading-normal! text-dark-grey md:text-[14px]! text-[10px]!"
-              >
-                {m['header.subtitle']()}
-              </p>
-            </div>
+            <p
+              class="fr-header__service-tagline mb-0! leading-normal! text-dark-grey md:text-[14px]! text-[10px]!"
+            >
+              {m['header.subtitle']()}
+            </p>
           </div>
           <div class="fr-header__navbar mt-0! self-auto!">
             <button
