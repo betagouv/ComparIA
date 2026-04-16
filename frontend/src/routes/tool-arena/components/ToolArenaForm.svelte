@@ -106,12 +106,21 @@
       </label>
       <input
         id="tool-arena-document"
-        class="fr-upload"
+        class="file-input-hidden"
         type="file"
         accept=".txt,.md"
         onchange={handleFileChange}
         {disabled}
       />
+      <label
+        for="tool-arena-document"
+        class="file-upload-btn"
+        class:file-upload-btn--disabled={disabled}
+        aria-disabled={disabled}
+      >
+        <span class="i-ri-upload-2-line" aria-hidden="true"></span>
+        {fileName ? fileName : 'Choisir un fichier'}
+      </label>
       {#if fileError}
         <p class="fr-error-text">{fileError}</p>
       {/if}
@@ -177,5 +186,43 @@
 <style lang="postcss">
   .fr-input {
     --border-plain-grey: var(--blue-france-main-525);
+  }
+
+  .file-input-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .file-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px;
+    background-color: #1f1f1f;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-upload-btn:hover {
+    background-color: #fa520f;
+  }
+
+  .file-upload-btn--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 </style>
