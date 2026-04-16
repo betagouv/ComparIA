@@ -42,7 +42,7 @@
     data-tally-open="1AVpXL"
     data-tally-hide-title="1"
     data-tally-auto-close="5000"
-    class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#6A6AF4]! hover:bg-[#9898f8]! px-4 py-3 text-white! shadow-lg cursor-pointer"
+    class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#fa520f]! hover:bg-[#fb6424]! px-4 py-3 text-white! shadow-lg cursor-pointer"
     aria-label="Donner votre avis"
   >
     <Icon icon="i-ri-feedback-line" class="text-white" />

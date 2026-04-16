@@ -35,7 +35,7 @@ export default defineConfig({
       black: 'var(--grey-0-1000)',
       primary: 'var(--blue-france-main-525)',
       info: 'var(--info-425-625)',
-      'light-info': 'var(--info-950-100)',
+      'light-info': 'var(--cg-very-light-blue)',
       'very-light-info': 'var(--cg-very-light-blue)',
       error: 'var(--error-425-625)',
       warning: 'var(--warning-425-625)',
