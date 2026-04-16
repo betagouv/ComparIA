@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 import polars as pl
 from sqlalchemy import text
@@ -9,9 +8,6 @@ from backend.arena.spam_detection import is_spam
 from utils.utils import db_connection
 
 from ..utils import TABLE_NAMES, archive
-
-if TYPE_CHECKING:
-    pass
 
 logger = logging.getLogger("comparia.db")
 

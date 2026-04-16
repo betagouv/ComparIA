@@ -288,8 +288,7 @@ def process_conversations(db_params, analyzer: Config):
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
                 COUNT(*) FILTER (WHERE short_summary IS NULL AND NOT postprocess_failed) AS no_summary,
                 COUNT(*) FILTER (WHERE short_summary IS NOT NULL AND NOT postprocess_failed) AS has_summary,
@@ -303,8 +302,7 @@ def process_conversations(db_params, analyzer: Config):
                 COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
             FROM conversations
             WHERE archived = FALSE;
-            """
-        )
+            """)
         (
             no_summary_count,
             summary_count,
@@ -350,8 +348,7 @@ def process_conversations(db_params, analyzer: Config):
         )
 
         # Include the postprocess_failed field in the select statement and filter
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT 
                 conversation_pair_id,
                 conversation_a,
@@ -368,8 +365,7 @@ def process_conversations(db_params, analyzer: Config):
                 AND postprocess_failed = FALSE
                 AND archived = FALSE
             ;
-            """
-        )
+            """)
 
         conversations_to_process = cursor.fetchall()
         cursor.close()
