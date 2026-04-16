@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" fill="none">
+  <!-- Hexagon icon -->
+  <polygon points="20,2 34,10 34,26 20,34 6,26 6,10" fill="none" stroke="#1f1f1f" stroke-width="1.5"/>
+  <polygon points="20,6.5 29,11.5 29,24.5 20,29.5 11,24.5 11,11.5" fill="none" stroke="#1f1f1f" stroke-width="1.2"/>
+  <polygon points="20,11 24,13.5 24,22.5 20,25 16,22.5 16,13.5" fill="none" stroke="#1f1f1f" stroke-width="1"/>
+  <polygon points="20,15 22,16.5 22,21 20,22.5 18,21 18,16.5" fill="#1f1f1f"/>
+  <!-- Text -->
+  <text x="46" y="16" font-family="Arial, sans-serif" font-size="9" font-weight="400" fill="#1f1f1f" letter-spacing="-0.2">Le graphe</text>
+  <text x="46" y="28" font-family="Arial, sans-serif" font-size="9" font-weight="400" fill="#1f1f1f" letter-spacing="-0.2">de Borges</text>
+</svg>

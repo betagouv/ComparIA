@@ -113,16 +113,10 @@
       en: [],
       fr: [
         {
-          class: 'max-h-[95px]',
-          src: '/orgs/minicult.svg',
-          alt: 'Ministère de la Culture',
-          title: 'Ministère de la Culture'
-        },
-        {
-          class: 'max-h-[95px] dark:invert',
-          src: '/orgs/ateliernumerique.png',
-          alt: 'Atelier numérique',
-          title: 'Atelier numérique'
+          class: 'max-h-[40px] dark:invert',
+          src: '/orgs/borges-graph.svg',
+          alt: 'Le graphe de Borges',
+          title: 'Le graphe de Borges'
         }
       ],
       lt: [],
