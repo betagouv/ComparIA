@@ -45,31 +45,33 @@
         <div
           class={['fr-header__brand fr-enlarge-link', { 'lg:-translate-x-1/8 lg:scale-75': small }]}
         >
-          <div class="fr-header__brand-top w-auto!">
-            <div class="fr-header__logo">
-              <a
-                href="/"
-                target={page.url.pathname.includes('arene') ? '_blank' : undefined}
-                title={m['header.homeTitle']()}
-                style="display:inline-flex;align-items:center;"
-              >
-                <img
-                  src="/orgs/comparag-logo.svg"
-                  alt="CompaRAG"
-                  height="36"
-                  style="height:36px;width:auto;"
-                />
-              </a>
-            </div>
-          </div>
+          <div class="fr-header__brand-top w-auto!"></div>
           <div
             class="fr-header__service mx-1! sm:mx-3! sm:w-auto md:px-3! flex w-1/2 grow items-center before:content-none!"
           >
-            <p
-              class="fr-header__service-tagline mb-0! leading-normal! text-dark-grey md:text-[14px]! text-[10px]!"
-            >
-              {m['header.subtitle']()}
-            </p>
+            <img
+              src="/orgs/comparag-icon.svg"
+              aria-hidden="true"
+              alt=""
+              width="46"
+              class="me-4 sm:block hidden h-max"
+            />
+            <div>
+              <p class="fr-header__service-title mb-0! leading-normal!">
+                <a
+                  href="/"
+                  target={page.url.pathname.includes('arene') ? '_blank' : undefined}
+                  title={m['header.homeTitle']()}
+                >
+                  {m['header.title']()}
+                </a>
+              </p>
+              <p
+                class="fr-header__service-tagline mb-0! leading-normal! text-dark-grey md:text-[14px]! text-[10px]!"
+              >
+                {m['header.subtitle']()}
+              </p>
+            </div>
           </div>
           <div class="fr-header__navbar mt-0! self-auto!">
             <button
