@@ -319,7 +319,7 @@
       <!-- i18n: specific to locales -->
       <div class="cg-border bg-white px-5 py-10 md:px-8">
         <h5>{m['home.origin.team.title']()}</h5>
-        <p>{m['home.origin.team.desc']()}</p>
+        <p>{@html sanitize(m['home.origin.team.desc']())}</p>
 
         <div class="mt-12 gap-8 flex flex-wrap">
           {#each localizedLogos as logoProps, i (i)}

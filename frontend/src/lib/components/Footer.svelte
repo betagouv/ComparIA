@@ -27,78 +27,36 @@
   })
 </script>
 
-<footer class="fr-footer fr-pb-2w" id="main-footer">
+<footer id="main-footer" style="background:#1f1f1f;color:rgba(255,255,255,0.7);padding:48px 0 24px;">
   <div class="fr-container">
-    <div class="fr-footer__body">
-      <div class="gap-8 lg:basis-1/2 flex flex-wrap">
-        <div class="fr-footer__brand fr-enlarge-link">
-          <div class="">
-            <a href="/" title={m['footer.backHome']()}>
-              <span
-                style="font-size:1.5rem;font-weight:400;letter-spacing:-0.04em;color:#ffffff;font-family:Arial,sans-serif;line-height:1;"
-              >
-                Compa<span style="color:#ffd900;">RAG</span>
-              </span>
-            </a>
-          </div>
-        </div>
-
-        <div class="fr-footer__brand fr-enlarge-link gap-3 max-w-[165px] flex-col! items-start!">
-          <a
-            href="https://www.digitalpublicgoods.net/r/comparia"
-            target="_blank"
-            class="after:content-none!"
-          >
-            <img src="/orgs/dpg.png" alt="DPG" class="max-h-[47px]" />
-          </a>
-          <p class="mb-0! leading-normal! text-[11px]!">{m['footer.dpg']()}</p>
-        </div>
-      </div>
-      <div class="fr-footer__content">
-        <p class="fr-footer__content-desc">
-          <strong>{m['footer.helpUs']()}</strong><br />
-          {@html sanitize(
-            m['footer.writeUs']({
-              formLinkProps: externalLinkProps('https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX'),
-              contactLinkProps: externalLinkProps(`mailto:${i18nData.contact}`)
-            })
-          )}
-        </p>
-      </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:40px;">
+      <a href="/" title={m['footer.backHome']()} style="text-decoration:none;">
+        <span style="font-size:1.25rem;font-weight:400;letter-spacing:-0.04em;color:#ffffff;font-family:Arial,sans-serif;">
+          Compa<span style="color:#fa520f;">RAG</span>
+        </span>
+      </a>
+      <p style="max-width:380px;font-size:0.875rem;margin:0;line-height:1.5;">
+        {@html sanitize(
+          m['footer.writeUs']({
+            formLinkProps: externalLinkProps('https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX'),
+            contactLinkProps: externalLinkProps(`mailto:${i18nData.contact}`)
+          })
+        )}
+      </p>
     </div>
-    <div class="fr-footer__bottom">
-      <ul class="fr-footer__bottom-list">
+
+    <div style="border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:16px;">
         {#each links as { label, ...props } (props.href)}
-          <li class="fr-footer__bottom-item">
-            <a class="fr-footer__bottom-link" {...props}>{label}</a>
+          <li>
+            <a style="color:rgba(255,255,255,0.55);font-size:0.8rem;text-decoration:none;" {...props}
+              onmouseenter={(e) => (e.currentTarget as HTMLElement).style.color='#fa520f'}
+              onmouseleave={(e) => (e.currentTarget as HTMLElement).style.color='rgba(255,255,255,0.55)'}
+            >{label}</a>
           </li>
         {/each}
-        <li class="fr-footer__bottom-item">
-          <a
-            class="fr-footer__bottom-link"
-            href="http://metabase.comparia.beta.gouv.fr/public/dashboard/8d5418a6-40cb-4cdb-8384-101ee6cca0be"
-            target="_blank"
-            rel="noopener external"
-          >
-            Matrice d'impact
-          </a>
-        </li>
-        <li class="fr-footer__bottom-item">
-          <ThemeSelector />
-        </li>
       </ul>
-      <div class="fr-footer__bottom-copy">
-        <p>
-          {@html sanitize(
-            m['footer.license.mention']({
-              linkProps: externalLinkProps({
-                href: 'https://github.com/etalab/licence-ouverte/blob/master/LO.md',
-                title: m['footer.license.linkTitle']()
-              })
-            })
-          )}
-        </p>
-      </div>
+      <ThemeSelector />
     </div>
   </div>
 </footer>

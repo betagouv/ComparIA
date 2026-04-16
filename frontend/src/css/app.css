@@ -116,22 +116,7 @@ h3 {
   background-color: #fffaeb !important;
 }
 
-/* ── Warm footer ── */
-.fr-footer {
-  background: linear-gradient(180deg, #ffa110 0%, #1f1f1f 100%) !important;
-  color: #ffffff !important;
-}
-.fr-footer__bottom-link,
-.fr-footer__content-desc,
-.fr-footer__bottom-copy p {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-.fr-footer__bottom-link:hover {
-  color: #ffd900 !important;
-}
-.fr-footer__bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
-}
+/* ── Footer — handled inline in Footer.svelte ── */
 
 /* ── Warm card elevation (golden shadow) ── */
 .fr-card {
