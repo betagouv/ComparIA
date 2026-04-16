@@ -8,23 +8,14 @@
   const locale = getLocale()
   const i18nData = getI18nContext()
 
-  const links = (
-    [
-      { href: '/mentions-legales', labelKey: 'legal' },
-      { href: '/modalites', labelKey: 'tos' },
-      { href: '/donnees-personnelles', labelKey: 'privacy' },
-      { href: '/accessibilite', labelKey: 'accessibility' },
-      { href: '/ecoconception', labelKey: 'rgesn' },
-      { href: 'https://github.com/betagouv/languia', labelKey: 'sources' }
-    ] as const
-  ).map(({ href, labelKey }) => {
-    return {
-      href,
-      label: m[`footer.links.${labelKey}`](),
-      target: href.startsWith('http') ? '_blank' : undefined,
-      rel: href.startsWith('http') ? 'noopener external' : undefined
+  const links = [
+    {
+      href: 'https://github.com/betagouv/languia',
+      label: m['footer.links.sources'](),
+      target: '_blank',
+      rel: 'noopener external'
     }
-  })
+  ]
 </script>
 
 <footer id="main-footer" style="background:#1f1f1f;color:rgba(255,255,255,0.7);padding:48px 0 24px;">
