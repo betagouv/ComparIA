@@ -1790,6 +1790,25 @@
     "icon_path": "zhipu-color",
     "models": [
       {
+        "id": "glm-5.1",
+        "simple_name": "GLM 5.1",
+        "license": "MIT",
+        "release_date": "04/2026",
+        "arch": "moe",
+        "params": 744,
+        "active_params": 40,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/zai-org/GLM-5.1",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "z-ai/glm-5.1"
+        },
+        "desc": "Très grand modèle conçu pour des tâches complexes : ingénierie logicielle, orchestration agentique et raisonnement avancé. Il simule une étape de raisonnement avant de générer sa réponse. Cette version améliore sensiblement les performances en code et en exécution autonome prolongée par rapport à GLM 5.",
+        "size_desc": "Avec 744 milliards de paramètres, ce modèle fait partie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts) comptant 256 experts dont 8 activés par jeton, il n'utilise que 40 milliards de paramètres par inférence, ce qui réduit l'empreinte par rapport à un modèle dense de même taille, tout en nécessitant un serveur doté de plusieurs cartes graphiques puissantes pour être hébergé. Sa fenêtre de contexte atteint environ 200 000 jetons, ce qui permet de traiter de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Zhipu AI (désormais Z.ai) a publié GLM 5.1 en avril 2026, une mise à jour de GLM 5 reposant sur la même architecture de mélange d'experts (MoE, Mixture of Experts) : 744 milliards de paramètres totaux, 40 milliards activés par jeton via 256 modules experts avec routage top-8 et un expert partagé. Le modèle intègre le mécanisme Multi-head Latent Attention (MLA) et DeepSeek Sparse Attention (DSA), qui réduisent les coûts d'inférence tout en préservant la capacité de traitement de longs contextes. L'entraînement a été réalisé sur des puces Huawei Ascend 910B avec le framework MindSpore.\n\nLa principale avancée de cette version concerne les capacités agentiques prolongées : le modèle peut travailler de manière autonome sur une tâche unique pendant plus de 8 heures, enchaînant jusqu'à 1 700 étapes avec un cycle continu d'expérimentation, d'analyse et d'optimisation. Il peut générer jusqu'à 128 000 jetons en une seule réponse.\n\nSelon l'éditeur, GLM 5.1 obtient 58,4 % sur SWE-Bench Pro, ce qui le placerait au premier rang mondial devant GPT-5.4 (57,7 %) et Claude Opus 4.6 (57,3 %). Sur d'autres évaluations, il atteint 95,3 % sur AIME 2026, 86,2 % sur GPQA-Diamond, 68,7 % sur CyberGym et 68,0 % sur BrowseComp. Des évaluations indépendantes estiment sa performance globale en code à environ 94,6 % de celle de Claude Opus 4.6."
+      },
+      {
         "id": "glm-5",
         "simple_name": "GLM 5",
         "license": "MIT",
