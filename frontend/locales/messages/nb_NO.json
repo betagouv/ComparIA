@@ -1148,6 +1148,66 @@
                 "fyi": "<p>Denne modellen ble trent på 36 billioner tokens, nesten dobbelt så mye som Qwen 2.5, og er offisielt i stand til å svare på 100 språk.</p>",
                 "size_desc": "<p>Den nøyaktige størrelsen på modellen er ukjent. Det finnes indikasjoner på at dette er en veldig stor modell, som krever servere med flere kraftige grafikkort for å kjøre. Tilgjengelige estimater er avhengige av indirekte indikatorer som inferenskostnader og responsforsinkelse. Modellen har et kontekstvindu på opptil 256 000 tokens, egnet for å analysere lange dokumenter eller kodelagre.</p>"
             },
+            "Qwen 3.5 35B A3B": {
+                "desc": "<p>En mellomstor, multimodal og flerspråklig modell med resonneringsmuligheter. Til tross for sin beskjedne størrelse konkurrerer den med mye større modeller takket være en ultra-sparsom arkitektur som bare aktiverer en liten brøkdel av parameterne med hvert token.</p>",
+                "fyi": "<p>Denne modellen er basert på Qwen 3.5s hybridarkitektur, som kombinerer Gated DeltaNet (lineær oppmerksomhet i O(n)) og klassisk oppmerksomhet (attention) med en ultra-sparsom Mixture of Experts (MoE): 256 eksperter totalt, hvorav 8 rutede og 1 delt er aktivert per token. Nettverket har 40 lag organisert i blokker på 4: 3 Gated DeltaNet-lag etterfulgt av 1 klassisk oppmerksomhetslag, hvert tilknyttet en MoE-modul.</p>\n<p>Modellen er naturlig multimodal, og trent med tidlig fusjon på multimodale tokens (tekst, bilder og video). Den støtter 201 språk og dialekter. Den skal overgå den forrige generasjon Qwen3-235B-A228 på de viktigste evalueringstestene, samtidig som den er over 7 ganger mer effektiv når det gjelder aktive parametere.</p>",
+                "size_desc": "<p>Med 35 milliarder parametere er Qwen 3.5 35B A3B en mellomstor modell, men den ultrasparsomme Mixture of Experts-arkitekturen (MoE) tillater bare 3 milliarder parametere å aktiveres per generert token, noe som reduserer kravene til regnekraft betydelig. Den kan kjøres lokalt på avansert forbrukermaskinvare. Det innebygde kontekstvinduet når 262 144 tokens og kan utvides til omtrent 1 million takket være ekstrapoleringsteknikker (YaRN). Resonneringsmodeller av denne typen bruker lengre tid på å produsere et svar, noe som øker energiforbruket.</p>"
+            },
+            "Qwen 3.5 397B": {
+                "desc": "<p>En svært stor, multimodal og flerspråklig modell med en resonneringsmodus. Takket være en hybridarkitektur som kombinerer lineær oppmerksomhet (Gated DeltaNet) og ekspertmiksing (MoE), aktiverer den bare 17 milliarder parametere av totalt 397 milliarder.</p>",
+                "fyi": "<p>Denne modellen er basert på en innovativ hybridarkitektur som kombinerer Gated DeltaNet (lineær oppmerksomhet) og klassisk oppmerksomhet med en blanding av ultrasparsomme eksperter: 512 eksperter totalt, hvorav bare 10 rutede og 1 delt er aktivert per token. Nettverket har 60 lag organisert i blokker på fire; tre Gated DeltaNet-lag etterfulgt av ett klassisk oppmerksomhetslag, hvert tilknyttet en MoE-modul. Denne designen reduserer inferenskostnadene betydelig, samtidig som modellens evne til å håndtere komplekse resonneringsoppgaver bevares.</p>\n<p>Qwen 3.5 er native multimodal, trent ved hjelp av tidlig fusjon på billioner av multimodale tokens (tekst og bilder). Den støtter 201 språk og dialekter. Ettertrening benytter storskala forsterkningslæring (RL), distribuert på tvers av massivt parallelle miljøer (million-agent environments), med oppgavefordeling av økende kompleksitet. Treningsinfrastrukturen bruker en FP8-pipeline og et asynkront forsterkningslæringsrammeverk for å optimalisere effektiviteten.</p>",
+                "size_desc": "<p>Med sine 397 milliarder parametere er Qwen 3.5 en veldig stor modell som krever flere kraftige grafikkort for å kjøre. Imidlertid tillater Mixture of Experts-arkitekturen (MoE) bare 17 milliarder parametere å aktiveres per generert token, noe som reduserer fotavtrykket sammenlignet med en tett modell av samme størrelse. Det native kontekstvinduet når 262 144 tokens og kan utvides til omtrent 1 million ved hjelp av ekstrapoleringsteknikker (YaRN). Resonneringsmodeller av denne typen bruker lengre tid på å produsere et svar, noe som øker energiforbruket.</p>"
+            },
+            "Qwen1.5-32B": {
+                "desc": "<p>Dette er en mellomstor modell med en opplæringsprosess som er sterkt fokusert på tilpasning til brukerpreferanser.</p>",
+                "fyi": "<p>Modellen gikk gjennom en fase med tilpasning (alignment) til brukerpreferanser ved hjelp av teknikker som DPO (Direct Preference Optimization) og PPO (Proximal Policy Optimization). I tillegg til disse teknikkene, som var svært innovative på tidspunktet modellen ble laget, optimaliserte teamet hos Alibaba også treningsdataene og gjorde dem flerspråklige, spesielt for europeiske, østasiatiske og sørøstasiatiske språk.</p>",
+                "size_desc": "<p>Mellomstore modeller gir en god balanse mellom kompleksitet, kostnad og ytelse: de er mye mindre ressurskrevende enn store modeller, samtidig som de fortsatt kan håndtere komplekse oppgaver som sentimentanalyse og resonnering.</p>"
+            },
+            "Qwen2-57B-A14B-Instruct": {
+                "desc": "<p>Mellomstor modell med ekspertmiksarkitektur (Mixture of Experts, MoE), som yter godt innenfor koding, matematikk og flerspråklige oppgaver.</p>",
+                "fyi": "<p>Denne iterasjonen av Qwen-modellene har lengre kontekstvinduer.</p>",
+                "size_desc": "<p>Mellomstore modeller gir en god balanse mellom kompleksitet, kostnad og ytelse: de er mye mindre ressurskrevende enn store modeller, samtidig som de fortsatt kan håndtere komplekse oppgaver som sentimentanalyse og resonnering.</p>"
+            },
+            "Qwen2-72b-instruct": {
+                "desc": "<p>Stor modell som presterer godt innenfor koding, matematikk og flerspråklige oppgaver.</p>",
+                "fyi": "<p>Denne iterasjonen av Qwen-modellene har lengre kontekstvinduer.</p>",
+                "size_desc": "<p>Store modeller krever betydelige ressurser, men gir best ytelse for avanserte oppgaver som kreativ skriving, dialogmodellering og applikasjoner som krever en finmasket forståelse av kontekst.</p>"
+            },
+            "Qwen2-7B": {
+                "desc": "<p>Denne lille, allsidige og flerspråklige modellen støtter 130 000 konteksttokener og fungerer bra på oversettelses-, oppsummerings-, analyse- og resonneringsoppgaver.</p>",
+                "fyi": "<p>Dette er lillebroren i Qwen2-familien, produsert av det kinesiske selskapet Alibaba. Denne modellen støtter opptil 130 000 tokens for å kunne prosessere lange tekster.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og ressurskrevende sammenlignet med større modeller, samtidig som den gir tilstrekkelig ytelse for ulike oppgaver (oppsummering, oversettelse, tekstklassifisering osv.)</p>"
+            },
+            "Qwen2.5-32B": {
+                "desc": "<p>Denne flerspråklige og allsidige modellen støtter 130 000 konteksttokener, og fungerer bra på oversettelses-, oppsummerings-, analyse- og resonneringsoppgaver.</p>",
+                "fyi": "<p>Dette er en mellomstor modell i Qwen2.5-familien, produsert av det kinesiske selskapet Alibaba. Modellen kan støtte opptil 130 000 tokens for å prosessere lange tekster.</p>",
+                "size_desc": "<p>Mellomstore modeller gir en god balanse mellom kompleksitet, kostnad og ytelse; de er mye mindre ressurskrevende enn store modeller, samtidig som de fortsatt kan håndtere komplekse oppgaver som sentimentanalyse og resonnement.</p>"
+            },
+            "Qwen2.5-7B": {
+                "desc": "<p>Denne flerspråklige og allsidige modellen støtter 130 000 konteksttokener, og fungerer bra til oversettelses-, oppsummerings-, analyse- og resonneringsoppgaver.</p>",
+                "fyi": "<p>Dette er en liten modell i Qwen2.5-familien, produsert av det kinesiske selskapet Alibaba. Modellen støtter opptil 130 000 tokens, og kan prosessere lange tekster.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og ressurskrevende sammenlignet med større modeller. Samtidig har den tilstrekkelig ytelse til å utføre ulike oppgaver som oppsummering, oversettelse, tekstklassifisering osv.</p>"
+            },
+            "Qwen3 Coder 480B A35B": {
+                "desc": "<p>Dette er en svært stor modell som er spesialisert i kodegenerering, analyse av hele repositorier og løsning av flertrinnsproblemer. Denne versjonen er spesielt sterk i bruk av verktøy, og kan simulere en resonneringsfase før den gir det endelige svaret.</p>",
+                "fyi": "<p>Denne modellen ble forhåndstrent på 7,5 billioner tokens (hvorav 70 % var kode), og det ble brukt en avansert ettertreningsprosess , Code RL (Hard to Solve, Easy to Verify) for å forsterke korrekt kodeutførelse, og Agent RL (long-horisont reinforcement learning) for å optimalisere løsningen av multi-round software tasks, med et veldig stort parallelt miljø (20 000 parallelle simuleringer på Alibaba Cloud).</p>",
+                "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct er en veldig stor modell som krever flere grafikkort for å kjøre. Mixture of Experts-arkitekturen (MoE) tillater imidlertid bare aktivering av en brøkdel av parameterne (35B av 480B), noe som reduserer miljøpåvirkningen og kostnadene betydelig sammenlignet med en tilsvarende tett modell.</p>\n<p>Kontekstvinduet når 256 000 tokens og kan utvides til opptil 1 million ved hjelp av ekstrapoleringsteknikker (YaRN), noe som gjør det ideelt for å analysere store kodebaser.</p>"
+            },
+            "Qwen3 Coder Next": {
+                "desc": "<p>Dette er en modell designet spesielt for kode (særlig for lokal utvikling). Takket være en hybridarkitektur som kombinerer Gated DeltaNet, Gated Attention og MoE, oppnår den en ytelse som kan sammenlignes med mye større modeller, samtidig som den bare aktiverer 3 milliarder parametere av totalt 80 milliarder.</p>",
+                "fyi": "<p>Denne modellen har blitt trent på over 800 000 verifiserbare kodeoppgaver via en forsterkningslæringsprosess (RL). Den utmerker seg i langsiktig resonnering, bruk av komplekse verktøy og gjenoppretting fra utførelsesfeil.</p>",
+                "size_desc": "<p>Qwen3-Coder-Next bruker en ultra-sparsom Mixture of Experts-arkitektur (MoE) med 512 eksperter, hvorav bare 10 aktiveres per token. Dette designet gjør at modellen kan kjøre på avansert, men vanlig maskinvare (f.eks. MacBook 64GB, RTX 5090 eller AMD Radeon 7900 XTX) samtidig som den opprettholder et innebygd kontekstvindu på 256 000 tokens.</p>"
+            },
+            "Trinity Large": {
+                "desc": "<p>En delvis åpen amerikansk modell laget av Arcee AI, en startup-bedrift med 30 ansatte.</p>",
+                "fyi": "<p>Trinity Large ble designet og trent utelukkende i USA av Arcee AI, en oppstartsbedrift med 30 ansatte. Modellen ble trent på 17 billioner tokens.</p>\n<p>Hele treningsprosessen ble gjennomført i løpet 33 dager på 2048 Nvidia B300 GPU-er, til en kostnad på omtrent 20 millioner dollar. Arkitekturen inkluderer fremskritt som gated attention og Muon.</p>",
+                "size_desc": "<p>Med 398 milliarder parametere er Trinity Large en veldig stor modell. Likevel, takket være en optimalisert Mixture of Experts-arkitektur (MoE), aktiverer den bare 13 milliarder parametere per generert token, noe som reduserer energiforbruket og inferenskostnadene betydelig sammenlignet med en tilsvarende tett modell. Kontekstvinduet når 512 000 tokens, noe som gjør den spesielt godt egnet til å analysere veldig lange dokumenter eller store kodebaser.</p>"
+            },
+            "Yi-1.5 9B": {
+                "desc": "<p>Yi 1.5 er en modell fra det kinesiske selskapet 01-ai, som spesialiserer seg på koding, matematikk, resonnering og instruksjonsfølging. Modellen har veldig god språkforståelse.</p>",
+                "fyi": "<p>Yi 1.5 er en modell fra det kinesiske selskapet 01-ai, som spesialiserer seg på koding, matematikk, resonnering og instruksjonsfølging. Modellen har en svært god språkforståelse.</p>",
+                "size_desc": "<p>En liten modell er mindre kompleks og ressurskrevende sammenlignet med større modeller, samtidig som den har tilstrekkelig ytelse til å utføre ulike oppgaver som oppsummering, oversettelse, tekstklassifisering osv. </p>"
+            },
             "o3-mini": {
                 "desc": "<p>o3-mini er laget for resonnering og koding. Den tilbyr en god balanse mellom ytelse, kostnad og latens, samtidig som den er mindre enn andre OpenAI-modeller.</p>",
                 "fyi": "<p>Modell optimalisert for STEM (vitenskap, teknologi, ingeniørfag, matematikk), resonneringsoppgaver og koding. Den utmerker seg i generell vitenskap, matematikk og programmering.</p>",
@@ -1157,7 +1217,82 @@
                 "desc": "<p>Svært stor resonneringsmodell, egnet for komplekse vitenskapelige og teknologiske oppgaver og spørsmål.</p>",
                 "fyi": "<p>Denne modellen er svært kraftig og egnet til å analysere bilder og grafer. Den har også blitt trent til å samhandle med andre verktøy via funksjonskall, noe som gjør den egnet for agentisk bruk. Som en svært kraftig resonneringsmodell kan den brukes til å fordele oppgaver mellom flere mindre og/eller mer spesialiserte modeller. Den har et kontekstvindu på opptil 200 000 tokens, noe som gjør det enkelt å analysere store dokumenter.</p>",
                 "size_desc": "<p>Til tross for navnet og det faktum at den nøyaktige størrelsen er ukjent, er o4 mini mest sannsynlig en stor modell som krever servere utstyrt med flere grafikkort. Resonneringsmodeller som o4 mini bruker mer tid på å reagere fordi en resonneringsfase går forut for genereringen av det endelige resultatet, noe som øker energiforbruket. Den antatte Mixture of Experts-arkitekturen (MoE) aktiverer imidlertid bare et delsett av parameterne for å generere hvert token, og begrenser dermed energiforbruket. Størrelsesestimater er avhengige av indirekte indikatorer som slutningskostnader og responsforsinkelse.</p>"
+            },
+            "qwq 32B": {
+                "desc": "<p>Dette er en middels stor resonneringsmodell, spesialisert og svært effektiv innenfor matematikk, kodegenerering og logisk problemløsning.</p>",
+                "fyi": "<p>Denne modellen ble trent med en forsterkningslæringsmetode (RL) for å optimalisere håndteringen av matteproblemer og programmeringsoppgaver. Den bruker flere nyere teknikker for å forbedre kvaliteten til svarene. For eksempel gjør RoPE-metoden (Rotary Position Embedding) at den bedre forstår ordrekkefølgen i en tekst. SwiGLU-aktiveringsfunksjonen er en mer effektiv måte å håndtere beregninger i det nevrale nettverket på, noe som hjelper modellen med å produsere mer pålitelige svar. QKV-justeringsmetoden (Query Key Value-bias) forbedrer hvordan modellen identifiserer og velger viktig informasjon. Til slutt, takket være YaRN (Yet another RoPE extensioN method), kan den håndtere svært lange tekster på opptil 130 000 tokens, slik at den kan jobbe med komplekse eller svært detaljerte dokumenter.</p>",
+                "size_desc": "<p>Med 32 milliarder parametere faller denne modellen inn i den mellomstore klassen. Den kan kjøres på en server med et enkelt kraftig grafikkort, noe som begrenser infrastrukturkostnadene. Imidlertid bruker resonneringsmodeller av denne typen lengre tid å produsere et svar fordi en resonneringsfase går forut for genereringen av det endelige resultatet, noe som øker energiforbruket.</p>"
             }
+        }
+    },
+    "header": {
+        "banner": "🏆 Modellrangeringene er nå tilgjengelige! Se rangeringene.",
+        "chatbot": {
+            "newDiscussion": "Ny chat",
+            "step": "Steg",
+            "stepOne": {
+                "description": "Ta både form og innhold i betraktning, og vurder deretter hvert svar.",
+                "title": "Hva synes du om svarene?"
+            },
+            "stepTwo": {
+                "description": "Se klimaavtrykket av samtalene dine med hver enkelt modell",
+                "title": "Modellene har blitt avslørt!"
+            }
+        },
+        "help": {
+            "link": {
+                "content": "Hjelp oss å gjøre compar:IA bedre",
+                "title": "Si din mening om arenaen og sammenligningsverktøyet – åpner et nytt vindu"
+            }
+        },
+        "homeTitle": "Hjem - compar:IA",
+        "logoAlt": "Republikken Frankrike",
+        "menu": "Meny",
+        "startDiscussion": "Ny chat",
+        "subtitle": "Chatbot-arenaen",
+        "title": "compar:IA",
+        "votes": {
+            "count": "{count} stemmer",
+            "legend": "Forklaring",
+            "objective": "Mål: {count}",
+            "tooltip": "Diskuter, stem og hjelp oss med å nå dette målet!<br /><strong>Dine stemmer teller</strong>: de legges til compar:IA-datasettet. Datasettet er fritt tilgjengelig for å forbedre fremtidige modellers prestasjoner på underrepresenterte språk.<br />Denne digitale ressursen bidrar til større <strong>respekt for språklig og kulturelt mangfold i fremtidige språkmodeller.</strong>"
+        }
+    },
+    "home": {
+        "europe": {
+            "desc": "Flere land slutter seg til Frankrike og tar i bruk komparatoren for å forbedre fremtidige AI-modeller på sine nasjonale språk.",
+            "languages": {
+                "da": "på dansk",
+                "fr": "på fransk",
+                "lt": "på litauisk",
+                "sv": "på svensk"
+            },
+            "question": "Ønsker du å ha chatbot-arenaen tilgjengelig på ditt eget språk?",
+            "title": "Komparatoren <span {props}>blir europeisk!</span>"
+        },
+        "faq": {
+            "discover": "Se andre spørsmål",
+            "title": "Dine oftest stilte spørsmål"
+        },
+        "intro": {
+            "desc": "Gjennomfør en blind diskusjon med to KI-er og evaluer svarene deres",
+            "steps": {
+                "a11yDesc": "1. Du chatter med to anonyme KI-er: chat så lenge du vil. 2. Du gir din preferanse: ved å gjøre det, bidrar du til å forbedre KI-modellene. 3. Det avsløres hvilke modeller du har brukt: lær mer om modellene og deres egenskaper.",
+                "one": {
+                    "desc": "Chat så lenge du vil",
+                    "title": "Du chatter med to anonyme KI-er"
+                },
+                "three": {
+                    "desc": "Lær mer om KI-modellene og deres egenskaper",
+                    "title": "Identiteten til modellene blir avslørt!"
+                },
+                "title": "Hvordan det fungerer",
+                "two": {
+                    "desc": "Ved å gjøre dette bidrar du til forbedring av KI-modellene",
+                    "title": "Du gir din preferanse"
+                }
+            },
+            "title": "Ikke stol på svarene fra <span {props}>én enkelt KI</span>"
         }
     }
 }
