@@ -1292,7 +1292,547 @@
                     "title": "Du gir din preferanse"
                 }
             },
-            "title": "Ikke stol på svarene fra <span {props}>én enkelt KI</span>"
+            "title": "Ikke stol på svarene fra <span {props}>én enkelt KI</span>",
+            "tos": {
+                "accept": "Jeg godtar <a {linkProps}>vilkårene for bruk</a>",
+                "error": "Du må godta bruksvilkårene for å fortsette",
+                "help": "Dataene deles for forskningsformål"
+            }
+        },
+        "origin": {
+            "project": {
+                "desc": "Chatbot-arenaen ble utviklet og designet som en del av en statlig oppstartsbedrift ledet av det franske kulturdepartementet, integrert i <a {linkProps}>Beta.gouv.fr</a>-programmet av det interministerielle Direction interministérielle du numérique (DINUM). Dette initiativet støtter fransk offentlig forvaltning i utviklingen av nyttige, enkle og brukervennlige digitale tjenester.",
+                "title": "Hvem står bak prosjektet?"
+            },
+            "team": {
+                "desc": "Chatbot-arenaen (komparatoren) ledes av et tverrfaglig team i det franske kulturdepartementet – KI-eksperter, utviklere, spesialister innenfor formidling og designere. Oppdrag er å gjøre konversasjonsbasert KI mer transparent og tilgjengelig for alle.",
+                "title": "Hvem er vi?"
+            }
+        },
+        "usage": {
+            "desc": "Tjenesten er også rettet mot KI-eksperter og utdanningsfeltet for mer spesifikke bruksområder",
+            "educate": {
+                "desc": "Du kan bruke chatbot-arenaen som et pedagogisk verktøy for å diskutere og øke bevisstheten om KI med ditt eget publikum",
+                "title": "Trene og øke bevisstheten"
+            },
+            "explore": {
+                "desc": "Se alle funksjonene og bruksvilkårene for modellene på ett sted",
+                "title": "Utforske modellene"
+            },
+            "title": "Spesifikke bruksområder for compar:IA",
+            "use": {
+                "desc": "Utviklere, forskere, modellutgivere... får tilgang til datasett fra compar:IA for å forbedre modeller for språk med begrensede språklige ressurser",
+                "title": "Gjenbruk av dataene"
+            }
+        },
+        "use": {
+            "compare": {
+                "alt": "Sammenligne",
+                "desc": "Diskutere og utvikle egen kritisk tenkning ved å gi uttrykk for dine preferanser",
+                "title": "Sammenligne svarene fra forskjellige KI-modeller"
+            },
+            "desc": "compar:IA er en gratis tjeneste som ønsker å øke bevisstheten blant innbyggerne om generativ KI og dens utfordringer.",
+            "measure": {
+                "alt": "Måle",
+                "desc": "Se klimaavtrykket av samtalene dine med hver enkelt modell",
+                "title": "Måling av klimafotavtrykket i spørsmål stilt til KI"
+            },
+            "test": {
+                "alt": "Test",
+                "desc": "Teste forskjellige modeller: åpne, proprietære, små, store...",
+                "title": "Teste de nyeste KI-ene i økosystemet på ett sted"
+            },
+            "title": "Hva er formålet med compar:IA?"
+        },
+        "vote": {
+            "datasetAccess": "Få tilgang til datasettene",
+            "desc": "Tjenesten er også nyttig for KI-eksperter, utviklere og til utdanningsformål.",
+            "steps": {
+                "datasets": {
+                    "desc": "Alle stilte spørsmål og stemmegivning samles i ulike datasett og publiseres åpent etter anonymisering.",
+                    "title": "Datasett etter språk"
+                },
+                "finetune": {
+                    "desc": "Næringslivet og akademiske aktører kan bruke datasettene til å trene nye modeller som er mer respektfulle med tanke på språklig og kulturelt mangfold.",
+                    "title": "Modeller som er finjustert for bestemte språk"
+                },
+                "prefs": {
+                    "desc": "Etter å ha diskutert med KI-ene, kan du angi din preferanse for en modell basert på gitte kriterier, som for eksempel relevansen eller nytten av svarene.",
+                    "title": "Dine preferanser"
+                }
+            },
+            "title": "Hvorfor er din stemme viktig?"
+        }
+    },
+    "models": {
+        "arch": {
+            "title": "Visste du det?"
+        },
+        "conditions": {
+            "commercialUse": {
+                "question": "Er det tillatt med kommersiell bruk av modellen?",
+                "title": "Kommersiell bruk"
+            },
+            "reuse": {
+                "question": "Kan jeg bruke outputen fra modellene til å trene nye modeller?",
+                "subTitle": "Du kan ikke bruke outputen til å trene andre modeller",
+                "title": "Gjenbruk av generert output"
+            },
+            "title": "Vilkår for bruk",
+            "types": {
+                "allowed": "Tillatt",
+                "conditions": "På betingelser",
+                "forbidden": "Forbudt"
+            }
+        },
+        "conso": {
+            "count": {
+                "L": "> 5000 mWh",
+                "M": "fra 150 til 5000 mWh",
+                "S": "< 150 mWh"
+            },
+            "filterLegend": "Filtrer etter gjennomsnittlig energiforbruk per 1000 tokens"
+        },
+        "extra": {
+            "experts": {
+                "api-only": "For å finne ut mer, se <a {linkProps}>modellens offisielle nettside</a>",
+                "open-weights": "For å finne ut mer, se <a {linkProps}>modellsiden på Hugging Face</a>"
+            },
+            "impacts": "Beregninger av miljøpåvirkning er basert på de to prosjektene <a {linkProps1}>EcoLogits</a> og <a {linkProps2}>Impact CO<sub>2</sub></a>-.",
+            "title": "For å lære mer"
+        },
+        "licenses": {
+            "type": {
+                "openSource": "Åpen kildekode",
+                "proprietary": "Proprietær",
+                "semiOpen": "Åpne vekter"
+            }
+        },
+        "list": {
+            "filters": {
+                "archived": {
+                    "checkedLabel": "Synlig",
+                    "help": "Som standard er bare aktive modeller synlige i arenaen/komparatoren.",
+                    "label": "Utgåtte modeller",
+                    "uncheckedLabel": "Ikke synlig"
+                },
+                "display": "Vis filtre",
+                "editor": {
+                    "legend": "Utgiver"
+                },
+                "license": {
+                    "legend": "Lisens for bruk"
+                },
+                "reset": "Nullstill alle filtre",
+                "size": {
+                    "labels": {
+                        "L": "mellom 70 og 150 milliarder",
+                        "M": "fra 20 til 70 milliarder",
+                        "S": "mellom 7 og 20 milliarder",
+                        "XL": "> 150 milliarder",
+                        "XS": "< 7 milliarder"
+                    },
+                    "legend": "Størrelse (parametere)"
+                }
+            },
+            "intro": "Utforsk de forskjellige tilgjengelige konversasjonsbaserte KI-modellene, deres funksjoner og lisenser.",
+            "model": "modell",
+            "models": "modeller",
+            "noresults": "Ingen modeller samsvarer med søkekriteriene dine.",
+            "title": "Utforsk de forskjellige modellene",
+            "triage": {
+                "label": "Sorter etter",
+                "options": {
+                    "date-desc": "Slippdato (nyest til eldst)",
+                    "name-asc": "Modellnavn (A til Å)",
+                    "org-asc": "Utgiver (A til Å)",
+                    "params-asc": "Størrelse (minst til størst)"
+                }
+            }
+        },
+        "names": {
+            "a": "Modell A",
+            "b": "Modell B"
+        },
+        "openWeight": {
+            "tooltips": {
+                "copyleft": "Når modellen er modifisert, kan den kun distribueres på nytt under samme lisens som kildemodellen.",
+                "free": "Når modellen er modifisert, kan den distribueres på nytt under en annen lisens enn kildemodellen.",
+                "openSource": "Treningsdataene, koden og vektene til denne modellen (dvs. parameterne som læres under treningen) kan lastes ned og modifiseres av andre, slik at de kan kjøre og modifisere modellen på egen maskinvare. Hvorvidt en modell er \"åpen kildekode\" er mer restriktivt enn \"åpne vekter\", spesielt på grunn av behovet for åpenhet i treningskorpuset. Det er få modeller som regnes som \"åpen kildekode\".",
+                "openWeight": "En modell med \"åpne vekter\" der vektene, dvs. parameterne som læres under trening, kan lastes ned av publikum, slik at de kan kjøre modellen på egen maskinvare. Hvorvidt en modell er \"åpen kildekode\" er mer restriktivt (hovedsakelig i forhold til gjennomsiktigheten i treningskorpuset), og få modeller regnes som \"åpen kildekode\".",
+                "params": "Parametere eller vekter, som telles i milliarder, er variablene som læres av en modell under trening, og som bestemmer dens responser. Jo flere parametere, desto større læringskapasitet har modellen.",
+                "ram": "RAM (Random Access Memory) lagrer dataene som en LLM behandler i sanntid. Jo større modellen er, desto mer RAM trenger den for å kjøre."
+            }
+        },
+        "parameters": "{number} mrd. parametere",
+        "ram": "{min} til {max} GB",
+        "release": "Utgitt {date}",
+        "size": {
+            "count": {
+                "L": "100 til 400 mrd.",
+                "M": "60 til 100 mrd.",
+                "S": "15 til 60 mrd.",
+                "XL": "> 400 mrd.",
+                "XS": "< 15 mrd."
+            },
+            "estimated": "Estimert størrelse ({size})",
+            "title": "Størrelse"
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "David mot Goliat-modellutvalg",
+            "description": "En liten modell mot en stor modell, begge valgt tilfeldig",
+            "label": "David mot Goliat",
+            "title": "David mot Goliat-modus"
+        },
+        "custom": {
+            "altLabel": "Manuelt valg av modeller",
+            "description": "Vil du kjenne igjen de to modellene du har valgt?",
+            "label": "Manuelt valg",
+            "title": "Modus for valg"
+        },
+        "random": {
+            "altLabel": "Tilfeldig valg av modeller",
+            "description": "To modeller valgt tilfeldig fra hele listen",
+            "label": "Tilfeldig",
+            "title": "Tilfeldig-modus"
+        },
+        "reasoning": {
+            "altLabel": "Modeller med resonnering",
+            "description": "To tilfeldig valgte modeller fra de som er optimalisert for komplekse oppgaver",
+            "label": "Resonnering",
+            "title": "Resonneringsmodus"
+        },
+        "small-models": {
+            "altLabel": "Valg av ressurssparende modeller",
+            "description": "To tilfeldig valgte små modeller",
+            "label": "Ressurssparende",
+            "title": "Ressurssparende modus"
+        }
+    },
+    "product": {
+        "community": {
+            "countries": {
+                "da": "Danmark",
+                "fr": "Frankrike"
+            },
+            "tabLabel": "Fellesskap",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Siden juni 2024",
+                            "job": "UX/UI-produktdesigner"
+                        },
+                        "elie": {
+                            "date": "Siden november 2025",
+                            "job": "Full-stack-utvikler"
+                        },
+                        "hadrien": {
+                            "date": "Juni 2024 - november 2025",
+                            "job": "Full-stack-utvikler"
+                        },
+                        "lucie": {
+                            "date": "Januar 2024 - desember 2025",
+                            "job": "Grunnlegger - produktleder"
+                        },
+                        "mathilde": {
+                            "date": "Siden september 2024",
+                            "job": "Leder for \"Atelier numérique\" / produktdrift"
+                        },
+                        "nicolas": {
+                            "date": "Siden juni 2025",
+                            "job": "Full-stack-utvikler"
+                        },
+                        "simonas": {
+                            "date": "Siden desember 2024",
+                            "job": "Produktsjef - tidligere distribusjonssjef"
+                        }
+                    },
+                    "title": "compar:IA-teamet - Frankrike"
+                }
+            },
+            "title": "Partnere"
+        },
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "Fremheve skjevheter i KI som stammer fra underrepresentasjon av ikke-engelske data i modeller og øke bevisstheten om konsekvensene av dette.",
+                    "title": "Kulturelle og språklige skjevheter (bias)"
+                },
+                "impacts": {
+                    "desc": "Å synliggjøre de økologiske konsekvensene av generativ KI, som i stor grad fortsatt er ukjente for allmennheten.",
+                    "title": "Miljøpåvirkning"
+                },
+                "pluralism": {
+                    "desc": "Å sikre at innbyggerne har tilgang til et rikt utvalg av AI-modeller, slik at de kan ta informerte valg og utvikle en kritisk forståelse for denne teknologien.",
+                    "title": "Modellmangfold"
+                },
+                "thinking": {
+                    "desc": "Oppmuntre til kritisk tenkning omkring rollen til generativ KI i personlig og profesjonell/yrkesmessig sammenheng (utdanning, arbeid).",
+                    "title": "Kritisk tenkning og samfunnsspørsmål"
+                },
+                "title": "Tjenesten adresserer flere utfordringer"
+            },
+            "cta": "Tilgang til arenaen/tjenesten",
+            "europe": {
+                "adventure": "Fra høsten 2025 er Litauen, Sverige og Danmark med i initiativet!",
+                "catch": "Vil du ha chatbot-arenaen på ditt eget språk?",
+                "desc": "Chatbot-arenaen/tjenesten vil bli gjort tilgjengelig for innbyggerne på deres nasjonale språk. Målet er å lage preferansedatasett med mål om å forbedre fremtidige KI-modeller på disse europeiske språkene.",
+                "title": "Arenaen <span {props}>blir europeisk</span>!"
+            },
+            "screenshotAlt": "Skjermbilde av compar:IA-arenaen, med det første spørsmålet, de to modellsvarene og avstemningsknappene.",
+            "tabLabel": "Arenaen/komparatoren",
+            "title": "Arenaen/komparatoren gjør at man kan lage <span {props}>preferansedatasett</span> sentrert rundt <span {props}>praktisk språkbruk</span> i <span {props}>europeiske språk</span>."
+        },
+        "faq": {
+            "tabLabel": "Ofte stilte spørsmål"
+        },
+        "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "Mars 2025",
+                            "desc": "Opprettelse og publisering av det første compar:IA-datasettet på fransk, som grupperer spørsmålene og preferansene til plattformens brukere.",
+                            "title": "50 000 stemmer avlevert på arenaen!"
+                        },
+                        "2": {
+                            "date": "Mai 2025",
+                            "desc": "Og første gang datasettet ble gjenbrukt, av Bunka.ai, som gjennomførte en <a {linkProps}>grundig studie</a> av interaksjonene mellom brukerne av plattformen.",
+                            "title": "Målet på 100 000 stemmer er nådd!"
+                        },
+                        "3": {
+                            "date": "Juni 2025",
+                            "desc": "Tre datasett, samtaler, reaksjoner og stemmer, er tilgjengelige på <a {hgLinkProps}>HuggingFace</a> og <a {dataLinkProps}>Data.gouv.fr</a>.",
+                            "title": "Publisering av de tre datasettene fra compar:IA"
+                        }
+                    },
+                    "tag": "Oppskalering"
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "Juni-september 2024",
+                            "desc": "Utvikling av arenaens første MVP (Minimum Viable Product) og integrering av tilbakemeldinger fra de første betatesterne.",
+                            "title": "Design av første testversjon (MVP, Minimum Viable Product)"
+                        },
+                        "2": {
+                            "date": "Oktober 2024",
+                            "desc": "Offisiell presentasjon og første utrulling av verktøyet.",
+                            "title": "Offisiell lansering under la francophonie-toppmøtet i Villers Cotterêts!"
+                        },
+                        "3": {
+                            "date": "Januar 2025",
+                            "desc": "Lansering av funksjonalitet for å tillate manuelt valg av modeller.",
+                            "title": "compar:IA Versjon 2"
+                        },
+                        "4": {
+                            "date": "Februar 2025",
+                            "desc": "Mer enn 300 personer deltok på konferanser og workshops om de etiske, kulturelle og miljømessige utfordringene ved konversasjonsbaserte KI-systemer.",
+                            "title": "<a {linkProps}>compar:IA-dag på BnF</a> under AI Action Summit"
+                        }
+                    },
+                    "tag": "Oppbygging"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Sommer 2025",
+                            "desc": "Partnerskap med Danmark, Sverige og Litauen for å åpne tjenesten på deres språk.",
+                            "title": "Oppskalering på europeisk nivå"
+                        },
+                        "2": {
+                            "date": "September 2025",
+                            "desc": "Opprettelse av et nytt workshopformat for alle målgrupper, for å undersøke hvordan generativ KI fungerer bak kulissene, og reflektere over miljøpåvirkningen fra KI, samt publisering av materiale knyttet til utvidelsen «Duels de l'IA» (KI-dueller).",
+                            "title": "Lansering av <a {linkProps}>« Duels de l’IA »</a> (KI-dueller)"
+                        },
+                        "3": {
+                            "desc": "Rangeringen i compar:IA er utviklet i samarbeid med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), og er basert på alle stemmer og reaksjoner som er samlet inn siden tjenesten ble åpnet for publikum i oktober 2024.",
+                            "title": "Publisering av den <a {linkProps}>franske compar:IA-rangeringen</a>"
+                        },
+                        "4": {
+                            "desc": "Danmark blir med i prosjektet ved å tilby tjenesten/komparatoren på sitt nasjonalspråk med et dedikert domenenavn.",
+                            "title": "Åpning av \"AI Arenaen\" <a {linkProps}>på dansk</a>"
+                        },
+                        "5": {
+                            "desc": "Tjenesten er anerkjent som et digitalt offentlig gode av Digital Public Goods Alliance (DPGA).",
+                            "title": "compar:IA anerkjent som et <a {linkProps}>digitalt fellesgode</a>"
+                        },
+                        "6": {
+                            "date": "November 2025",
+                            "desc": "Med over 500 000 unike samtaler siden lanseringen av compar:IA.",
+                            "title": "Målet på 200 000 stemmer er nådd!"
+                        }
+                    },
+                    "tag": "Internasjonalisering"
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "Januar-mars 2024",
+                            "desc": "Intervjuer med interessenter i økosystemet og innledende hypoteser for en løsning på problemet: \"Hvordan legge til rette for tilgang til data på fransk for trening av språkmodeller?\".",
+                            "title": "Undersøkelsesfase"
+                        }
+                    },
+                    "tag": "Undersøkelser"
+                }
+            },
+            "tabLabel": "Viktige datoer",
+            "title": "Milepæler for compar:IA"
+        },
+        "partners": {
+            "academy": {
+                "catch": "Gjennomfører du et forskningsprosjekt og har forslag til eller trenger avklaring om tilnærmingen og/eller datasettene som produseres?",
+                "desc": "Vi er forpliktet til å sørge for at datasettene som genereres støtter tverrfaglige forskningsprosjekter som kombinerer humaniora, samfunnsvitenskap og datavitenskap.",
+                "title": "Akademiske partnere"
+            },
+            "diffusion": {
+                "catch": "Ønsker du å bruke chatbot-arenaen i en profesjonell sammenheng?",
+                "cta": "Fortell oss mer",
+                "desc": "Vi bygger et nettverk av partnere som integrerer tjenesten (chatbot-arenaen) i sine tjenester og opplæringstilbud.",
+                "title": "Formidlingspartnere"
+            },
+            "institution": {
+                "title": "Institusjonelle partnere"
+            },
+            "services": {
+                "desc": "Beregningene av miljøpåvirkning er basert på verktøyene som er oppført ovenfor.",
+                "title": "Tjenester som brukes"
+            },
+            "tabLabel": "Partnere"
+        },
+        "problem": {
+            "alignment": {
+                "alignment": {
+                    "a": "Alignment (tilpasning) skjer etter pre-treningsfasen av en språkmodell, som en \"etterbehandlings-\" eller \"poleringsfase\". I løpet av pre-treningen lærer modellen å forutsi det neste ordet og blir i stand til å generere sammenhengende tekst. Alignment skreddersyr modellen til de menneskelige preferansene man ønsker den skal ha.",
+                    "b": "Alignment-fasen trener modellen til å møte menneskelige behov på en bedre måte ved å gjøre den <strong>mer relevant</strong> (svarer mer nøyaktig på spørsmål), <strong>ærlig</strong> (innrømmer når den mangler tilstrekkelige data) og <strong>tryggere</strong> (unngår skadelig eller upassende innhold).",
+                    "c": "<strong>Uten alignment kan en LLM være teknisk kompetent, men vanskelig å bruke i praksis, fordi den ikke egentlig forstår hva som forventes av den i en samtale.</strong>",
+                    "title": "Alignment (tilpasning), et avgjørende trinn i modelltreningen"
+                },
+                "datasets": {
+                    "a": "Alignment bruker spesialiserte datasett, spesielt laget for å instruere modellen hvordan den skal oppføre seg \"riktig\".",
+                    "b": "<strong>Preferansedata</strong> er en kritisk komponent i alignment, og fungerer sammen med <strong>demonstrasjonsdata</strong> (ekspertutformede dialoger mellom mennesker og kunstig intelligens med presise retningslinjer for tone/stil), <strong>sikkerhetsdata</strong> (kuraterte eksempler som lærer modeller å avvise skadelige forespørsler) og <strong>domenespesifikke datasett</strong> (skreddersydd for felt som f.eks. medisin, jus eller utdanning).",
+                    "c": "Preferansedata inneholder flere potensielle svar på det samme spørsmålet, rangert av menneskelige evaluatorer basert på kriterier som relevans, nytte eller skadepotensial. Annotørene angir hvilket svar som fungerer best/er ønskelig, og disse kuraterte datasettene brukes deretter til å finjustere modeller – og tilpasse dem til uttrykte menneskelige preferanser.",
+                    "title": "Spesifikke datasett"
+                },
+                "desc": "Alignment (tilpasning): En teknikk for å redusere skjevheter (bias) i språkmodeller, basert på crowdsourcing av brukerpreferanser for å forbedre modellatferd",
+                "diversity": {
+                    "a": "For å gjenspeile mangfoldet av kulturer og språk i modelloutput, må <strong>alignment-datasett innlemme et bredt spekter av språk</strong>, kontekster og brukeroppgaver som finnes i den virkelige verden. Diversifisering av alignment-data forbedrer til syvende og sist modellytelsen på to viktige måter:",
+                    "b": "For det første blir <strong>kulturelle skjevheter redusert</strong> ved å forhindre at et enkelt – ofte engelsktalende – perspektiv dominerer KI-ens svar. Modellen lærer at gyldige svar varierer etter den kulturelle konteksten, og anerkjenner flere legitime måter å besvare det samme spørsmålet på.",
+                    "c": "For det andre muliggjør eksponering for språklig og kulturelt mangfold modellresponser som reflekter brukerens kontekst. En fransk bruker får råd skreddersydd til Frankrikes systemer, mens en dansk bruker mottar informasjon som er tilpasset sin nasjonale kontekst.",
+                    "d": "Resultatet? En mer inkluderende samtalebasert KI som anerkjenner og tilpasser seg ulike kulturelle perspektiver.",
+                    "title": "Diversifisering av data for å redusere skjevheter (bias)"
+                },
+                "english": {
+                    "a": "Preferansedata er dyre å produsere fordi <strong>hvert eksempel krever kvalifisert menneskelig evaluering</strong>. Plattformer som https://chat.lmsys.org/ bidrar med innsamling av slike datasett, men få brukere bidrar på morsmålet sitt, noe som gjør at særlig \"mindre\" språk er underrepresentert.",
+                    "b": "Preferansedatasett for europeiske språk er få, eller ikke-eksisterende. For eksempel er andelen spørsmål stilt på fransk i LMSYS-datasettet mindre enn 1 %.",
+                    "c": "compar:IA er en chatbot-arena designet for å samle inn flerspråklige samtaler, og fange opp kulturelle referanser spesifikke for hver region eller land, det være seg daglige gjøremål, lokale kulinariske tradisjoner, utdanningssystemer, historiske og litterære referanser osv.",
+                    "title": "Det er en mangel på preferansedata for europeiske språk"
+                },
+                "title": "Hvordan kan vi redusere kulturelle og språklige skjevheter (bias) i disse modellene?"
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "Disse skjevhetene kan føre til ufullstendige eller direkte feilaktige svar, og sette mangfoldet av europeiske språk og kulturer på sidelinjen."
+                }
+            }
+        }
+    },
+    "ranking": {
+        "preferences": {
+            "table": {
+                "cols": {
+                    "creative": "Kreativ",
+                    "incorrect": "Uriktig",
+                    "instructions_not_followed": "Instruksjoner<br> ikke fulgt",
+                    "n_match": "Totalt antall treff",
+                    "name": "Modell",
+                    "positive_prefs_ratio": "Fordeling av preferanser",
+                    "superficial": "Overfladisk",
+                    "total_negative_prefs": "Totalt antall preferanser<br> Negativt",
+                    "total_positive_prefs": "Totalt antall preferanser<br> Positivt",
+                    "useful": "Nyttig"
+                },
+                "percentLabel": "Preferanser i prosent",
+                "tooltips": {
+                    "positive_prefs_ratio": "Under avstemningen kunne du bruke etiketter til å spesifisere årsakene til preferansen din. Denne kolonnen viser den prosentvise fordelingen av disse etikettene (positive eller negative) for alle stemmer."
+                }
+            },
+            "title": "Hvordan fordeler brukernes preferanser seg?"
+        },
+        "ranking": {
+            "desc": "Takk for bidragene dine!<br> <strong>compar:IA-rangeringen</strong> er basert på alle stemmer og reaksjoner fra den <strong>blinde sammenligningen</strong> av modellene, samlet inn siden tjenesten åpnet for publikum i oktober 2024.<br>Modellrangeringen er utviklet i samarbeid med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), og er basert på <strong>tilfredshetspoengsummen</strong> beregnet ved hjelp av den statistiske modellen <strong>Bradley Terry</strong>, en mye brukt metode for å konvertere binære stemmer til en sannsynlighetsrangering.<br> compar:IA-rangeringen er ikke ment å være en offisiell anbefaling eller å evaluere modellenes tekniske ytelse. Den gjenspeiler de <strong>subjektive preferansene</strong> til tjenestens brukere og ikke den faktiske nøyaktigheten eller sannferdigheten i svarene.",
+            "tabLabel": "Rangering"
+        },
+        "table": {
+            "data": {
+                "billions": "{count} mrd.",
+                "cols": {
+                    "arch": "Arkitektur",
+                    "consumption": "Gjennomsnittlig energiforbruk<br>(1000 tokens)",
+                    "elo": "BT-score <br> for tilfredshet",
+                    "license": "Lisens",
+                    "n_match": "Totalt antall stemmer",
+                    "name": "Modell",
+                    "organisation": "Organisasjon",
+                    "rank": "Plassering",
+                    "release": "Lanseringsdato",
+                    "size": "Størrelse<br>(parametere)",
+                    "trust_range": "Konfidens (±)"
+                },
+                "estimation": "(estimat)",
+                "tooltips": {
+                    "arch": "Arkitekturen til en LLM-modell refererer til designprinsippene som definerer hvordan komponentene i et nevralt nettverk er ordnet og samhandler for å transformere input-data til prediktiv output. Dette inkluderer modusen for parameteraktivering (tett vs. sparsom), spesialisering av komponenter og informasjonsbehandlingsmekanismer (transformatorer, konvolusjonelle nettverk, hybridarkitekturer).",
+                    "consumption": "Målt i milliwattimer representerer energiforbruket elektrisiteten som modellen bruker til å behandle en forespørsel og generere det tilhørende svaret. Modellens energiforbruk avhenger av modellens størrelse og arkitektur. Vi har valgt å vise proprietære modeller som vi ikke har transparent informasjon om størrelse og arkitektur for, i grått som \"uanalysert\" (N/A).",
+                    "elo": "Den statistiske poengsummen, estimert i henhold til Bradley-Terry-modellen, gjenspeiler sannsynligheten for at en modell foretrekkes fremfor en annen. Denne poengsummen blir beregnet ut fra alle brukerstemmer og reaksjoner. Gå til metodefanen for mer informasjon.",
+                    "rank": "Rangering tildelt, basert på Bradley-Terry-score for tilfredshet",
+                    "size": "Modellstørrelsen måles i milliarder parametere, kategorisert i fem klasser. For proprietære modeller er ikke denne størrelsen oppgitt.",
+                    "trust_range": "Intervall som indikerer rangeringens pålitelighet: jo smalere intervallet er, desto mer pålitelig er rangeringsestimatet. Det er 95 % sjanse for at modellens sanne rangering er innenfor dette området."
+                }
+            },
+            "lastUpdate": "Sist oppdatert {date}",
+            "totalModels": "Totalt antall modeller:",
+            "totalVotes": "Totalt antall stemmer:"
+        },
+        "title": "Fra stemmer til modellrangering"
+    },
+    "reveal": {
+        "equivalent": {
+            "co2": {
+                "label": "CO<sub>2</sub>-utslipp",
+                "tooltip": "CO<sub>2</sub>-utslippet tilsvarer karbondioksidutslippene som blir produsert av energien som brukes til å kjøre modellen. Det gjenspeiler miljøpåvirkningen knyttet til energiforbruket. Beregningen av watt-time/CO<sub>2</sub>-ekvivalens varierer avhengig av energimiksen i det enkelte land. Serverne som brukes til modellkjøring er imidlertid ikke alltid plassert i Europa. Derfor er ekvivalensberegningen basert på det globale gjennomsnittet av CO<sub>2</sub>-utslippsraten per forbrukt energienhet.",
+                "unit": "tonn"
+            },
+            "desc": "Hvis alle franskmenn som bruker generativ KI (48 %) hadde hatt denne diskusjonen, ville det representert:",
+            "scales": {
+                "baguette_production": {
+                    "tooltip": "Beregnede data, basert på karbonavtrykket fra tradisjonell bagettproduksjon. (Kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Antall bagetter produsert"
+                },
+                "mango_import": {
+                    "tooltip": "Beregnede data, basert på karbonavtrykket fra produksjon til levering av mango importert med fly. (Kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Antall importerte mangoer"
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "Estimat basert på et gjennomsnitt: et modent tre absorberer ~22 kg CO₂/år (≈48 lb). Dette resultatet er en størrelsesorden; det varierer avhengig av art, alder, klima og jordsmonn. (Kilde <a {linkProps}>USDA</a>)",
+                    "unit": "Trær skal absorbere CO<sub>2</sub> i ett år"
+                },
+                "package_delivery": {
+                    "tooltip": "Beregnede data, basert på karbonavtrykket til hjemlevering av pakker på 1 kg. (Kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Antall pakkeleveringer"
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "Beregnede data, basert på karbonavtrykket til en tur-retur-reise mellom Paris og New York på en langdistanseflyvning. (Kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Tur-retur Paris–New York med fly"
+                },
+                "pool_filing": {
+                    "tooltip": "Beregnede data, basert på karbonpåvirkningen av å fylle et privat svømmebasseng på 8 x 4 meter. (Kilde <a {linkProps}>ADEME</a>)",
+                    "unit": "Antall påfyllinger av svømmebasseng"
+                }
+            },
+            "title": "Ekvivalenter i tonn CO<sub>2</sub>"
         }
     }
 }
