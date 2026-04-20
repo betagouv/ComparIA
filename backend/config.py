@@ -67,7 +67,10 @@ PositivePref = Literal["useful", "complete", "creative", "clear_formatting"]
 POSITIVE_PREFS: tuple[PositivePref, ...] = get_args(PositivePref)
 NegativePref = Literal["incorrect", "superficial", "instructions_not_followed"]
 NEGATIVE_PREFS: tuple[NegativePref, ...] = get_args(NegativePref)
-ALL_PREFS = POSITIVE_PREFS + NEGATIVE_PREFS
+AllPref = Literal[PositivePref | NegativePref]
+ALL_PREFS: tuple[AllPref, ...] = get_args(AllPref)
+TurnChoice = Literal["both_good", "both_bad", "a_better", "b_better", "idk"]
+TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 
 # Available country portals
 CountryPortal = Literal["fr", "da"]

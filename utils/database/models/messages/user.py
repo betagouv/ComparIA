@@ -9,3 +9,5 @@ class UserMessage(SQLModel, table=True):
     id: Annotated[int | None, Field(primary_key=True)] = None
     role: Annotated[Literal["user"], Field(sa_type=String)] = "user"
     content: str
+
+    turn_id: int | None = Field(default=None, foreign_key="turn.id", unique=True)
