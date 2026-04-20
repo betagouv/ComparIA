@@ -243,3 +243,85 @@ async def test_single_mcp_call_returns_non_negative_duration_ms():
 
     assert duration_ms >= 0
     assert isinstance(duration_ms, int)
+
+
+# --- INJ-01: Context Injection tests ---
+
+def test_build_task_prompt_with_document():
+    from backend.tool_arena.client import _build_task_prompt
+    result = _build_task_prompt("Summarize this", "Full document text here.")
+    assert result.startswith("[CONTEXT]\n")
+    assert "Full document text here." in result
+    assert "[/CONTEXT]\n\n" in result
+    assert result.endswith("Summarize this")
+
+
+def test_build_task_prompt_empty_document():
+    from backend.tool_arena.client import _build_task_prompt
+    assert _build_task_prompt("my task", "") == "my task"
+    assert _build_task_prompt("my task", "   ") == "my task"
+    assert _build_task_prompt("my task", "\n\t ") == "my task"
+
+
+async def test_both_mcp_calls_receive_identical_task_prompt():
+    """INJ-01 equifinality: Tool A and Tool B receive byte-identical task arg."""
+    from unittest.mock import AsyncMock, MagicMock, patch
+    from backend.tool_arena.dispatcher import MCPDispatcher
+
+    captured_tasks = []
+
+    async def capture_mcp_call(server, task, goal, document_content=""):
+        captured_tasks.append(task)
+        return ("raw", 100)
+
+    from backend.tool_arena.config import MCPServerConfig
+    server_a = MCPServerConfig(
+        id="srv-a", name="A", description="Server A",
+        endpoint="http://a/mcp", transport="streamablehttp", tools=["*"],
+    )
+    server_b = MCPServerConfig(
+        id="srv-b", name="B", description="Server B",
+        endpoint="http://b/mcp", transport="streamablehttp", tools=["*"],
+    )
+
+    mock_registry = MagicMock()
+    mock_registry.pick_two.return_value = (server_a, server_b)
+
+    def make_litellm_response(text):
+        r = MagicMock()
+        r.choices = [MagicMock()]
+        r.choices[0].message.content = text
+        return r
+
+    with (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", side_effect=capture_mcp_call),
+        patch("backend.tool_arena.dispatcher.sanitize_output", side_effect=lambda t, s: t),
+        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
+    ):
+        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
+        dispatcher = MCPDispatcher()
+        await dispatcher.dispatch(
+            task="Search this",
+            goal="Find answer",
+            llm_id="openai/gpt-4o",
+            session_id="session-inj",
+            document_content="Some document text.",
+        )
+
+    assert len(captured_tasks) == 2
+    assert captured_tasks[0] == captured_tasks[1]
+    # Note: dispatcher.py passes raw task to single_mcp_call; [CONTEXT] is added
+    # inside single_mcp_call itself. Since we mock single_mcp_call, captured
+    # tasks here are the raw task. The [CONTEXT] wrapping is covered by the
+    # unit test on _build_task_prompt above.
+    assert captured_tasks[0] == "Search this"
+
+
+def test_no_empty_context_block_when_no_document():
+    """INJ-01 guard: empty/whitespace document_content produces no [CONTEXT] block."""
+    from backend.tool_arena.client import _build_task_prompt
+    for empty in ("", "   ", "\n", "\t\n "):
+        result = _build_task_prompt("task X", empty)
+        assert "[CONTEXT]" not in result
+        assert result == "task X"
