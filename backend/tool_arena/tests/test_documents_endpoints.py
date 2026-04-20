@@ -1,68 +1,25 @@
 """Endpoint tests for document library routes (DOC-02, DOC-03).
 
-Uses a minimal FastAPI app that replicates the GET /documents and
-GET /documents/{doc_id} route logic directly from documents.py.
-
-Note: We cannot import backend.tool_arena.router directly in this test
-environment because the full router import chain pulls in psycopg2 /
-MCPDispatcher / Redis which require external services. The minimal-app
-pattern (same as test_router_documents.py) isolates document logic only.
-The router.py implementation is verified independently via the acceptance
-criteria checks (grep + python -c import check).
+Tests exercise the REAL router imported from backend.tool_arena.router,
+mounted on a minimal FastAPI app to avoid pulling in the full backend
+(DB/Redis) dependency chain.
 """
 
 import pytest
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from backend.tool_arena.documents import (
-    DocumentDetail,
-    DocumentSummary,
-    document_registry,
-)
+from backend.tool_arena.router import router
 
 _EXPECTED_CACHE_CONTROL = "public, max-age=3600, stale-while-revalidate=86400"
 _EXPECTED_IDS = {"rag_overview", "langchain_concepts", "llamaindex_concepts"}
 
 
-# ---------------------------------------------------------------------------
-# Minimal test app — mirrors the exact logic in router.py
-# ---------------------------------------------------------------------------
-
-_test_app = FastAPI()
-
-
-@_test_app.get("/tool-arena/documents")
-async def list_documents(response: Response):
-    response.headers["Cache-Control"] = _EXPECTED_CACHE_CONTROL
-    return [
-        DocumentSummary(id=d.id, title=d.title, description=d.description)
-        for d in document_registry.list_all()
-    ]
-
-
-@_test_app.get("/tool-arena/documents/{doc_id}")
-async def get_document(doc_id: str, response: Response):
-    doc = document_registry.get(doc_id)
-    if doc is None:
-        raise HTTPException(status_code=404, detail="Document not found")
-    response.headers["Cache-Control"] = _EXPECTED_CACHE_CONTROL
-    return DocumentDetail(
-        id=doc.id,
-        title=doc.title,
-        description=doc.description,
-        content=doc.content,
-    )
-
-
 @pytest.fixture(scope="module")
 def client():
-    return TestClient(_test_app)
-
-
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
+    app = FastAPI()
+    app.include_router(router)
+    return TestClient(app)
 
 
 def test_list_documents_returns_200_with_all_ids(client):
@@ -71,7 +28,7 @@ def test_list_documents_returns_200_with_all_ids(client):
     body = resp.json()
     assert isinstance(body, list)
     ids = {item["id"] for item in body}
-    assert _EXPECTED_IDS.issubset(ids)
+    assert _EXPECTED_IDS.issubset(ids), f"missing ids: {_EXPECTED_IDS - ids}"
     for item in body:
         assert set(item.keys()) == {"id", "title", "description"}
 
