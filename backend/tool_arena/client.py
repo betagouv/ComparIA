@@ -17,6 +17,20 @@ from backend.tool_arena.config import MCPServerConfig
 logger = logging.getLogger("languia")
 
 
+def _build_task_prompt(task: str, document_content: str) -> str:
+    """Prepend a [CONTEXT] block to the task when document_content is provided.
+
+    Returns the plain task string when document_content is empty or
+    whitespace-only. This is the INJ-01 injection point — called once per
+    single_mcp_call invocation. Both Tool A and Tool B call this function
+    with the same document_content, guaranteeing byte-identical context
+    (equifinality contract).
+    """
+    if not document_content.strip():
+        return task
+    return f"[CONTEXT]\n{document_content}\n[/CONTEXT]\n\n{task}"
+
+
 async def single_mcp_call(
     server: MCPServerConfig,
     task: str,
@@ -75,7 +89,8 @@ async def single_mcp_call(
                     message += f"\n\nDocument:\n{document_content}"
                 arguments = {"message": message, **server.tool_args}
             else:
-                arguments = {"task": task, "goal": goal, "document_content": document_content}
+                task_prompt = _build_task_prompt(task, document_content)
+                arguments = {"task": task_prompt, "goal": goal, "document_content": document_content}
             result = await session.call_tool(tool_name, arguments=arguments)
 
             raw_text = "\n".join(
