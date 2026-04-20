@@ -19,7 +19,7 @@ import logging
 from datetime import datetime
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from pydantic import BaseModel
 
 from backend.tool_arena.client import single_mcp_call
@@ -44,6 +44,8 @@ from backend.tool_arena.session import (
 logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/tool-arena", tags=["tool-arena"])
+
+_DOCUMENTS_CACHE_CONTROL = "public, max-age=3600, stale-while-revalidate=86400"
 
 
 # ---------------------------------------------------------------------------
@@ -155,32 +157,34 @@ def _build_reveal_response(session: dict, chosen: str) -> ToolRevealResponse:
 
 
 # ---------------------------------------------------------------------------
-# Document Library: GET /tool-arena/documents
+# Document Library: GET /tool-arena/documents (DOC-02, DOC-03)
 # ---------------------------------------------------------------------------
 
 
-@router.get("/documents", response_model=list[DocumentSummary])
-async def list_documents():
+@router.get("/documents")
+async def list_documents(response: Response):
     """Return catalogue of available documents (id, title, description — no content).
 
-    Intended for the frontend document picker to enumerate choices without
-    transferring full document content on every page load.
+    Per DOC-02: unauthenticated, cacheable. Content field is NOT included —
+    the list endpoint is for discovery only. Use GET /documents/{id} to fetch content.
     """
+    response.headers["Cache-Control"] = _DOCUMENTS_CACHE_CONTROL
     return [
         DocumentSummary(id=d.id, title=d.title, description=d.description)
         for d in document_registry.list_all()
     ]
 
 
-@router.get("/documents/{doc_id}", response_model=DocumentDetail)
-async def get_document(doc_id: str):
+@router.get("/documents/{doc_id}")
+async def get_document(doc_id: str, response: Response):
     """Return a single document by id including full content.
 
-    Raises 404 if the document is not found in the registry.
+    Per DOC-03: unauthenticated, cacheable. HTTP 404 when doc_id is unknown.
     """
     doc = document_registry.get(doc_id)
     if doc is None:
-        raise HTTPException(status_code=404, detail=f"Document '{doc_id}' not found")
+        raise HTTPException(status_code=404, detail="Document not found")
+    response.headers["Cache-Control"] = _DOCUMENTS_CACHE_CONTROL
     return DocumentDetail(
         id=doc.id,
         title=doc.title,
