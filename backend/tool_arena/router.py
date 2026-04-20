@@ -26,11 +26,7 @@ from backend.tool_arena.client import single_mcp_call
 from backend.tool_arena.dispatcher import MCPDispatcher
 from backend.tool_arena.normalizer import normalize_output
 from backend.tool_arena.sanitizer import sanitize_envelope
-from backend.tool_arena.documents import (
-    DocumentDetail,
-    DocumentSummary,
-    document_registry,
-)
+from backend.tool_arena.documents_router import documents_router
 from utils.storage.redis import REDIS_TOOL_RANKING_KEY, get_redis_client
 from backend.tool_arena.models import save_tool_call_to_db, ToolCallRecord
 from backend.tool_arena.persistence import ToolVoteRecord, save_tool_vote_to_db
@@ -44,8 +40,7 @@ from backend.tool_arena.session import (
 logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/tool-arena", tags=["tool-arena"])
-
-_DOCUMENTS_CACHE_CONTROL = "public, max-age=3600, stale-while-revalidate=86400"
+router.include_router(documents_router)
 
 
 # ---------------------------------------------------------------------------
@@ -153,43 +148,6 @@ def _build_reveal_response(session: dict, chosen: str) -> ToolRevealResponse:
             duration_ms=tool_b.get("duration_ms", 0),
             error=tool_b.get("error"),
         ),
-    )
-
-
-# ---------------------------------------------------------------------------
-# Document Library: GET /tool-arena/documents (DOC-02, DOC-03)
-# ---------------------------------------------------------------------------
-
-
-@router.get("/documents")
-async def list_documents(response: Response):
-    """Return catalogue of available documents (id, title, description — no content).
-
-    Per DOC-02: unauthenticated, cacheable. Content field is NOT included —
-    the list endpoint is for discovery only. Use GET /documents/{id} to fetch content.
-    """
-    response.headers["Cache-Control"] = _DOCUMENTS_CACHE_CONTROL
-    return [
-        DocumentSummary(id=d.id, title=d.title, description=d.description)
-        for d in document_registry.list_all()
-    ]
-
-
-@router.get("/documents/{doc_id}")
-async def get_document(doc_id: str, response: Response):
-    """Return a single document by id including full content.
-
-    Per DOC-03: unauthenticated, cacheable. HTTP 404 when doc_id is unknown.
-    """
-    doc = document_registry.get(doc_id)
-    if doc is None:
-        raise HTTPException(status_code=404, detail="Document not found")
-    response.headers["Cache-Control"] = _DOCUMENTS_CACHE_CONTROL
-    return DocumentDetail(
-        id=doc.id,
-        title=doc.title,
-        description=doc.description,
-        content=doc.content,
     )
 
 

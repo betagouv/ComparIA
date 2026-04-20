@@ -9,7 +9,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from backend.tool_arena.router import router
+from backend.tool_arena.documents_router import documents_router as router
 
 _EXPECTED_CACHE_CONTROL = "public, max-age=3600, stale-while-revalidate=86400"
 _EXPECTED_IDS = {"rag_overview", "langchain_concepts", "llamaindex_concepts"}
@@ -18,7 +18,7 @@ _EXPECTED_IDS = {"rag_overview", "langchain_concepts", "llamaindex_concepts"}
 @pytest.fixture(scope="module")
 def client():
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(router, prefix="/tool-arena")
     return TestClient(app)
 
 
