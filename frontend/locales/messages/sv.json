@@ -1269,6 +1269,13 @@
                     "title": "Stereotypa svar"
                 }
             },
+            "sampling": {
+                "desc": {
+                    "1": "För att hjälpa nyare eller mindre utvärderade modeller att komma ikapp dras modellparen med en <strong>lätt snedvridning till förmån för modeller som har fått färre röster</strong>. Varje modell kan fortfarande väljas i vilken som helst jämförelse — de populäraste modellerna blir bara något mindre sannolika än vid en rent slumpmässig urval.",
+                    "2": "Konkret är varje modells urvalsvikt omvänt proportionell mot dess registrerade antal matcher (med en utjämning så att helt nya modeller inte dominerar dragningen), och förhållandet mellan två modellers vikter är begränsat till 3×. Denna snedvridning är tillräckligt liten för att Bradley-Terry-rankningen ovan ska förbli statistiskt tillförlitlig, samtidigt som röstantalen kan konvergera över tid så att jämförelser mellan modeller bygger på jämförbara stickprovsstorlekar."
+                },
+                "title": "Så väljs modellerna ut för jämförelser"
+            },
             "tabLabel": "Det inledande problemet",
             "title": "Respekterar konversationsbaserade AI-modeller <span {props}>mångfalden</span> av europeiska språk?"
         },

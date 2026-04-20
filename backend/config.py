@@ -34,6 +34,14 @@ class Settings(BaseSettings):
     HF_PUSH_DATASET_KEY_DA: str = ""
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
+
+    # Weighted model sampling: bias selection toward models with fewer votes
+    # so vote counts converge. Weight w_i = 1 / (n_match_i + smoothing)^alpha,
+    # clipped so max/min weight ratio <= max_ratio.
+    WEIGHTED_SAMPLING_ENABLED: bool = True
+    WEIGHTED_SAMPLING_ALPHA: float = 0.4
+    WEIGHTED_SAMPLING_SMOOTHING: int = 50
+    WEIGHTED_SAMPLING_MAX_RATIO: float = 3.0
     REPO_ORG: str = "ministere-culture"
     ALTCHA_HMAC_KEY: str = ""
 

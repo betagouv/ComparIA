@@ -1972,6 +1972,13 @@
                     "title": "Classement par taux de victoire"
                 }
             },
+            "sampling": {
+                "desc": {
+                    "1": "Pour aider les modèles récents ou peu évalués à rattraper leur retard, les paires de modèles sont tirées avec un <strong>léger biais en faveur des modèles ayant reçu moins de votes</strong>. Chaque modèle peut toujours être sélectionné dans n'importe quelle confrontation — les modèles les plus populaires deviennent simplement un peu moins probables qu'avec un tirage purement aléatoire.",
+                    "2": "Concrètement, le poids de sélection de chaque modèle est inversement proportionnel à son nombre de matchs enregistrés (avec un lissage pour éviter qu'un modèle tout nouveau ne domine le tirage), et le rapport entre les poids de deux modèles est plafonné à 3×. Ce biais reste assez faible pour que le classement Bradley-Terry ci-dessus demeure statistiquement fiable, tout en permettant aux volumes de votes de converger dans le temps afin que les comparaisons entre modèles reposent sur des tailles d'échantillon comparables."
+                },
+                "title": "Comment les modèles sont sélectionnés pour les confrontations"
+            },
             "tabLabel": "Méthodologie",
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
