@@ -1091,6 +1091,25 @@
     "icon_path": "moonshot",
     "models": [
       {
+        "id": "kimi-k2.6",
+        "simple_name": "Kimi K2.6",
+        "license": "Modified MIT",
+        "release_date": "04/2026",
+        "arch": "moe",
+        "params": 1000,
+        "active_params": 32,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/moonshotai/Kimi-K2.6",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "moonshotai/kimi-k2.6"
+        },
+        "desc": "Très grand modèle ouvert conçu par Moonshot AI, qui se distingue par un mode agentique capable de coordonner jusqu'à 300 sous-agents travaillant en parallèle sur une même tâche complexe. Il est nativement multimodal (texte, image, vidéo) et dispose d'un mode de raisonnement. Selon l'éditeur, il rivalise avec les meilleurs modèles propriétaires comme Claude Opus 4.6 et GPT-5.4 sur plusieurs tests d'ingénierie logicielle, tout en étant publié en poids ouverts.",
+        "size_desc": "Avec 1 000 milliards de paramètres, Kimi K2.6 se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 32 milliards de paramètres par jeton généré, ce qui réduit considérablement l'empreinte par rapport à un modèle dense de même taille. Sa fenêtre de contexte atteint 256 000 jetons, ce qui permet de traiter de longs documents ou des bases de code volumineuses. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Publié par Moonshot AI le 20 avril 2026, Kimi K2.6 est le successeur direct de K2.5. L'architecture repose sur 61 couches dont une dense, avec 384 experts routés et un expert partagé, 8 experts étant activés par jeton. Le modèle utilise une attention de type MLA (Multi-head Latent Attention), une fonction d'activation SwiGLU et une quantification INT4 native, dans la continuité de Kimi K2 Thinking.\n\nLa principale évolution par rapport à K2.5 concerne les capacités agentiques : l'essaim d'agents passe de 100 à 300 sous-agents pouvant coordonner jusqu'à 4 000 étapes en parallèle pour décomposer des tâches complexes. Le modèle est nativement multimodal grâce à un encodeur visuel MoonViT de 400 millions de paramètres capable de traiter des images et des vidéos.\n\nSelon l'éditeur, Kimi K2.6 obtient 58,6 % sur SWE-Bench Pro (devant GPT-5.4 à 57,7 %), 54,0 % sur Humanity's Last Exam avec outils, 80,2 % sur SWE-Bench Verified, 96,4 % sur AIME 2026 et 90,5 % sur GPQA-Diamond. Les poids sont publiés sous licence Modified MIT sur Hugging Face."
+      },
+      {
         "id": "kimi-k2.5",
         "simple_name": "Kimi K2.5",
         "license": "MIT",
