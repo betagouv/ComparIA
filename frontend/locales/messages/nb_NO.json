@@ -155,15 +155,15 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p> Preferansedata brukes til å forbedre modeller under fremtidig trening.</p> <p> Ved å sammenligne svarene fra to modeller blindt, kan compar:IA-brukerne uttrykke sine preferanser og indikere hvilke svar som er mest relevante. Disse preferansedataene kan brukes til å forbedre tilpasningen av modellene – det vil si å trene dem til å generere svar som er mer i tråd med brukerens forventninger og preferanser.</p> <p> Dette er en iterativ prosess, der modellen gradvis lærer å generere bedre svar basert på tilbakemeldinger fra mennesker angående kvaliteten på svarene. Ved å bli eksponert for preferansedata justerer modellene sin svarstil.</p>",
+                    "desc": "<p>Preferansedata brukes til å forbedre modeller under fremtidig trening.</p><p>Ved å sammenligne svarene fra to modeller blindt, kan compar:IA-brukerne uttrykke sine preferanser og indikere hvilke svar som er mest relevante. Disse preferansedataene kan brukes til å forbedre tilpasningen av modellene – det vil si å trene dem til å generere svar som er mer i tråd med brukerens forventninger og preferanser.</p><p>Dette er en iterativ prosess, der modellen gradvis lærer å generere bedre svar basert på tilbakemeldinger fra mennesker angående kvaliteten på svarene. Ved å bli eksponert for preferansedata justerer modellene sin svarstil.</p>",
                     "title": "Har preferansedata en umiddelbar effekt på modellenes ytelse?"
                 },
                 "2": {
-                    "desc": "<p> Det unike med dataene som samles inn på compar:IA-plattformen er at de er på språk med lavere tilgang på ressurser og samsvarer med virkelige brukeroppgaver. Dataene gjenspeiler menneskelige preferanser i spesifikke språklige og kulturelle kontekster. Dataene lar oss justere modellene for å gjøre dem mer relevante, nøyaktige og tilpasset brukernes behov, samtidig som vi prøver å rette opp i eventuelle skjevheter og mangler.</p>",
+                    "desc": "<p>Det unike med dataene som samles inn på compar:IA-plattformen er at de er på språk med lavere tilgang på ressurser og samsvarer med virkelige brukeroppgaver. Dataene gjenspeiler menneskelige preferanser i spesifikke språklige og kulturelle kontekster. Dataene lar oss justere modellene for å gjøre dem mer relevante, nøyaktige og tilpasset brukernes behov, samtidig som vi prøver å rette opp i eventuelle skjevheter og mangler.</p>",
                     "title": "Hvorfor er stemmene som avgis på compar:IA nyttige?"
                 },
                 "3": {
-                    "desc": "<p> compar:IA er et vurderings- og tilpasningsverktøy for språkmodeller, med fokus på responskvalitet og innsamling av preferansedata, og skiller seg dermed fra den globale rangeringstilnærmingen til <a href='https://lmarena.ai/' target='_blank'> chatbot-arenaen </a> utviklet av <a href='http://lmsys.org' target='_blank'> lmsys.org </a> og den etiske tilpasningen av AI-modeller fra <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a>. </p>",
+                    "desc": "<p>compar:IA er et vurderings- og tilpasningsverktøy for språkmodeller, med fokus på responskvalitet og innsamling av preferansedata, og skiller seg dermed fra den globale rangeringstilnærmingen til <a href='https://lmarena.ai/' target='_blank'>chatbot-arenaen</a> utviklet av <a href='http://lmsys.org' target='_blank'>lmsys.org</a> og den etiske tilpasningen av AI-modeller fra <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
                     "title": "Hva skiller compar:IA fra andre lignende initiativer?"
                 }
             },
@@ -172,11 +172,11 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p> compar:AI bruker en metode utviklet av <a target='_blank' href='https://ecologits.ai/latest/'> <strong>Ecologits</strong> (GenAI Impact)</a> for å gi et estimat for energiforbruk som lar brukerne sammenligne ulike KI-modellers miljøpåvirkning for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.</p> <p> Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044, som for øyeblikket fokuserer på virkningen av <strong>inferens</strong> (dvs. bruk av modeller for å svare på spørringer) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).</p> <p> En modells strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen på KI-modellen som brukes, plasseringen av serverne der modellene er distribuert og antall tokener i outputen. Beregningen av indikatoren for globalt oppvarmingspotensial uttrykt i CO2-ekvivalenter er avledet fra modellens strømforbruksmåling. </p> <p> Det er viktig å merke seg at metoder for å vurdere miljøpåvirkningen av KI fortsatt er under utvikling. </p>",
+                    "desc": "<p>compar:IA bruker en metode utviklet av <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> for å gi et estimat for energiforbruk som lar brukerne sammenligne ulike KI-modellers miljøpåvirkning for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.</p><p>Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044, som for øyeblikket fokuserer på virkningen av <strong>inferens</strong> (dvs. bruk av modeller for å svare på spørringer) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).</p><p>En modells strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen på KI-modellen som brukes, plasseringen av serverne der modellene er distribuert og antall tokener i outputen. Beregningen av indikatoren for globalt oppvarmingspotensial uttrykt i CO2-ekvivalenter er avledet fra målinger av modellens strømforbruk.</p><p>Det er viktig å merke seg at metodene for å vurdere miljøpåvirkningen av KI fortsatt er under utvikling.</p>",
                     "title": "Hvordan beregnes miljøfaktorer?"
                 },
                 "2": {
-                    "desc": "<p> Datasentrenes plassering spiller en svært viktig rolle for karbonavtrykket til KI. Hvis en modell trenes eller brukes i et land som er sterkt avhengig av fossilt brensel, vil miljøpåvirkningen være større enn om den ligger i et land som hovedsakelig bruker fornybar energi.</p> <p> Metoden for analyse av miljøpåvirkning fra KI, utviklet av <a target='_blank' href='https://ecologits.ai/latest/'> Ecologits (fra GenAI Impact),</a> inkorporerer data om energimiksen i de forskjellige landene der serverne er plassert. Dette gir et mer nøyaktig og nyansert estimat av det faktiske karbonavtrykket til spørringer mot forskjellige generative KI-modeller.</p>",
+                    "desc": "<p>Datasentrenes plassering spiller en svært viktig rolle for karbonavtrykket til KI. Hvis en modell trenes eller brukes i et land som er sterkt avhengig av fossilt brensel, vil miljøpåvirkningen være større enn om den ligger i et land som hovedsakelig bruker fornybar energi.</p><p>Metoden for analyse av miljøpåvirkning fra KI, utviklet av <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (fra GenAI Impact)</a>, inkorporerer data om energimiksen i de forskjellige landene der serverne er plassert. Dette gir et mer nøyaktig og nyansert estimat av det faktiske karbonavtrykket til spørringer mot forskjellige generative KI-modeller.</p>",
                     "title": "Tar miljøfaktorene hensyn til energimiksen i forskjellige land?"
                 },
                 "3": {
@@ -189,11 +189,11 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p> Ja, internasjonaliseringen av compar:AI er i gang. Vi starter med en utvidelse til tre pilotland: Litauen, Sverige og Danmark. Denne første fasen vil tillate oss å teste tilnærmingen og tilpasse grensesnittet til ulike europeiske språklige og kulturelle kontekster. Etter hvert kan sirkelen utvides til flere europeiske språk basert på tilbakemeldinger fra pilotlandene. Målet er å gradvis bygge en ekte europeisk digital felles infrastruktur for menneskelig evaluering av konversasjonsbasert KI, med samarbeidende styring som gjenstår å definere mellom de ulike deltakerlandene.</p>",
+                    "desc": "<p>Ja, internasjonaliseringen av compar:AI er i gang. Vi starter med en utvidelse til tre pilotland: Litauen, Sverige og Danmark. Denne første fasen vil tillate oss å teste tilnærmingen og tilpasse grensesnittet til ulike europeiske språklige og kulturelle kontekster. Etter hvert kan sirkelen utvides til flere europeiske språk basert på tilbakemeldinger fra pilotlandene. Målet er å gradvis bygge en ekte europeisk digital felles infrastruktur for menneskelig evaluering av konversasjonsbasert KI, med samarbeidende styring som gjenstår å definere mellom de ulike deltakerlandene.</p>",
                     "title": "compar:IA fokuserte opprinnelig på fransk: finnes det planer for andre europeiske språk?"
                 },
                 "2": {
-                    "desc": "<p> Utviklingen av en europeisk plattform for sammenligning av konversasjonsbaserte KI-modeller gir flere konkrete fordeler. Den muliggjør innsamling av preferansedata som gjenspeiler de reelle behovene til europeiske brukere, og forbedrer dermed relevansen av modellsvar for denne brukerbasen. Publisering av datasettene garanterer bedre representasjon av europeiske språk og kulturer, som ofte er underrepresentert i globale datasett og evalueringer dominert av engelsk. Den sikrer også samsvar med europeiske forskrifter (GDPR, EUs AI Act) og integrerer evalueringskriterier i tråd med europeiske prioriteringer som reduksjon av miljøpåvirkning og åpne algoritmer. Til slutt fremmer den fremveksten av et konkurransedyktig og autonomt europeisk økosystem for kunstig intelligens.</p>",
+                    "desc": "<p>Utviklingen av en europeisk plattform for sammenligning av konversasjonsbaserte KI-modeller gir flere konkrete fordeler. Den muliggjør innsamling av preferansedata som gjenspeiler de reelle behovene til europeiske brukere, og forbedrer dermed relevansen av modellsvar for denne brukerbasen. Publisering av datasettene garanterer bedre representasjon av europeiske språk og kulturer, som ofte er underrepresentert i globale datasett og evalueringer dominert av engelsk. Den sikrer også samsvar med europeiske forskrifter (GDPR, EUs AI Act) og integrerer evalueringskriterier i tråd med europeiske prioriteringer som reduksjon av miljøpåvirkning og åpne algoritmer. Til slutt fremmer den fremveksten av et konkurransedyktig og autonomt europeisk økosystem for kunstig intelligens.</p>",
                     "title": "Hva er fordelene med en spesifikt europeisk plattform for innsamling av preferansedata?"
                 }
             },
@@ -202,23 +202,23 @@
         "models": {
             "questions": {
                 "1": {
-                    "desc": "<p> Vi velger modeller basert på deres popularitet, mangfold og relevans for brukerne. Vi legger spesielt vekt på å gjøre <em> åpne vekter </em> og modeller i forskjellige størrelser tilgjengelige. </p>",
+                    "desc": "<p>Vi velger modeller basert på deres popularitet, mangfold og relevans for brukerne. Vi legger spesielt vekt på å tilgjengeliggjøre modeller med <em>åpne vekter</em> og modeller i forskjellige størrelser.</p>",
                     "title": "Hvordan velger dere modellene som finnes på plattformen?"
                 },
                 "2": {
-                    "desc": "<p> Inferens, altså muligheten til å spørre modellene, betales av prosjektet. For de fleste modellene bruker vi Open Router og Hugging Face Inference Providers på en per-token-basis.</p>",
+                    "desc": "<p>Inferens, altså muligheten til å spørre modellene, håndteres av prosjektet. For de fleste modellene bruker vi Open Router og Hugging Face API-ene og fakturerer på et per-token, bruksbasert grunnlag.</p>",
                     "title": "Hvordan klarer dere å tilby denne tjenesten gratis?"
                 },
                 "3": {
-                    "desc": "<p> Kvantiserte modeller er optimalisert for å bruke færre ressurser ved å forenkle visse beregninger samtidig som man sikter mot best mulig kvalitet i responsen.</p> <p> Kvantisering er en optimaliseringsteknikk som innebærer å redusere presisjonen til tallene som brukes til å representere parameterne til en KI-modell. Dette gjør det mulig å <strong> redusere størrelsen på modellen </strong> og <strong> øke hastigheten på beregningene </strong>, noe som er spesielt fordelaktig for inferens på maskiner med begrensede ressurser.</p>",
+                    "desc": "<p>Kvantiserte modeller er optimalisert for å bruke færre ressurser ved å forenkle visse beregninger samtidig som man sikter mot best mulig kvalitet i responsen.</p><p>Kvantisering er en optimaliseringsteknikk som innebærer å redusere presisjonen til tallene som brukes til å representere parameterne til en KI-modell. Dette gjør det mulig å <strong>redusere modellstørrelsen</strong> og <strong>øke hastigheten på beregningene</strong>, noe som er spesielt fordelaktig for inferens på maskiner med begrensede ressurser.</p>",
                     "title": "Hva er “kvantiserte modeller” ?"
                 },
                 "4": {
-                    "desc": "<p> <strong> En modells flerspråklige evner er relatert til det språklige mangfoldet i treningsdataene, ikke til landet den ble utviklet i </strong>. <strong> Store språkmodeller bruker enorme datasamlinger som inneholder mange språk </strong>, men fordelingen av språk i treningsdataene er ikke ensartet. En overrepresentasjon av engelsk kan føre til begrensninger for andre språk. Disse begrensningene er synlige, for eksempel i <strong> anglisismer eller manglende evne til å generere innhold på visse språk klassifisert som \"truet\" av UNESCO </strong>. </p> <p> <strong> Nøyaktigheten og rikdommen i en modells vokabular avhenger av dataene som brukes i treningen </strong>. </p>",
+                    "desc": "<p><strong>En modells flerspråklige evner er relatert til det språklige mangfoldet i treningsdataene, ikke til landet den ble utviklet i</strong>. <strong>Store språkmodeller bruker enorme datasamlinger som inneholder mange språk</strong>, men fordelingen av språk i treningsdataene er ikke ensartet. En overrepresentasjon av engelsk kan føre til begrensninger for andre språk. Disse begrensningene er synlige, for eksempel i <strong>hyppig forekomst av anglisismer eller manglende evne til å generere innhold på visse språk klassifisert som \"truet\" av UNESCO</strong>.</p><p><strong>Nøyaktigheten og rikdommen i en modells vokabular avhenger av dataene som brukes i treningen</strong>.</p>",
                     "title": "Er det en sammenheng mellom nasjonaliteten til selskapet eller laboratoriet som har laget en modell og modellens evne til å snakke flere språk?"
                 },
                 "5": {
-                    "desc": "<p> Få interessenter er «transparente» om datakildene som brukes i treningskorpora. Denne informasjonen er ofte konfidensiell av juridiske og kommersielle årsaker.</p>",
+                    "desc": "<p>Få interessenter er \"transparente\" om datakildene som brukes i treningskorpusene. Denne informasjonen er ofte konfidensiell av juridiske og kommersielle årsaker.</p>",
                     "title": "Kan vi se treningsdataene til modellene?"
                 }
             },
@@ -228,27 +228,27 @@
         "usage": {
             "questions": {
                 "1": {
-                    "desc": "<p> Eksisterende modeller for samtale er <strong> ikke i stand til å sitere kildene </strong> de bruker for å generere et svar. De fungerer ved å forutsi det mest sannsynlige neste tokenet basert på den statistiske fordelingen i treningsdataene. Selv om modellene kan syntetisere informasjon fra ulike kilder, holder de ikke oversikt over hvor informasjonen kommer fra. </p> <p> Det finnes imidlertid teknikker som <strong> Retrieval Augmented Generation (RAG) </strong> som tar sikte på å overvinne denne begrensningen. RAG lar modeller få tilgang til eksterne kunnskapsbaser og <strong> gi kontekstualisert informasjon ved å sitere kildene </strong>. Denne tilnærmingen er nyttig for å forbedre gjennomsiktigheten og påliteligheten til svarene en modell gir. </p>",
+                    "desc": "<p>Eksisterende modeller for samtale er <strong>ikke i stand til å sitere kildene</strong> de bruker for å generere et svar. De fungerer ved å forutsi det mest sannsynlige neste tokenet basert på den statistiske fordelingen i treningsdataene. Selv om modellene kan syntetisere informasjon fra ulike kilder, holder de ikke oversikt over hvor informasjonen kommer fra.</p><p>Det finnes imidlertid teknikker som <strong>Retrieval Augmented Generation (RAG)</strong> som tar sikte på å overvinne denne begrensningen. RAG lar modeller få tilgang til eksterne kunnskapsbaser og <strong>gi kontekstualisert informasjon ved å sitere kildene</strong>. Denne tilnærmingen er nyttig for å forbedre gjennomsiktigheten og påliteligheten til svarene en modell gir.</p>",
                     "title": "Kan modellene oppgi kildene sine?"
                 },
                 "2": {
-                    "desc": "<p> Har du stilt spørsmålet: «Gi meg den nyeste trendy ostekakeoppskriften og oppgi kildene dine» og blitt skuffet over svarene? Det er normalt... </p> <p> <strong>KI-modeller for «enkel» konversasjon kan ikke svare på spørsmål om de siste nyhetene.</strong> De er trent på statiske datasett og kan ikke samhandle med nettet eller åpne lenker. De har ikke muligheten til å oppdatere seg selv i sanntid med hendelser som utspiller seg i verden. Informasjonen modellen har tilgang til er begrenset til datoen for siste trening. </p> <p> Derfor, hvis du stiller et spørsmål om en nylig nyhetshendelse, vil modellen basere responsen på utdatert informasjon, og risikere å generere unøyaktige svar. </p> <p> Når det gjelder Perplexity, Copilot og ChatGPT, kombineres konversasjons-KI-modellene med andre systemblokker som lar dem koble til internett for å få tilgang til informasjon i sanntid. Disse kalles «konversasjonsagenter». </p>",
+                    "desc": "<p>Har du stilt spørsmålet: \"Gi meg den nyeste trendy ostekakeoppskriften og oppgi kildene dine\" og blitt skuffet over svarene? Det er normalt...</p><p><strong>KI-modeller for \"enkel\" konversasjon kan ikke svare på spørsmål om de siste nyhetene.</strong> De er trent på statiske datasett og kan ikke samhandle med nettet eller åpne lenker. De har ikke muligheten til å oppdatere seg selv i sanntid med hendelser som utspiller seg i verden i nåtid. Informasjonen modellen har tilgang til er begrenset til datoen for siste trening.</p><p>Derfor, hvis du stiller et spørsmål om en nylig nyhetshendelse, vil modellen basere responsen på utdatert informasjon, og risikere å generere unøyaktige svar.</p><p>Når det gjelder Perplexity, Copilot og ChatGPT, kombineres konversasjons-KI-modellene med andre systemblokker som lar dem koble til internett for å få tilgang til informasjon i sanntid. Disse kalles \"konversasjonsagenter\".</p>",
                     "title": "Kan modellen svare hvis jeg stiller et spørsmål om nylige nyhetshendelser?"
                 },
                 "3": {
-                    "desc": "<p> Hvis forespørselen din inneholder en URL, vil ikke konversasjonsmodellen kunne få direkte tilgang til den. Språkmodeller behandler spørreteksten, men har ikke mulighet til å samhandle med nettet eller åpne lenker. De er trent på et fast datasett bestående av tekst, og svarene deres er basert på disse treningsdataene. Når et spørsmål stilles, bruker modellene denne treningen til å generere et svar, men kan ikke få tilgang til ny informasjon på nettet hvis de ikke er aktivert til det av et omkringliggende system.</p> <p> Som en analogi, tenk deg en student som tar en eksamen uten internettilgang. Hen kan bruke sin tilegnede kunnskap til å svare på spørsmål, men kan ikke besøke nettsteder for ytterligere informasjon.</p>",
+                    "desc": "<p>Hvis forespørselen din inneholder en URL, vil ikke konversasjonsmodellen kunne få direkte tilgang til den. Språkmodeller behandler spørreteksten, men har ikke mulighet til å samhandle med nettet eller åpne lenker. De er trent på et fast datasett bestående av tekst, og svarene deres er basert på disse treningsdataene. Når et spørsmål stilles, bruker modellene denne treningen til å generere et svar, men kan ikke få tilgang til ny informasjon på nettet hvis de ikke er aktivert til det av et omkringliggende system.</p><p>Som en analogi, tenk deg en student som tar en eksamen uten internettilgang. Hen kan bruke sin tilegnede kunnskap til å svare på spørsmål, men kan ikke besøke nettsteder for ytterligere informasjon.</p>",
                     "title": "Hvis en spørring inneholder en URL, kan modellen få tilgang til den?"
                 },
                 "4": {
-                    "desc": "<p> Modeller mister noen ganger oversikten over en samtale fordi de har <strong> et begrenset kontekstvindu og problemet med \"nåla i høystakken\".</strong> Kontekstvinduet representerer mengden tidligere informasjon modellen kan huske, og fungerer som et korttidsminne. Jo mindre vinduet er, desto mer sannsynlig er det at modellen glemmer viktige deler av samtalen, noe som fører til inkonsekvente svar. Lange eller komplekse samtaler kan raskt fylle kontekstvinduet, noe som øker risikoen for inkonsekvens.</p> <p> Som en analogi, tenk deg en person som bare husker de siste fem setningene i en samtale. Hvis samtalen er kort, kan personen følge med. Men hvis samtalen blir lang, vil personen glemme viktig informasjon, noe som gjør vedkommendes svar inkonsekvente. På samme måte kan en AI-modell med et lite kontekstvindu \"miste oversikten\" over en samtale når for mye informasjon utveksles, gå glipp av viktige elementer og produsere svar som ikke lenger gir mening.</p>",
+                    "desc": "<p>Modeller mister noen ganger oversikten over en samtale fordi de har et <strong>begrenset kontekstvindu</strong>. Kontekstvinduet representerer mengden tidligere informasjon modellen kan aksessere, og fungerer som et korttidsminne. Jo mindre vinduet er, desto mer sannsynlig er det at modellen \"glemmer\" viktige deler av samtalen, noe som fører til inkonsekvente svar. Lange eller komplekse samtaler kan raskt fylle kontekstvinduet, noe som øker risikoen for inkonsekvenser.</p><p>Som en analogi, tenk deg en person som bare husker de siste fem setningene i en samtale. Hvis samtalen er kort, kan personen følge med. Men hvis samtalen blir lang, vil personen glemme viktig informasjon, noe som gjør vedkommendes svar inkonsekvente. På samme måte kan en KI-modell med et lite kontekstvindu \"miste oversikten\" over en samtale når for mye informasjon utveksles, gå glipp av viktige elementer og produsere svar som ikke lenger gir mening.</p>",
                     "title": "Hvorfor mister noen modeller fort tråden i samtalen?"
                 },
                 "5": {
-                    "desc": "<p> Ordlyden i et prompt påvirker svarene betydelig. For å få et best mulig resultat fra en språkmodell er det viktig å mestre kunsten å <em>prompte</em>, det vil si formuleringen av forespørsler eller instruksjoner. <strong> Klarhet er nøkkelen</strong>: </p> <ul> <li> Bruk et enkelt og direkte språk, og unngå spørsmål som er for lange eller komplekse. Del opp forespørsler i flere enklere spørsmål for mer presise svar. </li> <li> <strong> Spesifiser spesifikke formatbegrensninger om nødvendig</strong>: Hvis du trenger et svar i et bestemt format (liste, tabell, sammendrag osv.), spesifiser det i spørsmålet. Du kan også spesifisere trinnene som skal følges og ønskede kvalitetskriterier. </li> <li> <strong> Spesifiser modellens rolle</strong> Start for eksempel med «Oppfør deg som en ekspert på…» eller «Se for deg at du er en lærer…» for å veilede tonen og perspektivet i svaret. </li> <li> <strong> Kontekstualiser spørsmålene dine</strong> Gi om nødvendig relevante eksempler for å veilede modellen. </li> <li> <strong> Oppmuntre til resonnement </strong> Bruk tankekjede-spørsmål (<em>Chain-of-Thought Prompting </em>) for å be modellen forklare resonnementet sitt, noe som gjør svarene mer robuste. </li> </ul> <p> Samtalemodeller er følsomme for variasjoner i ordlyd: enkelt språk, korte spørsmål og omformulering når det er nødvendig kan bidra til å lede modellen til å gi relevante svar. Test og finjuster spørsmålene dine for å finne den mest effektive ordlyden! </p>",
+                    "desc": "<p>Ordlyden i et prompt påvirker svarene i betydelig grad. For å få et best mulig resultat fra en språkmodell er det viktig å mestre kunsten å <em>prompte</em>, det vil si å formulere forespørsler eller instruksjoner. <strong>Klarhet er nøkkelen</strong>:</p><ul><li>Bruk et enkelt og direkte språk, og unngå spørsmål som er for lange eller komplekse. Del opp forespørsler i flere enklere spørsmål for mer presise svar. </li><li> <strong> Spesifiser spesifikke formatbegrensninger om nødvendig</strong>: Hvis du trenger et svar i et bestemt format (liste, tabell, sammendrag osv.), spesifiser det i spørsmålet. Du kan også spesifisere trinnene som skal følges og ønskede kvalitetskriterier. </li> <li> <strong> Spesifiser modellens rolle</strong> Start for eksempel med «Oppfør deg som en ekspert på…» eller «Se for deg at du er en lærer…» for å veilede tonen og perspektivet i svaret. </li> <li> <strong> Kontekstualiser spørsmålene dine</strong> Gi om nødvendig relevante eksempler for å veilede modellen. </li> <li> <strong> Oppmuntre til resonnement </strong> Bruk tankekjede-spørsmål (<em>Chain-of-Thought Prompting </em>) for å be modellen forklare resonnementet sitt, noe som gjør svarene mer robuste. </li> </ul> <p> Samtalemodeller er følsomme for variasjoner i ordlyd: enkelt språk, korte spørsmål og omformulering når det er nødvendig kan bidra til å lede modellen til å gi relevante svar. Test og finjuster spørsmålene dine for å finne den mest effektive ordlyden! </p>",
                     "title": "Hva er den beste framgangsmåten for prompting?"
                 },
                 "6": {
-                    "desc": "<p> Konversasjonsbaserte KI-modeller svarer direkte ved å forutsi tokens (dvs. (deler av) ord) basert på sannsynlighet, mens en søkemotor tilbyr lenker og ressurser som brukeren kan utforske på egenhånd.</p>",
+                    "desc": "<p>Konversasjonsbaserte KI-modeller svarer direkte ved å forutsi tokens (dvs. (deler av) ord) basert på sannsynlighet, mens en søkemotor tilbyr lenker og ressurser som brukeren kan utforske på egen hånd.</p>",
                     "title": "Hva er forskjellen mellom å stille et spørsmål til en KI-modell og å søke på Google?"
                 }
             },
@@ -275,8 +275,8 @@
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong> comparia.beta.gouv.fr </strong>.",
-            "disclaimer": "<strong> compar:IA </strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
+            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>comparia.beta.gouv.fr</strong>.",
+            "disclaimer": "<strong>compar:IA</strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi prøver å svare innen to virkedager.",
             "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av beta.gouv.fr for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
@@ -288,7 +288,7 @@
             "remedyDesc": "Denne prosedyren skal brukes i følgende tilfelle: du har rapportert en feil med tilgjengeligheten til ansvarlig for nettstedet som hindrer deg i å få tilgang til innhold eller en av portalens tjenester, og du har ikke mottatt et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Anke",
-            "stateDesc": "Nettstedet comparia.beta.gouv.fr er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig.</strong> Du bør derfor kunne:",
+            "stateDesc": "Nettstedet comparia.beta.gouv.fr er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
             "stateNavigate": "finne fram på alle sidene på nettstedet ved hjelp av et tastatur",
             "statePrefs": "tilpasse nettstedet til dine behov (skriftstørrelse, zoome inn på skjermen, endre typografi osv.) uten tap av innhold",
             "stateScreenReader": "se nettsiden med en skjermleser.",
@@ -345,7 +345,7 @@
             "privacyTitle": "Behandler vi personopplysninger?",
             "tallyData": "Når du fyller ut et av disse skjemaene, blir dataene du oppgir overført til og lagret av Tally (Tally BV, Belgia). Tally er forpliktet til ikke å bruke dataene dine til kommersielle formål og til å overholde GDPR. For mer informasjon, se Tallys <a {tallyPrivacyLinkProps}>personvernerklæring</a>.",
             "tallyDesc": "Dette nettstedet bruker <a {tallyLinkProps}>Tally</a>, en tjeneste for oppretting av skjemaer på nett, til to funksjoner:",
-            "tallyFeedback": "Skjemaet «Din mening» lar oss samle inn tilbakemeldinger fra deg om tjenesten.",
+            "tallyFeedback": "Skjemaet \"Din mening\" lar oss samle inn tilbakemeldinger fra deg om tjenesten",
             "tallyNewsletter": "Abonnementsskjema for nyhetsbrev fra compar:IA",
             "tallyTitle": "Tally-skjemaer",
             "title": "Personvernerklæring"
@@ -517,10 +517,10 @@
         "licenses": {
             "os": {
                 "Apache 2.0": {
-                    "license_desc": "<p> Denne lisensen gir deg rett til fritt å bruke, endre og distribuere modellen, inkludert for kommersielle formål. I tillegg til bruksfrihet garanterer den juridisk beskyttelse ved å inkludere en patentklausul som fungerer som forsikring: hvis du bruker denne modellen, samtykker bidragsyterne i å ikke saksøke deg for å krenke patentene deres knyttet til prosjektet. Denne gjensidige beskyttelsen unngår juridiske konflikter mellom brukere og utviklere. Ved distribusjon av modifiserte versjoner må vesentlige endringer angis på adekvat måte, slik at åpenhet er sikret for brukeren.</p>"
+                    "license_desc": "<p>Denne lisensen gir deg rett til fritt å bruke, endre og distribuere modellen, inkludert for kommersielle formål. I tillegg til bruksfrihet garanterer den juridisk beskyttelse ved å inkludere en patentklausul som fungerer som forsikring: hvis du bruker denne modellen, samtykker bidragsyterne i å ikke saksøke deg for å krenke patentene deres knyttet til prosjektet. Denne gjensidige beskyttelsen unngår juridiske konflikter mellom brukere og utviklere. Ved distribusjon av modifiserte versjoner må vesentlige endringer angis på adekvat måte, slik at åpenhet er sikret for brukeren.</p>"
                 },
                 "CC-BY-NC-4.0": {
-                    "license_desc": "<p> Denne lisensen gir deg rett til fritt å dele og tilpasse innholdet så lenge du krediterer forfatteren, men forbyr all kommersiell bruk. Den gir fleksibilitet for ikke-kommersiell bruk samtidig som forfatterens rettigheter er beskyttet.</p>",
+                    "license_desc": "<p>Denne lisensen gir deg rett til fritt å dele og tilpasse innholdet så lenge du krediterer forfatteren, men forbyr all kommersiell bruk. Den gir fleksibilitet for ikke-kommersiell bruk samtidig som forfatterens rettigheter er beskyttet.</p>",
                     "reuse_specificities": "men kun for ikke-kommersiell bruk"
                 },
                 "Gemma": {
@@ -611,7 +611,7 @@
             "Aya Expanse 32B": {
                 "desc": "<p>Mellomstor, flerspråklig modell, trent til å generere tekst på 23 språk.</p>",
                 "fyi": "<p>Cohere, det kanadiske selskapet som trente denne modellen, ble grunnlagt i 2019 av tidligere Google Brain-forskere, inkludert Aidan Gomez, medforfatter av den berømte artikkelen «Attention Is All You Need» som revolusjonerte moderne KI. Det unike ved selskapet ligger i at de utelukkende har fokus på generativ KI for bedrifter, spesielt regulerte sektorer som finans, helsevesen, produksjon og energi, samt offentlig sektor. Selskapet er også en pioner når det gjelder flerspråklige tilnærminger og har et non-profit forskningslaboratorium for å støtte åpen innovasjon.</p>\n<p>Denne modellen ble designet for å gi gode muligheter for hvert av de 23 språkene i treningskorpuset.</p>",
-                "size_desc": "<p>Med 32 milliarder parametere regnes denne modellen som mellomstor. Den kan driftes på en server med et enkelt, kraftig grafikkort, noe som bidrar til å holde kostnadene til infrastruktur lave.</p>\n<p> Den har et kontekstvindu på opptil 130 000 tokens, noe som er nyttig for å analysere lange dokumenter.</p>"
+                "size_desc": "<p>Med 32 milliarder parametere regnes denne modellen som mellomstor. Den kan driftes på en server med et enkelt, kraftig grafikkort, noe som bidrar til å holde kostnadene til infrastruktur lave.</p>\n<p>Den har et kontekstvindu på opptil 130 000 tokens, noe som er nyttig for å analysere lange dokumenter.</p>"
             },
             "Aya Expanse 8B": {
                 "desc": "<p>Liten, flerspråklig modell, andre iterasjon av Aya-serien. Den ble trent på en stor andel underrepresenterte språk.</p>",
@@ -710,7 +710,7 @@
             },
             "EuroLLM 22B Instruct": {
                 "desc": "<p>En flerspråklig modell spesielt utviklet med tanke på europeisk språklig mangfold, med høy kapasitet for flerspråklig oversettelse og forståelse.</p>",
-                "fyi": "<p><p>EuroLLM-22B er en modell laget av et konsortium bestående av Sorbonne-universitetet, Paris-Saclay-universitetet, Artefact Research Center, Instituto Superior Técnico – Universitetet i Lisboa, Instituto de Telecomunicações, Universitetet i Edinburgh, Aveni, Unbabel, Universitetet i Amsterdam og Naver Labs. Den ble trent med et primært mål om balansert dekning av europeiske språk. Den dekker de 24 offisielle språkene i EU samt 11 andre språk. Treningen ble utført på omtrent 4 billioner tokens, ved bruk av 400 Nvidia H100 GPU-er på superdatamaskinen MareNostrum 5, drevet av Barcelona Supercomputing Center. Prosjektet mottok europeisk institusjonell støtte gjennom Horizon Europe og EuroHPC, innenfor rammen av en \"ekstremskala\" databehandlingstildeling.</p>\n<p>Treningsdataene kombinerer webdata, flerspråklige parallelle data (en–xx og xx–en) og nøye utvalgte datasett av høy kvalitet, med sterk vekt på balanse mellom de europeiske språkene. Modellen fungerer spesielt bra for flerspråklige oversettelsesoppgaver.</p>",
+                "fyi": "<p>EuroLLM-22B er en modell laget av et konsortium bestående av Sorbonne-universitetet, Paris-Saclay-universitetet, Artefact Research Center, Instituto Superior Técnico – Universitetet i Lisboa, Instituto de Telecomunicações, Universitetet i Edinburgh, Aveni, Unbabel, Universitetet i Amsterdam og Naver Labs. Den ble trent med det primære målet om en balansert dekning av europeiske språk. Den dekker de 24 offisielle språkene i EU samt 11 andre språk. Treningen ble utført på omtrent 4 billioner tokens, ved bruk av 400 Nvidia H100 GPU-er på superdatamaskinen MareNostrum 5, drevet av Barcelona Supercomputing Center. Prosjektet mottok europeisk institusjonell støtte gjennom Horizon Europe og EuroHPC, innenfor rammen av en \"ekstremskala\" databehandlingstildeling.</p>\n<p>Treningsdataene kombinerer webdata, flerspråklige parallelle data (en–xx og xx–en) og nøye utvalgte datasett av høy kvalitet, med sterk vekt på balanse mellom de europeiske språkene. Modellen fungerer spesielt bra for flerspråklige oversettelsesoppgaver.</p>",
                 "size_desc": "<p>Med 22 milliarder parametere faller denne modellen inn i kategorien mellomstore modeller. Bruken krever en svært kraftig pc eller, mer generelt, en server med minst ett grafikkort med høy ytelse. Kontekstvinduet inneholder 32 000 tokens.</p>"
             },
             "GLM 4.5": {
@@ -995,7 +995,7 @@
             },
             "Magistral Small": {
                 "desc": "<p>En mellomstor, multimodal og flerspråklig resonneringsmodell. Passer for oppgaver som krever grundig analyse, forståelse av logiske systemer eller planlegging, for eksempel for bruk av agenter eller skriving av langt, komplekst innhold.</p>",
-                "fyi": "<p>Denne modellen er en del av Mistral AIs første generasjon av resonneringsmodeller (sommeren 2025). I motsetning til de fleste andre resonneringsmodeller, kan denne modellen resonnere på flere språk, inkludert engelsk, fransk, spansk, tysk, italiensk, arabisk, russisk og forenklet kinesisk.</p>\n<p>Trening ble utført i to faser. Den første, kalt <em>kaldstart</em> ved destillasjon (fra Mistral Medium 3 og <em>OpenThoughts/OpenR1</em>), lar modellen tilegne seg grunnleggende resonneringsevner fra generelle instruksjonsdata (10 %). Den andre er en høy-entropi fase med forsterkningslærings (RL), hvor modellen oppmuntres til å utforske ulike og varierte løsninger i stedet for å konvergere på et enkelt svar, og til å generere lange konklusjoner (opptil 32 000 tokens), noe som tillater utvikling av resonneringsevner som overgår undervisningsmodellens.</p>",
+                "fyi": "<p>Denne modellen er en del av Mistral AIs første generasjon av resonneringsmodeller (sommeren 2025). I motsetning til de fleste andre resonneringsmodeller, kan denne modellen resonnere på flere språk, inkludert engelsk, fransk, spansk, tysk, italiensk, arabisk, russisk og forenklet kinesisk.</p>\n<p>Treningen ble utført i to faser. Den første fasen (kalt <em>cold-start</em>) ved destillasjon (fra Mistral Medium 3 og <em>OpenThoughts/OpenR1</em>), lar modellen tilegne seg grunnleggende resonneringsevner fra generelle instruksjonsdata (10 %). Den andre fasen er en høy-entropi-fase med forsterkningslærings (RL), hvor modellen oppmuntres til å utforske ulike og varierte løsninger i stedet for å konvergere på et enkelt svar, og til å generere lange konklusjoner (opptil 32 000 tokens), noe som tillater utvikling av resonneringsevner som overgår undervisningsmodellens.</p>",
                 "size_desc": "<p>Med 24 milliarder parametere regnes dette som en mellomstor modell. Den krever et enkelt kraftig grafikkort for å kjøre. Resonneringsmodeller bruker også lengre tid på å produsere et svar, noe som øker strømforbruket.</p>\n<p>Den har et kontekstvindu på opptil 40 000 tokens, nyttig for å analysere kortere dokumenter, men utilstrekkelig for å analysere store korpus av dokumenter.</p>"
             },
             "MiniMax M2": {
@@ -1231,7 +1231,7 @@
             "newDiscussion": "Ny chat",
             "step": "Steg",
             "stepOne": {
-                "description": "Ta både form og innhold i betraktning, og vurder deretter hvert svar.",
+                "description": "Ta både form og innhold i betraktning, og vurder deretter hvert svar",
                 "title": "Hva synes du om svarene?"
             },
             "stepTwo": {
@@ -1346,7 +1346,7 @@
         },
         "vote": {
             "datasetAccess": "Få tilgang til datasettene",
-            "desc": "Tjenesten er også nyttig for KI-eksperter, utviklere og til utdanningsformål.",
+            "desc": "Tjenesten er også nyttig for KI-eksperter, utviklere, og til utdanningsformål",
             "steps": {
                 "datasets": {
                     "desc": "Alle stilte spørsmål og stemmegivning samles i ulike datasett og publiseres åpent etter anonymisering.",
@@ -1469,11 +1469,11 @@
         "release": "Utgitt {date}",
         "size": {
             "count": {
-                "L": "100 til 400 mrd.",
-                "M": "60 til 100 mrd.",
-                "S": "15 til 60 mrd.",
-                "XL": "> 400 mrd.",
-                "XS": "< 15 mrd."
+                "L": "100 til 400 milliarder",
+                "M": "60 til 100 milliarder",
+                "S": "15 til 60 milliarder",
+                "XL": "> 400 milliarder",
+                "XS": "< 15 milliarder"
             },
             "estimated": "Estimert størrelse ({size})",
             "title": "Størrelse"
@@ -1892,7 +1892,7 @@
         },
         "table": {
             "data": {
-                "billions": "{count} mrd.",
+                "billions": "{count} milliarder",
                 "cols": {
                     "arch": "Arkitektur",
                     "consumption": "Gjennomsnittlig energiforbruk<br>(1000 tokens)",
@@ -1971,7 +1971,7 @@
                 "tooltip": "Energiforbruket, målt i milliwattimer, representerer elektrisiteten modellen bruker til å behandle en spørring og generere et svar. Jo større en modell er (i milliarder av parametere), desto mer energi kreves det generelt sett for å produsere et token."
             },
             "size": {
-                "count": "milliarder parametere",
+                "count": "milliarder parametere.",
                 "estimated": "(est.)",
                 "label": "modellstørrelse",
                 "quantized": "(kvantisert)"
@@ -1993,9 +1993,100 @@
         }
     },
     "seo": {
-        "desc": "compar:IA er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes."
+        "desc": "compar:IA er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes.",
+        "title": "compar:IA, arena for sammenligning av KI-chatboter",
+        "titles": {
+            "accessibilite": "Tlgjengelighetserklæring",
+            "arene": "Chat",
+            "community": "Fellesskap",
+            "comparator": "Komparatoren",
+            "datasets": "Datasett",
+            "donnees-personnelles": "Personvernerklæring",
+            "duel": "Verksted for KI-dueller",
+            "faq": "Ofte stilte spørsmål",
+            "history": "Viktige datoer",
+            "home": "Hjem",
+            "mentions-legales": "Juridisk merknad",
+            "modalites": "Vilkår for bruk",
+            "modeles": "Liste over modeller",
+            "news": "Nyheter og ressurser",
+            "partners": "Partnere",
+            "problem": "Det innledende problemet",
+            "product": "Om oss",
+            "ranking": "Rangering",
+            "rgesn": "Økodesign-erklæring",
+            "share": "Min vurdering"
+        }
+    },
+    "vote": {
+        "bothEqual": "Begge er like gode",
+        "choices": {
+            "altText": "{choice} for modellen {model}",
+            "negative": {
+                "incorrect": "Uriktig",
+                "instructions_not_followed": "Instruksjoner ikke fulgt",
+                "question": "Hvorfor passer ikke svaret?",
+                "superficial": "Overfladisk"
+            },
+            "other": "Annet…",
+            "positive": {
+                "clear_formatting": "Fjern formatering",
+                "complete": "Fullstendig",
+                "creative": "Kreativ",
+                "question": "Hva likte du med dette svaret?",
+                "useful": "Nyttig"
+            }
+        },
+        "comment": {
+            "add": "Legg til kommentarer",
+            "placeholder": "Du kan legge til detaljer om dette svaret fra {model}-modellen"
+        },
+        "dislike": {
+            "label": "Jeg liker det ikke",
+            "selectedLabel": "Jeg liker ikke (valgt)"
+        },
+        "introA": "Før vi avslører modellenes identitet, trenger vi din stemme.",
+        "introB": "Det gjør at vi kan videreutvikle compar:IA-datasettene, som har som mål å forbedre fremtidige KI-modeller på språk med færre tilgjengelige språkressurser",
+        "like": {
+            "label": "Jeg liker det",
+            "selectedLabel": "Jeg liker (valgt)"
+        },
+        "qualify": {
+            "addDetails": "Legg til detaljer",
+            "placeholder": "Svarene fra modellen {model} er...",
+            "question": "Hvordan ville du beskrevet modellens svar?"
+        },
+        "title": "Hvilken KI-modell foretrekker du?",
+        "yours": "Din stemme"
+    },
+    "welcome": {
+        "errors": "KI kan gjøre feil: vi oppfordrer deg til å sjekke og få bekreftet informasjonen.",
+        "go": "Da setter vi i gang",
+        "privacy": "Ikke del personlig informasjon som navn, etternavn eller adresse.",
+        "title": "Velkommen til compar:IA!",
+        "tos": {
+            "desc": "Samtalene og preferansene du uttrykker på compar:IA brukes anonymt til å lage datasett som er representative for europeiske språk og deres bruksområder, for å redusere kulturelle skjevheter og åpne opp for mer inkluderende KI-modeller i fremtiden.",
+            "moreInfos": "Lær mer om prosjektet."
+        },
+        "use": "Ikke bruk compar:IA til ulovlige eller skadelige formål."
     },
     "words": {
+        "NA": "Ikke aktuelt",
+        "activated": "Aktivert",
+        "archived": "Arkivert",
+        "back": "Tilbake",
+        "close": "Lukke",
+        "deactivated": "Deaktivert",
+        "loading": "Laster",
+        "new": "Ny",
+        "random": "Tilfeldig",
+        "regenerate": "Generer på nytt",
+        "reset": "Tilbakestill",
+        "restart": "Start på nytt",
+        "retry": "Start på nytt",
+        "search": "Søk",
+        "send": "Send",
+        "tooltip": "Verktøytips",
         "validate": "Validere"
     }
 }
