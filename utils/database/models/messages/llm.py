@@ -1,12 +1,18 @@
 from typing import Annotated, Literal
 
+from pydantic import BeforeValidator
 from sqlmodel import Field, SQLModel, String
 
 
-class LLMMessage(SQLModel, table=True):
-    __tablename__ = "llm_message"
+def strip_and_empty_as_none(v: str | None) -> str | None:
+    v = v.strip() if v else None
+    return None if not v else v
 
-    id: Annotated[int | None, Field(primary_key=True)] = None
+
+StripAndEmptyAsNone = BeforeValidator(strip_and_empty_as_none)
+
+
+class LLMMessageBase(SQLModel):
     role: Annotated[Literal["assistant"], Field(sa_type=String)] = "assistant"
 
     content: str
@@ -16,3 +22,28 @@ class LLMMessage(SQLModel, table=True):
     tokens: int | None = None
     duration: float | None = None
     is_cached: bool = False
+
+
+class LLMMessageFinal(LLMMessageBase):
+    content: Annotated[str, StripAndEmptyAsNone]
+    reasoning_content: Annotated[str | None, StripAndEmptyAsNone]
+
+    generation_id: str
+    tokens: int
+    duration: float
+    is_cached: bool
+
+
+class LLMMessage(LLMMessageFinal, table=True):
+    __tablename__ = "llm_message"
+
+    id: Annotated[int | None, Field(primary_key=True)] = None
+
+
+class LLMMessageCreate(LLMMessageBase):
+    content: str = ""
+    reasoning_content: str = ""
+
+
+class LLMMessageRead(LLMMessageFinal):
+    id: int
