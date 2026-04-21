@@ -7,16 +7,15 @@ from sqlmodel import Field, Relationship, SQLModel, String
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.database.utils import ArchivedReason
 
-from .messages import SystemMessage
-from .turn import Turn
+from .messages import SystemMessage, SystemMessageRead
+from .turn import Turn, TurnRead
 
 SystemMessageId = Annotated[
     int | None, Field(foreign_key="system_message.id", unique=True)
 ]
 
 
-class Comparison(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class ComparisonBase(SQLModel):
     created_at: Annotated[
         datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
     ]
@@ -32,27 +31,16 @@ class Comparison(SQLModel, table=True):
         None
     )
 
-    turns: list[Turn] = Relationship(back_populates="comparison")
-
     # a
     llm_id_a: str
     system_msg_a_id: SystemMessageId = None
-    system_msg_a: SystemMessage | None = Relationship(
-        sa_relationship_kwargs={
-            "foreign_keys": "[Turn.system_msg_a_id]",
-            "lazy": "joined",
-        }
-    )
+
     # b
     llm_id_b: str
     system_msg_b_id: SystemMessageId = None
-    system_msg_b: SystemMessage | None = Relationship(
-        sa_relationship_kwargs={
-            "foreign_keys": "[Turn.system_msg_b_id]",
-            "lazy": "joined",
-        }
-    )
 
+
+class ComparisonWithAnalyzeData(ComparisonBase):
     # LLM analyze metadata
     llm_analyze_failed: bool | None = None
     contains_pii: bool | None = None
@@ -66,3 +54,36 @@ class Comparison(SQLModel, table=True):
     archived: bool | None = None
     archived_reason: Annotated[ArchivedReason | None, Field(sa_type=String)] = None
     archived_at: datetime | None = None
+
+
+class Comparison(ComparisonWithAnalyzeData, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+    system_msg_a: SystemMessage | None = Relationship(
+        sa_relationship_kwargs={
+            "foreign_keys": "[Comparison.system_msg_a_id]",
+            "lazy": "joined",
+        }
+    )
+    system_msg_b: SystemMessage | None = Relationship(
+        sa_relationship_kwargs={
+            "foreign_keys": "[Comparison.system_msg_b_id]",
+            "lazy": "joined",
+        }
+    )
+
+    turns: list[Turn] = Relationship(
+        back_populates="comparison", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+
+class ComparisonCreate(ComparisonBase):
+    system_msg_a: SystemMessage | None = None
+    system_msg_b: SystemMessage | None = None
+
+
+class ComparisonRead(ComparisonBase):
+    id: int
+    system_msg_a: SystemMessageRead | None
+    system_msg_b: SystemMessageRead | None
+    turns: list[TurnRead]
