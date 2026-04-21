@@ -1735,15 +1735,139 @@
             },
             "diversity": {
                 "diversity": {
-                    "desc": "Disse skjevhetene kan føre til ufullstendige eller direkte feilaktige svar, og sette mangfoldet av europeiske språk og kulturer på sidelinjen."
+                    "desc": "Disse skjevhetene kan føre til ufullstendige eller direkte feilaktige svar, og sette mangfoldet av europeiske språk og kulturer på sidelinjen.",
+                    "title": "Forsømt kulturelt og språklig mangfold"
+                },
+                "english": {
+                    "desc": "Konversasjonsbasert KI er basert store språkmodeller (LLM-er) som primært er trent på engelske data, noe som skaper språklige og kulturelle skjevheter i outputen de produserer.",
+                    "title": "Treningsdata hovedsakelig på engelsk"
+                },
+                "stereotypes": {
+                    "desc": "Konversasjonsbaserte KI-systemer gir inntrykk av å snakke alle språk, men outputen de genererer kan noen ganger være stereotyp eller diskriminerende.",
+                    "title": "Stereotype svar"
                 }
-            }
-        }
+            },
+            "tabLabel": "Det første problemet",
+            "title": "Respekterer konversasjonsbaserte KI-modeller <span {props}>mangfoldet</span> av europeiske språk?"
+        },
+        "title": "Alt du trenger å vite om chatbot-arenaen"
     },
     "ranking": {
+        "energy": {
+            "desc": "Denne grafen representerer tilfredshetspoengsummen (Bradley Terry-score) for hver modell som en funksjon av det estimerte gjennomsnittlige energiforbruket per 1000 tokens. Energiforbruket er estimert ved hjelp av Ecologits-metodikken og er basert på to parametere: størrelsen på modellene (antall parametere) og arkitekturen deres. For proprietære modeller er denne informasjonen enten ikke oppgitt eller bare delvis tilgjengelig. Derfor er de ekskludert fra grafen nedenfor.",
+            "tabLabel": "Energifokus",
+            "title": "Er de mest populære modellene energieffektive?",
+            "views": {
+                "graph": {
+                    "desc": "Velg en modell for å finne Bradley-Terry-poengsummen (BT) og det estimerte energiforbruket",
+                    "legends": {
+                        "arch": "Modellarkitektur",
+                        "size": "Filtrer etter størrelse",
+                        "sizeSub": "(milliarder parametere)"
+                    },
+                    "tabLabel": "Grafisk visning",
+                    "title": "Bradley-Terry-tilfredshetspoengsum (BT) stilt opp mot gjennomsnittlig forbruk per 1000 tokens",
+                    "tooltip": {
+                        "active_params": "Aktive parametere (milliarder)",
+                        "arch": "Arkitektur",
+                        "consumption": "Gjennomsnittlig forbruk (mWh)",
+                        "elo": "BT-poengsum",
+                        "params": "Parametere (milliarder)"
+                    },
+                    "xLabel": "Gjennomsnittlig forbruk per 1000 tokens (mWh)",
+                    "yLabel": "Bradley-Terry-poengsum (BT)"
+                },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Jo høyere en modell befinner seg på grafen</strong>, desto høyere er Bradley-Terry-tilfredshetspoengsummen. <strong>Jo lenger til venstre en modell befinner seg på grafen</strong>, desto mindre energi bruker den sammenlignet med andre modeller.",
+                            "2": "<strong>Øverst til venstre</strong> er modellene som er populære og bruker mindre energi sammenlignet med andre modeller.",
+                            "3": "Utover størrelsen har <strong>arkitekturen</strong> en innvirkning på det gjennomsnittlige energiforbruket til modeller. Med en lignende størrelse, bruker for eksempel Llama 3 405B-modellen (tett arkitektur, 405 milliarder parametere) 10 ganger mer energi i gjennomsnitt enn GLM 4.5-modellen (MoE-arkitektur, 355 milliarder parametere og 32 milliarder aktive parametere)."
+                        },
+                        "subTitle": "Eksempler på hvordan man leser grafen",
+                        "title": "Hvordan finne den riktige balansen mellom opplevd ytelse og energieffektivitet?"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "Estimeringen av energiforbruk for modellinferens er basert på Ecologits-metoden, som tar hensyn til modellenes størrelse og arkitektur. Denne informasjonen blir imidlertid ikke offentliggjort av modellutviklere for proprietære modeller.",
+                            "2": "Vi har derfor valgt å ikke integrere proprietære modeller i grafen før informasjonen som bidrar til beregning av energiforbruk er transparent."
+                        },
+                        "title": "Hvorfor vises ikke de proprietære modellene på grafen?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "Arenaen bruker metoden utviklet av <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) for å gi et estimat av energifotavtrykket knyttet til bruken av konversasjonsbaserte KI-modeller. Dette estimatet lar brukere sammenligne miljøpåvirkningen av ulike KI-modeller for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.",
+                            "2": "Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044. For øyeblikket er fokuset på virkningen av inferens (dvs. bruk av modeller for å svare på spørsmål) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).",
+                            "3": "Modellens strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen og arkitekturen til KI-modellen som brukes, plasseringen av serverne der modellen er distribuert og antall outputtokener. Beregningen av indikatoren for globalt oppvarmingspotensial, uttrykt i CO2-ekvivalenter, er avledet fra målingen av modellens strømforbruk.",
+                            "4": "Det er viktig å merke seg at metodene for å vurdere miljøpåvirkningen fra KI fortsatt er under utvikling."
+                        },
+                        "title": "Hvordan beregnes modellenes energipåvirkning?"
+                    }
+                },
+                "table": {
+                    "title": "Diagramdata i tabellformat"
+                }
+            }
+        },
+        "methodo": {
+            "desc": {
+                "1": "Siden 2024 har tusenvis av brukere brukt arenaen til å sammenligne svarene fra ulike modeller, noe som har generert hundretusenvis av stemmer. Det er ikke nok å bare telle antall stemmer for å etablere en rangering. Et rettferdig system må være statistisk robust, justeres kontinuerlig og gjenspeile verdien av de oppnådde prestasjonene.",
+                "2": "Det er på denne bakgrunnen at en <strong>rangering basert på Bradley-Terry-modellen</strong> ble etablert, utviklet i samarbeid med et team fra <strong>Pôle d’Expertise de la Régulation Numérique</strong> (<a {perenLinkProps}>PEReN</a>)</strong>, basert på alle stemmene og reaksjonene som er samlet inn på plattformen. For å lære mer, se vår <a {lnotebookLinkProps}>metodiske notatbok</a>."
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "<strong>Bradley-Terry</strong>-modellen omdanner et sett med lokale og potensielt ufullstendige sammenligninger til et konsistent og statistisk robust globalt rangeringssystem, der den empiriske seiersraten forblir begrenset til direkte observasjoner."
+                    },
+                    "title": "Topp 10 modeller i rangeringen basert på estimert seiersrate med Bradley-Terry-modellen"
+                },
+                "title": "Innvirkning av metodevalg på modellrangering",
+                "winrate": {
+                    "desc": {
+                        "1": "Basert utelukkende på den <strong>gjennomsnittlige seiersraten</strong>, kan man få frem en samlet rangering, men denne beregningen forutsetter at hver modell har spilt mot alle andre.",
+                        "2": "Denne metoden er ikke ideell fordi den krever data fra alle kombinasjoner av modeller, og så snart antallet modeller øker, blir den raskt dyr og tungvint å vedlikeholde."
+                    },
+                    "title": "Topp 10 modeller i rangeringen basert på \"empiriske\" seiersrater"
+                }
+            },
+            "methods": {
+                "cons": "Hovedproblemer",
+                "elo": {
+                    "def": "<strong>Definisjon</strong>: Rangeringssystem der poenggevinst eller -tap avhenger av resultatet (seier/tap/uavgjort <strong>og</strong> motstanderens estimerte nivå: hvis en svakere modell slår en sterkere modell, er førstnevntes progresjon i rangeringen større.",
+                    "list": {
+                        "1": "<strong>Probabilistisk modell</strong>: Vi kan estimere det sannsynlige utfallet av enhver \"duell\", selv mellom modeller som aldri har blitt sammenlignet direkte.",
+                        "2": "<strong>Ta hensyn til kampens vanskelighetsgrad</strong>: Poengsummene som er estimert fra Bradley Terry-modellen tar hensyn til nivået på motstanderne som møtes, noe som gir en rettferdig sammenligning mellom modellene.",
+                        "3": "<strong>Forbedret håndtering av usikkerhet</strong>: Konfidensintervallet integrerer hele nettverket av sammenligninger. Dette gir en mer nøyaktig estimering av usikkerhet, spesielt for modeller med få direkte konfrontasjoner, men mange felles motstandere."
+                    },
+                    "title": "Bradley-Terry-tabell"
+                },
+                "pros": "Fordeler",
+                "title": "To måter å klassifisere modeller på",
+                "winrate": {
+                    "def": "<strong>Definisjon</strong> Et empirisk rangeringssystem for modeller basert på prosentandelen av dueller vunnet av en modell mot alle andre modeller.",
+                    "list": {
+                        "1": "<strong>Skjevhet i antall dueller</strong>: En modell som har vunnet tre av tre dueller har en seiersrate på 100 %, men denne poengsummen er ikke veldig meningsfull fordi den er basert på svært lite data.",
+                        "2": "<strong>Ingen hensyn til duellens vanskelighetsgrad</strong>: Det å slå en «nybegynner»- eller en «ekspert»-modell teller likt. Seiersrater er urettferdige siden de ikke tar hensyn til duellens vanskelighetsgrad.",
+                        "3": "<strong>Stagnasjon</strong>: I det lange løp ender mange gode modeller opp med en seiersrate på rundt 50 % fordi de møter modeller på sitt eget ferdighetsnivå, noe som gjør rangeringene mindre diskriminerende."
+                    },
+                    "title": "Rangering etter antall seire"
+                }
+            },
+            "tabLabel": "Metodikk",
+            "title": "Hvordan velge metode for klassifisering av modeller?"
+        },
+        "no_data": "Rangeringen er for øyeblikket utilgjengelig eller under beregning.",
         "preferences": {
+            "desc": "Når du stemmer, kan du kategorisere preferansene dine ved hjelp av ulike positive og negative etiketter. Sammenlign fordelingen deres på tvers av modellene.",
+            "modal": {
+                "cta": "Hva er en preferanse?",
+                "title": "Positive og negative preferanser"
+            },
+            "tabLabel": "Visning basert på preferanse",
             "table": {
                 "cols": {
+                    "clear_formatting": "Fjern formatering<br>",
+                    "complete": "Fullstendig",
                     "creative": "Kreativ",
                     "incorrect": "Uriktig",
                     "instructions_not_followed": "Instruksjoner<br> ikke fulgt",
@@ -1832,7 +1956,46 @@
                     "unit": "Antall påfyllinger av svømmebasseng"
                 }
             },
-            "title": "Ekvivalenter i tonn CO<sub>2</sub>"
+            "title": "Ekvivalenter i tonn CO<sub>2</sub>",
+            "title_tooltip": "Ekvivalensene er projeksjoner for å illustrere masseeffekten. Vi har multiplisert effekten av diskusjonen din med denne modellen til alle KI-brukere i Frankrike: 48 % av franskmenn rapporterer nå at de bruker generativ KI. Aldri før har en digital teknologi blitt tatt i bruk så raskt (kilde <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
+        },
+        "feedback": {
+            "description": "Bidra til å fremme compar:IA ved å dele KI-modellene du har samhandlet med! Bare navnene på modellene og energipåvirkningen fra diskusjonen vil være synlige via denne lenken, meldingene i samtalen blir ikke delt.",
+            "example": "Eksempel på delte resultater",
+            "moreOnVotes": "Lær mer om avstemningen",
+            "shareResult": "Del resultatet ditt"
+        },
+        "impacts": {
+            "energy": {
+                "label": "energiforbruk.",
+                "tooltip": "Energiforbruket, målt i milliwattimer, representerer elektrisiteten modellen bruker til å behandle en spørring og generere et svar. Jo større en modell er (i milliarder av parametere), desto mer energi kreves det generelt sett for å produsere et token."
+            },
+            "size": {
+                "count": "milliarder parametere",
+                "estimated": "(est.)",
+                "label": "modellstørrelse",
+                "quantized": "(kvantisert)"
+            },
+            "title": "Estimert energiforbruk for chatten",
+            "tokens": {
+                "label": "tekststørrelse",
+                "tokens": "tokener",
+                "tooltip": "KI analyserer og genererer setninger fra ord eller deler av ord (omtrent fire bokstaver); denne tekstenheten kalles et token. Jo lengre en tekst er, desto flere tokener inneholder den."
+            },
+            "tooltip": "Estimat basert på modellstørrelse, arkitektur og lengden på det genererte svaret."
+        },
+        "thanks": {
+            "cta": "Få tilgang til rangeringene",
+            "desc": "Se hvordan dine preferansener sammenlignes med den generelle rangeringen av modeller i compar:IA.",
+            "graphAlt": "Oversikt over grafen som representerer poengsummen og strømforbruket til modellene",
+            "rankingAlt": "Oversikt over rangeringen i tabellformat",
+            "title": "Takk for bidraget ditt!"
         }
+    },
+    "seo": {
+        "desc": "compar:IA er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes."
+    },
+    "words": {
+        "validate": "Validere"
     }
 }
