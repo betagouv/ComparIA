@@ -5,7 +5,7 @@ from sqlmodel import Field, Relationship, SQLModel, String
 
 from backend.config import NegativePref, PositivePref, TurnChoice
 
-from .messages import LLMMessage, UserMessage
+from .messages import LLMMessage, LLMMessageRead, UserMessage, UserMessageRead
 
 if TYPE_CHECKING:
     from .comparison import Comparison
@@ -16,31 +16,42 @@ KeywordAnnotations = Annotated[
 ]
 
 
-class Turn(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
+class TurnBase(SQLModel):
     comparison_id: Annotated[int, Field(foreign_key="comparison.id")]
-    comparison: "Comparison" = Relationship(back_populates="turns")
-
-    choice: Annotated[TurnChoice | None, Field(sa_type=String)]
-    user_msg: UserMessage = Relationship(
-        sa_relationship_kwargs={"uselist": False, "lazy": "joined"}
-    )
+    choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
 
     # a
-    llm_id_a: str
     llm_msg_a_id: LLMMessageId = None
-    llm_msg_a: LLMMessage | None = Relationship(
-        sa_relationship_kwargs={"foreign_keys": "[Turn.llm_msg_a_id]", "lazy": "joined"}
-    )
     keyword_annotations_a: KeywordAnnotations = []
     custom_annotation_a: str | None = None
 
     # b
-    llm_id_b: str
     llm_msg_b_id: LLMMessageId = None
+    keyword_annotations_b: KeywordAnnotations = []
+    custom_annotation_b: str | None = None
+
+
+class Turn(TurnBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+
+    comparison: "Comparison" = Relationship(back_populates="turns")
+    user_msg: UserMessage = Relationship(
+        sa_relationship_kwargs={"uselist": False, "lazy": "joined"}
+    )
+    llm_msg_a: LLMMessage | None = Relationship(
+        sa_relationship_kwargs={"foreign_keys": "[Turn.llm_msg_a_id]", "lazy": "joined"}
+    )
     llm_msg_b: LLMMessage | None = Relationship(
         sa_relationship_kwargs={"foreign_keys": "[Turn.llm_msg_b_id]", "lazy": "joined"}
     )
-    keyword_annotations_b: KeywordAnnotations = []
-    custom_annotation_b: str | None = None
+
+
+class TurnCreate(TurnBase):
+    user_msg: UserMessage
+
+
+class TurnRead(TurnBase):
+    id: int
+    user_msg: UserMessageRead
+    llm_msg_a: LLMMessageRead | None
+    llm_msg_b: LLMMessageRead | None
