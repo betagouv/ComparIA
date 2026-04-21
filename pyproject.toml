@@ -25,6 +25,7 @@ dependencies = [
     "uvicorn>=0.40.0",
     "altcha>=1.0.0",
     "sqlmodel>=0.0.38",
+    "psycopg[binary]>=3.3.3",
 ]
 
 [dependency-groups]
