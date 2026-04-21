@@ -3,6 +3,11 @@
         "externalLink": "{text}"
     },
     "actions": {
-        "accessData": "Accedere ai dati"
+        "accessData": "Accedere ai dati",
+        "contact": "Contattaci",
+        "contactUs": "Contattaci",
+        "copyLink": {
+            "do": "Copia il link"
+        }
     }
 }
