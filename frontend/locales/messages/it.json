@@ -1,1 +1,8 @@
-{}
+{
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "accessData": "Accedere ai dati"
+    }
+}
