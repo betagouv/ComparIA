@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comparia-backend
+  labels:
+    part: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      part: backend
+  template:
+    metadata:
+      labels:
+        part: backend
+    spec:
+      containers:
+        - name: backend
+          image: registry-placeholder/languia
+          imagePullPolicy: Always
+          command:
+            - uv
+            - run
+            - uvicorn
+            - backend.main:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "80"
+            - --timeout-graceful-shutdown
+            - "60"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              port: 80
+              path: /docs
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          env:
+            - name: COMPARIA_REDIS_HOST
+              value: comparia-redis
+            - name: COMPARIA_DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: comparia-db
+                  key: COMPARIA_DB_URI
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: comparia-apikeys
+                  key: OPENROUTER_API_KEY
+            - name: ALBERT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: comparia-apikeys
+                  key: ALBERT_API_KEY
+            - name: ALTCHA_HMAC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: comparia-apikeys
+                  key: ALTCHA_HMAC_KEY

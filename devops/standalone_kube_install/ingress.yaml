@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: comparia
+spec:
+  # Adjust ingressClassName to match your cluster's ingress controller
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - comparia.example.com
+  rules:
+    - host: comparia.example.com
+      http:
+        paths:
+          - path: /counter
+            pathType: Prefix
+            backend:
+              service:
+                name: comparia-backend
+                port:
+                  number: 80
+          - path: /models
+            pathType: Prefix
+            backend:
+              service:
+                name: comparia-backend
+                port:
+                  number: 80
+          - path: /arena
+            pathType: Prefix
+            backend:
+              service:
+                name: comparia-backend
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: comparia-frontend
+                port:
+                  number: 80

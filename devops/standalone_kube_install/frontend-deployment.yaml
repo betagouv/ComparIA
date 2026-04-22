@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comparia-frontend
+  labels:
+    part: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      part: frontend
+  template:
+    metadata:
+      labels:
+        part: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: registry-placeholder/languia-front
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              port: 80
+              path: /
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          env:
+            - name: PORT
+              value: "80"
+            # Set to the public URL of your instance (e.g. https://comparia.example.com)
+            - name: PUBLIC_API_URL
+              value: ""
+            - name: PUBLIC_API_LOCAL_URL
+              value: http://comparia-backend:80
+            - name: PRIVATE_API_URL
+              value: http://comparia-backend:80

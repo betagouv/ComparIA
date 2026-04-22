@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comparia-postgres
+  labels:
+    part: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+  selector:
+    part: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comparia-redis
+  labels:
+    part: redis
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+      name: redis
+  selector:
+    part: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comparia-backend
+  labels:
+    part: backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    part: backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comparia-frontend
+  labels:
+    part: frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    part: frontend
