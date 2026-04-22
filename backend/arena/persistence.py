@@ -98,7 +98,7 @@ def save_vote_to_db(data: dict) -> dict:
 
     with db(data, "save 'vote'") as (cursor, fields, values):
         # SQL INSERT for votes table
-        insert_statement = psycopg2.sql.SQL(f"""
+        insert_statement = psycopg2.sql.SQL("""
             INSERT INTO votes ({fields})
             VALUES ({values})
         """)
@@ -140,7 +140,7 @@ def upsert_reaction_to_db(data: dict) -> dict:
     with db(data, "upsert 'reaction'") as (cursor, fields, values):
         data_keys = list(data.keys())
         # SQL UPSERT for reactions table
-        query = psycopg2.sql.SQL(f"""
+        query = psycopg2.sql.SQL("""
             INSERT INTO reactions ({fields})
             VALUES ({values})
             ON CONFLICT (refers_to_conv_id, msg_index) 
@@ -267,7 +267,7 @@ def upsert_conv_to_db(data: dict) -> dict:
         # FIXME add tstamp?
         data_keys = list(data.keys())
         # SQL UPSERT for conversations table
-        upsert_query = psycopg2.sql.SQL(f"""
+        upsert_query = psycopg2.sql.SQL("""
             INSERT INTO conversations ({fields})
             VALUES ({values})
             ON CONFLICT (conversation_pair_id)
