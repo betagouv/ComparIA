@@ -1,5 +1,21 @@
 {
     "a11y": {
         "externalLink": "{text}"
+    },
+    "actions": {
+        "accessData": "Få tilgang til dataa",
+        "contact": "Kontakt oss",
+        "contactUs": "Kontakt oss",
+        "copyLink": {
+            "do": "Kopier lenka",
+            "done": "Lenka er kopiert til utklippstavla"
+        },
+        "copyMessage": {
+            "do": "Kopier meldinga",
+            "done": "Meldinga er kopiert"
+        },
+        "downloadData": "Last ned dataa",
+        "home": "Heimeside",
+        "returnHome": "Gå til heimesida"
     }
 }
