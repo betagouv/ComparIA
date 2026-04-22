@@ -59,6 +59,13 @@
       "enabled": true
     },
     {
+      "name": "hex_prefix_injection",
+      "regex": "^[a-f0-9]{12,}\\s*\\n\\n",
+      "flags": "IGNORECASE",
+      "description": "Hex string prefix followed by double newline — bot/spam pattern where a random hex token precedes injected prompt content.",
+      "enabled": true
+    },
+    {
       "name": "roleplay_injection_tags",
       "regex": "<[^>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
       "flags": "IGNORECASE",
