@@ -98,10 +98,10 @@ def save_vote_to_db(data: dict) -> dict:
 
     with db(data, "save 'vote'") as (cursor, fields, values):
         # SQL INSERT for votes table
-        insert_statement = psycopg2.sql.SQL(f"""
-            INSERT INTO votes ({fields})
-            VALUES ({values})
-        """)
+        insert_statement = psycopg2.sql.SQL("INSERT INTO votes ({}) VALUES ({})").format(
+            psycopg2.sql.SQL(", ").join(psycopg2.sql.Identifier(f) for f in data.keys()),
+            psycopg2.sql.SQL(", ").join(psycopg2.sql.Placeholder() for _ in data.keys())
+        )
 
         cursor.execute(insert_statement, data)
 
@@ -140,10 +140,13 @@ def upsert_reaction_to_db(data: dict) -> dict:
     with db(data, "upsert 'reaction'") as (cursor, fields, values):
         data_keys = list(data.keys())
         # SQL UPSERT for reactions table
-        query = psycopg2.sql.SQL(f"""
-            INSERT INTO reactions ({fields})
-            VALUES ({values})
-            ON CONFLICT (refers_to_conv_id, msg_index) 
+        query = psycopg2.sql.SQL("""
+            INSERT INTO reactions ({})
+            VALUES ({})
+            ON CONFLICT (refers_to_conv_id, msg_index)""").format(
+                psycopg2.sql.SQL(", ").join(psycopg2.sql.Identifier(f) for f in data.keys()),
+                psycopg2.sql.SQL(", ").join(psycopg2.sql.Placeholder() for _ in data.keys()),
+            ) 
             DO UPDATE SET
                 model_a_name = EXCLUDED.model_a_name,
                 model_b_name = EXCLUDED.model_b_name,
@@ -267,10 +270,13 @@ def upsert_conv_to_db(data: dict) -> dict:
         # FIXME add tstamp?
         data_keys = list(data.keys())
         # SQL UPSERT for conversations table
-        upsert_query = psycopg2.sql.SQL(f"""
-            INSERT INTO conversations ({fields})
-            VALUES ({values})
-            ON CONFLICT (conversation_pair_id)
+        upsert_query = psycopg2.sql.SQL("""
+            INSERT INTO conversations ({})
+            VALUES ({})
+            ON CONFLICT (conversation_pair_id)""").format(
+                psycopg2.sql.SQL(", ").join(psycopg2.sql.Identifier(f) for f in data.keys()),
+                psycopg2.sql.SQL(", ").join(psycopg2.sql.Placeholder() for _ in data.keys()),
+            )
             DO UPDATE SET
                 country_portal =  coalesce(EXCLUDED.country_portal, conversations.country_portal),
                 conversation_a = EXCLUDED.conversation_a,
