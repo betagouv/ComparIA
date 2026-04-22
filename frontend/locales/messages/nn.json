@@ -16,6 +16,33 @@
         },
         "downloadData": "Last ned dataa",
         "home": "Heimeside",
-        "returnHome": "Gå til heimesida"
+        "returnHome": "Gå til heimesida",
+        "scrollLeft": "Bla til venstre",
+        "scrollRight": "Bla til høgre",
+        "searchModel": "Søk etter ein modell",
+        "seeMore": "Sjå meir",
+        "selectLanguage": "Vel eit språk",
+        "vote": "Send attendemelding"
+    },
+    "arenaHome": {
+        "compareModels": {
+            "count": "{count}/2 modellar",
+            "help": "Viss du berre vel ein, vert den andre vald tilfeldig",
+            "question": "Kva modellar vil du samanlikne?"
+        },
+        "modelSelection": "Val av modellar",
+        "prompt": {
+            "label": "Skriv den første meldinga di",
+            "placeholder": "Skriv den første meldinga di her"
+        },
+        "selectModels": {
+            "help": "Vel samanlikningsmodus",
+            "question": "Kva modellar vil du samanlikne?"
+        },
+        "suggestions": {
+            "generateAnother": "Generer eit nytt prompt",
+            "title": "Føreslåtte prompt"
+        },
+        "title": "Kva kan eg hjelpe deg med i dag?"
     }
 }
