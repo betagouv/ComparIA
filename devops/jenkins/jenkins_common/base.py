@@ -3,13 +3,13 @@
 Classe de base abstraite pour tous les triggers Jenkins
 """
 
+import argparse
+import logging
 import os
 import sys
-import logging
 import time
-import argparse
-from typing import Optional, Dict, Any
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional
 
 try:
     import jenkins
@@ -76,18 +76,13 @@ class JenkinsJobTrigger(ABC):
         Returns:
             Numéro du build lancé ou None en cas d'erreur
         """
-        pass
 
     @abstractmethod
     def get_job_parameters(self, **kwargs) -> Dict[str, Any]:
         """Retourne les paramètres du job Jenkins"""
-        pass
 
     def _execute_job(
-        self,
-        parameters: Dict[str, Any],
-        wait: bool,
-        action_name: str = "job"
+        self, parameters: Dict[str, Any], wait: bool, action_name: str = "job"
     ) -> Optional[int]:
         """
         Logique commune d'exécution d'un job
@@ -236,9 +231,7 @@ class JenkinsJobTrigger(ABC):
             help="Nom d'utilisateur Jenkins",
         )
         parser.add_argument(
-            "--token",
-            default=os.getenv("JENKINS_API_TOKEN"),
-            help="Token API Jenkins"
+            "--token", default=os.getenv("JENKINS_API_TOKEN"), help="Token API Jenkins"
         )
         parser.add_argument(
             "--job",
@@ -251,11 +244,7 @@ class JenkinsJobTrigger(ABC):
             default=30,
             help="Timeout de connexion en secondes (défaut: 30)",
         )
-        parser.add_argument(
-            "--verbose", "-v",
-            action="store_true",
-            help="Mode verbeux"
-        )
+        parser.add_argument("--verbose", "-v", action="store_true", help="Mode verbeux")
 
         return parser
 
@@ -287,10 +276,7 @@ class JenkinsJobTrigger(ABC):
             sys.exit(1)
 
     def execute_main_workflow(
-        self,
-        trigger_result: Optional[int],
-        success_message: str,
-        error_message: str
+        self, trigger_result: Optional[int], success_message: str, error_message: str
     ):
         """Workflow standard de fin d'exécution"""
         if trigger_result:

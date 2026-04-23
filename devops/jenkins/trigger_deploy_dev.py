@@ -4,8 +4,9 @@ Script pour lancer le job de déploiement Kustomize dev
 Utilise un token API pour l'authentification (méthode recommandée)
 """
 
-import sys
 import logging
+import sys
+
 from jenkins_common import JenkinsDeployJobTrigger, JenkinsJobTrigger
 
 # Configuration du logging
@@ -75,15 +76,13 @@ Exemples d'utilisation:
     # Lancement du déploiement
     logger.info("=" * 50)
     result = trigger.trigger(
-        image_tag=args.image_tag,
-        force_delete=args.force_delete,
-        wait=args.wait
+        image_tag=args.image_tag, force_delete=args.force_delete, wait=args.wait
     )
 
     trigger.execute_main_workflow(
         result,
         success_message="Déploiement lancé avec succès!",
-        error_message="Échec du lancement du déploiement"
+        error_message="Échec du lancement du déploiement",
     )
 
 

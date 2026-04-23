@@ -11,7 +11,13 @@ from typing import TYPE_CHECKING, Generator, TypedDict, Union, cast
 
 import litellm
 
-from backend.config import GLOBAL_TIMEOUT, ORDBOGEN_GLOBAL_TIMEOUT, ORDBOGEN_STREAM_TIMEOUT, STREAM_TIMEOUT, settings
+from backend.config import (
+    GLOBAL_TIMEOUT,
+    ORDBOGEN_GLOBAL_TIMEOUT,
+    ORDBOGEN_STREAM_TIMEOUT,
+    STREAM_TIMEOUT,
+    settings,
+)
 from backend.errors import ContextTooLongError
 
 if TYPE_CHECKING:
