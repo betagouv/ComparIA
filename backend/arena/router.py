@@ -4,6 +4,7 @@ from typing import Annotated, AsyncGenerator, TypedDict
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
+from backend.arena.captcha import generate_challenge
 from backend.arena.models import (
     AddFirstTextBody,
     AddTextBody,
@@ -24,7 +25,6 @@ from backend.arena.persistence import (
     record_vote,
 )
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
-from backend.arena.captcha import generate_challenge, verify_altcha_token
 from backend.arena.session import (
     create_session,
     increment_custom_selections,

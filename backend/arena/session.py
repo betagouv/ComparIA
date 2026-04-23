@@ -9,17 +9,16 @@ import logging
 from typing import Awaitable
 from uuid import uuid4
 
-from utils.storage.redis import (
-    REDIS_CONVERSATIONS_KEY,
-    REDIS_USER_CHAR_COUNT,
-    get_redis_client,
-)
 from backend.config import (
     RATELIMIT_CUSTOM_SELECTION_PER_DAY,
     RATELIMIT_CUSTOM_SELECTION_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
 )
-
+from utils.storage.redis import (
+    REDIS_CONVERSATIONS_KEY,
+    REDIS_USER_CHAR_COUNT,
+    get_redis_client,
+)
 
 logger = logging.getLogger("languia")
 

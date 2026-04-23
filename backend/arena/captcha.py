@@ -7,7 +7,7 @@ Provides challenge generation, solution verification, and replay prevention via 
 import logging
 from datetime import datetime, timedelta, timezone
 
-from altcha import ChallengeOptions, Challenge, create_challenge, verify_solution
+from altcha import Challenge, ChallengeOptions, create_challenge, verify_solution
 
 from backend.config import (
     ALTCHA_CHALLENGE_EXPIRY_SECONDS,

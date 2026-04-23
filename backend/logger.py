@@ -20,6 +20,8 @@ class LokiHandler(BaseLokiHandler):
 
     def handleError(self, record: logging.LogRecord) -> None:
         pass
+
+
 from psycopg2 import sql
 from rich.logging import RichHandler
 
@@ -232,7 +234,10 @@ def configure_logger() -> logging.Logger:
         try:
             loki_handler = LokiHandler(
                 url=f"{custom_logger_url}/loki/api/v1/push",
-                tags={"app": "comparia-backend", "environment": os.getenv("ENVIR", "dev")},
+                tags={
+                    "app": "comparia-backend",
+                    "environment": os.getenv("ENVIR", "dev"),
+                },
                 version="1",
             )
             logger.addHandler(loki_handler)
