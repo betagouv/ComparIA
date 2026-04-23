@@ -58,7 +58,10 @@ check_untyped_defs = true
 recursive = true
 in-place = true
 remove-all-unused-imports = true
-exclude= ["./utils/ranking_methods"]
+exclude= [
+    "./utils/ranking_methods",
+    "./**/__init__.py"
+]
 
 [tool.isort]
 profile = "black"
