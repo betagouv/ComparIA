@@ -4,7 +4,8 @@ from typing import Annotated
 from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from backend.config import CustomModelsSelection, SelectionMode
+from backend.arena.models import ErrorDetails
+from backend.config import CountryPortal, CustomModelsSelection, SelectionMode
 from utils.database.utils import ArchivedReason
 
 from .messages import SystemMessage, SystemMessageRead
@@ -25,6 +26,7 @@ class ComparisonBase(SQLModel):
     session_hash: str
     ip: str  # WARNING: PII
     visitor_id: str | None = None
+    country_portal: Annotated[CountryPortal, Field(sa_type=String)]
     cohorts: str | None = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
@@ -38,6 +40,8 @@ class ComparisonBase(SQLModel):
     # b
     llm_id_b: str
     system_msg_b_id: SystemMessageId = None
+
+    error: Annotated[ErrorDetails | None, Field(sa_type=JSONB)] = None
 
 
 class ComparisonWithAnalyzeData(ComparisonBase):
