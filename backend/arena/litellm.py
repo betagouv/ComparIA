@@ -6,7 +6,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 """
 
 import logging
-from typing import TYPE_CHECKING, Generator, TypedDict, Union, cast
+from typing import TYPE_CHECKING, Generator, Union, cast
 
 import litellm
 
@@ -22,8 +22,8 @@ from backend.errors import ContextTooLongError
 if TYPE_CHECKING:
     from fastapi import Request
 
-    from backend.arena.models import AnyMessage
-    from backend.llms.models import Endpoint
+    from backend.llms.models import Endpoint, LLMDataEnabled
+    from utils.database.models import AnyMessageRead, LLMMessageCreate
 
 logger = logging.getLogger("languia")
 
@@ -59,23 +59,16 @@ def get_api_key(endpoint: "Endpoint") -> str | None:
     return None
 
 
-class LLMResponse(TypedDict):
-    generation_id: str
-    reasoning: str
-    content: str
-    output_tokens: int | None
-
-
 def litellm_stream_iter(
-    model_name: str,
-    endpoint: "Endpoint",
-    messages: list["AnyMessage"],
+    llm: "LLMDataEnabled",
+    messages: list["AnyMessageRead"],
+    msg: "LLMMessageCreate",
     temperature: float,
     max_new_tokens: int,
     request: Union["Request", None] = None,
     include_reasoning: bool = False,  # FIXME Legacy ?
     enable_reasoning: bool = False,  # FIXME Legacy ?
-) -> Generator[LLMResponse]:
+) -> Generator["LLMMessageCreate"]:
     """
     Stream responses from an LLM API using LiteLLM.
 
@@ -83,9 +76,9 @@ def litellm_stream_iter(
     manages streaming responses, and processes tokens and metadata.
 
     Args:
-        model_name: Model id
-        endpoint: Model Endpoint data
+        llm: LLM data
         messages: List of messages to be serialized for llm call
+        msg: initialized LLMMessageCreate to update
         temperature: Sampling temperature for response diversity
         max_new_tokens: Maximum tokens to generate
         request: FastAPI request for logging
@@ -93,16 +86,16 @@ def litellm_stream_iter(
         enable_reasoning: Whether to enable reasoning mode
 
     Yields:
-        Dict containing: content, reasoning, output_tokens, generation_id
+        updated LLMMessageCreate
     """
-
+    endpoint = llm.endpoint
     # Build LiteLLM model identifier (e.g., "openai/gpt-4", "google/gemini-pro")
     litellm_model_name = f"{endpoint.api_type}/{endpoint.api_model_id}"
     # Retrieve API key from environment or config
     api_key = get_api_key(endpoint)
 
     logger.info(
-        f"using endpoint {litellm_model_name} for {model_name}: {endpoint.model_dump(mode="json")}",
+        f"using endpoint {litellm_model_name} for {llm.id}: {endpoint.model_dump(mode="json")}",
         extra={"request": request},
     )
 
@@ -173,28 +166,20 @@ def litellm_stream_iter(
     # OpenRouter specific params could be added here
     # transforms = [""], route= ""
 
-    # Data dict to accumulate response metadata
-    data: LLMResponse = {
-        "generation_id": "",
-        "reasoning": "",
-        "content": "",
-        "output_tokens": None,
-    }
-
     # Process streaming chunks from the API
     for chunk in response:
         # Extract generation ID for tracking/debugging
-        if not data["generation_id"] and chunk.id:
-            data["generation_id"] = chunk.id
+        if not msg.generation_id and chunk.id:
+            msg.generation_id = chunk.id
             logger.debug(
                 f"Response stream started for '{litellm_model_name}' with generation_id='{chunk.id}'",
                 extra={"request": request},
             )
         # Extract token count from streaming completion (if available)
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            data["output_tokens"] = chunk.usage.completion_tokens
+            msg.tokens = chunk.usage.completion_tokens
             logger.debug(
-                f"reported output tokens for api {endpoint.api_base} and model {litellm_model_name}: {data["output_tokens"]}",
+                f"reported output tokens for api {endpoint.api_base} and model {litellm_model_name}: {msg.tokens}",
                 extra={"request": request},
             )
         # Process content chunks
@@ -205,12 +190,12 @@ def litellm_stream_iter(
             if delta := choice.get("delta"):
                 # Get the text content of this chunk
                 if content := choice.delta.get("content"):
-                    data["content"] += content
+                    msg.content += content
                 # Get reasoning content (for reasoning models)
                 if reasoning := delta.get("reasoning_content") or delta.get(
                     "reasoning"
                 ):
-                    data["reasoning"] += reasoning
+                    msg.reasoning_content += reasoning
 
             # Check for generation completion signal
             if choice.finish_reason == "stop":
@@ -224,7 +209,7 @@ def litellm_stream_iter(
                 break
 
             # Yield partial results for streaming to frontend
-            yield data
+            yield msg
 
     logger.debug(
         f"Response stream ended for '{litellm_model_name}' with generation_id='{chunk.id}'",
@@ -232,4 +217,4 @@ def litellm_stream_iter(
     )
 
     # Final yield after loop completes
-    yield data
+    yield msg
