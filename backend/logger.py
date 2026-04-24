@@ -4,9 +4,6 @@ import logging
 import os
 import sys
 from logging.handlers import WatchedFileHandler
-from typing import Any
-
-import psycopg2
 from fastapi import Request
 from logging_loki import LokiHandler as BaseLokiHandler
 
@@ -20,7 +17,8 @@ class LokiHandler(BaseLokiHandler):
 
     def handleError(self, record: logging.LogRecord) -> None:
         pass
-from psycopg2 import sql
+
+
 from rich.logging import RichHandler
 
 from backend.config import settings
@@ -66,92 +64,6 @@ class JSONFormatter(logging.Formatter):
 
         return json.dumps(log_data)
 
-
-class PostgresHandler(logging.Handler):
-    """
-    Custom logging handler that writes logs to PostgreSQL.
-
-    Connects to database and stores log entries for centralized logging.
-    Maintains persistent connection with auto-reconnection.
-    """
-
-    dsn: str
-    connection: Any
-
-    def __init__(self, dsn: str) -> None:
-        """
-        Initialize PostgreSQL logging handler.
-
-        Args:
-            dsn: Database connection string (postgres://user:pass@host/db)
-        """
-        super().__init__()
-        self.dsn = dsn
-        self.connection = None
-
-    def connect(self) -> None:
-        """Connect to PostgreSQL database, reconnecting if connection is closed."""
-        if not self.connection or self.connection.closed:
-            try:
-                self.connection = psycopg2.connect(self.dsn)
-            except psycopg2.Error as e:
-                print(f"Error connecting to database: {e}")
-
-    def emit(self, record) -> None:
-        """
-        Emit a log record by writing it to PostgreSQL.
-
-        Args:
-            record: LogRecord from Python logging
-        """
-        assert isinstance(record, logging.LogRecord)
-        # print((record.__dict__))
-        # print("LoggingHandler received LogRecord: {}".format(record))
-
-        # record = super().format(record)
-        self.format(record)
-
-        try:
-            self.connect()
-            if self.connection:
-                with self.connection.cursor() as cursor:
-                    # del(record.__dict__["request"])
-
-                    insert_statement = sql.SQL("""
-                        INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
-                        VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
-                    """)
-                    values = {
-                        "time": record.asctime,
-                        "level": record.levelname,
-                        "message": record.message,
-                    }
-                    if hasattr(record, "extra"):
-                        values["extra"] = json.dumps(record.__dict__.get("extra"))
-                    else:
-                        values["extra"] = "{}"
-                    if hasattr(record, "request"):
-                        query_params = dict(record.request.query_params)
-                        path_params = dict(record.request.path_params)
-                        # ip = get_ip(record.request)
-                        session_hash = getattr(record.request, "session_hash", None)
-                        values["query_params"] = json.dumps(query_params)
-                        values["path_params"] = json.dumps(path_params)
-                        values["session_hash"] = (
-                            str(session_hash) if session_hash else ""
-                        )
-                    else:
-                        values["query_params"] = "{}"
-                        values["path_params"] = "{}"
-                        values["session_hash"] = ""
-
-                    cursor.execute(insert_statement, values)
-                    self.connection.commit()
-        except psycopg2.Error as e:
-            # Don't use logger on purpose to avoid endless loops
-            print(f"Error logging to Postgres: {e}")
-            # Could do:
-            # self.handleError(record)
 
 
 def configure_logger() -> logging.Logger:
@@ -222,17 +134,16 @@ def configure_logger() -> logging.Logger:
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 
-    if settings.COMPARIA_DB_URI and settings.enable_postgres_handler:
-        postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
-        logger.addHandler(postgres_handler)
-
     # Custom Logger (Loki) handler for centralized logging
     custom_logger_url = os.getenv("CUSTOM_LOGGER_URL")
     if custom_logger_url:
         try:
             loki_handler = LokiHandler(
                 url=f"{custom_logger_url}/loki/api/v1/push",
-                tags={"app": "comparia-backend", "environment": os.getenv("ENVIR", "dev")},
+                tags={
+                    "app": "comparia-backend",
+                    "environment": os.getenv("ENVIR", "dev"),
+                },
                 version="1",
             )
             logger.addHandler(loki_handler)
@@ -300,11 +211,6 @@ def configure_uvicorn_logging() -> None:
 
             file_handler.setFormatter(file_formatter)
             uvicorn_logger.addHandler(file_handler)
-
-        # PostgreSQL handler
-        if settings.COMPARIA_DB_URI and settings.enable_postgres_handler:
-            postgres_handler = PostgresHandler(settings.COMPARIA_DB_URI)
-            uvicorn_logger.addHandler(postgres_handler)
 
         # Custom Logger (Loki) handler
         custom_logger_url = os.getenv("CUSTOM_LOGGER_URL")

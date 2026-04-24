@@ -37,6 +37,7 @@
         "fyi": "Ce modèle a été codistillé avec Behemoth, ce qui veut dire qu’il a appris en même temps que le modèle géant, et non après comme dans une distillation classique. Cela permet de transférer ses compétences plus vite et avec moins de calcul.  Il a été entraîné sur 30 billions de jetons, combinant texte en 200 langues et images  pour obtenir des capacités multimodales natives - il peut traiter jusqu’à 8 images simultanément. L’architecture repose sur un système de mix d’experts (MoE - Mixture of Experts), avec 17 milliards de paramètres actifs, 16 experts et 109 milliards de paramètres totaux. L'équipe Meta a développé une stratégie de post-entraînement progressive, combinant filtrage adaptatif des données - en gardant seulement les plus complexes et intéressantes, fine-tuning ciblé et apprentissage par renforcement en ligne, pour équilibrer performances multimodales, raisonnement et qualité conversationnelle. Grâce à l’architecture iRoPE (version optimisée de l’encodage positionnel), il peut gérer des fenêtres de contexte très longues, jusqu’à 10 millions de jetons. \n\nLe modèle Llama 4 Maverick a été présenté comme la réponse directe de Meta aux modèles DeepSeek. Cependant, lors de sa sortie, de nombreux utilisateurs ont estimé qu’il ne répondait pas aux attentes, en particulier sur les tâches de programmation et les travaux créatifs."
       },
       {
+        "status": "archived",
         "id": "llama-3.3-70b",
         "simple_name": "Llama 3.3 70B",
         "license": "Llama 3.3",
@@ -383,6 +384,24 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "id": "grok-4.20",
+        "simple_name": "Grok 4.20",
+        "license": "proprietary",
+        "release_date": "03/2026",
+        "arch": "maybe-moe",
+        "params": 1700,
+        "reasoning": true,
+        "new": true,
+        "url": "https://x.ai/news",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "x-ai/grok-4.20"
+        },
+        "desc": "Nouvelle itération majeure de Grok, la famille de modèles de xAI. Elle se distingue par un mode multi-agent qui fait raisonner quatre agents en parallèle sur une même question avant d'en synthétiser une réponse unique, et par une fenêtre de contexte exceptionnellement large de 2 millions de jetons. L'éditeur annonce également une capacité d'apprentissage continu, avec des mises à jour hebdomadaires à partir de l'usage réel. Le raisonnement peut être activé ou désactivé à la demande.",
+        "size_desc": "La taille exacte du modèle n'est pas connue. Des indices laissent penser qu'il s'agit d'un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s'appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu'à 2 millions de jetons, ce qui permet de traiter de très grands corpus documentaires. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "La préversion bêta de Grok 4.20 a été rendue disponible à la mi-février 2026, avant sa sortie officielle sur l'API xAI en mars 2026. Le mode multi-agent oriente chaque requête vers quatre agents spécialisés qui raisonnent en parallèle, puis synthétise leurs conclusions en une réponse unique, une approche annoncée comme bénéfique pour les tâches de raisonnement complexes. Le raisonnement est contrôlable via un paramètre d'API plutôt que via un identifiant de modèle distinct.\n\nSelon l'éditeur, Grok 4.20 introduit une architecture d'apprentissage continu qui met à jour hebdomadairement les capacités du modèle à partir de l'usage réel, sans intervention des utilisateurs. Aucun détail architectural précis (nombre de paramètres, architecture dense ou mélange d'experts) n'a été communiqué publiquement par xAI. Le modèle est proposé sous licence payante, accessible via l'API xAI et OpenRouter."
+      },
+      {
         "id": "grok-4.1-fast",
         "simple_name": "Grok 4.1 Fast",
         "license": "proprietary",
@@ -631,6 +650,7 @@
         "fyi": "Publié par Google DeepMind sous licence Apache 2.0, ce modèle repose sur une architecture de mélange d'experts (MoE, Mixture of Experts) de 30 couches, avec 8 experts actifs par jeton parmi 128 experts disponibles, plus un expert partagé. Il combine attention locale à fenêtre glissante (1 024 jetons) et attention globale sur l'ensemble du contexte.\n\nIl partage le même encodeur visuel d'environ 550 millions de paramètres que la variante dense 31B, et prend en charge les images à résolution variable, les vidéos jusqu'à 60 secondes, plus de 140 langues et les appels de fonctions natifs.\n\nMalgré ses 4 milliards de paramètres actifs seulement, il atteint des performances très proches de la variante dense 31B. Selon l'éditeur, il obtient 88,3 % sur AIME 2026, 82,6 % sur MMLU Pro, 82,3 % sur GPQA Diamond et 77,1 % sur LiveCodeBench v6, ce qui en fait l'un des modèles de raisonnement les plus efficaces en paramètres actifs disponibles à ce jour."
       },
       {
+        "status": "archived",
         "id": "gemma-3n-e4b-it",
         "simple_name": "Gemma 3n 4B",
         "license": "Gemma",
@@ -647,6 +667,7 @@
         "fyi": "Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle."
       },
       {
+        "status": "archived",
         "id": "gemma-3-4b",
         "simple_name": "Gemma 3 4B",
         "license": "Gemma",
@@ -663,6 +684,7 @@
         "fyi": "Il peut traiter du texte et des images en fonctionnant sur des appareils peu puissants, y compris smartphones et tablettes. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
       },
       {
+        "status": "archived",
         "id": "gemma-3-12b",
         "simple_name": "Gemma 3 12B",
         "license": "Gemma",
@@ -679,6 +701,7 @@
         "fyi": "Il traite du texte et des images et peut fonctionner en local sur des ordinateurs portables puissants ou des serveurs avec une seule carte graphique. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
       },
       {
+        "status": "archived",
         "id": "gemma-3-27b",
         "simple_name": "Gemma 3 27B",
         "license": "Gemma",
@@ -781,6 +804,24 @@
     "icon_path": "qwen-color",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
+      {
+        "id": "qwen3.6-plus",
+        "simple_name": "Qwen 3.6 Plus",
+        "license": "proprietary",
+        "release_date": "04/2026",
+        "arch": "maybe-moe",
+        "params": 500,
+        "reasoning": true,
+        "new": true,
+        "url": "https://chat.qwen.ai/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3.6-plus"
+        },
+        "desc": "Modèle phare de la nouvelle génération Qwen 3.6, conçu par Alibaba autour de l'« agentic coding » : il sait décomposer un projet de programmation, écrire le code, le tester et corriger ses propres erreurs jusqu'à aboutir à un résultat fonctionnel. Il se distingue aussi par une très grande fenêtre de contexte, qui lui permet d'ingérer des bases de code ou des corpus documentaires entiers. C'est l'un des rares modèles propriétaires publiés par Qwen, qui sort habituellement beaucoup de modèles en poids ouverts.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE, Mixture of Experts) combinée à une attention linéaire. Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton, ce qui réduit la puissance de calcul nécessaire. Sa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Annoncé officiellement par Alibaba le 2 avril 2026, Qwen 3.6 Plus a été mis à disposition en préversion sur OpenRouter fin mars 2026. L'éditeur le positionne comme compatible avec plusieurs assistants de code tiers, dont Claude Code et Cline, pour permettre des flux de travail automatisés où le modèle traduit des exigences complexes en code fonctionnel.\n\nL'architecture hybride associe une attention linéaire à un routage de mélange d'experts épars, dans la continuité de la série Qwen 3.5. Les poids de Qwen 3.6 Plus ne sont pas publiés et l'accès se fait uniquement via API, ce qui tranche avec la majorité des modèles Qwen, publiés en poids ouverts. Selon l'éditeur, le modèle est optimisé pour la stabilité et la précision requises dans les environnements professionnels, notamment pour le suivi d'instructions, la reconnaissance de textes complexes et la perception visuelle fine. Aucun score de référence public indépendant n'était disponible au moment de l'annonce."
+      },
       {
         "id": "qwen3.5-397b-a17b",
         "simple_name": "Qwen 3.5 397B",
@@ -1050,6 +1091,25 @@
     "icon_path": "moonshot",
     "models": [
       {
+        "id": "kimi-k2.6",
+        "simple_name": "Kimi K2.6",
+        "license": "Modified MIT",
+        "release_date": "04/2026",
+        "arch": "moe",
+        "params": 1000,
+        "active_params": 32,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/moonshotai/Kimi-K2.6",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "moonshotai/kimi-k2.6"
+        },
+        "desc": "Très grand modèle ouvert conçu par Moonshot AI, qui se distingue par un mode agentique capable de coordonner jusqu'à 300 sous-agents travaillant en parallèle sur une même tâche complexe. Il est nativement multimodal (texte, image, vidéo) et dispose d'un mode de raisonnement. Selon l'éditeur, il rivalise avec les meilleurs modèles propriétaires comme Claude Opus 4.6 et GPT-5.4 sur plusieurs tests d'ingénierie logicielle, tout en étant publié en poids ouverts.",
+        "size_desc": "Avec 1 000 milliards de paramètres, Kimi K2.6 se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 32 milliards de paramètres par jeton généré, ce qui réduit considérablement l'empreinte par rapport à un modèle dense de même taille. Sa fenêtre de contexte atteint 256 000 jetons, ce qui permet de traiter de longs documents ou des bases de code volumineuses. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Publié par Moonshot AI le 20 avril 2026, Kimi K2.6 est le successeur direct de K2.5. L'architecture repose sur 61 couches dont une dense, avec 384 experts routés et un expert partagé, 8 experts étant activés par jeton. Le modèle utilise une attention de type MLA (Multi-head Latent Attention), une fonction d'activation SwiGLU et une quantification INT4 native, dans la continuité de Kimi K2 Thinking.\n\nLa principale évolution par rapport à K2.5 concerne les capacités agentiques : l'essaim d'agents passe de 100 à 300 sous-agents pouvant coordonner jusqu'à 4 000 étapes en parallèle pour décomposer des tâches complexes. Le modèle est nativement multimodal grâce à un encodeur visuel MoonViT de 400 millions de paramètres capable de traiter des images et des vidéos.\n\nSelon l'éditeur, Kimi K2.6 obtient 58,6 % sur SWE-Bench Pro (devant GPT-5.4 à 57,7 %), 54,0 % sur Humanity's Last Exam avec outils, 80,2 % sur SWE-Bench Verified, 96,4 % sur AIME 2026 et 90,5 % sur GPQA-Diamond. Les poids sont publiés sous licence Modified MIT sur Hugging Face."
+      },
+      {
         "id": "kimi-k2.5",
         "simple_name": "Kimi K2.5",
         "license": "MIT",
@@ -1068,6 +1128,7 @@
         "fyi": "Le modèle a été entraîné avec un mode spécifique appelé « Agent Swarm » (essaim d’agents). Dans ce mode d’orchestration, le problème n’est pas résolu de manière strictement séquentielle, mais découpé en plusieurs sous-tâches exécutées en parallèle par des sous-agents. Le modèle a appris au cours de son entraînement à agir comme un agent principal : il analyse la demande, décide combien de sous-agents lancer, leur assigne des objectifs, puis agrège leurs résultats. Cette capacité a été atteinte grâce à des méthodes d’apprentissage par renforcement multi-agent, où l’orchestrateur était récompensé lorsqu’il choisissait une bonne décomposition du problème et une coordination efficace entre agents, et pénalisé lorsqu’il adoptait un raisonnement trop linéaire ou redondant."
       },
       {
+        "status": "archived",
         "id": "kimi-k2-thinking",
         "simple_name": "Kimi K2 Thinking",
         "license": "MIT",
@@ -1086,6 +1147,7 @@
         "fyi": "Le modèle semble démontrer des performances accrues sur les raisonnements longs et les tâches nécessitant des étapes d'utilisation d'outils. Ces caractéristiques sont supposées favoriser une « autonomie » prolongée dans l'exécution des tâches."
       },
       {
+        "status": "archived",
         "id": "kimi-k2",
         "simple_name": "Kimi K2",
         "license": "MIT",
@@ -1512,6 +1574,7 @@
         "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement."
       },
       {
+        "status": "archived",
         "id": "mistral-small-2506",
         "simple_name": "Mistral Small 3.2",
         "license": "Apache 2.0",
@@ -1722,6 +1785,7 @@
         "fyi": "Claude Sonnet 4.6 succède à Sonnet 4.5 et constitue une mise à niveau majeure de la gamme intermédiaire d'Anthropic. Le modèle obtient 79,6 % sur SWE-bench Verified, un score de référence pour la génération de code, et 72,5 % sur OSWorld pour l'utilisation d'ordinateur, se rapprochant d'Opus 4.6 pour un coût cinq fois inférieur. Les performances en mathématiques (89 %) sont également en forte hausse par rapport à son prédécesseur.\n\nLe modèle prend en charge un mode de raisonnement adaptatif, permettant de moduler l'intensité de la réflexion selon la complexité de la tâche. Sa fenêtre de contexte atteint 1 000 000 jetons en version bêta, une première pour un modèle de la gamme Sonnet, ce qui permet de traiter des bases de code entières ou de volumineux ensembles documentaires en une seule requête. Lors de tests comparatifs internes, les utilisateurs ont préféré Sonnet 4.6 à Sonnet 4.5 dans environ 70 % des cas."
       },
       {
+        "status": "archived",
         "id": "claude-4-5-sonnet",
         "simple_name": "Claude 4.5 Sonnet",
         "license": "proprietary",
@@ -1789,6 +1853,25 @@
     "name": "Zhipu",
     "icon_path": "zhipu-color",
     "models": [
+      {
+        "id": "glm-5.1",
+        "simple_name": "GLM 5.1",
+        "license": "MIT",
+        "release_date": "04/2026",
+        "arch": "moe",
+        "params": 744,
+        "active_params": 40,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/zai-org/GLM-5.1",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "z-ai/glm-5.1"
+        },
+        "desc": "Très grand modèle conçu pour des tâches complexes : ingénierie logicielle, orchestration agentique et raisonnement avancé. Il simule une étape de raisonnement avant de générer sa réponse. Cette version améliore sensiblement les performances en code et en exécution autonome prolongée par rapport à GLM 5.",
+        "size_desc": "Avec 744 milliards de paramètres, ce modèle fait partie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts) comptant 256 experts dont 8 activés par jeton, il n'utilise que 40 milliards de paramètres par inférence, ce qui réduit l'empreinte par rapport à un modèle dense de même taille, tout en nécessitant un serveur doté de plusieurs cartes graphiques puissantes pour être hébergé. Sa fenêtre de contexte atteint environ 200 000 jetons, ce qui permet de traiter de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Zhipu AI (désormais Z.ai) a publié GLM 5.1 en avril 2026, une mise à jour de GLM 5 reposant sur la même architecture de mélange d'experts (MoE, Mixture of Experts) : 744 milliards de paramètres totaux, 40 milliards activés par jeton via 256 modules experts avec routage top-8 et un expert partagé. Le modèle intègre le mécanisme Multi-head Latent Attention (MLA) et DeepSeek Sparse Attention (DSA), qui réduisent les coûts d'inférence tout en préservant la capacité de traitement de longs contextes. L'entraînement a été réalisé sur des puces Huawei Ascend 910B avec le framework MindSpore.\n\nLa principale avancée de cette version concerne les capacités agentiques prolongées : le modèle peut travailler de manière autonome sur une tâche unique pendant plus de 8 heures, enchaînant jusqu'à 1 700 étapes avec un cycle continu d'expérimentation, d'analyse et d'optimisation. Il peut générer jusqu'à 128 000 jetons en une seule réponse.\n\nSelon l'éditeur, GLM 5.1 obtient 58,4 % sur SWE-Bench Pro, ce qui le placerait au premier rang mondial devant GPT-5.4 (57,7 %) et Claude Opus 4.6 (57,3 %). Sur d'autres évaluations, il atteint 95,3 % sur AIME 2026, 86,2 % sur GPQA-Diamond, 68,7 % sur CyberGym et 68,0 % sur BrowseComp. Des évaluations indépendantes estiment sa performance globale en code à environ 94,6 % de celle de Claude Opus 4.6."
+      },
       {
         "id": "glm-5",
         "simple_name": "GLM 5",
@@ -1865,6 +1948,7 @@
     "icon_path": "nousresearch",
     "models": [
       {
+        "status": "archived",
         "id": "hermes-4-70b",
         "simple_name": "Hermes 4 70B",
         "license": "Llama 3.1",
@@ -1881,6 +1965,7 @@
       },
       {
         "status": "disabled",
+        "status": "archived",
         "id": "hermes-3-llama-3.1-405b",
         "simple_name": "Hermes 3 405B",
         "license": "Llama 3.1",
@@ -1959,6 +2044,7 @@
     "icon_path": "ai2.svg",
     "models": [
       {
+        "status": "archived",
         "id": "olmo-3-32b-think",
         "simple_name": "Olmo 3 32B Think",
         "license": "Apache 2.0",
@@ -2017,6 +2103,24 @@
     "icon_path": "liquid",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
     "models": [
+      {
+        "id": "lfm2-24b-a2b",
+        "simple_name": "LFM2 24B A2B",
+        "license": "LFM 1.0",
+        "release_date": "02/2026",
+        "arch": "moe",
+        "params": 24,
+        "active_params": 2.3,
+        "new": true,
+        "url": "https://huggingface.co/LiquidAI/LFM2-24B-A2B",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "liquid/lfm-2-24b-a2b"
+        },
+        "desc": "Modèle ouvert conçu par Liquid AI pour un déploiement efficace, y compris en local sur un ordinateur puissant. Sa particularité est de générer du texte nettement plus rapidement qu'un modèle de taille équivalente, grâce à une architecture qui sort des sentiers battus des modèles dominants actuels.",
+        "size_desc": "Avec 24 milliards de paramètres, ce modèle se place dans la catégorie des modèles de taille moyenne. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 2,3 milliards de paramètres par jeton généré, ce qui le rend très économe en calcul. Il peut être utilisé localement sur un ordinateur puissant disposant d'au moins 32 Go de mémoire vive, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d'une seule carte graphique, ce qui limite les coûts d'infrastructure. Sa fenêtre de contexte, de 32 768 jetons, peut être limitante pour l'analyse de documents très longs.",
+        "fyi": "Publié par Liquid AI le 24 février 2026, LFM2-24B-A2B est le plus grand modèle de la famille LFM2. L'architecture hybride combine 30 couches de convolution courte à portes (gated short convolution) et 10 couches d'attention à requêtes groupées (grouped query attention, GQA), ce qui permet d'obtenir un préremplissage et une génération rapides tout en limitant l'empreinte mémoire. Le routage MoE utilise 64 experts avec une sélection top-4, et seuls 2,3 milliards de paramètres sont actifs par jeton.\n\nLe modèle a été entraîné sur plus de 17 000 milliards de jetons, le préentraînement étant toujours en cours selon Liquid AI au moment de la publication. Selon l'éditeur, il atteint un débit de décodage d'environ 26 800 jetons par seconde sur une carte H100 avec 1 024 requêtes simultanées, supérieur à celui de Qwen3 30B A3B et GPT OSS-20B dans ses tests internes. Le modèle est publié sous licence LFM Open License v1.0, avec une prise en charge dès le jour de sortie pour llama.cpp, vLLM et SGLang, ainsi que des quantifications en GGUF, ONNX et MLX."
+      },
       {
         "id": "lfm2-8b-a1b",
         "status": "archived",
@@ -2113,6 +2217,25 @@
     "icon_path": "minimax-color",
     "models": [
       {
+        "id": "minimax-m2.7",
+        "simple_name": "MiniMax M2.7",
+        "license": "Modified MIT",
+        "release_date": "03/2026",
+        "arch": "moe",
+        "params": 230,
+        "active_params": 10,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.7",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "minimax/minimax-m2.7"
+        },
+        "desc": "Très grand modèle semi-ouvert spécialisé dans le code et les tâches agentiques, conçu par MiniMax, entreprise basée à Shanghai. Il est présenté par l'éditeur comme un modèle « auto-évolutif » : il optimise de manière autonome ses propres méthodes de résolution de tâches, avec un gain de performance significatif revendiqué. Selon l'éditeur, il rivalise avec les meilleurs modèles propriétaires sur l'ingénierie logicielle tout en étant publié en poids ouverts.",
+        "size_desc": "Avec 230 milliards de paramètres, MiniMax M2.7 se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 10 milliards de paramètres par jeton généré, ce qui réduit considérablement l'empreinte par rapport à un modèle dense de même taille. Sa fenêtre de contexte atteint environ 200 000 jetons, ce qui est adapté à l'analyse de longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Annoncé le 18 mars 2026 puis publié en poids ouverts le 12 avril 2026, M2.7 optimise de manière autonome ses propres scaffolds de programmation sur plus d'une centaine de cycles, avec un gain de performance d'environ 30 % revendiqué par MiniMax. L'architecture s'appuie sur 256 experts dont 8 sont activés par jeton, dans la continuité de la génération M2.5.\n\nSelon l'éditeur, le modèle obtient 56,22 % sur SWE-Pro, au niveau de GPT 5.3 Codex, et 76,5 % sur SWE Multilingual. Son score ELO de 1495 sur GDPval-AA serait le plus élevé parmi les modèles à poids ouverts. Le modèle met l'accent sur la collaboration multi-agents avec une identité de rôle stable, la recherche dynamique d'outils et l'orchestration de compétences complexes, notamment pour des tâches d'analyse de métriques, de vérification de causes racines et de décisions de type SRE (Site Reliability Engineering). La licence autorise un usage non commercial libre mais impose une autorisation écrite préalable pour tout usage commercial."
+      },
+      {
         "id": "minimax-m2.5",
         "simple_name": "MiniMax M2.5",
         "license": "Modified MIT",
@@ -2131,6 +2254,7 @@
         "fyi": "Ce modèle utilise une architecture MoE avec 256 experts, dont 8 sont activés par jeton. Son entraînement repose sur Forge, un cadre d'apprentissage par renforcement agentique développé par MiniMax, qui découple l'entraînement de l'inférence et permet d'optimiser le modèle sur plus de 200 000 environnements réels (dépôts de code, navigateurs web, applications bureautiques). L'algorithme CISPO (Clipped Importance Sampling Policy Optimization) assure la stabilité de l'entraînement MoE à grande échelle. Un mécanisme de fusion arborescente des échantillons accélère l'entraînement d'environ 40 fois.\n\nLe modèle obtient 80,2 % sur SWE-Bench Verified (résolution automatique de problèmes logiciels) et 51,3 % sur Multi-SWE-Bench. Il intègre également des compétences bureautiques (Word, PowerPoint, Excel). Sa particularité est de rédiger des spécifications avant de commencer à coder, décomposant les tâches complexes en sous-étapes."
       },
       {
+        "status": "archived",
         "id": "minimax-m2",
         "simple_name": "MiniMax M2",
         "license": "MIT",

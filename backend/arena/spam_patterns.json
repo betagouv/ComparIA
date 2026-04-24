@@ -59,6 +59,20 @@
       "enabled": true
     },
     {
+      "name": "hex_prefix_injection",
+      "regex": "^[a-f0-9]{12,}\\s*\\n\\n",
+      "flags": "IGNORECASE",
+      "description": "Hex string prefix followed by double newline — bot/spam pattern where a random hex token precedes injected prompt content.",
+      "enabled": true
+    },
+    {
+      "name": "fake_session_id_prefix",
+      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{6,}\\s*[\\]\\)]\\s*(?:User|Q|Assistant|System)\\s*:",
+      "flags": "IGNORECASE|MULTILINE",
+      "description": "Bot-generated prompts prefixed with fake session/trace IDs like '[trace-01598e97...] User: hi' or '(session ref-f7b8a24f...) Q: say OK'. Legitimate users don't prefix messages with hex session IDs.",
+      "enabled": true
+    },
+    {
       "name": "roleplay_injection_tags",
       "regex": "<[^>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
       "flags": "IGNORECASE",

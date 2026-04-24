@@ -1,5 +1,5 @@
 {
-  "timestamp": 1775660479.348297,
+  "timestamp": 1776865999.496151,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -379,7 +379,7 @@
       "reuse": false,
       "simple_name": "Claude 4.5 Sonnet",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
       "wh_per_million_token": 3930.8611235673734
     },
@@ -1099,7 +1099,7 @@
       "reuse": true,
       "simple_name": "Gemma 3 12B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/google/gemma-3-12b-it",
       "wh_per_million_token": 94.00611124052664
     },
@@ -1131,7 +1131,7 @@
       "reuse": true,
       "simple_name": "Gemma 3 27B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/google/gemma-3-27b-it",
       "wh_per_million_token": 112.20683631841874
     },
@@ -1163,7 +1163,7 @@
       "reuse": true,
       "simple_name": "Gemma 3 4B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/google/gemma-3-4b-it",
       "wh_per_million_token": 84.29905786565084
     },
@@ -1195,7 +1195,7 @@
       "reuse": true,
       "simple_name": "Gemma 3n 4B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 84.29905786565084
     },
@@ -1389,6 +1389,38 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/zai-org/GLM-5",
+      "wh_per_million_token": 4095.385537682941
+    },
+    "glm-5.1": {
+      "active_params": 40,
+      "arch": "moe",
+      "commercial_use": true,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "z-ai/glm-5.1",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "zhipu-color",
+      "id": "glm-5.1",
+      "license": "MIT",
+      "new": true,
+      "organisation": "Zhipu",
+      "params": 744,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "04/2026",
+      "required_ram": 744,
+      "reuse": true,
+      "simple_name": "GLM 5.1",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/zai-org/GLM-5.1",
       "wh_per_million_token": 4095.385537682941
     },
     "gpt-3.5-turbo-0301": {
@@ -1981,6 +2013,38 @@
       "url": "https://x.ai/news/grok-4-1-fast",
       "wh_per_million_token": 14480.941662285395
     },
+    "grok-4.20": {
+      "active_params": null,
+      "arch": "maybe-moe",
+      "commercial_use": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "x-ai/grok-4.20",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "xai",
+      "id": "grok-4.20",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "xAI",
+      "params": 1700,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "03/2026",
+      "required_ram": 1700,
+      "reuse": false,
+      "simple_name": "Grok 4.20",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://x.ai/news",
+      "wh_per_million_token": 137100.43989371642
+    },
     "hermes-3-llama-3.1-405b": {
       "active_params": null,
       "arch": "dense",
@@ -2003,7 +2067,7 @@
       "reuse": true,
       "simple_name": "Hermes 3 405B",
       "specific_portals": null,
-      "status": "disabled",
+      "status": "archived",
       "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
       "wh_per_million_token": 9133.8417325008
     },
@@ -2035,7 +2099,7 @@
       "reuse": true,
       "simple_name": "Hermes 4 70B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 657.5289928335044
     },
@@ -2093,7 +2157,7 @@
       "reuse": true,
       "simple_name": "Kimi K2",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
       "wh_per_million_token": 3784.7598296869155
     },
@@ -2125,7 +2189,7 @@
       "reuse": true,
       "simple_name": "Kimi K2 Thinking",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://moonshotai.github.io/Kimi-K2/thinking.html",
       "wh_per_million_token": 3784.7598296869155
     },
@@ -2161,6 +2225,38 @@
       "url": "https://www.kimi.com/blog/kimi-k2-5.html",
       "wh_per_million_token": 3784.7598296869155
     },
+    "kimi-k2.6": {
+      "active_params": 32,
+      "arch": "moe",
+      "commercial_use": true,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "moonshotai/kimi-k2.6",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "moonshot",
+      "id": "kimi-k2.6",
+      "license": "Modified MIT",
+      "new": true,
+      "organisation": "Moonshot AI",
+      "params": 1000,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "04/2026",
+      "required_ram": 1000,
+      "reuse": true,
+      "simple_name": "Kimi K2.6",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/moonshotai/Kimi-K2.6",
+      "wh_per_million_token": 3784.7598296869155
+    },
     "lfm-40b": {
       "active_params": 12,
       "arch": "moe",
@@ -2186,6 +2282,38 @@
       "status": "archived",
       "url": "https://www.liquid.ai/liquid-foundation-models",
       "wh_per_million_token": 188.01222248105327
+    },
+    "lfm2-24b-a2b": {
+      "active_params": 2.3,
+      "arch": "moe",
+      "commercial_use": true,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "liquid/lfm-2-24b-a2b",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "S",
+      "fully_open_source": false,
+      "icon_path": "liquid",
+      "id": "lfm2-24b-a2b",
+      "license": "LFM 1.0",
+      "new": true,
+      "organisation": "Liquid",
+      "params": 24,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": false,
+      "release_date": "02/2026",
+      "required_ram": 24,
+      "reuse": true,
+      "simple_name": "LFM2 24B A2B",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/LiquidAI/LFM2-24B-A2B",
+      "wh_per_million_token": 81.87229452193189
     },
     "lfm2-8b-a1b": {
       "active_params": 1.5,
@@ -2369,7 +2497,7 @@
       "reuse": true,
       "simple_name": "Llama 3.3 70B",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
       "wh_per_million_token": 657.5289928335044
     },
@@ -2581,7 +2709,7 @@
       "reuse": true,
       "simple_name": "MiniMax M2",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://www.minimax.io/news/minimax-m2",
       "wh_per_million_token": 732.6347831744614
     },
@@ -2615,6 +2743,38 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.5",
+      "wh_per_million_token": 732.6347831744614
+    },
+    "minimax-m2.7": {
+      "active_params": 10,
+      "arch": "moe",
+      "commercial_use": true,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "minimax/minimax-m2.7",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "minimax-color",
+      "id": "minimax-m2.7",
+      "license": "Modified MIT",
+      "new": true,
+      "organisation": "MiniMax",
+      "params": 230,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "03/2026",
+      "required_ram": 230,
+      "reuse": true,
+      "simple_name": "MiniMax M2.7",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.7",
       "wh_per_million_token": 732.6347831744614
     },
     "ministral-8b-instruct-2410": {
@@ -2845,7 +3005,7 @@
       "reuse": true,
       "simple_name": "Mistral Small 3.2",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": null,
       "wh_per_million_token": 108.56669130284031
     },
@@ -3197,7 +3357,7 @@
       "reuse": true,
       "simple_name": "Olmo 3 32B Think",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://allenai.org/blog/olmo2-32b",
       "wh_per_million_token": 118.27374467771611
     },
@@ -3748,6 +3908,38 @@
       "status": "enabled",
       "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
       "wh_per_million_token": 1601.1683135971837
+    },
+    "qwen3.6-plus": {
+      "active_params": null,
+      "arch": "maybe-moe",
+      "commercial_use": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "qwen/qwen3.6-plus",
+        "api_type": "openrouter",
+        "api_version": null,
+        "vertex_ai_location": null
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "qwen-color",
+      "id": "qwen3.6-plus",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "Alibaba",
+      "params": 500,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "04/2026",
+      "required_ram": 500,
+      "reuse": false,
+      "simple_name": "Qwen 3.6 Plus",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://chat.qwen.ai/",
+      "wh_per_million_token": 10978.181873727197
     },
     "qwq-32b": {
       "active_params": null,

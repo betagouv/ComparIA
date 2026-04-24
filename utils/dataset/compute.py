@@ -18,14 +18,12 @@ Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
 import hashlib
-import json
 import logging
 import os
 from functools import lru_cache
 
 import pandas as pd
 
-from backend.arena.spam_detection import is_spam
 from backend.config import PORTAL_DATASET_INFOS, CountryPortal, settings
 from backend.llms.utils import get_active_params, get_total_params
 from utils.utils import db_connection
@@ -78,56 +76,6 @@ def calculate_kwh(model_name, tokens):
     return (llm_data.wh_per_million_token / 1_000_000) * tokens / 1_000
 
 
-def conversation_contains_spam(conversation_json) -> bool:
-    """
-    Check if a conversation (JSONB field) contains spam in user messages.
-
-    Args:
-        conversation_json: JSON string or parsed list of messages
-
-    Returns:
-        True if any user message contains spam, False otherwise
-    """
-    # Handle null/None values
-    if conversation_json is None:
-        return False
-
-    # Handle pandas NA/null
-    try:
-        if pd.isnull(conversation_json):
-            return False
-    except (ValueError, TypeError):
-        # If pd.isnull fails on this value, continue
-        pass
-
-    try:
-        # Parse JSON if string
-        if isinstance(conversation_json, str):
-            messages = json.loads(conversation_json)
-        else:
-            messages = conversation_json
-
-        # Ensure messages is a list
-        if not isinstance(messages, list):
-            return False
-
-        # Check each user message
-        for message in messages:
-            if not isinstance(message, dict):
-                continue
-
-            if message.get("role") == "user":
-                content = message.get("content", "")
-                if content and is_spam(str(content)):
-                    return True
-
-        return False
-
-    except (json.JSONDecodeError, TypeError, AttributeError) as e:
-        logger.debug(f"Failed to parse conversation for spam detection: {e}")
-        return False
-
-
 def fetch_and_transform_data(conn, table_name, query=None):
     """
     Fetch data from a database table and apply transformations.
@@ -149,35 +97,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
         if dataframe.empty:
             logger.warning("DataFrame vide - no data to export")
             return dataframe
-
-        # Filter out spam conversations (for conversations and reactions tables)
-        if (
-            table_name in ("conversations", "reactions")
-            and "conversation_a" in dataframe.columns
-        ):
-            logger.info("Filtering spam conversations...")
-            initial_count = len(dataframe)
-
-            # Build list of indices to keep (not spam)
-            indices_to_keep = []
-            for idx, row in dataframe.iterrows():
-                has_spam_a = conversation_contains_spam(row["conversation_a"])
-                has_spam_b = conversation_contains_spam(row["conversation_b"])
-
-                # Keep row only if neither conversation has spam
-                if not has_spam_a and not has_spam_b:
-                    indices_to_keep.append(idx)
-
-            # Filter dataframe to keep only non-spam rows
-            dataframe = dataframe.loc[indices_to_keep].copy()
-
-            filtered_count = initial_count - len(dataframe)
-            if filtered_count > 0:
-                logger.info(
-                    f"Filtered out {filtered_count:,} spam conversations ({filtered_count/initial_count*100:.1f}%)"
-                )
-            else:
-                logger.info("No spam detected")
 
         # Anonymize visitor_id using MD5 hash
         if "visitor_id" in dataframe.columns:
@@ -245,11 +164,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
                     row["model_b_name"], row["total_conv_b_output_tokens"]
                 )
 
-        # Il faudrait supprimer du dataset ces infos un peu legacy
-        # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
-        #     -- selected_category VARCHAR(255), (suggested question category)
-        #     -- is_unedited_prompt BOOLEAN, (if the prompt is exactly a suggestion)
-
         # Drop sensitive columns before export
         # List of sensitive columns :
 
@@ -257,7 +171,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
             "archived",
             "pii_analyzed",
             "ip",
-            "chatbot_index",
             "conversation_a_pii_removed",
             "conversation_b_pii_removed",
             "opening_msg_pii_removed",

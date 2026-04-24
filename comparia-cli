@@ -1,0 +1,15 @@
+#!/usr/bin/env -S uv run --script
+
+import logging
+
+from cyclopts import App
+
+from utils.database.cli import cli_db
+from utils.logger import configure_logger
+
+cli = App()
+cli.command(cli_db)
+
+if __name__ == "__main__":
+    configure_logger(logging.getLogger("comparia"))
+    cli()

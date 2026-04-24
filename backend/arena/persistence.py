@@ -145,21 +145,12 @@ def upsert_reaction_to_db(data: dict) -> dict:
             VALUES ({values})
             ON CONFLICT (refers_to_conv_id, msg_index) 
             DO UPDATE SET
-                model_a_name = EXCLUDED.model_a_name,
-                model_b_name = EXCLUDED.model_b_name,
                 refers_to_model = EXCLUDED.refers_to_model,
-                opening_msg = EXCLUDED.opening_msg,
-                conversation_a = EXCLUDED.conversation_a,
-                conversation_b = EXCLUDED.conversation_b,
                 model_pos = EXCLUDED.model_pos,
-                conv_turns = EXCLUDED.conv_turns,
+                current_conv_turn_when_reacting = EXCLUDED.current_conv_turn_when_reacting,
                 system_prompt = EXCLUDED.system_prompt,
-                conv_a_id = EXCLUDED.conv_a_id,
-                conv_b_id = EXCLUDED.conv_b_id,
                 conversation_pair_id = EXCLUDED.conversation_pair_id,
                 session_hash = EXCLUDED.session_hash,
-                visitor_id = EXCLUDED.visitor_id,
-                ip = EXCLUDED.ip,
                 response_content = EXCLUDED.response_content,
                 question_content = EXCLUDED.question_content,
                 liked = EXCLUDED.liked,
@@ -172,9 +163,7 @@ def upsert_reaction_to_db(data: dict) -> dict:
                 incorrect = EXCLUDED.incorrect,
                 superficial = EXCLUDED.superficial,
                 instructions_not_followed = EXCLUDED.instructions_not_followed,
-                model_pair_name = EXCLUDED.model_pair_name,
                 msg_rank = EXCLUDED.msg_rank,
-                chatbot_index = EXCLUDED.chatbot_index,
                 question_id = EXCLUDED.question_id;
         """)
         # TODO: fixes some edge case
@@ -295,51 +284,10 @@ def upsert_conv_to_db(data: dict) -> dict:
 # ============================================================================
 
 
-# TODO since we can postprocess data from Conversations we could remove:
-# - timestamp (let the db put a default)
-# - visitor_id
-# - ip
-# - country_portal
-# - cohorts
-# - model_pair_name
-# - opening_msg
-# - model_a_name
-# - model_b_name
-# - system_prompt_a
-# - system_prompt_b
-# - conversation_a
-# - conversation_b
-# - also probably conv_turns since vote can only happen at the end of the Conversations
-# and legacy:
-# - selected_category
-# - is_unedited_prompt
 class VoteRecord(BaseModel):
-    # Set with database defaults, not present in logs?
-    # id: int | None = None
-    timestamp: str
-
-    # Session
+    # Conversations links
     session_hash: str
-    visitor_id: str | None
-    ip: str
-
-    # Conversations
-    conv_turns: int
     conversation_pair_id: str
-    model_pair_name: Annotated[
-        list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
-    opening_msg: str
-    selected_category: str | None = None  # FIXME legacy autofill with None for now
-    is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
-
-    # Language model pairs specific
-    model_a_name: str
-    model_b_name: str
-    system_prompt_a: str | None
-    system_prompt_b: str | None
-    conversation_a: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
-    conversation_b: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
 
     # Vote
     chosen_model_name: str | None
@@ -360,9 +308,6 @@ class VoteRecord(BaseModel):
     conv_superficial_b: bool
     conv_instructions_not_followed_a: bool
     conv_instructions_not_followed_b: bool
-
-    # Additional? (not found in record_vote but present in votes.sql)
-    # archived: bool = False
 
 
 def record_vote(
@@ -393,8 +338,6 @@ def record_vote(
         6. Call save_vote_to_db() for database persistence
     """
 
-    t = datetime.now()
-
     conv_a = conversations.conversation_a
     conv_b = conversations.conversation_b
     chosen_model_name = (
@@ -403,8 +346,9 @@ def record_vote(
         else getattr(conversations, f"conversation_{vote.chosen_llm}").model_name
     )
 
-    vote_data = conversations.model_dump() | {
-        "timestamp": str(t),
+    vote_data = conversations.model_dump(
+        include={"session_hash", "conversation_pair_id"}
+    ) | {
         # Vote
         "chosen_model_name": chosen_model_name,
         "both_equal": vote.chosen_llm == "both_equal",
@@ -416,18 +360,10 @@ def record_vote(
         for key in ALL_PREFS:
             vote_data[f"conv_{key}_{pos}"] = key in getattr(vote, f"prefs_{pos}")
 
-        # Language model pairs specific
-        conv = vote_data.pop(f"conversation_{pos}")
-        for data_key, db_key in [
-            ("model_name", "model_{}_name"),
-            ("system_msg", "system_prompt_{}"),
-            ("messages", "conversation_{}"),
-        ]:
-            vote_data[db_key.format(pos)] = conv[data_key]
-
     vote_record = VoteRecord(**vote_data)
     db_data = vote_record.model_dump(mode="json")
 
+    t = datetime.now()
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{conversations.session_hash}.json"
     vote_log_path = settings.LOGDIR / vote_log_filename
     with vote_log_path.open(mode="a") as fout:
@@ -446,16 +382,6 @@ def record_vote(
 
 
 # TODO since we can postprocess data from Conversations we could remove:
-# - visitor_id
-# - ip
-# - model_pair_name
-# - opening_msg
-# - model_a_name
-# - model_b_name
-# - conv_a_id
-# - conv_b_id
-# - conversation_a
-# - conversation_b
 # Also based on refers_to_conv_id and msg_index we can postprocess:
 # - model_pos
 # - refers_to_model
@@ -463,35 +389,13 @@ def record_vote(
 # - response_content
 # - question_content
 # Also not sure that `question_id` is usefull
-# And legacy:
-# - chatbot_index
 class ReactionRecord(BaseModel):
-    # Set with database defaults, not present in logs?
-    # id: int | None = None
-    # timestamp: datetime | None = None
-
-    # Session
+    # Conversations links
     session_hash: str
-    visitor_id: str | None
-    ip: str
-
-    # Conversations
-    conv_turns: int  # TODO rename to current_conv_turn_when_reacting?
     conversation_pair_id: str
-    model_pair_name: Annotated[
-        list[str], JSONSerializer
-    ]  # FIXME, not sure what serialization is needed. Replace to string:string ?
-    opening_msg: str
-
-    # Language model pairs specific
-    model_a_name: str
-    model_b_name: str
-    conv_a_id: str
-    conv_b_id: str
-    conversation_a: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
-    conversation_b: Annotated[list["ConversationMessageRecord"], JSONModelSerializer]
 
     # Conversation
+    current_conv_turn_when_reacting: int
     model_pos: BotPos
     refers_to_model: str
     refers_to_conv_id: str
@@ -502,7 +406,6 @@ class ReactionRecord(BaseModel):
     # Liked/disliked message data
     msg_index: int
     msg_rank: int
-    chatbot_index: int
     question_id: str
 
     # Reaction
@@ -516,13 +419,6 @@ class ReactionRecord(BaseModel):
     incorrect: bool
     superficial: bool
     instructions_not_followed: bool
-
-    # Additional? (not found in record_reaction but present in reactions.sql)
-    # archived: bool = False
-
-    # FIXME add?
-    # country_portal: CountryPortal
-    # cohorts: str
 
 
 def delete_reaction(conv: Conversation, msg_index: int) -> dict:
@@ -573,12 +469,11 @@ def record_reaction(
     conv_b = conversations.conversation_b
     conv = conv_a if reaction.bot == "a" else conv_b
 
-    t = datetime.now()  # FIXME
     reaction_data = (
-        # Conversations
-        conversations.model_dump()
+        conversations.model_dump(include={"session_hash", "conversation_pair_id"})
         | {
             # Conversation
+            "current_conv_turn_when_reacting": conversations.conv_turns,
             "model_pos": reaction.bot,
             "refers_to_model": conv.model_name,
             "refers_to_conv_id": conv.conv_id,
@@ -590,7 +485,6 @@ def record_reaction(
             "msg_rank": (
                 reaction.index // 2  # Rank begins at zero (not counting system message)
             ),
-            "chatbot_index": reaction.index,  # FIXME legacy to remove index from old front chatbot index
             "question_id": f"{conversations.conversation_pair_id}-{reaction.index // 2}",
             # Reaction
             "liked": reaction.liked is True,
@@ -604,19 +498,10 @@ def record_reaction(
         }
     )
 
-    # Language model pairs specific
-    for pos in {"a", "b"}:
-        _conv = reaction_data.pop(f"conversation_{pos}")
-        for data_key, db_key in [
-            ("model_name", "model_{}_name"),
-            ("conv_id", "conv_{}_id"),
-            ("messages", "conversation_{}"),
-        ]:
-            reaction_data[db_key.format(pos)] = _conv[data_key]
-
     reaction_record = ReactionRecord(**reaction_data)
     db_data = reaction_record.model_dump(mode="json")
 
+    t = datetime.now()
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{conversations.session_hash}.json"
     reaction_log_path = settings.LOGDIR / reaction_log_filename
     with reaction_log_path.open(mode="a") as fout:
@@ -657,9 +542,6 @@ class ConversationMessageRecord(BaseModel):
 # - total_conv_a_output_tokens
 # - total_conv_b_output_tokens
 # - opening_msg
-# And legacy:
-# - selected_category
-# - is_unedited_prompt
 class ConversationsRecord(BaseModel):
     """
     Database/logs record for a paired conversation comparison.
@@ -670,10 +552,6 @@ class ConversationsRecord(BaseModel):
     We do not use serialization on Conversations model but define here another model
     to make sure data is of database expected type.
     """
-
-    # Set from database defaults, not present in logs?
-    # id: int | None = None
-    # timestamp: datetime | None = None
 
     # Session
     session_hash: str
@@ -693,8 +571,6 @@ class ConversationsRecord(BaseModel):
         str
     ]  # FIXME, not sure what serialization is needed, in previous code it was raw array but in db shema it says 'TEXT', and in others 'JSONB'. Replace to string:string ?
     opening_msg: str
-    selected_category: str | None = None  # FIXME legacy autofill with None for now
-    is_unedited_prompt: bool = False  # FIXME legacy autofill with False for now
 
     # Language model pairs specific
     model_a_name: str
@@ -709,18 +585,6 @@ class ConversationsRecord(BaseModel):
     total_conv_b_output_tokens: int
     cached_response_a: bool
     cached_response_b: bool
-
-    # Additional? (not found in record_conversations but present in conversations.sql)
-    # archived: bool = False
-    # short_summary: str | None = None
-    # ip_map: str | None = None
-    # keywords: dict[str, Any] | None = None
-    # categories: dict[str, Any] | None = None
-    # languages: dict[str, Any] | None = None
-    # pii_analyzed: bool = False
-    # contains_pii: bool | None = None
-    # conversation_a_pii_removed: Any = None  # JSONB
-    # conversation_b_pii_removed: Any = None  # JSONB
 
     # TODO: add 'interrupted' bool field?
     # TODO: add `error: boolean` or `error_message: str`, `conv_a|b_error: str`?
@@ -743,7 +607,6 @@ def record_conversations(
         dict: The saved serialized ConversationsRecord
     """
 
-    t = datetime.now()  # FIXME
     convs_data = conversations.model_dump()
 
     # Language model pairs specific

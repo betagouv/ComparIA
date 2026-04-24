@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Script pour lancer le job de déploiement Kustomize prd sur Jenkins"""
-import sys
+
 import logging
+import sys
+
 from jenkins_common import JenkinsDeployJobTrigger, JenkinsJobTrigger
 
 logging.basicConfig(
