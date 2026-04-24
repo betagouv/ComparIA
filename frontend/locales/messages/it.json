@@ -8,6 +8,11 @@
         "contactUs": "Contattaci",
         "copyLink": {
             "do": "Copia il link"
-        }
+        },
+        "copyMessage": {
+            "do": "Copia il messaggio"
+        },
+        "downloadData": "Scarica i dati",
+        "home": "Pagina iniziale / principale"
     }
 }
