@@ -21,69 +21,44 @@ from backend.arena.cache import (
     store_cached_response,
 )
 from backend.arena.litellm import litellm_stream_iter
-from backend.arena.models import (
-    AnyMessage,
-    AssistantMessage,
-    AssistantMessageMetadata,
-    BotPos,
-    Conversation,
-    SystemMessage,
-)
+from backend.arena.models import BotPos
 from backend.errors import EmptyResponseError
+from backend.llms.models import LLMDataEnabled
+from utils.database.models import AnyMessageRead, LLMMessageCreate, TurnRead
 
 logger = logging.getLogger("languia")
 
 
-def _is_first_turn(state: Conversation) -> bool:
-    """Check if this is the first turn (no assistant messages yet)."""
-    return not any(isinstance(m, AssistantMessage) for m in state.messages)
-
-
-def _get_user_prompt(state: Conversation) -> str:
-    """Get the first user message content for cache key."""
-    for msg in state.messages:
-        if not isinstance(msg, SystemMessage):
-            return msg.content
-    return ""
-
-
 async def _stream_cached_response(
-    position: BotPos,
-    state: Conversation,
+    pos: BotPos,
+    turn: TurnRead,
     cached: CachedResponse,
-) -> AsyncGenerator[list[AnyMessage]]:
+) -> AsyncGenerator[LLMMessageCreate]:
     """
     Simulate streaming from a cached response.
 
     Chunks the cached content and yields with small delays to mimic
     real streaming behavior for consistent UX.
     """
-    metadata = AssistantMessageMetadata(
+    llm_msg = LLMMessageCreate(
+        reasoning_content=cached["reasoning"].strip(),
         generation_id="cached",
-        bot=position,
-        output_tokens=cached["output_tokens"],
+        tokens=cached["output_tokens"],
         is_cached=True,
     )
-    current_msg = AssistantMessage(metadata=metadata)
-    state.messages.append(current_msg)
+    setattr(turn, f"llm_msg_{pos}", llm_msg)
 
     start_tstamp = time.time()
 
-    content = cached["content"]
-    reasoning = cached["reasoning"].strip()
-
-    if reasoning:
-        current_msg.reasoning = reasoning
-
     # Simulate streaming: emit content in chunks
-    chunk_size = max(20, len(content) // 15)  # ~15 chunks
+    content_len = len(cached["content"])
+    chunk_size = max(20, content_len // 15)  # ~15 chunks
     emitted = 0
-    while emitted < len(content):
-        end = min(emitted + chunk_size, len(content))
-        current_msg.content = content[:end].strip()
-        if current_msg.content or current_msg.reasoning:
-            yield state.messages
-        emitted = end
+    while emitted < content_len:
+        emitted = min(emitted + chunk_size, content_len)
+        llm_msg.content = cached["content"][:emitted].strip()
+        if llm_msg.content or llm_msg.reasoning_content:
+            yield llm_msg
 
         try:
             await asyncio.sleep(0.2)
@@ -93,18 +68,22 @@ async def _stream_cached_response(
             pass
 
     # Final yield with complete content and timing
-    current_msg.content = content.strip()
-    current_msg.metadata.duration = time.time() - start_tstamp
-    yield state.messages
+    llm_msg.content = cached["content"].strip()
+    llm_msg.duration = time.time() - start_tstamp
+
+    yield llm_msg
 
 
 async def bot_response_async(
-    position: BotPos,
-    state: Conversation,
-    request: Request,
+    pos: BotPos,
+    llm: LLMDataEnabled,
+    turn: TurnRead,
+    turn_index: int,
+    messages: list[AnyMessageRead],
+    request: Request | None = None,
     temperature=0.7,
     max_new_tokens=16384,
-) -> AsyncGenerator[list[AnyMessage]]:
+) -> AsyncGenerator[LLMMessageCreate]:
     """
     Stream a response from an AI model asynchronously.
 
@@ -112,8 +91,11 @@ async def bot_response_async(
     generates responses token by token.
 
     Args:
-        position: Which model position ("a" or "b") to respond
-        state: Conversation (Pydantic model) with messages and model info
+        pos: Which LLM position ("a" or "b") to respond
+        llm: LLM data
+        turn: Current Turn
+        turn_index: Current Turn index
+        messages: List of messages to be serialized for llm call
         request: FastAPI request for logging
         temperature: Sampling temperature (default 0.7)
         max_new_tokens: Maximum tokens to generate (default 4096)
@@ -124,28 +106,21 @@ async def bot_response_async(
     Raises:
         EmptyResponseError: If model returns empty response
     """
-    is_first_turn = _is_first_turn(state)
-
     # Try cache on first turn only
-    if is_first_turn:
-        prompt = _get_user_prompt(state)
-        cached = get_cached_response(state.model_name, prompt)
+    if turn_index == 0:
+        cached = get_cached_response(llm.id, turn.user_msg.content)
         if cached:
             logger.info(
-                f"[CACHE] Serving cached response for {state.model_name}",
+                f"[CACHE] Serving cached response for {llm.id}",
                 extra={"request": request},
             )
-            async for messages in _stream_cached_response(position, state, cached):
-                yield messages
+            async for llm_msg in _stream_cached_response(pos, turn, cached):
+                yield llm_msg
             return
 
-    # Capture messages to send to the API (before appending the empty assistant placeholder)
-    messages_for_api = list(state.messages)
-
-    # Add new partial AssistantMessage to chat (for accumulating streamed response)
-    metadata = AssistantMessageMetadata(generation_id="", bot=position)
-    current_msg = AssistantMessage(metadata=metadata)
-    state.messages.append(current_msg)
+    # Add new partial LLMMessage to Turn (for accumulating streamed response)
+    llm_msg = LLMMessageCreate()
+    setattr(turn, f"llm_msg_{pos}", llm_msg)
 
     # Track generation start time for performance metrics
     start_tstamp = time.time()
@@ -154,66 +129,56 @@ async def bot_response_async(
     # Use messages_for_api to avoid sending the empty AssistantMessage placeholder
     # (some providers like Cohere reject messages with empty content)
     stream_iter = litellm_stream_iter(
-        model_name=state.model_name,
-        endpoint=state.llm.endpoint,
-        messages=messages_for_api,
+        llm=llm,
+        messages=messages,
+        msg=llm_msg,
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         request=request,
     )
 
     # Process streaming response chunks and update current message
-    for data in stream_iter:
-        if not current_msg.metadata.generation_id:
-            current_msg.metadata.generation_id = data["generation_id"]
-        if data["output_tokens"]:
-            current_msg.metadata.output_tokens = data["output_tokens"]
-
-        if data["content"] or data["reasoning"]:
-            current_msg.content = data["content"].strip()
-            current_msg.reasoning = data["reasoning"].strip()
-
+    for llm_msg in stream_iter:
         # Yield complete chat only if there's content to display in current message
-        if current_msg.content or current_msg.reasoning:
-            yield state.messages
+        if llm_msg.content or llm_msg.reasoning_content:
+            yield llm_msg
 
     # Calculate total generation duration
     stop_tstamp = time.time()
-    current_msg.metadata.duration = stop_tstamp - start_tstamp
+    llm_msg.duration = stop_tstamp - start_tstamp
     logger.debug(
-        f"duration for {data["generation_id"]}: {current_msg.metadata.duration}",
+        f"duration for {llm_msg.generation_id}: {llm_msg.duration}",
         extra={"request": request},
     )
-
     # Check for empty responses and raise error (check on data that is not stripped)
-    if not data["content"] and not data["reasoning"]:
+    if not llm_msg.content and not llm_msg.reasoning_content:
         logger.error(
-            f"reponse_vide: {state.model_name}, message: {current_msg}",
+            f"reponse_vide: {llm.id}, message: {llm_msg}",
             exc_info=True,
             extra={"request": request},
         )
         raise EmptyResponseError(
-            f"No answer from API '{state.llm.endpoint.api_model_id}' for model '{state.model_name}'"
+            f"No answer from API '{llm.endpoint.api_model_id}' for model '{llm.id}'"
         )
 
     # Fallback: count tokens locally if API didn't provide them
-    if not current_msg.metadata.output_tokens:
-        current_msg.metadata.output_tokens = token_counter(
-            text=[data["reasoning"], data["content"]],
-            model=state.model_name,
+    if not llm_msg.tokens:
+        llm_msg.tokens = token_counter(
+            text=[llm_msg.reasoning_content, llm_msg.content],
+            model=llm.id,
         )
 
     # Final update with complete response and timing data
-    yield state.messages
+    yield llm_msg
 
     # Store successful response in cache (first turn only)
-    if is_first_turn:
+    if turn_index == 0:
         store_cached_response(
-            state.model_name,
-            _get_user_prompt(state),
+            llm.id,
+            turn.user_msg.content,
             CachedResponse(
-                content=current_msg.content,
-                reasoning=current_msg.reasoning,
-                output_tokens=current_msg.metadata.output_tokens,
+                content=llm_msg.content,
+                reasoning=llm_msg.reasoning_content,
+                output_tokens=llm_msg.tokens,
             ),
         )
