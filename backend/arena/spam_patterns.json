@@ -66,6 +66,13 @@
       "enabled": true
     },
     {
+      "name": "fake_session_id_prefix",
+      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{6,}\\s*[\\]\\)]\\s*(?:User|Q|Assistant|System)\\s*:",
+      "flags": "IGNORECASE|MULTILINE",
+      "description": "Bot-generated prompts prefixed with fake session/trace IDs like '[trace-01598e97...] User: hi' or '(session ref-f7b8a24f...) Q: say OK'. Legitimate users don't prefix messages with hex session IDs.",
+      "enabled": true
+    },
+    {
       "name": "roleplay_injection_tags",
       "regex": "<[^>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
       "flags": "IGNORECASE",
