@@ -32,8 +32,6 @@ def fetch_votes() -> list[dict]:
             get_votes_db_query(
                 columns={
                     "v": (
-                        "model_a_name",
-                        "model_b_name",
                         "chosen_model_name",
                         "both_equal",
                         "conv_useful_a",
@@ -51,7 +49,11 @@ def fetch_votes() -> list[dict]:
                         "conv_instructions_not_followed_a",
                         "conv_instructions_not_followed_b",
                     ),
-                    "c": ("country_portal",),
+                    "c": (
+                        "model_a_name",
+                        "model_b_name",
+                        "country_portal",
+                    ),
                 },
                 exclude_pii=False,
             )
@@ -74,8 +76,6 @@ def fetch_reactions() -> list[dict]:
             get_reactions_db_query(
                 columns={
                     "r": (
-                        "model_a_name",
-                        "model_b_name",
                         "refers_to_model",
                         "liked",
                         "disliked",
@@ -87,7 +87,11 @@ def fetch_reactions() -> list[dict]:
                         "superficial",
                         "instructions_not_followed",
                     ),
-                    "c": ("country_portal",),
+                    "c": (
+                        "model_a_name",
+                        "model_b_name",
+                        "country_portal",
+                    ),
                 },
                 exclude_pii=False,
             )

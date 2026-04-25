@@ -51,9 +51,6 @@ def get_conversations_filters(
     {IS_COUNTRY_PORTAL.format(country_portal=country_portal) if country_portal else ""}
     {EXCLUDE_PPI if exclude_pii else ""}
     {EXCLUDE_COHORTS if exclude_cohorts else ""}
-    -- Filter out non-recoverable ModelResponseStream in JSONB conversations
-    AND c.conversation_a::text NOT LIKE '%%ModelResponseStream%%'
-    AND c.conversation_b::text NOT LIKE '%%ModelResponseStream%%'
     """
 
     if as_exists:
@@ -129,29 +126,6 @@ def get_reactions_db_query(
     {JOIN_CONVERSATIONS.format(k="r") if join else ""}
     WHERE
         r.archived = FALSE
-
-        -- Filter potentially incoherent data
-        -- 1. msg_index referencing a conversation must be within conversation bounds
-        AND r.msg_index < LEAST(
-            jsonb_array_length(r.conversation_a),
-            jsonb_array_length(r.conversation_b)
-        )
-        -- 2. Message at reacted to (at msg_index) must be from assistant role
-        -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
-        AND (
-            CASE
-                WHEN r.refers_to_conv_id = r.conv_a_id THEN
-                    (r.conversation_a->r.msg_index->>'role' = 'assistant')
-                WHEN r.refers_to_conv_id = r.conv_b_id THEN
-                    (r.conversation_b->r.msg_index->>'role' = 'assistant')
-                ELSE FALSE
-            END
-        )
-        -- 3. Filter out eventual ModelResponseStream corrupted content
-        AND (r.response_content NOT LIKE '%%ModelResponseStream%%' OR r.response_content IS NULL)
-        -- AND r.conversation_a::text NOT LIKE '%%ModelResponseStream%%'
-        -- AND r.conversation_b::text NOT LIKE '%%ModelResponseStream%%'
-
         -- Filtering reactions with PII, or excluded cohorts
         AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join, k="r")}
     """

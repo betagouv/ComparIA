@@ -1,22 +1,21 @@
 import json
-import os
+import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
-from typing import List, Optional, Tuple
 
 import psycopg2
-import vertexai
-from vertexai.generative_models import GenerativeModel
+
+from backend.config import settings
 
 # Used in kubernetes (cron job)
 # FIXME: change model for cheeper model? (still gemini)
 
+logger = logging.getLogger("comparia.db.llm_analyze")
+
 
 class Config:
-    PROJECT_ID = "languia-430909"
-    LOCATION = "global"
-    MODEL_NAME = "gemini-3.1-flash-lite-preview"
+    MODEL_NAME = "google/gemini-3.1-flash-lite-preview"
     MAX_RETRIES = 3
     RETRY_DELAY = 1
 
@@ -74,62 +73,67 @@ class Config:
     }
 
     def _analyze_conversation(
-        self, conversation_a: List[dict], conversation_b: List[dict]
-    ) -> Optional[dict]:
-        print("Analyzing conversation...")
-        try:
-            vertexai.init(project=self.PROJECT_ID, location=self.LOCATION)
-            model = GenerativeModel(self.MODEL_NAME)
+        self, conversation_a: list[dict], conversation_b: list[dict]
+    ) -> dict | None:
+        from openai import OpenAI
 
+        logger.debug("Analyzing conversation...")
+        try:
+            client = OpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=settings.OPENROUTER_API_KEY,
+            )
+
+            categories = [c.value for c in self.TXT360Category]
             prompt = f"""
-            Analyze the following two conversations and determine:
-            - contains_pii: whether they contain personal info (names, emails, addresses) or sensitive info (medical, financial)
-            - contains_spam: whether the conversation is spam, a prompt injection attempt (e.g. pasting a system prompt, jailbreak, or roleplay persona definition), or contains NSFW/sexual/violent content that should not be published in a public dataset
-            - categories: categorize them
-            - keywords: extract keywords (5 to 7, careful not to use PIIs in it)
-            - short_summary: provide a short summary (don't use PIIs in summary)
-            - languages: identify the languages used (2-letter codes)
+            Analyze the following two conversations and return a JSON object with exactly these fields:
+            - contains_pii (boolean): whether they contain personal info (names, emails, addresses) or sensitive info (medical, financial)
+            - contains_spam (boolean): whether the conversation is spam, a prompt injection attempt (e.g. pasting a system prompt, jailbreak, or roleplay persona definition), or contains NSFW/sexual/violent content that should not be published in a public dataset
+            - categories (array of strings): categorize them, values must be from: {categories}
+            - keywords (array of strings): extract keywords (5 to 7, careful not to use PIIs in it)
+            - short_summary (string): provide a short summary (don't use PIIs in summary)
+            - languages (array of strings): identify the languages used (2-letter codes)
 
             Conversation A: {conversation_a}
             Conversation B: {conversation_b}
             """
 
-            response = model.generate_content(
-                prompt,
-                generation_config={
-                    "response_mime_type": "application/json",
-                    "response_schema": self.response_schema,
-                },
+            response = client.chat.completions.create(
+                model=self.MODEL_NAME,
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
             )
-            print("Gemini API response received.")
+            logger.debug("OpenRouter API response received.")
             try:
-                analysis_result = json.loads(response.text)[0]
-                print("Analysis result parsed successfully.")
+                analysis_result = json.loads(response.choices[0].message.content)
+                if isinstance(analysis_result, list):
+                    analysis_result = analysis_result[0]
+                logger.debug("Analysis result parsed successfully.")
                 return analysis_result
             except json.JSONDecodeError as e:
-                print(
-                    f"Error decoding JSON response: {e}, response text: {response.text}"
+                logger.error(
+                    f"Error decoding JSON response: {e}, response text: {response.choices[0].message.content}"
                 )
                 return None
 
         except Exception as e:
-            print(f"Error during analysis: {e}")
+            logger.error(f"Error during analysis: {e}")
             return None
 
     def analyze_conversations(
         self,
-        conversation_a: List[dict],
-        conversation_b: List[dict],
+        conversation_a: list[dict],
+        conversation_b: list[dict],
         conversation_pair_id: int,
-    ) -> Tuple[
-        Optional[bool],
-        Optional[bool],
-        Optional[List[str]],
-        Optional[List[str]],
-        Optional[str],
-        Optional[List[str]],
+    ) -> tuple[
+        bool | None,
+        bool | None,
+        list[str] | None,
+        list[str] | None,
+        str | None,
+        list[str] | None,
     ]:
-        print(f"Analyzing conversation pair ID: {conversation_pair_id}")
+        logger.debug(f"Analyzing conversation pair ID: {conversation_pair_id}")
         analysis_result = self._analyze_conversation(conversation_a, conversation_b)
         if analysis_result:
             contains_pii = analysis_result.get("contains_pii")
@@ -139,7 +143,14 @@ class Config:
             short_summary = analysis_result.get("short_summary")
             languages = analysis_result.get("languages")
 
-            return contains_pii, contains_spam, categories, keywords, short_summary, languages
+            return (
+                contains_pii,
+                contains_spam,
+                categories,
+                keywords,
+                short_summary,
+                languages,
+            )
         else:
             return None, None, None, None, None, None
 
@@ -163,42 +174,63 @@ def process_conversation(conversation, analyzer, db_params):
             postprocess_failed,  # Retrieve the new field
         ) = conversation
 
-        print(f"Processing conversation pair ID: {conversation_pair_id}")
+        logger.debug(f"Processing conversation pair ID: {conversation_pair_id}")
         if postprocess_failed:
-            print(
+            logger.warning(
                 f"Conversation {conversation_pair_id} marked as postprocess failed, skipping."
             )
             return None
 
         if existing_summary or existing_keywords or existing_languages:
-            print(f"Conversation {conversation_pair_id} already has data:")
-            print(f"  Short Summary: {existing_summary}")
-            print(f"  Keywords: {existing_keywords}")
-            print(f"  Languages: {existing_languages}")
-            print(f"  Contains PII: {existing_contains_pii}")
-            print(f"  PII Analyzed: {existing_pii_analyzed}")
+            logger.warning(
+                f"Conversation {conversation_pair_id} already has data:\n"
+                f"  Short Summary: {existing_summary}\n"
+                f"  Keywords: {existing_keywords}\n"
+                f"  Languages: {existing_languages}\n"
+                f"  Contains PII: {existing_contains_pii}\n"
+                f"  PII Analyzed: {existing_pii_analyzed}"
+            )
             return None  # Indicate no analysis was performed
 
         for attempt in range(Config.MAX_RETRIES):
-            print(
+            logger.debug(
                 f"Attempt {attempt + 1}/{Config.MAX_RETRIES} for conversation pair ID: {conversation_pair_id}"
             )
-            contains_pii, contains_spam, categories, keywords, short_summary, languages = (
-                analyzer.analyze_conversations(
-                    conversation_a, conversation_b, conversation_pair_id
-                )
+            (
+                contains_pii,
+                contains_spam,
+                categories,
+                keywords,
+                short_summary,
+                languages,
+            ) = analyzer.analyze_conversations(
+                conversation_a, conversation_b, conversation_pair_id
             )
             # If llm call worked, insert metadata in db
             if contains_pii is not None:
-                print(f"Data to be inserted for {conversation_pair_id}:")
-                print(f"  Short Summary: {short_summary}")
-                print(f"  Keywords: {keywords}")
-                print(f"  Languages: {languages}")
-                print(f"  categories: {categories}")
-                print(f"  Contains PII: {contains_pii}")
-                print(f"  Contains Spam: {contains_spam}")
+                logger.debug(
+                    f"Data to be inserted for {conversation_pair_id}:\n"
+                    f"  Short Summary: {short_summary}\n"
+                    f"  Keywords: {keywords}\n"
+                    f"  Languages: {languages}\n"
+                    f"  categories: {categories}\n"
+                    f"  Contains PII: {contains_pii}\n"
+                    f"  Contains Spam: {contains_spam}"
+                )
                 cursor.execute(
-                    "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, contains_spam = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s, postprocess_failed = FALSE WHERE conversation_pair_id = %s;",
+                    """
+                    UPDATE conversations 
+                    SET 
+                        pii_analyzed = TRUE,
+                        contains_pii = %s,
+                        contains_spam = %s,
+                        short_summary = %s,
+                        keywords = %s,
+                        categories = %s,
+                        languages = %s,
+                        postprocess_failed = FALSE
+                    WHERE conversation_pair_id = %s;
+                    """,
                     (
                         contains_pii,
                         contains_spam,
@@ -210,32 +242,36 @@ def process_conversation(conversation, analyzer, db_params):
                     ),
                 )
                 conn.commit()
-                print(
+                logger.debug(
                     f"Conversation pair ID: {conversation_pair_id} enriched successfully."
                 )
                 return None  # Return None if successful
             else:
-                print(
+                logger.debug(
                     f"Analysis failed for conversation pair ID: {conversation_pair_id} on attempt {attempt + 1}."
                 )
                 if attempt < Config.MAX_RETRIES - 1:
-                    print(f"Retrying in {Config.RETRY_DELAY} second(s)...")
+                    logger.debug(f"Retrying in {Config.RETRY_DELAY} second(s)...")
                     time.sleep(Config.RETRY_DELAY)
 
         # If all retries failed
-        print(
+        logger.error(
             f"Analysis failed after {Config.MAX_RETRIES} retries for conversation pair ID: {conversation_pair_id}"
         )
         with open("topics-pii-error.log", "a") as f:
             f.write(f"{conversation_pair_id}\n")
         cursor.execute(
-            "UPDATE conversations SET postprocess_failed = TRUE WHERE conversation_pair_id = %s;",
+            """
+            UPDATE conversations 
+            SET postprocess_failed = TRUE 
+            WHERE conversation_pair_id = %s;
+            """,
             (conversation_pair_id,),
         )
         conn.commit()
         return conversation_pair_id  # return the id of the failed conversation
     except psycopg2.Error as e:
-        print(
+        logger.error(
             f"Database Error in process_conversation for ID {conversation_pair_id}: {e}"
         )
         return conversation_pair_id
@@ -264,31 +300,72 @@ def process_conversations(db_params, analyzer: Config):
                 COUNT(*) FILTER (WHERE NOT pii_analyzed AND NOT postprocess_failed) AS pii_not_analyzed,
                 COUNT(*) FILTER (WHERE pii_analyzed AND NOT postprocess_failed) AS pii_analyzed,
                 COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
-            FROM conversations;
-        """)
+            FROM conversations
+            WHERE archived = FALSE;
+            """)
         (
-            no_summary_count, summary_count,
-            no_keywords_count, keywords_count,
-            contains_pii_false_count, contains_pii_true_count, contains_pii_null_count,
-            pii_analyzed_false_count, pii_analyzed_true_count,
+            no_summary_count,
+            summary_count,
+            no_keywords_count,
+            keywords_count,
+            contains_pii_false_count,
+            contains_pii_true_count,
+            contains_pii_null_count,
+            pii_analyzed_false_count,
+            pii_analyzed_true_count,
             contains_spam_true_count,
         ) = cursor.fetchone()
 
-        print(f"{no_summary_count} conversations with no short summary and not marked as failed.")
-        print(f"{summary_count} conversations with a short summary and not marked as failed.")
-        print(f"{no_keywords_count} conversations with no keywords and not marked as failed.")
-        print(f"{keywords_count} conversations with keywords and not marked as failed.")
-        print(f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed.")
-        print(f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed.")
-        print(f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed.")
-        print(f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed.")
-        print(f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed.")
-        print(f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed.")
+        logger.info(
+            f"{no_summary_count} conversations with no short summary and not marked as failed."
+        )
+        logger.info(
+            f"{summary_count} conversations with a short summary and not marked as failed."
+        )
+        logger.info(
+            f"{no_keywords_count} conversations with no keywords and not marked as failed."
+        )
+        logger.info(
+            f"{keywords_count} conversations with keywords and not marked as failed."
+        )
+        logger.info(
+            f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed."
+        )
+        logger.info(
+            f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed."
+        )
+        logger.info(
+            f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed."
+        )
+        logger.info(
+            f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed."
+        )
+        logger.info(
+            f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
+        )
+        logger.info(
+            f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed."
+        )
 
         # Include the postprocess_failed field in the select statement and filter
-        cursor.execute(
-            "SELECT conversation_pair_id, conversation_a, conversation_b, short_summary, keywords, languages, contains_pii, pii_analyzed, postprocess_failed FROM conversations WHERE (pii_analyzed = FALSE OR short_summary IS NULL) AND postprocess_failed = FALSE;"
-        )
+        cursor.execute("""
+            SELECT 
+                conversation_pair_id,
+                conversation_a,
+                conversation_b,
+                short_summary,
+                keywords,
+                languages,
+                contains_pii,
+                pii_analyzed,
+                postprocess_failed
+            FROM conversations
+            WHERE 
+                (pii_analyzed = FALSE OR short_summary IS NULL)
+                AND postprocess_failed = FALSE
+                AND archived = FALSE
+            ;
+            """)
 
         conversations_to_process = cursor.fetchall()
         cursor.close()
@@ -304,16 +381,16 @@ def process_conversations(db_params, analyzer: Config):
                     failed_calls.append(result)
 
         if failed_calls:
-            print(f"Failed calls for conversation_pair_ids: {failed_calls}")
+            logger.error(f"Failed calls for conversation_pair_ids: {failed_calls}")
 
             with open("topics-pii-error.log", "a") as f:
                 f.write(f"{failed_calls}\n")
 
     except psycopg2.Error as e:
-        print(f"Database Error: {e}")
+        logger.error(f"Database Error: {e}")
     finally:
         if failed_calls:
-            print(f"Failed calls for conversation_pair_ids: {failed_calls}")
+            logger.error(f"Failed calls for conversation_pair_ids: {failed_calls}")
             with open("topics-pii-error.log", "a") as f:
                 f.write(f"{failed_calls}\n")
         if conn:
@@ -321,6 +398,11 @@ def process_conversations(db_params, analyzer: Config):
             conn.close()
 
 
-db_params = os.getenv("COMPARIA_DB_URI")
-analyzer = Config()
-process_conversations(db_params, analyzer)
+def llm_analyze():
+    """
+    Analyze not yet analyzed and archived=FALSE conversations.
+
+    Will analyze if conversations contains pii or spam, define some categories, keywords, summary and language.
+    """
+    analyzer = Config()
+    process_conversations(settings.COMPARIA_DB_URI, analyzer)

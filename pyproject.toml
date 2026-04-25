@@ -59,8 +59,9 @@ recursive = true
 in-place = true
 remove-all-unused-imports = true
 exclude= [
+    "./**/__init__.py",
     "./utils/ranking_methods",
-    "./**/__init__.py"
+    "./utils/database/actions/__init__.py"
 ]
 
 [tool.isort]

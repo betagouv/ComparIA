@@ -37,9 +37,7 @@ class Settings(BaseSettings):
     REPO_ORG: str = "ministere-culture"
     ALTCHA_HMAC_KEY: str = ""
 
-    enable_postgres_handler: bool = True
-
-    # Response caching
+# Response caching
     CACHE_ENABLED: bool = False
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
     CACHE_TTL: int = 172800  # Cache TTL in seconds (default 48h)
