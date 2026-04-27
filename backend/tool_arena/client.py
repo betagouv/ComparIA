@@ -5,6 +5,7 @@ session, discovers or calls specific tools, and returns raw text + duration.
 """
 
 import logging
+import os
 import time
 
 from mcp import ClientSession
@@ -43,8 +44,15 @@ async def single_mcp_call(
         Exception: On unexpected errors. Caller wraps in asyncio.wait_for.
     """
     headers: dict[str, str] = {}
-    if server.auth and server.auth.token:
-        headers["Authorization"] = f"Bearer {server.auth.token}"
+    if server.auth is not None:
+        if server.auth.type == "oauth2":
+            from backend.tool_arena.auth import get_token
+            token = await get_token(server.id, server.auth)
+            headers["Authorization"] = f"Bearer {token}"
+        elif server.auth.type == "api_key":
+            key = os.environ[server.auth.key_env]
+            headers[server.auth.header] = key
+        # type == "none": no header needed
 
     start = time.monotonic()
     async with streamablehttp_client(
