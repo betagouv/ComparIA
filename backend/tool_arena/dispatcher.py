@@ -21,8 +21,9 @@ import litellm
 from backend.tool_arena.client import single_mcp_call
 from backend.tool_arena.config import MCPServerConfig
 from backend.tool_arena.models import MCPToolCall
+from backend.tool_arena.normalizer import normalize_output
 from backend.tool_arena.registry import registry
-from backend.tool_arena.sanitizer import sanitize_output
+from backend.tool_arena.sanitizer import sanitize_envelope, sanitize_output
 
 logger = logging.getLogger("tool_arena")
 
@@ -118,8 +119,12 @@ class MCPDispatcher:
                 raw_texts.append("")
             else:
                 raw_text, duration_ms = result
-                # Step 3: Sanitize raw result BEFORE LLM mediation (D-08)
-                sanitized_raw = sanitize_output(raw_text, servers)
+                # Step 3a: Normalize raw output to canonical envelope (Phase 14 D-06)
+                envelope = normalize_output(raw_text, duration_ms)
+                # Step 3b: Sanitize envelope — strip source URLs and per-server terms
+                envelope = sanitize_envelope(envelope, servers)
+                # Step 3c: Sanitize answer text for id/name/endpoint patterns
+                sanitized_raw = sanitize_output(envelope.answer, servers)
                 tool_calls.append(
                     MCPToolCall(
                         session_id=session_id,
