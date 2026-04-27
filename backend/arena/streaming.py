@@ -16,9 +16,10 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
 from backend.arena.models import BOT_POS, BotPos, ErrorDetails
+from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
-from backend.llms.data import get_llms_data
+from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
     AnyMessageRead,
@@ -234,14 +235,13 @@ async def stream_comparison_messages(
                             comparison.custom_models_selection,
                         )
                     ):
-                        if new_llm_id := _pick_replacement_model(comparison, e.pos):
+                        if new_llm_id := pick_replacement_model(comparison, e.pos):
+                            await update_comparison_llm_id(
+                                comparison, e.pos, new_llm_id
+                            )
                             logger.warning(
                                 f"LLM '{failing_llm_id}' timed out, swapping to '{new_llm_id}'"
                             )
-                            # Mutate current ComparisonRead llm_id_*
-                            setattr(comparison, f"llm_id_{e.pos}", new_llm_id)
-                            # Reset TurnRead llm_msg_* to None
-                            setattr(comparison.turns[-1], f"llm_msg_{e.pos}", None)
                             generators[e.pos] = stream_conversation_messages(
                                 e.pos,
                                 llms_data[new_llm_id],
@@ -267,9 +267,11 @@ async def stream_comparison_messages(
     except ChatError as e:
         # Specific chat error
         # Error logging is done in `stream_conversation_messages()`
-        comparison.error = ErrorDetails(
-            message=e.message, pos=e.pos, is_timeout=e.is_timeout
+        await update_comparison_error(
+            comparison,
+            ErrorDetails(message=e.message, pos=e.pos, is_timeout=e.is_timeout),
         )
+
         yield format_sse_event({"type": "error", "error": e.message, "pos": e.pos})
     except Exception as e:
         # General error
@@ -277,7 +279,7 @@ async def stream_comparison_messages(
             # Error is silenced to be sent thru sse message, send it to sentry manually
             sentry_sdk.capture_exception(e)
 
-        comparison.error = ErrorDetails(message=str(e))
+        await update_comparison_error(comparison, ErrorDetails(message=str(e)))
         logger.error(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
@@ -305,30 +307,6 @@ def _is_model_user_selected(
     if mode != "custom" or not custom_selection:
         return False
     return model_name in custom_selection
-
-
-def _pick_replacement_model(comparison: ComparisonRead, pos: BotPos) -> str | None:
-    """Pick a replacement model from the appropriate pool, excluding both current models."""
-    models = get_llms_data(comparison.country_portal)
-    other_pos: BotPos = "b" if pos == "a" else "a"
-    failing = getattr(comparison, f"llm_id_{pos}")
-    other = getattr(comparison, f"llm_id_{other_pos}")
-    excluded = [failing, other]
-
-    # Pick from the right pool based on mode
-    if comparison.mode == "small-models":
-        pool = models.small_models
-    elif comparison.mode == "big-vs-small":
-        pool = (
-            models.big_models if failing in models.big_models else models.small_models
-        )
-    else:
-        pool = models.random_models
-
-    try:
-        return models.pick_one(pool, excluded=excluded)
-    except Exception:
-        return None
 
 
 def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:

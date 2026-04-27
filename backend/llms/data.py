@@ -1,7 +1,7 @@
 import json
 import logging
 from functools import lru_cache
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 import numpy as np
 from pydantic import BaseModel, Field, ValidationInfo, computed_field, field_validator
@@ -15,6 +15,11 @@ from backend.config import (
 )
 from backend.llms.models import LLMDataArchived, LLMDataEnabled
 from utils.utils import LLMS_GENERATED_DATA_FILE
+
+if TYPE_CHECKING:
+    from backend.arena.models import BotPos
+    from utils.database.models import ComparisonRead
+
 
 logger = logging.getLogger("languia")
 
@@ -224,3 +229,27 @@ def get_llms_data(country_portal: CountryPortal) -> LLMsData:
     return LLMsData.model_validate(
         {"all": data["models"]}, context={"country_portal": country_portal}
     )
+
+
+def pick_replacement_model(comparison: "ComparisonRead", pos: "BotPos") -> str | None:
+    """Pick a replacement model from the appropriate pool, excluding both current models."""
+    models = get_llms_data(comparison.country_portal)
+    other_pos: BotPos = "b" if pos == "a" else "a"
+    failing = getattr(comparison, f"llm_id_{pos}")
+    other = getattr(comparison, f"llm_id_{other_pos}")
+    excluded = [failing, other]
+
+    # Pick from the right pool based on mode
+    if comparison.mode == "small-models":
+        pool = models.small_models
+    elif comparison.mode == "big-vs-small":
+        pool = (
+            models.big_models if failing in models.big_models else models.small_models
+        )
+    else:
+        pool = models.random_models
+
+    try:
+        return models.pick_one(pool, excluded=excluded)
+    except Exception:
+        return None

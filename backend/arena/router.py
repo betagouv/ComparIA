@@ -9,33 +9,36 @@ from backend.arena.models import (
     AddFirstTextBody,
     AddTextBody,
     AssistantMessage,
-    Conversations,
     ReactionBody,
     ReactionData,
     RevealData,
-    UserMessage,
     VoteBody,
-    create_conversation,
-    create_conversations,
 )
-from backend.arena.persistence import (
-    delete_reaction,
-    record_conversations,
-    record_reaction,
-    record_vote,
-)
+from backend.arena.persistence import delete_reaction, record_reaction, record_vote
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
+from backend.arena.services import (
+    add_comparison_turn,
+    create_comparison,
+    read_comparison,
+    update_comparison_error,
+    update_comparison_llm_id,
+    update_turn,
+)
 from backend.arena.session import (
+    ComparisonMetadata,
     create_session,
     increment_custom_selections,
     increment_input_chars,
     is_custom_selection_ratelimited,
     is_ratelimited,
+    retreive_comparison_metadata,
+    store_comparison_metadata,
 )
 from backend.arena.streaming import create_sse_response, stream_comparison_messages
-from backend.llms.data import get_llms_data
+from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from utils.database.models import ComparisonCreate
 
 logger = logging.getLogger("languia")
 
@@ -83,27 +86,29 @@ def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) ->
     return session_hash
 
 
-def get_conversations(session_hash: str = Depends(get_session_hash)) -> Conversations:
+def get_comparison_metadata(
+    session_hash: str = Depends(get_session_hash),
+) -> ComparisonMetadata:
     try:
-        conversations = Conversations.from_session(session_hash)
+        metadata = retreive_comparison_metadata(session_hash)
     except Exception as e:
         # FIXME raise different errors depending on problem
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Conversations '{session_hash}' couldn't be found or parsed: {str(e)}",
+            detail=f"Comparison '{session_hash}' couldn't be found or parsed: {str(e)}",
         )
 
     # For any arena view, raise error if chat responses are not yet finished
-    if conversations.is_streaming:
+    if metadata["is_streaming"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Veuillez attendre la fin de la réponse des modèles.",
         )
 
-    return conversations
+    return metadata
 
 
-ConversationsAnno = Annotated[Conversations, Depends(get_conversations)]
+ComparisonMetadataAnno = Annotated[ComparisonMetadata, Depends(get_comparison_metadata)]
 
 # FIXME log conversation session data (ip, portal, cohorts, conv id) in routes?
 
@@ -119,20 +124,20 @@ async def add_first_text(
     args: AddFirstTextBody, country_portal: CountryPortalAnno, request: Request
 ) -> StreamingResponse:
     """
-    Process user's first message and initiate model comparison.
+    Process user's first message and initiate Comparison.
 
     This is the main handler for the send button click. It:
-    1. Creates a new session
-    2. Selects two models to compare based on mode
-    3. Initializes Conversations for both models
-    4. Streams responses from both models in parallel
+    1. Selects two LLMs to compare based on mode
+    2. Initializes and save Comparison for both LLMs with a first empty Turn
+    4. Streams responses from both LLMs in parallel
+    5. Save the completed Turn if everything went well
 
     Args:
-        args: Request body with prompt, mode, and optional custom model selection
-        request: FastAPI request for logging and rate limiting
+        args: Request body with prompt, mode, optional custom model selection, etc.
+        request: FastAPI request
 
     Returns:
-        StreamingResponse: Server-Sent Events stream with model responses
+        StreamingResponse: Server-Sent Events stream with LLM responses
 
     Raises:
         HTTPException: If rate limiting triggered or validation fails
@@ -156,38 +161,40 @@ async def add_first_text(
             )
         increment_custom_selections(ip)
 
-    # Select models
-    models = get_llms_data(country_portal)
-    model_a_id, model_b_id = models.pick_two(args.mode, args.custom_models_selection)
+    # Select LLMs
+    llms_data = get_llms_data(country_portal)
+    llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
 
     logger.info(
-        f"Selected models: {model_a_id} vs {model_b_id}", extra={"request": request}
+        f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
     # Create new session
     session_hash = create_session()
 
-    # Initialize conversations using Pydantic models
-    conversations = create_conversations(
-        llm_id_a=model_a_id,
-        llm_id_b=model_b_id,
-        args=args,
-        session_hash=session_hash,
-        country_portal=country_portal,
-        ip=get_ip(request),
-        visitor_id=get_matomo_tracker_from_cookies(request.cookies),
+    # Initialize comparison and save it to db
+    comparison = await create_comparison(
+        ComparisonCreate(
+            session_hash=create_session(),
+            ip=get_ip(request),
+            visitor_id=get_matomo_tracker_from_cookies(request.cookies),
+            country_portal=country_portal,
+            cohorts=args.cohorts,
+            mode=args.mode,
+            custom_models_selection=args.custom_models_selection,
+            llm_id_a=llm_a_id,
+            llm_id_b=llm_b_id,
+        )
     )
 
     logger.info(
-        f"conv_pair_id: {conversations.conversation_pair_id}",
+        f"Saved partial Comparison with id '{comparison.id}'",
         extra={"request": request},
     )
 
-    conversations.is_streaming = True
-    # Store Conversations to redis/db/logs
-    conversations.store_to_session()
-    # Record for questions only dataset and stats on ppl abandoning before generation completion
-    record_conversations(conversations)
+    # Add first turn and save it to db (to at least save the user prompt)
+    comparison, turn = await add_comparison_turn(comparison.id, args.prompt_value)
+    store_comparison_metadata(session_hash, comparison.id, is_streaming=True)
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
@@ -197,18 +204,18 @@ async def add_first_text(
         yield f"data: {json.dumps({'type': 'init', 'session_hash': session_hash})}\n\n"
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(conversations, request):
+        async for chunk in stream_comparison_messages(comparison, turn, request):
             yield chunk
 
-        # Increment input chars for pricey llms
-        for conv in [conversations.conversation_a, conversations.conversation_b]:
-            if conv.llm.pricey:
-                increment_input_chars(get_ip(request), len(args.prompt_value))
+        if not comparison.error:
+            # Increment input chars for pricey llms
+            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
+                if llm_id in llms_data.pricey_models:
+                    increment_input_chars(get_ip(request), len(args.prompt_value))
 
-        conversations.is_streaming = False
-        # After streaming completes, store Conversations to redis/db/logs
-        conversations.store_to_session()
-        record_conversations(conversations)
+            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+
+        store_comparison_metadata(session_hash, comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream())
 
@@ -216,174 +223,134 @@ async def add_first_text(
 @router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
 async def add_text(
     args: AddTextBody,
-    conversations: ConversationsAnno,
+    metadata: ComparisonMetadataAnno,
     request: Request,
 ) -> StreamingResponse:
     """
-    Add a follow-up message to an existing conversation.
+    Add a follow-up message to an existing Comparison.
+
+    It:
+    1. Add a new empty Turn
+    2. Streams responses from both LLMs in parallel
+    3. Save the completed Turn if everything went well
 
     Args:
         args: Request body with message content
-        conversations: Conversations from session_hash
+        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Returns:
-        StreamingResponse: SSE stream with both model responses
+        StreamingResponse: Server-Sent Events stream with LLM responses
 
     Raises:
-        HTTPException: If session not found or rate limiting triggered
+        HTTPException: If Comparison not found or rate limiting triggered
     """
     logger.info(
-        f"'/add_text' session={conversations.session_hash} called with: {args.model_dump_json()}",
+        f"'/add_text' session={metadata["session_hash"]} called with: {args.model_dump_json()}",
         extra={"request": request},
     )
 
-    # Add user message to both conversations
-    user_message = UserMessage(content=args.message)
-    conversations.conversation_a.messages.append(user_message)
-    conversations.conversation_b.messages.append(user_message)
-
-    conversations.is_streaming = True
-    # Store Conversations to redis/db/logs
-    conversations.store_to_session()
-    # Record for questions only dataset and stats on ppl abandoning before generation completion
-    record_conversations(conversations)
+    # Add new turn and save it to db (to at least save the user prompt)
+    comparison, turn = await add_comparison_turn(metadata["id"], args.message)
+    store_comparison_metadata(comparison.session_hash, comparison.id, is_streaming=True)
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
-        async for chunk in stream_comparison_messages(conversations, request):
+        async for chunk in stream_comparison_messages(comparison, turn, request):
             yield chunk
 
-        # Increment input chars for pricey llms
-        for conv in [conversations.conversation_a, conversations.conversation_b]:
-            if conv.llm.pricey:
-                increment_input_chars(get_ip(request), len(args.message))
+        if not comparison.error:
+            llms_data = get_llms_data(comparison.country_portal)
+            # Increment input chars for pricey llms
+            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
+                if llm_id in llms_data.pricey_models:
+                    increment_input_chars(get_ip(request), len(args.message))
 
-        conversations.is_streaming = False
-        # After streaming completes, store Conversations to redis/db/logs
-        conversations.store_to_session()
-        record_conversations(conversations)
+            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+
+        store_comparison_metadata(
+            comparison.session_hash, comparison.id, is_streaming=False
+        )
 
     return create_sse_response(event_stream())
 
 
 @router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
-    conversations: ConversationsAnno,
+    metadata: ComparisonMetadataAnno,
     request: Request,
 ) -> StreamingResponse:
     """
-    Retry generating the last bot response.
+    Retry generating the last LLM responses.
 
-    Removes the last assistant messages and re-generates them.
+    Expects that at least the user message is present in last turn.
+    Reroll a failing LLM if possible.
 
     Args:
-        conversations: Conversations from session_hash
+        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Returns:
-        StreamingResponse: SSE stream with new model responses
+        StreamingResponse: Server-Sent Events stream with LLM responses
 
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
     logger.info(
-        f"'/retry' session={conversations.session_hash}", extra={"request": request}
+        f"'/retry' session={metadata["session_hash"]}", extra={"request": request}
     )
 
-    conv_a = conversations.conversation_a
-    conv_b = conversations.conversation_b
+    comparison = await read_comparison(metadata["id"])
+    turn = comparison.turns[-1]
 
-    # Remove last assistant messages
-    if isinstance(conv_a.messages[-1], AssistantMessage):
-        conv_a.messages = conv_a.messages[:-1]
-    if isinstance(conv_b.messages[-1], AssistantMessage):
-        conv_b.messages = conv_b.messages[:-1]
-
-    if not (
-        isinstance(conv_a.messages[-1], UserMessage)
-        and isinstance(conv_b.messages[-1], UserMessage)
-    ):
+    if turn.user_msg is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
         )
-    last_user_msg = conv_a.messages[-1]
 
     # If conversations has not yet trully started
-    if conversations.error and last_user_msg.content == conversations.opening_msg:
+    if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
-        if pos := conversations.error.pos:
-            if conversations.mode != "custom" and conversations.error.is_timeout:
+        if pos := comparison.error.pos:
+            if comparison.mode != "custom" and comparison.error.is_timeout:
                 # Another timeout error occured even tho llms have been rerolled already
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
                 )
 
-            models = get_llms_data(conversations.country_portal)
-            failing_model_id = conv_a.model_name if pos == "a" else conv_b.model_name
+            failing_llm_id = getattr(comparison, f"llm_id_{pos}")
+            if new_llm_id := pick_replacement_model(comparison, pos):
+                await update_comparison_llm_id(comparison, pos, new_llm_id)
+                logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
-            if selection := conversations.custom_models_selection:
-                # Filter failing model from custom_models_selection
-                new_selection = tuple(
-                    model_id for model_id in selection if model_id != failing_model_id
-                )
-                conversations.custom_models_selection = (
-                    (new_selection[0],) if new_selection else None
-                )
-                # FIXME warn user that its selection is not taken into account
-            else:
-                conversations.custom_models_selection = None
+    await update_comparison_error(comparison, None)
 
-            # Repick a model ids excluding current ones
-            new_model_id, _ = models.pick_two(
-                conversations.mode,
-                unavailable_models=[conv_a.model_name, conv_b.model_name],
-            )
-            logger.info(
-                f"reinitializing conv {pos} w/ new model: {new_model_id}",
-                extra={"request": request},
-            )
-            # Reset conversation with new model
-            setattr(
-                conversations,
-                f"conversation_{pos}",
-                create_conversation(
-                    new_model_id, conversations.country_portal, last_user_msg
-                ),
-            )
-            logger.info(
-                f"new conv {pos} id: {(conv_a if pos == "a" else conv_b).conv_id}",
-                extra={"request": request},
-            )
-
-    conversations.error = None
-
-    conversations.is_streaming = True
-    # Store Conversations to redis/db/logs
-    conversations.store_to_session()
-    # Record for questions only dataset and stats on ppl abandoning before generation completion
-    record_conversations(conversations)
+    store_comparison_metadata(comparison.session_hash, comparison.id, is_streaming=True)
 
     logger.info(
-        f"retry with user message: {last_user_msg.content}", extra={"request": request}
+        f"retry with user message: {turn.user_msg.content}",
+        extra={"request": request},
     )
 
     # Re-stream responses
     async def event_stream() -> AsyncGenerator[str]:
-        async for chunk in stream_comparison_messages(conversations, request):
+        async for chunk in stream_comparison_messages(comparison, turn, request):
             yield chunk
 
-        # Increment input chars for pricey llms
-        for conv in [conversations.conversation_a, conversations.conversation_b]:
-            if conv.llm.pricey:
-                increment_input_chars(get_ip(request), len(last_user_msg.content))
+        if not comparison.error:
+            llms_data = get_llms_data(comparison.country_portal)
+            # Increment input chars for pricey llms
+            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
+                if llm_id in llms_data.pricey_models:
+                    increment_input_chars(get_ip(request), len(args.message))
 
-        conversations.is_streaming = False
-        # After streaming completes, store Conversations to redis/db/logs
-        conversations.store_to_session()
-        record_conversations(conversations)
+            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+
+        store_comparison_metadata(
+            comparison.session_hash, comparison.id, is_streaming=False
+        )
 
     return create_sse_response(event_stream())
 
@@ -394,7 +361,7 @@ ReactReturnType = TypedDict("ReactReturnType", {"reaction": ReactionData | None}
 @router.post("/react")
 async def react(
     reaction_body: ReactionBody,
-    conversations: ConversationsAnno,
+    conversations: ComparisonMetadataAnno,
     request: Request,
 ) -> ReactReturnType:
     """
@@ -470,7 +437,7 @@ async def react(
 @router.post("/vote")
 async def vote(
     vote_body: VoteBody,
-    conversations: ConversationsAnno,
+    conversations: ComparisonMetadataAnno,
     request: Request,
 ) -> RevealData:
     """
@@ -521,7 +488,7 @@ async def vote(
 
 
 @router.get("/reveal")
-async def reveal(conversations: ConversationsAnno, request: Request) -> RevealData:
+async def reveal(conversations: ComparisonMetadataAnno, request: Request) -> RevealData:
     """
     Get reveal data for a session (model identities and metadata).
 

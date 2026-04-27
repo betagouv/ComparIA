@@ -82,8 +82,7 @@ class Comparison(ComparisonWithAnalyzeData, table=True):
 
 
 class ComparisonCreate(ComparisonBase):
-    system_msg_a: SystemMessage | None = None
-    system_msg_b: SystemMessage | None = None
+    pass
 
 
 class ComparisonRead(ComparisonBase):
