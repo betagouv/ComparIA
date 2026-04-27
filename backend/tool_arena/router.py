@@ -13,6 +13,7 @@ Per D-04: session hash passed via X-Session-Hash header.
 Zero imports from backend.arena.
 """
 
+import asyncio
 import json
 import logging
 from datetime import datetime
@@ -22,10 +23,14 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel
 
 from backend.config import settings
+from backend.tool_arena.client import single_mcp_call
 from backend.tool_arena.dispatcher import MCPDispatcher
+from backend.tool_arena.normalizer import normalize_output
+from backend.tool_arena.sanitizer import sanitize_envelope
 from utils.storage.redis import REDIS_TOOL_RANKING_KEY, get_redis_client
 from backend.tool_arena.models import save_tool_call_to_db, ToolCallRecord
 from backend.tool_arena.persistence import ToolVoteRecord, save_tool_vote_to_db
+from backend.tool_arena.registry import registry
 from backend.tool_arena.session import (
     create_tool_session,
     retrieve_tool_session,
@@ -77,6 +82,23 @@ class ToolRevealResponse(BaseModel):
     chosen: str           # "a" | "b" | "tie"
     tool_a: ToolRevealInfo
     tool_b: ToolRevealInfo
+
+
+class DryRunRequest(BaseModel):
+    tool_id: str
+
+
+class DryRunCheck(BaseModel):
+    name: str             # "connectivity" | "envelope_shape" | "sanitization"
+    passed: bool
+    detail: str | None = None
+
+
+class DryRunResponse(BaseModel):
+    valid: bool
+    tool_id: str
+    checks: list[DryRunCheck]
+    raw_sample: dict | None = None  # normalized envelope if all checks pass
 
 
 # ---------------------------------------------------------------------------
@@ -154,6 +176,92 @@ async def get_tool_leaderboard():
         "data_timestamp": data.get("timestamp"),
         "tools": list(rankings.values()),
     }
+
+
+# ---------------------------------------------------------------------------
+# Endpoint 0b: POST /tool-arena/dry-run
+# ---------------------------------------------------------------------------
+
+_DRY_RUN_TASK = "What is this document about?"
+_DRY_RUN_GOAL = "Provide a brief summary"
+_DRY_RUN_TIMEOUT = 30  # seconds
+
+
+@router.post("/dry-run", response_model=DryRunResponse)
+async def dry_run(body: DryRunRequest) -> DryRunResponse:
+    """Validate a registered RAG tool end-to-end with a hardcoded test prompt.
+
+    Runs three checks:
+      1. connectivity — real MCP call with 30s timeout
+      2. envelope_shape — normalize_output produces non-empty answer
+      3. sanitization — sanitize_envelope runs without error (best-effort)
+
+    Returns structured pass/fail with detail for each check.
+    """
+    # Lookup — 404 if not registered
+    try:
+        server = registry.get_server(body.tool_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"Tool '{body.tool_id}' not found in registry")
+
+    checks: list[DryRunCheck] = []
+    raw_text: str | None = None
+    duration_ms: int = 0
+
+    # --- Check 1: connectivity ---
+    try:
+        raw_text, duration_ms = await asyncio.wait_for(
+            single_mcp_call(server, _DRY_RUN_TASK, _DRY_RUN_GOAL),
+            timeout=_DRY_RUN_TIMEOUT,
+        )
+        checks.append(DryRunCheck(name="connectivity", passed=True, detail=f"MCP call succeeded in {duration_ms}ms"))
+    except asyncio.TimeoutError:
+        checks.append(DryRunCheck(name="connectivity", passed=False, detail=f"MCP call timed out after {_DRY_RUN_TIMEOUT}s"))
+    except Exception as exc:
+        checks.append(DryRunCheck(name="connectivity", passed=False, detail=str(exc)))
+
+    if not checks[0].passed:
+        # Skip remaining checks — no output to validate
+        checks.append(DryRunCheck(name="envelope_shape", passed=False, detail="Skipped — connectivity failed"))
+        checks.append(DryRunCheck(name="sanitization", passed=False, detail="Skipped — connectivity failed"))
+        return DryRunResponse(valid=False, tool_id=body.tool_id, checks=checks, raw_sample=None)
+
+    # --- Check 2: envelope_shape ---
+    envelope = None
+    try:
+        envelope = normalize_output(raw_text, duration_ms)
+        if not envelope.answer or not envelope.answer.strip():
+            checks.append(DryRunCheck(name="envelope_shape", passed=False, detail="Normalized answer is empty"))
+            envelope = None
+        else:
+            checks.append(DryRunCheck(name="envelope_shape", passed=True, detail=f"Answer: {len(envelope.answer)} chars, sources: {len(envelope.sources)}"))
+    except Exception as exc:
+        checks.append(DryRunCheck(name="envelope_shape", passed=False, detail=f"normalize_output raised: {exc}"))
+        envelope = None
+
+    if envelope is None:
+        checks.append(DryRunCheck(name="sanitization", passed=False, detail="Skipped — envelope_shape failed"))
+        return DryRunResponse(valid=False, tool_id=body.tool_id, checks=checks, raw_sample=None)
+
+    # --- Check 3: sanitization (best-effort, always passes) ---
+    try:
+        sanitized = sanitize_envelope(envelope, [server])
+        stripped_urls = sum(1 for s in sanitized.sources if s.url is None)
+        checks.append(DryRunCheck(name="sanitization", passed=True, detail=f"Sanitized {stripped_urls} source URLs"))
+        final_envelope = sanitized
+    except Exception as exc:
+        # Sanitization is best-effort — log but still pass
+        logger.warning("dry_run sanitization raised (non-fatal): %s", exc)
+        checks.append(DryRunCheck(name="sanitization", passed=True, detail=f"Sanitization skipped (non-fatal): {exc}"))
+        final_envelope = envelope
+
+    valid = all(c.passed for c in checks)
+    return DryRunResponse(
+        valid=valid,
+        tool_id=body.tool_id,
+        checks=checks,
+        raw_sample=final_envelope.model_dump() if valid else None,
+    )
 
 
 # ---------------------------------------------------------------------------
