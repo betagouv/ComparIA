@@ -1,91 +1,108 @@
-"""OAuth2 client_credentials token cache for MCP server authentication.
+"""OAuth2 authorization_code + PKCE auth for MCP servers via the MCP SDK.
 
-Provides get_token() which fetches an OAuth2 token via client_credentials grant
-and caches it with a TTL buffer of 30 seconds before expiry.
+Uses the MCP SDK's OAuthClientProvider which handles:
+- Authorization code flow with PKCE (S256)
+- Token storage and automatic refresh
+- 401 retry with re-authentication
+
+For servers requiring OAuth2, a one-time browser-based login stores tokens
+to disk. The backend then uses refresh tokens automatically.
 """
 
-import asyncio
+import json
 import logging
 import os
-import time
+from pathlib import Path
 
-import httpx
+from mcp.client.auth import OAuthClientProvider
+from mcp.client.auth import TokenStorage as TokenStorageProtocol
+from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
 
-from backend.tool_arena.config import OAuth2Auth
+from backend.tool_arena.config import MCPServerConfig, OAuth2Auth
 
 logger = logging.getLogger("tool_arena.auth")
 
-# Module-level token cache: server_id -> (access_token, expiry_monotonic)
-_token_cache: dict[str, tuple[str, float]] = {}
-
-# Lazy-initialized lock (avoids "no running event loop" at import time)
-_refresh_lock: asyncio.Lock | None = None
+TOKENS_DIR = Path(__file__).parent.parent.parent / ".oauth_tokens"
 
 
-def _get_lock() -> asyncio.Lock:
-    """Return the module-level async lock, creating it if needed."""
-    global _refresh_lock
-    if _refresh_lock is None:
-        _refresh_lock = asyncio.Lock()
-    return _refresh_lock
+class FileTokenStorage:
+    """Stores OAuth tokens and client info as JSON files on disk."""
+
+    def __init__(self, server_id: str) -> None:
+        self._dir = TOKENS_DIR / server_id
+        self._dir.mkdir(parents=True, exist_ok=True)
+
+    async def get_tokens(self) -> OAuthToken | None:
+        p = self._dir / "tokens.json"
+        if not p.exists():
+            return None
+        data = json.loads(p.read_text())
+        return OAuthToken(**data)
+
+    async def set_tokens(self, tokens: OAuthToken) -> None:
+        p = self._dir / "tokens.json"
+        p.write_text(tokens.model_dump_json(indent=2))
+
+    async def get_client_info(self) -> OAuthClientInformationFull | None:
+        p = self._dir / "client_info.json"
+        if not p.exists():
+            return None
+        data = json.loads(p.read_text())
+        return OAuthClientInformationFull(**data)
+
+    async def set_client_info(self, client_info: OAuthClientInformationFull) -> None:
+        p = self._dir / "client_info.json"
+        p.write_text(client_info.model_dump_json(indent=2))
 
 
-async def get_token(server_id: str, auth: OAuth2Auth) -> str:
-    """Fetch or return a cached OAuth2 token for the given server.
+def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
+    """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
 
-    Uses client_credentials grant. Caches token with a 30-second early-expiry
-    buffer to avoid using tokens that expire mid-request.
-
-    Args:
-        server_id: Unique identifier for the MCP server (used as cache key).
-        auth: OAuth2Auth config with client_id, client_secret_env, token_url.
-
-    Returns:
-        A valid access token string.
-
-    Raises:
-        KeyError: If the env var specified by auth.client_secret_env is not set.
-        httpx.HTTPStatusError: If the token endpoint returns a non-2xx response.
+    The provider is passed as auth= to streamablehttp_client. It handles
+    token refresh and 401 re-auth automatically.
     """
-    now = time.monotonic()
+    auth: OAuth2Auth = server.auth  # type: ignore[assignment]
+    client_secret = os.environ.get(auth.client_secret_env, "")
 
-    # Fast path: valid cached token
-    if server_id in _token_cache:
-        cached_token, expiry = _token_cache[server_id]
-        if now < expiry - 30:
-            return cached_token
+    storage = FileTokenStorage(server.id)
 
-    # Slow path: acquire lock and refresh
-    async with _get_lock():
-        # Double-check after acquiring lock (another coroutine may have refreshed)
-        now = time.monotonic()
-        if server_id in _token_cache:
-            cached_token, expiry = _token_cache[server_id]
-            if now < expiry - 30:
-                return cached_token
+    client_info = OAuthClientInformationFull(
+        client_id=auth.client_id,
+        client_secret=client_secret or None,
+        redirect_uris=["http://localhost:9876/callback"],
+    )
 
-        client_secret = os.environ[auth.client_secret_env]  # KeyError if missing
+    client_metadata = OAuthClientMetadata(
+        redirect_uris=["http://localhost:9876/callback"],
+        grant_types=["authorization_code", "refresh_token"],
+        response_types=["code"],
+        client_name="CompaRAG Tool Arena",
+        scope="claudeai openid offline_access",
+        token_endpoint_auth_method="client_secret_post",
+    )
 
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                auth.token_url,
-                data={
-                    "grant_type": "client_credentials",
-                    "client_id": auth.client_id,
-                    "client_secret": client_secret,
-                },
-            )
-            resp.raise_for_status()
+    # Pre-seed client info so the SDK doesn't try dynamic registration
+    p = storage._dir / "client_info.json"
+    p.write_text(client_info.model_dump_json(indent=2))
 
-        payload = resp.json()
-        access_token: str = payload["access_token"]
-        expires_in: int = payload.get("expires_in", 3600)
+    return OAuthClientProvider(
+        server_url=str(server.endpoint),
+        client_metadata=client_metadata,
+        storage=storage,
+    )
 
-        _token_cache[server_id] = (access_token, time.monotonic() + expires_in)
-        logger.debug("Fetched new token for server '%s' (expires_in=%s)", server_id, expires_in)
-        return access_token
+
+# Cache providers by server_id to reuse token state
+_provider_cache: dict[str, OAuthClientProvider] = {}
+
+
+def get_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
+    """Get or create a cached OAuthClientProvider for the server."""
+    if server.id not in _provider_cache:
+        _provider_cache[server.id] = build_oauth_provider(server)
+    return _provider_cache[server.id]
 
 
 def _clear_token_cache() -> None:
-    """Clear the in-memory token cache. Used for test isolation."""
-    _token_cache.clear()
+    """Clear provider cache. Used for test isolation."""
+    _provider_cache.clear()

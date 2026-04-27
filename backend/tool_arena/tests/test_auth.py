@@ -1,124 +1,101 @@
-"""Unit tests for OAuth2 token cache in auth.py."""
+"""Unit tests for OAuth2 auth module (MCP SDK OAuthClientProvider-based)."""
 
-import time
-from unittest.mock import AsyncMock, MagicMock, patch
+import json
+from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 import backend.tool_arena.auth as auth_module
-from backend.tool_arena.config import OAuth2Auth
+from backend.tool_arena.config import MCPServerConfig, OAuth2Auth
 
 pytestmark = pytest.mark.anyio
 
 
-def _make_oauth2_auth(
-    client_id: str = "test_id",
-    client_secret_env: str = "TEST_SECRET",
-    token_url: str = "https://example.com/token",
-) -> OAuth2Auth:
-    return OAuth2Auth(
-        type="oauth2",
-        client_id=client_id,
-        client_secret_env=client_secret_env,
-        token_url=token_url,
+def _make_server(tmp_path: Path) -> MCPServerConfig:
+    return MCPServerConfig(
+        id="test_srv",
+        name="Test Server",
+        description="test",
+        endpoint="https://example.com/mcp",
+        transport="streamablehttp",
+        auth=OAuth2Auth(
+            type="oauth2",
+            client_id="test_client_id",
+            client_secret_env="TEST_SECRET",
+            token_url="https://example.com/o/token/",
+        ),
     )
-
-
-def _make_mock_httpx_client(access_token: str = "tok123", expires_in: int = 3600):
-    """Build a mock httpx.AsyncClient context manager."""
-    mock_response = MagicMock()
-    mock_response.json.return_value = {"access_token": access_token, "expires_in": expires_in}
-    mock_response.raise_for_status = MagicMock()
-
-    mock_client = MagicMock()
-    mock_client.post = AsyncMock(return_value=mock_response)
-
-    ctx = MagicMock()
-    ctx.__aenter__ = AsyncMock(return_value=mock_client)
-    ctx.__aexit__ = AsyncMock(return_value=None)
-
-    return ctx, mock_client
 
 
 @pytest.fixture(autouse=True)
 def clear_cache():
-    """Clear token cache before each test for isolation."""
     auth_module._clear_token_cache()
     yield
     auth_module._clear_token_cache()
 
 
-async def test_get_token_fetches_from_token_url():
-    """get_token posts to token_url with client_credentials grant."""
-    auth = _make_oauth2_auth()
-    ctx, mock_client = _make_mock_httpx_client(access_token="tok123")
+async def test_file_token_storage_roundtrip(tmp_path):
+    """FileTokenStorage stores and retrieves tokens."""
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage("srv1")
+        assert await storage.get_tokens() is None
 
-    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-        with patch("httpx.AsyncClient", return_value=ctx):
-            token = await auth_module.get_token("srv1", auth)
+        from mcp.shared.auth import OAuthToken
+        token = OAuthToken(access_token="abc123", token_type="Bearer")
+        await storage.set_tokens(token)
 
-    assert token == "tok123"
-    mock_client.post.assert_awaited_once()
-    call_args = mock_client.post.call_args
-    form_data = call_args.kwargs.get("data") or call_args.args[1] if len(call_args.args) > 1 else call_args.kwargs.get("data", {})
-    assert form_data.get("grant_type") == "client_credentials"
-    assert form_data.get("client_id") == "test_id"
-    assert form_data.get("client_secret") == "secret_value"
+        retrieved = await storage.get_tokens()
+        assert retrieved is not None
+        assert retrieved.access_token == "abc123"
 
 
-async def test_get_token_returns_cached_on_second_call():
-    """Second call to get_token returns cached token without re-fetching."""
-    auth = _make_oauth2_auth()
-    ctx, mock_client = _make_mock_httpx_client(access_token="tok123", expires_in=3600)
+async def test_file_token_storage_client_info_roundtrip(tmp_path):
+    """FileTokenStorage stores and retrieves client info."""
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage("srv1")
+        assert await storage.get_client_info() is None
 
-    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-        with patch("httpx.AsyncClient", return_value=ctx):
-            token1 = await auth_module.get_token("srv1", auth)
-            token2 = await auth_module.get_token("srv1", auth)
+        from mcp.shared.auth import OAuthClientInformationFull
+        info = OAuthClientInformationFull(
+            client_id="cid",
+            redirect_uris=["http://localhost:9876/callback"],
+        )
+        await storage.set_client_info(info)
 
-    assert token1 == "tok123"
-    assert token2 == "tok123"
-    # httpx.AsyncClient (and thus post) only called once
-    assert mock_client.post.await_count == 1
-
-
-async def test_get_token_refreshes_after_expiry():
-    """get_token re-fetches when cached token has expired."""
-    auth = _make_oauth2_auth()
-    ctx, mock_client = _make_mock_httpx_client(access_token="tok_expired", expires_in=0)
-
-    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-        with patch("httpx.AsyncClient", return_value=ctx):
-            await auth_module.get_token("srv1", auth)
-            await auth_module.get_token("srv1", auth)
-
-    # Both calls should hit the token endpoint because expires_in=0
-    assert mock_client.post.await_count == 2
+        retrieved = await storage.get_client_info()
+        assert retrieved is not None
+        assert retrieved.client_id == "cid"
 
 
-async def test_get_token_raises_on_missing_env_var():
-    """get_token raises KeyError when the env var for the secret is not set."""
-    auth = _make_oauth2_auth(client_secret_env="MISSING_SECRET_XYZ")
-    ctx, _ = _make_mock_httpx_client()
+def test_build_oauth_provider_returns_provider(tmp_path):
+    """build_oauth_provider returns an OAuthClientProvider and pre-seeds client info."""
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+            from mcp.client.auth import OAuthClientProvider
+            provider = auth_module.build_oauth_provider(server)
+            assert isinstance(provider, OAuthClientProvider)
 
-    import os
-    # Ensure it's not set
-    os.environ.pop("MISSING_SECRET_XYZ", None)
-
-    with patch("httpx.AsyncClient", return_value=ctx):
-        with pytest.raises(KeyError):
-            await auth_module.get_token("srv1", auth)
+            client_info_path = tmp_path / "test_srv" / "client_info.json"
+            assert client_info_path.exists()
+            data = json.loads(client_info_path.read_text())
+            assert data["client_id"] == "test_client_id"
 
 
-async def test_clear_token_cache():
-    """_clear_token_cache empties the cache."""
-    auth = _make_oauth2_auth()
-    ctx, _ = _make_mock_httpx_client()
+def test_get_oauth_provider_caches(tmp_path):
+    """get_oauth_provider returns same instance on repeated calls."""
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+            p1 = auth_module.get_oauth_provider(server)
+            p2 = auth_module.get_oauth_provider(server)
+            assert p1 is p2
 
-    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-        with patch("httpx.AsyncClient", return_value=ctx):
-            await auth_module.get_token("srv1", auth)
 
-    assert len(auth_module._token_cache) == 1
+def test_clear_token_cache():
+    """_clear_token_cache empties the provider cache."""
+    auth_module._provider_cache["dummy"] = "fake"
+    assert len(auth_module._provider_cache) == 1
     auth_module._clear_token_cache()
-    assert len(auth_module._token_cache) == 0
+    assert len(auth_module._provider_cache) == 0

@@ -90,6 +90,7 @@ class MCPServerConfig(BaseModel):
     auth: MCPAuthConfig | None = None
     sanitize: SanitizeConfig | None = None
     tools: list[str] = ["*"]  # which MCP tools to call; ["*"] means all
+    tool_args: dict[str, str] = {}  # extra static args merged into every tool call
 
 
 def load_mcp_servers(path: Path | None = None) -> list[MCPServerConfig]:

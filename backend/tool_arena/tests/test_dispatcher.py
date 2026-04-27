@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
-from backend.tool_arena.config import MCPAuth, MCPServerConfig
+from backend.tool_arena.config import ApiKeyAuth, MCPServerConfig
 from backend.tool_arena.models import MCPToolCall
 
 
@@ -32,7 +32,7 @@ def server_a():
         description="test server A",
         endpoint="https://a.example.com/mcp",
         transport="streamablehttp",
-        auth=MCPAuth(type="bearer", token="token_a"),
+        auth=ApiKeyAuth(type="api_key", key_env="TEST_KEY_A", header="Authorization"),
         tools=["*"],
     )
 
@@ -45,7 +45,7 @@ def server_b():
         description="test server B",
         endpoint="https://b.example.com/mcp",
         transport="streamablehttp",
-        auth=MCPAuth(type="bearer", token="token_b"),
+        auth=ApiKeyAuth(type="api_key", key_env="TEST_KEY_B", header="Authorization"),
         tools=["summarize"],
     )
 
@@ -301,7 +301,7 @@ async def test_timeout_failure_isolation(server_a, server_b):
 
     call_count = 0
 
-    async def mcp_call_side_effect(server, task, goal):
+    async def mcp_call_side_effect(server, task, goal, document_content=""):
         nonlocal call_count
         call_count += 1
         if call_count == 1:
@@ -355,7 +355,7 @@ async def test_mcp_error_sets_error_field_and_empty_results(server_a, server_b):
 
     call_count = 0
 
-    async def mcp_call_side_effect(server, task, goal):
+    async def mcp_call_side_effect(server, task, goal, document_content=""):
         nonlocal call_count
         call_count += 1
         if call_count == 1:
@@ -403,7 +403,7 @@ async def test_connection_error_isolation(server_a, server_b):
 
     call_count = 0
 
-    async def mcp_call_side_effect(server, task, goal):
+    async def mcp_call_side_effect(server, task, goal, document_content=""):
         nonlocal call_count
         call_count += 1
         if call_count == 1:
@@ -616,7 +616,7 @@ async def test_failed_mcp_call_skips_llm_mediation(server_a, server_b):
 
     call_count = 0
 
-    async def mcp_call_side_effect(server, task, goal):
+    async def mcp_call_side_effect(server, task, goal, document_content=""):
         nonlocal call_count
         call_count += 1
         if call_count == 1:

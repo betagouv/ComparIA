@@ -163,8 +163,8 @@ async def test_single_mcp_call_returns_raw_text_and_duration():
     assert isinstance(duration_ms, int)
 
 
-async def test_single_mcp_call_sets_oauth2_bearer_header():
-    """Test 5: single_mcp_call sets Authorization Bearer header for OAuth2 auth."""
+async def test_single_mcp_call_passes_auth_for_oauth2():
+    """Test 5: single_mcp_call passes auth= to streamablehttp_client for OAuth2."""
     from backend.tool_arena.client import single_mcp_call
 
     server = _make_server(tools=["tool"], auth_type="oauth2")
@@ -173,16 +173,17 @@ async def test_single_mcp_call_sets_oauth2_bearer_header():
 
     captured_kwargs: dict = {}
 
-    def mock_streamable(url, headers=None, **kwargs):
-        captured_kwargs["headers"] = headers
+    def mock_streamable(url, headers=None, auth=None, **kwargs):
+        captured_kwargs["auth"] = auth
         return ctx_manager
 
+    mock_provider = MagicMock()
     with patch("backend.tool_arena.client.streamablehttp_client", side_effect=mock_streamable):
         with patch("backend.tool_arena.client.ClientSession", return_value=session_ctx):
-            with patch("backend.tool_arena.auth.get_token", new=AsyncMock(return_value="mocked_token")):
+            with patch("backend.tool_arena.auth.get_oauth_provider", return_value=mock_provider):
                 await single_mcp_call(server, "task", "goal")
 
-    assert captured_kwargs["headers"].get("Authorization") == "Bearer mocked_token"
+    assert captured_kwargs["auth"] is mock_provider
 
 
 async def test_single_mcp_call_no_authorization_header_when_no_auth():

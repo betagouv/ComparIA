@@ -1,0 +1,28 @@
+{
+  "redirect_uris": [
+    "http://localhost:9876/callback"
+  ],
+  "token_endpoint_auth_method": null,
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "response_types": [
+    "code"
+  ],
+  "scope": null,
+  "client_name": null,
+  "client_uri": null,
+  "logo_uri": null,
+  "contacts": null,
+  "tos_uri": null,
+  "policy_uri": null,
+  "jwks_uri": null,
+  "jwks": null,
+  "software_id": null,
+  "software_version": null,
+  "client_id": "Zlq2o82F4VDm7CV-vue4l8h-nSHgoj-B8lt0_XM7chc",
+  "client_secret": null,
+  "client_id_issued_at": null,
+  "client_secret_expires_at": null
+}

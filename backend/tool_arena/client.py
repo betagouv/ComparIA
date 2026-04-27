@@ -44,11 +44,11 @@ async def single_mcp_call(
         Exception: On unexpected errors. Caller wraps in asyncio.wait_for.
     """
     headers: dict[str, str] = {}
+    auth = None
     if server.auth is not None:
         if server.auth.type == "oauth2":
-            from backend.tool_arena.auth import get_token
-            token = await get_token(server.id, server.auth)
-            headers["Authorization"] = f"Bearer {token}"
+            from backend.tool_arena.auth import get_oauth_provider
+            auth = get_oauth_provider(server)
         elif server.auth.type == "api_key":
             key = os.environ[server.auth.key_env]
             headers[server.auth.header] = key
@@ -58,6 +58,7 @@ async def single_mcp_call(
     async with streamablehttp_client(
         str(server.endpoint),
         headers=headers,
+        auth=auth,
     ) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
@@ -68,7 +69,13 @@ async def single_mcp_call(
             else:
                 tool_name = server.tools[0]
 
-            arguments = {"task": task, "goal": goal, "document_content": document_content}
+            if tool_name == "call_agent":
+                message = f"Task: {task}\nGoal: {goal}"
+                if document_content:
+                    message += f"\n\nDocument:\n{document_content}"
+                arguments = {"message": message, **server.tool_args}
+            else:
+                arguments = {"task": task, "goal": goal, "document_content": document_content}
             result = await session.call_tool(tool_name, arguments=arguments)
 
             raw_text = "\n".join(
