@@ -1221,6 +1221,8 @@
         "license": "proprietary",
         "release_date": "04/2026",
         "arch": "maybe-moe",
+        "params": 300,
+        "active_params": 94,
         "reasoning": true,
         "url": "https://openai.com/index/introducing-gpt-5-5/",
         "endpoint": {
