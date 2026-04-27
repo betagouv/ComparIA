@@ -38,14 +38,10 @@ export interface UserMessage {
 }
 export interface AssistantMessage {
   role: 'assistant'
-  pos: Bot
-  metadata: {
-    bot: Bot
-    duration: number | null
-    generation_id: string
-  }
+  duration: number | null
+  generation_id: string
   content: string
-  reasoning: string | ''
+  reasoning_content: string | ''
 
   generating?: boolean
 }

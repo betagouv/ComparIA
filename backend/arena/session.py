@@ -6,7 +6,7 @@ Handles storing and retrieving conversation pairs during active arena sessions.
 
 import json
 import logging
-from typing import Awaitable
+from typing import Awaitable, TypedDict
 from uuid import uuid4
 
 from backend.config import (
@@ -25,6 +25,12 @@ from utils.storage.redis import (
 logger = logging.getLogger("languia")
 
 
+class ComparisonMetadata(TypedDict):
+    id: int
+    session_hash: str
+    is_streaming: bool
+
+
 def create_session() -> str:
     """
     Generate a new unique session hash.
@@ -35,17 +41,7 @@ def create_session() -> str:
     return str(uuid4())
 
 
-def store_session_conversations(session_hash: str, data: dict) -> None:
-    """
-    Store conversation pair with metadata in Redis for an active session.
-
-    Args:
-        session_hash: Unique session identifier
-        data: serialized conversations data (see Conversations.store_to_session)
-
-    Note:
-        Session expires after 24 hours
-    """
+def store_comparison_metadata(session_hash: str, id: int, is_streaming: bool) -> None:
     expire_time = 86400  # 24 hours
 
     try:
@@ -53,7 +49,9 @@ def store_session_conversations(session_hash: str, data: dict) -> None:
         client.setex(
             REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash),
             expire_time,
-            json.dumps(data),
+            json.dumps(
+                {"id": id, "session_hash": session_hash, "is_streaming": is_streaming}
+            ),
         )
         logger.info(f"[SESSION] Stored conversations for {session_hash}")
     except Exception as e:
@@ -61,21 +59,9 @@ def store_session_conversations(session_hash: str, data: dict) -> None:
         raise
 
 
-def retrieve_session_conversations(
+def retreive_comparison_metadata(
     session_hash: str,
-) -> dict:
-    """
-    Retrieve conversation pair and metadata from Redis.
-
-    Args:
-        session_hash: Unique session identifier
-
-    Returns:
-        Conversations serialized data
-
-    Raises:
-        ValueError: If session not found or expired
-    """
+) -> ComparisonMetadata:
     try:
         client = get_redis_client()
         data = client.get(REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash))
@@ -84,7 +70,6 @@ def retrieve_session_conversations(
             logger.warning(f"[SESSION] Session not found: {session_hash}")
             raise ValueError(f"Session not found: {session_hash}")
 
-        # parsed = json.loads(data)
         logger.info(f"[SESSION] Retrieved conversations for {session_hash}")
 
         return json.loads(data)

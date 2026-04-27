@@ -3,24 +3,29 @@
   import { Icon } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import Pending from '$components/Pending.svelte'
-  import type { APIReactionData, AssistantMessage, OnReactionFn } from '$lib/chatService.svelte'
+  import type {
+    APIReactionData,
+    AssistantMessage,
+    Bot,
+    OnReactionFn
+  } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { LikeDislike, LikePanel } from '.'
 
   export type MessageBotProps = {
     message: AssistantMessage
+    bot: Bot
     index: number
     disabled?: boolean
     onReactionChange: OnReactionFn
   }
 
-  let { message, index, disabled = false, onReactionChange }: MessageBotProps = $props()
+  let { message, bot, index, disabled = false, onReactionChange }: MessageBotProps = $props()
 
-  const bot = message.metadata.bot
   const reaction = $state<APIReactionData>({
     index: index * 2 + 1,
-    bot: message.metadata.bot,
+    bot,
     liked: null,
     prefs: [],
     comment: '',
@@ -51,7 +56,7 @@
         <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
-      {#if message.reasoning.trim() !== ''}
+      {#if message.reasoning_content?.trim()}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
             <h3 class="fr-accordion__title ms-1!">
@@ -59,7 +64,7 @@
                 type="button"
                 class="fr-accordion__btn text-primary! bg-transparent!"
                 aria-expanded="true"
-                aria-controls="reasoning-{message.metadata.generation_id}"
+                aria-controls="reasoning-{message.generation_id}"
               >
                 <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
                 {#if message.content === '' && message.generating}
@@ -70,11 +75,11 @@
               </button>
             </h3>
             <div
-              id="reasoning-{message.metadata.generation_id}"
+              id="reasoning-{message.generation_id}"
               class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
             >
               <div class="px-5 py-4">
-                {@html sanitize(message.reasoning.split('\n').join('<br>'))}
+                {@html sanitize(message.reasoning_content.split('\n').join('<br>'))}
               </div>
             </div>
           </div>
@@ -104,7 +109,7 @@
   {#if reaction.liked !== null}
     <div class="cg-border rounded-lg! mt-3 bg-white p-5 border-dashed!">
       <LikePanel
-        id={message.metadata.generation_id}
+        id={message.generation_id}
         kind={reaction.liked ? 'like' : 'dislike'}
         show={true}
         bind:selection={reaction.prefs}

@@ -25,8 +25,8 @@
 
   <div class="gap-10 md:grid-cols-2 md:gap-6 grid">
     {#if round.a && round.b && round.showMessages}
-      <MessageBot message={round.a} index={round.index} {disabled} {onReactionChange} />
-      <MessageBot message={round.b} index={round.index} {disabled} {onReactionChange} />
+      <MessageBot message={round.a} bot="a" index={round.index} {disabled} {onReactionChange} />
+      <MessageBot message={round.b} bot="b" index={round.index} {disabled} {onReactionChange} />
     {/if}
   </div>
 </div>
