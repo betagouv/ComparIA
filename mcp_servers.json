@@ -14,5 +14,24 @@
     "endpoint": "http://localhost:8011/mcp",
     "transport": "streamablehttp",
     "tools": ["*"]
+  },
+  {
+    "id": "clarifeye",
+    "name": "Clarifeye",
+    "description": "Clarifeye RAG pipeline via MCP",
+    "endpoint": "https://env-3256.gcp.clarifeye.io/mcp",
+    "transport": "streamablehttp",
+    "auth": {
+      "type": "oauth2",
+      "client_id": "Zlq2o82F4VDm7CV-vue4l8h-nSHgoj-B8lt0_XM7chc",
+      "client_secret_env": "CLARIFEYE_CLIENT_SECRET",
+      "token_url": "https://env-3256.gcp.clarifeye.io/o/token/"
+    },
+    "sanitize": {
+      "url_patterns": ["clarifeye\\.io", "gcp\\.clarifeye"],
+      "metadata_keys": [],
+      "extra_terms": ["clarifeye", "Clarifeye"]
+    },
+    "tools": ["*"]
   }
 ]
