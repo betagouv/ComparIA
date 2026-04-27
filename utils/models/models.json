@@ -1216,6 +1216,40 @@
     "models": [
       {
         "new": true,
+        "id": "gpt-5.5",
+        "simple_name": "GPT 5.5",
+        "license": "proprietary",
+        "release_date": "04/2026",
+        "arch": "maybe-moe",
+        "reasoning": true,
+        "url": "https://openai.com/index/introducing-gpt-5-5/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.5"
+        },
+        "desc": "Très grand modèle nativement multimodal (texte, image, audio, vidéo traités par le même réseau de paramètres) conçu pour des tâches complexes : génération et débogage de code, recherche en ligne, analyse de données, utilisation autonome d'un ordinateur. Il simule une étape de raisonnement avant de générer sa réponse, avec un niveau d'effort paramétrable, et utilise sensiblement moins de jetons que GPT 5.4 pour les mêmes tâches.",
+        "size_desc": "Les tailles des modèles derrière le système GPT 5.5 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Les estimations disponibles s'appuient sur des indices indirects tels que les coûts d'inférence et la latence de réponse.\n\nGPT 5.5 prend en charge une fenêtre de contexte allant jusqu'à un million de jetons, ce qui le rend adapté à l'analyse de très grands corpus documentaires ou de bases de code étendues.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "GPT 5.5, dont le nom de code interne est « Spud », est selon OpenAI le premier modèle de base entièrement réentraîné depuis GPT 4.5. Sa principale nouveauté architecturale est un traitement nativement omnimodal : les mêmes paramètres traitent le texte, les images, l'audio et la vidéo, ce qui améliore le raisonnement transmodal et réduit la latence sur les requêtes multimodales par rapport à des architectures où chaque modalité dispose d'un encodeur séparé.\n\nSelon l'éditeur, le modèle réduit de 60 % le taux d'hallucination par rapport à GPT 5.4, et consomme environ 40 % de jetons en moins pour accomplir les mêmes tâches de programmation. Sur SWE-Bench Verified (test de résolution automatique de bugs), il atteint 88,7 %, et sur MMLU (questions générales de niveau universitaire), il obtient 92,4 %. La latence par jeton est comparable à celle de GPT 5.4 en conditions réelles d'inférence.\n\nLe modèle est disponible en trois variantes : standard, Thinking (budget de raisonnement étendu) et Pro (variante distincte plus précise pour les tâches critiques). Le tarif d'API standard s'établit à 5 $ en entrée et 30 $ en sortie par million de jetons, soit un coût unitaire supérieur à GPT 5.4, en partie compensé par la baisse du nombre de jetons consommés. L'accès API a été ouvert le 24 avril 2026, un jour après le lancement grand public, OpenAI invoquant la nécessité de garde-fous spécifiques."
+      },
+      {
+        "new": true,
+        "id": "gpt-5.5-pro",
+        "simple_name": "GPT 5.5 Pro",
+        "license": "proprietary",
+        "release_date": "04/2026",
+        "arch": "maybe-moe",
+        "reasoning": true,
+        "url": "https://openai.com/index/introducing-gpt-5-5/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.5-pro"
+        },
+        "desc": "Variante haut de gamme de GPT 5.5, conçue pour les tâches où la justesse de la réponse prime sur le coût (analyse juridique, scientifique, ingénierie logicielle complexe). Elle reprend la même architecture nativement multimodale et la même fenêtre d'un million de jetons, mais à un tarif d'API six fois supérieur à la version standard.",
+        "size_desc": "Les tailles des modèles derrière le système GPT 5.5 Pro ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Les estimations disponibles s'appuient sur des indices indirects tels que les coûts d'inférence et la latence de réponse.\n\nLa fenêtre de contexte atteint un million de jetons, ce qui est adapté à l'analyse de très grands corpus documentaires ou de bases de code étendues.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. Pro mobilise davantage de calcul par requête que la version standard.",
+        "fyi": "GPT 5.5 Pro est une variante distincte de la version standard, et non un simple mode de raisonnement étendu : OpenAI la présente comme spécifiquement entraînée pour les tâches où la précision est critique. Elle partage l'architecture nativement omnimodale de GPT 5.5 (texte, image, audio, vidéo traités par le même réseau de paramètres) et la même fenêtre d'un million de jetons.\n\nLe tarif d'API s'établit à 30 $ en entrée et 180 $ en sortie par million de jetons, soit six fois la version standard. Ce positionnement la destine aux usages où le coût unitaire compte moins que la qualité de la réponse, par exemple pour la révision de code, l'analyse documentaire approfondie ou la recherche.\n\nComme la version standard, GPT 5.5 Pro a été lancée le 23 avril 2026, avec un accès API ouvert le lendemain."
+      },
+      {
+        "new": true,
         "id": "gpt-5.4",
         "simple_name": "GPT 5.4",
         "license": "proprietary",
