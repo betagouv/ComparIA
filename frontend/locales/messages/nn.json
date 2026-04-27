@@ -30,6 +30,9 @@
             "help": "Viss du berre vel ein, vert den andre vald tilfeldig",
             "question": "Kva modellar vil du samanlikne?"
         },
+        "errors": {
+            "rateLimitCustomSelection": "Modellvalet er avgrensa for å sikre rettferdig tilgang for alle. Du kan halde fram med å bruke tilfeldig modus, eller prøve att seinare."
+        },
         "modelSelection": "Val av modellar",
         "prompt": {
             "label": "Skriv den første meldinga di",
@@ -44,5 +47,21 @@
             "title": "Føreslåtte prompt"
         },
         "title": "Kva kan eg hjelpe deg med i dag?"
+    },
+    "chatbot": {
+        "continuePrompt": "Hald fram samtalen med KI-modellane",
+        "conversation": "Samtale",
+        "errors": {
+            "other": {
+                "message": "Det har oppstått ein mellombels feil.",
+                "retry": "Du kan prøve å spørje modellane på nytt.",
+                "title": "Oops, mellombels feil",
+                "vote": "Eller avslutt ved å oppgi kva modell du føretrekker."
+            },
+            "tooLong": {
+                "message": "Kvar modell har avgrensingar på kor lange samtalar dei kan handtere.",
+                "retry": "Du kan ta opp att samtalen med to nye modellar."
+            }
+        }
     }
 }
