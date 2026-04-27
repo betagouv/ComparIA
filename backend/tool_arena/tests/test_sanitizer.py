@@ -2,7 +2,7 @@
 
 import pytest
 
-from backend.tool_arena.config import MCPAuth, MCPServerConfig
+from backend.tool_arena.config import ApiKeyAuth, NoAuth, MCPServerConfig
 from backend.tool_arena.sanitizer import sanitize_output
 
 # --------------------------------------------------------------------------- #
@@ -17,7 +17,7 @@ def server_a() -> MCPServerConfig:
         description="test",
         endpoint="https://example.com/mcp/global-summarizer",
         transport="streamablehttp",
-        auth=MCPAuth(type="bearer", token="secret_token_abc"),
+        auth=NoAuth(type="none"),
         tools=["*"],
     )
 
@@ -30,7 +30,7 @@ def server_b() -> MCPServerConfig:
         description="test",
         endpoint="https://example.com/mcp/clarifeye-memos",
         transport="streamablehttp",
-        auth=MCPAuth(type="bearer", token="secret_token_xyz"),
+        auth=ApiKeyAuth(type="api_key", key_env="CLARIFEYE_KEY", header="Authorization"),
         tools=["extract_memo"],
     )
 
@@ -77,32 +77,22 @@ def test_sanitize_replaces_endpoint_url(server_a, server_b):
     assert "https://example.com/mcp/global-summarizer" not in result
 
 
-def test_sanitize_replaces_auth_token(server_a, server_b):
-    """Test 4: sanitize_output replaces auth token with '[REDACTED]'."""
-    text = "Using token secret_token_abc for authorization."
-    result = sanitize_output(text, [server_a, server_b])
-    assert "[REDACTED]" in result
-    assert "secret_token_abc" not in result
-
-
 def test_sanitize_both_servers(server_a, server_b):
     """Test 5: sanitize_output strips identifying info from BOTH servers in the list."""
     text = (
         "Server global_summarizer (Global Summarizer AI) at "
-        "https://example.com/mcp/global-summarizer used token secret_token_abc. "
+        "https://example.com/mcp/global-summarizer. "
         "Server clarifeye_memos (Clarifeye Memos) at "
-        "https://example.com/mcp/clarifeye-memos used token secret_token_xyz."
+        "https://example.com/mcp/clarifeye-memos."
     )
     result = sanitize_output(text, [server_a, server_b])
     assert "global_summarizer" not in result
     assert "Global Summarizer AI" not in result
     assert "https://example.com/mcp/global-summarizer" not in result
-    assert "secret_token_abc" not in result
     assert "clarifeye_memos" not in result
     assert "Clarifeye Memos" not in result
     assert "https://example.com/mcp/clarifeye-memos" not in result
-    assert "secret_token_xyz" not in result
-    assert result.count("[REDACTED]") >= 8
+    assert result.count("[REDACTED]") >= 6
 
 
 def test_sanitize_no_match_returns_original(server_a, server_b):

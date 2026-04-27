@@ -12,29 +12,68 @@ import os
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, HttpUrl, PlainSerializer
+from pydantic import BaseModel, Field, HttpUrl, PlainSerializer
+
 
 # Path to mcp_servers.json relative to the CompaRAG project root
 # backend/tool_arena/ -> CompaRAG/
 ROOT_DIR = Path(__file__).parent.parent.parent
 MCP_SERVERS_PATH = ROOT_DIR / "mcp_servers.json"
 
-# Mapping from server id to the env var that overrides its endpoint URL at runtime.
-# Railway-internal hostnames are injected via these env vars; localhost defaults remain
-# in mcp_servers.json for local dev (D-01, D-03).
-_URL_OVERRIDE_ENV_VARS: dict[str, str] = {
-    "langchain_rag": "MCP_LANGCHAIN_RAG_URL",
-    "llamaindex_rag": "MCP_LLAMAINDEX_RAG_URL",
-}
+
+# --------------------------------------------------------------------------- #
+# Auth union (D-01): polymorphic discriminated union on `type`
+# --------------------------------------------------------------------------- #
+
+class OAuth2Auth(BaseModel):
+    """OAuth2 client_credentials auth. Secrets stored as env var names, never literals."""
+
+    type: Literal["oauth2"]
+    client_id: str
+    client_secret_env: str  # env var name, not literal secret
+    token_url: str
 
 
-class MCPAuth(BaseModel):
-    """Authentication credentials for an MCP server."""
+class ApiKeyAuth(BaseModel):
+    """API key auth. Key stored as env var name, not literal value."""
 
-    type: str  # e.g., "bearer"
-    token: str | None = None
-    header: str | None = None
+    type: Literal["api_key"]
+    key_env: str  # env var name
+    header: str = "Authorization"
 
+
+class NoAuth(BaseModel):
+    """No authentication required."""
+
+    type: Literal["none"]
+
+
+MCPAuthConfig = Annotated[
+    OAuth2Auth | ApiKeyAuth | NoAuth,
+    Field(discriminator="type"),
+]
+
+
+# --------------------------------------------------------------------------- #
+# Per-server sanitize block (D-02)
+# --------------------------------------------------------------------------- #
+
+class SanitizeConfig(BaseModel):
+    """Per-server sanitization configuration.
+
+    url_patterns: Regex patterns to strip from answer text (source URLs, vendor domains).
+    metadata_keys: JSON keys to strip from structured output.
+    extra_terms: Additional literal terms to redact from answer text.
+    """
+
+    url_patterns: list[str] = []
+    metadata_keys: list[str] = []
+    extra_terms: list[str] = []
+
+
+# --------------------------------------------------------------------------- #
+# Main server config
+# --------------------------------------------------------------------------- #
 
 class MCPServerConfig(BaseModel):
     """
@@ -48,7 +87,8 @@ class MCPServerConfig(BaseModel):
     description: str  # short text shown in arena UI
     endpoint: Annotated[HttpUrl, PlainSerializer(str)]  # URL with str serialization
     transport: Literal["streamablehttp"]  # only valid transport (SSE deprecated per MCP spec v2025-03-26)
-    auth: MCPAuth | None = None
+    auth: MCPAuthConfig | None = None
+    sanitize: SanitizeConfig | None = None
     tools: list[str] = ["*"]  # which MCP tools to call; ["*"] means all
 
 
@@ -78,14 +118,15 @@ def load_mcp_servers(path: Path | None = None) -> list[MCPServerConfig]:
     with open(path) as f:
         raw = json.load(f)  # raises json.JSONDecodeError on malformed JSON
 
-    # Overlay Railway-internal URLs from env vars (D-01)
-    # Falls back to mcp_servers.json values when env var is absent (local dev)
+    # D-03: Convention-based URL override — derived from server id.
+    # e.g. id="clarifeye" -> env var "MCP_CLARIFEYE_URL"
+    # Backward compatible: "langchain_rag" -> MCP_LANGCHAIN_RAG_URL (same as before)
     for entry in raw:
-        env_var = _URL_OVERRIDE_ENV_VARS.get(entry.get("id", ""))
-        if env_var:
-            override_url = os.getenv(env_var)
-            if override_url:
-                entry["endpoint"] = override_url
+        server_id = entry.get("id", "")
+        env_var = f"MCP_{server_id.upper()}_URL"
+        override_url = os.getenv(env_var)
+        if override_url:
+            entry["endpoint"] = override_url
 
     servers = [MCPServerConfig(**entry) for entry in raw]  # raises ValidationError on invalid fields
 

@@ -31,8 +31,8 @@ def sanitize_output(text: str, servers: list[MCPServerConfig]) -> str:
         for value in [server.id, server.name, str(server.endpoint)]:
             if value:
                 patterns.append(re.escape(value))
-        if server.auth and server.auth.token:
-            patterns.append(re.escape(server.auth.token))
+        # New auth types (OAuth2Auth, ApiKeyAuth, NoAuth) store env var names, not literals.
+        # No literal secrets to redact from auth config in the new design.
 
     if not patterns:
         return text
