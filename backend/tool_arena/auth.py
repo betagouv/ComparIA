@@ -1,12 +1,9 @@
-"""OAuth2 authorization_code + PKCE auth for MCP servers via the MCP SDK.
+"""OAuth2 client_credentials auth for MCP servers.
 
-Uses the MCP SDK's OAuthClientProvider which handles:
-- Authorization code flow with PKCE (S256)
+Uses the MCP SDK's ClientCredentialsOAuthProvider which handles:
+- client_credentials grant (no browser redirect needed)
 - Token storage and automatic refresh
 - 401 retry with re-authentication
-
-For servers requiring OAuth2, a one-time browser-based login stores tokens
-to disk. The backend then uses refresh tokens automatically.
 """
 
 import json
@@ -14,9 +11,8 @@ import logging
 import os
 from pathlib import Path
 
-from mcp.client.auth import OAuthClientProvider
-from mcp.client.auth import TokenStorage as TokenStorageProtocol
-from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
+from mcp.client.auth.extensions.client_credentials import ClientCredentialsOAuthProvider
+from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
 
 from backend.tool_arena.config import MCPServerConfig, OAuth2Auth
 
@@ -55,49 +51,26 @@ class FileTokenStorage:
         p.write_text(client_info.model_dump_json(indent=2))
 
 
-def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
-    """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
-
-    The provider is passed as auth= to streamablehttp_client. It handles
-    token refresh and 401 re-auth automatically.
-    """
+def build_oauth_provider(server: MCPServerConfig) -> ClientCredentialsOAuthProvider:
+    """Build a ClientCredentialsOAuthProvider for an OAuth2-authenticated MCP server."""
     auth: OAuth2Auth = server.auth  # type: ignore[assignment]
     client_secret = os.environ.get(auth.client_secret_env, "")
-
     storage = FileTokenStorage(server.id)
 
-    client_info = OAuthClientInformationFull(
+    return ClientCredentialsOAuthProvider(
+        server_url=str(server.endpoint),
+        storage=storage,
         client_id=auth.client_id,
-        client_secret=client_secret or None,
-        redirect_uris=["http://localhost:9876/callback"],
-    )
-
-    client_metadata = OAuthClientMetadata(
-        redirect_uris=["http://localhost:9876/callback"],
-        grant_types=["authorization_code", "refresh_token"],
-        response_types=["code"],
-        client_name="CompaRAG Tool Arena",
-        scope="claudeai openid offline_access",
+        client_secret=client_secret,
         token_endpoint_auth_method="client_secret_post",
     )
 
-    # Pre-seed client info so the SDK doesn't try dynamic registration
-    p = storage._dir / "client_info.json"
-    p.write_text(client_info.model_dump_json(indent=2))
 
-    return OAuthClientProvider(
-        server_url=str(server.endpoint),
-        client_metadata=client_metadata,
-        storage=storage,
-    )
+_provider_cache: dict[str, ClientCredentialsOAuthProvider] = {}
 
 
-# Cache providers by server_id to reuse token state
-_provider_cache: dict[str, OAuthClientProvider] = {}
-
-
-def get_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
-    """Get or create a cached OAuthClientProvider for the server."""
+def get_oauth_provider(server: MCPServerConfig) -> ClientCredentialsOAuthProvider:
+    """Get or create a cached ClientCredentialsOAuthProvider for the server."""
     if server.id not in _provider_cache:
         _provider_cache[server.id] = build_oauth_provider(server)
     return _provider_cache[server.id]

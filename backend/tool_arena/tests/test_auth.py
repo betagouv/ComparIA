@@ -68,19 +68,14 @@ async def test_file_token_storage_client_info_roundtrip(tmp_path):
         assert retrieved.client_id == "cid"
 
 
-def test_build_oauth_provider_returns_provider(tmp_path):
-    """build_oauth_provider returns an OAuthClientProvider and pre-seeds client info."""
+def test_build_oauth_provider_returns_client_credentials_provider(tmp_path):
+    """build_oauth_provider returns a ClientCredentialsOAuthProvider."""
     server = _make_server(tmp_path)
     with patch.object(auth_module, "TOKENS_DIR", tmp_path):
         with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-            from mcp.client.auth import OAuthClientProvider
+            from mcp.client.auth.extensions.client_credentials import ClientCredentialsOAuthProvider
             provider = auth_module.build_oauth_provider(server)
-            assert isinstance(provider, OAuthClientProvider)
-
-            client_info_path = tmp_path / "test_srv" / "client_info.json"
-            assert client_info_path.exists()
-            data = json.loads(client_info_path.read_text())
-            assert data["client_id"] == "test_client_id"
+            assert isinstance(provider, ClientCredentialsOAuthProvider)
 
 
 def test_get_oauth_provider_caches(tmp_path):
