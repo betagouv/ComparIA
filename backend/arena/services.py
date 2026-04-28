@@ -15,6 +15,8 @@ from utils.database.models import (
     Turn,
     TurnCreate,
     TurnRead,
+    TurnVoteAnnotate,
+    TurnVoteChoice,
     UserMessage,
 )
 from utils.database.session import get_session
@@ -139,5 +141,18 @@ async def update_turn(
         db_turn = await _get_item(Turn, id, session)
         db_turn.llm_msg_a = LLMMessage.model_validate(llm_msg_a)
         db_turn.llm_msg_b = LLMMessage.model_validate(llm_msg_b)
+        session.add(db_turn)
+        await session.commit()
+
+
+async def update_turn_vote(id: int, vote: TurnVoteChoice | TurnVoteAnnotate) -> None:
+    async with get_session() as session:
+        db_turn = await _get_item(Turn, id, session)
+        data = (
+            {f"{k}_{vote.pos}": v for k, v in vote.model_dump().items()}
+            if isinstance(vote, TurnVoteAnnotate)
+            else vote.model_dump()
+        )
+        db_turn.sqlmodel_update(data)
         session.add(db_turn)
         await session.commit()
