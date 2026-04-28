@@ -145,6 +145,26 @@ def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
     logger.info("Bootstrapped OAuth tokens for %s from %s env var", server.id, env_key)
 
 
+class CompaRAGOAuthProvider(OAuthClientProvider):
+    """OAuthClientProvider subclass that uses the configured token_url.
+
+    The base class discovers the token endpoint via OAuth metadata (only available
+    after a 401 triggers discovery). Before that, it falls back to {server_url}/token
+    which is wrong for servers like Clarifeye where it's at /o/token/. This subclass
+    overrides _get_token_endpoint to use the token_url from mcp_servers.json config,
+    so the refresh_token flow works on the very first request.
+    """
+
+    def __init__(self, token_url: str, **kwargs):
+        super().__init__(**kwargs)
+        self._configured_token_url = token_url
+
+    def _get_token_endpoint(self) -> str:
+        if self.context.oauth_metadata and self.context.oauth_metadata.token_endpoint:
+            return str(self.context.oauth_metadata.token_endpoint)
+        return self._configured_token_url
+
+
 async def _redirect_handler(url: str) -> None:
     """Redirect handler for auth code flow — should never be called in production."""
     raise RuntimeError(
@@ -159,7 +179,7 @@ async def _callback_handler() -> tuple[str, str | None]:
     raise RuntimeError("OAuth callback triggered on headless server — this should not happen.")
 
 
-def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
+def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
     """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
 
     Token storage: Redis in production, file on disk for local dev.
@@ -198,7 +218,8 @@ def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
             client_info.model_dump_json(),
         )
 
-    return OAuthClientProvider(
+    return CompaRAGOAuthProvider(
+        token_url=auth.token_url,
         server_url=str(server.endpoint),
         client_metadata=client_metadata,
         storage=storage,
@@ -207,11 +228,11 @@ def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
     )
 
 
-_provider_cache: dict[str, OAuthClientProvider] = {}
+_provider_cache: dict[str, CompaRAGOAuthProvider] = {}
 
 
-def get_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
-    """Get or create a cached OAuthClientProvider for the server."""
+def get_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
+    """Get or create a cached CompaRAGOAuthProvider for the server."""
     if server.id not in _provider_cache:
         _provider_cache[server.id] = build_oauth_provider(server)
     return _provider_cache[server.id]
