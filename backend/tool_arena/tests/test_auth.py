@@ -68,14 +68,60 @@ async def test_file_token_storage_client_info_roundtrip(tmp_path):
         assert retrieved.client_id == "cid"
 
 
-def test_build_oauth_provider_returns_client_credentials_provider(tmp_path):
-    """build_oauth_provider returns a ClientCredentialsOAuthProvider."""
+def test_build_oauth_provider_returns_provider(tmp_path):
+    """build_oauth_provider returns an OAuthClientProvider with pre-seeded client info."""
     server = _make_server(tmp_path)
     with patch.object(auth_module, "TOKENS_DIR", tmp_path):
         with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-            from mcp.client.auth.extensions.client_credentials import ClientCredentialsOAuthProvider
+            from mcp.client.auth import OAuthClientProvider
             provider = auth_module.build_oauth_provider(server)
-            assert isinstance(provider, ClientCredentialsOAuthProvider)
+            assert isinstance(provider, OAuthClientProvider)
+
+            client_info_path = tmp_path / "test_srv" / "client_info.json"
+            assert client_info_path.exists()
+            data = json.loads(client_info_path.read_text())
+            assert data["client_id"] == "test_client_id"
+
+
+def test_bootstrap_tokens_from_env(tmp_path):
+    """_bootstrap_tokens_from_env pre-seeds tokens.json from env var."""
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage(server.id)
+        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "my_refresh_tok"}):
+            auth_module._bootstrap_tokens_from_env(server, storage)
+
+        tokens_path = tmp_path / "test_srv" / "tokens.json"
+        assert tokens_path.exists()
+        data = json.loads(tokens_path.read_text())
+        assert data["refresh_token"] == "my_refresh_tok"
+        assert data["access_token"] == "expired"
+
+
+def test_bootstrap_skips_if_tokens_exist(tmp_path):
+    """_bootstrap_tokens_from_env does not overwrite existing tokens."""
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage(server.id)
+        tokens_path = tmp_path / "test_srv" / "tokens.json"
+        tokens_path.write_text('{"access_token":"real","token_type":"Bearer"}')
+
+        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "should_not_write"}):
+            auth_module._bootstrap_tokens_from_env(server, storage)
+
+        data = json.loads(tokens_path.read_text())
+        assert data["access_token"] == "real"
+        assert "refresh_token" not in data
+
+
+def test_bootstrap_skips_if_no_env_var(tmp_path):
+    """_bootstrap_tokens_from_env is a no-op without the env var."""
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage(server.id)
+        auth_module._bootstrap_tokens_from_env(server, storage)
+        tokens_path = tmp_path / "test_srv" / "tokens.json"
+        assert not tokens_path.exists()
 
 
 def test_get_oauth_provider_caches(tmp_path):
