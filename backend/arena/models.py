@@ -390,6 +390,6 @@ class RevealModelData(TypedDict):
 
 class RevealData(TypedDict):
     b64: str
-    chosen_llm: BotChoice
+    chosen_llm: BotPos | None
     a: RevealModelData
     b: RevealModelData
