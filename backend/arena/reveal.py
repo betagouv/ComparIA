@@ -2,79 +2,67 @@
 Reveal screen data generation.
 
 Functions:
-- get_chosen_llm: Guess the chosen LLM
+- get_chosen_llm: Compute the chosen LLM
 - get_reveal_data: Main function generating reveal screen data
 """
 
 import logging
 
-from backend.arena.models import BotChoice, BotPos, Conversations, RevealData
+from backend.arena.models import BotPos, Consumption, RevealData
+from backend.llms.data import get_llms_data
 from backend.llms.utils import get_llm_consumption
+from utils.database.models import ComparisonRead
 
 logger = logging.getLogger("languia")
 
 
-def get_chosen_llm(conversations: Conversations) -> BotChoice | None:
+def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
     """
-    Guess the chosen LLM based on vote or reaction data.
+    Compute the better LLM based on turn votes.
 
     Args:
-        conversations: Conversations
+        comparison: ComparisonRead
 
     Returns:
-        BotChoice | None: the computed choice or None if no vote or reactions is found
+        BotPos | None: the computed LLM pos or None if it is a draw.
     """
-    if conversations.vote:
-        return conversations.vote.chosen_llm
-
-    reactions: dict[BotPos, dict[int, bool]] = {
-        "a": {r.index: r.liked for r in conversations.conversation_a.reactions},
-        "b": {r.index: r.liked for r in conversations.conversation_b.reactions},
-    }
-
-    indexes: set[int] = set([*reactions["a"].keys(), *reactions["b"].keys()])
-
-    if not indexes:
-        # No reactions
-        return None
-
-    scores = {"a": 0, "b": 0}
-    for index in indexes:
-        for pos in ("a", "b"):
-            liked = reactions[pos].get(index, None)
-            if liked is not None:
-                scores[pos] += 1 if liked else -1
+    scores: dict[BotPos, int] = {"a": 0, "b": 0}
+    for turn in comparison.turns:
+        if turn.choice == "a_better":
+            scores["a"] += 1
+        elif turn.choice == "b_better":
+            scores["b"] += 1
 
     if scores["a"] > scores["b"]:
         return "a"
-    elif scores["b"] > scores["a"]:
+    if scores["b"] > scores["a"]:
         return "b"
-    else:
-        return "both_equal"
+
+    return None
 
 
-def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> RevealData:
+def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     """
-    Build reveal screen data with model comparison and environmental impact metrics.
+    Build reveal screen data with LLM comparison and environmental impact metrics.
 
     Calculates environmental impact (energy, CO2 emissions) and creates data for the
-    reveal screen shown after voting. Includes model metadata, token counts, and
+    reveal screen shown after voting. Includes LLM definitions, token counts, and
     scaled equivalence (e.g., "if all the population made this prompt…").
 
     Args:
-        conversations: Conversation object for model B with messages, model_name, and conv_id
-        chosen_llm: User's choice ("a", "b", or "both_equal")
+        comparison: ComparisonRead
+        chosen_llm: Computed better LLM pos or None if equal based on votes
 
     Returns:
         dict: RevealData containing:
             - b64: Base64-encoded JSON summary (compact storage/transmission)
-            - chosen_llm: User's model preference ("a", "b" or None)
-            - a: llm 'a' data (see `LLMData`) and conso (see `Consumption`)
-            - b: llm 'b' data (see `LLMData`) and conso (see `Consumption`)
+            - chosen_llm: Computed better LLM pos ("a", "b" or None)
+            - a: llm 'a' definition (see `LLMData`) and conso (see `Consumption`)
+            - b: llm 'b' definition (see `LLMData`) and conso (see `Consumption`)
 
     Process:
-        1. Compute total output tokens for each conversation
-        2. Compute `Consumption` data for each conversation
+        1. Compute total output tokens for each LLM turns
+        2. Compute `Consumption` data for each LLM turns
         3. Encode summary to base64 for efficient storage
         4. Return comprehensive metrics for reveal screen display
     """
@@ -85,24 +73,32 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
     # Currently not tracked; would need start/finish timestamps from Conversation
     # Compute it for each exchange (user prompt/llm response)
     # request_latency = conv.finish_tstamp - conv.start_tstamp
+
+    chosen_llm = get_chosen_llm(comparison)
+    llms = get_llms_data(comparison.country_portal).enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
-    conv_a = conversations.conversation_a
-    tokens_a = conv_a.tokens
-    conso_a = get_llm_consumption(conv_a.llm, tokens_a)
-    logger.debug(f"[REVEAL] output_tokens (llm 'a'): {tokens_a}")
-    conv_b = conversations.conversation_b
-    tokens_b = conv_b.tokens
-    conso_b = get_llm_consumption(conv_b.llm, tokens_b)
-    logger.debug(f"[REVEAL] output_tokens (llm 'b'): {tokens_b}")
+    conso: dict[BotPos, Consumption] = {
+        "a": get_llm_consumption(
+            llms[comparison.llm_id_a],
+            sum(turn.llm_msg_a.tokens for turn in comparison.turns),
+        ),
+        "b": get_llm_consumption(
+            llms[comparison.llm_id_b],
+            sum(turn.llm_msg_b.tokens for turn in comparison.turns),
+        ),
+    }
+
+    logger.debug(f"[REVEAL] output_tokens (llm 'a'): {conso["a"]["tokens"]}")
+    logger.debug(f"[REVEAL] output_tokens (llm 'b'): {conso["b"]["tokens"]}")
 
     # Encode summary as base64 for safe storage/transmission (share feature)
     jsonstring = json.dumps(
         {
-            "a": conv_a.model_name,  # Model A identifier
-            "b": conv_b.model_name,  # Model B identifier
-            "ta": tokens_a,  # Model A token count
-            "tb": tokens_b,  # Model B token count
+            "a": comparison.llm_id_a,  # Model A identifier
+            "b": comparison.llm_id_b,  # Model B identifier
+            "ta": conso["a"]["tokens"],  # Model A token count
+            "tb": conso["b"]["tokens"],  # Model B token count
             # Add user's choice to summary (for verification/tracking)
             "c": chosen_llm,
         }
@@ -113,6 +109,6 @@ def get_reveal_data(conversations: Conversations, chosen_llm: BotChoice) -> Reve
     return {
         "b64": b64,
         "chosen_llm": chosen_llm,
-        "a": {"llm": conv_a.llm, "conso": conso_a},
-        "b": {"llm": conv_b.llm, "conso": conso_b},
+        "a": {"llm": llms[comparison.llm_id_a], "conso": conso["a"]},
+        "b": {"llm": llms[comparison.llm_id_b], "conso": conso["b"]},
     }

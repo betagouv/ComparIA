@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
 from backend.arena.models import AddFirstTextBody, AddTextBody, RevealData
-from backend.arena.reveal import get_chosen_llm, get_reveal_data
+from backend.arena.reveal import get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
     create_comparison,
@@ -400,31 +400,31 @@ async def vote(
 
 
 @router.get("/reveal")
-async def reveal(conversations: ComparisonMetadataAnno, request: Request) -> RevealData:
+async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealData:
     """
-    Get reveal data for a session (model identities and metadata).
+    Get reveal data for a Comparison.
 
     Args:
-        conversations: Conversations from session_hash
+        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Returns:
-        dict: Reveal data with model names and metadata
+        dict: Reveal data with LLM definitions and consumptions
 
     Raises:
-        HTTPException: If session not found
+        HTTPException: If Comparison not found or no vote.
     """
     logger.info(
-        f"[REVEAL] session={conversations.session_hash}", extra={"request": request}
+        f"[REVEAL] session={metadata["session_hash"]}, extra={"request": request}"
     )
+    comparison = await read_comparison(metadata["id"])
+    last_turn = comparison.turns[-1]
 
-    chosen_llm = get_chosen_llm(conversations)
-
-    if chosen_llm is None:
+    if last_turn.choice is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="No reaction or vote found, can't access reveal",
+            detail="Have to make a choice before reveal.",
         )
 
     # Return computed reveal data with environmental impact
-    return get_reveal_data(conversations, chosen_llm)
+    return get_reveal_data(comparison)
