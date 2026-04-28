@@ -20,7 +20,9 @@ import logging
 import os
 from pathlib import Path
 
+import httpx
 from mcp.client.auth import OAuthClientProvider
+from mcp.client.auth.exceptions import OAuthTokenError
 from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
 
 from backend.tool_arena.config import MCPServerConfig, OAuth2Auth
@@ -146,23 +148,41 @@ def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
 
 
 class CompaRAGOAuthProvider(OAuthClientProvider):
-    """OAuthClientProvider subclass that uses the configured token_url.
+    """OAuthClientProvider that overrides _refresh_token() to use configured token_url.
 
-    The base class discovers the token endpoint via OAuth metadata (only available
-    after a 401 triggers discovery). Before that, it falls back to {server_url}/token
-    which is wrong for servers like Clarifeye where it's at /o/token/. This subclass
-    overrides _get_token_endpoint to use the token_url from mcp_servers.json config,
-    so the refresh_token flow works on the very first request.
+    The SDK's _refresh_token() falls back to {server_url}/token before OAuth metadata
+    is discovered. For Clarifeye the endpoint is /o/token/. This override uses the
+    token_url from mcp_servers.json so refresh works on the very first request.
     """
 
     def __init__(self, token_url: str, **kwargs):
         super().__init__(**kwargs)
         self._configured_token_url = token_url
 
-    def _get_token_endpoint(self) -> str:
+    async def _refresh_token(self) -> httpx.Request:
+        if not self.context.current_tokens or not self.context.current_tokens.refresh_token:
+            raise OAuthTokenError("No refresh token available")
+        if not self.context.client_info or not self.context.client_info.client_id:
+            raise OAuthTokenError("No client info available")
+
         if self.context.oauth_metadata and self.context.oauth_metadata.token_endpoint:
-            return str(self.context.oauth_metadata.token_endpoint)
-        return self._configured_token_url
+            token_url = str(self.context.oauth_metadata.token_endpoint)
+        else:
+            token_url = self._configured_token_url
+
+        refresh_data: dict[str, str] = {
+            "grant_type": "refresh_token",
+            "refresh_token": self.context.current_tokens.refresh_token,
+            "client_id": self.context.client_info.client_id,
+        }
+
+        if self.context.should_include_resource_param(self.context.protocol_version):
+            refresh_data["resource"] = self.context.get_resource_url()
+
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        refresh_data, headers = self.context.prepare_token_auth(refresh_data, headers)
+
+        return httpx.Request("POST", token_url, data=refresh_data, headers=headers)
 
 
 async def _redirect_handler(url: str) -> None:

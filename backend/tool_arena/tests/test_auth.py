@@ -3,8 +3,11 @@
 import json
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import parse_qs
 
 import pytest
+
+from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
 
 import backend.tool_arena.auth as auth_module
 from backend.tool_arena.config import MCPServerConfig, OAuth2Auth
@@ -144,3 +147,88 @@ def test_clear_token_cache():
     assert len(auth_module._provider_cache) == 1
     auth_module._clear_token_cache()
     assert len(auth_module._provider_cache) == 0
+
+
+# --- CompaRAGOAuthProvider._refresh_token() tests ---
+
+def _build_provider(tmp_path, token_url="https://example.com/o/token/"):
+    """Build a CompaRAGOAuthProvider with FileTokenStorage for testing."""
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage("test_srv")
+    client_metadata = OAuthClientMetadata(
+        redirect_uris=["http://localhost:9876/callback"],
+        grant_types=["authorization_code", "refresh_token"],
+        response_types=["code"],
+        client_name="test",
+    )
+    return auth_module.CompaRAGOAuthProvider(
+        token_url=token_url,
+        server_url="https://example.com/mcp",
+        client_metadata=client_metadata,
+        storage=storage,
+        redirect_handler=None,
+        callback_handler=None,
+    )
+
+
+async def test_refresh_token_uses_configured_token_url(tmp_path):
+    """_refresh_token() sends to configured token_url, not SDK fallback."""
+    provider = _build_provider(tmp_path, token_url="https://example.com/o/token/")
+    provider.context.current_tokens = OAuthToken(
+        access_token="", token_type="Bearer", refresh_token="test_refresh"
+    )
+    provider.context.client_info = OAuthClientInformationFull(
+        client_id="test_id", redirect_uris=["http://localhost:9876/callback"]
+    )
+    request = await provider._refresh_token()
+    assert str(request.url) == "https://example.com/o/token/"
+    assert request.method == "POST"
+
+
+async def test_refresh_token_includes_correct_form_data(tmp_path):
+    """_refresh_token() includes grant_type, refresh_token, client_id in body."""
+    provider = _build_provider(tmp_path)
+    provider.context.current_tokens = OAuthToken(
+        access_token="", token_type="Bearer", refresh_token="my_refresh"
+    )
+    provider.context.client_info = OAuthClientInformationFull(
+        client_id="my_client", redirect_uris=["http://localhost:9876/callback"]
+    )
+    request = await provider._refresh_token()
+    body = parse_qs(request.content.decode())
+    assert body["grant_type"] == ["refresh_token"]
+    assert body["refresh_token"] == ["my_refresh"]
+    assert body["client_id"] == ["my_client"]
+
+
+async def test_refresh_prefers_discovered_metadata(tmp_path):
+    """If OAuth metadata is discovered, its token_endpoint takes priority."""
+    from mcp.shared.auth import OAuthMetadata
+
+    provider = _build_provider(tmp_path, token_url="https://configured.example.com/o/token/")
+    provider.context.current_tokens = OAuthToken(
+        access_token="", token_type="Bearer", refresh_token="test_refresh"
+    )
+    provider.context.client_info = OAuthClientInformationFull(
+        client_id="test_id", redirect_uris=["http://localhost:9876/callback"]
+    )
+    provider.context.oauth_metadata = OAuthMetadata(
+        issuer="https://discovered.example.com",
+        authorization_endpoint="https://discovered.example.com/authorize",
+        token_endpoint="https://discovered.example.com/token",
+        response_types_supported=["code"],
+    )
+    request = await provider._refresh_token()
+    assert "discovered.example.com" in str(request.url)
+
+
+async def test_refresh_raises_without_tokens(tmp_path):
+    """_refresh_token() raises OAuthTokenError when no tokens are seeded."""
+    from mcp.client.auth.exceptions import OAuthTokenError
+
+    provider = _build_provider(tmp_path)
+    provider.context.client_info = OAuthClientInformationFull(
+        client_id="test_id", redirect_uris=["http://localhost:9876/callback"]
+    )
+    with pytest.raises(OAuthTokenError):
+        await provider._refresh_token()
