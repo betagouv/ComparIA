@@ -1,20 +1,12 @@
 import logging
-from typing import Annotated, AsyncGenerator, TypedDict
+from typing import Annotated, AsyncGenerator
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
-from backend.arena.models import (
-    AddFirstTextBody,
-    AddTextBody,
-    AssistantMessage,
-    ReactionBody,
-    ReactionData,
-    RevealData,
-    VoteBody,
-)
-from backend.arena.persistence import delete_reaction, record_reaction, record_vote
+from backend.arena.models import AddFirstTextBody, AddTextBody, RevealData, VoteBody
+from backend.arena.persistence import record_vote
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -353,85 +345,6 @@ async def retry(
         )
 
     return create_sse_response(event_stream())
-
-
-ReactReturnType = TypedDict("ReactReturnType", {"reaction": ReactionData | None})
-
-
-@router.post("/react")
-async def react(
-    reaction_body: ReactionBody,
-    conversations: ComparisonMetadataAnno,
-    request: Request,
-) -> ReactReturnType:
-    """
-    Update reaction (like/dislike) for a specific message.
-
-    Args:
-        reaction_body: Request body with reaction data
-        conversations: Conversations from session_hash
-        request: FastAPI request for logging
-
-    Returns:
-        dict: reaction data
-
-    Raises:
-        HTTPException: If session not found
-    """
-    logger.info(
-        f"'/react' session={conversations.session_hash} called with: {reaction_body.model_dump_json()}",
-        extra={"request": request},
-    )
-
-    if conversations.vote:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Can't react: Conversations has vote",
-        )
-
-    conv = (
-        conversations.conversation_a
-        if reaction_body.bot == "a"
-        else conversations.conversation_b
-    )
-
-    # Get real message index from front which is the assistant message index without counting system message
-    msg_index = (
-        reaction_body.index if not conv.has_system_msg else reaction_body.index + 1
-    )
-    message = conv.messages[msg_index] if len(conv.messages) > msg_index else None
-
-    if not message or not isinstance(message, AssistantMessage):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Assistant message not found"
-        )
-
-    if reaction_body.liked is None:
-        # A reaction has been undone, remove it from its message and db
-        message.reaction = None
-        # Store conversations with removed reaction
-        conversations.store_to_session()
-        # Delete db reaction
-        delete_reaction(conv, msg_index)
-
-        return {"reaction": None}
-
-    # Build final reaction data
-    # FIXME replace reaction.index with msg_index?
-    reaction = ReactionData.model_validate(reaction_body, from_attributes=True)
-
-    message.reaction = reaction
-    # Store conversations with updated reaction to redis
-    conversations.store_to_session()
-    # Store reaction to db/logs
-    reaction_record = record_reaction(
-        conversations=conversations,
-        reaction=reaction,
-        msg_index=msg_index,
-        request=request,
-    )
-
-    return {"reaction": reaction}
 
 
 @router.post("/vote")
