@@ -1254,6 +1254,24 @@
     "models": [
       {
         "new": true,
+        "id": "gpt-5.5",
+        "simple_name": "GPT 5.5",
+        "license": "proprietary",
+        "release_date": "04/2026",
+        "arch": "maybe-moe",
+        "params": 300,
+        "active_params": 94,
+        "reasoning": true,
+        "url": "https://openai.com/index/introducing-gpt-5-5/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.5"
+        },
+        "desc": "Modèle multimodal (entrées texte et image) qui se distingue surtout de GPT 5.4 par un saut important sur deux axes : la récupération d'information dans les très longs contextes (où il double pratiquement le score de la version précédente) et les tâches agentiques de programmation et d'utilisation d'un ordinateur. Selon l'éditeur, ses affirmations sont 23 % plus souvent factuellement correctes que celles de GPT 5.4 ; en revanche, lorsqu'il se trompe, il a tendance à inventer une réponse plutôt qu'à reconnaître son ignorance. Il simule une étape de raisonnement avant de générer sa réponse, avec cinq niveaux d'effort paramétrables.",
+        "size_desc": "Les tailles des modèles derrière le système GPT 5.5 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), où seule une partie des paramètres est activée pour chaque requête. Les estimations disponibles s'appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nSa fenêtre de contexte va jusqu'à 1 050 000 jetons (400 000 dans Codex), ce qui permet de traiter de très grands corpus documentaires ou des bases de code étendues.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "GPT 5.5 a été co-conçu et entraîné sur les serveurs NVIDIA GB200 et GB300, et le modèle a contribué à optimiser sa propre infrastructure : il a écrit les algorithmes de répartition de charge qui ont accru de plus de 20 % la vitesse de génération de réponses.\n\nSur les tests de programmation, l'éditeur rapporte 82,7 % sur Terminal-Bench 2.0 (contre 75,1 % pour GPT 5.4 et 69,4 % pour Claude Opus 4.7) et 73,1 % sur Expert-SWE, un test interne portant sur des tâches qui demandent environ 20 heures à un développeur expérimenté. Sur le raisonnement abstrait (test ARC-AGI 2), il atteint 85,0 % contre 73,3 % pour GPT 5.4. Le saut le plus net concerne la lecture des très longs documents : sur le test MRCR v2 (récupération d'information dans des textes de 512 000 à un million de jetons), il passe de 36,6 % à 74,0 %. Il est en revanche devancé par Claude Opus 4.7 et Gemini 3.1 Pro sur les questions académiques pointues (test Humanity's Last Exam).\n\nSur la fiabilité, le bilan est contrasté. Le rapport technique d'OpenAI indique que les affirmations individuelles sont 23 % plus souvent correctes par rapport à GPT 5.4, et que le modèle ne parvient pas à modifier sa chaîne de raisonnement quand on le lui demande, ce qui rend sa surveillance plus fiable. À l'inverse, sur des tâches de programmation volontairement impossibles, il prétend les avoir accomplies dans 29 % des cas (contre 7 % pour GPT 5.4), et des évaluations indépendantes signalent que lorsqu'il se trompe sur des questions de connaissance, il invente une réponse dans environ 86 % des cas, contre 36 % pour Claude Opus 4.7.\n\nLe tarif d'API standard s'établit à 5 $ par million de jetons en entrée et 30 $ en sortie. Une variante Pro plus coûteuse (30 $ / 180 $) est destinée aux tâches où la précision prime sur le coût."
+      },
+      {
         "id": "gpt-5.4",
         "simple_name": "GPT 5.4",
         "license": "proprietary",
@@ -1272,7 +1290,6 @@
         "fyi": "GPT 5.4 est le premier modèle généraliste d'OpenAI doté de capacités natives d'utilisation d'un ordinateur (computer use), permettant à des agents d'interagir directement avec des logiciels. Il unifie les gammes GPT et Codex en un seul modèle. Selon l'éditeur, il réduit de 33 % les affirmations erronées et de 18 % les réponses contenant des erreurs par rapport à GPT 5.2. Le modèle se distingue également par son efficacité en jetons, avec une réduction de 47 % de la consommation sur les tâches impliquant de nombreux outils. OpenAI met en avant ses performances sur des tâches professionnelles : sur un test interne de modélisation de tableurs, GPT 5.4 atteint 87,3 %, contre 68,4 % pour GPT 5.2.\n\nLe raisonnement est configurable via plusieurs niveaux d'effort (low, medium, high, xhigh), permettant d'arbitrer entre coût, latence et qualité des réponses. Le modèle accepte des entrées textuelles et visuelles. Sur les benchmarks de code, il surpasse GPT 5.3-Codex, le modèle spécialisé précédent, ce qui interroge sur la pérennité de la gamme Codex en tant que ligne distincte. La fenêtre de contexte standard est de 272 000 jetons, extensible jusqu'à 1 050 000 jetons avec un surcoût tarifaire."
       },
       {
-        "new": true,
         "id": "gpt-5.4-mini",
         "simple_name": "GPT 5.4 Mini",
         "license": "proprietary",
@@ -1291,7 +1308,6 @@
         "fyi": "GPT 5.4 Mini est la première déclinaison compacte de GPT 5.4, lancée en même temps que GPT 5.4 Nano. Selon OpenAI, le modèle est plus de deux fois plus rapide que GPT 5 Mini tout en le surpassant sur de nombreux tests. Sur SWE-Bench Pro (test de résolution automatique de bugs dans des dépôts logiciels), il atteint 54,4 % contre 45,7 % pour GPT 5 Mini. Il obtient 88,0 % sur GPQA Diamond (questions scientifiques de niveau doctoral) et 72,1 % sur OSWorld-Verified (tâches d'utilisation d'un ordinateur).\n\nLe modèle accepte des entrées textuelles et visuelles et prend en charge l'utilisation autonome d'un ordinateur (computer use), l'appel d'outils et la génération de sorties structurées. Le raisonnement est configurable. La fenêtre de contexte atteint 400 000 jetons, mais les performances de récupération d'information dans de très longs contextes sont en retrait par rapport au modèle complet GPT 5.4 (47,7 % contre 86,0 % sur le test MRCR v2)."
       },
       {
-        "new": true,
         "id": "gpt-5.4-nano",
         "simple_name": "GPT 5.4 Nano",
         "license": "proprietary",
@@ -1310,6 +1326,7 @@
         "fyi": "GPT 5.4 Nano est le modèle le plus compact et le moins coûteux de la gamme GPT 5.4, lancé en même temps que GPT 5.4 Mini. Il est principalement destiné aux cas d'usage à fort volume nécessitant un coût unitaire très faible : classification, extraction de données, automatisation légère. Sur SWE-Bench Pro, il atteint 52,4 %, un score remarquable pour un modèle de cette catégorie de prix, proche de GPT 5.4 Mini (54,4 %).\n\nLe modèle accepte des entrées textuelles et visuelles, prend en charge l'appel d'outils, la génération de sorties structurées et le raisonnement configurable. Sa fenêtre de contexte atteint 400 000 jetons avec une sortie maximale de 128 000 jetons."
       },
       {
+        "status": "archived",
         "id": "gpt-5.3",
         "simple_name": "GPT 5.3",
         "license": "proprietary",
