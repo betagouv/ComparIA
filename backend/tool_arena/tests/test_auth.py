@@ -106,20 +106,40 @@ def test_bootstrap_tokens_from_env(tmp_path):
         assert data["access_token"] == ""
 
 
-def test_bootstrap_skips_if_tokens_exist(tmp_path):
-    """_bootstrap_tokens_from_env does not overwrite existing tokens."""
+def test_bootstrap_skips_if_tokens_match(tmp_path):
+    """_bootstrap_tokens_from_env does not overwrite when refresh_token matches env."""
     server = _make_server(tmp_path)
     with patch.object(auth_module, "TOKENS_DIR", tmp_path):
         storage = auth_module.FileTokenStorage(server.id)
         tokens_path = tmp_path / "test_srv" / "tokens.json"
-        tokens_path.write_text('{"access_token":"real","token_type":"Bearer"}')
+        tokens_path.write_text(
+            '{"access_token":"real","token_type":"Bearer","refresh_token":"same_token"}'
+        )
 
-        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "should_not_write"}):
+        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "same_token"}):
             auth_module._bootstrap_tokens_from_env(server, storage)
 
         data = json.loads(tokens_path.read_text())
         assert data["access_token"] == "real"
-        assert "refresh_token" not in data
+        assert data["refresh_token"] == "same_token"
+
+
+def test_bootstrap_overwrites_if_refresh_token_differs(tmp_path):
+    """_bootstrap_tokens_from_env overwrites when env var has a newer refresh_token."""
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage(server.id)
+        tokens_path = tmp_path / "test_srv" / "tokens.json"
+        tokens_path.write_text(
+            '{"access_token":"old_access","token_type":"Bearer","refresh_token":"old_token"}'
+        )
+
+        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "new_token"}):
+            auth_module._bootstrap_tokens_from_env(server, storage)
+
+        data = json.loads(tokens_path.read_text())
+        assert data["refresh_token"] == "new_token"
+        assert data["access_token"] == ""
 
 
 def test_bootstrap_skips_if_no_env_var(tmp_path):

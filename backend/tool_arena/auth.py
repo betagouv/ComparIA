@@ -122,13 +122,19 @@ def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
     if not refresh_token:
         return
 
-    # Check if tokens already exist (sync — called before event loop starts)
+    # Check if stored refresh_token already matches env var
+    stored_data = None
     if isinstance(storage, FileTokenStorage):
-        if (storage._dir / "tokens.json").exists():
-            return
+        p = storage._dir / "tokens.json"
+        if p.exists():
+            stored_data = json.loads(p.read_text())
     elif isinstance(storage, RedisTokenStorage):
-        if storage._redis.get(REDIS_TOKEN_KEY.format(server_id=server.id)):
-            return
+        raw = storage._redis.get(REDIS_TOKEN_KEY.format(server_id=server.id))
+        if raw:
+            stored_data = json.loads(raw)
+
+    if stored_data and stored_data.get("refresh_token") == refresh_token:
+        return
 
     bootstrap = OAuthToken(
         access_token="",
