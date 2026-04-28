@@ -1,15 +1,8 @@
 from typing import Annotated, Literal
 
-from pydantic import BeforeValidator
 from sqlmodel import Field, SQLModel, String
 
-
-def strip_and_empty_as_none(v: str | None) -> str | None:
-    v = v.strip() if v else None
-    return None if not v else v
-
-
-StripAndEmptyAsNone = BeforeValidator(strip_and_empty_as_none)
+from utils.validation import StripAndEmptyAsNone
 
 
 class LLMMessageBase(SQLModel):
