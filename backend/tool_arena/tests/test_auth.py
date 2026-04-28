@@ -232,3 +232,15 @@ async def test_refresh_raises_without_tokens(tmp_path):
     )
     with pytest.raises(OAuthTokenError):
         await provider._refresh_token()
+
+
+async def test_build_oauth_provider_client_info_has_auth_method(force_file_storage):
+    """build_oauth_provider pre-seeds client_info with token_endpoint_auth_method."""
+    server = _make_server(force_file_storage)
+    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+        provider = auth_module.build_oauth_provider(server)
+
+    await provider._initialize()
+    assert provider.context.client_info is not None
+    assert provider.context.client_info.token_endpoint_auth_method == "client_secret_post"
+    assert provider.context.client_info.client_secret == "secret_value"

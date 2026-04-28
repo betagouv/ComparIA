@@ -217,6 +217,7 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
         client_id=auth.client_id,
         client_secret=client_secret or None,
         redirect_uris=["http://localhost:9876/callback"],
+        token_endpoint_auth_method="client_secret_post",
     )
 
     client_metadata = OAuthClientMetadata(
