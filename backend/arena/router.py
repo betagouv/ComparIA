@@ -5,8 +5,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
-from backend.arena.models import AddFirstTextBody, AddTextBody, RevealData, VoteBody
-from backend.arena.persistence import record_vote
+from backend.arena.models import AddFirstTextBody, AddTextBody, RevealData
 from backend.arena.reveal import get_chosen_llm, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -15,6 +14,7 @@ from backend.arena.services import (
     update_comparison_error,
     update_comparison_llm_id,
     update_turn,
+    update_turn_vote,
 )
 from backend.arena.session import (
     ComparisonMetadata,
@@ -30,7 +30,7 @@ from backend.arena.streaming import create_sse_response, stream_comparison_messa
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
-from utils.database.models import ComparisonCreate
+from utils.database.models import ComparisonCreate, TurnVoteAnnotate, TurnVoteChoice
 
 logger = logging.getLogger("languia")
 
@@ -349,55 +349,54 @@ async def retry(
 
 @router.post("/vote")
 async def vote(
-    vote_body: VoteBody,
-    conversations: ComparisonMetadataAnno,
+    vote: TurnVoteChoice | TurnVoteAnnotate,
+    metadata: ComparisonMetadataAnno,
     request: Request,
-) -> RevealData:
+) -> None:
     """
-    Submit a vote after conversation and reveal model identities.
-
-    Saves the vote to database and returns reveal data.
+    Submit a vote choice or annotations.
+    Vote choice should happen once per turn on last turn.
+    Vote annotations can be updated multiple times and relate to one LLM pos only.
 
     Args:
-        vote_body: Request body with vote data
-        conversations: Conversations from session_hash
+        vote: Request body with vote data (choice or annotations)
+        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
-    Returns:
-        dict: Reveal data with model names, metadata, and environmental stats
-
     Raises:
-        HTTPException: If session not found
+        HTTPException: If Comparison not found or forbidden vote attempts.
     """
     logger.info(
-        f"'/vote' session={conversations.session_hash} called with: {vote_body.model_dump_json()}",
+        f"'/vote' session={metadata["session_hash"]} called with: {vote.model_dump_json()}",
         extra={"request": request},
     )
 
-    if conversations.vote:
+    comparison = await read_comparison(metadata["id"])
+
+    if vote.turn_index != len(comparison.turns) - 1:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Can't vote: Conversations has vote",
-        )
-    if conversations.conversation_a.reactions or conversations.conversation_a.reactions:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Can't vote: Conversation has reactions",
+            status_code=status.HTTP_403_FORBIDDEN, detail="Can vote only for last turn."
         )
 
-    conversations.vote = vote_body
-    # Store conversations with updated vote to redis
-    conversations.store_to_session()
+    turn = comparison.turns[vote.turn_index]
 
-    # Save vote to database with prefs and comments
-    record_vote(
-        conversations=conversations,
-        vote=vote_body,
-        request=request,
-    )
+    if comparison.error or not turn.llm_msg_a or not turn.llm_msg_b:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Can't vote for unfinished turn.",
+        )
 
-    # Return computed reveal data with environmental impact
-    return get_reveal_data(conversations, vote_body.chosen_llm)
+    if isinstance(vote, TurnVoteChoice) and turn.choice is not None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Already made a choice."
+        )
+    if (isinstance(vote, TurnVoteAnnotate)) and turn.choice is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Have to make a choice before annotating.",
+        )
+
+    await update_turn_vote(turn.id, vote)
 
 
 @router.get("/reveal")

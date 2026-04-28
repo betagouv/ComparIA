@@ -3,7 +3,9 @@ from typing import TYPE_CHECKING, Annotated
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from backend.arena.models import BotPos
 from backend.config import NegativePref, PositivePref, TurnChoice
+from utils.validation import StripAndEmptyAsNone
 
 from .messages import LLMMessage, LLMMessageRead, UserMessage, UserMessageRead
 
@@ -55,3 +57,17 @@ class TurnRead(TurnBase):
     user_msg: UserMessageRead
     llm_msg_a: LLMMessageRead | None
     llm_msg_b: LLMMessageRead | None
+
+
+# TODO use turn_id instead of turn_index?
+class TurnVoteChoice(SQLModel):
+    turn_index: Annotated[int, Field(exclude=True)]
+    choice: TurnChoice
+
+
+# TODO assert keywords are positive/negative depending on vote choice
+class TurnVoteAnnotate(SQLModel):
+    turn_index: Annotated[int, Field(exclude=True)]
+    pos: Annotated[BotPos, Field(exclude=True)]
+    keyword_annotations: list[PositivePref] | list[NegativePref]
+    custom_annotation: Annotated[str | None, StripAndEmptyAsNone]
