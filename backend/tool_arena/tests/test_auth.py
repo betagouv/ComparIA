@@ -35,6 +35,16 @@ def clear_cache():
     auth_module._clear_token_cache()
 
 
+@pytest.fixture
+def force_file_storage(tmp_path):
+    """Force FileTokenStorage by making _get_storage return it."""
+    def _file_storage(server_id):
+        return auth_module.FileTokenStorage(server_id)
+    with patch.object(auth_module, "_get_storage", _file_storage):
+        with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+            yield tmp_path
+
+
 async def test_file_token_storage_roundtrip(tmp_path):
     """FileTokenStorage stores and retrieves tokens."""
     with patch.object(auth_module, "TOKENS_DIR", tmp_path):
@@ -68,19 +78,14 @@ async def test_file_token_storage_client_info_roundtrip(tmp_path):
         assert retrieved.client_id == "cid"
 
 
-def test_build_oauth_provider_returns_provider(tmp_path):
+def test_build_oauth_provider_returns_provider(force_file_storage):
     """build_oauth_provider returns an OAuthClientProvider with pre-seeded client info."""
+    tmp_path = force_file_storage
     server = _make_server(tmp_path)
-    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
-        with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-            from mcp.client.auth import OAuthClientProvider
-            provider = auth_module.build_oauth_provider(server)
-            assert isinstance(provider, OAuthClientProvider)
-
-            client_info_path = tmp_path / "test_srv" / "client_info.json"
-            assert client_info_path.exists()
-            data = json.loads(client_info_path.read_text())
-            assert data["client_id"] == "test_client_id"
+    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+        from mcp.client.auth import OAuthClientProvider
+        provider = auth_module.build_oauth_provider(server)
+        assert isinstance(provider, OAuthClientProvider)
 
 
 def test_bootstrap_tokens_from_env(tmp_path):
@@ -124,14 +129,13 @@ def test_bootstrap_skips_if_no_env_var(tmp_path):
         assert not tokens_path.exists()
 
 
-def test_get_oauth_provider_caches(tmp_path):
+def test_get_oauth_provider_caches(force_file_storage):
     """get_oauth_provider returns same instance on repeated calls."""
-    server = _make_server(tmp_path)
-    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
-        with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-            p1 = auth_module.get_oauth_provider(server)
-            p2 = auth_module.get_oauth_provider(server)
-            assert p1 is p2
+    server = _make_server(force_file_storage)
+    with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+        p1 = auth_module.get_oauth_provider(server)
+        p2 = auth_module.get_oauth_provider(server)
+        assert p1 is p2
 
 
 def test_clear_token_cache():

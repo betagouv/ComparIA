@@ -5,9 +5,14 @@ Uses the MCP SDK's OAuthClientProvider which handles:
 - Token storage and automatic refresh via refresh_token
 - 401 retry with re-authentication
 
-For servers requiring OAuth2, a one-time local setup (scripts/auth_setup.py)
-obtains tokens. The refresh_token is stored as an env var on Railway. The
-provider loads it at startup and refreshes automatically.
+Token storage strategy:
+- Production (Redis available): RedisTokenStorage — persists across Railway deploys
+- Local dev (no Redis): FileTokenStorage — writes to .oauth_tokens/ on disk
+- Bootstrap: if {SERVER_ID}_REFRESH_TOKEN env var exists and no stored tokens,
+  seeds the initial refresh_token so the SDK can refresh without browser auth
+
+One-time setup: run `uv run python -m scripts.auth_setup <tool_id>` locally
+to obtain tokens via browser auth. The refresh_token persists in Redis.
 """
 
 import json
@@ -24,9 +29,44 @@ logger = logging.getLogger("tool_arena.auth")
 
 TOKENS_DIR = Path(__file__).parent.parent.parent / ".oauth_tokens"
 
+REDIS_TOKEN_KEY = "oauth_tokens:{server_id}"
+REDIS_CLIENT_INFO_KEY = "oauth_client_info:{server_id}"
+
+
+class RedisTokenStorage:
+    """Stores OAuth tokens and client info in Redis — survives Railway redeploys."""
+
+    def __init__(self, server_id: str, redis_client) -> None:
+        self._server_id = server_id
+        self._redis = redis_client
+
+    async def get_tokens(self) -> OAuthToken | None:
+        data = self._redis.get(REDIS_TOKEN_KEY.format(server_id=self._server_id))
+        if not data:
+            return None
+        return OAuthToken(**json.loads(data))
+
+    async def set_tokens(self, tokens: OAuthToken) -> None:
+        self._redis.set(
+            REDIS_TOKEN_KEY.format(server_id=self._server_id),
+            tokens.model_dump_json(),
+        )
+
+    async def get_client_info(self) -> OAuthClientInformationFull | None:
+        data = self._redis.get(REDIS_CLIENT_INFO_KEY.format(server_id=self._server_id))
+        if not data:
+            return None
+        return OAuthClientInformationFull(**json.loads(data))
+
+    async def set_client_info(self, client_info: OAuthClientInformationFull) -> None:
+        self._redis.set(
+            REDIS_CLIENT_INFO_KEY.format(server_id=self._server_id),
+            client_info.model_dump_json(),
+        )
+
 
 class FileTokenStorage:
-    """Stores OAuth tokens and client info as JSON files on disk."""
+    """Stores OAuth tokens and client info as JSON files on disk (local dev fallback)."""
 
     def __init__(self, server_id: str) -> None:
         self._dir = TOKENS_DIR / server_id
@@ -55,28 +95,53 @@ class FileTokenStorage:
         p.write_text(client_info.model_dump_json(indent=2))
 
 
-def _bootstrap_tokens_from_env(server: MCPServerConfig, storage: FileTokenStorage) -> None:
-    """Pre-seed tokens from env var so OAuthClientProvider can refresh without browser auth.
+def _get_storage(server_id: str) -> RedisTokenStorage | FileTokenStorage:
+    """Get token storage: Redis if available, file fallback for local dev."""
+    try:
+        from utils.storage.redis import get_redis_client
+        client = get_redis_client()
+        client.ping()
+        logger.debug("Using Redis token storage for %s", server_id)
+        return RedisTokenStorage(server_id, client)
+    except Exception:
+        logger.debug("Redis unavailable, using file token storage for %s", server_id)
+        return FileTokenStorage(server_id)
+
+
+def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
+    """Pre-seed tokens from env var if no tokens exist in storage.
 
     Looks for {SERVER_ID}_REFRESH_TOKEN env var (e.g. CLARIFEYE_REFRESH_TOKEN).
-    If found and no tokens on disk, writes a bootstrap tokens.json with the refresh_token.
-    The SDK will use it to obtain a fresh access_token on first request.
+    Seeds the storage with an expired access_token + the refresh_token so the
+    SDK refreshes automatically on first request.
     """
     env_key = f"{server.id.upper()}_REFRESH_TOKEN"
     refresh_token = os.environ.get(env_key, "")
     if not refresh_token:
         return
 
-    tokens_path = storage._dir / "tokens.json"
-    if tokens_path.exists():
-        return
+    # Check if tokens already exist (sync — called before event loop starts)
+    if isinstance(storage, FileTokenStorage):
+        if (storage._dir / "tokens.json").exists():
+            return
+    elif isinstance(storage, RedisTokenStorage):
+        if storage._redis.get(REDIS_TOKEN_KEY.format(server_id=server.id)):
+            return
 
     bootstrap = OAuthToken(
         access_token="expired",
         token_type="Bearer",
         refresh_token=refresh_token,
     )
-    tokens_path.write_text(bootstrap.model_dump_json(indent=2))
+
+    if isinstance(storage, FileTokenStorage):
+        (storage._dir / "tokens.json").write_text(bootstrap.model_dump_json(indent=2))
+    elif isinstance(storage, RedisTokenStorage):
+        storage._redis.set(
+            REDIS_TOKEN_KEY.format(server_id=server.id),
+            bootstrap.model_dump_json(),
+        )
+
     logger.info("Bootstrapped OAuth tokens for %s from %s env var", server.id, env_key)
 
 
@@ -84,8 +149,8 @@ async def _redirect_handler(url: str) -> None:
     """Redirect handler for auth code flow — should never be called in production."""
     raise RuntimeError(
         f"OAuth authorization_code flow triggered on headless server. "
-        f"Run 'python scripts/auth_setup.py' locally to obtain tokens, then set "
-        f"the refresh token as an env var. Auth URL: {url}"
+        f"Run 'uv run python -m scripts.auth_setup <tool_id>' locally to obtain tokens. "
+        f"Auth URL: {url}"
     )
 
 
@@ -97,15 +162,15 @@ async def _callback_handler() -> tuple[str, str | None]:
 def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
     """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
 
-    The provider handles token refresh and 401 re-auth automatically.
-    Initial tokens must be bootstrapped from env var or obtained via auth_setup.py.
+    Token storage: Redis in production, file on disk for local dev.
+    Initial tokens bootstrapped from env var or obtained via auth_setup.py.
     """
     auth: OAuth2Auth = server.auth  # type: ignore[assignment]
     client_secret = os.environ.get(auth.client_secret_env, "")
 
-    storage = FileTokenStorage(server.id)
+    storage = _get_storage(server.id)
 
-    # Bootstrap refresh token from env var if no tokens on disk
+    # Bootstrap refresh token from env var if no tokens in storage
     _bootstrap_tokens_from_env(server, storage)
 
     client_info = OAuthClientInformationFull(
@@ -124,8 +189,14 @@ def build_oauth_provider(server: MCPServerConfig) -> OAuthClientProvider:
     )
 
     # Pre-seed client info so the SDK doesn't try dynamic registration
-    p = storage._dir / "client_info.json"
-    p.write_text(client_info.model_dump_json(indent=2))
+    if isinstance(storage, FileTokenStorage):
+        p = storage._dir / "client_info.json"
+        p.write_text(client_info.model_dump_json(indent=2))
+    elif isinstance(storage, RedisTokenStorage):
+        storage._redis.set(
+            REDIS_CLIENT_INFO_KEY.format(server_id=server.id),
+            client_info.model_dump_json(),
+        )
 
     return OAuthClientProvider(
         server_url=str(server.endpoint),
