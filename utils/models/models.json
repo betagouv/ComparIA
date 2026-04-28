@@ -131,6 +131,44 @@
     "icon_path": "deepseek-color",
     "models": [
       {
+        "new": true,
+        "id": "deepseek-v4-pro",
+        "simple_name": "DeepSeek V4 Pro",
+        "license": "MIT",
+        "release_date": "04/2026",
+        "arch": "moe",
+        "params": 1600,
+        "active_params": 49,
+        "reasoning": true,
+        "url": "https://huggingface.co/deepseek-ai",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "deepseek/deepseek-v4-pro"
+        },
+        "desc": "Très grand modèle conçu pour analyser de très longs documents (jusqu'à un million de jetons en entrée, soit l'équivalent de plusieurs livres) et pour les tâches agentiques comme la génération de code et l'utilisation d'outils. Son tarif d'API est inférieur à celui des principaux modèles propriétaires de niveau comparable, ce qui en fait une option à considérer en termes de rapport coût/performance. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "Avec 1600 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 49 milliards de paramètres par jeton généré, ce qui réduit l'empreinte par rapport à un modèle dense de même taille. Il nécessite néanmoins un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé.\n\nSa fenêtre de contexte va jusqu'à 1 048 576 jetons, ce qui permet de traiter de très grands corpus documentaires.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. L'architecture de mélange d'experts permet néanmoins de n'activer qu'une fraction des paramètres, ce qui limite l'empreinte par rapport à un modèle dense de même taille.",
+        "fyi": "L'innovation principale de DeepSeek V4 réside dans deux nouveaux mécanismes d'attention, la Compressed Sparse Attention (CSA) et la Heavily Compressed Attention (HCA), qui réduisent fortement la mémoire nécessaire pour traiter les contextes très longs. Selon l'éditeur, à un million de jetons, ce modèle ne consomme que 27 % des opérations de calcul et 10 % de la mémoire de cache requises par DeepSeek V3.2 pour le même contexte. C'est cette efficacité, plus que la taille brute, qui caractérise ce modèle.\n\nL'entraînement s'est déroulé sur environ 32 billions de jetons, avec un recours au FP4 (un format de précision réduit qui diminue les coûts de calcul). DeepSeek a publié à la fois la version pré-entraînée (Base) et la version post-entraînée (Instruct), un choix rare pour un modèle de cette taille, ainsi qu'un rapport technique de 58 pages largement commenté dans la communauté de recherche.\n\nCe modèle est par ailleurs conçu pour fonctionner sur les puces chinoises Huawei Ascend en plus des cartes graphiques NVIDIA, ce qui marque une étape vers une indépendance vis-à-vis des contrôles à l'export américains. L'éditeur indique que les prix d'API pourraient baisser une fois les supernœuds Ascend 950 déployés à grande échelle.\n\nSelon l'analyse indépendante d'Artificial Analysis, V4 Pro se classe au deuxième rang des modèles de raisonnement à poids ouverts, derrière Kimi K2.6, et au premier rang des modèles ouverts sur le test agentique GDPval-AA. Il reste en retrait des modèles propriétaires les mieux classés (GPT-5.4, Opus 4.7, Gemini 3.1 Pro) sur les domaines généralistes."
+      },
+      {
+        "new": true,
+        "id": "deepseek-v4-flash",
+        "simple_name": "DeepSeek V4 Flash",
+        "license": "MIT",
+        "release_date": "04/2026",
+        "arch": "moe",
+        "params": 284,
+        "active_params": 13,
+        "reasoning": true,
+        "url": "https://huggingface.co/deepseek-ai",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "deepseek/deepseek-v4-flash"
+        },
+        "desc": "Version réduite et plus économique de DeepSeek V4 Pro, qui conserve la même fenêtre d'un million de jetons en entrée pour l'analyse de très longs documents. Son tarif d'API se situe parmi les plus bas de sa catégorie pour le traitement du long contexte, à un niveau de performance comparable à celui des modèles intermédiaires propriétaires, ce qui en fait une option intéressante en termes de rapport coût/performance. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "Avec 284 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 13 milliards de paramètres par jeton généré, ce qui réduit fortement la puissance de calcul nécessaire à l'inférence. Il peut être déployé sur des configurations beaucoup moins coûteuses que la version Pro.\n\nSa fenêtre de contexte va jusqu'à 1 048 576 jetons, ce qui permet de traiter de très grands corpus documentaires.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. L'architecture de mélange d'experts permet néanmoins de n'activer qu'une fraction des paramètres, ce qui limite l'empreinte par rapport à un modèle dense de même taille.",
+        "fyi": "Flash partage l'architecture et la campagne d'entraînement de V4 Pro (environ 32 billions de jetons en précision FP4), à une exception près : certaines couches de Heavily Compressed Attention (HCA) sont remplacées par des couches d'attention à fenêtre glissante de 128 jetons, un compromis qui privilégie la vitesse d'inférence.\n\nLe tarif d'API officiel s'établit à 0,14 $ en entrée et 0,28 $ en sortie par million de jetons, ce qui le situe parmi les offres les moins chères de sa catégorie.\n\nDans les évaluations indépendantes d'Artificial Analysis, l'écart avec la version Pro reste mesuré : Flash atteint un niveau comparable à celui de Claude Sonnet 4.6, et plusieurs évaluateurs notent que son mode de raisonnement maximal rivalise avec le mode élevé de Pro sur certaines tâches, Pro conservant l'avantage sur les questions de connaissances factuelles."
+      },
+      {
         "id": "DeepSeek-V3.2",
         "simple_name": "DeepSeek V3.2",
         "license": "Apache 2.0",
