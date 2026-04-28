@@ -129,10 +129,9 @@ def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
             return
 
     bootstrap = OAuthToken(
-        access_token="bootstrap",
+        access_token="",
         token_type="Bearer",
         refresh_token=refresh_token,
-        expires_in=0,
     )
 
     if isinstance(storage, FileTokenStorage):

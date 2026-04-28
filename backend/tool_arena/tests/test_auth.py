@@ -100,8 +100,7 @@ def test_bootstrap_tokens_from_env(tmp_path):
         assert tokens_path.exists()
         data = json.loads(tokens_path.read_text())
         assert data["refresh_token"] == "my_refresh_tok"
-        assert data["access_token"] == "bootstrap"
-        assert data["expires_in"] == 0
+        assert data["access_token"] == ""
 
 
 def test_bootstrap_skips_if_tokens_exist(tmp_path):
