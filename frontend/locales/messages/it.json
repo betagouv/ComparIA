@@ -7,12 +7,128 @@
         "contact": "Contattaci",
         "contactUs": "Contattaci",
         "copyLink": {
-            "do": "Copia il link"
+            "do": "Copia il link",
+            "done": "Link copiato negli appunti"
         },
         "copyMessage": {
-            "do": "Copia il messaggio"
+            "do": "Copia il messaggio",
+            "done": "Messaggio copiato"
         },
         "downloadData": "Scarica i dati",
-        "home": "Pagina iniziale / principale"
+        "home": "Pagina iniziale / principale",
+        "returnHome": "Torna alla pagina principale",
+        "scrollLeft": "Scorri verso sinistra",
+        "scrollRight": "Scorri verso destra",
+        "searchModel": "Cerca un modello",
+        "seeMore": "Scopri di più",
+        "selectLanguage": "Seleziona una lingua",
+        "vote": "Esprimi un tuo parere"
+    },
+    "arenaHome": {
+        "compareModels": {
+            "count": "{count}/2 modelli",
+            "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente.",
+            "question": "Quali modelli desideri confrontare?"
+        },
+        "errors": {
+            "rateLimitCustomSelection": "La scelta dei modelli è limitata per garantire un accesso equo a tutti. Puoi continuare a utilizzare la modalità casuale oppure riprovare più tardi."
+        },
+        "modelSelection": "Selezione del modello",
+        "prompt": {
+            "label": "Scrivi il tuo primo messaggio",
+            "placeholder": "Scrivi qui il tuo primo messaggio"
+        },
+        "selectModels": {
+            "help": "Seleziona il metodo di confronto più adatto a te",
+            "question": "Quali modelli desideri confrontare?"
+        },
+        "suggestions": {
+            "generateAnother": "Genera un altro messaggio",
+            "title": "Suggerimenti rapidi"
+        },
+        "title": "Come posso esserti d'aiuto oggi?"
+    },
+    "chatbot": {
+        "continuePrompt": "Continua la conversazione con i modelli",
+        "conversation": "Conversazione",
+        "errors": {
+            "other": {
+                "message": "Si è verificato un errore temporaneo.",
+                "retry": "Puoi provare a sollecitare nuovamente i modelli.",
+                "title": "Ops, errore temporaneo",
+                "vote": "Oppure puoi concludere la tua esperienza esprimendo la tua opinione sui modelli."
+            },
+            "tooLong": {
+                "message": "Ciascun modello è limitato nella dimensione delle conversazioni che è in grado di elaborare.",
+                "retry": "Puoi riprendere la conversazione con due nuovi modelli.",
+                "title": "Ops, la conversazione è troppo lunga per uno dei modelli.",
+                "vote": "Puoi ancora esprimere la tua opinione su questi modelli o avviare una conversazione con due nuovi."
+            }
+        },
+        "loading": "Caricamento delle risposte",
+        "reasoning": {
+            "finished": "Ragionamento completato",
+            "inProgress": "Ragionamento in corso…"
+        },
+        "revealButton": "Rivela i modelli"
+    },
+    "closeModal": "Chiudi la finestra popup",
+    "components": {
+        "pagination": {
+            "first": "Prima pagina",
+            "label": "Pagine",
+            "last": "Ultima pagina",
+            "next": "Pagina successiva",
+            "nth": "Pagina {count}",
+            "previous": "Pagina precedente"
+        },
+        "table": {
+            "linePerPage": "Numero di righe per pagina",
+            "pageCount": "{count} righe per pagina",
+            "triage": "Ordinare"
+        },
+        "theme": {
+            "legend": "Scegli un tema per personalizzare l'aspetto del sito.",
+            "options": {
+                "dark": "Tema cupo",
+                "light": "Tema chiaro",
+                "system": "Sistema",
+                "systemSub": "Utilizza le impostazioni di sistema"
+            },
+            "title": "Impostazioni display"
+        }
+    },
+    "datasets": {
+        "access": {
+            "catch": "Sviluppatori di modelli, ricercatori, aziende, ora tocca a te!",
+            "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese, lituano e riflettono un utilizzo reale e non artificiale/vincolato. Questi set di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
+            "repos": {
+                "conversations": {
+                    "desc": "Tutte le risposte e le domande poste",
+                    "title": "/conversazioni"
+                },
+                "reactions": {
+                    "desc": "Tutte le reazioni espresse",
+                    "title": "/reazioni"
+                },
+                "votes": {
+                    "desc": "Tutte le preferenze espresse",
+                    "title": "/voti"
+                }
+            },
+            "title": "Accedi all'insieme di dati di compar:AI"
+        }
+    },
+    "errors": {
+        "404": {
+            "sorry": "La pagina che stai cercando non è stata trovata. Ci scusiamo per l'inconveniente.",
+            "title": "Pagina non trovata"
+        },
+        "unexpected": {
+            "error": "Errore {code}",
+            "sorry": "Siamo spiacenti, il servizio sta riscontrando un problema. Stiamo lavorando per risolverlo il prima possibile.",
+            "title": "Errore imprevisto"
+        },
+        "unknown": "Si è verificato un errore"
     }
 }
