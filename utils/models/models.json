@@ -408,7 +408,7 @@
         "url": "https://huggingface.co/arcee-ai/Trinity-Large-Preview",
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "arcee-ai/trinity-large-preview:free"
+          "api_model_id": "arcee-ai/trinity-large-preview"
         },
         "desc": "Modèle semi-ouvert américain créé par Arcee AI, une startup de 30 personnes.",
         "size_desc": "Avec 398 milliards de paramètres, Trinity Large est un modèle de très grande taille. Néanmoins, grâce à son architecture de mélange d'experts (MoE, Mixture of Experts) hautement optimisée, il n'active que 13 milliards de paramètres par jeton généré, ce qui réduit significativement l'empreinte énergétique et les coûts d'inférence comparé à un modèle dense équivalent. Sa fenêtre de contexte atteint 512 000 jetons, ce qui le rend particulièrement adapté à l'analyse de très longs documents ou de bases de code massives.",
@@ -1239,7 +1239,7 @@
         "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "nvidia/nemotron-3-super-120b-a12b:free"
+          "api_model_id": "nvidia/nemotron-3-super-120b-a12b"
         },
         "desc": "Grand modèle de Nvidia, le fabricant de cartes graphiques, fondé sur une architecture hybride qui combine différents types de couches pour traiter efficacement de très longs documents tout en limitant le coût de calcul. Nvidia publie les poids, les recettes d'entraînement et une grande partie des données d'entraînement.",
         "size_desc": "Avec 120 milliards de paramètres au total dont 12 milliards activés par jeton, ce modèle nécessite plusieurs cartes graphiques puissantes pour fonctionner. L'architecture de mélange d'experts (MoE, Mixture of Experts) permet de n'activer qu'une fraction des paramètres, ce qui réduit l'empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte native atteint 1 million de jetons, ce qui le rend adapté à l'analyse de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
