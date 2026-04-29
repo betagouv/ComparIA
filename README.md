@@ -191,18 +191,17 @@ Compar:IA is a digital common. Whether you can offer funding, code, translations
 ## Roadmap
 
 ### 🟢 In Progress
-
-- **EcoLogits update** [#253](https://github.com/betagouv/ComparIA/pull/253) _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
-- **Gradio → FastAPI migration** _(🇫🇷 Ministry of Culture, 🇫🇷 DINUM, 🇪🇺 ALT-EDIC)_
-- **Language/platform-specific model support** _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
 - **Dataset publication pipeline** configurable per language/platform, with customizable publication delays and anonymization pipelines _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- **Web search** (🇪🇺 ALT-EDIC)
+- **Easier deployment, observability and cleaner DB** (🇪🇺 ALT-EDIC)
+- **New voting system** (🇪🇺 ALT-EDIC, 🇫🇷 Ministry of Culture)
+
 
 ### 🔮 Up Next
 
-- Web search and document upload
+- Web search 
 - Authentication
 - Style control [#273](https://github.com/betagouv/ComparIA/pull/273)
-- Ranking consolidation and internationalization
 - Message history
 - Easier deployment and streamlined onboarding
 - Improved anonymization pipeline
@@ -210,6 +209,10 @@ Compar:IA is a digital common. Whether you can offer funding, code, translations
 
 ### ⛵ Shipped
 
+- Ranking consolidation and internationalization _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- Language/platform-specific model support _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- Gradio → FastAPI migration _(🇫🇷 Ministry of Culture, 🇫🇷 DINUM, 🇪🇺 ALT-EDIC)_
+- [EcoLogits update](https://github.com/betagouv/ComparIA/pull/253) _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
 - Dataset publishing pipeline v1 _(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)_
 - Leaderboard v1 _(🇫🇷 DINUM, 🇫🇷 Ministry of Culture, in collaboration with 🇫🇷 PEReN)_
 - Archived models _(🇫🇷 DINUM, 🇫🇷 Ministry of Culture)_
