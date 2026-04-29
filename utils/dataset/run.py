@@ -1,4 +1,4 @@
-import logging
+zimport logging
 from pathlib import Path
 from typing import Literal
 

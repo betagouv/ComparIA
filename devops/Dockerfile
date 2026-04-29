@@ -27,6 +27,7 @@ COPY controller.py /app/
 COPY backend /app/backend
 COPY utils /app/utils
 COPY templates /app/templates
+COPY comparia-cli /app/
 
 VOLUME /data
 EXPOSE 80
