@@ -66,7 +66,18 @@ export interface ChatRound {
 
 export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
 export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
-export type APIReactionPref = (typeof APIPositivePrefs)[number] | (typeof APINegativePrefs)[number]
+export const PREFS_EMOJIS: Record<APIReactionPref, string> = {
+  useful: '🙌',
+  complete: '💯',
+  creative: '🌀',
+  clear_formatting: '🎨',
+  incorrect: '❌',
+  superficial: '🚩',
+  instructions_not_followed: '🚫'
+}
+export type APIPositivePref = (typeof APIPositivePrefs)[number]
+export type APINegativePref = (typeof APINegativePrefs)[number]
+export type APIReactionPref = APIPositivePref | APINegativePref
 
 export type ReactionKind = 'like' | 'comment'
 export type APIReactionData = {
@@ -80,6 +91,11 @@ export type APIReactionData = {
 export type OnReactionFn = (reaction: APIReactionData) => void
 
 // VOTE
+
+export interface VoteAnnotations {
+  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  custom_annotation: string
+}
 
 export interface APIVoteData {
   chosen_llm: BotChoice
@@ -239,7 +255,7 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
       if (arena.currentScreen !== 'chat') {
         arena.currentScreen = 'chat'
         arena.mode = args.mode
-        arena.chat.step = 'reveal'
+        arena.chat.step = 'chat'
       }
       onSSEEvent(event)
     }
