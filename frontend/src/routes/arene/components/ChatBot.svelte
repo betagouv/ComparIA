@@ -52,7 +52,7 @@
   class="pb-7 flex grow flex-col"
 >
   {#each rounds as round (round.index)}
-    <GroupedMessages {round} {disabled} {onReactionChange} />
+    <GroupedMessages {round} {disabled} mode={arena.mode!} {onReactionChange} />
   {/each}
 
   {#if arena.chat.status === 'pending'}
