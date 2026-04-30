@@ -168,7 +168,7 @@ export const arena = $state<{
   currentScreen: 'prompt' | 'chat'
   mode?: Mode
   chat: {
-    step?: 1 | 2
+    step: 'chat' | 'vote' | 'reveal'
     status: ChatStatus
     a: Chat
     b: Chat
@@ -177,7 +177,7 @@ export const arena = $state<{
 }>({
   currentScreen: 'prompt',
   chat: {
-    step: 1,
+    step: 'chat',
     status: 'pending',
     a: { status: 'pending', messages: [] },
     b: { status: 'pending', messages: [] },
@@ -237,7 +237,7 @@ export async function runChatBots(args: APIModeAndPromptData): Promise<string | 
       if (arena.currentScreen !== 'chat') {
         arena.currentScreen = 'chat'
         arena.mode = args.mode
-        arena.chat.step = 1
+        arena.chat.step = 'reveal'
       }
       onSSEEvent(event)
     }
