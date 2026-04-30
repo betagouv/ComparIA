@@ -14,7 +14,6 @@
   import { m } from '$lib/i18n/messages'
   import { ChatBot, RevealArea, VoteArea } from '.'
 
-  let step = $state<'chat' | 'vote' | 'reveal'>('chat')
   let prompt = $state('')
   let promptError = $state<string>()
   let canVote = $state<boolean | null>(true)
@@ -33,9 +32,10 @@
   })
   let revealData = $state<RevealData>()
 
-  const chatbotDisabled = $derived(arena.chat.status !== 'complete' || step !== 'chat')
+  const chatbotDisabled = $derived(arena.chat.status !== 'complete' || arena.chat.step !== 'chat')
   const revealDisabled = $derived(
-    arena.chat.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
+    arena.chat.status !== 'complete' ||
+      (arena.chat.step === 'vote' && voteData.selected === undefined)
   )
 
   const onReactionChange: OnReactionFn = async (reaction) => {
@@ -66,21 +66,19 @@
     // if chat as reactions, no need to show vote
     if (canVote === false) {
       revealData = await getReveal()
-      step = 'reveal'
-      arena.chat.step = 2
-    } else if (step === 'vote') {
+      arena.chat.step = 'reveal'
+    } else if (arena.chat.step === 'vote') {
       if (!voteData.selected) return
       revealData = await postVoteGetReveal(voteData as Required<VoteData>)
-      step = 'reveal'
-      arena.chat.step = 2
+      arena.chat.step = 'reveal'
     } else {
-      step = 'vote'
+      arena.chat.step = 'vote'
     }
   }
 
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
-  let footerSize: number = $derived(step && footer ? footer.offsetHeight : 0)
+  let footerSize: number = $derived(arena.chat.step && footer ? footer.offsetHeight : 0)
 
   function onResize() {
     footerSize = footer ? footer.offsetHeight : 0
@@ -92,11 +90,11 @@
 <div style="--footer-size: {footerSize}px;" class="flex grow flex-col">
   <ChatBot disabled={chatbotDisabled} {onReactionChange} {onRetry} {onVote} />
 
-  {#if step === 'vote' || (step === 'reveal' && canVote)}
-    <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
+  {#if arena.chat.step === 'vote' || (arena.chat.step === 'reveal' && canVote)}
+    <VoteArea bind:value={voteData} disabled={arena.chat.step === 'reveal'} />
   {/if}
 
-  {#if step === 'reveal' && revealData}
+  {#if arena.chat.step === 'reveal' && revealData}
     <RevealArea data={revealData} />
     <Footer />
   {:else}
@@ -105,7 +103,7 @@
       id="send-area"
       class="bg-very-light-grey bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
     >
-      {#if step === 'chat'}
+      {#if arena.chat.step === 'chat'}
         <div class="gap-3 md:flex-row flex w-full flex-col">
           <TextPrompt
             id="chatbot-prompt"

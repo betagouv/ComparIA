@@ -1402,14 +1402,10 @@
         "banner": "🏆 Le classement des modèles est maintenant disponible ! Découvrir le classement.",
         "chatbot": {
             "newDiscussion": "Nouvelle discussion",
-            "step": "Étape",
-            "stepOne": {
-                "description": "Prêtez attention au fond et à la forme puis évaluez chaque réponse",
-                "title": "Que pensez-vous des réponses ?"
-            },
-            "stepTwo": {
-                "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
-                "title": "Les modèles sont démasqués !"
+            "reveal": {
+                "title": "Révélation",
+                "subtitle": "Les modèles sont démasqués !",
+                "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle"
             }
         },
         "help": {
