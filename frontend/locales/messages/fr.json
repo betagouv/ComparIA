@@ -2180,8 +2180,17 @@
     },
     "vote": {
         "bothEqual": "Les deux se valent",
+        "turn": {
+            "choices": {
+                "a_better": "A est meilleur",
+                "both_good": "Les deux sont bons",
+                "idk": "Passer le vote",
+                "both_bad": "Les deux sont mauvais",
+                "b_better": "B est meilleur"
+            },
+            "important": "Votre vote est important : il contribue à un meilleur alignement avec les <a {linkProps}>préférences francophones</a>."
+        },
         "choices": {
-            "altText": "{choice} pour le modèle {model}",
             "negative": {
                 "incorrect": "Incorrecte",
                 "instructions_not_followed": "Instructions non suivies",

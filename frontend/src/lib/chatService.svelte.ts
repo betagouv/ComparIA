@@ -27,6 +27,8 @@ export type ModeInfos = {
 
 export type Bot = 'a' | 'b'
 export type BotChoice = Bot | 'both_equal'
+export const TURN_CHOICES = ['a_better', 'both_good', 'idk', 'both_bad', 'b_better'] as const
+export type TurnChoice = (typeof TURN_CHOICES)[number]
 
 export type LLMPos = 'a' | 'b'
 export type ChatStatus = 'pending' | 'error' | 'complete' | 'generating'
