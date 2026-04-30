@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
     ALTCHA_HMAC_KEY: str = ""
+    # When Redis is unreachable, replay protection cannot be enforced.
+    # Default: fail closed (reject the request). Set to True only as a
+    # deliberate degraded-mode fallback.
+    ALTCHA_FAIL_OPEN_ON_REDIS_ERROR: bool = False
 
 # Response caching
     CACHE_ENABLED: bool = False
@@ -46,11 +50,23 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Generate a random HMAC key if not configured (dev mode)
+# In production, ALTCHA_HMAC_KEY must be set: every worker/pod needs the same
+# value so a challenge issued by one process verifies on another. Falling back
+# to a random key only makes sense in dev (single process, restart-friendly).
 if not settings.ALTCHA_HMAC_KEY:
+    if not settings.LANGUIA_DEBUG:
+        raise RuntimeError(
+            "ALTCHA_HMAC_KEY is required in non-debug mode. "
+            "Set it in the environment so all workers share the same key."
+        )
     import secrets
 
     settings.ALTCHA_HMAC_KEY = secrets.token_hex(32)
+    import logging
+
+    logging.getLogger("languia").warning(
+        "ALTCHA_HMAC_KEY not set; generated an ephemeral key (dev mode only)."
+    )
 
 # Create directory for JSON backup files
 os.makedirs(settings.LOGDIR, exist_ok=True)
