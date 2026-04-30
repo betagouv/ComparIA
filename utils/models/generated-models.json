@@ -1,5 +1,5 @@
 {
-  "timestamp": 1777375843.976335,
+  "timestamp": 1777473636.498346,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -3248,7 +3248,7 @@
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
-        "api_model_id": "nvidia/nemotron-3-super-120b-a12b:free",
+        "api_model_id": "nvidia/nemotron-3-super-120b-a12b",
         "api_type": "openrouter",
         "api_version": null,
         "vertex_ai_location": null
@@ -4076,7 +4076,7 @@
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
-        "api_model_id": "arcee-ai/trinity-large-preview:free",
+        "api_model_id": "arcee-ai/trinity-large-preview",
         "api_type": "openrouter",
         "api_version": null,
         "vertex_ai_location": null
