@@ -16,26 +16,48 @@ interface AltchaChallenge {
   signature: string
 }
 
+// Server expiry is 600s. Refresh comfortably before that.
+const TOKEN_STALE_AFTER_MS = 8 * 60 * 1000
+
+export class CaptchaError extends Error {
+  constructor(message: string, public cause?: unknown) {
+    super(message)
+    this.name = 'CaptchaError'
+  }
+}
+
 let altchaToken = $state<string | null>(null)
-let solving = $state(false)
+let tokenCreatedAt = 0
+let inflight: Promise<void> | null = null
+
+function isStale(): boolean {
+  return !altchaToken || Date.now() - tokenCreatedAt > TOKEN_STALE_AFTER_MS
+}
 
 export function getAltchaToken(): string | null {
   return altchaToken
 }
 
 /**
- * Consume the current token and start solving a new one.
+ * Return a fresh token and start solving the next one.
+ * Throws CaptchaError if no token can be produced — callers should surface
+ * this to the user rather than POST a null token to the backend.
  */
-export function consumeAltchaToken(): string | null {
+export async function consumeAltchaToken(): Promise<string> {
+  if (isStale()) {
+    await fetchAndSolve()
+  }
   const token = altchaToken
+  if (!token) {
+    throw new CaptchaError('Captcha token unavailable')
+  }
   altchaToken = null
-  fetchAndSolve()
+  tokenCreatedAt = 0
+  // Start the next solve so the following request is instant.
+  void fetchAndSolveSilently()
   return token
 }
 
-/**
- * Solve a SHA-256 proof-of-work challenge using Web Crypto API.
- */
 async function solveChallenge(
   challenge: string,
   salt: string,
@@ -53,23 +75,27 @@ async function solveChallenge(
 }
 
 /**
- * Fetch a challenge from the backend and solve it.
+ * Fetch a challenge and solve it. Concurrent calls share the in-flight promise.
+ * Rejects on network or solve failure — callers that want fire-and-forget
+ * behaviour should use fetchAndSolveSilently().
  */
-export async function fetchAndSolve(): Promise<void> {
-  if (!browser || solving || altchaToken) return
+export function fetchAndSolve(): Promise<void> {
+  if (!browser) return Promise.resolve()
+  if (inflight) return inflight
+  if (altchaToken && !isStale()) return Promise.resolve()
 
-  solving = true
-  try {
-    const challenge = await api.request<AltchaChallenge>('/arena/challenge')
-
-    const number = await solveChallenge(
-      challenge.challenge,
-      challenge.salt,
-      challenge.algorithm,
-      challenge.maxNumber
-    )
-
-    if (number !== null) {
+  inflight = (async () => {
+    try {
+      const challenge = await api.request<AltchaChallenge>('/arena/challenge')
+      const number = await solveChallenge(
+        challenge.challenge,
+        challenge.salt,
+        challenge.algorithm,
+        challenge.maxNumber
+      )
+      if (number === null) {
+        throw new CaptchaError('Failed to solve challenge within maxNumber range')
+      }
       const payload = {
         algorithm: challenge.algorithm,
         challenge: challenge.challenge,
@@ -78,13 +104,29 @@ export async function fetchAndSolve(): Promise<void> {
         signature: challenge.signature
       }
       altchaToken = btoa(JSON.stringify(payload))
+      tokenCreatedAt = Date.now()
       console.debug('[ALTCHA] Challenge solved')
-    } else {
-      console.error('[ALTCHA] Failed to solve challenge')
+    } finally {
+      inflight = null
     }
-  } catch (error) {
-    console.error('[ALTCHA] Error:', error)
-  } finally {
-    solving = false
-  }
+  })()
+
+  return inflight
+}
+
+/**
+ * Background variant for page-load and visibility refresh: never throws.
+ */
+export function fetchAndSolveSilently(): Promise<void> {
+  return fetchAndSolve().catch((error) => {
+    console.error('[ALTCHA] Background solve failed:', error)
+  })
+}
+
+if (browser) {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isStale()) {
+      void fetchAndSolveSilently()
+    }
+  })
 }
