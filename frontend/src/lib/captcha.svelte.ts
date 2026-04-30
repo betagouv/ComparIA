@@ -86,7 +86,12 @@ export function fetchAndSolve(): Promise<void> {
 
   inflight = (async () => {
     try {
-      const challenge = await api.request<AltchaChallenge>('/arena/challenge')
+      let challenge: AltchaChallenge
+      try {
+        challenge = await api.request<AltchaChallenge>('/arena/challenge')
+      } catch (err) {
+        throw new CaptchaError('Failed to fetch captcha challenge', err)
+      }
       const number = await solveChallenge(
         challenge.challenge,
         challenge.salt,
