@@ -3,9 +3,14 @@
 @import './icons.css';
 
 :root {
+  /* Accessibility override (WCAG AA): replace DSFR violet #6a6af4 with #6464f3
+     to reach 4.5:1 contrast against white text on primary CTAs. */
+  --blue-france-main-525: #6464f3;
+  --text-inverted-blue-france: #ffffff;
+
   /* CUSTOM DSFR LIKE ADDITION */
-  --cg-blue-france-main-525-hover: #9898f8;
-  --cg-blue-france-main-525-active: #aeaef9;
+  --cg-blue-france-main-525-hover: #5454e3;
+  --cg-blue-france-main-525-active: #4545d3;
   --outline-color: #0a76f6;
 
   /* CUSTOM */
@@ -24,6 +29,9 @@
 }
 
 :root[data-fr-theme='dark'] {
+  --blue-france-main-525: #6464f3;
+  --text-inverted-blue-france: #ffffff;
+
   --cg-very-light-grey: #0a0a0b;
   --cg-light-grey: #1c1e22;
   /* FIXME need equivalent in dark */
