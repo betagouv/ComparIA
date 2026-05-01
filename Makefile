@@ -35,8 +35,8 @@ install-frontend: ## Install npm frontend dependencies
 	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
 # generate the file to init db in postgres docker
-db-generate-init: ## Generate devops/docker/db-init/init-db.sql from schema files
-	@bash devops/docker/generate-init-db.sh
+db-generate-init: ## Generate devops/db-init/init-db.sql from schema files
+	@bash devops/db-init/generate-init-db.sh
 
 ## Launch and init Postgres database using docker compose
 db:
@@ -83,14 +83,14 @@ dataset-export-fr: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASE
 docker-app-up: ## Launch full app in Docker (frontend + backend + infra)
 	@$(MAKE) db-generate-init
 	@echo "Starting full app with Docker..."
-	docker compose -f devops/docker/docker-compose.yml -f devops/docker/app.compose.override.yml up -d --build
+	docker compose -f devops/instances/db-redis/docker-compose.yml -f devops/docker/app.compose.override.yml up -d --build
 
 docker-app-down: ## Stop only app services (frontend + backend), keep infra
 	@echo "Stopping app services..."
-	docker compose -f devops/docker/docker-compose.yml -f devops/docker/app.compose.override.yml rm -sf frontend backend
+	docker compose -f devops/instances/db-redis/docker-compose.yml -f devops/docker/app.compose.override.yml rm -sf frontend backend
 
 docker-app-logs: ## Show logs for frontend and backend containers
-	docker compose -f devops/docker/docker-compose.yml -f devops/docker/app.compose.override.yml logs -f frontend backend
+	docker compose -f devops/instances/db-redis/docker-compose.yml -f devops/docker/app.compose.override.yml logs -f frontend backend
 
 dev-full: ## Launch backend and frontend with Postgres and Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA with Postgres and Redis..."

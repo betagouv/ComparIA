@@ -1,13 +1,8 @@
 services:
   backend:
     build:
-<<<<<<<< HEAD:devops/docker-bake.yml
-      context: .
-      dockerfile: devops/Dockerfile
-========
       context: ../..
       dockerfile: devops/docker/Dockerfile
->>>>>>>> 9a97623d (devops: reorganisation WIP):devops/docker/docker-bake.yml
       args:
         GIT_COMMIT: ${GIT_COMMIT:-}
         PUBLIC_API_URL: ${PUBLIC_API_URL:-}
@@ -22,13 +17,8 @@ services:
 
   frontend:
     build:
-<<<<<<<< HEAD:devops/docker-bake.yml
-      context: frontend
-      dockerfile: ../devops/Dockerfile.front
-========
       context: ../../frontend
       dockerfile: ../devops/docker/Dockerfile.front
->>>>>>>> 9a97623d (devops: reorganisation WIP):devops/docker/docker-bake.yml
       args:
         GIT_COMMIT: ${GIT_COMMIT:-}
         PUBLIC_API_URL: ${PUBLIC_API_URL:-}
