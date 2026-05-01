@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - postgres-statefulset.yaml
+  - redis-statefulset.yaml
+  - backend-deployment.yaml
+  - frontend-deployment.yaml
+  - services.yaml
+  - ingress.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: backend-config
+    literals:
+      - CACHE_ENABLED=true
+      - CACHE_PROBABILITY=0.75
+      - CACHE_TTL=172800
+      - CACHE_MAX_RESPONSES=5
+      - LOG_FORMAT=JSON
+      - LOGDIR=/data
+
+secretGenerator:
+  - name: comparia-db
+    literals:
+      # Change these values before applying
+      - POSTGRES_PASSWORD=changeme
+      - COMPARIA_DB_URI=postgresql://comparia:changeme@comparia-postgres:5432/comparia
+
+  - name: comparia-apikeys
+    literals:
+      # Fill in your API keys before applying
+      - OPENROUTER_API_KEY=
+      - ALBERT_API_KEY=
+      - ALTCHA_HMAC_KEY=
+
+images:
+  - name: registry-placeholder/languia
+    # Replace with your backend image
+    newName: registry-placeholder/languia
+    newTag: latest
+  - name: registry-placeholder/languia-front
+    # Replace with your frontend image
+    newName: registry-placeholder/languia-front
+    newTag: latest
