@@ -1,22 +1,17 @@
 # Overlay for full stack (frontend + backend)
-# Usage: docker compose -f docker-compose-dev.yml -f app.compose.override.yml up
+# Usage: docker compose -f docker-compose.yml -f app.compose.override.yml up
 services:
   frontend:
     build:
-<<<<<<<< HEAD:devops/app.compose.override.yml
-      context: ../frontend
-      dockerfile: ../devops/Dockerfile.front
-========
       context: ../../frontend
       dockerfile: ../devops/docker/Dockerfile.front
->>>>>>>> 9a97623d (devops: reorganisation WIP):devops/docker/app.compose.override.yml
     depends_on:
       - backend
     environment:
       # URL for server-side rendering (inside Docker network)
       PUBLIC_API_LOCAL_URL: "http://backend:80"
       # URL for client-side browser requests (exposed to host)
-      PUBLIC_API_URL: "http://localhost:8001"
+      PUBLIC_API_URL: "http://localhost:8000"
       PUBLIC_API_DEV_MODE: "true"
     ports:
       - "3000:3000"
@@ -34,13 +29,8 @@ services:
       COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
       COMPARIA_REDIS_HOST: redis
     build:
-<<<<<<<< HEAD:devops/app.compose.override.yml
-      context: ..
-      dockerfile: devops/Dockerfile
-========
       context: ../..
       dockerfile: devops/docker/Dockerfile
->>>>>>>> 9a97623d (devops: reorganisation WIP):devops/docker/app.compose.override.yml
       # args:
       #   GIT_COMMIT: ${GIT_COMMIT:-}
       #   PUBLIC_API_URL: ${PUBLIC_API_URL:-}
@@ -48,7 +38,7 @@ services:
       #   MATOMO_URL: ${MATOMO_URL:-}
     image: languia:latest
     ports:
-      - "8001:80"
+      - "8000:80"
     # volumes:
     #   # Dev config - mount everything except .venv
     #   - ../../:/app
