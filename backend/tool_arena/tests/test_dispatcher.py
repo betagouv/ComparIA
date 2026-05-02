@@ -702,3 +702,49 @@ async def test_llm_mediation_failure_preserves_raw_result(server_a, server_b):
     assert result_b.raw_result == "raw output"
     assert result_b.error is not None
     assert "LLM mediation failed" in result_b.error or "RuntimeError" in result_b.error
+
+
+# ---------------------------------------------------------------------------
+# Test: TOOL_ARENA_MEDIATE=false bypasses LLM mediation entirely
+# ---------------------------------------------------------------------------
+
+async def test_dispatch_bypasses_mediation_when_disabled(server_a, server_b):
+    """When MEDIATION_ENABLED is False, mediation must be skipped and the raw
+    sanitized output must be used as mediated_result. litellm.acompletion must
+    NOT be called.
+    """
+    from backend.tool_arena import dispatcher as dispatcher_module
+    from backend.tool_arena.dispatcher import MCPDispatcher
+
+    mock_registry = MagicMock()
+    mock_registry.pick_two.return_value = (server_a, server_b)
+    mock_acompletion = AsyncMock(return_value=make_litellm_response("should not be called"))
+
+    with (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch(
+            "backend.tool_arena.dispatcher.single_mcp_call",
+            new_callable=AsyncMock,
+            return_value=("raw output", 100),
+        ),
+        patch(
+            "backend.tool_arena.dispatcher.sanitize_output",
+            side_effect=lambda text, servers: text,
+        ),
+        patch.object(dispatcher_module, "MEDIATION_ENABLED", False),
+        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
+    ):
+        mock_litellm.acompletion = mock_acompletion
+        dispatcher = MCPDispatcher()
+        result_a, result_b = await dispatcher.dispatch(
+            task="task",
+            goal="goal",
+            llm_id="openai/gpt-4o",
+            session_id="session-bypass",
+        )
+
+    assert result_a.error is None
+    assert result_b.error is None
+    assert result_a.mediated_result == "raw output"
+    assert result_b.mediated_result == "raw output"
+    assert mock_acompletion.call_count == 0
