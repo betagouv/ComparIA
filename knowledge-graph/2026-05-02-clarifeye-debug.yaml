@@ -1,0 +1,307 @@
+# Postmortem: Clarifeye stability + display truncation debugging session
+#
+# Context: testers reported (1) Clarifeye "crashing", (2) tool output visibly
+# truncated mid-sentence, (3) intermittent timeouts under load. Five PRs over
+# one session diagnosed and fixed five distinct root causes.
+#
+# This file is structured as a knowledge graph for ingestion into mem0
+# (see knowledge-graph/README.md).
+
+session:
+  date: 2026-05-02
+  topic: Clarifeye stability + tool-arena display truncation
+  branch: claude/fix-clarifeye-auth-crashes-DsatO
+  prs: [1, 2, 3, 4, 5]
+  outcome: all five root causes fixed and merged to develop
+
+# ---------------------------------------------------------------------------
+# Entities
+# ---------------------------------------------------------------------------
+
+entities:
+
+  # Projects & components
+  - id: project_comparag
+    type: Project
+    name: CompaRAG
+    metadata:
+      repo: ArthurSrz/CompaRAG
+      stack: [FastAPI, SvelteKit, Railway, Vercel, Redis, Postgres]
+
+  - id: tool_clarifeye
+    type: MCPServer
+    name: Clarifeye
+    metadata:
+      endpoint: https://env-3256.gcp.clarifeye.io/mcp
+      auth: oauth2
+      tool: call_agent
+      kind: agentic
+
+  - id: tool_langchain_rag
+    type: MCPServer
+    name: LangChain RAG
+    metadata:
+      tool: rag_query
+      kind: chunk-returning
+
+  # Bugs
+  - id: bug_clarifeye_first_call_fails
+    type: Bug
+    name: First call to Clarifeye fails after deploy/scale
+    metadata:
+      symptom: "Premier test plante, ensuite ça marche"
+      visibility: testers
+      status: fixed
+
+  - id: bug_silent_logs
+    type: Bug
+    name: tool_arena logs invisible in Railway
+    metadata:
+      symptom: "logger.info() calls produce no output despite info level"
+      blocked_diagnosis_of: [bug_truncation, bug_clarifeye_first_call_fails]
+      status: fixed
+
+  - id: bug_truncation
+    type: Bug
+    name: Tool output truncated in UI
+    metadata:
+      symptom: "Visible content ends mid-list (~300 tokens) regardless of input size"
+      affected_tools: all
+      status: fixed
+
+  - id: bug_clarifeye_timeout
+    type: Bug
+    name: Clarifeye intermittent timeouts under load
+    metadata:
+      symptom: "Tool encountered an error on Clarifeye card"
+      status: fixed
+
+  - id: bug_vote_silent_failure
+    type: Bug
+    name: Vote button frozen on failure
+    metadata:
+      symptom: "User clicks vote, nothing happens, no UI feedback"
+      visibility: testers
+      status: fixed
+
+  # Root causes
+  - id: cause_oauth_cold_start
+    type: RootCause
+    name: Lazy OAuth provider build on first request
+    metadata:
+      detail: |
+        OAuthClientProvider built lazily inside single_mcp_call. First request
+        had to do metadata discovery + token refresh + MCP init in a single
+        30s window. Subsequent requests hit a cached provider in the worker
+        process and were fast.
+
+  - id: cause_refresh_rotation_overwrite
+    type: RootCause
+    name: Bootstrap clobbered rotated refresh_token in Redis
+    metadata:
+      detail: |
+        Clarifeye rotates refresh_tokens. Old _bootstrap_tokens_from_env logic
+        re-seeded the env-var token whenever stored != env, but after a successful
+        refresh the SDK had stored the rotated token. On next process restart
+        the bootstrap replaced it with the original (now revoked) env-var
+        token, causing intermittent failures across deploys.
+
+  - id: cause_logger_misconfigured
+    type: RootCause
+    name: tool_arena logger had no handlers
+    metadata:
+      detail: |
+        backend/logger.py::configure_logger() only attached handlers (console,
+        Loki, Postgres, file) to the logger named 'languia'. tool_arena modules
+        used getLogger('tool_arena') which had no handlers attached, so all
+        info/warning lines were silently dropped on Railway.
+
+  - id: cause_mediation_oversummarizes
+    type: RootCause
+    name: mistral-small over-summarizes regardless of prompt
+    metadata:
+      detail: |
+        With TOOL_ARENA_LLM_ID=openrouter/mistralai/mistral-small-3.1-24b-instruct,
+        the mediation step reduced 1144 chars of raw output to 79 chars with
+        finish_reason=stop. The 4096 max_tokens budget was never hit. Stronger
+        prompt wording ('do not summarize, reproduce all details') was ignored
+        by the model. Universal across all tools.
+
+  - id: cause_short_default_timeout
+    type: RootCause
+    name: 30s MCP_CALL_TIMEOUT too short for agentic tools
+    metadata:
+      detail: |
+        Clarifeye's call_agent does multi-step reasoning + internal LLM calls
+        and routinely needs 60-90s. The 30s default cut off complex queries.
+
+  - id: cause_no_retry_on_transient
+    type: RootCause
+    name: No retry on transient connection errors
+    metadata:
+      detail: |
+        A brief network blip between Railway and Clarifeye (httpx.ConnectError,
+        RemoteProtocolError, ReadError) failed the entire comparison even
+        though the next request would have worked.
+
+  - id: cause_handlevote_swallows_errors
+    type: RootCause
+    name: Frontend handleVote logged errors but did not surface them
+    metadata:
+      detail: |
+        On vote failure, only console.error was called. No state update, no
+        UI feedback. Users perceived this as the app "crashing".
+
+  # Fixes (linked to commits and PRs)
+  - id: fix_oauth_prewarm
+    type: Fix
+    pr: 1
+    commit: 2cefe29
+    name: Pre-warm OAuth providers in FastAPI lifespan
+    metadata:
+      file: backend/main.py, backend/tool_arena/auth.py
+      env_vars: [OAUTH_PREWARM_TIMEOUT]
+
+  - id: fix_bootstrap_seed_only
+    type: Fix
+    pr: 1
+    commit: cb43b83
+    name: Bootstrap is one-time seed; never overwrites stored refresh_token
+    metadata:
+      file: backend/tool_arena/auth.py
+
+  - id: fix_client_info_preservation
+    type: Fix
+    pr: 1
+    commit: 2c79098
+    name: Don't overwrite stored client_info when secret env var missing
+    metadata:
+      file: backend/tool_arena/auth.py
+
+  - id: fix_handlevote_ui_feedback
+    type: Fix
+    pr: 1
+    commit: 2c79098
+    name: Vote errors surface in UI with retry button
+    metadata:
+      file: frontend/src/routes/tool-arena/+page.svelte
+
+  - id: fix_parseerror_string_detail
+    type: Fix
+    pr: 1
+    commit: 2c79098
+    name: parseErrorResponse tolerates string detail in 422 responses
+    metadata:
+      file: frontend/src/lib/fastapi-client.ts
+
+  - id: fix_mediation_max_tokens
+    type: Fix
+    pr: 1
+    commit: e8d5ced
+    name: Pass max_tokens=4096 to mediation litellm call
+    metadata:
+      env_vars: [MEDIATION_MAX_TOKENS]
+      result: insufficient — mistral-small still summarized within budget
+
+  - id: fix_diagnostic_logs
+    type: Fix
+    pr: 2
+    commit: 851491c
+    name: Log raw_len, output_len, finish_reason for each MCP call and mediation
+    metadata:
+      file: backend/tool_arena/client.py, backend/tool_arena/dispatcher.py
+
+  - id: fix_logger_rename
+    type: Fix
+    pr: 3
+    commit: 0d36161
+    name: Rename tool_arena loggers to 'languia'
+    metadata:
+      files_changed: 6
+
+  - id: fix_mediation_toggle
+    type: Fix
+    pr: 4
+    commit: 214443c
+    name: TOOL_ARENA_MEDIATE env var to bypass LLM mediation
+    metadata:
+      env_vars: [TOOL_ARENA_MEDIATE]
+      production_setting: false
+
+  - id: fix_per_server_timeout_and_retry
+    type: Fix
+    pr: 5
+    commit: f4b1fd2
+    name: Per-server timeout_seconds + bounded retry on transient errors
+    metadata:
+      env_vars: [MCP_CALL_TIMEOUT, MCP_CALL_RETRIES]
+      defaults: {global_timeout_s: 90, retries: 1, clarifeye_timeout_s: 120}
+
+# ---------------------------------------------------------------------------
+# Relations
+# ---------------------------------------------------------------------------
+
+relations:
+  # Project composition
+  - {from: project_comparag, rel: USES, to: tool_clarifeye}
+  - {from: project_comparag, rel: USES, to: tool_langchain_rag}
+
+  # Bug → cause
+  - {from: bug_clarifeye_first_call_fails, rel: CAUSED_BY, to: cause_oauth_cold_start}
+  - {from: bug_clarifeye_first_call_fails, rel: CAUSED_BY, to: cause_refresh_rotation_overwrite}
+  - {from: bug_silent_logs, rel: CAUSED_BY, to: cause_logger_misconfigured}
+  - {from: bug_silent_logs, rel: BLOCKED_DIAGNOSIS_OF, to: bug_truncation}
+  - {from: bug_silent_logs, rel: BLOCKED_DIAGNOSIS_OF, to: bug_clarifeye_first_call_fails}
+  - {from: bug_truncation, rel: CAUSED_BY, to: cause_mediation_oversummarizes}
+  - {from: bug_clarifeye_timeout, rel: CAUSED_BY, to: cause_short_default_timeout}
+  - {from: bug_clarifeye_timeout, rel: CAUSED_BY, to: cause_no_retry_on_transient}
+  - {from: bug_vote_silent_failure, rel: CAUSED_BY, to: cause_handlevote_swallows_errors}
+
+  # Bug → affects
+  - {from: bug_clarifeye_first_call_fails, rel: AFFECTS, to: tool_clarifeye}
+  - {from: bug_clarifeye_timeout, rel: AFFECTS, to: tool_clarifeye}
+  - {from: bug_truncation, rel: AFFECTS, to: project_comparag}
+
+  # Fix → root cause
+  - {from: fix_oauth_prewarm, rel: ADDRESSES, to: cause_oauth_cold_start}
+  - {from: fix_bootstrap_seed_only, rel: ADDRESSES, to: cause_refresh_rotation_overwrite}
+  - {from: fix_logger_rename, rel: ADDRESSES, to: cause_logger_misconfigured}
+  - {from: fix_diagnostic_logs, rel: ENABLED_DIAGNOSIS_OF, to: cause_mediation_oversummarizes}
+  - {from: fix_mediation_toggle, rel: ADDRESSES, to: cause_mediation_oversummarizes}
+  - {from: fix_per_server_timeout_and_retry, rel: ADDRESSES, to: cause_short_default_timeout}
+  - {from: fix_per_server_timeout_and_retry, rel: ADDRESSES, to: cause_no_retry_on_transient}
+  - {from: fix_handlevote_ui_feedback, rel: ADDRESSES, to: cause_handlevote_swallows_errors}
+  - {from: fix_mediation_max_tokens, rel: ATTEMPTED_TO_FIX, to: cause_mediation_oversummarizes}
+
+  # Fix dependency chain (chronological discovery order)
+  - {from: fix_diagnostic_logs, rel: DEPENDS_ON, to: fix_logger_rename}
+  - {from: fix_mediation_toggle, rel: DEPENDS_ON, to: fix_diagnostic_logs}
+
+# ---------------------------------------------------------------------------
+# Propagable learnings (carry these forward to all future sessions)
+# ---------------------------------------------------------------------------
+
+learnings:
+  - text: "backend/logger.py only configures handlers for the 'languia' logger — any other name produces silent logs in production."
+    tags: [logging, observability, comparag]
+
+  - text: "Clarifeye rotates refresh_tokens. Storage is authoritative; env-var bootstrap must be strictly one-time seed."
+    tags: [oauth, clarifeye, refresh-token-rotation]
+
+  - text: "OAuth provider construction is lazy by default. Pre-warm at FastAPI startup so the first user request doesn't pay the cold-start cost (discovery + refresh + MCP init in one timeout window)."
+    tags: [oauth, mcp, performance]
+
+  - text: "mistral-small ignores 'do not summarize' instructions in mediation prompts. Use claude-haiku or bypass mediation when output fidelity matters."
+    tags: [llm, mediation, mistral, model-selection]
+
+  - text: "30s default timeout is too short for agentic tools (call_agent, multi-step reasoning). Use 90-120s; expose per-server override."
+    tags: [mcp, timeout, agentic-tools]
+
+  - text: "Retry on transient connection errors (httpx.ConnectError, RemoteProtocolError, ReadError) but NEVER on asyncio.TimeoutError — the latter just doubles the user wait without adding signal."
+    tags: [retry, network, robustness]
+
+  - text: "When a frontend handler swallows errors with only console.error, testers perceive it as a crash. Always surface errors to UI state with a recovery action."
+    tags: [frontend, ux, error-handling]
+
+  - text: "FastAPI HTTPException(detail=str) and HTTPException(detail=[{msg}]) coexist. Frontend error parsers must handle both forms."
+    tags: [fastapi, frontend, error-handling]
