@@ -3,5 +3,6 @@ langchain>=0.3
 langchain-community>=0.3
 langchain-text-splitters>=0.3
 langchain-huggingface>=0.1
+langchain-openai>=0.2
 faiss-cpu>=1.9
 sentence-transformers>=3.0

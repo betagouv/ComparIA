@@ -25,7 +25,6 @@ class Settings(BaseSettings):
     SENTRY_ENVIRONMENT: str = "dev"
     SENTRY_SAMPLE_RATE: float = 0.2
     OPENROUTER_API_KEY: str | None = None
-    TOOL_ARENA_LLM_ID: str = "openrouter/anthropic/claude-3-5-haiku-20241022"
     GOOGLE_APPLICATION_CREDENTIALS: str | None = None
     VERTEXAI_LOCATION: str | None = None
     ALBERT_KEY: str | None = None

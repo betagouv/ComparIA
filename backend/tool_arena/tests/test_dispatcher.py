@@ -1,28 +1,26 @@
-"""Tests for MCPDispatcher — concurrent MCP tool call orchestration with LLM mediation.
+"""Tests for MCPDispatcher — concurrent MCP tool call orchestration.
+
+Each MCP server returns a finished answer (full RAG pipeline). The dispatcher
+only routes, sanitizes, and aggregates — there is no post-hoc LLM mediation.
 
 Covers:
 - Concurrency: both MCP calls run via asyncio.gather
 - Failure isolation: one failure does not corrupt the other result
-- Sanitization order: raw -> sanitize -> LLM -> sanitize
-- LLM mediation: same llm_id used for both results
+- Sanitization is applied to each successful result
 - Task/goal identity: passed unchanged to both MCP calls
-- Session/tool_id population in returned MCPToolCall objects
-- Timeout configurable via MCP_CALL_TIMEOUT env var
-- LLM mediation failure: raw_result preserved, error set
+- Session/tool_id/llm_id population in returned MCPToolCall objects
+- Timeout configurable via MCP_CALL_TIMEOUT env var, overridable per server
+- Retry on transient connection errors, no retry on timeout
 """
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from backend.tool_arena.config import ApiKeyAuth, MCPServerConfig
 from backend.tool_arena.models import MCPToolCall
 
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def server_a():
@@ -34,6 +32,7 @@ def server_a():
         transport="streamablehttp",
         auth=ApiKeyAuth(type="api_key", key_env="TEST_KEY_A", header="Authorization"),
         tools=["*"],
+        llm_id="openrouter/mistralai/mistral-small-3.1-24b-instruct",
     )
 
 
@@ -47,25 +46,31 @@ def server_b():
         transport="streamablehttp",
         auth=ApiKeyAuth(type="api_key", key_env="TEST_KEY_B", header="Authorization"),
         tools=["summarize"],
+        llm_id="openrouter/mistralai/mistral-small-3.1-24b-instruct",
     )
 
-
-def make_litellm_response(content: str) -> MagicMock:
-    """Build a mock litellm ModelResponse-like object with the given content."""
-    mock_response = MagicMock()
-    mock_response.choices[0].message.content = content
-    return mock_response
-
-
-# ---------------------------------------------------------------------------
-# Test 1: dispatch() returns a tuple of two MCPToolCall objects
-# ---------------------------------------------------------------------------
 
 pytestmark = pytest.mark.anyio
 
 
+def _patch_dispatch_basics(mock_registry, *, mcp_return=("raw output", 100), mcp_side_effect=None):
+    """Common patches for dispatcher tests."""
+    mcp_kwargs = {"side_effect": mcp_side_effect} if mcp_side_effect else {
+        "new_callable": AsyncMock,
+        "return_value": mcp_return,
+    }
+    return (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", **mcp_kwargs),
+        patch(
+            "backend.tool_arena.dispatcher.sanitize_output",
+            side_effect=lambda text, servers: text,
+        ),
+    )
+
+
 async def test_dispatch_returns_two_tool_calls(server_a, server_b):
-    """dispatch() should return exactly two MCPToolCall instances."""
+    """dispatch() returns exactly two MCPToolCall instances."""
     from backend.tool_arena.dispatcher import MCPDispatcher
 
     mock_registry = MagicMock()
@@ -82,29 +87,15 @@ async def test_dispatch_returns_two_tool_calls(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(
-            return_value=make_litellm_response("mediated")
-        )
-        dispatcher = MCPDispatcher()
-        result = await dispatcher.dispatch(
-            task="test task",
-            goal="test goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-001",
+        result = await MCPDispatcher().dispatch(
+            task="test task", goal="test goal", session_id="session-001",
         )
 
-    assert isinstance(result, tuple)
-    assert len(result) == 2
+    assert isinstance(result, tuple) and len(result) == 2
     call_a, call_b = result
-    assert isinstance(call_a, MCPToolCall)
-    assert isinstance(call_b, MCPToolCall)
+    assert isinstance(call_a, MCPToolCall) and isinstance(call_b, MCPToolCall)
 
-
-# ---------------------------------------------------------------------------
-# Test 2: dispatch() passes identical task and goal to both MCP calls (TASK-02)
-# ---------------------------------------------------------------------------
 
 async def test_dispatch_passes_identical_task_goal_to_both(server_a, server_b):
     """Both single_mcp_call invocations must receive the same task and goal."""
@@ -112,7 +103,6 @@ async def test_dispatch_passes_identical_task_goal_to_both(server_a, server_b):
 
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a, server_b)
-
     mock_mcp_call = AsyncMock(return_value=("raw output", 100))
 
     with (
@@ -122,141 +112,25 @@ async def test_dispatch_passes_identical_task_goal_to_both(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(
-            return_value=make_litellm_response("mediated")
-        )
-        dispatcher = MCPDispatcher()
-        await dispatcher.dispatch(
-            task="my task",
-            goal="my goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-002",
-        )
+        await MCPDispatcher().dispatch(task="my task", goal="my goal", session_id="s")
 
     assert mock_mcp_call.call_count == 2
-    calls = mock_mcp_call.call_args_list
-    # Both calls must use same task and goal
-    assert calls[0].args[1] == "my task"
-    assert calls[0].args[2] == "my goal"
-    assert calls[1].args[1] == "my task"
-    assert calls[1].args[2] == "my goal"
+    for c in mock_mcp_call.call_args_list:
+        assert c.args[1] == "my task"
+        assert c.args[2] == "my goal"
 
 
-# ---------------------------------------------------------------------------
-# Test 3: dispatch() uses same llm_id for both litellm.acompletion calls (MCP-03)
-# ---------------------------------------------------------------------------
-
-async def test_dispatch_uses_same_llm_id_for_both_mediations(server_a, server_b):
-    """Both litellm.acompletion calls must use the same llm_id."""
+async def test_sanitize_called_on_each_result(server_a, server_b):
+    """sanitize_output must be called on each successful raw result."""
     from backend.tool_arena.dispatcher import MCPDispatcher
 
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a, server_b)
-
-    mock_acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-
-    with (
-        patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            new_callable=AsyncMock,
-            return_value=("raw output", 100),
-        ),
-        patch(
-            "backend.tool_arena.dispatcher.sanitize_output",
-            side_effect=lambda text, servers: text,
-        ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
-    ):
-        mock_litellm.acompletion = mock_acompletion
-        dispatcher = MCPDispatcher()
-        await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openrouter/anthropic/claude-sonnet-4",
-            session_id="session-003",
-        )
-
-    assert mock_acompletion.call_count == 2
-    for c in mock_acompletion.call_args_list:
-        assert c.kwargs["model"] == "openrouter/anthropic/claude-sonnet-4"
-
-
-# ---------------------------------------------------------------------------
-# Test 4: sanitize_output called on raw_result BEFORE litellm.acompletion (D-08)
-# ---------------------------------------------------------------------------
-
-async def test_sanitize_called_on_raw_before_llm(server_a, server_b):
-    """sanitize_output must be called with the raw result BEFORE litellm.acompletion receives it."""
-    from backend.tool_arena.dispatcher import MCPDispatcher
-
-    mock_registry = MagicMock()
-    mock_registry.pick_two.return_value = (server_a, server_b)
-
-    call_order = []
+    seen: list[str] = []
 
     def track_sanitize(text, servers):
-        call_order.append(("sanitize", text))
-        return f"[SANITIZED]{text}"
-
-    async def track_acompletion(**kwargs):
-        # Extract the content from messages to check what the LLM received
-        content = kwargs["messages"][0]["content"]
-        call_order.append(("llm", content))
-        return make_litellm_response("llm output")
-
-    with (
-        patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            new_callable=AsyncMock,
-            return_value=("raw_text", 100),
-        ),
-        patch("backend.tool_arena.dispatcher.sanitize_output", side_effect=track_sanitize),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
-    ):
-        mock_litellm.acompletion = AsyncMock(side_effect=track_acompletion)
-        dispatcher = MCPDispatcher()
-        await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-004",
-        )
-
-    # sanitize must be called before any llm call
-    sanitize_indices = [i for i, (name, _) in enumerate(call_order) if name == "sanitize"]
-    llm_indices = [i for i, (name, _) in enumerate(call_order) if name == "llm"]
-
-    # At least one pre-LLM sanitization call must occur before the first LLM call
-    assert min(sanitize_indices) < min(llm_indices), (
-        f"Expected sanitize before llm but order was: {call_order}"
-    )
-
-    # Verify LLM received sanitized text (containing [SANITIZED] prefix)
-    llm_call_contents = [content for name, content in call_order if name == "llm"]
-    assert any("[SANITIZED]raw_text" in c for c in llm_call_contents), (
-        f"LLM did not receive sanitized text. LLM calls received: {llm_call_contents}"
-    )
-
-
-# ---------------------------------------------------------------------------
-# Test 5: sanitize_output called on mediated_result AFTER litellm.acompletion (D-08 defense)
-# ---------------------------------------------------------------------------
-
-async def test_sanitize_called_on_mediated_after_llm(server_a, server_b):
-    """sanitize_output must be called on the mediated result AFTER litellm.acompletion."""
-    from backend.tool_arena.dispatcher import MCPDispatcher
-
-    mock_registry = MagicMock()
-    mock_registry.pick_two.return_value = (server_a, server_b)
-
-    sanitize_call_args = []
-
-    def track_sanitize(text, servers):
-        sanitize_call_args.append(text)
+        seen.append(text)
         return f"[SANITIZED]{text}"
 
     with (
@@ -267,30 +141,15 @@ async def test_sanitize_called_on_mediated_after_llm(server_a, server_b):
             return_value=("raw_text", 100),
         ),
         patch("backend.tool_arena.dispatcher.sanitize_output", side_effect=track_sanitize),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("llm_output"))
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-005",
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="session-005",
         )
 
-    # sanitize should have been called with "llm_output" at least once (post-LLM)
-    assert "llm_output" in sanitize_call_args, (
-        f"Expected sanitize_output called with 'llm_output' but calls were: {sanitize_call_args}"
-    )
+    assert result_a.mediated_result == "[SANITIZED]raw_text"
+    assert result_b.mediated_result == "[SANITIZED]raw_text"
+    assert result_a.raw_result == "[SANITIZED]raw_text"
 
-    # The mediated_result in the MCPToolCall should be the post-sanitized version
-    assert result_a.mediated_result == "[SANITIZED]llm_output"
-    assert result_b.mediated_result == "[SANITIZED]llm_output"
-
-
-# ---------------------------------------------------------------------------
-# Test 6: When one MCP call raises asyncio.TimeoutError, other still returns valid (MCP-04)
-# ---------------------------------------------------------------------------
 
 async def test_timeout_failure_isolation(server_a, server_b):
     """When one MCP call times out, the other MCPToolCall must still be populated."""
@@ -298,7 +157,6 @@ async def test_timeout_failure_isolation(server_a, server_b):
 
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a, server_b)
-
     call_count = 0
 
     async def mcp_call_side_effect(server, task, goal, document_content=""):
@@ -306,42 +164,26 @@ async def test_timeout_failure_isolation(server_a, server_b):
         call_count += 1
         if call_count == 1:
             return ("raw output", 100)
-        else:
-            raise asyncio.TimeoutError()
+        raise asyncio.TimeoutError()
 
     with (
         patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            side_effect=mcp_call_side_effect,
-        ),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", side_effect=mcp_call_side_effect),
         patch(
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-006",
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="session-006",
         )
 
-    # One should succeed, one should have an error
     successful = [tc for tc in (result_a, result_b) if tc.error is None]
     failed = [tc for tc in (result_a, result_b) if tc.error is not None]
-
-    assert len(successful) == 1, f"Expected 1 success but got: {[tc.error for tc in (result_a, result_b)]}"
+    assert len(successful) == 1
     assert len(failed) == 1
-    assert successful[0].mediated_result == "mediated"
+    assert successful[0].mediated_result == "raw output"
 
-
-# ---------------------------------------------------------------------------
-# Test 7: When one MCP call raises mcp.McpError, failed MCPToolCall has error + empty results (D-11)
-# ---------------------------------------------------------------------------
 
 async def test_mcp_error_sets_error_field_and_empty_results(server_a, server_b):
     """Failed MCPToolCall must have error set and raw_result/mediated_result as empty strings."""
@@ -352,7 +194,6 @@ async def test_mcp_error_sets_error_field_and_empty_results(server_a, server_b):
 
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a, server_b)
-
     call_count = 0
 
     async def mcp_call_side_effect(server, task, goal, document_content=""):
@@ -360,39 +201,25 @@ async def test_mcp_error_sets_error_field_and_empty_results(server_a, server_b):
         call_count += 1
         if call_count == 1:
             return ("valid output", 200)
-        else:
-            raise mcp.McpError(ErrorData(code=-32600, message="protocol error"))
+        raise mcp.McpError(ErrorData(code=-32600, message="protocol error"))
 
     with (
         patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            side_effect=mcp_call_side_effect,
-        ),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", side_effect=mcp_call_side_effect),
         patch(
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-007",
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="session-007",
         )
 
-    failed = result_b  # second call fails
+    failed = result_b
     assert failed.error is not None
     assert failed.raw_result == ""
     assert failed.mediated_result == ""
 
-
-# ---------------------------------------------------------------------------
-# Test 8: When one MCP call raises ConnectionError, the other result is unaffected (MCP-04)
-# ---------------------------------------------------------------------------
 
 async def test_connection_error_isolation(server_a, server_b):
     """ConnectionError on one server must not affect the other MCPToolCall."""
@@ -400,7 +227,6 @@ async def test_connection_error_isolation(server_a, server_b):
 
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a, server_b)
-
     call_count = 0
 
     async def mcp_call_side_effect(server, task, goal, document_content=""):
@@ -412,36 +238,21 @@ async def test_connection_error_isolation(server_a, server_b):
 
     with (
         patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            side_effect=mcp_call_side_effect,
-        ),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", side_effect=mcp_call_side_effect),
         patch(
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated B"))
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-008",
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="session-008",
         )
 
-    # First call fails
     assert result_a.error is not None
     assert result_a.raw_result == ""
-    # Second call succeeds
     assert result_b.error is None
-    assert result_b.mediated_result == "mediated B"
+    assert result_b.mediated_result == "other server output"
 
-
-# ---------------------------------------------------------------------------
-# Test 9: dispatch() calls registry.pick_two() to select servers (D-14)
-# ---------------------------------------------------------------------------
 
 async def test_dispatch_calls_registry_pick_two(server_a, server_b):
     """dispatch() must call registry.pick_two() exactly once."""
@@ -461,23 +272,11 @@ async def test_dispatch_calls_registry_pick_two(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        dispatcher = MCPDispatcher()
-        await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-009",
-        )
+        await MCPDispatcher().dispatch(task="task", goal="goal", session_id="session-009")
 
     mock_registry.pick_two.assert_called_once()
 
-
-# ---------------------------------------------------------------------------
-# Test 10: dispatch() populates MCPToolCall.tool_id with server.id for each result
-# ---------------------------------------------------------------------------
 
 async def test_dispatch_populates_tool_id(server_a, server_b):
     """Each MCPToolCall must have tool_id matching the server's id."""
@@ -497,24 +296,14 @@ async def test_dispatch_populates_tool_id(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-010",
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="session-010",
         )
 
     assert result_a.tool_id == "server_a"
     assert result_b.tool_id == "server_b"
 
-
-# ---------------------------------------------------------------------------
-# Test 11: dispatch() populates MCPToolCall.session_id with the passed session_id
-# ---------------------------------------------------------------------------
 
 async def test_dispatch_populates_session_id(server_a, server_b):
     """MCPToolCall.session_id must match the session_id passed to dispatch()."""
@@ -534,29 +323,47 @@ async def test_dispatch_populates_session_id(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="my-session-xyz",
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="my-session-xyz",
         )
 
     assert result_a.session_id == "my-session-xyz"
     assert result_b.session_id == "my-session-xyz"
 
 
-# ---------------------------------------------------------------------------
-# Test 12: dispatch() reads MCP_CALL_TIMEOUT from environment (D-10), defaults to 30
-# ---------------------------------------------------------------------------
+async def test_dispatch_populates_llm_id_from_server_config(server_a, server_b):
+    """MCPToolCall.llm_id must be sourced from MCPServerConfig.llm_id, not a global."""
+    from backend.tool_arena.dispatcher import MCPDispatcher
+
+    server_a_custom = server_a.model_copy(update={"llm_id": "openrouter/test/model-a"})
+    server_b_no_llm = server_b.model_copy(update={"llm_id": None})
+
+    mock_registry = MagicMock()
+    mock_registry.pick_two.return_value = (server_a_custom, server_b_no_llm)
+
+    with (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch(
+            "backend.tool_arena.dispatcher.single_mcp_call",
+            new_callable=AsyncMock,
+            return_value=("raw output", 100),
+        ),
+        patch(
+            "backend.tool_arena.dispatcher.sanitize_output",
+            side_effect=lambda text, servers: text,
+        ),
+    ):
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="t", goal="g", session_id="s",
+        )
+
+    assert result_a.llm_id == "openrouter/test/model-a"
+    assert result_b.llm_id == ""  # None -> "" for DB compat
+
 
 async def test_dispatch_reads_timeout_from_env(server_a, server_b, monkeypatch):
     """MCP_CALL_TIMEOUT env var must control the timeout for asyncio.wait_for."""
-    from backend.tool_arena.dispatcher import MCPDispatcher
-
     monkeypatch.setenv("MCP_CALL_TIMEOUT", "15")
 
     mock_registry = MagicMock()
@@ -580,141 +387,25 @@ async def test_dispatch_reads_timeout_from_env(server_a, server_b, monkeypatch):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
         patch("backend.tool_arena.dispatcher.asyncio.wait_for", side_effect=capture_wait_for),
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        # Re-import to pick up monkeypatched env (module-level MCP_CALL_TIMEOUT)
         import importlib
+
         import backend.tool_arena.dispatcher as dispatcher_module
         importlib.reload(dispatcher_module)
 
-        dispatcher = dispatcher_module.MCPDispatcher()
-        await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-012",
+        await dispatcher_module.MCPDispatcher().dispatch(
+            task="task", goal="goal", session_id="session-012",
         )
 
-    # The timeout used should be 15.0 (from env)
-    assert any(t == 15.0 for t in wait_for_timeouts), (
-        f"Expected timeout 15.0 in wait_for calls but got: {wait_for_timeouts}"
-    )
+    assert any(t == 15.0 for t in wait_for_timeouts)
 
-
-# ---------------------------------------------------------------------------
-# Test 13: Failed MCP call skips LLM mediation
-# ---------------------------------------------------------------------------
-
-async def test_failed_mcp_call_skips_llm_mediation(server_a, server_b):
-    """When one MCP call fails, litellm.acompletion must NOT be called for that result."""
-    from backend.tool_arena.dispatcher import MCPDispatcher
-
-    mock_registry = MagicMock()
-    mock_registry.pick_two.return_value = (server_a, server_b)
-
-    call_count = 0
-
-    async def mcp_call_side_effect(server, task, goal, document_content=""):
-        nonlocal call_count
-        call_count += 1
-        if call_count == 1:
-            return ("valid output", 100)
-        raise ConnectionError("down")
-
-    mock_acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-
-    with (
-        patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            side_effect=mcp_call_side_effect,
-        ),
-        patch(
-            "backend.tool_arena.dispatcher.sanitize_output",
-            side_effect=lambda text, servers: text,
-        ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
-    ):
-        mock_litellm.acompletion = mock_acompletion
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-013",
-        )
-
-    # Only ONE litellm call (for the successful server), not two
-    assert mock_acompletion.call_count == 1, (
-        f"Expected 1 LLM mediation call but got {mock_acompletion.call_count}"
-    )
-    assert result_b.error is not None
-
-
-# ---------------------------------------------------------------------------
-# Test 14: When litellm.acompletion raises, MCPToolCall gets error but raw_result preserved
-# ---------------------------------------------------------------------------
-
-async def test_llm_mediation_failure_preserves_raw_result(server_a, server_b):
-    """If LLM mediation raises, the MCPToolCall.raw_result must be preserved and error set."""
-    from backend.tool_arena.dispatcher import MCPDispatcher
-
-    mock_registry = MagicMock()
-    mock_registry.pick_two.return_value = (server_a, server_b)
-
-    call_count = 0
-
-    async def acompletion_side_effect(**kwargs):
-        nonlocal call_count
-        call_count += 1
-        if call_count == 1:
-            return make_litellm_response("mediated A")
-        raise RuntimeError("LLM is down")
-
-    with (
-        patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            new_callable=AsyncMock,
-            return_value=("raw output", 100),
-        ),
-        patch(
-            "backend.tool_arena.dispatcher.sanitize_output",
-            side_effect=lambda text, servers: text,
-        ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
-    ):
-        mock_litellm.acompletion = AsyncMock(side_effect=acompletion_side_effect)
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-014",
-        )
-
-    # First mediation succeeds
-    assert result_a.error is None
-    assert result_a.mediated_result == "mediated A"
-    # Second mediation fails — raw_result preserved, error set
-    assert result_b.raw_result == "raw output"
-    assert result_b.error is not None
-    assert "LLM mediation failed" in result_b.error or "RuntimeError" in result_b.error
-
-
-# ---------------------------------------------------------------------------
-# Test: per-server mediate=false bypasses LLM mediation for that server only
-# ---------------------------------------------------------------------------
 
 async def test_dispatch_uses_per_server_timeout(server_a, server_b):
     """server.timeout_seconds must override the global MCP_CALL_TIMEOUT."""
     from backend.tool_arena.dispatcher import MCPDispatcher
 
-    # Give server_a a custom 5s timeout, leave server_b on the default
     server_a_custom = server_a.model_copy(update={"timeout_seconds": 5.0})
-
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a_custom, server_b)
 
@@ -736,15 +427,10 @@ async def test_dispatch_uses_per_server_timeout(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
         patch("backend.tool_arena.dispatcher.asyncio.wait_for", side_effect=capture_wait_for),
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
-        await MCPDispatcher().dispatch(
-            task="t", goal="g", llm_id="openai/gpt-4o", session_id="s",
-        )
+        await MCPDispatcher().dispatch(task="t", goal="g", session_id="s")
 
-    # server_a uses its own 5s, server_b falls back to MCP_CALL_TIMEOUT (default 90s)
     assert 5.0 in captured_timeouts
     assert any(t != 5.0 for t in captured_timeouts)
 
@@ -752,13 +438,11 @@ async def test_dispatch_uses_per_server_timeout(server_a, server_b):
 async def test_dispatch_retries_on_transient_connection_error(server_a, server_b):
     """A single httpx.ConnectError must trigger one retry, then succeed."""
     import httpx
+
     from backend.tool_arena.dispatcher import MCPDispatcher
 
     mock_registry = MagicMock()
     mock_registry.pick_two.return_value = (server_a, server_b)
-
-    # First call raises ConnectError, second succeeds. Both servers share
-    # the same mock so the retry path is exercised on at least one of them.
     call_count = {"n": 0}
 
     async def flaky_call(*args, **kwargs):
@@ -774,18 +458,13 @@ async def test_dispatch_retries_on_transient_connection_error(server_a, server_b
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        # Patch sleep to avoid the backoff delay in tests
         patch("backend.tool_arena.dispatcher.asyncio.sleep", new_callable=AsyncMock),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
         result_a, result_b = await MCPDispatcher().dispatch(
-            task="t", goal="g", llm_id="openai/gpt-4o", session_id="s",
+            task="t", goal="g", session_id="s",
         )
 
-    # 2 servers × first one fails+retry, second succeeds first try → 3 calls total
     assert call_count["n"] == 3
-    # Both tools succeed (no errors)
     assert result_a.error is None
     assert result_b.error is None
 
@@ -795,13 +474,11 @@ async def test_dispatch_does_not_retry_on_timeout(server_a, server_b):
     from backend.tool_arena.dispatcher import MCPDispatcher
 
     mock_registry = MagicMock()
-    mock_registry.pick_two.return_value = (server_a, server_b)
-
     call_count = {"n": 0}
 
     async def slow_call(*args, **kwargs):
         call_count["n"] += 1
-        await asyncio.sleep(10)  # will be cut by wait_for
+        await asyncio.sleep(10)
         return ("raw", 10)
 
     server_a_short = server_a.model_copy(update={"timeout_seconds": 0.05})
@@ -815,62 +492,11 @@ async def test_dispatch_does_not_retry_on_timeout(server_a, server_b):
             "backend.tool_arena.dispatcher.sanitize_output",
             side_effect=lambda text, servers: text,
         ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
     ):
-        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
         result_a, result_b = await MCPDispatcher().dispatch(
-            task="t", goal="g", llm_id="openai/gpt-4o", session_id="s",
+            task="t", goal="g", session_id="s",
         )
 
-    # Each server called exactly once (no retry on timeout)
     assert call_count["n"] == 2
-    # Both error out with timeout
     assert result_a.error is not None
     assert result_b.error is not None
-
-
-async def test_dispatch_bypasses_mediation_per_server_flag(server_a, server_b):
-    """When a server has mediate=false (e.g. Clarifeye's agentic call_agent),
-    its raw sanitized output is used as mediated_result and litellm.acompletion
-    is NOT called for that server. Servers with mediate=true still go through
-    the LLM pass.
-    """
-    from backend.tool_arena.dispatcher import MCPDispatcher
-
-    # server_a keeps default mediate=true; server_b opts out.
-    server_b_no_mediate = server_b.model_copy(update={"mediate": False})
-
-    mock_registry = MagicMock()
-    mock_registry.pick_two.return_value = (server_a, server_b_no_mediate)
-    mock_acompletion = AsyncMock(return_value=make_litellm_response("llm answer"))
-
-    with (
-        patch("backend.tool_arena.dispatcher.registry", mock_registry),
-        patch(
-            "backend.tool_arena.dispatcher.single_mcp_call",
-            new_callable=AsyncMock,
-            return_value=("raw output", 100),
-        ),
-        patch(
-            "backend.tool_arena.dispatcher.sanitize_output",
-            side_effect=lambda text, servers: text,
-        ),
-        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
-    ):
-        mock_litellm.acompletion = mock_acompletion
-        dispatcher = MCPDispatcher()
-        result_a, result_b = await dispatcher.dispatch(
-            task="task",
-            goal="goal",
-            llm_id="openai/gpt-4o",
-            session_id="session-bypass",
-        )
-
-    assert result_a.error is None
-    assert result_b.error is None
-    # server_a went through the LLM
-    assert result_a.mediated_result == "llm answer"
-    # server_b bypassed the LLM and shows raw output
-    assert result_b.mediated_result == "raw output"
-    # Exactly one LLM call (for server_a only)
-    assert mock_acompletion.call_count == 1
