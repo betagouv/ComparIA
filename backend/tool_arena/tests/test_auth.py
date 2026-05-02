@@ -1,5 +1,6 @@
 """Unit tests for OAuth2 auth module (MCP SDK OAuthClientProvider-based)."""
 
+import asyncio
 import json
 from pathlib import Path
 from unittest.mock import patch
@@ -124,22 +125,51 @@ def test_bootstrap_skips_if_tokens_match(tmp_path):
         assert data["refresh_token"] == "same_token"
 
 
-def test_bootstrap_overwrites_if_refresh_token_differs(tmp_path):
-    """_bootstrap_tokens_from_env overwrites when env var has a newer refresh_token."""
+def test_bootstrap_does_not_overwrite_rotated_refresh_token(tmp_path):
+    """Bootstrap MUST NOT overwrite a stored refresh_token, even when env var differs.
+
+    Many OAuth providers rotate refresh_tokens; the env var is the original
+    bootstrap value and is revoked after the first successful refresh.
+    Overwriting on restart would replay the revoked token.
+    """
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        storage = auth_module.FileTokenStorage(server.id)
+        tokens_path = tmp_path / "test_srv" / "tokens.json"
+        # Simulate state after a successful SDK refresh: rotated refresh_token,
+        # real access_token in storage.
+        tokens_path.write_text(
+            '{"access_token":"real_access","token_type":"Bearer","refresh_token":"rotated_token"}'
+        )
+
+        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "original_revoked_token"}):
+            auth_module._bootstrap_tokens_from_env(server, storage)
+
+        data = json.loads(tokens_path.read_text())
+        # Storage must be untouched
+        assert data["refresh_token"] == "rotated_token"
+        assert data["access_token"] == "real_access"
+
+
+def test_bootstrap_does_not_overwrite_pristine_bootstrap(tmp_path):
+    """Even a pristine bootstrap (empty access_token) is not re-overwritten.
+
+    Once any refresh_token is in storage, the env var bootstrap is a no-op.
+    To force a re-seed, callers must clear storage first.
+    """
     server = _make_server(tmp_path)
     with patch.object(auth_module, "TOKENS_DIR", tmp_path):
         storage = auth_module.FileTokenStorage(server.id)
         tokens_path = tmp_path / "test_srv" / "tokens.json"
         tokens_path.write_text(
-            '{"access_token":"old_access","token_type":"Bearer","refresh_token":"old_token"}'
+            '{"access_token":"","token_type":"Bearer","refresh_token":"existing_bootstrap"}'
         )
 
-        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "new_token"}):
+        with patch.dict("os.environ", {"TEST_SRV_REFRESH_TOKEN": "different_value"}):
             auth_module._bootstrap_tokens_from_env(server, storage)
 
         data = json.loads(tokens_path.read_text())
-        assert data["refresh_token"] == "new_token"
-        assert data["access_token"] == ""
+        assert data["refresh_token"] == "existing_bootstrap"
 
 
 def test_bootstrap_skips_if_no_env_var(tmp_path):
@@ -264,3 +294,95 @@ async def test_build_oauth_provider_client_info_has_auth_method(force_file_stora
     assert provider.context.client_info is not None
     assert provider.context.client_info.token_endpoint_auth_method == "client_secret_post"
     assert provider.context.client_info.client_secret == "secret_value"
+
+
+def test_build_oauth_provider_missing_secret_preserves_stored_client_info(
+    force_file_storage, caplog
+):
+    """When the secret env var is missing, stored client_info must NOT be overwritten."""
+    tmp_path = force_file_storage
+    server = _make_server(tmp_path)
+    server_dir = tmp_path / server.id
+    server_dir.mkdir(parents=True, exist_ok=True)
+    stored = OAuthClientInformationFull(
+        client_id="test_client_id",
+        client_secret="previously_valid_secret",
+        redirect_uris=["http://localhost:9876/callback"],
+        token_endpoint_auth_method="client_secret_post",
+    )
+    (server_dir / "client_info.json").write_text(stored.model_dump_json(indent=2))
+
+    with patch.dict("os.environ", {}, clear=False):
+        # Make absolutely sure TEST_SECRET is not set
+        import os
+        os.environ.pop("TEST_SECRET", None)
+        provider = auth_module.build_oauth_provider(server)
+
+    # Stored secret must still be intact
+    on_disk = json.loads((server_dir / "client_info.json").read_text())
+    assert on_disk["client_secret"] == "previously_valid_secret"
+    assert provider is not None
+
+
+async def test_prewarm_skips_non_oauth_servers(tmp_path):
+    """prewarm_oauth_provider returns True without calling MCP for non-OAuth servers."""
+    server = MCPServerConfig(
+        id="plain",
+        name="Plain",
+        description="x",
+        endpoint="http://example.com/mcp",
+        transport="streamablehttp",
+    )
+    assert await auth_module.prewarm_oauth_provider(server) is True
+
+
+async def test_prewarm_all_no_oauth_servers_is_noop():
+    """prewarm_all_oauth_providers does nothing when no OAuth server is registered."""
+    server = MCPServerConfig(
+        id="plain",
+        name="Plain",
+        description="x",
+        endpoint="http://example.com/mcp",
+        transport="streamablehttp",
+    )
+    # Should complete without error and without raising even with empty list
+    await auth_module.prewarm_all_oauth_providers([])
+    await auth_module.prewarm_all_oauth_providers([server])
+
+
+async def test_prewarm_swallows_oauth_handshake_failure(tmp_path, caplog):
+    """prewarm_oauth_provider returns False (not raises) when the handshake fails."""
+    import logging
+
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+            with caplog.at_level(logging.WARNING, logger="tool_arena.auth"):
+                # No real Clarifeye server is reachable at example.com → handshake
+                # will time out or refuse connection. Either way prewarm must
+                # not raise — startup must continue.
+                result = await asyncio.wait_for(
+                    auth_module.prewarm_oauth_provider(server),
+                    timeout=auth_module.PREWARM_TIMEOUT_SECONDS + 5,
+                )
+    assert result is False
+
+
+def test_build_oauth_provider_missing_secret_no_stored_info_logs_error(
+    force_file_storage, caplog
+):
+    """Missing env var AND no stored client_info should log an error and not write garbage."""
+    import logging
+    import os
+
+    tmp_path = force_file_storage
+    server = _make_server(tmp_path)
+
+    os.environ.pop("TEST_SECRET", None)
+    with caplog.at_level(logging.ERROR, logger="tool_arena.auth"):
+        provider = auth_module.build_oauth_provider(server)
+
+    server_dir = tmp_path / server.id
+    assert not (server_dir / "client_info.json").exists()
+    assert provider is not None
+    assert any("misconfiguration" in r.message.lower() for r in caplog.records)

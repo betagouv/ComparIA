@@ -36,6 +36,8 @@
   let errorB = $state<string | null>(null)
   let revealData = $state<ToolRevealResponse | null>(null)
   let compareError = $state<string | null>(null)
+  let voteError = $state<string | null>(null)
+  let voting = $state(false)
 
   let secondHeader = $state<HTMLElement | undefined>(undefined)
   let secondHeaderSize = $derived(secondHeader?.offsetHeight ?? 0)
@@ -67,6 +69,9 @@
   }
 
   async function handleVote(chosen: 'a' | 'b' | 'tie') {
+    if (voting) return
+    voting = true
+    voteError = null
     try {
       const data = await api.request<ToolRevealResponse>('/tool-arena/vote', {
         method: 'POST',
@@ -80,6 +85,9 @@
       phase = 'revealed'
     } catch (err) {
       console.error('Vote failed:', err)
+      voteError = (err as Error).message || m['toolArena.errorFallback']()
+    } finally {
+      voting = false
     }
   }
 
@@ -92,6 +100,8 @@
     errorB = null
     revealData = null
     compareError = null
+    voteError = null
+    voting = false
   }
 </script>
 
@@ -186,10 +196,16 @@
       {#if bothFailed}
         <div class="text-center py-7">
           <p class="fr-text--sm text-red-600 mb-4">{m['toolArena.bothToolsFailed']()}</p>
-          <Button onclick={() => (phase = 'input')}>{m['toolArena.tryAgain']()}</Button>
+          <Button onclick={resetArena}>{m['toolArena.tryAgain']()}</Button>
         </div>
       {:else}
         <ToolVoteArea onvote={handleVote} />
+        {#if voteError}
+          <div class="text-center py-4 mt-2">
+            <p class="fr-text--sm text-red-600 mb-2">{voteError}</p>
+            <Button onclick={resetArena}>{m['toolArena.tryAgain']()}</Button>
+          </div>
+        {/if}
       {/if}
     </div>
 

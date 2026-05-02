@@ -15,6 +15,7 @@ One-time setup: run `uv run python -m scripts.auth_setup <tool_id>` locally
 to obtain tokens via browser auth. The refresh_token persists in Redis.
 """
 
+import asyncio
 import json
 import logging
 import os
@@ -33,6 +34,9 @@ TOKENS_DIR = Path(__file__).parent.parent.parent / ".oauth_tokens"
 
 REDIS_TOKEN_KEY = "oauth_tokens:{server_id}"
 REDIS_CLIENT_INFO_KEY = "oauth_client_info:{server_id}"
+
+# Per-server timeout for the startup OAuth pre-warm handshake.
+PREWARM_TIMEOUT_SECONDS = float(os.environ.get("OAUTH_PREWARM_TIMEOUT", "20"))
 
 
 class RedisTokenStorage:
@@ -111,18 +115,26 @@ def _get_storage(server_id: str) -> RedisTokenStorage | FileTokenStorage:
 
 
 def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
-    """Pre-seed tokens from env var if no tokens exist in storage.
+    """Pre-seed tokens from env var ONLY if storage has no refresh_token yet.
 
     Looks for {SERVER_ID}_REFRESH_TOKEN env var (e.g. CLARIFEYE_REFRESH_TOKEN).
     Seeds the storage with an expired access_token + the refresh_token so the
     SDK refreshes automatically on first request.
+
+    IMPORTANT — refresh-token rotation safety: many OAuth providers (including
+    Clarifeye) rotate the refresh_token on every refresh. The original bootstrap
+    token is then revoked. If we re-seeded from the env var on every process
+    start, we would clobber the rotated token in storage and replay the revoked
+    one on the next request — making the integration "work the first time, then
+    fail intermittently after every restart". So once storage has any
+    refresh_token, treat it as authoritative. To force a re-seed (e.g. after
+    rotating the env var manually), clear the storage entry first.
     """
     env_key = f"{server.id.upper()}_REFRESH_TOKEN"
     refresh_token = os.environ.get(env_key, "")
     if not refresh_token:
         return
 
-    # Check if stored refresh_token already matches env var
     stored_data = None
     if isinstance(storage, FileTokenStorage):
         p = storage._dir / "tokens.json"
@@ -133,7 +145,12 @@ def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
         if raw:
             stored_data = json.loads(raw)
 
-    if stored_data and stored_data.get("refresh_token") == refresh_token:
+    if stored_data and stored_data.get("refresh_token"):
+        # Storage is populated — don't risk overwriting a rotated token.
+        logger.debug(
+            "OAuth bootstrap skipped for %s: storage already has a refresh_token",
+            server.id,
+        )
         return
 
     bootstrap = OAuthToken(
@@ -205,11 +222,37 @@ async def _callback_handler() -> tuple[str, str | None]:
     raise RuntimeError("OAuth callback triggered on headless server — this should not happen.")
 
 
+def _read_stored_client_info(
+    storage: RedisTokenStorage | FileTokenStorage,
+    server_id: str,
+) -> OAuthClientInformationFull | None:
+    """Synchronously read stored client_info, if any. Returns None on any error."""
+    try:
+        if isinstance(storage, FileTokenStorage):
+            p = storage._dir / "client_info.json"
+            if not p.exists():
+                return None
+            return OAuthClientInformationFull(**json.loads(p.read_text()))
+        if isinstance(storage, RedisTokenStorage):
+            raw = storage._redis.get(REDIS_CLIENT_INFO_KEY.format(server_id=server_id))
+            if not raw:
+                return None
+            return OAuthClientInformationFull(**json.loads(raw))
+    except Exception as exc:
+        logger.warning("Could not read stored client_info for %s: %s", server_id, exc)
+    return None
+
+
 def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
     """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
 
     Token storage: Redis in production, file on disk for local dev.
     Initial tokens bootstrapped from env var or obtained via auth_setup.py.
+
+    Client_info handling: pre-seeded from env (client_id + secret env var). If
+    the secret env var is missing or empty, we keep any previously-stored
+    client_info untouched — overwriting it with an empty secret would
+    permanently break refresh until the next manual auth_setup run.
     """
     auth: OAuth2Auth = server.auth  # type: ignore[assignment]
     client_secret = os.environ.get(auth.client_secret_env, "")
@@ -218,13 +261,6 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
 
     # Bootstrap refresh token from env var if no tokens in storage
     _bootstrap_tokens_from_env(server, storage)
-
-    client_info = OAuthClientInformationFull(
-        client_id=auth.client_id,
-        client_secret=client_secret or None,
-        redirect_uris=["http://localhost:9876/callback"],
-        token_endpoint_auth_method="client_secret_post",
-    )
 
     client_metadata = OAuthClientMetadata(
         redirect_uris=["http://localhost:9876/callback"],
@@ -235,15 +271,42 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
         token_endpoint_auth_method="client_secret_post",
     )
 
-    # Pre-seed client info so the SDK doesn't try dynamic registration
-    if isinstance(storage, FileTokenStorage):
-        p = storage._dir / "client_info.json"
-        p.write_text(client_info.model_dump_json(indent=2))
-    elif isinstance(storage, RedisTokenStorage):
-        storage._redis.set(
-            REDIS_CLIENT_INFO_KEY.format(server_id=server.id),
-            client_info.model_dump_json(),
+    if client_secret:
+        client_info = OAuthClientInformationFull(
+            client_id=auth.client_id,
+            client_secret=client_secret,
+            redirect_uris=["http://localhost:9876/callback"],
+            token_endpoint_auth_method="client_secret_post",
         )
+        if isinstance(storage, FileTokenStorage):
+            p = storage._dir / "client_info.json"
+            p.write_text(client_info.model_dump_json(indent=2))
+        elif isinstance(storage, RedisTokenStorage):
+            storage._redis.set(
+                REDIS_CLIENT_INFO_KEY.format(server_id=server.id),
+                client_info.model_dump_json(),
+            )
+    else:
+        # Env var missing/empty — do NOT overwrite stored client_info.
+        # If nothing is stored either, the SDK will see no client_info and the
+        # call will fail with a clear OAuthTokenError rather than silently
+        # using a None-secret provider.
+        existing = _read_stored_client_info(storage, server.id)
+        if existing is None:
+            logger.error(
+                "OAuth misconfiguration for %s: env var %s is unset and no "
+                "stored client_info exists. Calls will fail until "
+                "auth_setup is run or %s is set.",
+                server.id,
+                auth.client_secret_env,
+                auth.client_secret_env,
+            )
+        else:
+            logger.warning(
+                "OAuth env var %s is unset for %s; reusing stored client_info.",
+                auth.client_secret_env,
+                server.id,
+            )
 
     return CompaRAGOAuthProvider(
         token_url=auth.token_url,
@@ -268,3 +331,66 @@ def get_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
 def _clear_token_cache() -> None:
     """Clear provider cache. Used for test isolation."""
     _provider_cache.clear()
+
+
+async def prewarm_oauth_provider(server: MCPServerConfig) -> bool:
+    """Open a brief MCP session to trigger OAuth metadata discovery + token refresh.
+
+    The first user request would otherwise pay this cold-start cost (and risk
+    exceeding MCP_CALL_TIMEOUT), which is the cause of "first call fails, then
+    works" reports. By doing it at app startup, the access_token is already
+    fresh in storage and the OAuth metadata is cached on the provider when
+    real traffic arrives.
+
+    Failures are logged and swallowed — startup MUST NOT be blocked by a
+    misconfigured or unreachable server.
+    """
+    if not server.auth or server.auth.type != "oauth2":
+        return True
+
+    # Local imports to avoid pulling MCP transports at module import time.
+    from mcp import ClientSession
+    from mcp.client.streamable_http import streamablehttp_client
+
+    async def _handshake() -> None:
+        provider = get_oauth_provider(server)
+        async with streamablehttp_client(
+            str(server.endpoint),
+            headers={},
+            auth=provider,
+        ) as (read, write, _):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+
+    try:
+        await asyncio.wait_for(_handshake(), timeout=PREWARM_TIMEOUT_SECONDS)
+        logger.info("OAuth pre-warm succeeded for %s", server.id)
+        return True
+    except asyncio.TimeoutError:
+        logger.warning(
+            "OAuth pre-warm timed out for %s after %ss",
+            server.id, PREWARM_TIMEOUT_SECONDS,
+        )
+        return False
+    except Exception as exc:
+        logger.warning(
+            "OAuth pre-warm failed for %s: %s: %s",
+            server.id, type(exc).__name__, exc,
+        )
+        return False
+
+
+async def prewarm_all_oauth_providers(servers: list[MCPServerConfig]) -> None:
+    """Concurrently pre-warm every OAuth-authenticated server in the list."""
+    oauth_servers = [s for s in servers if s.auth and s.auth.type == "oauth2"]
+    if not oauth_servers:
+        return
+    logger.info(
+        "Pre-warming OAuth for %d MCP server(s): %s",
+        len(oauth_servers),
+        [s.id for s in oauth_servers],
+    )
+    await asyncio.gather(
+        *(prewarm_oauth_provider(s) for s in oauth_servers),
+        return_exceptions=True,
+    )
