@@ -37,7 +37,7 @@ from backend.tool_arena.session import (
     store_tool_session,
 )
 
-logger = logging.getLogger("tool_arena")
+logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/tool-arena", tags=["tool-arena"])
 

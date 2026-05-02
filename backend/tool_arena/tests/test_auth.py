@@ -357,7 +357,7 @@ async def test_prewarm_swallows_oauth_handshake_failure(tmp_path, caplog):
     server = _make_server(tmp_path)
     with patch.object(auth_module, "TOKENS_DIR", tmp_path):
         with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
-            with caplog.at_level(logging.WARNING, logger="tool_arena.auth"):
+            with caplog.at_level(logging.WARNING, logger="languia"):
                 # No real Clarifeye server is reachable at example.com → handshake
                 # will time out or refuse connection. Either way prewarm must
                 # not raise — startup must continue.
@@ -379,7 +379,7 @@ def test_build_oauth_provider_missing_secret_no_stored_info_logs_error(
     server = _make_server(tmp_path)
 
     os.environ.pop("TEST_SECRET", None)
-    with caplog.at_level(logging.ERROR, logger="tool_arena.auth"):
+    with caplog.at_level(logging.ERROR, logger="languia"):
         provider = auth_module.build_oauth_provider(server)
 
     server_dir = tmp_path / server.id

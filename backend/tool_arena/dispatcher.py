@@ -25,7 +25,7 @@ from backend.tool_arena.normalizer import normalize_output
 from backend.tool_arena.registry import registry
 from backend.tool_arena.sanitizer import sanitize_envelope, sanitize_output
 
-logger = logging.getLogger("tool_arena")
+logger = logging.getLogger("languia")
 
 # Per D-10: 30-second default, configurable via environment variable
 MCP_CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))
