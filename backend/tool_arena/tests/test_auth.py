@@ -1,5 +1,6 @@
 """Unit tests for OAuth2 auth module (MCP SDK OAuthClientProvider-based)."""
 
+import asyncio
 import json
 from pathlib import Path
 from unittest.mock import patch
@@ -321,6 +322,50 @@ def test_build_oauth_provider_missing_secret_preserves_stored_client_info(
     on_disk = json.loads((server_dir / "client_info.json").read_text())
     assert on_disk["client_secret"] == "previously_valid_secret"
     assert provider is not None
+
+
+async def test_prewarm_skips_non_oauth_servers(tmp_path):
+    """prewarm_oauth_provider returns True without calling MCP for non-OAuth servers."""
+    server = MCPServerConfig(
+        id="plain",
+        name="Plain",
+        description="x",
+        endpoint="http://example.com/mcp",
+        transport="streamablehttp",
+    )
+    assert await auth_module.prewarm_oauth_provider(server) is True
+
+
+async def test_prewarm_all_no_oauth_servers_is_noop():
+    """prewarm_all_oauth_providers does nothing when no OAuth server is registered."""
+    server = MCPServerConfig(
+        id="plain",
+        name="Plain",
+        description="x",
+        endpoint="http://example.com/mcp",
+        transport="streamablehttp",
+    )
+    # Should complete without error and without raising even with empty list
+    await auth_module.prewarm_all_oauth_providers([])
+    await auth_module.prewarm_all_oauth_providers([server])
+
+
+async def test_prewarm_swallows_oauth_handshake_failure(tmp_path, caplog):
+    """prewarm_oauth_provider returns False (not raises) when the handshake fails."""
+    import logging
+
+    server = _make_server(tmp_path)
+    with patch.object(auth_module, "TOKENS_DIR", tmp_path):
+        with patch.dict("os.environ", {"TEST_SECRET": "secret_value"}):
+            with caplog.at_level(logging.WARNING, logger="tool_arena.auth"):
+                # No real Clarifeye server is reachable at example.com → handshake
+                # will time out or refuse connection. Either way prewarm must
+                # not raise — startup must continue.
+                result = await asyncio.wait_for(
+                    auth_module.prewarm_oauth_provider(server),
+                    timeout=auth_module.PREWARM_TIMEOUT_SECONDS + 5,
+                )
+    assert result is False
 
 
 def test_build_oauth_provider_missing_secret_no_stored_info_logs_error(

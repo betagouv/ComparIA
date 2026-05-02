@@ -15,6 +15,7 @@ One-time setup: run `uv run python -m scripts.auth_setup <tool_id>` locally
 to obtain tokens via browser auth. The refresh_token persists in Redis.
 """
 
+import asyncio
 import json
 import logging
 import os
@@ -33,6 +34,9 @@ TOKENS_DIR = Path(__file__).parent.parent.parent / ".oauth_tokens"
 
 REDIS_TOKEN_KEY = "oauth_tokens:{server_id}"
 REDIS_CLIENT_INFO_KEY = "oauth_client_info:{server_id}"
+
+# Per-server timeout for the startup OAuth pre-warm handshake.
+PREWARM_TIMEOUT_SECONDS = float(os.environ.get("OAUTH_PREWARM_TIMEOUT", "20"))
 
 
 class RedisTokenStorage:
@@ -327,3 +331,66 @@ def get_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
 def _clear_token_cache() -> None:
     """Clear provider cache. Used for test isolation."""
     _provider_cache.clear()
+
+
+async def prewarm_oauth_provider(server: MCPServerConfig) -> bool:
+    """Open a brief MCP session to trigger OAuth metadata discovery + token refresh.
+
+    The first user request would otherwise pay this cold-start cost (and risk
+    exceeding MCP_CALL_TIMEOUT), which is the cause of "first call fails, then
+    works" reports. By doing it at app startup, the access_token is already
+    fresh in storage and the OAuth metadata is cached on the provider when
+    real traffic arrives.
+
+    Failures are logged and swallowed — startup MUST NOT be blocked by a
+    misconfigured or unreachable server.
+    """
+    if not server.auth or server.auth.type != "oauth2":
+        return True
+
+    # Local imports to avoid pulling MCP transports at module import time.
+    from mcp import ClientSession
+    from mcp.client.streamable_http import streamablehttp_client
+
+    async def _handshake() -> None:
+        provider = get_oauth_provider(server)
+        async with streamablehttp_client(
+            str(server.endpoint),
+            headers={},
+            auth=provider,
+        ) as (read, write, _):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+
+    try:
+        await asyncio.wait_for(_handshake(), timeout=PREWARM_TIMEOUT_SECONDS)
+        logger.info("OAuth pre-warm succeeded for %s", server.id)
+        return True
+    except asyncio.TimeoutError:
+        logger.warning(
+            "OAuth pre-warm timed out for %s after %ss",
+            server.id, PREWARM_TIMEOUT_SECONDS,
+        )
+        return False
+    except Exception as exc:
+        logger.warning(
+            "OAuth pre-warm failed for %s: %s: %s",
+            server.id, type(exc).__name__, exc,
+        )
+        return False
+
+
+async def prewarm_all_oauth_providers(servers: list[MCPServerConfig]) -> None:
+    """Concurrently pre-warm every OAuth-authenticated server in the list."""
+    oauth_servers = [s for s in servers if s.auth and s.auth.type == "oauth2"]
+    if not oauth_servers:
+        return
+    logger.info(
+        "Pre-warming OAuth for %d MCP server(s): %s",
+        len(oauth_servers),
+        [s.id for s in oauth_servers],
+    )
+    await asyncio.gather(
+        *(prewarm_oauth_provider(s) for s in oauth_servers),
+        return_exceptions=True,
+    )
