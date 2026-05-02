@@ -119,14 +119,17 @@ export class FastAPIClient {
     const content = await response.text()
     try {
       const detail = JSON.parse(content).detail
+      const detailText =
+        typeof detail === 'string'
+          ? detail
+          : Array.isArray(detail) && detail[0]?.msg
+            ? detail[0].msg
+            : JSON.stringify(detail)
 
-      if (response.status === 422) {
-        return new ValidationError(detail[0].msg)
-      } else if (response.status === 429) {
-        return new ValidationError(detail)
-      } else {
-        return new InternalError(message + detail)
+      if (response.status === 422 || response.status === 429) {
+        return new ValidationError(detailText)
       }
+      return new InternalError(message + detailText)
     } catch {
       return new Error(message + content)
     }

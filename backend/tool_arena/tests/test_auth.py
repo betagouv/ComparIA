@@ -264,3 +264,51 @@ async def test_build_oauth_provider_client_info_has_auth_method(force_file_stora
     assert provider.context.client_info is not None
     assert provider.context.client_info.token_endpoint_auth_method == "client_secret_post"
     assert provider.context.client_info.client_secret == "secret_value"
+
+
+def test_build_oauth_provider_missing_secret_preserves_stored_client_info(
+    force_file_storage, caplog
+):
+    """When the secret env var is missing, stored client_info must NOT be overwritten."""
+    tmp_path = force_file_storage
+    server = _make_server(tmp_path)
+    server_dir = tmp_path / server.id
+    server_dir.mkdir(parents=True, exist_ok=True)
+    stored = OAuthClientInformationFull(
+        client_id="test_client_id",
+        client_secret="previously_valid_secret",
+        redirect_uris=["http://localhost:9876/callback"],
+        token_endpoint_auth_method="client_secret_post",
+    )
+    (server_dir / "client_info.json").write_text(stored.model_dump_json(indent=2))
+
+    with patch.dict("os.environ", {}, clear=False):
+        # Make absolutely sure TEST_SECRET is not set
+        import os
+        os.environ.pop("TEST_SECRET", None)
+        provider = auth_module.build_oauth_provider(server)
+
+    # Stored secret must still be intact
+    on_disk = json.loads((server_dir / "client_info.json").read_text())
+    assert on_disk["client_secret"] == "previously_valid_secret"
+    assert provider is not None
+
+
+def test_build_oauth_provider_missing_secret_no_stored_info_logs_error(
+    force_file_storage, caplog
+):
+    """Missing env var AND no stored client_info should log an error and not write garbage."""
+    import logging
+    import os
+
+    tmp_path = force_file_storage
+    server = _make_server(tmp_path)
+
+    os.environ.pop("TEST_SECRET", None)
+    with caplog.at_level(logging.ERROR, logger="tool_arena.auth"):
+        provider = auth_module.build_oauth_provider(server)
+
+    server_dir = tmp_path / server.id
+    assert not (server_dir / "client_info.json").exists()
+    assert provider is not None
+    assert any("misconfiguration" in r.message.lower() for r in caplog.records)

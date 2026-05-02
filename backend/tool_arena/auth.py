@@ -205,11 +205,37 @@ async def _callback_handler() -> tuple[str, str | None]:
     raise RuntimeError("OAuth callback triggered on headless server — this should not happen.")
 
 
+def _read_stored_client_info(
+    storage: RedisTokenStorage | FileTokenStorage,
+    server_id: str,
+) -> OAuthClientInformationFull | None:
+    """Synchronously read stored client_info, if any. Returns None on any error."""
+    try:
+        if isinstance(storage, FileTokenStorage):
+            p = storage._dir / "client_info.json"
+            if not p.exists():
+                return None
+            return OAuthClientInformationFull(**json.loads(p.read_text()))
+        if isinstance(storage, RedisTokenStorage):
+            raw = storage._redis.get(REDIS_CLIENT_INFO_KEY.format(server_id=server_id))
+            if not raw:
+                return None
+            return OAuthClientInformationFull(**json.loads(raw))
+    except Exception as exc:
+        logger.warning("Could not read stored client_info for %s: %s", server_id, exc)
+    return None
+
+
 def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
     """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
 
     Token storage: Redis in production, file on disk for local dev.
     Initial tokens bootstrapped from env var or obtained via auth_setup.py.
+
+    Client_info handling: pre-seeded from env (client_id + secret env var). If
+    the secret env var is missing or empty, we keep any previously-stored
+    client_info untouched — overwriting it with an empty secret would
+    permanently break refresh until the next manual auth_setup run.
     """
     auth: OAuth2Auth = server.auth  # type: ignore[assignment]
     client_secret = os.environ.get(auth.client_secret_env, "")
@@ -218,13 +244,6 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
 
     # Bootstrap refresh token from env var if no tokens in storage
     _bootstrap_tokens_from_env(server, storage)
-
-    client_info = OAuthClientInformationFull(
-        client_id=auth.client_id,
-        client_secret=client_secret or None,
-        redirect_uris=["http://localhost:9876/callback"],
-        token_endpoint_auth_method="client_secret_post",
-    )
 
     client_metadata = OAuthClientMetadata(
         redirect_uris=["http://localhost:9876/callback"],
@@ -235,15 +254,42 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
         token_endpoint_auth_method="client_secret_post",
     )
 
-    # Pre-seed client info so the SDK doesn't try dynamic registration
-    if isinstance(storage, FileTokenStorage):
-        p = storage._dir / "client_info.json"
-        p.write_text(client_info.model_dump_json(indent=2))
-    elif isinstance(storage, RedisTokenStorage):
-        storage._redis.set(
-            REDIS_CLIENT_INFO_KEY.format(server_id=server.id),
-            client_info.model_dump_json(),
+    if client_secret:
+        client_info = OAuthClientInformationFull(
+            client_id=auth.client_id,
+            client_secret=client_secret,
+            redirect_uris=["http://localhost:9876/callback"],
+            token_endpoint_auth_method="client_secret_post",
         )
+        if isinstance(storage, FileTokenStorage):
+            p = storage._dir / "client_info.json"
+            p.write_text(client_info.model_dump_json(indent=2))
+        elif isinstance(storage, RedisTokenStorage):
+            storage._redis.set(
+                REDIS_CLIENT_INFO_KEY.format(server_id=server.id),
+                client_info.model_dump_json(),
+            )
+    else:
+        # Env var missing/empty — do NOT overwrite stored client_info.
+        # If nothing is stored either, the SDK will see no client_info and the
+        # call will fail with a clear OAuthTokenError rather than silently
+        # using a None-secret provider.
+        existing = _read_stored_client_info(storage, server.id)
+        if existing is None:
+            logger.error(
+                "OAuth misconfiguration for %s: env var %s is unset and no "
+                "stored client_info exists. Calls will fail until "
+                "auth_setup is run or %s is set.",
+                server.id,
+                auth.client_secret_env,
+                auth.client_secret_env,
+            )
+        else:
+            logger.warning(
+                "OAuth env var %s is unset for %s; reusing stored client_info.",
+                auth.client_secret_env,
+                server.id,
+            )
 
     return CompaRAGOAuthProvider(
         token_url=auth.token_url,
