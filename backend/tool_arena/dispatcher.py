@@ -30,9 +30,14 @@ logger = logging.getLogger("tool_arena")
 # Per D-10: 30-second default, configurable via environment variable
 MCP_CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))
 
+# Mediation output budget. Without this, providers fall back to a low default
+# (e.g. ~1024 on OpenRouter for Anthropic) and visibly truncate the answer.
+MEDIATION_MAX_TOKENS = int(os.environ.get("MEDIATION_MAX_TOKENS", "4096"))
+
 MEDIATION_PROMPT = """\
 You are given the raw output from a RAG tool that retrieved relevant chunks from a document.
-Synthesize the retrieved chunks into a clear, concise answer that directly addresses the task and goal.
+Synthesize the retrieved chunks into a clear, complete answer that directly addresses the task and goal.
+Use as much of the retrieved content as needed — do not summarize or shorten relevant information.
 
 Task: {task}
 Goal: {goal}{document_section}
@@ -192,5 +197,6 @@ class MCPDispatcher:
             messages=[{"role": "user", "content": prompt}],
             stream=False,
             timeout=30,
+            max_tokens=MEDIATION_MAX_TOKENS,
         )
         return response.choices[0].message.content or ""
