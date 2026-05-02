@@ -42,12 +42,6 @@ MCP_CALL_RETRIES = int(os.environ.get("MCP_CALL_RETRIES", "1"))
 # (e.g. ~1024 on OpenRouter for Anthropic) and visibly truncate the answer.
 MEDIATION_MAX_TOKENS = int(os.environ.get("MEDIATION_MAX_TOKENS", "4096"))
 
-# Whether to run an LLM mediation pass over each tool's raw output. When false,
-# the sanitized raw output is shown directly. Useful when the configured
-# mediation model (e.g. mistral-small) over-summarizes and crops content
-# regardless of prompt instructions.
-MEDIATION_ENABLED = os.environ.get("TOOL_ARENA_MEDIATE", "true").lower() == "true"
-
 MEDIATION_PROMPT = """\
 You are reformatting retrieved content from a RAG tool into a clear answer.
 
@@ -161,18 +155,20 @@ class MCPDispatcher:
 
         # Step 4: Concurrent LLM mediation for successful calls (D-04, D-05, MCP-03)
         # Failed calls (error is set) are skipped — no LLM call wasted.
-        # When TOOL_ARENA_MEDIATE=false, mediation is bypassed entirely and
-        # the sanitized raw output is shown directly.
+        # Per-server mediate=false (e.g. Clarifeye's agentic call_agent) bypasses
+        # the LLM pass and shows the sanitized raw output directly. Pure retrievers
+        # like LangChain/LlamaIndex RAG keep mediate=true so chunks become a
+        # readable answer.
         mediation_coros = []
         mediation_indices = []
-        for i, tc in enumerate(tool_calls):
+        for i, (tc, server) in enumerate(zip(tool_calls, servers)):
             if tc.error is not None:
                 continue
-            if not MEDIATION_ENABLED:
+            if not server.mediate:
                 tc.mediated_result = raw_texts[i]
                 logger.info(
-                    "mediation disabled (TOOL_ARENA_MEDIATE=false) — using raw raw_len=%d for %s",
-                    len(raw_texts[i]), tool_calls[i].tool_id,
+                    "mediation disabled for server=%s (mediate=false) — using raw raw_len=%d",
+                    server.id, len(raw_texts[i]),
                 )
                 continue
             mediation_coros.append(
