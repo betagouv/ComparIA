@@ -91,6 +91,7 @@ class MCPServerConfig(BaseModel):
     sanitize: SanitizeConfig | None = None
     tools: list[str] = ["*"]  # which MCP tools to call; ["*"] means all
     tool_args: dict[str, str] = {}  # extra static args merged into every tool call
+    timeout_seconds: float | None = None  # per-server override; falls back to MCP_CALL_TIMEOUT
 
 
 def load_mcp_servers(path: Path | None = None) -> list[MCPServerConfig]:

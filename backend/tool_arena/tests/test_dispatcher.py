@@ -708,6 +708,127 @@ async def test_llm_mediation_failure_preserves_raw_result(server_a, server_b):
 # Test: TOOL_ARENA_MEDIATE=false bypasses LLM mediation entirely
 # ---------------------------------------------------------------------------
 
+async def test_dispatch_uses_per_server_timeout(server_a, server_b):
+    """server.timeout_seconds must override the global MCP_CALL_TIMEOUT."""
+    from backend.tool_arena.dispatcher import MCPDispatcher
+
+    # Give server_a a custom 5s timeout, leave server_b on the default
+    server_a_custom = server_a.model_copy(update={"timeout_seconds": 5.0})
+
+    mock_registry = MagicMock()
+    mock_registry.pick_two.return_value = (server_a_custom, server_b)
+
+    captured_timeouts: list[float] = []
+    original_wait_for = asyncio.wait_for
+
+    async def capture_wait_for(coro, timeout):
+        captured_timeouts.append(timeout)
+        return await original_wait_for(coro, timeout)
+
+    with (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch(
+            "backend.tool_arena.dispatcher.single_mcp_call",
+            new_callable=AsyncMock,
+            return_value=("raw", 10),
+        ),
+        patch(
+            "backend.tool_arena.dispatcher.sanitize_output",
+            side_effect=lambda text, servers: text,
+        ),
+        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
+        patch("backend.tool_arena.dispatcher.asyncio.wait_for", side_effect=capture_wait_for),
+    ):
+        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
+        await MCPDispatcher().dispatch(
+            task="t", goal="g", llm_id="openai/gpt-4o", session_id="s",
+        )
+
+    # server_a uses its own 5s, server_b falls back to MCP_CALL_TIMEOUT (default 90s)
+    assert 5.0 in captured_timeouts
+    assert any(t != 5.0 for t in captured_timeouts)
+
+
+async def test_dispatch_retries_on_transient_connection_error(server_a, server_b):
+    """A single httpx.ConnectError must trigger one retry, then succeed."""
+    import httpx
+    from backend.tool_arena.dispatcher import MCPDispatcher
+
+    mock_registry = MagicMock()
+    mock_registry.pick_two.return_value = (server_a, server_b)
+
+    # First call raises ConnectError, second succeeds. Both servers share
+    # the same mock so the retry path is exercised on at least one of them.
+    call_count = {"n": 0}
+
+    async def flaky_call(*args, **kwargs):
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            raise httpx.ConnectError("simulated network blip")
+        return ("raw", 10)
+
+    with (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", side_effect=flaky_call),
+        patch(
+            "backend.tool_arena.dispatcher.sanitize_output",
+            side_effect=lambda text, servers: text,
+        ),
+        # Patch sleep to avoid the backoff delay in tests
+        patch("backend.tool_arena.dispatcher.asyncio.sleep", new_callable=AsyncMock),
+        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
+    ):
+        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="t", goal="g", llm_id="openai/gpt-4o", session_id="s",
+        )
+
+    # 2 servers × first one fails+retry, second succeeds first try → 3 calls total
+    assert call_count["n"] == 3
+    # Both tools succeed (no errors)
+    assert result_a.error is None
+    assert result_b.error is None
+
+
+async def test_dispatch_does_not_retry_on_timeout(server_a, server_b):
+    """asyncio.TimeoutError must NOT trigger a retry — would double the wait."""
+    from backend.tool_arena.dispatcher import MCPDispatcher
+
+    mock_registry = MagicMock()
+    mock_registry.pick_two.return_value = (server_a, server_b)
+
+    call_count = {"n": 0}
+
+    async def slow_call(*args, **kwargs):
+        call_count["n"] += 1
+        await asyncio.sleep(10)  # will be cut by wait_for
+        return ("raw", 10)
+
+    server_a_short = server_a.model_copy(update={"timeout_seconds": 0.05})
+    server_b_short = server_b.model_copy(update={"timeout_seconds": 0.05})
+    mock_registry.pick_two.return_value = (server_a_short, server_b_short)
+
+    with (
+        patch("backend.tool_arena.dispatcher.registry", mock_registry),
+        patch("backend.tool_arena.dispatcher.single_mcp_call", side_effect=slow_call),
+        patch(
+            "backend.tool_arena.dispatcher.sanitize_output",
+            side_effect=lambda text, servers: text,
+        ),
+        patch("backend.tool_arena.dispatcher.litellm") as mock_litellm,
+    ):
+        mock_litellm.acompletion = AsyncMock(return_value=make_litellm_response("mediated"))
+        result_a, result_b = await MCPDispatcher().dispatch(
+            task="t", goal="g", llm_id="openai/gpt-4o", session_id="s",
+        )
+
+    # Each server called exactly once (no retry on timeout)
+    assert call_count["n"] == 2
+    # Both error out with timeout
+    assert result_a.error is not None
+    assert result_b.error is not None
+
+
 async def test_dispatch_bypasses_mediation_when_disabled(server_a, server_b):
     """When MEDIATION_ENABLED is False, mediation must be skipped and the raw
     sanitized output must be used as mediated_result. litellm.acompletion must

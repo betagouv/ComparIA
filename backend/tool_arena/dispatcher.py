@@ -27,8 +27,16 @@ from backend.tool_arena.sanitizer import sanitize_envelope, sanitize_output
 
 logger = logging.getLogger("languia")
 
-# Per D-10: 30-second default, configurable via environment variable
-MCP_CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))
+# Default MCP call timeout in seconds. Configurable globally via env var, and
+# overridable per-server via MCPServerConfig.timeout_seconds. The previous 30s
+# default was too aggressive for agentic tools (e.g. Clarifeye's call_agent
+# does multi-step reasoning + internal LLM calls).
+MCP_CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "90"))
+
+# Number of retry attempts on transient connection errors (NOT on timeout).
+# A timeout retry would double the user's wait without adding signal; a
+# connection retry recovers from network blips (e.g. brief Clarifeye 502).
+MCP_CALL_RETRIES = int(os.environ.get("MCP_CALL_RETRIES", "1"))
 
 # Mediation output budget. Without this, providers fall back to a low default
 # (e.g. ~1024 on OpenRouter for Anthropic) and visibly truncate the answer.
@@ -93,17 +101,12 @@ class MCPDispatcher:
         server_a, server_b = registry.pick_two()
         servers = [server_a, server_b]
 
-        # Step 1: Concurrent MCP calls with timeout + failure isolation (D-10, D-11, MCP-01)
-        # asyncio.gather with return_exceptions=True ensures one failure does not discard the other
+        # Step 1: Concurrent MCP calls with per-server timeout + failure isolation
+        # (D-10, D-11, MCP-01). asyncio.gather with return_exceptions=True ensures
+        # one failure does not discard the other.
         raw_results = await asyncio.gather(
-            asyncio.wait_for(
-                single_mcp_call(server_a, task, goal, document_content),
-                timeout=MCP_CALL_TIMEOUT,
-            ),
-            asyncio.wait_for(
-                single_mcp_call(server_b, task, goal, document_content),
-                timeout=MCP_CALL_TIMEOUT,
-            ),
+            self._call_with_resilience(server_a, task, goal, document_content),
+            self._call_with_resilience(server_b, task, goal, document_content),
             return_exceptions=True,
         )
 
@@ -196,6 +199,58 @@ class MCPDispatcher:
                     tool_calls[idx].mediated_result = sanitize_output(med_result, servers)
 
         return tool_calls[0], tool_calls[1]
+
+    async def _call_with_resilience(
+        self,
+        server: MCPServerConfig,
+        task: str,
+        goal: str,
+        document_content: str,
+    ) -> tuple[str, int]:
+        """Call a single MCP server with per-server timeout and bounded retry.
+
+        - Timeout: server.timeout_seconds if set, else MCP_CALL_TIMEOUT.
+        - Retry: up to MCP_CALL_RETRIES retries on transient connection errors
+          (httpx.ConnectError, httpx.RemoteProtocolError, httpx.ReadError).
+        - NO retry on asyncio.TimeoutError — retrying after a timeout would
+          double the user's wait without adding signal.
+        """
+        import httpx
+
+        timeout = server.timeout_seconds or MCP_CALL_TIMEOUT
+        transient_excs = (
+            httpx.ConnectError,
+            httpx.RemoteProtocolError,
+            httpx.ReadError,
+            httpx.WriteError,
+        )
+
+        last_exc: Exception | None = None
+        for attempt in range(MCP_CALL_RETRIES + 1):
+            try:
+                return await asyncio.wait_for(
+                    single_mcp_call(server, task, goal, document_content),
+                    timeout=timeout,
+                )
+            except asyncio.TimeoutError:
+                logger.warning(
+                    "mcp call timed out server=%s timeout_s=%.1f attempt=%d (no retry on timeout)",
+                    server.id, timeout, attempt + 1,
+                )
+                raise
+            except transient_excs as exc:
+                last_exc = exc
+                logger.warning(
+                    "mcp call transient error server=%s attempt=%d/%d type=%s: %s",
+                    server.id, attempt + 1, MCP_CALL_RETRIES + 1,
+                    type(exc).__name__, exc,
+                )
+                if attempt >= MCP_CALL_RETRIES:
+                    raise
+                # Exponential backoff: 1s, 2s, 4s, ...
+                await asyncio.sleep(2 ** attempt)
+        # Unreachable, kept for type-checker safety
+        raise last_exc if last_exc else RuntimeError("unreachable")
 
     async def _mediate(self, raw_result: str, task: str, goal: str, llm_id: str, document_content: str = "") -> str:
         """Mediate a single sanitized raw result through the LLM (D-04).
