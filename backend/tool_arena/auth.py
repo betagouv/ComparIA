@@ -111,18 +111,26 @@ def _get_storage(server_id: str) -> RedisTokenStorage | FileTokenStorage:
 
 
 def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
-    """Pre-seed tokens from env var if no tokens exist in storage.
+    """Pre-seed tokens from env var ONLY if storage has no refresh_token yet.
 
     Looks for {SERVER_ID}_REFRESH_TOKEN env var (e.g. CLARIFEYE_REFRESH_TOKEN).
     Seeds the storage with an expired access_token + the refresh_token so the
     SDK refreshes automatically on first request.
+
+    IMPORTANT — refresh-token rotation safety: many OAuth providers (including
+    Clarifeye) rotate the refresh_token on every refresh. The original bootstrap
+    token is then revoked. If we re-seeded from the env var on every process
+    start, we would clobber the rotated token in storage and replay the revoked
+    one on the next request — making the integration "work the first time, then
+    fail intermittently after every restart". So once storage has any
+    refresh_token, treat it as authoritative. To force a re-seed (e.g. after
+    rotating the env var manually), clear the storage entry first.
     """
     env_key = f"{server.id.upper()}_REFRESH_TOKEN"
     refresh_token = os.environ.get(env_key, "")
     if not refresh_token:
         return
 
-    # Check if stored refresh_token already matches env var
     stored_data = None
     if isinstance(storage, FileTokenStorage):
         p = storage._dir / "tokens.json"
@@ -133,7 +141,12 @@ def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
         if raw:
             stored_data = json.loads(raw)
 
-    if stored_data and stored_data.get("refresh_token") == refresh_token:
+    if stored_data and stored_data.get("refresh_token"):
+        # Storage is populated — don't risk overwriting a rotated token.
+        logger.debug(
+            "OAuth bootstrap skipped for %s: storage already has a refresh_token",
+            server.id,
+        )
         return
 
     bootstrap = OAuthToken(
