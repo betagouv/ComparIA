@@ -22,7 +22,6 @@ from typing import Literal
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel
 
-from backend.config import settings
 from backend.tool_arena.client import single_mcp_call
 from backend.tool_arena.dispatcher import MCPDispatcher
 from backend.tool_arena.normalizer import normalize_output
@@ -290,13 +289,11 @@ async def compare(body: CompareRequest):
     tool_id, raw_result, server name, and endpoint are NEVER exposed.
     """
     session_hash = create_tool_session()
-    llm_id = settings.TOOL_ARENA_LLM_ID
 
     dispatcher = MCPDispatcher()
     tool_a, tool_b = await dispatcher.dispatch(
         task=body.task,
         goal=body.goal,
-        llm_id=llm_id,
         session_id=session_hash,
         document_content=body.document_content,
     )
@@ -309,12 +306,15 @@ async def compare(body: CompareRequest):
         except Exception as exc:
             logger.error("Failed to persist tool_call %s: %s", tc.call_id, exc)
 
-    # Store full state in Redis (tool_id included — never sent to client)
+    # Store full state in Redis (tool_id included — never sent to client).
+    # Each server now uses its own LLM (set in mcp_servers.json); the session
+    # tracks both for the vote record.
     session_payload = {
         "session_hash": session_hash,
         "task": body.task,
         "goal": body.goal,
-        "llm_id": llm_id,
+        "llm_id_a": tool_a.llm_id,
+        "llm_id_b": tool_b.llm_id,
         "voted": False,
         "tool_a": tool_a.model_dump(mode="json"),
         "tool_b": tool_b.model_dump(mode="json"),
@@ -367,7 +367,9 @@ async def vote(
     session["chosen"] = body.chosen
     store_tool_session(session_hash, session)
 
-    # Persist vote to DB
+    # Persist vote to DB. tool_votes.llm_id keeps a single string for back-compat:
+    # store tool_a's llm_id (typically equal to tool_b's when both are RAG servers
+    # we control). For per-tool granularity, query tool_calls.llm_id instead.
     tool_a = session["tool_a"]
     tool_b = session["tool_b"]
     vote_record = ToolVoteRecord(
@@ -375,7 +377,7 @@ async def vote(
         tool_a_id=tool_a["tool_id"],
         tool_b_id=tool_b["tool_id"],
         chosen=body.chosen,
-        llm_id=session["llm_id"],
+        llm_id=session.get("llm_id_a") or session.get("llm_id_b") or "",
         task=session["task"],
         goal=session["goal"],
         timestamp=datetime.now().isoformat(),

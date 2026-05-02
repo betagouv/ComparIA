@@ -29,7 +29,7 @@ def store_tool_session(session_hash: str, data: dict) -> None:
 
     Args:
         session_hash: Unique session identifier
-        data: Session state dict (task, goal, llm_id, voted flag, tool_a/b MCPToolCall dicts)
+        data: Session state dict (task, goal, llm_id_a/b, voted flag, tool_a/b MCPToolCall dicts)
 
     Note:
         Session expires after 24 hours (86400 seconds) per D-07.
@@ -50,7 +50,7 @@ def retrieve_tool_session(session_hash: str) -> dict:
         session_hash: Unique session identifier
 
     Returns:
-        dict: Session state with task, goal, llm_id, voted, tool_a, tool_b
+        dict: Session state with task, goal, llm_id_a/b, voted, tool_a, tool_b
 
     Raises:
         ValueError: If session not found or expired

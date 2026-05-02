@@ -5,7 +5,8 @@
     "description": "RAG pipeline using LangChain with FAISS and RecursiveCharacterTextSplitter",
     "endpoint": "http://localhost:8010/mcp",
     "transport": "streamablehttp",
-    "tools": ["*"]
+    "tools": ["*"],
+    "llm_id": "openrouter/mistralai/mistral-small-3.1-24b-instruct"
   },
   {
     "id": "llamaindex_rag",
@@ -13,7 +14,8 @@
     "description": "RAG pipeline using LlamaIndex with VectorStoreIndex and SimpleDirectoryReader",
     "endpoint": "http://localhost:8011/mcp",
     "transport": "streamablehttp",
-    "tools": ["*"]
+    "tools": ["*"],
+    "llm_id": "openrouter/mistralai/mistral-small-3.1-24b-instruct"
   },
   {
     "id": "clarifeye",
@@ -37,7 +39,6 @@
       "project_id": "086b054d-dd72-42e1-8827-2d1b1c8e2b4a",
       "agent_settings_id": "c0d46bd1-574c-4679-8bfb-15bc6a09db16"
     },
-    "timeout_seconds": 120,
-    "mediate": false
+    "timeout_seconds": 120
   }
 ]
