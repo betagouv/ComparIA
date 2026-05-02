@@ -43,14 +43,17 @@ MCP_CALL_RETRIES = int(os.environ.get("MCP_CALL_RETRIES", "1"))
 MEDIATION_MAX_TOKENS = int(os.environ.get("MEDIATION_MAX_TOKENS", "4096"))
 
 MEDIATION_PROMPT = """\
-You are reformatting retrieved content from a RAG tool into a clear answer.
+You are answering a user's task using content retrieved from documents by a RAG tool.
 
-CRITICAL RULES:
-- DO NOT summarize, condense, or shorten the retrieved content.
-- Reproduce all relevant details, lists, examples, code snippets, and bullet points in full.
-- If the retrieved content is already a complete answer, return it essentially verbatim with only minimal cleanup (formatting, removing duplicates).
-- A useful answer is typically several paragraphs long when the retrieved content supports it.
-- Never reply with a one-sentence teaser. The user wants the full answer.
+Write a clear, well-structured answer to the task that draws on the retrieved content.
+
+Requirements:
+- Stay grounded: only use facts present in the retrieved content. Do not invent or extrapolate.
+- Cover the relevant points completely. A useful answer is typically several short paragraphs or a structured list when the retrieved content supports it.
+- Do not reply with a one-sentence teaser. If the retrieved content has substance, the answer must reflect it.
+- Preserve concrete details that matter to the task: numbers, names, dates, examples, code, lists, definitions.
+- If the retrieved content does not actually address the task, say so explicitly rather than fabricating an answer.
+- Write directly to the user. Do not mention the tool, the retrieval process, or any technical identifiers.
 
 Task: {task}
 Goal: {goal}{document_section}
@@ -58,7 +61,7 @@ Goal: {goal}{document_section}
 Retrieved content:
 {raw_result}
 
-Provide the complete, human-readable answer. Do not mention the tool, its name, or any technical identifiers."""
+Answer:"""
 
 
 class MCPDispatcher:
