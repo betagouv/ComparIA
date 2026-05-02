@@ -14,7 +14,7 @@ from mcp.types import TextContent
 
 from backend.tool_arena.config import MCPServerConfig
 
-logger = logging.getLogger("tool_arena")
+logger = logging.getLogger("languia")
 
 
 async def single_mcp_call(

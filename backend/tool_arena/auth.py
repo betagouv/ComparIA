@@ -28,7 +28,7 @@ from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAu
 
 from backend.tool_arena.config import MCPServerConfig, OAuth2Auth
 
-logger = logging.getLogger("tool_arena.auth")
+logger = logging.getLogger("languia")
 
 TOKENS_DIR = Path(__file__).parent.parent.parent / ".oauth_tokens"
 

@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field, PlainSerializer
 
 from backend.config import settings  # ONLY for COMPARIA_DB_URI
 
-logger = logging.getLogger("tool_arena")
+logger = logging.getLogger("languia")
 
 
 class MCPToolCall(BaseModel):
