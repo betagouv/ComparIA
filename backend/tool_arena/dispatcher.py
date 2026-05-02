@@ -34,17 +34,29 @@ MCP_CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))
 # (e.g. ~1024 on OpenRouter for Anthropic) and visibly truncate the answer.
 MEDIATION_MAX_TOKENS = int(os.environ.get("MEDIATION_MAX_TOKENS", "4096"))
 
+# Whether to run an LLM mediation pass over each tool's raw output. When false,
+# the sanitized raw output is shown directly. Useful when the configured
+# mediation model (e.g. mistral-small) over-summarizes and crops content
+# regardless of prompt instructions.
+MEDIATION_ENABLED = os.environ.get("TOOL_ARENA_MEDIATE", "true").lower() == "true"
+
 MEDIATION_PROMPT = """\
-You are given the raw output from a RAG tool that retrieved relevant chunks from a document.
-Synthesize the retrieved chunks into a clear, complete answer that directly addresses the task and goal.
-Use as much of the retrieved content as needed — do not summarize or shorten relevant information.
+You are reformatting retrieved content from a RAG tool into a clear answer.
+
+CRITICAL RULES:
+- DO NOT summarize, condense, or shorten the retrieved content.
+- Reproduce all relevant details, lists, examples, code snippets, and bullet points in full.
+- If the retrieved content is already a complete answer, return it essentially verbatim with only minimal cleanup (formatting, removing duplicates).
+- A useful answer is typically several paragraphs long when the retrieved content supports it.
+- Never reply with a one-sentence teaser. The user wants the full answer.
 
 Task: {task}
 Goal: {goal}{document_section}
-Retrieved chunks:
+
+Retrieved content:
 {raw_result}
 
-Provide a clean, human-readable answer. Do not mention the tool, its name, or any technical identifiers."""
+Provide the complete, human-readable answer. Do not mention the tool, its name, or any technical identifiers."""
 
 
 class MCPDispatcher:
@@ -145,15 +157,25 @@ class MCPDispatcher:
                 raw_texts.append(sanitized_raw)
 
         # Step 4: Concurrent LLM mediation for successful calls (D-04, D-05, MCP-03)
-        # Failed calls (error is set) are skipped — no LLM call wasted
+        # Failed calls (error is set) are skipped — no LLM call wasted.
+        # When TOOL_ARENA_MEDIATE=false, mediation is bypassed entirely and
+        # the sanitized raw output is shown directly.
         mediation_coros = []
         mediation_indices = []
         for i, tc in enumerate(tool_calls):
-            if tc.error is None:
-                mediation_coros.append(
-                    self._mediate(raw_texts[i], task, goal, llm_id, document_content)
+            if tc.error is not None:
+                continue
+            if not MEDIATION_ENABLED:
+                tc.mediated_result = raw_texts[i]
+                logger.info(
+                    "mediation disabled (TOOL_ARENA_MEDIATE=false) — using raw raw_len=%d for %s",
+                    len(raw_texts[i]), tool_calls[i].tool_id,
                 )
-                mediation_indices.append(i)
+                continue
+            mediation_coros.append(
+                self._mediate(raw_texts[i], task, goal, llm_id, document_content)
+            )
+            mediation_indices.append(i)
 
         if mediation_coros:
             mediation_results = await asyncio.gather(*mediation_coros, return_exceptions=True)
