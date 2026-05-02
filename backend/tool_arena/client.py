@@ -82,4 +82,8 @@ async def single_mcp_call(
                 c.text for c in result.content if isinstance(c, TextContent)
             )
             duration_ms = int((time.monotonic() - start) * 1000)
+            logger.info(
+                "mcp call server=%s tool=%s raw_len=%d duration_ms=%d",
+                server.id, tool_name, len(raw_text), duration_ms,
+            )
             return raw_text, duration_ms

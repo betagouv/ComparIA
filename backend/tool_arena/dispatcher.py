@@ -199,4 +199,20 @@ class MCPDispatcher:
             timeout=30,
             max_tokens=MEDIATION_MAX_TOKENS,
         )
-        return response.choices[0].message.content or ""
+        choice = response.choices[0]
+        content = choice.message.content or ""
+        finish_reason = getattr(choice, "finish_reason", None)
+        logger.info(
+            "mediation model=%s raw_len=%d output_len=%d finish_reason=%s max_tokens=%d",
+            llm_id,
+            len(raw_result),
+            len(content),
+            finish_reason,
+            MEDIATION_MAX_TOKENS,
+        )
+        if finish_reason == "length":
+            logger.warning(
+                "mediation truncated by max_tokens (model=%s) — bump MEDIATION_MAX_TOKENS",
+                llm_id,
+            )
+        return content
