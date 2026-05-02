@@ -37,6 +37,7 @@
       "project_id": "086b054d-dd72-42e1-8827-2d1b1c8e2b4a",
       "agent_settings_id": "c0d46bd1-574c-4679-8bfb-15bc6a09db16"
     },
-    "timeout_seconds": 120
+    "timeout_seconds": 120,
+    "mediate": false
   }
 ]
