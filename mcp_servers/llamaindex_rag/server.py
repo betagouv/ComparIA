@@ -1,6 +1,8 @@
 """LlamaIndex RAG MCP Server — FastMCP on port 8011 (or $PORT)."""
 
+import asyncio
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastmcp import FastMCP
@@ -14,8 +16,6 @@ CORPUS_DIR = Path(__file__).parent.parent / "corpus"
 
 OPENROUTER_API_KEY = os.environ["OPENROUTER_API_KEY"]
 
-mcp = FastMCP("LlamaIndex RAG")
-
 Settings.embed_model = OpenAIEmbedding(
     model="text-embedding-3-small",
     api_base="https://openrouter.ai/api/v1",
@@ -28,18 +28,30 @@ Settings.llm = OpenAILike(
     is_chat_model=True,
 )
 
+# Set after lifespan build
+query_engine = None
+
+
+@asynccontextmanager
+async def lifespan(app):
+    global query_engine
+    print("Loading corpus and building VectorStoreIndex...")
+    loop = asyncio.get_event_loop()
+    documents = SimpleDirectoryReader(str(CORPUS_DIR)).load_data()
+    index = await loop.run_in_executor(
+        None, lambda: VectorStoreIndex.from_documents(documents)
+    )
+    query_engine = index.as_query_engine(similarity_top_k=3)
+    print(f"Index ready: {len(documents)} documents loaded")
+    yield
+
+
+mcp = FastMCP("LlamaIndex RAG", lifespan=lifespan)
+
 
 @mcp.custom_route("/health", methods=["GET"])
 async def health_check(request: Request) -> PlainTextResponse:
     return PlainTextResponse("OK")
-
-
-# Build index at startup
-print("Loading corpus and building VectorStoreIndex...")
-documents = SimpleDirectoryReader(str(CORPUS_DIR)).load_data()
-index = VectorStoreIndex.from_documents(documents)
-query_engine = index.as_query_engine(similarity_top_k=3)
-print(f"Index ready: {len(documents)} documents loaded")
 
 
 @mcp.tool()
@@ -58,6 +70,8 @@ def rag_query(task: str, goal: str, document_content: str = "") -> str:
         ephemeral_engine = VectorStoreIndex.from_documents([doc]).as_query_engine(similarity_top_k=3)
         response = ephemeral_engine.query(query)
     else:
+        if query_engine is None:
+            return "Index not ready yet, please retry in a moment."
         response = query_engine.query(query)
 
     sources = set(

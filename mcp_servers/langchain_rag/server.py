@@ -1,6 +1,8 @@
 """LangChain RAG MCP Server — FastMCP on port 8010 (or $PORT)."""
 
+import asyncio
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastmcp import FastMCP
@@ -16,13 +18,19 @@ CORPUS_DIR = Path(__file__).parent.parent / "corpus"
 
 OPENROUTER_API_KEY = os.environ["OPENROUTER_API_KEY"]
 
-mcp = FastMCP("LangChain RAG")
-
 llm = ChatOpenAI(
     model="mistralai/mistral-small",
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
 )
+
+embeddings = OpenAIEmbeddings(
+    model="openai/text-embedding-3-small",
+    base_url="https://openrouter.ai/api/v1",
+    openai_api_key=OPENROUTER_API_KEY,
+)
+
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
 _PROMPT = ChatPromptTemplate.from_template(
     "You are a helpful assistant. Answer the question using ONLY the context below. "
@@ -32,26 +40,32 @@ _PROMPT = ChatPromptTemplate.from_template(
     "Answer:"
 )
 
+# Set after lifespan build
+retriever = None
+
+
+@asynccontextmanager
+async def lifespan(app):
+    global retriever
+    print("Loading corpus and building FAISS index...")
+    loop = asyncio.get_event_loop()
+    loader = DirectoryLoader(str(CORPUS_DIR), glob="*.md", loader_cls=TextLoader)
+    docs = loader.load()
+    chunks = splitter.split_documents(docs)
+    vectorstore = await loop.run_in_executor(
+        None, lambda: FAISS.from_documents(chunks, embeddings)
+    )
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    print(f"Index ready: {len(chunks)} chunks from {len(docs)} documents")
+    yield
+
+
+mcp = FastMCP("LangChain RAG", lifespan=lifespan)
+
 
 @mcp.custom_route("/health", methods=["GET"])
 async def health_check(request: Request) -> PlainTextResponse:
     return PlainTextResponse("OK")
-
-
-# Build index at startup
-print("Loading corpus and building FAISS index...")
-embeddings = OpenAIEmbeddings(
-    model="openai/text-embedding-3-small",
-    base_url="https://openrouter.ai/api/v1",
-    openai_api_key=OPENROUTER_API_KEY,
-)
-loader = DirectoryLoader(str(CORPUS_DIR), glob="*.md", loader_cls=TextLoader)
-docs = loader.load()
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-chunks = splitter.split_documents(docs)
-vectorstore = FAISS.from_documents(chunks, embeddings)
-retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
-print(f"Index ready: {len(chunks)} chunks from {len(docs)} documents")
 
 
 @mcp.tool()
@@ -73,6 +87,8 @@ def rag_query(task: str, goal: str, document_content: str = "") -> str:
         ephemeral_store = FAISS.from_documents(doc_chunks, embeddings)
         results = ephemeral_store.as_retriever(search_kwargs={"k": 3}).invoke(query)
     else:
+        if retriever is None:
+            return "Index not ready yet, please retry in a moment."
         results = retriever.invoke(query)
 
     if not results:
