@@ -184,8 +184,95 @@
             "questions": {
                 "1": {
                     "title": "compar:AI inizialmente si è concentrata sul francese: sono previsti piani per altre lingue europee?"
+                },
+                "2": {
+                    "title": "Quali sono i vantaggi di una piattaforma di raccolta delle preferenze specificamente europea?"
                 }
-            }
+            },
+            "title": "Internazionalizzazione"
+        },
+        "models": {
+            "questions": {
+                "1": {
+                    "title": "Come si scelgono i modelli da includere nello strumento di confronto?"
+                },
+                "2": {
+                    "title": "Come fate a offrire questo servizio gratuitamente?"
+                },
+                "3": {
+                    "title": "\"Modello quantificato\", che cos'è?"
+                },
+                "4": {
+                    "title": "Esiste un legame tra la nazionalità dell'azienda o del laboratorio che ha ideato il modello e la sua capacità di parlare più lingue?"
+                },
+                "5": {
+                    "title": "È possibile conoscere i dati di addestramento dei modelli?"
+                }
+            },
+            "title": "Modelli"
+        },
+        "title": "Domande frequenti",
+        "usage": {
+            "questions": {
+                "1": {
+                    "title": "I modelli possono citare le proprie fonti?"
+                },
+                "2": {
+                    "title": "Se pongo una domanda sulle ultime notizie, il modello è in grado di rispondere?"
+                },
+                "3": {
+                    "title": "Se includo un link URL in una domanda, il modello può accedervi?"
+                },
+                "4": {
+                    "title": "Perché alcuni modelli perdono rapidamente il filo della conversazione?"
+                },
+                "5": {
+                    "title": "Quali sono le migliori pratiche per fornire suggerimenti?"
+                },
+                "6": {
+                    "title": "Qual è la differenza tra porre una domanda a un modello di intelligenza artificiale conversazionale e fare una ricerca su Google?"
+                }
+            },
+            "title": "Utilizzo"
+        }
+    },
+    "footer": {
+        "backHome": "Torna alla homepage del sito - compar:AI",
+        "dpg": "Il servizio è riconosciuto come bene pubblico digitale dalla Digital Public Goods Alliance.",
+        "helpUs": "Aiutaci a migliorare questo servizio!",
+        "license": {
+            "linkTitle": "Licenza etalab - nuova finestra",
+            "mention": "Salvo diversa indicazione esplicita in merito alla proprietà intellettuale detenuta da terzi, il contenuto di questo sito è offerto sotto la licenza <a {linkProps}>etalab-2.0</a>"
+        },
+        "links": {
+            "accessibility": "Accessibilità: non conforme",
+            "legal": "Avviso legale",
+            "privacy": "Politica sulla riservatezza",
+            "rgesn": "Ecodesign",
+            "sources": "Codice sorgente",
+            "tos": "Termini di utilizzo"
+        },
+        "writeUs": "Se riscontri un problema o hai commenti sullo strumento di confronto, non esitare a scriverci <a {formLinkProps}>tramite questo modulo</a>. Leggiamo tutti i vostri messaggi.<br />Grazie!"
+    },
+    "general": {
+        "a11y": {
+            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong> compara.beta.gouv.fr </strong> .",
+            "disclaimer": "<strong> compar:IA </strong> si impegna a rendere accessibili i propri servizi digitali, in conformità all'articolo 47 della legge n. 2005-102 dell'11 febbraio 2005.",
+            "improveAdress": "Indirizzo: DINUM, 20 avenue de Ségur 75007 Parigi",
+            "improveDelay": "Cerchiamo di rispondere entro 2 giorni lavorativi.",
+            "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di beta.gouv.fr per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
+            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Miglioramento e contatto",
+            "remedyAdvocate": "Scrivi un messaggio al <a {linkProps}>Difensore dei diritti</a>",
+            "remedyAdvocateAdress": "Invia una lettera per posta (gratuitamente, senza francobolli): Difensore dei Diritti - Risposta libera 71120 75342 Parigi CEDEX 07",
+            "remedyDelegateAdvocate": "Contatta il rappresentante del <a {linkProps}>Difensore dei diritti nella tua regione</a>",
+            "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato al gestore del sito web un problema di accessibilità che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
+            "remedyList": "Puoi :",
+            "remedyTitle": "Procedura di ricorso",
+            "stateNavigate": "naviga tra tutte le pagine del sito utilizzando una tastiera",
+            "statePrefs": "adatta il sito alle tue preferenze (dimensione del carattere, zoom dello schermo, modifica della tipografia, ecc.) senza perdita di contenuti",
+            "stateScreenReader": "visualizza il sito web con un lettore di schermo.",
+            "stateTitle": "Stato di conformità"
         }
     }
 }
