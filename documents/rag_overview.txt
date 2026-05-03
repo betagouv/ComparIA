@@ -1,0 +1,49 @@
+RAG Overview
+
+Retrieval-Augmented Generation (RAG) is an AI architecture that combines information retrieval with generative language models to produce accurate, grounded, and up-to-date responses. Rather than relying solely on the knowledge baked into an LLM during training, RAG fetches relevant documents or passages at query time and provides them as context to the model before it generates a response.
+
+The Problem RAG Solves
+
+Large language models are trained on static datasets with a knowledge cutoff date. This means they cannot answer questions about recent events, and they may confidently produce incorrect information about topics where their training data was sparse or contradictory. This phenomenon is called hallucination. RAG addresses three fundamental limitations of standalone LLMs:
+
+First, stale knowledge: an LLM trained six months ago cannot answer questions about events from last week. RAG bypasses this by retrieving current documents from an external knowledge base at query time.
+
+Second, hallucination: LLMs generate plausible-sounding text even when they lack reliable information. By grounding each response in retrieved passages, RAG gives the model accurate source material to work with, dramatically reducing fabricated content.
+
+Third, private or proprietary data: enterprise knowledge is not on the public internet and therefore not in any LLM training set. RAG allows organizations to index their internal documents and make them accessible to an LLM without exposing the raw data or fine-tuning a model on confidential information.
+
+Core Components
+
+A RAG system has four main components that work in sequence.
+
+The embedder converts text into numerical vector representations called embeddings. These vectors capture semantic meaning so that similar ideas map to nearby points in high-dimensional space. Common embedding models include OpenAI text-embedding-3-small, Cohere Embed, and open-source alternatives such as sentence-transformers.
+
+The vector store is a database optimized for storing and querying embeddings. When a user submits a query, the query is embedded and the vector store returns the stored passages whose embeddings are most similar to the query embedding. Popular vector stores include Pinecone, Weaviate, Qdrant, Chroma, and FAISS.
+
+The retriever orchestrates the lookup. Given an embedded query, it asks the vector store for the top-k most relevant passages. Retrieval strategies range from simple cosine similarity search to hybrid approaches that combine vector similarity with keyword-based BM25 scoring.
+
+The generator LLM receives the retrieved passages concatenated into the prompt as context, along with the user's original question, and produces the final answer. The model is instructed to base its response on the provided context rather than its parametric memory alone.
+
+The RAG Pipeline
+
+A complete RAG system involves two phases: offline ingestion and online querying.
+
+During ingestion, documents are loaded from a source such as PDFs, web pages, databases, or internal wikis. They are split into manageable chunks (typically 200 to 1000 tokens each) to fit within the retrieval context window. Each chunk is embedded and stored in the vector store alongside metadata like source URL, document title, and creation date.
+
+During querying, the user submits a question. The question is embedded using the same embedding model used during ingestion. The vector store performs an approximate nearest-neighbor search and returns the top-k most relevant chunks. These chunks are inserted into the LLM prompt as a context block, and the LLM generates a response grounded in that context. Optionally, the source passages can be returned to the user as citations, allowing them to verify the answer.
+
+Typical Use Cases
+
+RAG is well-suited for any application where accuracy and currency matter and where the underlying knowledge base changes over time. Common deployments include:
+
+Question answering over large document collections, such as legal databases, medical literature, or technical documentation. Customer support chatbots that reference product manuals, support tickets, and knowledge bases. Research assistants that retrieve and synthesize information from academic papers. Internal knowledge assistants that query company wikis, Slack archives, and HR policies. Code assistants that retrieve relevant API documentation or code examples before generating suggestions.
+
+RAG vs Fine-Tuning
+
+Fine-tuning involves updating model weights on a domain-specific dataset to improve performance on that domain. RAG does not modify model weights; instead it supplies relevant information at inference time.
+
+Fine-tuning is preferable when the style, format, or vocabulary of responses needs to match a specialized domain closely, or when the knowledge is stable and unlikely to change. It is expensive (requires GPU time and large labeled datasets) and produces a static snapshot.
+
+RAG is preferable when the knowledge base changes frequently, when the dataset is too large to include in a fine-tuning set, or when cost and latency constraints prevent retraining. RAG systems can be updated by re-indexing documents without any model retraining.
+
+In practice, many production systems combine both: a fine-tuned base model is used as the generator to capture domain style, while RAG provides fresh and specific factual grounding at query time.

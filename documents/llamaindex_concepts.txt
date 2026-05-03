@@ -1,0 +1,59 @@
+LlamaIndex Core Concepts
+
+LlamaIndex (formerly GPT Index) is an open-source data framework designed to help developers build LLM applications that work with external data. While LangChain is a general-purpose LLM application framework, LlamaIndex focuses specifically on the data layer: ingesting, indexing, querying, and synthesizing information from heterogeneous sources. It is particularly well-suited for building RAG systems where the quality of retrieval and response synthesis is the primary concern.
+
+Documents and Nodes
+
+The Document is the base data unit in LlamaIndex. A Document wraps raw text content along with metadata such as the source file name, creation date, author, and any custom key-value pairs that downstream components can use for filtering. LlamaIndex provides loaders for over 160 data sources including PDFs, Word documents, web pages, databases, Notion, Slack, and Google Drive.
+
+Nodes are the granular units that indexes operate on. A Document is automatically split into Nodes during ingestion. Each Node contains a chunk of text, a unique identifier, metadata inherited from the parent Document, and relationship pointers to adjacent Nodes (previous, next, parent). These relationships allow retrieval strategies to expand context by fetching surrounding Nodes when a particular chunk is returned as a match.
+
+The NodeParser (or text splitter in LlamaIndex terminology) controls how Documents become Nodes. The SentenceSplitter is the default, splitting on sentence boundaries while respecting a target chunk size. The SemanticSplitterNodeParser uses embedding similarity to find natural boundaries, and the HierarchicalNodeParser creates a multi-resolution tree of Nodes that enables coarse-to-fine retrieval.
+
+Indexes
+
+An index is a data structure that organizes Nodes for efficient retrieval. LlamaIndex provides several index types, each with different retrieval characteristics.
+
+VectorStoreIndex is the most commonly used index. It embeds each Node and stores the embeddings in a vector store. At query time, the query is embedded and the nearest-neighbor Nodes are retrieved by cosine similarity. It integrates with Pinecone, Weaviate, Qdrant, Chroma, FAISS, and many other vector stores.
+
+SummaryIndex (formerly ListIndex) stores Nodes in a flat list and retrieves all of them at query time, then synthesizes a response from the complete set. It is appropriate for summarization tasks over short document collections where recall of all content matters more than precision.
+
+TreeIndex organizes Nodes into a hierarchical tree where leaf nodes contain raw text and parent nodes contain summaries. Retrieval traverses the tree top-down, allowing the system to efficiently locate relevant subtrees before drilling into individual chunks.
+
+KeywordTableIndex extracts keywords from each Node and builds an inverted index. Retrieval is keyword-based: the query is parsed for keywords and the matching Nodes are returned. This is fast but less semantically rich than vector similarity.
+
+Query Engines
+
+A query engine is the end-to-end interface for asking questions over an index. It combines a retriever (which fetches relevant Nodes) with a response synthesizer (which generates the final answer using the retrieved context and the original query).
+
+The RetrieverQueryEngine wraps any retriever and any response synthesizer into a callable interface. A simple example is a VectorStoreIndex with a VectorIndexRetriever and a TreeSummarize response synthesizer: the retriever fetches the top-k most relevant Nodes, and the synthesizer iteratively summarizes them into a final answer.
+
+SubQuestionQueryEngine handles complex queries by decomposing them into sub-questions, routing each to an appropriate index or query engine, and then combining the results. RouterQueryEngine selects the best index or query engine for each query using an LLM-based classifier.
+
+Retrievers
+
+LlamaIndex retrievers are modular components that fetch Nodes from an index given a query. The VectorIndexRetriever retrieves the top-k Nodes by vector similarity. The BM25Retriever uses keyword-based BM25 scoring. The HybridRetriever combines both, using a reciprocal rank fusion algorithm to merge the ranked lists.
+
+Advanced retrieval strategies include AutoMergingRetriever, which merges leaf Node results back into parent Nodes when enough leaf children are retrieved (useful with HierarchicalNodeParser), and RecursiveRetriever, which follows Node relationships to retrieve connected content.
+
+Response Synthesizers
+
+The response synthesizer takes a set of retrieved Nodes and a query and produces the final natural language answer. LlamaIndex offers several synthesis strategies.
+
+Refine iterates through the retrieved Nodes one at a time, refining the answer after each one. This produces high-quality answers but requires many LLM calls.
+
+CompactAndRefine packs multiple Nodes into a single prompt before refining, reducing the number of LLM calls compared to Refine.
+
+TreeSummarize recursively summarizes groups of Nodes into a tree, then synthesizes the root as the final answer. This is efficient for large numbers of retrieved Nodes.
+
+SimpleSummarize concatenates all Nodes and generates a single summary in one LLM call. It is fast but may truncate content that exceeds the context window.
+
+Comparison to LangChain
+
+LangChain and LlamaIndex are complementary rather than competing frameworks, and many production systems use both. The key difference is emphasis.
+
+LangChain is application-first: it provides abstractions for chains, agents, memory, and tool use, with retrieval as one capability among many. It is the right choice when the core complexity is in orchestrating multi-step workflows, integrating multiple services, or building conversational agents with complex logic.
+
+LlamaIndex is data-first: it provides deep abstractions for indexing, retrieval, and response synthesis, with extensive support for different index structures, retrieval algorithms, and synthesis strategies. It is the right choice when the core complexity is in making retrieval accurate over large or heterogeneous document collections.
+
+A common pattern is to use LlamaIndex as the retrieval engine inside a LangChain pipeline, benefiting from LlamaIndex's sophisticated index structures while retaining LangChain's agent and memory capabilities for the surrounding application logic.

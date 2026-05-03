@@ -1,0 +1,20 @@
+[
+  {
+    "id": "rag_overview",
+    "title": "RAG Overview",
+    "description": "Introduction to Retrieval-Augmented Generation: what it is, why it matters, and how it differs from fine-tuning.",
+    "file": "documents/rag_overview.txt"
+  },
+  {
+    "id": "langchain_concepts",
+    "title": "LangChain Core Concepts",
+    "description": "Overview of LangChain primitives: chains, agents, memory, tools, and retrievers for RAG pipelines.",
+    "file": "documents/langchain_concepts.txt"
+  },
+  {
+    "id": "llamaindex_concepts",
+    "title": "LlamaIndex Core Concepts",
+    "description": "Overview of LlamaIndex primitives: documents, nodes, indexes, query engines, and retrievers for RAG pipelines.",
+    "file": "documents/llamaindex_concepts.txt"
+  }
+]

@@ -1,0 +1,43 @@
+LangChain Core Concepts
+
+LangChain is an open-source Python (and JavaScript) framework for building applications powered by large language models. It provides a unified interface to dozens of LLM providers, vector stores, document loaders, and other AI services, and it offers composable primitives for assembling those components into working applications. LangChain is particularly popular for building RAG pipelines, conversational agents, and multi-step reasoning chains.
+
+Chains
+
+A chain is the fundamental building block in LangChain. It represents a sequence of operations where each step takes inputs, performs a transformation (often an LLM call), and passes its output to the next step. The simplest chain combines a prompt template with an LLM call: format a prompt, send it to the model, return the response.
+
+LangChain Expression Language (LCEL) is the modern way to compose chains. It uses the pipe operator to connect components: a prompt template is piped into an LLM, whose output is piped into a parser. This declarative style makes chains composable, streamable, and easy to inspect. Complex chains can combine retrieval, summarization, classification, and generation steps in a single readable pipeline.
+
+Agents
+
+An agent is an LLM that decides at each step what action to take, using a set of available tools. Unlike a fixed chain where the sequence of steps is predetermined, an agent dynamically chooses which tool to call, with what arguments, and then observes the result before deciding the next action. This loop continues until the agent determines it has a final answer.
+
+LangChain supports multiple agent types. ReAct agents alternate between reasoning (thinking about what to do) and acting (calling a tool). Tool-calling agents use the function-calling or tool-use features of modern LLMs to produce structured arguments for tool invocations. The LangGraph library, built on top of LangChain, provides a stateful graph abstraction for building more complex agentic workflows with explicit control flow, cycles, and human-in-the-loop steps.
+
+Memory
+
+Memory allows a chain or agent to maintain state across multiple turns of a conversation. Without memory, each LLM call is stateless and the model has no awareness of what was said earlier in the conversation.
+
+LangChain provides several memory types. ConversationBufferMemory stores the full conversation history and injects it into each prompt. ConversationSummaryMemory periodically summarizes older exchanges to keep the context window manageable. ConversationBufferWindowMemory retains only the most recent k exchanges. Vector store-based memory stores past exchanges as embeddings and retrieves the most relevant ones for each new prompt, enabling very long-term memory without exceeding context limits.
+
+Retrievers and Vector Stores
+
+Retrievers are the search component of a RAG pipeline. Given a query, a retriever returns the most relevant documents from a knowledge base. LangChain defines a standard Retriever interface with a get_relevant_documents method, allowing different retrieval backends to be swapped without changing the surrounding application code.
+
+LangChain integrates with a wide range of vector stores including Pinecone, Weaviate, Chroma, FAISS, Qdrant, OpenSearch, and many others. Each integration wraps the vector store's client in a uniform interface. The VectorStoreRetriever wraps any integrated vector store and exposes it as a standard retriever.
+
+LangChain also supports more advanced retrieval strategies. A MultiQueryRetriever generates multiple reformulations of the original question and merges the results. A ContextualCompressionRetriever passes retrieved documents through a compression step to extract only the most relevant sentences. An EnsembleRetriever combines results from multiple retrieval backends.
+
+Tools
+
+Tools are functions that an agent can call. Each tool has a name, a description that the LLM reads to decide when to use it, and a callable that executes the function. LangChain includes a large library of pre-built tools for web search, calculator operations, Wikipedia lookups, Python REPL execution, file I/O, and API calls to services like Google Maps or OpenWeatherMap.
+
+Custom tools are defined as Python functions decorated with the @tool decorator, or as subclasses of the BaseTool class. The description field is critical: it tells the LLM what the tool does, so it must be clear and accurate to prevent the agent from misusing the tool.
+
+Document Loaders and Text Splitters
+
+Before documents can be retrieved, they must be ingested. Document loaders handle loading content from various sources: PDFs via PyMuPDF or PyPDF, web pages via BeautifulSoup or Playwright, Word documents, CSV files, Notion databases, GitHub repositories, YouTube transcripts, and dozens more. Each loader returns a list of Document objects with page_content and metadata fields.
+
+Text splitters divide long documents into smaller chunks suitable for embedding and retrieval. The RecursiveCharacterTextSplitter is the most commonly used: it splits on paragraph boundaries first, then sentence boundaries, then character boundaries, aiming to keep semantically coherent units together. Chunk size and overlap are configurable parameters that affect retrieval precision.
+
+LangChain also provides semantic splitters that use embedding similarity to find natural breakpoints in the text, producing chunks that are more semantically coherent than purely length-based splits.
