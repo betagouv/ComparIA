@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { browser, dev } from '$app/environment'
+  import { env as publicEnv } from '$env/dynamic/public'
   import { api } from '$lib/fastapi-client'
   import { ToolArenaForm, ToolResultCard, ToolRevealCard, ToolVoteArea } from './components'
   import { Button } from '$components/dsfr'
@@ -28,7 +30,7 @@
     tool_b: ToolRevealInfo
   }
 
-  let phase = $state<'input' | 'loading' | 'results' | 'revealed'>('input')
+  let phase = $state<'input' | 'loading' | 'results' | 'revealed' | 'unavailable'>('input')
   let sessionHash = $state<string | null>(null)
   let resultA = $state<string | null>(null)
   let resultB = $state<string | null>(null)
@@ -48,13 +50,39 @@
     phase = 'loading'
     compareError = null
 
+    // Phase 2: detect 503 tool_unavailable from the backend's readiness gate
+    // before falling back to the generic api.request error path. We intercept
+    // the raw fetch here so we can read the structured body without losing
+    // status info to ``parseErrorResponse``.
     try {
-      const data = await api.request<CompareResponse>('/tool-arena/compare', {
+      // Mirror getBackendUrl() in $lib/fastapi-client so 503 detection uses
+      // the same origin as the rest of the app.
+      const base = !browser
+        ? publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+        : dev || publicEnv.PUBLIC_API_DEV_MODE === 'true'
+          ? 'http://localhost:8001'
+          : publicEnv.PUBLIC_API_URL || window.location.origin || 'http://localhost:8001'
+      const url = `${base}/tool-arena/compare`
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task, goal, document_content: documentContent })
       })
 
+      if (response.status === 503) {
+        const body = await response.json().catch(() => ({}))
+        if (body?.error === 'tool_unavailable') {
+          phase = 'unavailable'
+          return
+        }
+      }
+
+      if (!response.ok) {
+        const text = await response.text()
+        throw new Error(text || `HTTP ${response.status}`)
+      }
+
+      const data = (await response.json()) as CompareResponse
       sessionHash = data.session_hash
       api.setSessionHash(data.session_hash)
       resultA = data.result_a
@@ -164,6 +192,17 @@
         {/if}
 
         <ToolArenaForm onsubmit={handleCompare} />
+      </div>
+    </div>
+
+  {:else if phase === 'unavailable'}
+    <div class="fr-container py-10 md:py-24">
+      <div class="fr-col-xl-8 m-auto text-center">
+        <h2 class="mb-4!" style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700;">
+          {m['toolArena.unavailable.title']()}
+        </h2>
+        <p class="fr-text--sm text-grey mb-6">{m['toolArena.unavailable.message']()}</p>
+        <Button onclick={resetArena}>{m['toolArena.tryAgain']()}</Button>
       </div>
     </div>
 

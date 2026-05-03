@@ -157,6 +157,10 @@
       "winRate": "Win Rate",
       "provisional": "Provisional",
       "eloExplanation": "ELO scores computed using the Bradley-Terry model with bootstrap confidence intervals (p2.5 – p97.5). Tools marked \"Provisional\" have fewer than 50 matches."
+    },
+    "unavailable": {
+      "title": "Tools temporarily unavailable",
+      "message": "The tool is temporarily unavailable. Please try again later."
     }
   }
 }

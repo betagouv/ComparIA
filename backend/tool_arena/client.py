@@ -5,7 +5,6 @@ session, discovers or calls specific tools, and returns raw text + duration.
 """
 
 import logging
-import os
 import time
 
 from mcp import ClientSession
@@ -13,6 +12,11 @@ from mcp.client.streamable_http import streamablehttp_client
 from mcp.types import TextContent
 
 from backend.tool_arena.config import MCPServerConfig
+from backend.tool_arena.credential import (
+    CredentialError,
+    OAuth2Credential,
+    credential_for,
+)
 
 logger = logging.getLogger("languia")
 
@@ -57,16 +61,21 @@ async def single_mcp_call(
         ConnectionError: On network failures.
         Exception: On unexpected errors. Caller wraps in asyncio.wait_for.
     """
-    headers: dict[str, str] = {}
+    # Single dispatch seam: the credential decides what headers to send and,
+    # for OAuth, exposes the SDK provider object via OAuth2Credential.
+    # See backend/tool_arena/credential.py for the asymmetry rationale.
+    credential = credential_for(server)
+    try:
+        headers = await credential.headers_for(server)
+    except CredentialError:
+        # Propagate to dispatcher; it already wraps generic exceptions into
+        # MCPToolCall error rows. Phase 2 will branch on the specific
+        # subclass to surface readiness state to the UI.
+        raise
+
     auth = None
-    if server.auth is not None:
-        if server.auth.type == "oauth2":
-            from backend.tool_arena.auth import get_oauth_provider
-            auth = get_oauth_provider(server)
-        elif server.auth.type == "api_key":
-            key = os.environ[server.auth.key_env]
-            headers[server.auth.header] = key
-        # type == "none": no header needed
+    if isinstance(credential, OAuth2Credential):
+        auth = credential.provider_for(server)
 
     start = time.monotonic()
     async with streamablehttp_client(

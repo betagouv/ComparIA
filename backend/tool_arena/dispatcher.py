@@ -20,8 +20,26 @@ from backend.tool_arena.client import single_mcp_call
 from backend.tool_arena.config import MCPServerConfig
 from backend.tool_arena.models import MCPToolCall
 from backend.tool_arena.normalizer import normalize_output
+from backend.tool_arena.readiness import get_readiness_registry
 from backend.tool_arena.registry import registry
 from backend.tool_arena.sanitizer import sanitize_envelope, sanitize_output
+
+
+class InsufficientReadyServersError(RuntimeError):
+    """Raised when fewer than 2 MCP servers are in READY state.
+
+    Surfaces as 503 ``tool_unavailable`` at the router layer. The dispatcher
+    will not silently degrade by retrying with non-ready servers — once a
+    server is filtered out by the readiness registry, the only way back in is
+    a successful probe.
+    """
+
+    def __init__(self, ready_count: int, snapshot: list) -> None:
+        super().__init__(
+            f"Need at least 2 READY servers; have {ready_count}."
+        )
+        self.ready_count = ready_count
+        self.snapshot = snapshot
 
 logger = logging.getLogger("languia")
 
@@ -58,7 +76,30 @@ class MCPDispatcher:
         Returns:
             Tuple of two MCPToolCall objects, one per server.
         """
-        server_a, server_b = registry.pick_two()
+        # Filter the pool through the readiness registry. Servers in
+        # NEEDS_REAUTH / MISCONFIGURED / UPSTREAM_DOWN / UNKNOWN are excluded.
+        readiness = get_readiness_registry()
+        all_servers = [registry.get_server(sid) for sid in registry.server_ids]
+        ready = readiness.ready_servers(all_servers)
+        if len(ready) < 2:
+            snapshot = [r.to_dict() for r in readiness.snapshot()]
+            logger.warning(
+                "dispatcher: insufficient READY servers (have=%d, need=2). snapshot=%s",
+                len(ready), snapshot,
+            )
+            raise InsufficientReadyServersError(len(ready), snapshot)
+
+        # Mirror the registry.pick_two contract on the filtered subset: pick
+        # two distinct READY servers at random, preserving their relative
+        # order in the ready list (so callers and tests see a stable A/B
+        # mapping when the pool is exactly 2).
+        import random
+
+        if len(ready) == 2:
+            server_a, server_b = ready[0], ready[1]
+        else:
+            picked_indices = sorted(random.sample(range(len(ready)), 2))
+            server_a, server_b = ready[picked_indices[0]], ready[picked_indices[1]]
         servers = [server_a, server_b]
 
         raw_results = await asyncio.gather(

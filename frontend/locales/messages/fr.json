@@ -2180,6 +2180,10 @@
     "bothToolsFailed": "Les deux outils ont rencontré des erreurs.",
     "tryAgain": "Réessayer",
     "errorFallback": "Une erreur inattendue est survenue",
+    "unavailable": {
+      "title": "Outils temporairement indisponibles",
+      "message": "L'outil est temporairement indisponible. Réessayez plus tard."
+    },
     "leaderboard": {
       "title": "Classement de l'arène des outils",
       "backLink": "Retour à l'arène des outils",

@@ -16,15 +16,21 @@ Zero imports from backend.arena.
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Response
+from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from backend.tool_arena.client import single_mcp_call
-from backend.tool_arena.dispatcher import MCPDispatcher
+from backend.tool_arena.dispatcher import (
+    InsufficientReadyServersError,
+    MCPDispatcher,
+)
 from backend.tool_arena.normalizer import normalize_output
+from backend.tool_arena.readiness import get_readiness_registry, probe_server
 from backend.tool_arena.sanitizer import sanitize_envelope
 from backend.tool_arena.documents_router import documents_router
 from utils.storage.redis import REDIS_TOOL_RANKING_KEY, get_redis_client
@@ -41,6 +47,100 @@ logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/tool-arena", tags=["tool-arena"])
 router.include_router(documents_router)
+
+
+# ---------------------------------------------------------------------------
+# Admin status router (Phase 2): operator-facing readiness snapshot.
+# Mounted under /admin/tool-arena to keep public + admin namespaces separate.
+# ---------------------------------------------------------------------------
+admin_router = APIRouter(prefix="/admin/tool-arena", tags=["tool-arena-admin"])
+
+
+def _require_admin_token(
+    authorization: str | None = Header(default=None, alias="Authorization"),
+) -> None:
+    """Reject requests unless ``Authorization: Bearer <ADMIN_STATUS_TOKEN>``.
+
+    If ``ADMIN_STATUS_TOKEN`` is unset the endpoint is considered "not
+    configured" and returns 503 — never 200, never 401 — so misconfigured
+    deployments cannot accidentally serve the admin snapshot.
+    """
+    expected = os.environ.get("ADMIN_STATUS_TOKEN")
+    if not expected:
+        raise HTTPException(
+            status_code=503, detail="Admin status endpoint not configured."
+        )
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing bearer token.")
+    token = authorization[len("Bearer "):].strip()
+    if token != expected:
+        raise HTTPException(status_code=401, detail="Invalid admin token.")
+
+
+@admin_router.get("/status")
+async def admin_status(_: None = Depends(_require_admin_token)) -> dict:
+    """Return the readiness snapshot for all probed servers.
+
+    No PII / secrets — ``last_error`` is already class name + truncated repr.
+    """
+    snapshot = get_readiness_registry().snapshot()
+    return {"servers": [r.to_dict() for r in snapshot]}
+
+
+# --- Admin OAuth re-key (Phase 3) -------------------------------------------
+
+
+class OAuthSeedRequest(BaseModel):
+    server_id: str
+    refresh_token: str
+    access_token: str | None = None
+    expires_in: int | None = None
+
+
+@admin_router.post("/oauth/seed")
+async def admin_oauth_seed(
+    body: OAuthSeedRequest,
+    _: None = Depends(_require_admin_token),
+) -> dict:
+    """Write a freshly-minted refresh_token to storage and re-probe.
+
+    Replaces the deprecated ``{SERVER_ID}_REFRESH_TOKEN`` env-var bootstrap.
+    Idempotent: a second seed with the same payload simply overwrites.
+    Tokens are NEVER logged.
+    """
+    from backend.tool_arena import auth as _auth_module
+    from backend.tool_arena.credential import _invalidate_cache as _cred_invalidate
+
+    try:
+        server = registry.get_server(body.server_id)
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Server '{body.server_id}' not found in registry",
+        )
+
+    if server.auth is None or server.auth.type != "oauth2":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Server '{body.server_id}' is not configured for OAuth2",
+        )
+
+    await _auth_module.seed_tokens(
+        server,
+        refresh_token=body.refresh_token,
+        access_token=body.access_token,
+        expires_in=body.expires_in,
+    )
+    _auth_module._invalidate_cache(body.server_id)
+    _cred_invalidate(body.server_id)
+    logger.info("OAuth seed accepted for %s", body.server_id)
+
+    readiness = await probe_server(server, get_readiness_registry())
+    return {
+        "server_id": body.server_id,
+        "readiness": readiness.to_dict(),
+        "seeded_at": datetime.now().isoformat(),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -293,12 +393,32 @@ async def compare(body: CompareRequest):
     session_hash = create_tool_session()
 
     dispatcher = MCPDispatcher()
-    tool_a, tool_b = await dispatcher.dispatch(
-        task=body.task,
-        goal=body.goal,
-        session_id=session_hash,
-        document_content=body.document_content,
-    )
+    try:
+        tool_a, tool_b = await dispatcher.dispatch(
+            task=body.task,
+            goal=body.goal,
+            session_id=session_hash,
+            document_content=body.document_content,
+        )
+    except InsufficientReadyServersError as exc:
+        # Surface as 503 with a structured body so the frontend can pattern-
+        # match on `error: "tool_unavailable"` and show a single
+        # "temporarily unavailable" message instead of two error cards.
+        logger.warning(
+            "tool-arena/compare: returning 503 tool_unavailable (ready_count=%d)",
+            exc.ready_count,
+        )
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": "tool_unavailable",
+                "message": (
+                    "Not enough MCP tools are currently available to run a "
+                    "comparison. Please try again shortly."
+                ),
+                "ready_count": exc.ready_count,
+            },
+        )
 
     # Persist both tool calls to DB early (don't lose data if user never votes)
     for tc in (tool_a, tool_b):

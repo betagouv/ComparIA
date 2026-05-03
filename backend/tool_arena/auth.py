@@ -8,11 +8,15 @@ Uses the MCP SDK's OAuthClientProvider which handles:
 Token storage strategy:
 - Production (Redis available): RedisTokenStorage — persists across Railway deploys
 - Local dev (no Redis): FileTokenStorage — writes to .oauth_tokens/ on disk
-- Bootstrap: if {SERVER_ID}_REFRESH_TOKEN env var exists and no stored tokens,
-  seeds the initial refresh_token so the SDK can refresh without browser auth
 
-One-time setup: run `uv run python -m scripts.auth_setup <tool_id>` locally
-to obtain tokens via browser auth. The refresh_token persists in Redis.
+Tokens are seeded via ``POST /admin/tool-arena/oauth/seed`` after running
+``scripts/auth_setup.py`` locally. There is no env-var bootstrap: the prior
+``{SERVER_ID}_REFRESH_TOKEN`` env-var path was removed because it silently
+re-seeded a revoked (rotated) refresh_token whenever Redis was wiped.
+
+A Redis distributed lock (``oauth_refresh_lock:{server_id}``) is held for the
+duration of a token refresh so multi-replica deployments cannot clobber each
+other when refresh_token rotation is enabled upstream.
 """
 
 import asyncio
@@ -114,60 +118,81 @@ def _get_storage(server_id: str) -> RedisTokenStorage | FileTokenStorage:
         return FileTokenStorage(server_id)
 
 
-def _bootstrap_tokens_from_env(server: MCPServerConfig, storage) -> None:
-    """Pre-seed tokens from env var ONLY if storage has no refresh_token yet.
+REDIS_REFRESH_LOCK_KEY = "oauth_refresh_lock:{server_id}"
+REFRESH_LOCK_TTL_MS = 30_000  # 30s — refresh usually <2s; generous for slow IdPs.
 
-    Looks for {SERVER_ID}_REFRESH_TOKEN env var (e.g. CLARIFEYE_REFRESH_TOKEN).
-    Seeds the storage with an expired access_token + the refresh_token so the
-    SDK refreshes automatically on first request.
 
-    IMPORTANT — refresh-token rotation safety: many OAuth providers (including
-    Clarifeye) rotate the refresh_token on every refresh. The original bootstrap
-    token is then revoked. If we re-seeded from the env var on every process
-    start, we would clobber the rotated token in storage and replay the revoked
-    one on the next request — making the integration "work the first time, then
-    fail intermittently after every restart". So once storage has any
-    refresh_token, treat it as authoritative. To force a re-seed (e.g. after
-    rotating the env var manually), clear the storage entry first.
+async def _with_refresh_lock(
+    server_id: str,
+    storage: "RedisTokenStorage | FileTokenStorage",
+    do_refresh,
+):
+    """Run ``do_refresh()`` while holding a Redis distributed lock.
+
+    Prevents two replicas from refreshing the same OAuth refresh_token
+    concurrently. Clarifeye rotates refresh_tokens on every refresh — without
+    a lock, the loser of the race holds a revoked token.
+
+    Strategy:
+      * Try ``SET NX PX`` to acquire ``oauth_refresh_lock:{server_id}``.
+      * If acquired, run ``do_refresh()`` and release the key in ``finally``.
+      * If not acquired, sleep with exponential backoff (200/400/800/1600/3200
+        ms, max 5 attempts). After each sleep, re-check storage: if a fresh
+        token appeared, return ``None`` and let the caller use it instead of
+        re-refreshing.
+      * If we exhaust attempts, fall through and run ``do_refresh()`` anyway —
+        better to risk a clobber than to deadlock the request indefinitely.
+
+    For ``FileTokenStorage`` (single-process dev) the lock is a no-op.
     """
-    env_key = f"{server.id.upper()}_REFRESH_TOKEN"
-    refresh_token = os.environ.get(env_key, "")
-    if not refresh_token:
-        return
+    if not isinstance(storage, RedisTokenStorage):
+        return await do_refresh()
 
-    stored_data = None
-    if isinstance(storage, FileTokenStorage):
-        p = storage._dir / "tokens.json"
-        if p.exists():
-            stored_data = json.loads(p.read_text())
-    elif isinstance(storage, RedisTokenStorage):
-        raw = storage._redis.get(REDIS_TOKEN_KEY.format(server_id=server.id))
-        if raw:
-            stored_data = json.loads(raw)
+    redis_client = storage._redis
+    lock_key = REDIS_REFRESH_LOCK_KEY.format(server_id=server_id)
+    lock_value = f"{os.getpid()}:{asyncio.get_event_loop().time()}"
 
-    if stored_data and stored_data.get("refresh_token"):
-        # Storage is populated — don't risk overwriting a rotated token.
-        logger.debug(
-            "OAuth bootstrap skipped for %s: storage already has a refresh_token",
-            server.id,
+    acquired = False
+    try:
+        acquired = bool(
+            redis_client.set(lock_key, lock_value, nx=True, px=REFRESH_LOCK_TTL_MS)
         )
-        return
+        if acquired:
+            return await do_refresh()
 
-    bootstrap = OAuthToken(
-        access_token="",
-        token_type="Bearer",
-        refresh_token=refresh_token,
-    )
+        # Wait for the holder; check storage between sleeps so we can short-
+        # circuit when a fresh token appears.
+        backoff_ms = 200
+        for _ in range(5):
+            await asyncio.sleep(backoff_ms / 1000.0)
+            existing = await storage.get_tokens()
+            if existing is not None and existing.access_token and existing.access_token not in (
+                "",
+                "bootstrap-pending-refresh",
+            ):
+                logger.debug(
+                    "Refresh lock waiter for %s saw a fresh token; skipping refresh",
+                    server_id,
+                )
+                return None
+            backoff_ms = min(backoff_ms * 2, 3200)
 
-    if isinstance(storage, FileTokenStorage):
-        (storage._dir / "tokens.json").write_text(bootstrap.model_dump_json(indent=2))
-    elif isinstance(storage, RedisTokenStorage):
-        storage._redis.set(
-            REDIS_TOKEN_KEY.format(server_id=server.id),
-            bootstrap.model_dump_json(),
+        # Last resort: take the lock by force and refresh anyway.
+        logger.warning(
+            "Refresh lock for %s held by another holder beyond backoff window; "
+            "proceeding without lock",
+            server_id,
         )
-
-    logger.info("Bootstrapped OAuth tokens for %s from %s env var", server.id, env_key)
+        return await do_refresh()
+    finally:
+        if acquired:
+            try:
+                # Best-effort release; the TTL covers crashes.
+                stored = redis_client.get(lock_key)
+                if stored == lock_value:
+                    redis_client.delete(lock_key)
+            except Exception as exc:  # noqa: BLE001
+                logger.debug("Refresh lock release for %s failed: %s", server_id, exc)
 
 
 class CompaRAGOAuthProvider(OAuthClientProvider):
@@ -178,11 +203,15 @@ class CompaRAGOAuthProvider(OAuthClientProvider):
     token_url from mcp_servers.json so refresh works on the very first request.
     """
 
-    def __init__(self, token_url: str, **kwargs):
+    def __init__(self, token_url: str, server_id: str | None = None, **kwargs):
         super().__init__(**kwargs)
         self._configured_token_url = token_url
+        # Stored so the lock helper can scope to this server. Optional so
+        # existing tests that build the provider directly continue to work.
+        self._server_id = server_id
 
-    async def _refresh_token(self) -> httpx.Request:
+    async def _build_refresh_request(self) -> httpx.Request:
+        """Original refresh request builder — extracted so the lock can wrap it."""
         if not self.context.current_tokens or not self.context.current_tokens.refresh_token:
             raise OAuthTokenError("No refresh token available")
         if not self.context.client_info or not self.context.client_info.client_id:
@@ -206,6 +235,36 @@ class CompaRAGOAuthProvider(OAuthClientProvider):
         refresh_data, headers = self.context.prepare_token_auth(refresh_data, headers)
 
         return httpx.Request("POST", token_url, data=refresh_data, headers=headers)
+
+    async def _refresh_token(self) -> httpx.Request:
+        """Wrap the SDK refresh in a Redis distributed lock to avoid clobber.
+
+        We override the SDK's seam (rather than guarding the wider
+        ``async_auth_flow``) because this is the narrowest place where rotation
+        actually matters. If a peer replica refreshed while we were waiting,
+        the storage already has fresh tokens — but the SDK still needs a
+        valid ``httpx.Request`` from this method to drive the next call. We
+        therefore always build the request, but the lock ensures that only
+        one replica is mid-flight against the IdP at a time.
+        """
+        if self._server_id is None:
+            return await self._build_refresh_request()
+
+        storage = self.context.storage  # set by SDK on init
+        if not isinstance(storage, (RedisTokenStorage, FileTokenStorage)):
+            return await self._build_refresh_request()
+
+        result = await _with_refresh_lock(
+            self._server_id,
+            storage,
+            self._build_refresh_request,
+        )
+        if result is None:
+            # A peer replica already refreshed; reuse its result by issuing the
+            # same request shape — the SDK's downstream flow will see the new
+            # access_token in storage on the next get_tokens() call.
+            return await self._build_refresh_request()
+        return result
 
 
 async def _redirect_handler(url: str) -> None:
@@ -246,8 +305,9 @@ def _read_stored_client_info(
 def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
     """Build an OAuthClientProvider for an OAuth2-authenticated MCP server.
 
-    Token storage: Redis in production, file on disk for local dev.
-    Initial tokens bootstrapped from env var or obtained via auth_setup.py.
+    Token storage: Redis in production, file on disk for local dev. Tokens are
+    seeded by ``POST /admin/tool-arena/oauth/seed`` after running
+    ``scripts/auth_setup.py`` locally.
 
     Client_info handling: pre-seeded from env (client_id + secret env var). If
     the secret env var is missing or empty, we keep any previously-stored
@@ -258,9 +318,6 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
     client_secret = os.environ.get(auth.client_secret_env, "")
 
     storage = _get_storage(server.id)
-
-    # Bootstrap refresh token from env var if no tokens in storage
-    _bootstrap_tokens_from_env(server, storage)
 
     client_metadata = OAuthClientMetadata(
         redirect_uris=["http://localhost:9876/callback"],
@@ -310,6 +367,7 @@ def build_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
 
     return CompaRAGOAuthProvider(
         token_url=auth.token_url,
+        server_id=server.id,
         server_url=str(server.endpoint),
         client_metadata=client_metadata,
         storage=storage,
@@ -331,6 +389,36 @@ def get_oauth_provider(server: MCPServerConfig) -> CompaRAGOAuthProvider:
 def _clear_token_cache() -> None:
     """Clear provider cache. Used for test isolation."""
     _provider_cache.clear()
+
+
+def _invalidate_cache(server_id: str) -> None:
+    """Drop the cached OAuth provider for one server.
+
+    Called after the admin re-key endpoint writes new tokens so the next call
+    to ``get_oauth_provider`` rebuilds with the freshly seeded storage.
+    """
+    _provider_cache.pop(server_id, None)
+
+
+async def seed_tokens(
+    server: MCPServerConfig,
+    refresh_token: str,
+    access_token: str | None = None,
+    expires_in: int | None = None,
+) -> None:
+    """Write a freshly-minted refresh_token (+ optional access_token) to storage.
+
+    Used by the admin re-key endpoint. If ``access_token`` is None we write a
+    sentinel + 1s expiry so the SDK refreshes on first use.
+    """
+    storage = _get_storage(server.id)
+    token = OAuthToken(
+        access_token=access_token or "bootstrap-pending-refresh",
+        token_type="Bearer",
+        refresh_token=refresh_token,
+        expires_in=expires_in if access_token else 1,
+    )
+    await storage.set_tokens(token)
 
 
 async def prewarm_oauth_provider(server: MCPServerConfig) -> bool:
