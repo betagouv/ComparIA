@@ -1,5 +1,5 @@
 fastmcp>=2.0.0
-llama-index>=0.11
-llama-index-embeddings-huggingface>=0.3
-llama-index-llms-litellm>=0.2
-sentence-transformers>=3.0
+llama-index-core>=0.12
+llama-index-readers-file>=0.4
+llama-index-embeddings-openai>=0.3
+llama-index-llms-openai>=0.3
