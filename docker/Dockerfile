@@ -29,6 +29,7 @@ COPY utils /app/utils
 COPY templates /app/templates
 COPY mcp_servers.json /app/mcp_servers.json
 COPY .oauth_tokens /app/.oauth_tokens
+COPY documents_index.json /app/documents_index.json
 
 EXPOSE 80
 
