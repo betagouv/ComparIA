@@ -94,7 +94,7 @@
 
           <Link
             button
-            href="https://comparia.getgrist.com/forms/h2i36mSYhJsAyb5r4Bee5c/29"
+            href="https://formulaire.beta.numerique.gouv.fr/duels-de-l-ia"
             text="Recevoir le kit facilitateur"
             size="lg"
             class="w-full!"
@@ -202,7 +202,7 @@
 
           <Link
             button
-            href="https://comparia.getgrist.com/forms/h2i36mSYhJsAyb5r4Bee5c/29"
+            href="https://formulaire.beta.numerique.gouv.fr/duels-de-l-ia"
             text="Recevoir le kit facilitateur"
             size="lg"
           />

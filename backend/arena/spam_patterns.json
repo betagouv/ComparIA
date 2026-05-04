@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "description": "Regex patterns to detect prompt injection spam. Blocks structured prompt template formats that no legitimate user would type.",
   "patterns": [
     {
@@ -67,9 +67,30 @@
     },
     {
       "name": "fake_session_id_prefix",
-      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{6,}\\s*[\\]\\)]\\s*(?:User|Q|Assistant|System)\\s*:",
+      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{4,}(?:[-_][0-9a-f]{4,})*\\s*[\\]\\)]",
       "flags": "IGNORECASE|MULTILINE",
-      "description": "Bot-generated prompts prefixed with fake session/trace IDs like '[trace-01598e97...] User: hi' or '(session ref-f7b8a24f...) Q: say OK'. Legitimate users don't prefix messages with hex session IDs.",
+      "description": "Bot-generated prompts prefixed with fake session/trace IDs like '[trace-01598e97...]' or '(session ref-f7b8a24f...)'. Legitimate users don't prefix messages with hex session IDs.",
+      "enabled": true
+    },
+    {
+      "name": "roleplay_stay_in_character",
+      "regex": "\\[\\s*ALWAYS\\s+STAY\\s+IN\\s+CHARACTER\\s*\\]",
+      "flags": "IGNORECASE",
+      "description": "Roleplay system instruction block '[ALWAYS STAY IN CHARACTER]' used in jailbreak prompts pasted from character chat platforms.",
+      "enabled": true
+    },
+    {
+      "name": "roleplay_never_speak_for",
+      "regex": "\\[\\s*NEVER\\s+speak\\s+(?:for|as)\\s+",
+      "flags": "IGNORECASE",
+      "description": "Roleplay system instruction '[NEVER speak for X]' / '[NEVER speak as X]' used in jailbreak prompts.",
+      "enabled": true
+    },
+    {
+      "name": "canned_followup_probe",
+      "regex": "^\\s*Following on from that,\\s*I'?d like to ask\\s*:",
+      "flags": "IGNORECASE|MULTILINE",
+      "description": "Canned bot continuation probe 'Following on from that, I'd like to ask:' used to test free-tier endpoints with trivial follow-ups (e.g. 'say OK', 'hi').",
       "enabled": true
     },
     {
