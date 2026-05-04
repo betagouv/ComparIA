@@ -131,8 +131,8 @@ def _compute_rankings_for_group(
     if not all_battles:
         return RankingResult(timestamp=time.time())
 
-    # Bootstrap gives (median, lower_2.5, upper_97.5) per model
-    ci = bootstrap_confidence_intervals(all_battles, n_samples=100)
+    # (point_estimate, lower_2.5, upper_97.5) per model
+    ci = bootstrap_confidence_intervals(all_battles)
 
     # Count matches and wins per model
     match_counts: dict[str, int] = defaultdict(int)
@@ -142,13 +142,13 @@ def _compute_rankings_for_group(
         match_counts[b] += 1
         win_counts[winner] += 1
 
-    # Sort by bootstrap median Elo descending
+    # Sort by point-estimate Elo descending
     sorted_models = sorted(ci, key=lambda m: -ci[m][0])
     n_total = len(sorted_models)
 
     rankings: dict[str, DatasetData] = {}
     for rank, model in enumerate(sorted_models, 1):
-        elo_median, elo_lower, elo_upper = ci[model]
+        elo_point, elo_lower, elo_upper = ci[model]
         n_match = match_counts.get(model, 0)
         wins = win_counts.get(model, 0)
 
@@ -166,7 +166,7 @@ def _compute_rankings_for_group(
                 rank_worst -= 1
 
         # Mean win probability: P(i beats j) = s_i / (s_i + s_j), averaged
-        strength_i = 10 ** ((elo_median - 1000) / 400)
+        strength_i = 10 ** ((elo_point - 1000) / 400)
         win_probs = []
         for other in sorted_models:
             if other == model:
@@ -176,7 +176,7 @@ def _compute_rankings_for_group(
         mean_win_prob = sum(win_probs) / len(win_probs) if win_probs else 0.5
 
         rankings[model] = DatasetData(
-            elo=round(elo_median),
+            elo=round(elo_point),
             score_p2_5=round(elo_lower),
             score_p97_5=round(elo_upper),
             rank=rank,
