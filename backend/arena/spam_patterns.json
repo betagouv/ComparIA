@@ -67,7 +67,7 @@
     },
     {
       "name": "fake_session_id_prefix",
-      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{6,}\\s*[\\]\\)]",
+      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{4,}(?:[-_][0-9a-f]{4,})*\\s*[\\]\\)]",
       "flags": "IGNORECASE|MULTILINE",
       "description": "Bot-generated prompts prefixed with fake session/trace IDs like '[trace-01598e97...]' or '(session ref-f7b8a24f...)'. Legitimate users don't prefix messages with hex session IDs.",
       "enabled": true
