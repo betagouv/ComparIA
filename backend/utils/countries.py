@@ -62,11 +62,10 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
     """
     from psycopg2 import sql
 
-    cache_key = REDIS_VOTE_COUNT_KEY.format(country_code=country_code)
     # Try Redis first
     client = get_redis_client()
     try:
-        count = client.get(cache_key)
+        count = client.get(REDIS_VOTE_COUNT_KEY)
         assert not isinstance(count, Awaitable)
         if count is not None:
             return int(count)
@@ -98,7 +97,7 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         result = res[0] if res and res[0] is not None else 0
 
         try:
-            client.setex(cache_key, ttl, result)
+            client.setex(REDIS_VOTE_COUNT_KEY, ttl, result)
         except Exception as e:
             logger.error(f"Error setting {country_code} count in Redis: {e}")
 
@@ -119,7 +118,7 @@ def get_country_portal_ranking(country_portal: CountryPortal) -> RankingResult |
 
     try:
         client = get_redis_client()
-        data = client.get(REDIS_RANKING_KEY.format(country_portal=country_portal))
+        data = client.get(REDIS_RANKING_KEY)
         assert not isinstance(data, Awaitable)
 
         if data is None:
