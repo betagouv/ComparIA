@@ -12,11 +12,24 @@ services:
       - "3002:3000"
 
   backend-da:
-    env_file: .env.da
     environment:
       LOGDIR: /data
+      DEFAULT_COUNTRY_PORTAL: da
       COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://postgres:postgres@postgres-da:5432/comparia_da}"
       COMPARIA_REDIS_HOST: redis-da
+      OPENROUTER_API_KEY:
+      ORDBOGEN_API_KEY:
+      GOOGLE_APPLICATION_CREDENTIALS:
+      HF_PUSH_DATASET_KEY_DA:
+      AWS_SECRET_ACCESS_KEY:
+      AWS_ACCESS_KEY_ID:
+      AWS_ENDPOINT_URL:
+      AWS_DEFAULT_REGION:
+      SENTRY_DSN:
+      SENTRY_ENVIRONMENT:
+      SENTRY_SAMPLE_RATE:
+      LOG_FORMAT:
+      ALTCHA_HMAC_KEY:
     build:
       context: ../../..
       dockerfile: devops/docker/Dockerfile

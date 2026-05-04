@@ -60,6 +60,9 @@ devops/db-init/init-db.sql
 devops/instances/fr/.env.fr
 devops/instances/da/.env.da
 
+# KeePass databases
+*.kdbx
+
 # Secrets
 model-info-file.json
 register-api-endpoint-file*.json

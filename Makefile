@@ -15,6 +15,10 @@ COMPARIA_REDIS_HOST ?= localhost
 export COMPARIA_DB_URI
 export COMPARIA_REDIS_HOST
 
+KEEPASS_DB ?= $(HOME)/comparia.kdbx
+KEEPASS_GROUP_FR ?= comparia/instances/fr
+KEEPASS_GROUP_DA ?= comparia/instances/da
+
 help: ## Display this help
 	@echo "Available commands for compar:IA:"
 	@echo ""
@@ -50,7 +54,7 @@ redis: ## Launch Redis using docker compose
 
 up-fr: ## Launch FR instance (frontend + backend + postgres + redis)
 	@$(MAKE) db-generate-init
-	docker compose -f devops/instances/fr/app.compose.fr.yml up -d --build
+	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)") && docker compose -f devops/instances/fr/app.compose.fr.yml up -d --build
 
 down-fr: ## Stop FR instance
 	docker compose -f devops/instances/fr/app.compose.fr.yml down
@@ -60,7 +64,7 @@ logs-fr: ## Show logs for FR instance
 
 up-da: ## Launch DA instance (frontend + backend + postgres + redis)
 	@$(MAKE) db-generate-init
-	docker compose -f devops/instances/da/app.compose.da.yml up -d --build
+	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)") && docker compose -f devops/instances/da/app.compose.da.yml up -d --build
 
 down-da: ## Stop DA instance
 	docker compose -f devops/instances/da/app.compose.da.yml down
