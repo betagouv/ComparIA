@@ -206,6 +206,7 @@
                     "title": "Esiste un legame tra la nazionalità dell'azienda o del laboratorio che ha ideato il modello e la sua capacità di parlare più lingue?"
                 },
                 "5": {
+                    "desc": "<p>Pochi portatori d'interesse sono \"trasparenti” riguardo alle fonti di dati utilizzate per l'addestramento dei corpus. Queste informazioni sono spesso riservate per ragioni legali e commerciali. </p>",
                     "title": "È possibile conoscere i dati di addestramento dei modelli?"
                 }
             },
@@ -224,12 +225,14 @@
                     "title": "Se includo un link URL in una domanda, il modello può accedervi?"
                 },
                 "4": {
+                    "desc": "<p> A volte i modelli perdono il filo di una conversazione a causa della loro <strong> finestra di contesto limitata. </strong> Questa \"finestra\" rappresenta la quantità di informazioni precedenti che il modello può conservare, fungendo da memoria breve termine. Più piccola è la finestra, maggiore è la probabilità che il modello dimentichi elementi chiave della conversazione, il che porta a risposte incoerenti. Conversazioni lunghe complesse possono saturare rapidamente la finestra di contesto, aumentando il rischio di incoerenza. </p><p> Per analogia, immaginiamo una persona che ricorda solo le ultime cinque frasi di una conversazione. Se la conversazione è breve, riesce a seguirla. Ma se la conversazione si allunga, la persona dimenticherà informazioni cruciali, rendendo le sue risposte incoerenti. Allo stesso modo, un modello di intelligenza artificiale con una piccola finestra di contesto può \"perdere il filo\" di una conversazione quando vengono scambiate troppe informazioni, dimenticando elementi chiave e producendo risposte che non hanno più senso </p>",
                     "title": "Perché alcuni modelli perdono rapidamente il filo della conversazione?"
                 },
                 "5": {
                     "title": "Quali sono le migliori pratiche per fornire suggerimenti?"
                 },
                 "6": {
+                    "desc": "<p> L'intelligenza artificiale conversazionale risponde direttamente formulando frasi basate su un ampio set di dati su cui è stato addestrato il modello, mentre un motore di ricerca suggerisce link e risorse che l'utente può esplorare in autonomia. </p>",
                     "title": "Qual è la differenza tra porre una domanda a un modello di intelligenza artificiale conversazionale e fare una ricerca su Google?"
                 }
             },
@@ -269,10 +272,91 @@
             "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato al gestore del sito web un problema di accessibilità che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
             "remedyList": "Puoi :",
             "remedyTitle": "Procedura di ricorso",
+            "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato </strong> . Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
             "stateNavigate": "naviga tra tutte le pagine del sito utilizzando una tastiera",
             "statePrefs": "adatta il sito alle tue preferenze (dimensione del carattere, zoom dello schermo, modifica della tipografia, ecc.) senza perdita di contenuti",
             "stateScreenReader": "visualizza il sito web con un lettore di schermo.",
-            "stateTitle": "Stato di conformità"
+            "stateTitle": "Stato di conformità",
+            "title": "Dichiarazione di accessibilità"
+        },
+        "legal": {
+            "a11yDesc": "Il rispetto degli standard di accessibilità digitale è un obiettivo successivo, ma ci impegniamo a rendere questo sito accessibile a tutti.",
+            "a11yTitle": "Accessibilità",
+            "directorDesc": "Il signor Romain Delassus, responsabile del dipartimento digitale presso il Ministero della Cultura",
+            "directorTitle": "Direttore della pubblicazione",
+            "editorDesc": "Questo sito web è pubblicato dal Ministero Francese della Cultura, 182, rue Saint-Honoré 75001 Parigi",
+            "editorTitle": "Redattore",
+            "hostingDesc": "Questo sito è ospitato da OVH SAS (<a {linkProps}>https://www.ovh.com</a>) la cui sede legale si trova in 2 rue Kellermann - 59100 Roubaix - Francia.",
+            "hostingTitle": "Hosting di siti web",
+            "reportA11y": "Se riscontri un problema di accessibilità che ti impedisce di accedere a contenuti o funzionalità del sito, ti invitiamo a comunicarcelo.",
+            "reportA11yDesc": "Per saperne di più sulla politica statale in materia di accessibilità digitale: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numeriche</a>",
+            "reportDesc": "Se non ricevi una risposta tempestiva da parte nostra, hai il diritto di inviare i tuoi reclami o una procedura di ricorso al Difensore dei diritti.",
+            "reportTitle": "Segnala un malfunzionamento",
+            "securityCertif": "Il sito è protetto da un certificato elettronico, rappresentato dall'icona di un lucchetto nella maggior parte dei browser. Questa protezione contribuisce alla riservatezza delle comunicazioni.",
+            "securityNoMail": "In nessun caso i servizi associati alla piattaforma invieranno e-mail che richiedano l'inserimento di informazioni personali.",
+            "securityTitle": "Sicurezza",
+            "sources": "Salvo diversa indicazione, tutti i testi presenti su questo sito sono soggetti alla licenza <a {etalabLinkProps}>Etalab Open 2.0</a>. Il codice sorgente di questa applicazione è liberamente riutilizzabile e accessibile su <a {githubLinkProps}>GitHub</a>.",
+            "title": "Avviso legale"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "Esatto, non era necessario cliccare su un blocco che occupava metà della pagina per dare il proprio consenso all'utilizzo dei cookie, anche se non sapevi cosa significasse!",
+            "cookiesBannerNoNeed": "Niente di eccezionale, nessun trattamento speciale legato al dominio .gouv.fr. Stiamo semplicemente rispettando la legge, che stabilisce che alcuni strumenti di tracciamento dell'audience, opportunamente configurati per rispettare la privacy, sono esenti da autorizzazione preventiva.",
+            "cookiesBannerTitle": "Perché questo sito non mostra un banner per il consenso ai cookie?",
+            "cookiesDesc": "Questo sito web inserisce un piccolo file di testo (un \"cookie\") sul tuo computer quando lo visiti. Ciò ci consente di misurare il numero di visite e capire quali pagine vengono visualizzate più frequentemente.",
+            "cookiesDescMore": "Puoi scegliere di non consentire il tracciamento della tua attività di navigazione su questo sito web. Ciò tutelerà la tua privacy, ma impedirà anche al proprietario del sito di apprendere dalle tue azioni e di creare un'esperienza migliore per te e per gli altri utenti.",
+            "cookiesTitle": "Cookie installati e consenso",
+            "dataAccessDatasets": "I dati relativi al dialogo e alle preferenze degli utenti vengono distribuiti sulla piattaforma Hugging Face sotto la licenza Open License 2.0 di Etalab tramite l'account del Ministero della Cultura (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Certamente! Le statistiche sull'utilizzo del sito sono disponibili gratuitamente all'indirizzo <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Contribuisco ad arricchire i vostri dati, posso accedervi?",
+            "dataExtraCountry": "Paese destinatario: Francia",
+            "dataExtraHost": "Subappaltatore: OVH",
+            "dataExtraTitle": "Chi ci aiuta a elaborare i dati?",
+            "dataExtraWarranty": "Garanzie: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Processo eseguito: Hosting",
+            "dataRespDesc": "Il dipartimento digitale del Ministero Francese della Cultura è responsabile del trattamento dei vostri dati personali.",
+            "dataRespTitle": "Chi è responsabile del trattamento dei dati?",
+            "dataTimeDesc": "I dati relativi agli utenti e alle loro conversazioni con i modelli vengono conservati a partire dalla registrazione del voto di preferenza.",
+            "dataTimeTitle": "Per quanto tempo conserviamo questi dati?",
+            "dataUseDesc": "In ogni caso, l'editore si impegna ad adottare le misure necessarie per garantire l'anonimizzazione dei dati relativi ai dialoghi prima di renderli pubblici.",
+            "dataUseTitle": "Quali elaborazioni vengono effettuate sui dati della conversazione?",
+            "desc": "Il servizio è pubblicato dal dipartimento digitale del Ministero Francese della Cultura.",
+            "privacyData": "I dati raccolti sul sito sono i seguenti:",
+            "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli: domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli.",
+            "privacyDataForm": "Dati relativi al questionario “Aiutaci a migliorare compar:AI”.",
+            "privacyDesc": "Il servizio non tratta dati personali come definiti dalla CNIL, ossia qualsiasi informazione riguardante una persona fisica che può essere identificata, direttamente o indirettamente.",
+            "privacyResp": "L'utente è responsabile dei dati o dei contenuti inseriti nel campo fornito dalla piattaforma. Accettando i <a {linkProps}>termini di utilizzo</a>, l'utente si impegna a non trasmettere alcuna informazione che possa identificare lui stesso o terzi.",
+            "privacyTitle": "Trattiamo dati a carattere personale?",
+            "tallyData": "Quando compili uno di questi moduli, i dati che inserisci vengono trasmessi e ospitati da Tally (Tally BV, Belgio). Tally si impegna a non utilizzare i tuoi dati per scopi commerciali e a rispettare il GDPR. Per ulteriori informazioni, consulta l'Informativa sulla privacy di Tally <a {tallyPrivacyLinkProps}>Privacy Policy</a>.",
+            "tallyDesc": "Questo sito utilizza <a {tallyLinkProps}>Tally</a>, un servizio online per la creazione di moduli, per due funzionalità:",
+            "tallyFeedback": "Il modulo \"La tua opinione\" ci permette di raccogliere il tuo feedback sul servizio",
+            "tallyNewsletter": "Il modulo di iscrizione alla newsletter (newsletter) compar:IA",
+            "tallyTitle": "Moduli Tally",
+            "title": "Politica sulla riservatezza"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Il sito web compar:IA offre un accesso facile e gratuito a un'ampia varietà di modelli di intelligenza artificiale conversazionale, sensibilizzando così il pubblico sulle diverse sfide dell'IA generativa: diversità, pregiudizi e impatto ambientale. Inoltre, gli insiemi di dati relativi a domande e preferenze raccolti sono condivisi come open source con licenza MIT/Etalab 2.0.",
+                "2": "Gli utenti target del servizio Compar:IA sono stati identificati attraverso interviste agli utenti e una fase preliminare di analisi dei bisogni.",
+                "3": "Pertanto, tutti i cittadini sono interessati in quanto potenziali utenti, ma in particolare insegnanti, alunni, studenti, mediatori digitali, formatori di intelligenza artificiale, nonché ricercatori (informatica, intelligenza artificiale, scienze umane e sociali) e aziende interessate ad analizzare o utilizzare gli insiemi di dati condivisi in open source. Di conseguenza, il servizio digitale soddisfa le loro esigenze attraverso le seguenti caratteristiche: testare e confrontare modelli gratuitamente e utilizzare dati open source condivisi.",
+                "4": "Il servizio compar:IA si inserisce in un approccio di ecodesign volto a ridurre l'impatto ambientale. A tal fine, la presente dichiarazione è stata redatta nell'ambito dell'attuazione del Quadro generale di ecodesign per i servizi digitali (RGESN, versione 2024). Il RGESN, elaborato da Arcep e Arcom in collaborazione con ADEME, DINUM, CNIL e Inria, è disponibile sul <a {linkProps}>sito web di Arcep</a>.",
+                "title": "Scopo di questo servizio"
+            },
+            "2": {
+                "1": "L'ecodesign dei servizi digitali è un approccio volto a ridurre e limitare l'impatto ambientale di un servizio fin dalla fase di progettazione e per tutto il suo ciclo di vita.",
+                "2": {
+                    "1": "Progettare servizi digitali più sostenibili per prolungare la durata di vita dei dispositivi;",
+                    "2": "Promuovere un approccio di sobrietà ambientale di fronte a strategie volte a catturare l'attenzione dell'utente, in linea con gli obiettivi ambientali internazionali;",
+                    "3": "Ridurre le risorse IT utilizzate, ottimizzare il traffico dati e l'uso dell'infrastrutture digitali;",
+                    "4": "Aumentare il livello di trasparenza sull'impatto ambientale dei servizi digitali.",
+                    "title": "La sua attuazione persegue quattro obiettivi principali:"
+                },
+                "3": {
+                    "1": "Limita le dimensioni di una pagina",
+                    "2": "Limita la complessità di una pagina",
+                    "3": "Limitare il numero di richieste al server",
+                    "4": "Limitare il consumo energetico necessario per ospitare il servizio"
+                }
+            }
         }
     }
 }
