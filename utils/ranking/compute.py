@@ -7,6 +7,7 @@ and PreferencesData shapes from backend/llms/models.py.
 """
 
 import logging
+import math
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -141,6 +142,9 @@ def _compute_rankings_for_group(
         match_counts[a] += 1
         match_counts[b] += 1
         win_counts[winner] += 1
+
+    # Drop degenerate models (never won or never lost in the full data)
+    ci = {m: v for m, v in ci.items() if not any(math.isnan(x) for x in v)}
 
     # Sort by point-estimate Elo descending
     sorted_models = sorted(ci, key=lambda m: -ci[m][0])
