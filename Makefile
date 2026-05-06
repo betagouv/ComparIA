@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr up-da down-da logs-da dataset-export-fr
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
 
 # Variables
 PYTHON := python3
@@ -24,8 +24,6 @@ help: ## Display this help
 	@echo ""
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
 
-
-
 ###################################
 # Shared - PostgreSQL and Redis init using docker
 ###################################
@@ -50,7 +48,6 @@ redis: ## Launch Redis using docker compose
 ###################################
 # Instance fr docker
 ###################################
-
 up-fr: ## Launch FR instance (frontend + backend + postgres + redis)
 	@$(MAKE) redis
 	@$(MAKE) db
@@ -62,6 +59,8 @@ down-fr: ## Stop FR instance
 logs-fr: ## Show logs for FR instance
 	docker compose -f devops/instances/fr/app.compose.fr.yml logs -f
 
+display-env-fr: ## Display env vars loaded from KeePass for FR instance
+	uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)"
 
 ###################################
 # Instance da docker
@@ -77,6 +76,8 @@ down-da: ## Stop DA instance
 logs-da: ## Show logs for DA instance
 	docker compose -f devops/instances/da/app.compose.da.yml logs -f
 
+display-env-da: ## Display env vars loaded from KeePass for DA instance
+	uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)"
 
 ###################################
 # Development with local code
@@ -138,7 +139,6 @@ check-requirements: ## Check that required tools are installed
 	@command -v $(NPM) >/dev/null 2>&1 || { echo "npm is required but not installed."; exit 1; }
 	@command -v $(UV) >/dev/null 2>&1 || { echo "uv is not installed. Run 'make install-backend' to install it."; }
 	@echo "All prerequisites are installed ✓"
-
 
 clean: ## Clean generated files
 	@echo "Cleaning..."
