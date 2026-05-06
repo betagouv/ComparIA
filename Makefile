@@ -28,8 +28,8 @@ help: ## Display this help
 # Shared - PostgreSQL and Redis init using docker
 ###################################
 
-db-generate-init: ## Generate devops/db-init/init-db.sql from schema files to init the db
-	@bash devops/db-init/generate-init-db.sh
+db-generate-init: ## Generate devops/instances/postgres/schema.sql from schema files
+	@bash devops/instances/postgres/generate-init-db.sh
 
 db: ## Launch and init Postgres database using docker compose
 	@$(MAKE) db-generate-init
@@ -38,7 +38,7 @@ db: ## Launch and init Postgres database using docker compose
 
 db-reset-data:
 	@echo "Removing docker dev data (volumes)..."
-	@docker compose -f devops/instances/db/postgres-simple.compose.yml down -v
+	@docker compose -f devops/instances/postgres/postgres-simple.compose.yml down -v
 
 redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."

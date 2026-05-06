@@ -57,6 +57,7 @@ val2014
 vqa_examples
 devops/docker/.env
 devops/db-init/init-db.sql
+devops/instances/postgres/schema.sql
 devops/instances/fr/.env.fr
 devops/instances/da/.env.da
 
