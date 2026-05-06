@@ -39,6 +39,7 @@ data = [
 ]
 devops = [
     "cyclopts>=4.7.0",
+    "keyring>=25.0.0",
     "pykeepass>=4.0.0",
 ]
 dev = [

@@ -60,7 +60,7 @@ logs-fr: ## Show logs for FR instance
 	docker compose -f devops/instances/fr/app.compose.fr.yml logs -f
 
 display-env-fr: ## Display env vars loaded from KeePass for FR instance
-	uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)"
+	uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)" --mask
 
 ###################################
 # Instance da docker
@@ -77,7 +77,7 @@ logs-da: ## Show logs for DA instance
 	docker compose -f devops/instances/da/app.compose.da.yml logs -f
 
 display-env-da: ## Display env vars loaded from KeePass for DA instance
-	uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)"
+	uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)" --mask
 
 ###################################
 # Development with local code
