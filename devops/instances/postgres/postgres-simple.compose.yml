@@ -1,0 +1,15 @@
+services:
+  postgres-simple:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: comparia_da
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ../../db-init/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  db-data:
