@@ -18,6 +18,8 @@ echo "Generating schema.sql from schema files..."
 
 > "$OUTPUT_FILE"
 
+# Base schema files only — migrations are for existing DBs and must not be
+# re-applied here since the base files already incorporate their changes.
 for sql_file in "$SCHEMAS_DIR"/*.sql; do
     if [ -f "$sql_file" ]; then
         table_name=$(basename "$sql_file" .sql)
@@ -28,18 +30,5 @@ for sql_file in "$SCHEMAS_DIR"/*.sql; do
         echo "" >> "$OUTPUT_FILE"
     fi
 done
-
-if [ -d "$MIGRATIONS_DIR" ]; then
-    for migration_file in "$MIGRATIONS_DIR"/*.sql; do
-        if [ -f "$migration_file" ]; then
-            filename=$(basename "$migration_file")
-            echo "  - migrations/$filename"
-            echo "-- MIGRATION: $filename" >> "$OUTPUT_FILE"
-            echo "" >> "$OUTPUT_FILE"
-            cat "$migration_file" >> "$OUTPUT_FILE"
-            echo "" >> "$OUTPUT_FILE"
-        fi
-    done
-fi
 
 echo "Successfully generated: $OUTPUT_FILE"
