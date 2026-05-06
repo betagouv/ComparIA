@@ -5,7 +5,6 @@ This module provides a unified interface to call different LLM APIs (OpenAI, Goo
 OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting, and error handling.
 """
 
-import json
 import logging
 from typing import TYPE_CHECKING, Generator, TypedDict, Union, cast
 
@@ -27,16 +26,6 @@ if TYPE_CHECKING:
     from backend.llms.models import Endpoint
 
 logger = logging.getLogger("languia")
-
-# Load Google Cloud credentials for Vertex AI if available
-vertex_credentials_json: str | None = None
-if settings.GOOGLE_APPLICATION_CREDENTIALS:
-    with open(settings.GOOGLE_APPLICATION_CREDENTIALS, "r") as file:
-        vertex_credentials = json.load(file)
-        vertex_credentials_json = json.dumps(vertex_credentials)
-else:
-    logger.warning("No Google creds detected!")
-    vertex_credentials_json = None
 
 
 def get_api_key(endpoint: "Endpoint") -> str | None:
@@ -66,10 +55,7 @@ def get_api_key(endpoint: "Endpoint") -> str | None:
     # Ordbogen.ai (Danish LLM)
     if endpoint.api_base and "ordbogen.ai" in endpoint.api_base:
         return settings.ORDBOGEN_API_KEY
-    # OpenRouter and Vertex AI are handled by LiteLLM reading env variables directly
-    # OPENROUTER_API_KEY and Google credentials are checked automatically
-    # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
-    # And no need for Vertex, handled with GOOGLE_APPLICATION_CREDENTIALS pointing to a json file
+    # OpenRouter is handled by LiteLLM reading OPENROUTER_API_KEY env variable directly
     return None
 
 
@@ -130,9 +116,6 @@ def litellm_stream_iter(
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
         litellm.failure_callback.append("sentry")
 
-    # Set Vertex AI location for Google Cloud models
-    litellm.vertex_location = endpoint.vertex_ai_location or settings.VERTEXAI_LOCATION
-
     # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
     #   extra_headers={
@@ -156,8 +139,6 @@ def litellm_stream_iter(
         "temperature": temperature,
         "max_tokens": max_new_tokens,
         "stream": True,  # Enable streaming for real-time responses
-        "vertex_credentials": vertex_credentials_json,
-        "vertex_ai_location": litellm.vertex_location,
     }
 
     # Use mock response for testing if enabled

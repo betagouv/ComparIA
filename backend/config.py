@@ -25,8 +25,6 @@ class Settings(BaseSettings):
     SENTRY_ENVIRONMENT: str = "dev"
     SENTRY_SAMPLE_RATE: float = 0.2
     OPENROUTER_API_KEY: str | None = None
-    GOOGLE_APPLICATION_CREDENTIALS: str | None = None
-    VERTEXAI_LOCATION: str | None = None
     ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None

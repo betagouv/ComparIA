@@ -52,7 +52,6 @@ class Endpoint(BaseModel):
     api_type: str | None = "openai"
     api_base: str | None = None
     api_version: str | None = None
-    vertex_ai_location: str | None = None
     api_model_id: str
 
 
