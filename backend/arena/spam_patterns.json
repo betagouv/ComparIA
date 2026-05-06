@@ -1,5 +1,5 @@
 {
-  "version": "1.3",
+  "version": "1.4",
   "description": "Regex patterns to detect prompt injection spam. Blocks structured prompt template formats that no legitimate user would type.",
   "patterns": [
     {
@@ -91,6 +91,20 @@
       "regex": "^\\s*Following on from that,\\s*I'?d like to ask\\s*:",
       "flags": "IGNORECASE|MULTILINE",
       "description": "Canned bot continuation probe 'Following on from that, I'd like to ask:' used to test free-tier endpoints with trivial follow-ups (e.g. 'say OK', 'hi').",
+      "enabled": true
+    },
+    {
+      "name": "trivial_short_prompt",
+      "regex": "^\\s*(?:hi|hello|hey|ok|okay|test|ping|say\\s+ok|say\\s+hi|say\\s+hello|hi\\s+or\\s+say\\s+ok)[\\s.!?]*$",
+      "flags": "IGNORECASE",
+      "description": "Whole-prompt trivial greetings/test pings ('hi', 'say OK', 'hello', 'test') used by bots to probe free-tier endpoints. Anchored to full string to avoid catching real prompts that contain these words.",
+      "enabled": true
+    },
+    {
+      "name": "fake_history_injection",
+      "regex": "(?:^|\\n)\\s*(?:For background,|Earlier you mentioned[:,]|Previously you (?:said|mentioned|told me))",
+      "flags": "IGNORECASE",
+      "description": "Fake conversation-history preamble used to trick models into thinking they had prior context: 'For background,...', 'Earlier you mentioned:...'. Legitimate users don't open with these.",
       "enabled": true
     },
     {
