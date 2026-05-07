@@ -10,12 +10,12 @@ seconds (default 28800 = 8h). Set --timeout 0 to disable caching.
 Usage:
     eval $(uv run --group devops python devops/keepassxc/load_env.py \
         --db ~/secrets.kdbx \
-        --group "comparia/instances/fr")
+        --group "instances/fr")
 
 In .envrc (direnv):
     eval $(uv run --group devops python $PWD/devops/keepassxc/load_env.py \
         --db ~/secrets.kdbx \
-        --group "comparia/instances/fr")
+        --group "instances/fr")
 """
 
 import getpass

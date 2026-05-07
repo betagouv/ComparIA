@@ -15,9 +15,9 @@ COMPARIA_REDIS_HOST ?= localhost
 export COMPARIA_DB_URI
 export COMPARIA_REDIS_HOST
 
-KEEPASS_DB ?= $(HOME)/comparia.kdbx
-KEEPASS_GROUP_FR ?= comparia/instances/fr
-KEEPASS_GROUP_DA ?= comparia/instances/da
+KEEPASS_DB ?= $(HOME)/comparia_dev.kdbx
+KEEPASS_GROUP_FR ?= instances/fr
+KEEPASS_GROUP_DA ?= instances/da
 
 help: ## Display this help
 	@echo "Available commands for compar:IA:"
