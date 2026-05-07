@@ -7,7 +7,8 @@ services:
       - backend-da
     environment:
       PUBLIC_API_LOCAL_URL: "http://backend-da:80"
-      PUBLIC_API_URL: "${PUBLIC_API_URL:-https://ai-arenaen.dk}"
+      PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8002}"
+      PUBLIC_API_DEV_MODE: "true"
     ports:
       - "3002:3000"
     networks:
@@ -22,11 +23,11 @@ services:
       OPENROUTER_API_KEY:
       ORDBOGEN_API_KEY:
       HF_PUSH_DATASET_KEY_DA:
-      SENTRY_DSN:
-      SENTRY_ENVIRONMENT:
-      SENTRY_SAMPLE_RATE:
-      LOG_FORMAT:
       ALTCHA_HMAC_KEY:
+      SENTRY_SAMPLE_RATE: "1.0"
+      SENTRY_ENV: "dev-da"
+      SENTRY_FRONT_DSN: "https://454e45b18f4ad93227ac60659a7d373c@sentry.incubateur.net/164"
+      SENTRY_DSN: "https://63791cc350514632a03f9907989499d7@sentry.incubateur.net/161"
     build:
       context: ../../..
       dockerfile: devops/docker/Dockerfile

@@ -7,7 +7,8 @@ services:
       - backend-fr
     environment:
       PUBLIC_API_LOCAL_URL: "http://backend-fr:80"
-      PUBLIC_API_URL: "${PUBLIC_API_URL:-https://comparia.beta.gouv.fr}"
+      PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8001}"
+      PUBLIC_API_DEV_MODE: "true"
     ports:
       - "3001:3000"
     networks:
@@ -22,11 +23,11 @@ services:
       OPENROUTER_API_KEY:
       ALBERT_API_KEY:
       HF_PUSH_DATASET_KEY:
-      SENTRY_DSN:
-      SENTRY_ENVIRONMENT:
-      SENTRY_SAMPLE_RATE:
-      LOG_FORMAT:
       ALTCHA_HMAC_KEY:
+      SENTRY_SAMPLE_RATE: "1.0"
+      SENTRY_ENV: "dev-fr"
+      SENTRY_FRONT_DSN: "https://454e45b18f4ad93227ac60659a7d373c@sentry.incubateur.net/164"
+      SENTRY_DSN: "https://63791cc350514632a03f9907989499d7@sentry.incubateur.net/161"
     build:
       context: ../../..
       dockerfile: devops/docker/Dockerfile
