@@ -90,6 +90,7 @@ def log_archived(
                     else ARCHIVED_QUERY.format(table_name=table_name)
                 ),
                 connection=conn,
+                schema_overrides={"archived_reason": pl.String},
             )
             all_items = all_items.with_columns(
                 archived=pl.col("archived")
