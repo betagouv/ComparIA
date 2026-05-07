@@ -10,13 +10,15 @@ services:
       PUBLIC_API_URL: "${PUBLIC_API_URL:-https://comparia.beta.gouv.fr}"
     ports:
       - "3001:3000"
+    networks:
+      - comparia-net
 
   backend-fr:
     environment:
       LOGDIR: /data
       DEFAULT_COUNTRY_PORTAL: fr
-      COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:-postgresql://postgres:postgres@postgres-fr:5432/comparia_fr}"
-      COMPARIA_REDIS_HOST: redis-fr
+      COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:-postgresql://comparia:comparia@postgres-fr:5432/comparia}"
+      COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
       ALBERT_API_KEY:
       HF_PUSH_DATASET_KEY:
@@ -30,3 +32,9 @@ services:
       dockerfile: devops/docker/Dockerfile
     ports:
       - "8001:80"
+    networks:
+      - comparia-net
+
+networks:
+  comparia-net:
+    external: true

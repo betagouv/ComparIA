@@ -28,10 +28,14 @@ help: ## Display this help
 # Shared - PostgreSQL and Redis init using docker
 ###################################
 
+network: ## Create shared Docker network (idempotent)
+	@docker network create comparia-net 2>/dev/null || true
+
 db-generate-init: ## Generate devops/instances/postgres/schema.sql from schema files
 	@bash devops/instances/postgres/generate-init-db.sh
 
 db: ## Launch and init Postgres database using docker compose
+	@$(MAKE) network
 	@$(MAKE) db-generate-init
 	@echo "Starting PostgreSQL database..."
 	docker compose -f devops/instances/postgres/postgres-simple.compose.yml up -d
@@ -41,6 +45,7 @@ db-reset-data:
 	@docker compose -f devops/instances/postgres/postgres-simple.compose.yml down -v
 
 redis: ## Launch Redis using docker compose
+	@$(MAKE) network
 	@echo "Starting Redis..."
 	docker compose -f devops/instances/redis/redis.compose.yml up -d
 

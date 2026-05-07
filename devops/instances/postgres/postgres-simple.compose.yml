@@ -2,8 +2,8 @@ services:
   postgres-simple:
     image: postgres:18
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: comparia
+      POSTGRES_PASSWORD: comparia
       POSTGRES_DB: comparia
     volumes:
       - db-data:/var/lib/postgresql
@@ -11,6 +11,15 @@ services:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     ports:
       - "127.0.0.1:5432:5432"
+    networks:
+      comparia-net:
+        aliases:
+          - postgres-fr
+          - postgres-da
 
 volumes:
   db-data:
+
+networks:
+  comparia-net:
+    external: true

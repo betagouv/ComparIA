@@ -10,13 +10,15 @@ services:
       PUBLIC_API_URL: "${PUBLIC_API_URL:-https://ai-arenaen.dk}"
     ports:
       - "3002:3000"
+    networks:
+      - comparia-net
 
   backend-da:
     environment:
       LOGDIR: /data
       DEFAULT_COUNTRY_PORTAL: da
-      COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://postgres:postgres@postgres-da:5432/comparia_da}"
-      COMPARIA_REDIS_HOST: redis-da
+      COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://comparia:comparia@postgres-da:5432/comparia_da}"
+      COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
       ORDBOGEN_API_KEY:
       HF_PUSH_DATASET_KEY_DA:
@@ -30,3 +32,9 @@ services:
       dockerfile: devops/docker/Dockerfile
     ports:
       - "8002:80"
+    networks:
+      - comparia-net
+
+networks:
+  comparia-net:
+    external: true
