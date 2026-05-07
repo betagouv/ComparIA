@@ -4,20 +4,20 @@
 PYTHON := python3
 UV := uv
 NPM := yarn
-BACKEND_PORT := 8001
+BACKEND_PORT := 8008
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
 
-# si non défini (utiliser les valeurs de dev local avec docker compose)
-COMPARIA_DB_URI ?= postgresql://postgres:postgres@localhost:5432/languia
+# Valeurs de dev local (sans docker)
+COMPARIA_DB_URI_FR ?= postgresql://comparia:comparia@localhost:5432/comparia
+COMPARIA_DB_URI_DA ?= postgresql://comparia:comparia@localhost:5432/comparia_da
 COMPARIA_REDIS_HOST ?= localhost
-# Exporter pour les sous-commandes
-export COMPARIA_DB_URI
 export COMPARIA_REDIS_HOST
 
 KEEPASS_DB ?= $(HOME)/comparia_dev.kdbx
 KEEPASS_GROUP_FR ?= instances/fr
 KEEPASS_GROUP_DA ?= instances/da
+KEEPASS_GROUP ?= $(KEEPASS_GROUP_FR)
 
 help: ## Display this help
 	@echo "Available commands for compar:IA:"
@@ -105,11 +105,15 @@ install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
 	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
-dev: ## Launch backend and frontend without Redis (Ctrl+C to stop)
-	@echo "Launching compar:IA..."
-	@echo "Backend: http://localhost:$(BACKEND_PORT)"
-	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
-	@$(MAKE) -j 2 dev-backend dev-frontend
+dev: ## Launch backend and frontend with FR env vars (Ctrl+C to stop)
+	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)") && \
+	COMPARIA_DB_URI=$(COMPARIA_DB_URI_FR) DEFAULT_COUNTRY_PORTAL=fr DEFAULT_LOCALE=fr \
+	$(MAKE) -j 2 dev-backend dev-frontend
+
+dev-da: ## Launch backend and frontend with DA env vars (Ctrl+C to stop)
+	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)") && \
+	COMPARIA_DB_URI=$(COMPARIA_DB_URI_DA) DEFAULT_COUNTRY_PORTAL=da DEFAULT_LOCALE=da \
+	$(MAKE) -j 2 dev-backend dev-frontend
 
 dev-backend: ## Launch only the backend (FastAPI + Gradio)
 	@echo "Starting backend on port $(BACKEND_PORT)..."

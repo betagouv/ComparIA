@@ -1253,6 +1253,7 @@ dependencies = [
     { name = "requests" },
     { name = "rich" },
     { name = "sentry-sdk" },
+    { name = "sqlalchemy" },
     { name = "uvicorn" },
 ]
 
@@ -1266,7 +1267,6 @@ data = [
     { name = "polars" },
     { name = "psycopg2-binary" },
     { name = "pyarrow" },
-    { name = "sqlalchemy" },
 ]
 dev = [
     { name = "autoflake" },
@@ -1303,6 +1303,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.5" },
     { name = "rich", specifier = ">=14.2.0" },
     { name = "sentry-sdk", specifier = ">=2.50.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.46" },
     { name = "uvicorn", specifier = ">=0.40.0" },
 ]
 
@@ -1316,7 +1317,6 @@ data = [
     { name = "polars", specifier = ">=1.37.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pyarrow", specifier = ">=23.0.0" },
-    { name = "sqlalchemy", specifier = ">=2.0.46" },
 ]
 dev = [
     { name = "autoflake", specifier = ">=2.3.1" },
