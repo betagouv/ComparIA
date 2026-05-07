@@ -49,6 +49,9 @@ redis: ## Launch Redis using docker compose
 	@echo "Starting Redis..."
 	docker compose -f devops/instances/redis/redis.compose.yml up -d
 
+redis-down: ## Stop Redis
+	docker compose -f devops/instances/redis/redis.compose.yml down
+
 
 ###################################
 # Instance fr docker

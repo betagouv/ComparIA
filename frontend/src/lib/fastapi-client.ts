@@ -16,7 +16,7 @@ function getBackendUrl(): string {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
     return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
-    return 'http://localhost:8001'
+    return publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else {
     // Client-side: use public URL or origin
     return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
