@@ -6,6 +6,7 @@ services:
     depends_on:
       - backend-fr
     environment:
+      DEFAULT_LOCALE: fr
       PUBLIC_API_LOCAL_URL: "http://backend-fr:80"
       PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8001}"
       PUBLIC_API_DEV_MODE: "true"
