@@ -3,14 +3,17 @@
   import Header from '$components/header/Header.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import { fetchAndSolve } from '$lib/captcha.svelte'
-  import { arena, modeInfos } from '$lib/chatService.svelte'
+  import { getComparison, initComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
 
+  // TODO query user comparisons
+  initComparisonsContext([])
   // Start solving Altcha challenge on page load (runs in background)
   fetchAndSolve()
 
-  const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
+  const comparator = getComparison(undefined)
+  const showInitialPrompt = $derived(!comparator.comparisonId)
 
   // Compute second header height for autoscrolling
   let secondHeader = $state<HTMLElement>()
@@ -30,13 +33,13 @@
 <Header
   hideNavigation
   hideDiscussBtn
-  hideVoteGauge={arena.currentScreen === 'prompt'}
-  hideLanguageSelector={arena.currentScreen === 'chat'}
-  showHelpLink={arena.currentScreen === 'prompt'}
+  hideVoteGauge={showInitialPrompt}
+  hideLanguageSelector={!showInitialPrompt}
+  showHelpLink={showInitialPrompt}
   small
 />
 
-{#if arena.currentScreen === 'chat' && arena.chat.step === 'reveal' && mode}
+{#if comparator.status === 'revealed'}
   <div
     bind:this={secondHeader}
     id="second-header"
@@ -70,9 +73,13 @@
 {/if}
 
 <main class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
-  {#if arena.currentScreen === 'prompt'}
-    <ViewPrompt />
+  {#if showInitialPrompt}
+    <ViewPrompt
+      loading={comparator.loading}
+      promptError={comparator.promptError}
+      onPrompt={comparator.askFirst}
+    />
   {:else}
-    <ViewChat />
+    <ViewChat comparisonId={comparator.comparisonId!} />
   {/if}
 </main>

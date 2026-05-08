@@ -60,9 +60,9 @@ export default defineConfig({
   },
   shortcuts: [
     {
-      'cg-border': 'border-1 border-[--grey-925-125] rounded-xl',
-      'c-bot-disk-a': 'w-[26px] h-[26px] rounded-full bg-purple',
-      'c-bot-disk-b': 'w-[26px] h-[26px] rounded-full bg-orange'
+      'cg-border': 'border-1 border-[--grey-925-125] border-solid rounded-xl',
+      'c-bot-disk-a': 'w-[22px] h-[22px] rounded-full bg-purple',
+      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange'
     }
   ],
   safelist: [
