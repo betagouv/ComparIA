@@ -21,8 +21,7 @@
         "scrollRight": "Défiler vers la droite",
         "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
-        "selectLanguage": "Sélectionner une langue",
-        "vote": "Donner mon avis"
+        "selectLanguage": "Sélectionner une langue"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +54,12 @@
             "other": {
                 "message": "Une erreur temporaire est survenue.",
                 "retry": "Vous pouvez tenter de réessayer de solliciter les modèles.",
-                "title": "Oups, erreur temporaire",
-                "vote": "Ou bien conclure votre expérience en donnant votre avis sur les modèles."
+                "title": "Oups, erreur temporaire"
             },
             "tooLong": {
                 "message": "Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.",
                 "retry": "Vous pouvez recommencer une conversation avec deux nouveaux modèles.",
-                "title": "Oups, la conversation est trop longue pour un des modèles.",
-                "vote": "Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux."
+                "title": "Oups, la conversation est trop longue pour un des modèles."
             }
         },
         "loading": "Chargement des réponses",
@@ -2179,7 +2176,6 @@
         }
     },
     "vote": {
-        "bothEqual": "Les deux se valent",
         "turn": {
             "choices": {
                 "a_better": "A est meilleur",
@@ -2195,35 +2191,17 @@
                 "incorrect": "Incorrecte",
                 "instructions_not_followed": "Instructions non suivies",
                 "question": "Pourquoi la réponse ne convient-elle pas ?",
+                "comment": "Précisez ce que vous n’avez pas aimé…",
                 "superficial": "Superficielle"
             },
-            "other": "Autre…",
             "positive": {
+                "comment": "Précisez ce que vous avez apprécié…",
                 "clear_formatting": "Mise en forme claire",
                 "complete": "Complète",
                 "creative": "Créative",
                 "question": "Qu'avez-vous apprécié dans la réponse ?",
                 "useful": "Utile"
             }
-        },
-        "comment": {
-            "add": "Ajouter des commentaires",
-            "placeholder": "Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
-        },
-        "dislike": {
-            "label": "je n'apprécie pas",
-            "selectedLabel": "je n'apprécie pas (sélectionné)"
-        },
-        "introA": "Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.",
-        "introB": "Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
-        "like": {
-            "label": "j'apprécie",
-            "selectedLabel": "j'apprécie (sélectionné)"
-        },
-        "qualify": {
-            "addDetails": "Ajouter des détails",
-            "placeholder": "Les réponses du modèle {model} sont...",
-            "question": "Comment qualifiez-vous ses réponses ?"
         },
         "title": "Quel modèle d’IA préférez-vous ?",
         "yours": "Votre vote"
