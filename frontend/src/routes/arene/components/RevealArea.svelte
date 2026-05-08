@@ -1,17 +1,17 @@
 <script lang="ts">
   import { Button, Link } from '$components/dsfr'
-  import type { RevealData } from '$lib/chatService.svelte'
+  import { parseAPIRevealData, type APIRevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { RevealCard } from '.'
 
-  let { data }: { data: RevealData } = $props()
+  let { data }: { data: APIRevealData } = $props()
 
   const locale = getLocale()
 
-  const { selected, modelsData, shareB64Data } = data
+  const { selected, modelsData, shareB64Data } = $derived(parseAPIRevealData(data))
 
   let shareInput: HTMLInputElement
 
