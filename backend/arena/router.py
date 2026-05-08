@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
-from backend.arena.models import AddFirstTextBody, AddTextBody, RevealData
-from backend.arena.reveal import get_reveal_data
+from backend.arena.models import AddFirstTextBody, AddTextBody
+from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
     create_comparison,

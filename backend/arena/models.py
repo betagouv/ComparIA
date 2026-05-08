@@ -2,7 +2,7 @@
 Data validation models using Pydantic.
 """
 
-from typing import Literal, TypedDict, get_args
+from typing import Literal, get_args
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -14,8 +14,6 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.models import LLMData
-from backend.llms.utils import Consumption
 
 BotPos = Literal["a", "b"]
 BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
@@ -82,15 +80,3 @@ class AddTextBody(BaseModel):
         if not ok:
             raise ValueError(f"Vérification anti-robot échouée : {error}")
         return v
-
-
-class RevealModelData(TypedDict):
-    llm: LLMData
-    conso: Consumption
-
-
-class RevealData(TypedDict):
-    b64: str
-    chosen_llm: BotPos | None
-    a: RevealModelData
-    b: RevealModelData
