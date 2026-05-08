@@ -195,7 +195,7 @@ models-doc: ## Build/generate llm doc and JSON schemas
 ###################################
 # Dataset utilities
 ###################################
-dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and COMPARIA_DB_URI)
+dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
 	@if [ -z "$$COMPARIA_DB_URI" ]; then \
 		echo "Error: COMPARIA_DB_URI is not defined"; \
@@ -205,16 +205,24 @@ dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_K
 		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
 		exit 1; \
 	fi
+	@if [ -z "$$HF_PUSH_DATASET_PATH" ]; then \
+		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
+		exit 1; \
+	fi
 	$(UV) run python -m utils.dataset.run fr
 
-dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASET_KEY_DA and COMPARIA_DB_URI)
+dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
 	@if [ -z "$$COMPARIA_DB_URI" ]; then \
 		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
-	@if [ -z "$$HF_PUSH_DATASET_KEY_DA" ]; then \
-		echo "Error: HF_PUSH_DATASET_KEY_DA is not defined"; \
+	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
+		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
+		exit 1; \
+	fi
+	@if [ -z "$$HF_PUSH_DATASET_PATH" ]; then \
+		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
 		exit 1; \
 	fi
 	$(UV) run python -m utils.dataset.run da

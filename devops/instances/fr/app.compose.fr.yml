@@ -25,7 +25,9 @@ services:
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
       ALBERT_API_KEY:
-      HF_PUSH_DATASET_KEY:
+      # Only needed for dataset export (uv run python -m utils.dataset.run):
+      # HF_PUSH_DATASET_KEY:
+      # HF_PUSH_DATASET_PATH: "ministere-culture/comparia"
       ALTCHA_HMAC_KEY:
       SENTRY_SAMPLE_RATE: "1.0"
       SENTRY_ENV: "dev-fr"
