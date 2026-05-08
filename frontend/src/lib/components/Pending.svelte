@@ -10,7 +10,7 @@
 
 <div
   {...props}
-  class={['py-5 flex flex-col items-center', props.class]}
+  class={['py-5 relative flex flex-col items-center', props.class]}
   role="status"
   aria-label={m['words.loading']()}
   aria-live="polite"
