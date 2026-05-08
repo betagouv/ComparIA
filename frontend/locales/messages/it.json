@@ -129,6 +129,7 @@
                     "desc": "Visualizzazione interattiva delle conversazioni, in cui ogni punto rappresenta un cluster di discussioni avviate dagli utenti (ad esempio su temi come istruzione, salute, ambiente o persino filosofia).",
                     "title": "Esplora la visualizzazione dei dati"
                 },
+                "desc": "Il team di Bunka.ai ha condotto uno studio approfondito sulle interazioni tra gli utenti della piattaforma Compar:AI e i modelli di intelligenza artificiale, esaminando gli argomenti preferiti, le attività principali e determinando se questi modelli funzionino principalmente come strumenti di automazione o come potenziamento delle capacità umane. Questa analisi si basa su un ampio campione di 25.000 conversazioni.",
                 "method": "Scopri di più sulla metodologia"
             },
             "desc": "Esempi di riutilizzo dei dataset di compar:AI",
@@ -154,12 +155,14 @@
         "datasets": {
             "questions": {
                 "1": {
+                    "desc": "<p> I dati sulle preferenze vengono utilizzati per migliorare i modelli durante l'addestramento futuro. </p> <p> Confrontando alla cieca le risposte di due modelli, gli utenti di compar:IA esprimono le proprie preferenze, indicando quali risposte sono più pertinenti. Questi dati sulle preferenze possono essere utilizzati per perfezionare l'allineamento del modello, ovvero per addestrarlo a generare risposte che meglio corrispondano alle aspettative e alle preferenze dell'utente. </p> <p> Si tratta di un processo iterativo, in cui il modello impara gradualmente a generare risposte migliori in base al feedback degli utenti sulla qualità delle risposte. Essendo esposti ai dati sulle preferenze, i modelli imparano a incorporarli nel loro processo di generazione delle risposte. </p>",
                     "title": "I dati sulle preferenze hanno un effetto immediato sul miglioramento dei modelli?"
                 },
                 "2": {
                     "title": "Perché i dati sulle preferenze raccolti su compar:IA sono utili?"
                 },
                 "3": {
+                    "desc": "<p> compar:IA si posiziona come uno strumento di valutazione e allineamento specifico per i modelli linguistici, focalizzato sulla qualità delle risposte e sulla raccolta di dati sulle preferenze, distinguendosi così dall'approccio di classificazione globale di <a href='https://lmarena.ai/' target='_blank'> chatbot arena </a> sviluppato da <a href=http://lmsys.org> lmsys.org </a> e dall'allineamento etico dei modelli di IA </a> <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project <a href='http://lmsys.org' target='_blank'> . </p>",
                     "title": "Cosa rende compar:IA unico rispetto ad altre iniziative simili?"
                 }
             },
@@ -259,8 +262,8 @@
     },
     "general": {
         "a11y": {
-            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong> compara.beta.gouv.fr </strong> .",
-            "disclaimer": "<strong> compar:IA </strong> si impegna a rendere accessibili i propri servizi digitali, in conformità all'articolo 47 della legge n. 2005-102 dell'11 febbraio 2005.",
+            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong>compara.beta.gouv.fr</strong> .",
+            "disclaimer": "<strong>compar:IA</strong> si impegna a rendere accessibili i propri servizi digitali, in conformità all'articolo 47 della legge n. 2005-102 dell'11 febbraio 2005.",
             "improveAdress": "Indirizzo: DINUM, 20 avenue de Ségur 75007 Parigi",
             "improveDelay": "Cerchiamo di rispondere entro 2 giorni lavorativi.",
             "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di beta.gouv.fr per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
@@ -321,7 +324,7 @@
             "dataUseTitle": "Quali elaborazioni vengono effettuate sui dati della conversazione?",
             "desc": "Il servizio è pubblicato dal dipartimento digitale del Ministero Francese della Cultura.",
             "privacyData": "I dati raccolti sul sito sono i seguenti:",
-            "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli: domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli.",
+            "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli : domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli.",
             "privacyDataForm": "Dati relativi al questionario “Aiutaci a migliorare compar:AI”.",
             "privacyDesc": "Il servizio non tratta dati personali come definiti dalla CNIL, ossia qualsiasi informazione riguardante una persona fisica che può essere identificata, direttamente o indirettamente.",
             "privacyResp": "L'utente è responsabile dei dati o dei contenuti inseriti nel campo fornito dalla piattaforma. Accettando i <a {linkProps}>termini di utilizzo</a>, l'utente si impegna a non trasmettere alcuna informazione che possa identificare lui stesso o terzi.",
