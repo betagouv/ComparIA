@@ -1,84 +1,30 @@
 <script lang="ts">
-  import { Button } from '$components/dsfr'
+  import { Button, Icon, Tooltip } from '$components/dsfr'
   import Footer from '$components/Footer.svelte'
+  import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import type { OnReactionFn, RevealData, VoteData } from '$lib/chatService.svelte'
-  import {
-    arena,
-    askChatBots,
-    getReveal,
-    postVoteGetReveal,
-    retryAskChatBots,
-    updateReaction
-  } from '$lib/chatService.svelte'
+  import { getComparison, modeInfos } from '$lib/chatService.svelte'
+  import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { ChatBot, RevealArea, VoteArea } from '.'
+  import { ErrorDisplay, GroupedMessages, RevealArea } from '.'
+
+  let { comparisonId }: { comparisonId: string } = $props()
+
+  const comparator = $derived(getComparison(comparisonId))
 
   let prompt = $state('')
-  let promptError = $state<string>()
-  let canVote = $state<boolean | null>(true)
-  let voteData = $state<VoteData>({
-    selected: undefined,
-    a: {
-      like: [],
-      dislike: [],
-      comment: ''
-    },
-    b: {
-      like: [],
-      dislike: [],
-      comment: ''
-    }
-  })
-  let revealData = $state<RevealData>()
 
-  const chatbotDisabled = $derived(arena.chat.status !== 'complete' || arena.chat.step !== 'chat')
-  const revealDisabled = $derived(
-    arena.chat.status !== 'complete' ||
-      (arena.chat.step === 'vote' && voteData.selected === undefined)
+  const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison.mode)!)
+
+  const canContinue = $derived(
+    !comparator.loading &&
+      comparator.status == 'complete' &&
+      comparator.comparison.turns.every((turn) => !!turn.choice)
   )
-
-  const onReactionChange: OnReactionFn = async (reaction) => {
-    canVote = reaction.liked === null
-    await updateReaction(reaction)
-  }
-
-  function onRetry() {
-    retryAskChatBots()
-  }
-
-  function onVote() {
-    // FIXME if user already react? go to reveal for now
-    onRevealModels()
-  }
-
-  async function onPromptSubmit() {
-    window.scrollTo(0, document.body.scrollHeight)
-    const validationError = await askChatBots(prompt)
-    if (validationError) {
-      promptError = validationError
-    } else {
-      prompt = ''
-    }
-  }
-
-  async function onRevealModels() {
-    // if chat as reactions, no need to show vote
-    if (canVote === false) {
-      revealData = await getReveal()
-      arena.chat.step = 'reveal'
-    } else if (arena.chat.step === 'vote') {
-      if (!voteData.selected) return
-      revealData = await postVoteGetReveal(voteData as Required<VoteData>)
-      arena.chat.step = 'reveal'
-    } else {
-      arena.chat.step = 'vote'
-    }
-  }
 
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
-  let footerSize: number = $derived(arena.chat.step && footer ? footer.offsetHeight : 0)
+  let footerSize: number = $derived(footer ? footer.offsetHeight : 0)
 
   function onResize() {
     footerSize = footer ? footer.offsetHeight : 0
@@ -88,14 +34,45 @@
 <svelte:window onresize={onResize} />
 
 <div style="--footer-size: {footerSize}px;" class="flex grow flex-col">
-  <ChatBot disabled={chatbotDisabled} {onReactionChange} {onRetry} {onVote} />
+  <div
+    id="chat-area"
+    role="log"
+    aria-label={m['chatbot.conversation']()}
+    aria-live="polite"
+    class="pb-7 flex grow flex-col"
+  >
+    {#each comparator.comparison.turns as turn, idx (turn.id)}
+      <GroupedMessages
+        {turn}
+        disabled={comparator.status !== 'complete' ||
+          idx !== comparator.comparison.turns.length - 1}
+        onVote={comparator.vote}
+      >
+        {#if idx === 0}
+          <div
+            class="cg-border md:me-3 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
+          >
+            <Icon icon={mode.icon} size="sm" class="text-primary" />
+            <strong>{mode.title}</strong>
+            <Tooltip id="mode-desc" text={mode.description} size="xs" />
+          </div>
+        {/if}
+      </GroupedMessages>
+    {/each}
 
-  {#if arena.chat.step === 'vote' || (arena.chat.step === 'reveal' && canVote)}
-    <VoteArea bind:value={voteData} disabled={arena.chat.step === 'reveal'} />
-  {/if}
+    {#if comparator.error}
+      <ErrorDisplay
+        error={comparator.error}
+        class={{ 'mt-10': comparator.comparison.turns.length > 1 }}
+        onRetry={() => comparator.retry()}
+      />
+    {:else if comparator.loading}
+      <Pending message={m['chatbot.loading']()} class="m-auto" {@attach scrollTo} />
+    {/if}
+  </div>
 
-  {#if arena.chat.step === 'reveal' && revealData}
-    <RevealArea data={revealData} />
+  {#if comparator.status === 'revealed' && comparator.comparison.reveal}
+    <RevealArea data={comparator.comparison.reveal} />
     <Footer />
   {:else}
     <div
@@ -103,37 +80,46 @@
       id="send-area"
       class="bg-very-light-grey bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
     >
-      {#if arena.chat.step === 'chat'}
-        <div class="gap-3 md:flex-row flex w-full flex-col">
-          <TextPrompt
-            id="chatbot-prompt"
-            bind:value={prompt}
-            label={m['chatbot.continuePrompt']()}
-            placeholder={m['chatbot.continuePrompt']()}
-            error={promptError}
-            hideLabel
-            rows={1}
-            maxRows={4}
-            onSubmit={onPromptSubmit}
-            class="mb-0! w-full"
-          />
+      <div class="gap-3 md:flex-row flex w-full flex-col">
+        <TextPrompt
+          id="chatbot-prompt"
+          bind:value={prompt}
+          label={m['chatbot.continuePrompt']()}
+          placeholder={m['chatbot.continuePrompt']()}
+          error={comparator.promptError}
+          hideLabel
+          rows={1}
+          maxRows={4}
+          onSubmit={() => comparator.ask(prompt)}
+          class="mb-0! w-full"
+        />
 
-          <Button
-            id="send-btn"
-            text={m['words.send']()}
-            disabled={arena.chat.status !== 'complete' || prompt === ''}
-            class="md:w-auto! md:self-end! w-full!"
-            onclick={onPromptSubmit}
-          />
-        </div>
-      {/if}
+        <Button
+          id="send-btn"
+          text={m['words.send']()}
+          disabled={!canContinue || prompt === ''}
+          class="md:w-auto! md:self-end! w-full!"
+          onclick={() => comparator.ask(prompt)}
+        />
+      </div>
 
       <Button
         text={m['chatbot.revealButton']()}
-        disabled={revealDisabled}
+        disabled={!canContinue}
         class="md:w-fit! w-full!"
-        onclick={onRevealModels}
+        onclick={() => comparator.reveal()}
       />
     </div>
   {/if}
 </div>
+
+<style>
+  :global(#chat-area:has(+ #send-area) .grouped-messages:last-of-type) {
+    min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
+    scroll-margin-top: calc(var(--second-header-size));
+
+    @media (min-width: 48em) {
+      height: calc(100vh - var(--second-header-size) - var(--footer-size));
+    }
+  }
+</style>
