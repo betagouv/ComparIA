@@ -15,6 +15,7 @@
     el?: HTMLTextAreaElement
     class?: string
     onSubmit?: (value: string) => void
+    onBlur?: (value: string) => void
   } & Partial<Pick<HTMLTextAreaElement, 'disabled' | 'placeholder' | 'rows'>>
 
   let {
@@ -31,6 +32,7 @@
     el = $bindable(),
     class: classNames = '',
     onSubmit = noop,
+    onBlur = noop,
     ...nativeTextAreaProps
   }: TextAreaProps = $props()
 
@@ -39,7 +41,7 @@
 
     const scrollOffset = el.scrollHeight - el.clientHeight
     if (value && scrollOffset > 0) {
-      rows = Math.min(Math.ceil(scrollOffset / lineHeightPx), maxRows)
+      rows = Math.min(Math.ceil((scrollOffset + rows * lineHeightPx) / lineHeightPx), maxRows)
     }
   }
 
@@ -51,6 +53,7 @@
   const onkeydown = (e: KeyboardEvent) => {
     error = undefined
     if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
       onSubmit(value)
     }
   }
@@ -68,6 +71,7 @@
     {...nativeTextAreaProps}
     aria-describedby="messages-{id}"
     {onkeydown}
+    onblur={() => onBlur?.(value)}
     {@attach updateAuto}
     {@attach updateRows}
   ></textarea>
