@@ -4,58 +4,57 @@
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import Pending from '$components/Pending.svelte'
   import type {
-    APIReactionData,
-    AssistantMessage,
+    APIVoteAnnotate,
     Bot,
-    OnReactionFn
+    ComparisonTurnSide,
+    TurnChoice
   } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
-  import { LikeDislike, LikePanel } from '.'
+  import { VoteAnnotate } from '.'
 
   export type MessageBotProps = {
-    message: AssistantMessage
+    id: string
+    turnSide: ComparisonTurnSide
     bot: Bot
-    index: number
+    choice?: TurnChoice
     disabled?: boolean
-    onReactionChange: OnReactionFn
+    onVoteAnnotate: (data: Omit<APIVoteAnnotate, 'turn_id'>) => void
   }
 
-  let { message, bot, index, disabled = false, onReactionChange }: MessageBotProps = $props()
+  let { id, turnSide, bot, choice, disabled = false, onVoteAnnotate }: MessageBotProps = $props()
 
-  const reaction = $state<APIReactionData>({
-    index: index * 2 + 1,
-    bot,
-    liked: null,
-    prefs: [],
-    comment: '',
-    value: message.content
+  const prefKind = $derived.by(() => {
+    if (!choice || choice == 'idk') return null
+    return choice == 'both_good' || choice == `${bot}_better` ? 'positive' : 'negative'
   })
 
-  function onLikedChanged() {
-    reaction.prefs = []
-    // FIXME reset comment?
-    dispatchOnReactionChange()
-  }
+  const message = $derived(turnSide.llm_msg!)
 
-  function dispatchOnReactionChange() {
-    onReactionChange({
-      ...reaction,
-      value: message.content
-    })
-  }
+  let annotations = $derived({
+    keyword_annotations: turnSide.keyword_annotations,
+    custom_annotation: turnSide.custom_annotation
+  })
 </script>
 
-<div class="flex flex-col">
+<div class="flex w-full flex-col">
   <div
-    class="message-bot cg-border rounded-lg! bg-white px-5 relative flex h-full flex-col overflow-scroll"
+    class={[
+      'message-bot cg-border rounded-lg! bg-white flex h-full flex-col',
+      {
+        'outline-2 -outline-offset-1': !!prefKind,
+        'outline-red': prefKind === 'negative',
+        'outline-green': prefKind === 'positive'
+      }
+    ]}
   >
-    <div>
-      <div class="top-0 bg-white pb-5 pt-7 sticky z-2 flex items-center">
-        <div class="c-bot-disk-{bot}"></div>
-        <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
-      </div>
+    <div class="px-4 py-2 flex items-center">
+      <div class="c-bot-disk-{bot}"></div>
+      <h3 class="ms-2! mb-0! text-base! me-auto">{m[`models.names.${bot}`]()}</h3>
+      <Copy value={message.content} />
+    </div>
 
+    <div class="px-4 overflow-scroll">
       {#if message.reasoning_content?.trim()}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
@@ -67,7 +66,7 @@
                 aria-controls="reasoning-{message.generation_id}"
               >
                 <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
-                {#if message.content === '' && message.generating}
+                {#if message.content === '' && turnSide.status === 'generating'}
                   {m['chatbot.reasoning.inProgress']()}
                 {:else}
                   {m['chatbot.reasoning.finished']()}
@@ -87,53 +86,22 @@
       {/if}
 
       <Markdown message={message.content} chatbot />
+    </div>
 
-      {#if message.generating}
+    <div class="mt-5">
+      {#if turnSide.status === 'generating'}
         <Pending message={m['chatbot.loading']()} />
       {/if}
     </div>
 
-    <div class="bottom-0 bg-white py-3 sticky mt-auto flex">
-      <Copy value={message.content} />
-
-      <div class="gap-2 ms-auto flex">
-        <LikeDislike
-          bind:liked={reaction.liked}
-          disabled={message.generating || disabled}
-          onChange={onLikedChanged}
-        />
-      </div>
-    </div>
-  </div>
-
-  {#if reaction.liked !== null}
-    <div class="cg-border rounded-lg! mt-3 bg-white p-5 border-dashed!">
-      <LikePanel
-        id={message.generation_id}
-        kind={reaction.liked ? 'like' : 'dislike'}
-        show={true}
-        bind:selection={reaction.prefs}
-        bind:comment={reaction.comment}
-        onSelectionChange={dispatchOnReactionChange}
-        onCommentChange={dispatchOnReactionChange}
-        model={bot.toUpperCase()}
+    {#if prefKind}
+      <VoteAnnotate
+        id="vote-annotate-{id}"
+        bind:annotations
+        kind={prefKind}
+        {disabled}
+        onUpdate={(annotations) => onVoteAnnotate({ pos: bot, ...annotations })}
       />
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
-
-<style>
-  .message-bot {
-    --extra-margin: 2.5rem;
-    height: calc(
-      100vh - var(--second-header-size) - var(--footer-size) - var(--message-size) -
-        var(--extra-margin)
-    );
-    min-height: 50vh;
-  }
-  @media (min-width: 48em) {
-    .message-bot {
-      --extra-margin: 3.5rem;
-    }
-  }
-</style>
