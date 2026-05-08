@@ -1,27 +1,25 @@
 <script lang="ts">
-  import { Icon, Tooltip } from '$components/dsfr'
-  import type { ChatRound, Mode, OnReactionFn } from '$lib/chatService.svelte'
-  import { modeInfos } from '$lib/chatService.svelte'
+  import Pending from '$components/Pending.svelte'
+  import type { AnyAPIVote, ComparisonTurn } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
-  import { onMount } from 'svelte'
-  import { MessageBot, MessageUser } from '.'
+  import { m } from '$lib/i18n/messages'
+  import { onMount, type Snippet } from 'svelte'
+  import { MessageBot, MessageUser, VoteSelect } from '.'
 
   let {
-    round,
+    turn,
     disabled,
-    mode: arenaMode,
-    onReactionChange
+    onVote,
+    children
   }: {
-    round: ChatRound
+    turn: ComparisonTurn
     disabled: boolean
-    mode: Mode
-    onReactionChange: OnReactionFn
+    onVote: (data: AnyAPIVote) => void
+    children: Snippet<[]> | undefined
   } = $props()
 
   let userBlockElem = $state<HTMLDivElement>()
   let userMessageSize = $state(0)
-
-  const mode = $derived(modeInfos.find((mode) => mode.value === arenaMode)!)
 
   onMount(() => {
     userMessageSize = userBlockElem!.offsetHeight
@@ -29,28 +27,44 @@
 </script>
 
 <div
-  class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16"
+  class="grouped-messages not-last:mb-15 px-4 py-5 md:px-8 xl:px-16 flex flex-col"
   style="--message-size: {userMessageSize}px;"
   {@attach scrollTo}
 >
-  <div class="mb-4 mt-5 md:mb-8 md:flex" bind:this={userBlockElem}>
-    {#if round.index === 0}
-      <div
-        class="cg-border md:me-3 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
-      >
-        <Icon icon={mode!.icon} size="sm" class="text-primary" />
-        <strong>{mode!.title}</strong>
-        <Tooltip id="mode-desc" text={mode!.description} size="xs" />
-      </div>
-    {/if}
+  <div class="mb-5 md:flex" bind:this={userBlockElem}>
+    {@render children?.()}
 
-    <MessageUser message={round.user} />
+    <MessageUser message={turn.user_msg} />
   </div>
+  {#if turn.status === 'pending'}
+    <Pending message={m['chatbot.loading']()} class="m-auto" />
+  {:else}
+    <div class="gap-10 md:flex-row md:gap-6 min-h-0 flex flex-col">
+      {#if turn.a.llm_msg && turn.b.llm_msg}
+        <MessageBot
+          id="{turn.id}-a"
+          turnSide={turn.a}
+          bot="a"
+          choice={turn.choice}
+          {disabled}
+          onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+        />
+        <MessageBot
+          id="{turn.id}-b"
+          turnSide={turn.b}
+          bot="b"
+          choice={turn.choice}
+          {disabled}
+          onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+        />
+      {/if}
+    </div>
+  {/if}
 
-  <div class="gap-10 md:grid-cols-2 md:gap-6 grid">
-    {#if round.a && round.b && round.showMessages}
-      <MessageBot message={round.a} bot="a" index={round.index} {disabled} {onReactionChange} />
-      <MessageBot message={round.b} bot="b" index={round.index} {disabled} {onReactionChange} />
-    {/if}
-  </div>
+  {#if turn.status === 'complete' && !turn.choice}
+    <VoteSelect
+      id="vote-select-{turn.id}"
+      onVote={(choice) => onVote({ turn_id: turn.id, choice })}
+    />
+  {/if}
 </div>
