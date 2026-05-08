@@ -26,11 +26,22 @@ from backend.arena.session import (
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
-from backend.arena.streaming import create_sse_response, stream_comparison_messages
+from backend.arena.streaming import (
+    create_sse_response,
+    format_sse_event,
+    stream_comparison_messages,
+)
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
-from utils.database.models import ComparisonCreate, TurnVoteAnnotate, TurnVoteChoice
+from utils.database.models import (
+    ComparisonCreate,
+    ComparisonPublic,
+    ComparisonRead,
+    TurnPublic,
+    TurnVoteAnnotate,
+    TurnVoteChoice,
+)
 
 logger = logging.getLogger("languia")
 
@@ -167,7 +178,7 @@ async def add_first_text(
     # Initialize comparison and save it to db
     comparison = await create_comparison(
         ComparisonCreate(
-            session_hash=create_session(),
+            session_hash=session_hash,
             ip=get_ip(request),
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             country_portal=country_portal,
@@ -184,20 +195,24 @@ async def add_first_text(
         extra={"request": request},
     )
 
-    # Add first turn and save it to db (to at least save the user prompt)
-    comparison, turn = await add_comparison_turn(comparison.id, args.prompt_value)
-    store_comparison_metadata(session_hash, comparison.id, is_streaming=True)
-
     # Stream responses
-    async def event_stream() -> AsyncGenerator[str]:
-        # Send session hash first
-        import json
+    async def event_stream(comparison: ComparisonRead) -> AsyncGenerator[str]:
+        yield format_sse_event(
+            {
+                "type": "init",
+                "comparison": ComparisonPublic.model_validate(comparison),
+            }
+        )
 
-        yield f"data: {json.dumps({'type': 'init', 'session_hash': session_hash})}\n\n"
+        # Add first turn and save it to db (to at least save the user prompt)
+        comparison, turn = await add_comparison_turn(comparison.id, args.prompt_value)
+        store_comparison_metadata(session_hash, comparison.id, is_streaming=True)
+
+        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
         # Stream both model responses
         async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield chunk
+            yield format_sse_event(chunk)
 
         if not comparison.error:
             # Increment input chars for pricey llms
@@ -209,7 +224,7 @@ async def add_first_text(
 
         store_comparison_metadata(session_hash, comparison.id, is_streaming=False)
 
-    return create_sse_response(event_stream())
+    return create_sse_response(event_stream(comparison))
 
 
 @router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
@@ -242,14 +257,21 @@ async def add_text(
         extra={"request": request},
     )
 
-    # Add new turn and save it to db (to at least save the user prompt)
-    comparison, turn = await add_comparison_turn(metadata["id"], args.message)
-    store_comparison_metadata(comparison.session_hash, comparison.id, is_streaming=True)
+    # Assert last turn has vote
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
+        # Add new turn and save it to db (to at least save the user prompt)
+        comparison, turn = await add_comparison_turn(metadata["id"], args.message)
+        store_comparison_metadata(
+            comparison.session_hash, comparison.id, is_streaming=True
+        )
+
+        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
+
+        # Stream both model responses
         async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield chunk
+            yield format_sse_event(chunk)
 
         if not comparison.error:
             llms_data = get_llms_data(comparison.country_portal)
@@ -327,16 +349,21 @@ async def retry(
     )
 
     # Re-stream responses
-    async def event_stream() -> AsyncGenerator[str]:
+    async def event_stream(comparison: ComparisonRead) -> AsyncGenerator[str]:
+        yield format_sse_event(
+            {"type": "update", "turn": TurnPublic.model_validate(turn)}
+        )
+
+        # Stream both model responses
         async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield chunk
+            yield format_sse_event(chunk)
 
         if not comparison.error:
             llms_data = get_llms_data(comparison.country_portal)
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(args.message))
+                    increment_input_chars(get_ip(request), len(turn.user_msg.content))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
@@ -344,7 +371,7 @@ async def retry(
             comparison.session_hash, comparison.id, is_streaming=False
         )
 
-    return create_sse_response(event_stream())
+    return create_sse_response(event_stream(comparison))
 
 
 @router.post("/vote")
@@ -372,13 +399,16 @@ async def vote(
     )
 
     comparison = await read_comparison(metadata["id"])
+    turn = next((turn for turn in comparison.turns if turn.id == vote.turn_id), None)
 
-    if vote.turn_index != len(comparison.turns) - 1:
+    if not turn:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Turn not found."
+        )
+    if turn != comparison.turns[-1]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Can vote only for last turn."
         )
-
-    turn = comparison.turns[vote.turn_index]
 
     if comparison.error or not turn.llm_msg_a or not turn.llm_msg_b:
         raise HTTPException(
@@ -415,7 +445,7 @@ async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealDa
         HTTPException: If Comparison not found or no vote.
     """
     logger.info(
-        f"[REVEAL] session={metadata["session_hash"]}, extra={"request": request}"
+        f"[REVEAL] session={metadata["session_hash"]}", extra={"request": request}
     )
     comparison = await read_comparison(metadata["id"])
     last_turn = comparison.turns[-1]
