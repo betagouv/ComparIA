@@ -7,13 +7,27 @@ Functions:
 """
 
 import logging
+from typing import TypedDict
 
-from backend.arena.models import BotPos, Consumption, RevealData
+from backend.arena.models import BotPos, Consumption
 from backend.llms.data import get_llms_data
-from backend.llms.utils import get_llm_consumption
+from backend.llms.models import LLMData
+from backend.llms.utils import Consumption, get_llm_consumption
 from utils.database.models import ComparisonRead
 
 logger = logging.getLogger("languia")
+
+
+class RevealModelData(TypedDict):
+    llm: LLMData
+    conso: Consumption
+
+
+class RevealData(TypedDict):
+    b64: str
+    chosen_llm: BotPos | None
+    a: RevealModelData
+    b: RevealModelData
 
 
 def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
