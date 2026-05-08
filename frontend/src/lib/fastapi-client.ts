@@ -5,7 +5,12 @@
  */
 import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
-import type { AssistantMessage, LLMPos, UserMessage } from '$lib/chatService.svelte'
+import type {
+  APIComparison,
+  APIComparisonTurn,
+  AssistantMessage,
+  Bot
+} from '$lib/chatService.svelte'
 import { getLocale } from '$lib/i18n/runtime'
 
 // Function to get the appropriate backend URL
@@ -26,38 +31,39 @@ function getBackendUrl(): string {
 /**
  * SSE event types from backend
  */
-type SSEEventInit = { type: 'init'; session_hash: string }
-type SSEEventChunk = { type: 'chunk'; pos: LLMPos; messages: Array<UserMessage | AssistantMessage> }
-type SSEEventError = { type: 'error'; error: string; pos?: LLMPos } //; chat: APIChat }
-type SSEEventComplete = { type: 'complete'; pos?: LLMPos }
-export type AnySSEEvent = SSEEventInit | SSEEventError | SSEEventChunk | SSEEventComplete
-
-interface SSEInitEvent {
+export interface SSEInitEvent {
   type: 'init'
-  session_hash: string
+  comparison: APIComparison
 }
 
-interface SSEUpdateEvent {
-  type: 'update'
-  a: { messages?: any[] }
-  b: { messages?: any[] }
+export interface SSEUpdateEvent {
+  type: 'add' | 'update'
+  turn: APIComparisonTurn
 }
 
-interface SSEChunkEvent {
+export interface SSECompleteEvent {
+  type: 'complete'
+  pos?: Bot
+}
+
+export interface SSEChunkEvent {
   type: 'chunk'
-  messages: any[]
+  pos: Bot
+  llm_msg: AssistantMessage
 }
 
-interface SSEDoneEvent {
-  type: 'done'
-}
-
-interface SSEErrorEvent {
+export interface SSEErrorEvent {
   type: 'error'
+  pos?: Bot
   error: string
 }
 
-export type SSEEvent = SSEInitEvent | SSEUpdateEvent | SSEChunkEvent | SSEDoneEvent | SSEErrorEvent
+export type SSEEvent =
+  | SSEInitEvent
+  | SSEUpdateEvent
+  | SSECompleteEvent
+  | SSEChunkEvent
+  | SSEErrorEvent
 
 export class InternalError extends Error {
   constructor(message: string) {
@@ -171,7 +177,7 @@ export class FastAPIClient {
   /**
    * Stream responses using Server-Sent Events (SSE)
    */
-  async *stream(path: string, body: any): AsyncGenerator<AnySSEEvent> {
+  async *stream(path: string, body: any): AsyncGenerator<SSEEvent> {
     const url = this.getUrl(path)
 
     console.debug(`Streaming from ${path}`)
@@ -219,29 +225,26 @@ export class FastAPIClient {
               const data = JSON.parse(dataStr) as SSEEvent
 
               // Handle special event types
-              if (data.type === 'init' && 'session_hash' in data) {
+              if (data.type === 'init') {
                 // Store session hash from first event
-                this.setSessionHash(data.session_hash)
+                this.setSessionHash(data.comparison.session_hash)
               } else if (data.type === 'error') {
                 // FIXME throw? probably not, errors are handle in chat
                 // const errorMsg = 'error' in data ? data.error : 'Unknown error'
                 // console.error(`SSE error: ${errorMsg}`)
                 // useToast(errorMsg, 10000, 'error')
                 // throw new Error(errorMsg)
-              } else if (data.type === 'done') {
-                // Stream complete
-                console.debug('SSE stream completed')
-                return
               }
 
               // Yield the parsed event
-              yield data as AnySSEEvent
+              yield data
             } catch (_parseError) {
               console.error(`Failed to parse SSE data: ${dataStr}`)
             }
           }
         }
       }
+      console.debug('SSE stream completed')
     } catch (error) {
       console.error(`Stream from ${path} failed: ${(error as Error).message}`)
       throw error
