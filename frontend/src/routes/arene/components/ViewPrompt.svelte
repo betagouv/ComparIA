@@ -2,29 +2,27 @@
   import { Button } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
-  import { runChatBots } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
   import { tick } from 'svelte'
   import { GuidedPromptSuggestions, ModelSelector } from '.'
 
+  let {
+    onPrompt,
+    promptError,
+    loading
+  }: {
+    onPrompt: (args: APIModeAndPromptData) => void
+    promptError?: string
+    loading: boolean
+  } = $props()
+
   let promptEl = $state<HTMLTextAreaElement>()
-  let disabled = $state(false)
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
+
   let prompt = $state('')
-  let promptError = $state<string>()
-  // const prompt = useLocalStorage('prompt', '', (parsed) => {
-  //   if (parsed !== '') {
-  //     tick().then(() => {
-  //       if (promptEl && typeof promptEl.select === 'function') {
-  //         promptEl.select()
-  //       }
-  //     })
-  //   }
-  //   return parsed
-  // })
   const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
   const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
@@ -33,6 +31,8 @@
     }
     return []
   })
+
+  const disabled = $derived(prompt == '' || !!promptError || loading)
 
   function selectPartialText(start?: number, end?: number): void {
     if (promptEl) {
@@ -49,21 +49,13 @@
     }
   }
 
-  const errorMessages: Record<string, () => string> = {
-    rate_limit_custom_selection: () => m['arenaHome.errors.rateLimitCustomSelection']()
-  }
-
-  async function dispatchSubmit(): void {
-    disabled = true
-    const validationError = await runChatBots({
+  function onPromptSubmit() {
+    if (disabled) return
+    onPrompt({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
       prompt_value: prompt
     })
-    if (validationError) {
-      promptError = errorMessages[validationError]?.() ?? validationError
-      disabled = false
-    }
   }
 
   function handlePromptSelected(
@@ -89,22 +81,12 @@
         }
       }
 
-      // Initial attempt: After Svelte tick and browser paint
+      // Select after Svelte tick and browser paint
       tick().then(() => {
         requestAnimationFrame(() => {
           performSelection()
         })
       })
-
-      // // Second attempt: With a short delay
-      // setTimeout(() => {
-      // 	performSelection();
-      // }, 100); // 100ms delay
-
-      // // Third attempt: With a slightly longer delay
-      // setTimeout(() => {
-      // 	performSelection();
-      // }, 250); // 250ms delay
     } else {
       // No valid selection range provided
       console.log(
@@ -112,8 +94,6 @@
         { text, selectionStart, selectionEnd }
       )
     }
-    // Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
-    // dispatchSubmit();
   }
 </script>
 
@@ -131,10 +111,10 @@
           label={m['arenaHome.prompt.label']()}
           placeholder={m['arenaHome.prompt.placeholder']()}
           bind:error={promptError}
-          {disabled}
+          disabled={loading}
           hideLabel
           rows={4}
-          onSubmit={dispatchSubmit}
+          onSubmit={() => onPromptSubmit()}
         />
       </div>
 
@@ -148,9 +128,9 @@
       <Button
         type="submit"
         text={m['words.send']()}
-        disabled={prompt == '' || !!promptError || disabled}
+        {disabled}
         class="md:w-auto! md:order-none order-2 w-full! min-w-[130px] place-self-end"
-        onclick={() => dispatchSubmit()}
+        onclick={() => onPromptSubmit()}
       />
     </div>
     <div class="pb-10">
