@@ -46,11 +46,12 @@
   <TextPrompt
     id="chatbot-prompt"
     bind:value={annotations.custom_annotation}
+    {disabled}
     label={m[`vote.choices.${kind}.comment`]()}
     placeholder={m[`vote.choices.${kind}.comment`]()}
     hideLabel
     rows={2}
-    maxRows={4}
+    maxRows={2}
     onSubmit={() => onUpdate(annotations)}
     onBlur={() => onUpdate(annotations)}
     class="mb-2!"
