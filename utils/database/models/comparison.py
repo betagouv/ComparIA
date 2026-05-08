@@ -9,7 +9,7 @@ from backend.config import CountryPortal, CustomModelsSelection, SelectionMode
 from utils.database.utils import ArchivedReason
 
 from .messages import SystemMessage, SystemMessageRead
-from .turn import Turn, TurnRead
+from .turn import Turn, TurnPublic, TurnRead
 
 SystemMessageId = Annotated[
     int | None, Field(foreign_key="system_message.id", unique=True)
@@ -90,3 +90,12 @@ class ComparisonRead(ComparisonBase):
     system_msg_a: SystemMessageRead | None
     system_msg_b: SystemMessageRead | None
     turns: list[TurnRead]
+
+
+class ComparisonPublic(SQLModel):
+    id: int
+    session_hash: str
+    mode: SelectionMode
+    custom_models_selection: CustomModelsSelection
+    error: ErrorDetails | None
+    turns: list[TurnPublic]

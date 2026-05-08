@@ -7,7 +7,13 @@ from backend.arena.models import BotPos
 from backend.config import NegativePref, PositivePref, TurnChoice
 from utils.validation import StripAndEmptyAsNone
 
-from .messages import LLMMessage, LLMMessageRead, UserMessage, UserMessageRead
+from .messages import (
+    LLMMessage,
+    LLMMessageCreate,
+    LLMMessageRead,
+    UserMessage,
+    UserMessageRead,
+)
 
 if TYPE_CHECKING:
     from .comparison import Comparison
@@ -59,15 +65,28 @@ class TurnRead(TurnBase):
     llm_msg_b: LLMMessageRead | None
 
 
-# TODO use turn_id instead of turn_index?
+class TurnPublic(SQLModel):
+    id: int
+    user_msg: UserMessageRead
+    choice: TurnChoice | None
+
+    llm_msg_a: LLMMessageCreate | None
+    keyword_annotations_a: KeywordAnnotations
+    custom_annotation_a: str | None = ""
+
+    llm_msg_b: LLMMessageCreate | None
+    keyword_annotations_b: KeywordAnnotations
+    custom_annotation_b: str | None = ""
+
+
 class TurnVoteChoice(SQLModel):
-    turn_index: Annotated[int, Field(exclude=True)]
+    turn_id: Annotated[int, Field(exclude=True)]
     choice: TurnChoice
 
 
 # TODO assert keywords are positive/negative depending on vote choice
 class TurnVoteAnnotate(SQLModel):
-    turn_index: Annotated[int, Field(exclude=True)]
+    turn_id: Annotated[int, Field(exclude=True)]
     pos: Annotated[BotPos, Field(exclude=True)]
     keyword_annotations: list[PositivePref] | list[NegativePref]
     custom_annotation: Annotated[str | None, StripAndEmptyAsNone]
