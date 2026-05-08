@@ -23,45 +23,73 @@ from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
     AnyMessageRead,
+    ComparisonPublic,
     ComparisonRead,
     LLMMessageCreate,
+    TurnPublic,
     TurnRead,
 )
 
 logger = logging.getLogger("languia")
 
 
-def format_sse_event(data: Any) -> str:
-    """
-    Format event for sse streaming with fastapi json encoder.
-    """
-    return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
-
-
-class SSEEventInit(TypedDict):
-    type: Literal["init"]
+class SSEEventMsgChunk(TypedDict):
+    type: Literal["chunk"]
     pos: BotPos
-    session_hash: str
+    llm_msg: LLMMessageCreate
 
 
-class SSEEventComplete(TypedDict):
+class SSEEventMsgComplete(TypedDict):
     type: Literal["complete"]
     pos: BotPos
 
 
-class SSEEventChunk(TypedDict):
-    type: Literal["chunk"]
-    pos: BotPos
-    messages: list[AnyMessageRead | LLMMessageCreate]
-
-
-class SSEEventError(TypedDict):
+class SSEEventMsgError(TypedDict):
     type: Literal["error"]
     pos: BotPos
     error: str
 
 
-AnySSEEvent = SSEEventInit | SSEEventChunk | SSEEventComplete | SSEEventError
+class SSEEventInit(TypedDict):
+    type: Literal["init"]
+    comparison: ComparisonPublic
+
+
+class SSEEventSwap(TypedDict):
+    type: Literal["swap"]
+    pos: BotPos
+
+
+class SSEEventTurn(TypedDict):
+    type: Literal["add", "update"]
+    turn: TurnPublic
+
+
+class SSEEventComplete(TypedDict):
+    type: Literal["complete"]
+
+
+class SSEEventError(TypedDict):
+    type: Literal["error"]
+    error: str
+
+
+AnySSEEventMsg = SSEEventMsgChunk | SSEEventMsgComplete | SSEEventMsgError
+AnySSEEvent = (
+    AnySSEEventMsg
+    | SSEEventInit
+    | SSEEventTurn
+    | SSEEventSwap
+    | SSEEventComplete
+    | SSEEventError
+)
+
+
+def format_sse_event(data: AnySSEEvent) -> str:
+    """
+    Format event for sse streaming with fastapi json encoder.
+    """
+    return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
 async def stream_conversation_messages(
@@ -71,7 +99,7 @@ async def stream_conversation_messages(
     turn_index: int,
     messages: list[AnyMessageRead],
     request: Request | None = None,
-) -> AsyncGenerator[AnySSEEvent]:
+) -> AsyncGenerator[AnySSEEventMsg]:
     """
     Stream a single bot response using Server-Sent Events format.
 
@@ -100,7 +128,7 @@ async def stream_conversation_messages(
         async for llm_msg in bot_response_async(
             pos, llm, turn, turn_index, messages, request
         ):
-            yield {"type": "chunk", "pos": pos, "messages": messages + [llm_msg]}
+            yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
 
         yield {"type": "complete", "pos": pos}
 
@@ -152,7 +180,7 @@ async def stream_comparison_messages(
     comparison: ComparisonRead,
     turn: TurnRead,
     request: Any | None = None,
-) -> AsyncGenerator[str]:
+) -> AsyncGenerator[AnySSEEvent]:
     """
     Stream both model responses in parallel using Server-Sent Events.
 
@@ -181,7 +209,7 @@ async def stream_comparison_messages(
 
     try:
         # Create async generators for both models
-        generators: dict[BotPos, AsyncGenerator[AnySSEEvent]] = {
+        generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {
             pos: stream_conversation_messages(
                 pos,
                 llms_data[getattr(comparison, f"llm_id_{pos}")],
@@ -251,7 +279,7 @@ async def stream_comparison_messages(
                                 request,
                             )
                             retried[e.pos] = True
-                            yield format_sse_event({"type": "swap", "pos": e.pos})
+                            yield {"type": "swap", "pos": e.pos}
                             continue
                         # No replacement available, fall through to raise
                     raise
@@ -260,10 +288,10 @@ async def stream_comparison_messages(
                     if event["type"] == "complete":
                         complete[event["pos"]] = True
 
-                yield format_sse_event(event)
+                yield event
 
         # Signal completion
-        yield format_sse_event({"type": "complete"})
+        yield {"type": "complete"}
     except ChatError as e:
         # Specific chat error
         # Error logging is done in `stream_conversation_messages()`
@@ -272,7 +300,7 @@ async def stream_comparison_messages(
             ErrorDetails(message=e.message, pos=e.pos, is_timeout=e.is_timeout),
         )
 
-        yield format_sse_event({"type": "error", "error": e.message, "pos": e.pos})
+        yield {"type": "error", "error": e.message, "pos": e.pos}
     except Exception as e:
         # General error
         if settings.SENTRY_DSN:
@@ -283,7 +311,7 @@ async def stream_comparison_messages(
         logger.error(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
-        yield format_sse_event({"type": "error", "error": str(e)})
+        yield {"type": "error", "error": str(e)}
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:
