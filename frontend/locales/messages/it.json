@@ -101,7 +101,7 @@
     "datasets": {
         "access": {
             "catch": "Sviluppatori di modelli, ricercatori, aziende, ora tocca a te!",
-            "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese, lituano e riflettono un utilizzo reale e non artificiale/vincolato. Questi set di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
+            "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese e lituano e riflettono un utilizzo reale e non artificiale. Questa raccolta di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
             "repos": {
                 "conversations": {
                     "desc": "Tutte le risposte e le domande poste",
@@ -117,7 +117,7 @@
                 }
             },
             "share": "Condividi con noi come utilizzi i dati",
-            "title": "Accedi all'insieme di dati di compar:AI"
+            "title": "Accedi ai dataset di compar:IA"
         },
         "reuse": {
             "bunka": {
@@ -138,7 +138,7 @@
     },
     "errors": {
         "404": {
-            "desc": "Se hai digitato l'indirizzo web nel tuo browser, verifica che sia corretto. La pagina potrebbe non essere più disponibile. In tal caso, per continuare la navigazione <br /> puoi accedere alla nostra homepage. Altrimenti <br /> contattaci e ti indirizzeremo alle informazioni corrette.",
+            "desc": "Se hai digitato l'indirizzo web nel tuo browser, verifica che sia corretto. La pagina potrebbe non essere più disponibile.<br />In tal caso, per continuare la navigazione puoi accedere alla nostra homepage.<br />Altrimenti contattaci e ti indirizzeremo alle informazioni corrette.",
             "error": "Errore 404",
             "sorry": "La pagina che stai cercando non è stata trovata. Ci scusiamo per l'inconveniente.",
             "title": "Pagina non trovata"
@@ -159,6 +159,7 @@
                     "title": "I dati sulle preferenze hanno un effetto immediato sul miglioramento dei modelli?"
                 },
                 "2": {
+                    "desc": "</p>La caratteristica unica dei dati raccolti sulla piattaforma compar:IA è che sono scritti in italiano e corrispondono ad attività reali degli utenti. Questi dati riflettono le preferenze umane all'interno di uno specifico contesto linguistico e culturale. Ciò consente di adattare i modelli per renderli più pertinenti, accurati e in linea con il comportamento degli utenti, affrontando al contempo eventuali distorsioni o lacune nei modelli attuali </p>",
                     "title": "Perché i dati sulle preferenze raccolti su compar:IA sono utili?"
                 },
                 "3": {
@@ -186,9 +187,11 @@
         "i18n": {
             "questions": {
                 "1": {
+                    "desc": "<p>Si, l'internazionalizzazione di compar:IA è in corso. Stiamo iniziando con un'espansione in tre paesi pilota: Lituania, Svezia e Danimarca. Questa fase iniziale ci permette di testare l'approccio e adattare l'interfaccia ai diversi contesti linguistici e culturali europei. In seguito, la rete potrebbe espandersi ad altre lingue europee in base al feedback ricevuto da questi paesi pilota. L'obiettivo è quello di costruire gradualmente un vero e proprio spazio digitale europeo per la valutazione umana dell'IA conversazionale, con una struttura di governance collaborativa che è ancora in fase di definizione tra i diversi paesi partecipanti.</p>",
                     "title": "compar:AI inizialmente si è concentrata sul francese: sono previsti piani per altre lingue europee?"
                 },
                 "2": {
+                    "desc": "<p>Lo sviluppo di una piattaforma europea per il confronto dei modelli di intelligenza artificiale conversazionale offre diversi vantaggi concreti. Consente la raccolta di dati sulle preferenze che riflettono le reali esigenze degli utenti europei, migliorando così la pertinenza dei modelli per questo pubblico. Garantisce inoltre una migliore rappresentazione delle lingue e delle culture europee, spesso sottorappresentate nelle valutazioni globali dominate dall'inglese. Assicura inoltre la conformità con le normative europee (GDPR, AI Act) e integra criteri di valutazione in linea con le priorità europee, come la sostenibilità ambientale e la trasparenza algoritmica. Per finire, favorisce la nascita di un ecosistema europeo di intelligenza artificiale competitivo e autonomo.</p>",
                     "title": "Quali sono i vantaggi di una piattaforma di raccolta delle preferenze specificamente europea?"
                 }
             },
@@ -197,12 +200,15 @@
         "models": {
             "questions": {
                 "1": {
+                    "desc": "<p>Scegliamo i modelli in base alla loro popolarità, diversità e rilevanza per gli utenti. Prestiamo particolare attenzione a rendere accessibili i modelli chiamati<em>open weights<em> e quelli di diverse dimensioni.</p>",
                     "title": "Come si scelgono i modelli da includere nello strumento di confronto?"
                 },
                 "2": {
+                    "desc": "<p> L'inferenza, ovvero la capacità di interrogare i modelli, è gestita dal progetto. Per la maggior parte dei modelli, utilizziamo le API Open Router e Hugging Face e applichiamo una tariffazione basata su token e sull'utilizzo. </p>",
                     "title": "Come fate a offrire questo servizio gratuitamente?"
                 },
                 "3": {
+                    "desc": "<p>I modelli sono ottimizzati per consumare meno risorse semplificando alcuni calcoli, pur puntando migliore qualità di risposta.</p><p>La quantizzazione è una tecnica di ottimizzazione che riduce la precisione dei numeri utilizzati per rappresentare i parametri di un modello . Ciò consente di <strong>ottenere modelli di dimensioni inferiori <strong> e </strong>di accelerare i calcoli</strong>, il che risulta vantaggioso per l'inferenza su macchine con risorse limitate</p>",
                     "title": "\"Modello quantificato\", che cos'è?"
                 },
                 "4": {
@@ -219,12 +225,15 @@
         "usage": {
             "questions": {
                 "1": {
+                    "desc": "<p>Gli attuali modelli di linguaggio conversazionale non sono <strong>in grado di citare le fonti</strong> utilizzate per generare una risposta. Funzionano prevedendo la parola successiva più probabile in base alla distribuzione statistica dei dati di addestramento. Sebbene possano sintetizzare informazioni da varie fonti, non tengono traccia dell'origine di tali informazioni. </p><p>Tuttavia, esistono tecniche come la<strong> Retrieval Augmented Generation (RAG)</strong> che mirano a superare questa limitazione. La RAG consente ai modelli di accedere a basi di conoscenza esterne e di<strong>fornire informazioni contestualizzate citando le fonti</strong>. Questo approccio è essenziale per migliorare la trasparenza e l'affidabilità delle risposte generate dai modelli.</p>",
                     "title": "I modelli possono citare le proprie fonti?"
                 },
                 "2": {
+                    "desc": "<p>Hai mai posto la domanda \"Spiegami la mozione di censura attualmente in discussione all'Assemblea nazionale francese e cita le tue fonti\" e sei rimasto deluso dalle risposte? È normale... </p><p><strong>I modelli di IA conversazionale grezzi\" non possono rispondere a domande sulle ultime notizie.</strong> Sono addestrati su set di dati statici e non possono interagire con il web o aprire link. Non hanno la capacità di aggiornarsi in tempo reale con gli eventi che accadono in tutto il mondo. Le informazioni a cui il modello ha accesso sono limitate alla data del suo ultimo addestramento.</p><p>Di conseguenza, se si pone una domanda su un fatto di attualità recente, il modello si baserà su informazioni potenzialmente obsolete, con il rischio di fornire risposte inesatte.</p><p> Nel caso di Perplexity, Copilot o ChatGPT, i cosiddetti modelli di IA conversazionale \"grezzi\" sono combinati con altri componenti tecnologici che consentono loro di connettersi a Internet per accedere a informazioni in tempo reale. Quest'ultimi si vengono chiamati \"agenti conversazionali\".</p>",
                     "title": "Se pongo una domanda sulle ultime notizie, il modello è in grado di rispondere?"
                 },
                 "3": {
+                    "desc": "<p>Se si include un URL in una richiesta, il modello conversazionale non può accedervi direttamente. I modelli linguistici elaborano il testo della richiesta, ma non sono in grado di interagire con il web o aprire link. Sono addestrati su dataset testuali fissi e le loro risposte si basano su questi dati di addestramento. Quando viene posta una domanda, i modelli utilizzano questo addestramento per generare una risposta, ma non possono accedere a nuove informazioni online.</p><p>Per analogia, si immagini uno studente sostiene un esame senza accesso a Internet. Può utilizzare le conoscenze acquisite per rispondere alle domande ma non può consultare siti web per ulteriori informazioni.</p>",
                     "title": "Se includo un link URL in una domanda, il modello può accedervi?"
                 },
                 "4": {
@@ -235,7 +244,7 @@
                     "title": "Quali sono le migliori pratiche per fornire suggerimenti?"
                 },
                 "6": {
-                    "desc": "<p> L'intelligenza artificiale conversazionale risponde direttamente formulando frasi basate su un ampio set di dati su cui è stato addestrato il modello, mentre un motore di ricerca suggerisce link e risorse che l'utente può esplorare in autonomia. </p>",
+                    "desc": "<p>L'intelligenza artificiale conversazionale risponde direttamente formulando frasi basate su un ampio set di dati su cui è stato addestrato il modello, mentre un motore di ricerca suggerisce link e risorse che l'utente può esplorare in autonomia.</p>",
                     "title": "Qual è la differenza tra porre una domanda a un modello di intelligenza artificiale conversazionale e fare una ricerca su Google?"
                 }
             },
@@ -244,7 +253,7 @@
     },
     "footer": {
         "backHome": "Torna alla homepage del sito - compar:AI",
-        "dpg": "Il servizio è riconosciuto come bene pubblico digitale dalla Digital Public Goods Alliance.",
+        "dpg": "Il servizio è riconosciuto come bene pubblico digitale dalla Digital Public Goods Alliance",
         "helpUs": "Aiutaci a migliorare questo servizio!",
         "license": {
             "linkTitle": "Licenza etalab - nuova finestra",
@@ -305,6 +314,7 @@
             "cookiesBannerDesc": "Esatto, non era necessario cliccare su un blocco che occupava metà della pagina per dare il proprio consenso all'utilizzo dei cookie, anche se non sapevi cosa significasse!",
             "cookiesBannerNoNeed": "Niente di eccezionale, nessun trattamento speciale legato al dominio .gouv.fr. Stiamo semplicemente rispettando la legge, che stabilisce che alcuni strumenti di tracciamento dell'audience, opportunamente configurati per rispettare la privacy, sono esenti da autorizzazione preventiva.",
             "cookiesBannerTitle": "Perché questo sito non mostra un banner per il consenso ai cookie?",
+            "cookiesBannerTools": "A tale scopo utilizziamo <a {matomoLinkProps}>Matomo</a>, uno strumento <a {libreLinkProps}>free</a>, configurato per conformarsi alla <a {cnilLinkProps}>recommendation</a>\"Cookie\" della CNIL. Ciò significa che il tuo indirizzo IP, ad esempio, viene anonimizzato prima di essere registrato. È quindi impossibile collegare le tue visite a questo sito alla tua persona.",
             "cookiesDesc": "Questo sito web inserisce un piccolo file di testo (un \"cookie\") sul tuo computer quando lo visiti. Ciò ci consente di misurare il numero di visite e capire quali pagine vengono visualizzate più frequentemente.",
             "cookiesDescMore": "Puoi scegliere di non consentire il tracciamento della tua attività di navigazione su questo sito web. Ciò tutelerà la tua privacy, ma impedirà anche al proprietario del sito di apprendere dalle tue azioni e di creare un'esperienza migliore per te e per gli altri utenti.",
             "cookiesTitle": "Cookie installati e consenso",
@@ -357,8 +367,72 @@
                     "1": "Limita le dimensioni di una pagina",
                     "2": "Limita la complessità di una pagina",
                     "3": "Limitare il numero di richieste al server",
-                    "4": "Limitare il consumo energetico necessario per ospitare il servizio"
-                }
+                    "4": "Limitare il consumo energetico necessario per ospitare il servizio",
+                    "title": "In termini pratici, l'ecodesign si traduce in un insieme di buone pratiche da seguire prima, durante e dopo la creazione o il miglioramento di un servizio, consentendo, in particolare:"
+                },
+                "4": "Si tratta di un processo di miglioramento continuo e collettivo.",
+                "title": "Che cos'è l'ecodesign?"
+            },
+            "3": {
+                "1": {
+                    "1": "Semplificazione dell'esperienza utente: i percorsi di navigazione sono ottimizzati e incentrati sulle funzionalità essenziali del servizio Compar:IA (area dei modelli da testare, set di dati, classificazione) con regolari test utente.",
+                    "2": "Sensibilizzare gli utenti sull'impatto ambientale del servizio: evidenziare gli indicatori di impatto energetico nelle domande poste all'IA; promuovere usi \"parsimoniosi\", con una modalità dedicata all'interrogazione di modelli di IA conversazionale \"piccoli\" il cui impatto ambientale è minore.",
+                    "3": "Utilizzo dei componenti di interfaccia del State Design System (DSFR): sono accessibili e hanno un'impronta ecologica minimo.",
+                    "4": "La navigazione più intuitiva possibile per ridurre al minimo il tempo impiegato nella ricerca delle informazioni.",
+                    "5": "Design \"mobile-first\": tutti i contenuti sono visualizzabili su dispositivi mobili. Il sito si adatta a tutte le dimensioni dello schermo.",
+                    "6": "Esclusione dell'integrazione di video sul sito.",
+                    "title": "La sfida principale è garantire che il servizio compar:IA funzioni anche sui dispositivi utente più datati, in condizioni di connettività variabili. Durante la fase di progettazione sono state implementate diverse misure, tra cui:"
+                },
+                "title": "Strategia attuata e obiettivi relativi alla riduzione o limitazione degli impatti ambientali"
+            },
+            "4": {
+                "1": "L'autovalutazione, condotta tra maggio e ottobre 2025 dal team di prodotto (due persone si sono occupate della revisione e della convalida di tutti i criteri), ha riguardato tutte le pagine del sito. Gli strumenti utilizzati per valutare alcuni indicatori tecnici sono stati lo strumento di ispezione \"rete\" degli strumenti per sviluppatori del browser, l'estensione <a {greenitLinkProps}>Green IT Analysis</a> e lo strumento <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "Diagnosi RGESN"
+            },
+            "5": {
+                "1": {
+                    "1": "Punteggio di avanzamento nell'attuazione del RGESN, al 10/12/2025: 89%",
+                    "title": "L'autodiagnosi fornisce un tasso di conformità con le <a {linkProps}>RGENSN</a> (linee guida generali per l'ecodesign) dell'89%."
+                },
+                "2": "Il servizio digitale compar:IA punta a migliorare questo punteggio di progresso fino a raggiungere il 95% entro il 2027.",
+                "3": {
+                    "1": "Strategia: 100%",
+                    "2": "Specifiche: 78%",
+                    "3": "Architettura: 100%",
+                    "4": "Esperienza utente e interfaccia (UX/UI): 100%",
+                    "5": "Contenuti: 67%",
+                    "6": "Frontend: 82%",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90%",
+                    "9": "Algoritmi: 100%",
+                    "title": "Punteggio per tema:"
+                },
+                "4": {
+                    "date": "10 dicembre 2025",
+                    "title": "Tabella di audit RGESN"
+                },
+                "title": "Punteggio nell'implementazione del quadro"
+            },
+            "6": {
+                "1": "Il sito è stato progettato per essere accessibile da qualsiasi dispositivo mobile prodotto a partire dal 2017.",
+                "2": "Connessione minima richiesta per un accesso e un utilizzo agevoli del servizio: 3G su rete mobile e 512 Kbps su connessione fissa.",
+                "3": "Il sito è progettato per adattarsi a diverse dimensioni dello schermo (larghezza minima 320 pixel).",
+                "4": "Il sito non è accessibile tramite il browser Internet Explorer. ",
+                "title": "Requisiti minimi per accedere al sito"
+            },
+            "7": {
+                "1": "Progettare il servizio con una revisione della progettazione e una revisione del codice, uno dei cui obiettivi è ridurre l'impatto ambientale di ciascuna funzionalità (criterio 2.1)",
+                "2": "Implementare periodi di conservazione dei dati ai fini della cancellazione o dell'archiviazione: cancellazione periodica dei log nel file server \"S3\" e, in particolare, nel database (Postgres).",
+                "3": {
+                    "1": "Numero massimo di richieste al server per schermata: 40",
+                    "2": "Dimensione massima delle risorse per schermata: 600 KB",
+                    "title": "Per rispettare un peso massimo e un limite al numero di richieste per schermata (criterio 6.1):"
+                },
+                "4": "Converti le illustrazioni in WebP, AVIF, JPEG XL o in un formato immagine più efficiente per le immagini raster (criterio 5.1).",
+                "5": "Consentire la possibilità di interrompere l'inferenza (caricamento delle risposte) durante il confronto dei modelli.",
+                "6": "I punteggi dell'analisi EcoIndex dimostrano una significativa discrepanza nelle misurazioni dell'impatto, con alcune pagine che ricevono punteggi fino a E o F (peso della pagina, complessità e numero di richieste relativamente elevati); la sfida ora è comprendere questi risultati in modo più preciso caso per caso, nonostante le buone pratiche implementate, al fine di individuare ulteriori miglioramenti.",
+                "desc": "Sono stati individuati o sono tuttora in fase di individuazione diversi miglioramenti, tra cui:",
+                "title": "Miglioramenti individuati"
             }
         }
     }
