@@ -433,7 +433,35 @@
                 "6": "I punteggi dell'analisi EcoIndex dimostrano una significativa discrepanza nelle misurazioni dell'impatto, con alcune pagine che ricevono punteggi fino a E o F (peso della pagina, complessità e numero di richieste relativamente elevati); la sfida ora è comprendere questi risultati in modo più preciso caso per caso, nonostante le buone pratiche implementate, al fine di individuare ulteriori miglioramenti.",
                 "desc": "Sono stati individuati o sono tuttora in fase di individuazione diversi miglioramenti, tra cui:",
                 "title": "Miglioramenti individuati"
-            }
+            },
+            "desc": "pubblicato l'11 dicembre 2025",
+            "title": "Dichiarazione di ecodesign"
+        },
+        "tos": {
+            "contactDesc": "Per qualsiasi domanda sul servizio, puoi scrivere a <a {linkProps}>{contactLink}</a>.",
+            "contactTitle": "9. Contatti",
+            "defsEditor": "Per “editore” si intende il Servizio Digitale del Ministero della Cultura.",
+            "defsModels": "Per “Modelli” si intendono i principali modelli linguistici (LLM) riutilizzati dalla piattaforma in base alla relativa licenza per adempiere ai suoi scopi.",
+            "defsPlatform": "Per \"Piattaforma\" si intende il sito web che rende accessibili i servizi.",
+            "defsServices": "Per “Servizi” si intendono le funzionalità offerte dalla piattaforma per il raggiungimento dei suoi scopi.",
+            "defsTitle": "2. Definizioni",
+            "defsUser": "Per “Utente” si intende qualsiasi persona fisica che consulta la piattaforma e usufruisce dei suoi servizi.",
+            "descDatasets": "Questi dataset saranno resi disponibili con una licenza aperta, in particolare per promuovere l'utilizzo a fini di ricerca.",
+            "descEditor": "Pubblicato dal Servizio Digitale del Ministero della Cultura Francese, il comparatore è una piattaforma per il confronto di modelli conversazionali destinati al grande pubblico con l'obiettivo di (1) sensibilizzare i cittadini sui principali modelli linguistici (LLMs), (2) raccogliere le preferenze degli utenti per creare dataset di allineamento.",
+            "descTitle": "3. Descrizione della piattaforma",
+            "descUse": "L'utente pone una domanda in una lingua specifica e riceve risposte da due principali modelli linguistici anonimi (LLMs). Votando per il modello che fornisce la risposta che preferisci, verrà quindi rivelata l'identità dei modelli. Questo sistema di produzione partecipativa, ispirato alla piattaforma <a {linkProps}>« chatbot arena » (LMSYS)</a>, consente la creazione di dataset di preferenze umane per compiti reali, in lingua francese, che possono essere utilizzati per l'allineamento dei modelli.",
+            "dispoDesc": "La piattaforma è accessibile, salvo casi di forza maggiore o eventi al di fuori del controllo del suo editore.",
+            "dispoResp": "Pertanto, l'editore non può essere ritenuto responsabile per eventuali perdite o danni di qualsiasi natura derivanti da un malfunzionamento o dall'indisponibilità del servizio. Tali situazioni non daranno diritto agli utenti ad alcun risarcimento finanziario.",
+            "dispoRight": "L'editore si riserva il diritto di sospendere, interrompere o limitare, senza preavviso, l'accesso a tutti o parte dei servizi, in particolare per interventi di manutenzione e aggiornamenti necessari al corretto funzionamento del servizio e delle relative apparecchiature, o per qualsiasi altro motivo, inclusi motivi tecnici.",
+            "dispoTitle": "7. Disponibilità del servizio",
+            "dispoWarranty": "Il servizio non è garantito come esente da anomalie o errori. Pertanto, il servizio viene fornito senza alcuna garanzia in merito alla sua disponibilità e alle sue prestazioni.",
+            "evoDesc": "Le condizioni d'uso possono essere modificate o integrate in qualsiasi momento, senza preavviso, in base a modifiche dei servizi, sviluppi legislativi o per qualsiasi altro motivo ritenuto necessario.",
+            "evoDescMore": "Tali modifiche e aggiornamenti sono vincolanti per l'utente, il quale è pertanto tenuto a consultare regolarmente questa sezione per verificare i termini e le condizioni generali in vigore.",
+            "evoTitle": "8. Evoluzione delle modalità di utilizzo",
+            "featuresDatasets": "Il servizio raccoglie dati di dialogo (domande, risposte di entrambi i modelli) e preferenze dell'utente (voti, metadati associati). Questi dati vengono utilizzati sia per creare dataset condivisi sia per stabilire una classifica dei modelli di intelligenza artificiale visualizzati sulla piattaforma, in base ai voti espressi.",
+            "featuresDatasetsMore": "L'editore si riserva il diritto di distribuire i dati relativi ai dialoghi e alle preferenze degli utenti secondo una licenza etalab aperta 2.0. Il dataset è distribuito sulla piattaforma Hugging Face tramite l'account del Ministero della Cultura Francese (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "featuresDesc": "Al fine di raggiungere il duplice obiettivo di sensibilizzare i cittadini sui principali modelli linguistici e di raccogliere le preferenze degli utenti, i servizi offerti dalla piattaforma senza restrizioni di accesso sono i seguenti:",
+            "featuresDescMore": "Un'interfaccia uomo-macchina che consente un dialogo simultaneo con due modelli conversazionali e la possibilità di votare la risposta preferita."
         }
     }
 }
