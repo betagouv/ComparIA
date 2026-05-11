@@ -16,7 +16,7 @@ from typing import Literal
 from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS, CountryPortal
 from backend.llms.models import DatasetData, PreferencesData
 from utils.ranking.bradley_terry import bootstrap_confidence_intervals
-from utils.ranking.queries import fetch_reactions, fetch_votes
+from utils.ranking.queries import fetch_votes
 from utils.utils import configure_logger
 
 logger = configure_logger(logging.getLogger("ranking.compute"))
@@ -35,66 +35,24 @@ def _votes_to_battles(votes: list[dict]) -> list[tuple[str, str, str]]:
     """Convert vote records to battle tuples, filtering ties."""
     battles = []
     for v in votes:
-        if v.get("both_equal"):
-            continue
-        winner = v.get("chosen_model_name")
-        if not winner:
-            continue
-        model_a = v["model_a_name"]
-        model_b = v["model_b_name"]
-        if winner not in (model_a, model_b):
-            continue
-        battles.append((model_a, model_b, winner))
+        if v["choice"] in ("a_better", "b_better"):
+            winner = v["llm_id_a"] if v["choice"] == "a_better" else v["llm_id_b"]
+            battles.append((v["llm_id_a"], v["llm_id_b"], winner))
+
     return battles
 
 
-def _reactions_to_battles(reactions: list[dict]) -> list[tuple[str, str, str]]:
-    """Convert reaction records to battle tuples.
-
-    liked = vote for that model, disliked = vote for the opponent.
-    """
-    battles = []
-    for r in reactions:
-        model_a = r["model_a_name"]
-        model_b = r["model_b_name"]
-        refers_to = r.get("refers_to_model")
-        if not refers_to or refers_to not in (model_a, model_b):
-            continue
-
-        opponent = model_b if refers_to == model_a else model_a
-
-        if r.get("liked"):
-            battles.append((refers_to, opponent, refers_to))
-        elif r.get("disliked"):
-            battles.append((refers_to, opponent, opponent))
-    return battles
-
-
-def _aggregate_preferences(
-    votes: list[dict], reactions: list[dict]
-) -> dict[str, PreferencesData]:
+def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
     """Aggregate preference booleans from votes per model."""
     counts: dict[str, dict[str, int]] = defaultdict(lambda: {f: 0 for f in ALL_PREFS})
     total: dict[str, int] = defaultdict(int)
 
     for v in votes:
         for side in ("a", "b"):
-            model = v[f"model_{side}_name"]
+            model = v[f"llm_id_{side}"]
             total[model] += 1
-            for pref_field in ALL_PREFS:
-                if v.get(f"conv_{pref_field}_{side}"):
-                    counts[model][pref_field] += 1
-
-    for r in reactions:
-        if not r["liked"] and not r["disliked"]:
-            continue
-
-        model = r["refers_to_model"]
-        total[model] += 1
-        fields = POSITIVE_PREFS if r["liked"] else NEGATIVE_PREFS
-        for pref_field in fields:
-            if r[pref_field]:
-                counts[model][pref_field] += 1
+            for keyword in v[f"keyword_annotations_{side}"]:
+                counts[model][keyword] += 1
 
     result = {}
     for model in total:
@@ -122,12 +80,9 @@ def _aggregate_preferences(
 
 def _compute_rankings_for_group(
     votes: list[dict],
-    reactions: list[dict],
 ) -> RankingResult:
     """Compute rankings and preferences for a single group of votes/reactions."""
-    vote_battles = _votes_to_battles(votes)
-    reaction_battles = _reactions_to_battles(reactions)
-    all_battles = vote_battles + reaction_battles
+    all_battles = _votes_to_battles(votes)
 
     if not all_battles:
         return RankingResult(timestamp=time.time())
@@ -191,7 +146,7 @@ def _compute_rankings_for_group(
             win_rate=round(wins / n_match, 4) if n_match > 0 else 0.0,
         )
 
-    preferences = _aggregate_preferences(votes, reactions)
+    preferences = _aggregate_preferences(votes)
 
     return RankingResult(
         timestamp=time.time(),
@@ -200,7 +155,7 @@ def _compute_rankings_for_group(
     )
 
 
-def compute_all_rankings() -> dict[DataGroup, RankingResult]:
+async def compute_all_rankings() -> dict[DataGroup, RankingResult]:
     """
     Main function called by the scheduler.
 
@@ -213,27 +168,22 @@ def compute_all_rankings() -> dict[DataGroup, RankingResult]:
     logger.info("[Ranking] Starting ranking computation...")
     start = time.time()
 
-    all_votes = fetch_votes()
-    all_reactions = fetch_reactions()
+    all_votes = await fetch_votes()
+    print(all_votes)
 
-    if not all_votes and not all_reactions:
+    if not all_votes:
         logger.warning("[Ranking] No votes or reactions found, skipping computation")
         return {}
 
     # Group by country_portal
     votes_by_portal: dict[str, list[dict]] = defaultdict(list)
-    reactions_by_portal: dict[str, list[dict]] = defaultdict(list)
 
     for v in all_votes:
         portal = v.get("country_portal", "unknown")
         votes_by_portal[portal].append(v)
 
-    for r in all_reactions:
-        portal = r.get("country_portal", "unknown")
-        reactions_by_portal[portal].append(r)
-
     # Get all portal keys (excluding unknown)
-    all_portals = set(votes_by_portal.keys()) | set(reactions_by_portal.keys())
+    all_portals = set(votes_by_portal.keys())
     all_portals.discard("unknown")
 
     results: dict[DataGroup, RankingResult] = {}
@@ -242,7 +192,6 @@ def compute_all_rankings() -> dict[DataGroup, RankingResult]:
         try:
             results[portal] = _compute_rankings_for_group(
                 votes_by_portal.get(portal, []),
-                reactions_by_portal.get(portal, []),
             )
         except Exception:
             logger.error(
@@ -252,7 +201,7 @@ def compute_all_rankings() -> dict[DataGroup, RankingResult]:
 
     # Global rankings using all votes/reactions
     try:
-        results["all"] = _compute_rankings_for_group(all_votes, all_reactions)
+        results["all"] = _compute_rankings_for_group(all_votes)
     except Exception:
         logger.error("[Ranking] Error computing global rankings", exc_info=True)
 
