@@ -14,8 +14,10 @@
             "do": "Copier le message",
             "done": "Message copié"
         },
+        "discover": "Découvrir",
         "downloadData": "Télécharger les données",
         "home": "Page d'accueil",
+        "returnArena": "Revenir à l’arène",
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
         "scrollRight": "Défiler vers la droite",
@@ -28,6 +30,9 @@
             "count": "{count}/2 modèles",
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
             "question": "Quels modèles voulez-vous comparer ?"
+        },
+        "errors": {
+            "rateLimitCustomSelection": "Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard."
         },
         "modelSelection": "Sélection des modèles",
         "prompt": {
@@ -42,10 +47,7 @@
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
-        "title": "Comment puis-je vous aider aujourd'hui ?",
-        "errors": {
-            "rateLimitCustomSelection": "Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard."
-        }
+        "title": "Comment puis-je vous aider aujourd'hui ?"
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter…",
@@ -337,14 +339,14 @@
             "privacyData": "Les données collectées sur le site sont les suivantes :",
             "privacyDataArena": "Données relatives aux conversations des utilisateurs avec les modèles : questions posées par les utilisateurs, réponses des modèles et préférence exprimée par l’utilisateur sur les deux modèles",
             "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer compar:IA ».",
-            "tallyTitle": "Formulaires Tally",
-            "tallyDesc": "Ce site utilise <a {tallyLinkProps}>Tally</a>, un service de création de formulaires en ligne, pour deux fonctionnalités :",
-            "tallyNewsletter": "Le formulaire d'inscription à la lettre d'information (infolettre) compar:IA",
-            "tallyFeedback": "Le formulaire « Votre avis » permettant de recueillir vos retours sur le service",
-            "tallyData": "Lorsque vous remplissez l'un de ces formulaires, les données saisies sont transmises et hébergées par Tally (Tally BV, Belgique). Tally s'engage à ne pas utiliser vos données à des fins commerciales et à respecter le RGPD. Pour plus d'informations, consultez la <a {tallyPrivacyLinkProps}>politique de confidentialité de Tally</a>.",
             "privacyDesc": "Le service ne traite pas de données à caractère personnel telles que définies par la CNIL, à savoir toute information relative à une personne physique susceptible d'être identifiée, directement ou indirectement.",
             "privacyResp": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme. En acceptant les <a {linkProps}>modalités d’utilisation</a>, l’utilisateur ou l’utilisatrice s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
             "privacyTitle": "Traitons-nous des données à caractère personnel ?",
+            "tallyData": "Lorsque vous remplissez l'un de ces formulaires, les données saisies sont transmises et hébergées par Tally (Tally BV, Belgique). Tally s'engage à ne pas utiliser vos données à des fins commerciales et à respecter le RGPD. Pour plus d'informations, consultez la <a {tallyPrivacyLinkProps}>politique de confidentialité de Tally</a>.",
+            "tallyDesc": "Ce site utilise <a {tallyLinkProps}>Tally</a>, un service de création de formulaires en ligne, pour deux fonctionnalités :",
+            "tallyFeedback": "Le formulaire « Votre avis » permettant de recueillir vos retours sur le service",
+            "tallyNewsletter": "Le formulaire d'inscription à la lettre d'information (infolettre) compar:IA",
+            "tallyTitle": "Formulaires Tally",
             "title": "Politique de confidentialité"
         },
         "rgesn": {
@@ -1390,9 +1392,9 @@
         "chatbot": {
             "newDiscussion": "Nouvelle discussion",
             "reveal": {
-                "title": "Révélation",
+                "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
                 "subtitle": "Les modèles sont démasqués !",
-                "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle"
+                "title": "Révélation"
             }
         },
         "help": {
@@ -1517,7 +1519,7 @@
                     "title": "Vos préférences"
                 }
             },
-            "title": "Pourquoi votre vote est-il important ?"
+            "title": "Pourquoi votre vote est important ?"
         }
     },
     "models": {
@@ -2176,34 +2178,35 @@
         }
     },
     "vote": {
-        "turn": {
-            "choices": {
-                "a_better": "A est meilleur",
-                "both_good": "Les deux sont bons",
-                "idk": "Passer le vote",
-                "both_bad": "Les deux sont mauvais",
-                "b_better": "B est meilleur"
-            },
-            "important": "Votre vote est important : il contribue à un meilleur alignement avec les <a {linkProps}>préférences francophones</a>."
-        },
         "choices": {
             "negative": {
+                "comment": "Précisez ce que vous n’avez pas aimé…",
                 "incorrect": "Incorrecte",
                 "instructions_not_followed": "Instructions non suivies",
                 "question": "Pourquoi la réponse ne convient-elle pas ?",
-                "comment": "Précisez ce que vous n’avez pas aimé…",
                 "superficial": "Superficielle"
             },
             "positive": {
-                "comment": "Précisez ce que vous avez apprécié…",
                 "clear_formatting": "Mise en forme claire",
+                "comment": "Précisez ce que vous avez apprécié…",
                 "complete": "Complète",
                 "creative": "Créative",
                 "question": "Qu'avez-vous apprécié dans la réponse ?",
                 "useful": "Utile"
             }
         },
+        "importantDesc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois.",
         "title": "Quel modèle d’IA préférez-vous ?",
+        "turn": {
+            "choices": {
+                "a_better": "A est meilleur",
+                "b_better": "B est meilleur",
+                "both_bad": "Les deux sont mauvais",
+                "both_good": "Les deux sont bons",
+                "idk": "Passer le vote"
+            },
+            "important": "Votre vote est important : il contribue à un meilleur alignement avec les <a {linkProps}>préférences francophones</a>."
+        },
         "yours": "Votre vote"
     },
     "welcome": {
