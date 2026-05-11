@@ -37,12 +37,12 @@
   })
 </script>
 
-<div class="flex w-full flex-col">
+<div class="md:w-full flex w-[80vw] flex-col">
   <div
     class={[
       'message-bot cg-border rounded-lg! bg-white flex h-full flex-col',
       {
-        'outline-2 -outline-offset-1': !!prefKind,
+        'outline-2 -outline-offset-2': !!prefKind,
         'outline-red': prefKind === 'negative',
         'outline-green': prefKind === 'positive'
       }

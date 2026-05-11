@@ -99,7 +99,7 @@
         disabled={!canContinue}
         size="sm"
         icon="arrow-up-circle-line"
-        class="md:w-fit! w-full!"
+        class="md:w-fit! lh-none! w-full!"
         onclick={() => comparator.reveal()}
       />
     </div>
@@ -114,10 +114,10 @@
   }
 
   :global(#chat-area .grouped-messages) {
-    min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
+    max-height: calc(100vh - var(--second-header-size) - var(--footer-size));
     scroll-margin-top: calc(var(--second-header-size));
 
-    @media (min-width: 48em) {
+    &:last-of-type {
       height: calc(100vh - var(--second-header-size) - var(--footer-size));
     }
   }
