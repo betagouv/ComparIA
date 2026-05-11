@@ -1,12 +1,17 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
   import { noop } from '$lib/utils/commons'
   import type { Attachment } from 'svelte/attachments'
+  import { Button } from './dsfr'
 
   export type TextAreaProps = {
     id: string
     label: string
     value: string
     hideLabel?: boolean
+    submitBtn?: boolean
+    submitDisabled?: boolean
+    size?: 'sm' | 'md'
     maxRows?: number
     lineHeightPx?: number
     error?: string
@@ -22,6 +27,9 @@
     id,
     label,
     value = $bindable(),
+    submitBtn = false,
+    submitDisabled = false,
+    size = 'sm',
     hideLabel = false,
     rows = 1,
     maxRows = 4,
@@ -54,27 +62,49 @@
     error = undefined
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      onSubmit(value)
+      if (!submitDisabled) {
+        onSubmit(value)
+      }
     }
   }
+
+  const roundedClass = $derived(
+    size === 'sm' ? 'rounded-t-sm! rounded-s-sm!' : 'rounded-t-xl! rounded-s-xl!'
+  )
 </script>
 
 <div class={['fr-input-group', classNames, { 'fr-input-group--error': !!error }]}>
   <label for={id} class={['fr-label', { 'hidden!': hideLabel }]}>{label}</label>
-  <textarea
-    {id}
-    data-testid="textbox"
-    bind:value
-    bind:this={el}
-    {rows}
-    class="fr-input cg-border rounded-t-md! bg-white! md:min-h-10! rounded-b-none! border-solid!"
-    {...nativeTextAreaProps}
-    aria-describedby="messages-{id}"
-    {onkeydown}
-    onblur={() => onBlur?.(value)}
-    {@attach updateAuto}
-    {@attach updateRows}
-  ></textarea>
+  <div class="relative">
+    <textarea
+      {id}
+      data-testid="textbox"
+      bind:value
+      bind:this={el}
+      {rows}
+      class={[
+        roundedClass,
+        'fr-input cg-border bg-white! md:min-h-10! rounded-b-none! border-solid!'
+      ]}
+      {...nativeTextAreaProps}
+      aria-describedby="messages-{id}"
+      {onkeydown}
+      onblur={() => onBlur?.(value)}
+      {@attach updateAuto}
+      {@attach updateRows}
+    ></textarea>
+    {#if submitBtn}
+      <Button
+        icon="arrow-up-line"
+        iconOnly
+        {size}
+        disabled={submitDisabled}
+        text={m['words.send']()}
+        onclick={() => onSubmit(value)}
+        class="right-3 bottom-3 absolute"
+      />
+    {/if}
+  </div>
   <div class="fr-messages-group" id="messages-{id}" aria-live="polite">
     {#if error}
       <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
