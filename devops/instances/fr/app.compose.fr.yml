@@ -24,7 +24,7 @@ services:
       COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:-postgresql://comparia:comparia@postgres:5432/comparia}"
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
-      ALBERT_API_KEY:
+      ALBERT_KEY:
       # Only needed for dataset export (uv run python -m utils.dataset.run):
       # HF_PUSH_DATASET_KEY:
       # HF_PUSH_DATASET_PATH: "ministere-culture/comparia"
