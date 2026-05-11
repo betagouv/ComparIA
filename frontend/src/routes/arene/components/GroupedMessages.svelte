@@ -4,17 +4,21 @@
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { onMount, type Snippet } from 'svelte'
-  import { MessageBot, MessageUser, VoteSelect } from '.'
+  import { ErrorDisplay, MessageBot, MessageUser, VoteSelect } from '.'
 
   let {
     turn,
     disabled,
+    error,
     onVote,
+    onRetry,
     children
   }: {
     turn: ComparisonTurn
     disabled: boolean
+    error?: string
     onVote: (data: AnyAPIVote) => void
+    onRetry: () => void
     children: Snippet<[]> | undefined
   } = $props()
 
@@ -27,7 +31,7 @@
 </script>
 
 <div
-  class="grouped-messages not-last:mb-15 px-4 py-5 md:px-8 xl:px-16 flex flex-col"
+  class="grouped-messages px-4 py-5 md:px-8 xl:px-16 flex flex-col"
   style="--message-size: {userMessageSize}px;"
   {@attach scrollTo}
 >
@@ -38,6 +42,8 @@
   </div>
   {#if turn.status === 'pending'}
     <Pending message={m['chatbot.loading']()} class="m-auto" />
+  {:else if turn.status === 'error' && error}
+    <ErrorDisplay {error} class="mt-10" {onRetry} />
   {:else}
     <div class="gap-10 md:flex-row md:gap-6 min-h-0 flex flex-col">
       {#if turn.a.llm_msg && turn.b.llm_msg}
