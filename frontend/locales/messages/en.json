@@ -21,8 +21,7 @@
         "scrollRight": "Scroll right",
         "searchModel": "Search for a model",
         "seeMore": "See more",
-        "selectLanguage": "Select a language",
-        "vote": "Give feedback"
+        "selectLanguage": "Select a language"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +54,12 @@
             "other": {
                 "message": "A temporary error has occurred.",
                 "retry": "You can retry to query the models again.",
-                "title": "Oops, temporary error",
-                "vote": "Or finish the experience by giving your preference on these models."
+                "title": "Oops, temporary error"
             },
             "tooLong": {
                 "message": "Each model is limited in the size of conversations it can handle.",
                 "retry": "You can restart a chat with two new models.",
-                "title": "Oops, the conversation is too long for one of the models.",
-                "vote": "You can still give your preference on these models or start a conversation with two new ones."
+                "title": "Oops, the conversation is too long for one of the models."
             }
         },
         "loading": "Loading answers",
@@ -1253,16 +1250,7 @@
     "header": {
         "banner": "New models just joined the arena!",
         "chatbot": {
-            "newDiscussion": "New chat",
-            "step": "Step",
-            "stepOne": {
-                "description": "Pay attention to both content and form, then evaluate each response.",
-                "title": "What do you think of the answers?"
-            },
-            "stepTwo": {
-                "description": "Discover the environmental impact of your conversations with each model",
-                "title": "Models are revealed!"
-            }
+            "newDiscussion": "New chat"
         },
         "help": {
             "link": {
@@ -2044,16 +2032,13 @@
         }
     },
     "vote": {
-        "bothEqual": "Both are equally good",
         "choices": {
-            "altText": "{choice} for model {model}",
             "negative": {
                 "incorrect": "Incorrect",
                 "instructions_not_followed": "Instructions not followed",
                 "question": "Why did you not like the answer",
                 "superficial": "Superficial"
             },
-            "other": "Other…",
             "positive": {
                 "clear_formatting": "Clear formatting",
                 "complete": "Complete",
@@ -2061,25 +2046,6 @@
                 "question": "What did you like about the answer?",
                 "useful": "Useful"
             }
-        },
-        "comment": {
-            "add": "Add comments",
-            "placeholder": "You can add details about model {model}'s response"
-        },
-        "dislike": {
-            "label": "I dislike",
-            "selectedLabel": "I dislike (selected)"
-        },
-        "introA": "Before finding out the identity of the models, we need your vote.",
-        "introB": "It allows us to improve the compar:IA datasets, the objective of which is to refine future AI models on less-resourced languages",
-        "like": {
-            "label": "I like",
-            "selectedLabel": "I like (selected)"
-        },
-        "qualify": {
-            "addDetails": "Add details",
-            "placeholder": "The responses from the {model} model are...",
-            "question": "How would you describe its answers?"
         },
         "title": "Which AI model do you prefer",
         "yours": "Your vote"

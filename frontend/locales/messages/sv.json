@@ -21,8 +21,7 @@
         "scrollRight": "Scrolla till höger",
         "searchModel": "Sök modell",
         "seeMore": "Visa mer",
-        "selectLanguage": "Välj språk",
-        "vote": "Skicka åsikt"
+        "selectLanguage": "Välj språk"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +54,12 @@
             "other": {
                 "message": "Ett tillfälligt fel har uppstått.",
                 "retry": "Du kan försöka begära modellerna igen.",
-                "title": "Ett tillfälligt fel har uppstått",
-                "vote": "Eller avsluta din upplevelse genom att ge din åsikt om modellerna."
+                "title": "Ett tillfälligt fel har uppstått"
             },
             "tooLong": {
                 "message": "Varje modell har en gräns för hur stora samtal den kan hantera.",
                 "retry": "Du kan återuppta en konversation med två nya modeller.",
-                "title": "Konversationen är för lång för en av modellerna.",
-                "vote": "Du kan fortfarande ge din åsikt om dessa modeller eller starta en konversation med två nya."
+                "title": "Konversationen är för lång för en av modellerna."
             }
         },
         "loading": "Läser in svar",
@@ -917,16 +914,7 @@
     "header": {
         "banner": "Claude 4, GLM 4.5, GPT OSS och andra nya modeller ansluter sig till arenan!",
         "chatbot": {
-            "newDiscussion": "Ny diskussion",
-            "step": "Steg",
-            "stepOne": {
-                "description": "Var uppmärksam på både innehåll och form, och utvärdera sedan varje svar",
-                "title": "Vad tycker du om svaren?"
-            },
-            "stepTwo": {
-                "description": "Upptäck vilken miljöpåverkan dina diskussioner har för varje modell",
-                "title": "Modellerna avslöjas!"
-            }
+            "newDiscussion": "Ny diskussion"
         },
         "help": {
             "link": {
@@ -1460,9 +1448,7 @@
         }
     },
     "vote": {
-        "bothEqual": "Båda är lika bra",
         "choices": {
-            "altText": "{choice} för modellen {model}",
             "negative": {
                 "incorrect": "Fel",
                 "instructions_not_followed": "Instruktioner följdes inte",
@@ -1476,25 +1462,6 @@
                 "question": "Vad tyckte du om med svaret?",
                 "useful": "Användbart"
             }
-        },
-        "comment": {
-            "add": "Lägg till kommentarer",
-            "placeholder": "Du kan lägga till detaljer i svaret för modellen {model}"
-        },
-        "dislike": {
-            "label": "Jag uppskattar inte",
-            "selectedLabel": "Jag gillar inte (vald)"
-        },
-        "introA": "Innan vi tar avslöjar vilka modellerna var behöver vi dina preferenser.",
-        "introB": "Det gör det möjligt för oss att berika compar:IA-datauppsättningarna, vars mål är att förfina framtida AI-modeller på språk med begränsade resurser",
-        "like": {
-            "label": "Jag uppskattar",
-            "selectedLabel": "Jag uppskattar (vald)"
-        },
-        "qualify": {
-            "addDetails": "Lägg till detaljer",
-            "placeholder": "Svaren från modellen {model} är...",
-            "question": "Hur betygsätter du svaren?"
         },
         "title": "Vilken AI-modell föredrar du?",
         "yours": "Din röst"
