@@ -6,7 +6,7 @@
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { ErrorDisplay, GroupedMessages, RevealArea } from '.'
+  import { GroupedMessages, RevealArea } from '.'
 
   let { comparisonId }: { comparisonId: string } = $props()
 
@@ -39,14 +39,16 @@
     role="log"
     aria-label={m['chatbot.conversation']()}
     aria-live="polite"
-    class="pb-7 flex grow flex-col"
+    class="flex grow flex-col"
   >
     {#each comparator.comparison.turns as turn, idx (turn.id)}
       <GroupedMessages
         {turn}
         disabled={comparator.status !== 'complete' ||
           idx !== comparator.comparison.turns.length - 1}
+        error={comparator.error}
         onVote={comparator.vote}
+        onRetry={comparator.retry}
       >
         {#if idx === 0}
           <div
@@ -60,13 +62,7 @@
       </GroupedMessages>
     {/each}
 
-    {#if comparator.error}
-      <ErrorDisplay
-        error={comparator.error}
-        class={{ 'mt-10': comparator.comparison.turns.length > 1 }}
-        onRetry={() => comparator.retry()}
-      />
-    {:else if comparator.loading}
+    {#if comparator.loading}
       <Pending message={m['chatbot.loading']()} class="m-auto" {@attach scrollTo} />
     {/if}
   </div>
@@ -114,7 +110,7 @@
 </div>
 
 <style>
-  :global(#chat-area:has(+ #send-area) .grouped-messages:last-of-type) {
+  :global(#chat-area .grouped-messages) {
     min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
     scroll-margin-top: calc(var(--second-header-size));
 
