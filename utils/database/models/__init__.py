@@ -1,3 +1,10 @@
-from .comparison import Comparison, ComparisonCreate, ComparisonRead
+from .comparison import Comparison, ComparisonCreate, ComparisonPublic, ComparisonRead
 from .messages import *
-from .turn import Turn, TurnCreate, TurnRead, TurnVoteAnnotate, TurnVoteChoice
+from .turn import (
+    Turn,
+    TurnCreate,
+    TurnPublic,
+    TurnRead,
+    TurnVoteAnnotate,
+    TurnVoteChoice,
+)
