@@ -3,6 +3,7 @@ import logging
 from typing import Annotated, Awaitable, cast
 
 from fastapi import Depends, Header, HTTPException, status
+from sqlmodel import and_, col, func, select
 
 from backend.config import (
     COUNTRY_PORTALS,
@@ -10,8 +11,9 @@ from backend.config import (
     CountryPortal,
     settings,
 )
+from utils.database.models import Comparison, Turn
+from utils.database.session import get_session
 from utils.ranking.compute import RankingResult
-from utils.storage.db import db_cursor
 from utils.storage.redis import (
     REDIS_RANKING_KEY,
     REDIS_VOTE_COUNT_KEY,
@@ -49,7 +51,7 @@ def country_portal_from_locale(locale: str = Header(..., alias="X-Locale")) -> s
 CountryPortalAnno = Annotated[CountryPortal, Depends(country_portal_from_locale)]
 
 
-def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
+async def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
 
@@ -60,7 +62,6 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
     Returns:
         The count of votes and reactions for the specified country portal
     """
-    from psycopg2 import sql
 
     # Try Redis first
     client = get_redis_client()
@@ -78,30 +79,23 @@ def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int
         return 0
 
     # Count votes and reactions linked to conversations with country_portal
-    with db_cursor("get votes and reactions count", logger) as cursor:
-        cursor.execute(
-            sql.SQL("""
-                SELECT
-                    (SELECT COUNT(*) FROM votes v
-                     JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
-                     WHERE c.country_portal = %s AND v.archived = FALSE) +
-                    (SELECT COUNT(*) FROM reactions r
-                     JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-                     WHERE c.country_portal = %s AND r.archived = FALSE)
-                AS total
-            """),
-            (country_code, country_code),
-        )
-        # FIXME raise error if None?
-        res = cursor.fetchone()
-        result = res[0] if res and res[0] is not None else 0
+    async with get_session() as session:
+        count = (
+            await session.exec(
+                select(func.count(col(Turn.id)))
+                .join(Comparison)
+                .where(col(Comparison.archived).is_not(True))
+                .where(Comparison.country_portal == country_code)
+                .where(and_(Turn.choice != None, Turn.choice != "idk"))
+            )
+        ).one()
 
         try:
-            client.setex(REDIS_VOTE_COUNT_KEY, ttl, result)
+            client.setex(REDIS_VOTE_COUNT_KEY, ttl, count)
         except Exception as e:
             logger.error(f"Error setting {country_code} count in Redis: {e}")
 
-        return result
+        return count
 
     return 0
 
