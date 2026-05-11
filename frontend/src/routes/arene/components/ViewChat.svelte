@@ -74,7 +74,7 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="bg-very-light-grey bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center"
+      class="bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)"
     >
       <div class="gap-3 md:flex-row flex w-full flex-col">
         <TextPrompt
@@ -107,6 +107,10 @@
 </div>
 
 <style>
+  #send-area {
+    background: linear-gradient(180deg, #fcfcfd 0%, #ebecfe 100%);
+  }
+
   :global(#chat-area .grouped-messages) {
     min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
     scroll-margin-top: calc(var(--second-header-size));
