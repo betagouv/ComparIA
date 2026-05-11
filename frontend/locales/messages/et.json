@@ -21,8 +21,7 @@
         "scrollRight": "Keri paremale",
         "searchModel": "Otsi mudelit",
         "seeMore": "Vaata veel",
-        "selectLanguage": "Vali keel",
-        "vote": "Anna tagasisidet"
+        "selectLanguage": "Vali keel"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +54,12 @@
             "other": {
                 "message": "Ilmnes ajutine tõrge.",
                 "retry": "Võid veelkord proovida.",
-                "title": "Ups, ajutine tõrge",
-                "vote": "Või lõpetada oma katse hääle andmisega."
+                "title": "Ups, ajutine tõrge"
             },
             "tooLong": {
                 "message": "Igal mudelil on piiratud vestluste maht, mida see käsitleda suudab.",
                 "retry": "Võid vestlust kahe uue mudeliga uuesti alustada.",
-                "title": "Ups, vestlus on ühe mudeli jaoks liiga pikk.",
-                "vote": "Võid nendele mudelitele siiski hääle anda või alustada vestlust kahe uue mudeliga."
+                "title": "Ups, vestlus on ühe mudeli jaoks liiga pikk."
             }
         },
         "loading": "Vastuste laadimine",
@@ -1243,16 +1240,7 @@
     "header": {
         "banner": "🏆 Mudelite edetabel on nüüd saadaval! Tutvu edetabeliga.",
         "chatbot": {
-            "newDiscussion": "Uus vestlus",
-            "step": "Samm",
-            "stepOne": {
-                "description": "Pööra tähelepanu nii sisule kui ka vormile, seejärel hinda igat vastust",
-                "title": "Mis sa sellest vastusest arvad?"
-            },
-            "stepTwo": {
-                "description": "Avasta iga mudeli puhul oma vestluste keskkonnamõju",
-                "title": "Näed nüüd mudeleid!"
-            }
+            "newDiscussion": "Uus vestlus"
         },
         "help": {
             "link": {
@@ -2034,16 +2022,13 @@
         }
     },
     "vote": {
-        "bothEqual": "Võrdselt head",
         "choices": {
-            "altText": "{choice} mudelile {model}",
             "negative": {
                 "incorrect": "Ekslik",
                 "instructions_not_followed": "Juhiseid ei järgitud",
                 "question": "Miks sulle see vastus ei meeldinud?",
                 "superficial": "Pealiskaudne"
             },
-            "other": "Muu",
             "positive": {
                 "clear_formatting": "Selge vorming",
                 "complete": "Täielik",
@@ -2051,25 +2036,6 @@
                 "question": "Mis sulle selle vastuse juures meeldis?",
                 "useful": "Kasulik"
             }
-        },
-        "comment": {
-            "add": "Lisa kommentaar",
-            "placeholder": "Saad lisada üksikasju {model} mudeli vastuse kohta"
-        },
-        "dislike": {
-            "label": "Ei meeldi",
-            "selectedLabel": "Ei meeldi (valitud)"
-        },
-        "introA": "Mudelite nimede nägemiseks pead andma oma hääle.",
-        "introB": "See võimaldab meil andmestikke paremaks muuta, mis omakorda aitab väheste ressurssidega keelte jaoks tulevasi tehisarumudeleid täiustada",
-        "like": {
-            "label": "Meeldib",
-            "selectedLabel": "Mulle meeldib (valitud)"
-        },
-        "qualify": {
-            "addDetails": "Lisa täpsustusi",
-            "placeholder": "Mudeli {model} vastused on ...",
-            "question": "Kuidas sa selle vastuseid kirjeldaksid?"
         },
         "title": "Missugust keelemudelit sa eelistad?",
         "yours": "Sinu hääl"

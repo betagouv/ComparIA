@@ -21,8 +21,7 @@
         "scrollRight": "Bla til høyre",
         "searchModel": "Søk etter en modell",
         "seeMore": "Se mer",
-        "selectLanguage": "Velg språk",
-        "vote": "Send tilbakemelding"
+        "selectLanguage": "Velg språk"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +54,12 @@
             "other": {
                 "message": "Det har oppstått en midlertidig feil.",
                 "retry": "Du kan prøve å spørre modellene på nytt.",
-                "title": "Oops, midlertidig feil",
-                "vote": "Eller avslutt ved å oppgi hvilken modell du foretrekker."
+                "title": "Oops, midlertidig feil"
             },
             "tooLong": {
                 "message": "Hver modell har begrensninger på hvor lange samtaler de kan håndtere.",
                 "retry": "Du kan gjenoppta samtalen med to nye modeller.",
-                "title": "Oops, samtalen er for lang for en av modellene.",
-                "vote": "Du kan fremdeles oppgi hvilken modell du foretrekker eller starte en samtale med to nye modeller."
+                "title": "Oops, samtalen er for lang for en av modellene."
             }
         },
         "loading": "Laster inn svar",
