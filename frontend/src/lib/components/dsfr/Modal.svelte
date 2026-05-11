@@ -1,18 +1,20 @@
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
-  import type { HTMLDialogAttributes } from 'svelte/elements'
+  import type { ClassValue, HTMLDialogAttributes } from 'svelte/elements'
   import { Button } from '.'
 
   let {
     id,
     titleId,
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
+    contentClass,
     onClose,
     children
   }: {
     id: string
     titleId: string
     sizeClass?: string
+    contentClass?: ClassValue
     onClose?: () => void
   } & HTMLDialogAttributes = $props()
 </script>
@@ -41,7 +43,7 @@
             />
           </div>
 
-          <div class="fr-modal__content">
+          <div class={['fr-modal__content', contentClass]}>
             {@render children?.()}
           </div>
         </div>
