@@ -1,45 +1,42 @@
 import logging
 from typing import Any
 
+from sqlmodel import col, select, union
+
+from utils.database.models import Comparison
+from utils.database.session import get_session
 from utils.logger import configure_logger
 from utils.models.organisations import LLMS_RAW_DATA_FILE
-from utils.utils import ROOT_DIR, db_connection
+from utils.utils import ROOT_DIR
 
 from .compute import RankingResult
 
 logger = configure_logger(logging.getLogger("ranking.monitoring"))
 
 
-def get_conversations_llm_ids() -> set[str]:
+async def get_conversations_llm_ids() -> set[str]:
     """Get distinct model IDs from the conversations table."""
-
-    import polars as pl
-
-    query = "SELECT DISTINCT model_a_name as model_id FROM conversations UNION SELECT DISTINCT model_b_name as model_id FROM conversations"
     try:
-        with db_connection() as conn:
-            df = pl.read_database(query=query, connection=conn)
-            # Filter out None values if any
-            model_ids = df["model_id"].drop_nulls().unique().to_list()
-
-            if not model_ids:
-                # log as error, this should not happen in prod
-                logger.error("No model IDs found in the database.")
-                return set()
-
-            return set(model_ids)
+        async with get_session() as session:
+            results = await session.exec(
+                union(
+                    select(col(Comparison.llm_id_a).label("llm_id")).distinct(),
+                    select(col(Comparison.llm_id_b).label("llm_id")).distinct(),
+                )
+            )
+            return set([result[0] for result in results.all()])
     except Exception as e:
         logger.error(f"Failed to fetch distinct model IDs: {e}")
         raise e
 
 
-def monitor(llms: dict[str, Any], data: RankingResult):
+async def monitor(llms: dict[str, Any], data: RankingResult):
     """
     Warn about missing llms definitions, ranking or preferences data
     """
 
     llm_ids = set(llms.keys())
-    db_llm_ids = get_conversations_llm_ids()
+    db_llm_ids = await get_conversations_llm_ids()
     new_llm_ids = set([id_ for id_ in llm_ids if llms[id_]["new"]])
     archived_llm_ids = set(
         [id_ for id_ in llm_ids if llms[id_]["status"] == "archived"]

@@ -48,11 +48,11 @@ def store_to_redis(data: RankingResult) -> None:
         raise
 
 
-def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
+async def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
     """
     Compute per group (portals + "all") `RankingResult` in redis/as file depending on mode.
     """
-    data = compute_all_rankings()
+    data = await compute_all_rankings()
 
     if mode in ("all", "json"):
         # FIXME reflect previous data structure and override utils/models/generated-models-extra-data.json?
@@ -64,7 +64,7 @@ def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
             store_to_redis(jsonable_encoder(portal_data))
 
     llms = read_json(LLMS_GENERATED_DATA_FILE)["models"]
-    monitor(llms, data["all"])
+    await monitor(llms, data["all"])
 
 
 if __name__ == "__main__":
