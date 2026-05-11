@@ -21,7 +21,7 @@ services:
       LOGDIR: /data
       LANGUIA_DEBUG: "true"
       DEFAULT_COUNTRY_PORTAL: fr
-      COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:-postgresql://comparia:comparia@postgres-fr:5432/comparia}"
+      COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:-postgresql://comparia:comparia@postgres:5432/comparia}"
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
       ALBERT_API_KEY:

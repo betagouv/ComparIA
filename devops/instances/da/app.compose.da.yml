@@ -21,7 +21,7 @@ services:
       LOGDIR: /data
       LANGUIA_DEBUG: "true"
       DEFAULT_COUNTRY_PORTAL: da
-      COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://comparia:comparia@postgres-da:5432/comparia_da}"
+      COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://comparia:comparia@postgres:5432/comparia_da}"
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
       ORDBOGEN_API_KEY:

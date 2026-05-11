@@ -14,8 +14,7 @@ services:
     networks:
       comparia-net:
         aliases:
-          - postgres-fr
-          - postgres-da
+          - postgres
 
 volumes:
   db-data:
