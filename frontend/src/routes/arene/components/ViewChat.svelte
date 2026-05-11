@@ -6,7 +6,7 @@
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { GroupedMessages, RevealArea } from '.'
+  import { GroupedMessages, RevealArea, VoteModal } from '.'
 
   let { comparisonId }: { comparisonId: string } = $props()
 
@@ -105,6 +105,8 @@
     </div>
   {/if}
 </div>
+
+<VoteModal />
 
 <style>
   #send-area {
