@@ -9,7 +9,7 @@ Functions:
 import logging
 from typing import TypedDict
 
-from backend.arena.models import BotPos, Consumption
+from backend.arena.models import BotPos
 from backend.llms.data import get_llms_data
 from backend.llms.models import LLMData
 from backend.llms.utils import Consumption, get_llm_consumption
