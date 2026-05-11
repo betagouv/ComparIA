@@ -42,7 +42,7 @@
   const keywordChoices = $derived(keywords[kind])
 </script>
 
-<form {id} class="bg-light-info px-4 pb-2 mt-auto">
+<form {id} class="bg-light-info px-4 py-2 mt-auto">
   <TextPrompt
     id="chatbot-prompt"
     bind:value={annotations.custom_annotation}

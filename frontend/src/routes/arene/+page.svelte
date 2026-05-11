@@ -47,7 +47,9 @@
   >
     <div class="fr-container gap-3 md:flex-row flex flex-col items-center">
       <div class="gap-3 md:flex-row flex basis-2/3 flex-col items-center">
-        <div class="bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-nowrap">
+        <div
+          class="bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-[18px] text-nowrap"
+        >
           {m['header.chatbot.reveal.title']()}
         </div>
         <div class="md:text-left flex flex-col text-center">
