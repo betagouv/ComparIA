@@ -48,7 +48,7 @@
         }
     },
     "chatbot": {
-        "continuePrompt": "Continuer à discuter avec les modèles",
+        "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
         "errors": {
             "other": {
@@ -67,7 +67,7 @@
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
-        "revealButton": "Passer à la révélation des modèles"
+        "revealButton": "Terminer la discussion et découvrir les deux modèles"
     },
     "closeModal": "Fermer la fenêtre modale",
     "components": {

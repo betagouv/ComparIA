@@ -58,7 +58,7 @@
       </button>
     </div>
 
-    <p id="{id}-help" class="mb-0! text-grey text-center text-[11px]!">
+    <p id="{id}-help" class="mb-0! text-grey lh-normal! text-center text-[11px]!">
       {@html sanitize(
         m['vote.turn.important']({
           linkProps: propsToAttrs({ href: 'FIXME' })

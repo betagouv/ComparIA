@@ -84,24 +84,21 @@
           placeholder={m['chatbot.continuePrompt']()}
           error={comparator.promptError}
           hideLabel
-          rows={1}
+          submitBtn
+          submitDisabled={!canContinue || prompt === ''}
+          size="md"
+          rows={3}
           maxRows={4}
           onSubmit={() => comparator.ask(prompt)}
           class="mb-0! w-full"
-        />
-
-        <Button
-          id="send-btn"
-          text={m['words.send']()}
-          disabled={!canContinue || prompt === ''}
-          class="md:w-auto! md:self-end! w-full!"
-          onclick={() => comparator.ask(prompt)}
         />
       </div>
 
       <Button
         text={m['chatbot.revealButton']()}
         disabled={!canContinue}
+        size="sm"
+        icon="arrow-up-circle-line"
         class="md:w-fit! w-full!"
         onclick={() => comparator.reveal()}
       />

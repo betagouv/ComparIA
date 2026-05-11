@@ -50,7 +50,6 @@
   }
 
   function onPromptSubmit() {
-    if (disabled) return
     onPrompt({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
@@ -112,6 +111,7 @@
           placeholder={m['arenaHome.prompt.placeholder']()}
           bind:error={promptError}
           disabled={loading}
+          submitDisabled={disabled}
           hideLabel
           rows={4}
           onSubmit={() => onPromptSubmit()}
