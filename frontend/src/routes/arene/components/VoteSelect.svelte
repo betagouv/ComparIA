@@ -61,7 +61,11 @@
     <p id="{id}-help" class="mb-0! text-grey lh-normal! text-center text-[11px]!">
       {@html sanitize(
         m['vote.turn.important']({
-          linkProps: propsToAttrs({ href: 'FIXME' })
+          linkProps: propsToAttrs({
+            href: '#',
+            'data-fr-opened': 'true',
+            'aria-controls': 'fr-modal-vote'
+          })
         })
       )}
     </p>
