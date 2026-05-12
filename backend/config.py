@@ -68,7 +68,7 @@ POSITIVE_PREFS: tuple[PositivePref, ...] = get_args(PositivePref)
 NegativePref = Literal["incorrect", "superficial", "instructions_not_followed"]
 NEGATIVE_PREFS: tuple[NegativePref, ...] = get_args(NegativePref)
 AllPref = Literal[PositivePref | NegativePref]
-ALL_PREFS: tuple[AllPref, ...] = get_args(AllPref)
+ALL_PREFS: tuple[AllPref, ...] = POSITIVE_PREFS + NEGATIVE_PREFS
 TurnChoice = Literal["both_good", "both_bad", "a_better", "b_better", "idk"]
 TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 
