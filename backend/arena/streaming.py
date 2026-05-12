@@ -205,7 +205,7 @@ async def stream_comparison_messages(
     import asyncio
 
     turn_index = len(comparison.turns) - 1
-    llms_data = get_llms_data(comparison.country_portal).enabled
+    llms_data = get_llms_data().enabled
 
     try:
         # Create async generators for both models

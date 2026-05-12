@@ -7,7 +7,7 @@ from backend.config import settings
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
-from backend.utils.countries import CountryPortalAnno, get_country_portal_count
+from backend.utils.countries import get_vote_count
 
 app = FastAPI()
 
@@ -48,8 +48,8 @@ app.include_router(arena_router)
 
 
 @app.get("/counter")
-async def get_counter(country_portal: CountryPortalAnno):
+async def get_counter():
     return {
-        "count": await get_country_portal_count(country_portal),
+        "count": await get_vote_count(),
         "objective": settings.VOTES_OBJECTIVE,
     }

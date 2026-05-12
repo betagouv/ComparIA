@@ -43,7 +43,7 @@ async def _get_item(item_class: type[T], id: int, session: "AsyncSession") -> T:
 async def create_comparison(comparison: ComparisonCreate) -> ComparisonRead:
     async with get_session() as session:
         db_comparison = Comparison.model_validate(comparison)
-        llms_data = get_llms_data(comparison.country_portal).enabled
+        llms_data = get_llms_data().enabled
 
         for pos in BOT_POS:
             if content := llms_data[getattr(comparison, f"llm_id_{pos}")].system_prompt:
@@ -75,7 +75,7 @@ async def update_comparison_llm_id(
     # Update current ComparisonRead failing LLM id
     setattr(comparison, f"llm_id_{pos}", new_llm_id)
     # Remove or add new SystemMessage if any
-    llm = get_llms_data(comparison.country_portal).enabled[new_llm_id]
+    llm = get_llms_data().enabled[new_llm_id]
     system_msg = SystemMessage(content=llm.system_prompt) if llm.system_prompt else None
     setattr(comparison, f"system_msg_{pos}", system_msg)
     # Reset TurnRead llm_msg_* to None (no need to do it in db, it is not yet saved)

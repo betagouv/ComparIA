@@ -1,16 +1,10 @@
 import json
 import logging
-from typing import Annotated, Awaitable, cast
+from typing import Awaitable
 
-from fastapi import Depends, Header, HTTPException, status
 from sqlmodel import and_, col, func, select
 
-from backend.config import (
-    COUNTRY_PORTALS,
-    DEFAULT_COUNTRY_PORTAL,
-    CountryPortal,
-    settings,
-)
+from backend.config import settings
 from utils.database.models import Comparison, Turn
 from utils.database.session import get_session
 from utils.ranking.compute import RankingResult
@@ -23,44 +17,15 @@ from utils.storage.redis import (
 logger = logging.getLogger("languia")
 
 
-def country_portal_from_locale(locale: str = Header(..., alias="X-Locale")) -> str:
+async def get_vote_count(ttl: int = 120) -> int:
     """
-    Dependency to extract and validate country portal from headers's locale.
+    Get the count of Turns with vote choice from redis if available or compute it.
 
     Args:
-        locale: Session identifier from X-Locale header
-
-    Returns:
-        CountryPortal
-
-    Raises:
-        HTTPException: If locale is missing
-    """
-    if not locale:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing locale in headers"
-        )
-
-    return (
-        DEFAULT_COUNTRY_PORTAL
-        if locale not in COUNTRY_PORTALS
-        else cast(CountryPortal, locale)
-    )
-
-
-CountryPortalAnno = Annotated[CountryPortal, Depends(country_portal_from_locale)]
-
-
-async def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) -> int:
-    """
-    Get the count of votes and reactions for conversations with a specific country portal.
-
-    Args:
-        country_code: The country code to filter by (e.g., 'da' for Danish)
         ttl: Time-to-live for Redis cache in seconds (default: 120 seconds = 2 minutes)
 
     Returns:
-        The count of votes and reactions for the specified country portal
+        The count of Turns with vote choice.
     """
 
     # Try Redis first
@@ -71,21 +36,20 @@ async def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) 
         if count is not None:
             return int(count)
     except Exception as e:
-        logger.debug(f"cache miss for {country_code} count from Redis: {e}")
+        logger.debug(f"cache miss for vote count from Redis: {e}")
 
     # Fallback to Postgres
     if not settings.COMPARIA_DB_URI:
         logger.warning("Cannot log to db: no db configured")
         return 0
 
-    # Count votes and reactions linked to conversations with country_portal
+    # Count Turn's with choice
     async with get_session() as session:
         count = (
             await session.exec(
                 select(func.count(col(Turn.id)))
                 .join(Comparison)
                 .where(col(Comparison.archived).is_not(True))
-                .where(Comparison.country_portal == country_code)
                 .where(and_(Turn.choice != None, Turn.choice != "idk"))
             )
         ).one()
@@ -93,22 +57,19 @@ async def get_country_portal_count(country_code: CountryPortal, ttl: int = 120) 
         try:
             client.setex(REDIS_VOTE_COUNT_KEY, ttl, count)
         except Exception as e:
-            logger.error(f"Error setting {country_code} count in Redis: {e}")
+            logger.error(f"Error setting vote count in Redis: {e}")
 
         return count
 
     return 0
 
 
-def get_country_portal_ranking(country_portal: CountryPortal) -> RankingResult | None:
+def get_ranking() -> RankingResult | None:
     """
-    Get ranking and preference data for a specific portal from redis cache.
-
-    Args:
-        country_portal: The country portal to filter by (e.g., 'da' for Danish)
+    Get ranking and preference data from redis cache if available.
     """
 
-    data_info = f"ranking and prefs data for country_portal: {country_portal}"
+    data_info = f"ranking and prefs data"
 
     try:
         client = get_redis_client()

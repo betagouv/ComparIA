@@ -4,14 +4,14 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Annotated, Any
 
 import numpy as np
-from pydantic import BaseModel, Field, ValidationInfo, computed_field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
 
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
-    CountryPortal,
     CustomModelsSelection,
     SelectionMode,
+    settings,
 )
 from backend.llms.models import LLMDataArchived, LLMDataEnabled
 from utils.utils import LLMS_GENERATED_DATA_FILE
@@ -32,22 +32,18 @@ class LLMsData(BaseModel):
 
     @field_validator("all", mode="before")
     @classmethod
-    def filter_disabled(cls, values: Any, info: ValidationInfo) -> dict[str, Any]:
+    def filter_disabled(cls, values: Any) -> dict[str, Any]:
         """
         Filter out disabled LLMs.
         Also remove LLMs that are only available in some portals
         """
-        assert info.context is not None
-        country_portal: CountryPortal = info.context["country_portal"]
-        assert country_portal is not None
-
         return {
             _id: model
             for _id, model in values.items()
             if model["status"] != "disabled"
             and (
                 not model["specific_portals"]
-                or country_portal in model["specific_portals"]
+                or settings.DEFAULT_COUNTRY_PORTAL in model["specific_portals"]
             )
         }
 
@@ -219,21 +215,19 @@ class LLMsData(BaseModel):
 
 
 @lru_cache
-def get_llms_data(country_portal: CountryPortal) -> LLMsData:
+def get_llms_data() -> LLMsData:
     """
     Load model definitions from generated configuration.
     File contains metadata: params, pricing, reasoning capability, licenses, etc.
     """
     data = json.loads(LLMS_GENERATED_DATA_FILE.read_text())
 
-    return LLMsData.model_validate(
-        {"all": data["models"]}, context={"country_portal": country_portal}
-    )
+    return LLMsData.model_validate({"all": data["models"]})
 
 
 def pick_replacement_model(comparison: "ComparisonRead", pos: "BotPos") -> str | None:
     """Pick a replacement model from the appropriate pool, excluding both current models."""
-    models = get_llms_data(comparison.country_portal)
+    models = get_llms_data()
     other_pos: BotPos = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
     other = getattr(comparison, f"llm_id_{other_pos}")
