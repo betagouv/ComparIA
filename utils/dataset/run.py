@@ -5,7 +5,7 @@ from typing import Literal
 import cyclopts
 from huggingface_hub import login
 
-from backend.config import CountryPortal, settings
+from backend.config import settings
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
 
@@ -16,7 +16,6 @@ logger = configure_logger(logging.getLogger("dataset"))
 
 
 def main(
-    country_portal: CountryPortal,
     export_base_path: Path = UTILS_DIR / "local_dataset",
     dataset: Literal[Datasets, "all"] | None = "all",
     dry_run: bool = False,
@@ -27,8 +26,6 @@ def main(
 
     Parameters
     ----------
-    country_portal: CountryPortal
-        Specific dataset portal to export
     export_base_path: str
         Directory for local export (default: utils/local_dataset)
     dataset: str
@@ -38,12 +35,11 @@ def main(
     count: bool
         Display row counts for each dataset without exporting
     """
-    country_portal = None if country_portal == "all" else country_portal
     dataset = None if dataset == "all" else dataset
 
     # If --count flag is set, display counts and exit
     if count:
-        count_dataset_rows(country_portal)
+        count_dataset_rows()
         return
 
     # Log spam detection info
@@ -61,14 +57,13 @@ def main(
 
     # Process each dataset (or just the specified one)
     try:
-        dataset_queries = get_dataset_queries(country_portal)
+        dataset_queries = get_dataset_queries()
 
         for dataset_name, query in dataset_queries.items():
             if not dataset or dataset == dataset_name:
                 process_dataset(
                     dataset_name,
                     query,
-                    country_portal,
                     export_base_path,
                     dry_run=dry_run,
                 )

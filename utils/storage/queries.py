@@ -1,7 +1,5 @@
 from typing import Literal
 
-from backend.config import CountryPortal
-
 Columns = tuple[str, ...]
 
 EXCLUDE_PPI = """
@@ -15,7 +13,6 @@ EXCLUDE_COHORTS = """
 -- Filter out rows excluded because of their cohort (only pix for now)
 AND (COALESCE(c.cohorts, '') NOT LIKE '%%pix%%')
 """
-IS_COUNTRY_PORTAL = "AND c.country_portal = '{country_portal}'"
 JOIN_CONVERSATIONS = (
     "JOIN conversations c ON {k}.conversation_pair_id = c.conversation_pair_id"
 )
@@ -40,7 +37,6 @@ def _get_columns_fields(
 
 
 def get_conversations_filters(
-    country_portal: CountryPortal | None = None,
     exclude_pii: bool = True,
     exclude_cohorts: bool = True,
     as_exists: bool = False,
@@ -48,7 +44,6 @@ def get_conversations_filters(
 ) -> str:
     base = f"""
     c.archived = FALSE
-    {IS_COUNTRY_PORTAL.format(country_portal=country_portal) if country_portal else ""}
     {EXCLUDE_PPI if exclude_pii else ""}
     {EXCLUDE_COHORTS if exclude_cohorts else ""}
     """
@@ -69,7 +64,6 @@ def get_conversations_filters(
 
 def get_conversations_db_query(
     columns: Columns | Literal["*"] = "*",
-    country_portal: CountryPortal | None = None,
     exclude_pii: bool = True,
     exclude_cohorts: bool = True,
 ) -> str:
@@ -79,21 +73,18 @@ def get_conversations_db_query(
     FROM
         conversations c
     WHERE
-        {get_conversations_filters(country_portal, exclude_pii, exclude_cohorts)}
+        {get_conversations_filters(exclude_pii, exclude_cohorts)}
     ;
     """
 
 
 def get_votes_db_query(
     columns: dict[Literal["v", "c"], Columns] | Columns | Literal["*"] = "*",
-    country_portal: CountryPortal | None = None,
     count: bool = False,
     exclude_pii: bool = True,
     exclude_cohorts: bool = True,
 ) -> str:
-    join = (isinstance(columns, dict) and "c" in columns) or (
-        count and country_portal is not None
-    )
+    join = (isinstance(columns, dict) and "c" in columns) or count
 
     return f"""
     SELECT
@@ -103,20 +94,17 @@ def get_votes_db_query(
     {JOIN_CONVERSATIONS.format(k="v") if join else ""}
     WHERE
         v.archived = FALSE
-        AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join, k="v")}
+        AND {get_conversations_filters(exclude_pii, exclude_cohorts, as_exists=not join, k="v")}
     """
 
 
 def get_reactions_db_query(
     columns: dict[Literal["r", "c"], Columns] | Columns | Literal["*"] = "*",
-    country_portal: CountryPortal | None = None,
     count: bool = False,
     exclude_pii: bool = True,
     exclude_cohorts: bool = True,
 ) -> str:
-    join = (isinstance(columns, dict) and "c" in columns) or (
-        count and country_portal is not None
-    )
+    join = (isinstance(columns, dict) and "c" in columns) or count
 
     return f"""
     SELECT 
@@ -127,5 +115,5 @@ def get_reactions_db_query(
     WHERE
         r.archived = FALSE
         -- Filtering reactions with PII, or excluded cohorts
-        AND {get_conversations_filters(country_portal,exclude_pii, exclude_cohorts, as_exists=not join, k="r")}
+        AND {get_conversations_filters(exclude_pii, exclude_cohorts, as_exists=not join, k="r")}
     """
