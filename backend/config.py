@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Final, Literal, get_args
 
 from httpx import Timeout
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
-# Response caching
+    # Response caching
     CACHE_ENABLED: bool = False
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
     CACHE_TTL: int = 172800  # Cache TTL in seconds (default 48h)
@@ -73,11 +73,17 @@ ALL_PREFS: tuple[AllPref, ...] = POSITIVE_PREFS + NEGATIVE_PREFS
 TurnChoice = Literal["both_good", "both_bad", "a_better", "b_better", "idk"]
 TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 
-# Available country portals
-CountryPortal = Literal["fr", "da"]
-COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
-DEFAULT_COUNTRY_PORTAL: CountryPortal = settings.DEFAULT_COUNTRY_PORTAL  # type: ignore[assignment]
-
+# Reference data for scaled equivalences
+# Population using generative AI
+# FIXME make generic (env var or db field)
+CONSUMPTION_SCALE_FACTOR: Final[float] = {
+    # 48% of ppl aged 12 or more in 2026 https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport
+    # population count of 12 or more in 2024 https://www.insee.fr/fr/statistiques/7746192?sommaire=7746197
+    "fr": 59_315_947 * 0.48,
+    # 48.4% of ppl aged 16–74 in 2025 https://ec.europa.eu/eurostat/fr/web/products-eurostat-news/w/ddn-20251216-3
+    # population count of 16-74 https://en.wikipedia.org/wiki/Demographics_of_Denmark
+    "da": 4_350_000 * 0.484,
+}[settings.DEFAULT_COUNTRY_PORTAL]
 
 # Language model selection modes
 SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]

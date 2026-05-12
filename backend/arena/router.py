@@ -32,7 +32,6 @@ from backend.arena.streaming import (
     stream_comparison_messages,
 )
 from backend.llms.data import get_llms_data, pick_replacement_model
-from backend.utils.countries import CountryPortalAnno
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
     ComparisonCreate,
@@ -123,9 +122,7 @@ async def get_challenge() -> dict:
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
-async def add_first_text(
-    args: AddFirstTextBody, country_portal: CountryPortalAnno, request: Request
-) -> StreamingResponse:
+async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
 
@@ -149,7 +146,6 @@ async def add_first_text(
         f"'/add_first_text' called with: {args.model_dump_json()}",
         extra={"request": request},
     )
-    logger.info(f"country_portal: {country_portal}")
 
     if args.mode == "custom" and args.custom_models_selection:
         ip = get_ip(request)
@@ -165,7 +161,7 @@ async def add_first_text(
         increment_custom_selections(ip)
 
     # Select LLMs
-    llms_data = get_llms_data(country_portal)
+    llms_data = get_llms_data()
     llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
 
     logger.info(
@@ -181,7 +177,6 @@ async def add_first_text(
             session_hash=session_hash,
             ip=get_ip(request),
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
-            country_portal=country_portal,
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,
@@ -274,7 +269,7 @@ async def add_text(
             yield format_sse_event(chunk)
 
         if not comparison.error:
-            llms_data = get_llms_data(comparison.country_portal)
+            llms_data = get_llms_data()
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
@@ -359,7 +354,7 @@ async def retry(
             yield format_sse_event(chunk)
 
         if not comparison.error:
-            llms_data = get_llms_data(comparison.country_portal)
+            llms_data = get_llms_data()
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:

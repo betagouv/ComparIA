@@ -20,7 +20,7 @@ from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
-from backend.config import CountryPortal
+from backend.config import CONSUMPTION_SCALE_FACTOR
 
 if TYPE_CHECKING:
     from backend.llms.models import LLMData
@@ -36,17 +36,6 @@ class EquivalenceType(Enum):
     MANGO_IMPORT = "mango_import"
     POOL_FILING = "pool_filing"
 
-
-# Reference data for scaled equivalences
-# Population using generative AI
-SCALE_FACTORS: dict[CountryPortal, float] = {
-    # 48% of ppl aged 12 or more in 2026 https://www.credoc.fr/publications/barometre-du-numerique-2026-rapport
-    # population count of 12 or more in 2024 https://www.insee.fr/fr/statistiques/7746192?sommaire=7746197
-    "fr": 59_315_947 * 0.48,
-    # 48.4% of ppl aged 16–74 in 2025 https://ec.europa.eu/eurostat/fr/web/products-eurostat-news/w/ddn-20251216-3
-    # population count of 16-74 https://en.wikipedia.org/wiki/Demographics_of_Denmark
-    "da": 4_350_000 * 0.484,
-}
 
 CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
     EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
@@ -212,7 +201,6 @@ def get_llm_consumption(
     llm: Union["LLMDataRaw", "LLMData"],
     tokens: int,
     request_latency: float | None = None,
-    country_portal: CountryPortal = "fr",  # FIXME
 ) -> Consumption:
     """
     Calculates environmental impact (energy, CO2 emissions)
@@ -231,7 +219,7 @@ def get_llm_consumption(
     kwh = convert_range_to_value(impact.energy.value)
     co2_kg = convert_range_to_value(impact.gwp.value)
     # co2 scaled to population using generative AI
-    scaled_co2_kg = co2_kg * SCALE_FACTORS[country_portal]
+    scaled_co2_kg = co2_kg * CONSUMPTION_SCALE_FACTOR
 
     return {
         "tokens": tokens,

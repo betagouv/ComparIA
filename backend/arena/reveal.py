@@ -89,7 +89,7 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # request_latency = conv.finish_tstamp - conv.start_tstamp
 
     chosen_llm = get_chosen_llm(comparison)
-    llms = get_llms_data(comparison.country_portal).enabled
+    llms = get_llms_data().enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {
