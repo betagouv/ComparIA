@@ -11,7 +11,6 @@ from .actions import (
     archive_corrupted,
     archive_duplicate,
     archive_not_archived,
-    archive_or_fix_country_portal,
     archive_spam,
     archive_unknown_llms,
     llm_analyze,
@@ -161,8 +160,8 @@ def log_archived(
 def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = False):
     """
     Run database linting.
-    Checks for spam, corrupted data, odd country_portal, unknown LLMs,
-    duplicates and not archived votes or reaction that should be.
+    Checks for spam, corrupted data, unknown LLMs, duplicates and not archived
+    votes or reaction that should be.
     Only logs what should be archived if no arg given.
 
     Parameters
@@ -182,7 +181,6 @@ def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = Fals
         reset_archived()
 
     archive_spam(commit=fix)
-    archive_or_fix_country_portal(commit=fix)
     archive_corrupted(commit=fix)
     archive_unknown_llms(commit=fix and hard)
     archive_duplicate(commit=fix)
