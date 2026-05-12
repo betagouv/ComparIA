@@ -35,6 +35,7 @@ class Settings(BaseSettings):
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
+    VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
 # Response caching
@@ -76,9 +77,6 @@ TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 CountryPortal = Literal["fr", "da"]
 COUNTRY_PORTALS: tuple[CountryPortal, ...] = get_args(CountryPortal)
 DEFAULT_COUNTRY_PORTAL: CountryPortal = settings.DEFAULT_COUNTRY_PORTAL  # type: ignore[assignment]
-
-# Per-portal objectives for data collection (rows to collect)
-OBJECTIVES: dict[CountryPortal, int] = {"fr": 300_000, "da": 10_000}
 
 
 # Language model selection modes
