@@ -11,7 +11,7 @@ from typing import Literal
 import cyclopts
 from fastapi.encoders import jsonable_encoder
 
-from backend.config import DEFAULT_COUNTRY_PORTAL
+from backend.config import settings
 from utils.storage.redis import REDIS_RANKING_KEY, get_redis_client
 from utils.utils import (
     LLMS_GENERATED_DATA_FILE,
@@ -20,7 +20,7 @@ from utils.utils import (
     write_json,
 )
 
-from .compute import DataGroup, RankingResult, compute_all_rankings
+from .compute import RankingResult, compute_ranking
 from .monitor import monitor
 
 logger = configure_logger(logging.getLogger("ranking.run"))
@@ -42,7 +42,9 @@ def store_to_redis(data: RankingResult) -> None:
             time=3600 * 24,
             value=json.dumps(data),
         )
-        logger.info(f"[SESSION] Stored ranking data for {DEFAULT_COUNTRY_PORTAL}")
+        logger.info(
+            f"[SESSION] Stored ranking data for {settings.DEFAULT_COUNTRY_PORTAL}"
+        )
     except Exception as e:
         logger.error(f"[SESSION] Error storing ranking data: {e}")
         raise
@@ -52,19 +54,20 @@ async def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
     """
     Compute per group (portals + "all") `RankingResult` in redis/as file depending on mode.
     """
-    data = await compute_all_rankings()
+    ranking = await compute_ranking()
+
+    if not ranking:
+        return
 
     if mode in ("all", "json"):
         # FIXME reflect previous data structure and override utils/models/generated-models-extra-data.json?
-        write_json(LLMS_RANKING_DATA_FILE, jsonable_encoder(data["all"]))
+        write_json(LLMS_RANKING_DATA_FILE, jsonable_encoder(ranking))
 
     if mode in ("all", "redis"):
-        portal_data = data.get(DEFAULT_COUNTRY_PORTAL)
-        if portal_data:
-            store_to_redis(jsonable_encoder(portal_data))
+        store_to_redis(jsonable_encoder(ranking))
 
     llms = read_json(LLMS_GENERATED_DATA_FILE)["models"]
-    await monitor(llms, data["all"])
+    await monitor(llms, ranking)
 
 
 if __name__ == "__main__":

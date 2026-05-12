@@ -18,14 +18,11 @@ logger = configure_logger(logging.getLogger("ranking.queries"))
 
 async def fetch_votes() -> list[dict]:
     """
-    Fetch all non-archived votes joined with conversations for country_portal.
+    Fetch all non-archived Turn's votes joined with Comparison data.
 
     Returns:
-        List of dicts with keys: model_a_name, model_b_name, chosen_model_name,
-        both_equal, conv_useful_a, conv_useful_b, conv_complete_a, conv_complete_b,
-        conv_creative_a, conv_creative_b, conv_clear_formatting_a, conv_clear_formatting_b,
-        conv_incorrect_a, conv_incorrect_b, conv_superficial_a, conv_superficial_b,
-        conv_instructions_not_followed_a, conv_instructions_not_followed_b, country_portal.
+        List of dicts with keys: choice, keyword_annotations_a,
+        keyword_annotations_b, llm_id_a, llm_id_b.
     """
     async with get_session() as session:
         results = await session.exec(
@@ -35,7 +32,6 @@ async def fetch_votes() -> list[dict]:
                 Turn.keyword_annotations_b,
                 Comparison.llm_id_a,
                 Comparison.llm_id_b,
-                Comparison.country_portal,
             )
             .join(Comparison, col(Turn.comparison_id) == col(Comparison.id))
             .where(col(Comparison.archived).is_not(True))

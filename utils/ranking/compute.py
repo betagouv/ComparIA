@@ -1,9 +1,8 @@
 """
 Ranking computation orchestration.
 
-Fetches votes/reactions from DB, groups by country portal,
-runs Bradley-Terry, and returns results matching the DatasetData
-and PreferencesData shapes from backend/llms/models.py.
+Fetches votes from DB, runs Bradley-Terry, and returns results matching the
+DatasetData and PreferencesData shapes from backend/llms/models.py.
 """
 
 import logging
@@ -11,17 +10,14 @@ import math
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Literal
 
-from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS, CountryPortal
+from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS
 from backend.llms.models import DatasetData, PreferencesData
 from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_votes
 from utils.utils import configure_logger
 
 logger = configure_logger(logging.getLogger("ranking.compute"))
-
-DataGroup = Literal[CountryPortal, "all"]
 
 
 @dataclass
@@ -78,10 +74,8 @@ def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
     return result
 
 
-def _compute_rankings_for_group(
-    votes: list[dict],
-) -> RankingResult:
-    """Compute rankings and preferences for a single group of votes/reactions."""
+def _compute_ranking(votes: list[dict]) -> RankingResult:
+    """Compute ranking and preferences for a single group of votes/reactions."""
     all_battles = _votes_to_battles(votes)
 
     if not all_battles:
@@ -155,58 +149,30 @@ def _compute_rankings_for_group(
     )
 
 
-async def compute_all_rankings() -> dict[DataGroup, RankingResult]:
+async def compute_ranking() -> RankingResult | None:
     """
     Main function called by the scheduler.
 
-    Fetches all votes and reactions (one query each), groups by country_portal,
-    computes rankings for each portal + an "all" global group.
+    Fetches all votes and computes ranking.
 
     Returns:
-        Dict mapping portal code (or "all") to RankingResult.
+        RankingResult.
     """
     logger.info("[Ranking] Starting ranking computation...")
     start = time.time()
 
     all_votes = await fetch_votes()
-    print(all_votes)
 
     if not all_votes:
-        logger.warning("[Ranking] No votes or reactions found, skipping computation")
-        return {}
+        logger.warning("[Ranking] No votes found, skipping computation")
+        return None
 
-    # Group by country_portal
-    votes_by_portal: dict[str, list[dict]] = defaultdict(list)
-
-    for v in all_votes:
-        portal = v.get("country_portal", "unknown")
-        votes_by_portal[portal].append(v)
-
-    # Get all portal keys (excluding unknown)
-    all_portals = set(votes_by_portal.keys())
-    all_portals.discard("unknown")
-
-    results: dict[DataGroup, RankingResult] = {}
-
-    for portal in all_portals:
-        try:
-            results[portal] = _compute_rankings_for_group(
-                votes_by_portal.get(portal, []),
-            )
-        except Exception:
-            logger.error(
-                f"[Ranking] Error computing rankings for portal {portal}",
-                exc_info=True,
-            )
-
-    # Global rankings using all votes/reactions
     try:
-        results["all"] = _compute_rankings_for_group(all_votes)
+        ranking = _compute_ranking(all_votes)
+        elapsed = time.time() - start
+        logger.info(f"[Ranking] Updated ranking in {elapsed:.1f}s")
+
+        return ranking
     except Exception:
-        logger.error("[Ranking] Error computing global rankings", exc_info=True)
-
-    elapsed = time.time() - start
-    portals = list(results.keys())
-    logger.info(f"[Ranking] Updated rankings for portals: {portals} in {elapsed:.1f}s")
-
-    return results
+        logger.error("[Ranking] Error computing ranking", exc_info=True)
+        return None
