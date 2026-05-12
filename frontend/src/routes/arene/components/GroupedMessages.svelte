@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Button } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
-  import type { AnyAPIVote, Bot, ComparisonTurn } from '$lib/chatService.svelte'
+  import SideSwitcher from '$components/SideSwitcher.svelte'
+  import type { AnyAPIVote, ComparisonTurn } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { onMount, type Snippet } from 'svelte'
@@ -25,17 +25,10 @@
 
   let userBlockElem = $state<HTMLDivElement>()
   let userMessageSize = $state(0)
-  let scrolledModel = $state<Bot>('a')
-  let scrollableElem = $state<HTMLDivElement>()
 
   onMount(() => {
     userMessageSize = userBlockElem!.offsetHeight
   })
-
-  function doScroll() {
-    scrollableElem?.scrollTo({ left: scrolledModel === 'a' ? scrollableElem?.scrollWidth : 0 })
-    scrolledModel = scrolledModel === 'a' ? 'b' : 'a'
-  }
 </script>
 
 <div
@@ -53,45 +46,29 @@
   {:else if turn.status === 'error' && error}
     <ErrorDisplay {error} class="mt-10" {onRetry} />
   {:else}
-    <div class="min-h-0 relative flex max-w-full">
-      <div class="flex w-full overflow-hidden" bind:this={scrollableElem}>
-        <div class="gap-6 md:w-full flex">
-          {#if turn.a.llm_msg && turn.b.llm_msg}
-            <MessageBot
-              id="{turn.id}-a"
-              turnSide={turn.a}
-              bot="a"
-              choice={turn.choice}
-              {disabled}
-              onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
-            />
+    <SideSwitcher>
+      <div class="gap-4 sm:gap-6 md:w-full flex">
+        {#if turn.a.llm_msg && turn.b.llm_msg}
+          <MessageBot
+            id="{turn.id}-a"
+            turnSide={turn.a}
+            bot="a"
+            choice={turn.choice}
+            {disabled}
+            onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+          />
 
-            <MessageBot
-              id="{turn.id}-b"
-              turnSide={turn.b}
-              bot="b"
-              choice={turn.choice}
-              {disabled}
-              onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
-            />
-          {/if}
-        </div>
+          <MessageBot
+            id="{turn.id}-b"
+            turnSide={turn.b}
+            bot="b"
+            choice={turn.choice}
+            {disabled}
+            onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+          />
+        {/if}
       </div>
-
-      {#each ['a', 'b'] as const as pos (pos)}
-        <Button
-          text={m[pos === 'b' ? 'actions.scrollRight' : 'actions.scrollLeft']()}
-          icon={pos === 'b' ? 'arrow-right-line' : 'arrow-left-line'}
-          iconOnly
-          variant="tertiary"
-          class={[
-            'bg-white! md:hidden! absolute top-1/2 inline-flex -translate-y-1/2',
-            { 'hidden!': pos === scrolledModel, 'left-0': pos === 'a', 'right-0': pos === 'b' }
-          ]}
-          onclick={() => doScroll()}
-        />
-      {/each}
-    </div>
+    </SideSwitcher>
   {/if}
 
   {#if turn.status === 'complete' && !turn.choice}
