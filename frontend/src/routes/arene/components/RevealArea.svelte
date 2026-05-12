@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button, Link } from '$components/dsfr'
+  import SideSwitcher from '$components/SideSwitcher.svelte'
   import { parseAPIRevealData, type APIRevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -24,11 +25,15 @@
 
 <div id="reveal-area" class="fr-container--fluid mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="px-4 md:px-8 xl:px-16">
-    <div class="gap-5 lg:grid-cols-2 lg:gap-6 grid grid-cols-1">
-      {#each modelsData as data (data.pos)}
-        <RevealCard {data} selected={selected === data.pos} />
-      {/each}
-    </div>
+    <SideSwitcher>
+      <div class="gap-4 sm:gap-6 md:w-full flex">
+        {#each modelsData as data (data.pos)}
+          <div class="md:w-full min-w-0 w-[85vw]">
+            <RevealCard {data} selected={selected === data.pos} />
+          </div>
+        {/each}
+      </div>
+    </SideSwitcher>
 
     <div class="feedback py-7 border-b-1 border-[#CECECE]">
       <div class="fr-container md:max-w-[280px]! gap-4 flex flex-col items-center">
