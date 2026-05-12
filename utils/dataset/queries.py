@@ -3,7 +3,6 @@ import logging
 from functools import lru_cache
 from typing import Literal
 
-from backend.config import CountryPortal
 from backend.llms.models import LLMData
 from utils.storage.queries import (
     get_conversations_db_query,
@@ -38,7 +37,7 @@ def get_llms_data() -> dict[str, LLMData]:
         raise
 
 
-def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
+def get_dataset_queries() -> dict[Datasets, str]:
     """
     Get dataset queries - filter out PII, archived data, and specific cohorts
     All queries exclude: archived=TRUE, contains_pii=TRUE, cohorts matching 'pix' or 'do-not-track'
@@ -71,8 +70,7 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
                 "keywords",
                 "categories",
                 "languages",
-            ),
-            country_portal=country_portal,
+            )
         ),
         "votes": get_votes_db_query(
             columns={
@@ -90,8 +88,7 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
                     "conversation_a",
                     "conversation_b",
                 ),
-            },
-            country_portal=country_portal,
+            }
         ),
         "reactions": get_reactions_db_query(
             columns={
@@ -133,13 +130,11 @@ def get_dataset_queries(country_portal: CountryPortal) -> dict[Datasets, str]:
                     "conversation_a",
                     "conversation_b",
                 ),
-            },
-            country_portal=country_portal,
+            }
         ),
         # FIXME this exclude compromised data but was not
         "conversations_raw": get_conversations_db_query(
             columns="*",
-            country_portal=country_portal,
             exclude_pii=False,
             exclude_cohorts=False,
         ),

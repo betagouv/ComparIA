@@ -24,7 +24,7 @@ from functools import lru_cache
 
 import pandas as pd
 
-from backend.config import CountryPortal, settings
+from backend.config import settings
 from backend.llms.utils import get_active_params, get_total_params
 from utils.utils import db_connection
 
@@ -176,7 +176,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
             "opening_msg_pii_removed",
             "ip_map",
             "cohorts",
-            "country_portal",
         ]
         dataframe = dataframe.drop(
             columns=[col for col in columns_to_drop if col in dataframe.columns],
@@ -190,7 +189,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
         return None
 
 
-def count_dataset_rows(country_portal: CountryPortal):
+def count_dataset_rows():
     """Display row counts for each dataset without performing export."""
     try:
         with db_connection(stream=True) as conn:
@@ -199,7 +198,7 @@ def count_dataset_rows(country_portal: CountryPortal):
             print("Dataset Row Counts")
             print("=" * 60)
 
-            dataset_queries = get_dataset_queries(country_portal)
+            dataset_queries = get_dataset_queries()
 
             for dataset_name, query in dataset_queries.items():
                 if not query:
@@ -231,7 +230,6 @@ def count_dataset_rows(country_portal: CountryPortal):
 def process_dataset(
     dataset_name,
     query,
-    country_portal: CountryPortal,
     export_base_path,
     dry_run=False,
 ):
