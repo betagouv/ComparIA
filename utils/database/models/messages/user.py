@@ -1,19 +1,21 @@
+import uuid
 from typing import Annotated, Literal
 
 from sqlmodel import Field, SQLModel, String
 
+from ..utils import ModelId
+
 
 class UserMessageBase(SQLModel):
+    id: ModelId
     role: Annotated[Literal["user"], Field(sa_type=String)] = "user"
     content: str
 
-    turn_id: int | None = Field(default=None, foreign_key="turn.id", unique=True)
+    turn_id: uuid.UUID | None = Field(default=None, foreign_key="turn.id", unique=True)
 
 
 class UserMessage(UserMessageBase, table=True):
     __tablename__ = "user_message"
-
-    id: Annotated[int | None, Field(primary_key=True)] = None
 
 
 class UserMessageCreate(UserMessageBase):
@@ -21,4 +23,4 @@ class UserMessageCreate(UserMessageBase):
 
 
 class UserMessageRead(UserMessageBase):
-    id: int
+    pass

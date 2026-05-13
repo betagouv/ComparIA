@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import Annotated
 
@@ -10,13 +11,15 @@ from utils.database.utils import ArchivedReason
 
 from .messages import SystemMessage, SystemMessageRead
 from .turn import Turn, TurnPublic, TurnRead
+from .utils import ModelId
 
 SystemMessageId = Annotated[
-    int | None, Field(foreign_key="system_message.id", unique=True)
+    uuid.UUID | None, Field(foreign_key="system_message.id", unique=True)
 ]
 
 
 class ComparisonBase(SQLModel):
+    id: ModelId
     created_at: Annotated[
         datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
     ]
@@ -60,8 +63,6 @@ class ComparisonWithAnalyzeData(ComparisonBase):
 
 
 class Comparison(ComparisonWithAnalyzeData, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
     system_msg_a: SystemMessage | None = Relationship(
         sa_relationship_kwargs={
             "foreign_keys": "[Comparison.system_msg_a_id]",
@@ -85,14 +86,13 @@ class ComparisonCreate(ComparisonBase):
 
 
 class ComparisonRead(ComparisonBase):
-    id: int
     system_msg_a: SystemMessageRead | None
     system_msg_b: SystemMessageRead | None
     turns: list[TurnRead]
 
 
 class ComparisonPublic(SQLModel):
-    id: int
+    id: uuid.UUID
     session_hash: str
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection

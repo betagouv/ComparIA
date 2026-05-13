@@ -4,8 +4,11 @@ from sqlmodel import Field, SQLModel, String
 
 from utils.validation import StripAndEmptyAsNone
 
+from ..utils import ModelId
+
 
 class LLMMessageBase(SQLModel):
+    id: ModelId
     role: Annotated[Literal["assistant"], Field(sa_type=String)] = "assistant"
 
     content: str
@@ -30,8 +33,6 @@ class LLMMessageFinal(LLMMessageBase):
 class LLMMessage(LLMMessageFinal, table=True):
     __tablename__ = "llm_message"
 
-    id: Annotated[int | None, Field(primary_key=True)] = None
-
 
 class LLMMessageCreate(LLMMessageBase):
     content: str = ""
@@ -39,4 +40,4 @@ class LLMMessageCreate(LLMMessageBase):
 
 
 class LLMMessageRead(LLMMessageFinal):
-    id: int
+    pass

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, TypeVar
 
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=Comparison | Turn)
 
 
-async def _get_item(item_class: type[T], id: int, session: "AsyncSession") -> T:
+async def _get_item(item_class: type[T], id: uuid.UUID, session: "AsyncSession") -> T:
     db_item = await session.get(item_class, id)
 
     if not db_item:
@@ -58,7 +59,7 @@ async def create_comparison(comparison: ComparisonCreate) -> ComparisonRead:
     return ComparisonRead.model_validate(db_comparison)
 
 
-async def read_comparison(id: int) -> ComparisonRead:
+async def read_comparison(id: uuid.UUID) -> ComparisonRead:
     async with get_session() as session:
         db_comparison = await _get_item(Comparison, id, session)
 
@@ -118,7 +119,7 @@ async def update_comparison_error(
 
 
 async def add_comparison_turn(
-    comparison_id: int, prompt: str
+    comparison_id: uuid.UUID, prompt: str
 ) -> tuple[ComparisonRead, TurnRead]:
     async with get_session() as session:
         db_turn = Turn.model_validate(
@@ -135,7 +136,7 @@ async def add_comparison_turn(
 
 
 async def update_turn(
-    id: int, llm_msg_a: LLMMessageCreate, llm_msg_b: LLMMessageCreate
+    id: uuid.UUID, llm_msg_a: LLMMessageCreate, llm_msg_b: LLMMessageCreate
 ) -> None:
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
@@ -145,7 +146,9 @@ async def update_turn(
         await session.commit()
 
 
-async def update_turn_vote(id: int, vote: TurnVoteChoice | TurnVoteAnnotate) -> None:
+async def update_turn_vote(
+    id: uuid.UUID, vote: TurnVoteChoice | TurnVoteAnnotate
+) -> None:
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
         data = (
