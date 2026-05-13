@@ -19,17 +19,18 @@ class LLMMessageBase(SQLModel):
 
     generation_id: str | None = None
     tokens: int | None = None
-    duration: float | None = None
     is_cached: bool = False
 
 
 class LLMMessageFinal(LLMMessageBase):
+    created_at: datetime
+    responded_at: datetime
+    updated_at: datetime
     content: Annotated[str, StripAndEmptyAsNone]
     reasoning_content: Annotated[str | None, StripAndEmptyAsNone]
 
     generation_id: str
     tokens: int
-    duration: float
     is_cached: bool
 
 
