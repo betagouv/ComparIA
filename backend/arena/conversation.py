@@ -9,7 +9,7 @@ Uses Pydantic Conversation model update and validation during streaming.
 
 import asyncio
 import logging
-import time
+from datetime import datetime
 from typing import AsyncGenerator
 
 from fastapi import Request
@@ -41,14 +41,14 @@ async def _stream_cached_response(
     real streaming behavior for consistent UX.
     """
     llm_msg = LLMMessageCreate(
+        created_at=datetime.now(),
+        responded_at=datetime.now(),
         reasoning_content=cached["reasoning"].strip(),
         generation_id="cached",
         tokens=cached["output_tokens"],
         is_cached=True,
     )
     setattr(turn, f"llm_msg_{pos}", llm_msg)
-
-    start_tstamp = time.time()
 
     # Simulate streaming: emit content in chunks
     content_len = len(cached["content"])
@@ -69,7 +69,7 @@ async def _stream_cached_response(
 
     # Final yield with complete content and timing
     llm_msg.content = cached["content"].strip()
-    llm_msg.duration = time.time() - start_tstamp
+    llm_msg.updated_at = datetime.now()
 
     yield llm_msg
 
@@ -122,9 +122,6 @@ async def bot_response_async(
     llm_msg = LLMMessageCreate()
     setattr(turn, f"llm_msg_{pos}", llm_msg)
 
-    # Track generation start time for performance metrics
-    start_tstamp = time.time()
-
     # Initialize streaming iterator from LiteLLM
     # Use messages_for_api to avoid sending the empty AssistantMessage placeholder
     # (some providers like Cohere reject messages with empty content)
@@ -143,12 +140,9 @@ async def bot_response_async(
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
 
-    # Calculate total generation duration
-    stop_tstamp = time.time()
-    llm_msg.duration = stop_tstamp - start_tstamp
+    duration = (llm_msg.updated_at - llm_msg.created_at).total_seconds()
     logger.debug(
-        f"duration for {llm_msg.generation_id}: {llm_msg.duration}",
-        extra={"request": request},
+        f"duration for {llm_msg.generation_id}: {duration}", extra={"request": request}
     )
     # Check for empty responses and raise error (check on data that is not stripped)
     if not llm_msg.content and not llm_msg.reasoning_content:

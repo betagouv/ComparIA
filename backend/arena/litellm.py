@@ -6,6 +6,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 """
 
 import logging
+from datetime import datetime
 from typing import TYPE_CHECKING, Generator, Union, cast
 
 import litellm
@@ -153,6 +154,9 @@ def litellm_stream_iter(
     if enable_reasoning:
         kwargs["enable_reasoning"] = True
 
+    # Store call start ts
+    msg.created_at = datetime.now()
+
     # Make the API call through LiteLLM
     try:
         response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
@@ -168,6 +172,9 @@ def litellm_stream_iter(
 
     # Process streaming chunks from the API
     for chunk in response:
+        if not msg.responded_at:
+            # Store first chunk ts for latency computation
+            msg.responded_at = datetime.now()
         # Extract generation ID for tracking/debugging
         if not msg.generation_id and chunk.id:
             msg.generation_id = chunk.id
@@ -210,6 +217,9 @@ def litellm_stream_iter(
 
             # Yield partial results for streaming to frontend
             yield msg
+
+    # Store last update ts for duration computation
+    msg.updated_at = datetime.now()
 
     logger.debug(
         f"Response stream ended for '{litellm_model_name}' with generation_id='{chunk.id}'",
