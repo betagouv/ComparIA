@@ -2,11 +2,12 @@ from typing import Annotated, Literal
 
 from sqlmodel import Field, SQLModel, String
 
-from ..utils import ModelId
+from ..utils import AutoDatetime, ModelId
 
 
 class SystemMessageBase(SQLModel):
     id: ModelId
+    created_at: AutoDatetime
     role: Annotated[Literal["system"], Field(sa_type=String)] = "system"
     content: str
 
