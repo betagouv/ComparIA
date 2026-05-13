@@ -6,8 +6,10 @@ Handles storing and retrieving conversation pairs during active arena sessions.
 
 import json
 import logging
+import uuid
 from typing import Awaitable, TypedDict
-from uuid import uuid4
+
+from fastapi.encoders import jsonable_encoder
 
 from backend.config import (
     RATELIMIT_CUSTOM_SELECTION_PER_DAY,
@@ -26,7 +28,7 @@ logger = logging.getLogger("languia")
 
 
 class ComparisonMetadata(TypedDict):
-    id: int
+    id: uuid.UUID
     session_hash: str
     is_streaming: bool
 
@@ -38,10 +40,12 @@ def create_session() -> str:
     Returns:
         str: UUID-based session identifier
     """
-    return str(uuid4())
+    return str(uuid.uuid4())
 
 
-def store_comparison_metadata(session_hash: str, id: int, is_streaming: bool) -> None:
+def store_comparison_metadata(
+    session_hash: str, id: uuid.UUID, is_streaming: bool
+) -> None:
     expire_time = 86400  # 24 hours
 
     try:
@@ -50,7 +54,13 @@ def store_comparison_metadata(session_hash: str, id: int, is_streaming: bool) ->
             REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash),
             expire_time,
             json.dumps(
-                {"id": id, "session_hash": session_hash, "is_streaming": is_streaming}
+                jsonable_encoder(
+                    {
+                        "id": id,
+                        "session_hash": session_hash,
+                        "is_streaming": is_streaming,
+                    }
+                )
             ),
         )
         logger.info(f"[SESSION] Stored conversations for {session_hash}")

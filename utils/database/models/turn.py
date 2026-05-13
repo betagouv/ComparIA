@@ -1,3 +1,4 @@
+import uuid
 from typing import TYPE_CHECKING, Annotated
 
 from sqlalchemy.dialects.postgresql import JSONB
@@ -14,18 +15,22 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
+from .utils import ModelId
 
 if TYPE_CHECKING:
     from .comparison import Comparison
 
-LLMMessageId = Annotated[int | None, Field(foreign_key="llm_message.id", unique=True)]
+LLMMessageId = Annotated[
+    uuid.UUID | None, Field(foreign_key="llm_message.id", unique=True)
+]
 KeywordAnnotations = Annotated[
     list[PositivePref] | list[NegativePref], Field(sa_type=JSONB)
 ]
 
 
 class TurnBase(SQLModel):
-    comparison_id: Annotated[int, Field(foreign_key="comparison.id")]
+    id: ModelId
+    comparison_id: Annotated[uuid.UUID, Field(foreign_key="comparison.id")]
     choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
 
     # a
@@ -40,8 +45,6 @@ class TurnBase(SQLModel):
 
 
 class Turn(TurnBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
     comparison: "Comparison" = Relationship(back_populates="turns")
     user_msg: UserMessage = Relationship(
         sa_relationship_kwargs={"uselist": False, "lazy": "joined"}
@@ -59,14 +62,13 @@ class TurnCreate(TurnBase):
 
 
 class TurnRead(TurnBase):
-    id: int
     user_msg: UserMessageRead
     llm_msg_a: LLMMessageRead | None
     llm_msg_b: LLMMessageRead | None
 
 
 class TurnPublic(SQLModel):
-    id: int
+    id: uuid.UUID
     user_msg: UserMessageRead
     choice: TurnChoice | None
 
@@ -80,13 +82,13 @@ class TurnPublic(SQLModel):
 
 
 class TurnVoteChoice(SQLModel):
-    turn_id: Annotated[int, Field(exclude=True)]
+    turn_id: Annotated[uuid.UUID, Field(exclude=True)]
     choice: TurnChoice
 
 
 # TODO assert keywords are positive/negative depending on vote choice
 class TurnVoteAnnotate(SQLModel):
-    turn_id: Annotated[int, Field(exclude=True)]
+    turn_id: Annotated[uuid.UUID, Field(exclude=True)]
     pos: Annotated[BotPos, Field(exclude=True)]
     keyword_annotations: list[PositivePref] | list[NegativePref]
     custom_annotation: Annotated[str | None, StripAndEmptyAsNone]
