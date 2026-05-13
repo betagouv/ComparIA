@@ -15,7 +15,7 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
-from .utils import ModelId
+from .utils import AutoDatetime, ModelId
 
 if TYPE_CHECKING:
     from .comparison import Comparison
@@ -31,6 +31,8 @@ KeywordAnnotations = Annotated[
 class TurnBase(SQLModel):
     id: ModelId
     comparison_id: Annotated[uuid.UUID, Field(foreign_key="comparison.id")]
+    created_at: AutoDatetime
+    updated_at: AutoDatetime
     choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
 
     # a

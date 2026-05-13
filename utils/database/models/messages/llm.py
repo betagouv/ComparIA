@@ -4,12 +4,15 @@ from sqlmodel import Field, SQLModel, String
 
 from utils.validation import StripAndEmptyAsNone
 
-from ..utils import ModelId
+from ..utils import ModelId, OptionalDatetime
 
 
 class LLMMessageBase(SQLModel):
     id: ModelId
     role: Annotated[Literal["assistant"], Field(sa_type=String)] = "assistant"
+    created_at: OptionalDatetime = None
+    responded_at: OptionalDatetime = None
+    updated_at: OptionalDatetime = None
 
     content: str
     reasoning_content: str | None = None

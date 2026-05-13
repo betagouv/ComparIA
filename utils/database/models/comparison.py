@@ -1,8 +1,7 @@
 import uuid
-from datetime import datetime
 from typing import Annotated
 
-from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
 from backend.arena.models import ErrorDetails
@@ -11,7 +10,7 @@ from utils.database.utils import ArchivedReason
 
 from .messages import SystemMessage, SystemMessageRead
 from .turn import Turn, TurnPublic, TurnRead
-from .utils import ModelId
+from .utils import AutoDatetime, ModelId, OptionalDatetime
 
 SystemMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="system_message.id", unique=True)
@@ -20,12 +19,8 @@ SystemMessageId = Annotated[
 
 class ComparisonBase(SQLModel):
     id: ModelId
-    created_at: Annotated[
-        datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
-    ]
-    updated_at: Annotated[
-        datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
-    ]
+    created_at: AutoDatetime
+    updated_at: AutoDatetime
     session_hash: str
     ip: str  # WARNING: PII
     visitor_id: str | None = None
@@ -59,7 +54,7 @@ class ComparisonWithAnalyzeData(ComparisonBase):
     # archived metadata
     archived: bool | None = None
     archived_reason: Annotated[ArchivedReason | None, Field(sa_type=String)] = None
-    archived_at: datetime | None = None
+    archived_at: OptionalDatetime = None
 
 
 class Comparison(ComparisonWithAnalyzeData, table=True):
