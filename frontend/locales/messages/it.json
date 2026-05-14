@@ -27,7 +27,7 @@
     "arenaHome": {
         "compareModels": {
             "count": "{count}/2 modelli",
-            "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente.",
+            "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
             "question": "Quali modelli desideri confrontare?"
         },
         "errors": {
@@ -122,7 +122,7 @@
         "reuse": {
             "bunka": {
                 "analyze": {
-                    "desc": "Analisi delle conversazioni degli utenti con individuazione di attività (creazione, ricerca di informazioni, ecc.), argomenti (arte e cultura, istruzione, ecc.), emozioni complesse (curiosità, entusiasmo, ecc.) e tipologie linguistiche (formale, professionale, ecc.).",
+                    "desc": "Analisi delle conversazioni degli utenti con individuazione di attività (creazione, ricerca di informazioni, ecc.), argomenti (arte e cultura, istruzione, ecc.), emozioni complesse (curiosità, entusiasmo, ecc.) e tipologie linguistiche (formale, professionale, ecc.)",
                     "title": "Accedi all'analisi per indicatore"
                 },
                 "conversations": {
@@ -155,15 +155,15 @@
         "datasets": {
             "questions": {
                 "1": {
-                    "desc": "<p> I dati sulle preferenze vengono utilizzati per migliorare i modelli durante l'addestramento futuro. </p> <p> Confrontando alla cieca le risposte di due modelli, gli utenti di compar:IA esprimono le proprie preferenze, indicando quali risposte sono più pertinenti. Questi dati sulle preferenze possono essere utilizzati per perfezionare l'allineamento del modello, ovvero per addestrarlo a generare risposte che meglio corrispondano alle aspettative e alle preferenze dell'utente. </p> <p> Si tratta di un processo iterativo, in cui il modello impara gradualmente a generare risposte migliori in base al feedback degli utenti sulla qualità delle risposte. Essendo esposti ai dati sulle preferenze, i modelli imparano a incorporarli nel loro processo di generazione delle risposte. </p>",
+                    "desc": "<p>I dati sulle preferenze vengono utilizzati per migliorare i modelli durante l'addestramento futuro.</p><p>Confrontando alla cieca le risposte di due modelli, gli utenti di compar:IA esprimono le proprie preferenze, indicando quali risposte sono più pertinenti. Questi dati sulle preferenze possono essere utilizzati per perfezionare l'allineamento del modello, ovvero per addestrarlo a generare risposte che meglio corrispondano alle aspettative e alle preferenze dell'utente. </p><p>Si tratta di un processo iterativo, in cui il modello impara gradualmente a generare risposte migliori in base al feedback degli utenti sulla qualità delle risposte. Essendo esposti ai dati sulle preferenze, i modelli imparano a incorporarli nel loro processo di generazione delle risposte.</p>",
                     "title": "I dati sulle preferenze hanno un effetto immediato sul miglioramento dei modelli?"
                 },
                 "2": {
-                    "desc": "</p>La caratteristica unica dei dati raccolti sulla piattaforma compar:IA è che sono scritti in italiano e corrispondono ad attività reali degli utenti. Questi dati riflettono le preferenze umane all'interno di uno specifico contesto linguistico e culturale. Ciò consente di adattare i modelli per renderli più pertinenti, accurati e in linea con il comportamento degli utenti, affrontando al contempo eventuali distorsioni o lacune nei modelli attuali </p>",
+                    "desc": "<p>La caratteristica unica dei dati raccolti sulla piattaforma compar:IA è che sono scritti in italiano e corrispondono ad attività reali degli utenti. Questi dati riflettono le preferenze umane all'interno di uno specifico contesto linguistico e culturale. Ciò consente di adattare i modelli per renderli più pertinenti, accurati e in linea con il comportamento degli utenti, affrontando al contempo eventuali distorsioni o lacune nei modelli attuali.</p>",
                     "title": "Perché i dati sulle preferenze raccolti su compar:IA sono utili?"
                 },
                 "3": {
-                    "desc": "<p> compar:IA si posiziona come uno strumento di valutazione e allineamento specifico per i modelli linguistici, focalizzato sulla qualità delle risposte e sulla raccolta di dati sulle preferenze, distinguendosi così dall'approccio di classificazione globale di <a href='https://lmarena.ai/' target='_blank'> chatbot arena </a> sviluppato da <a href=http://lmsys.org> lmsys.org </a> e dall'allineamento etico dei modelli di IA </a> <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project <a href='http://lmsys.org' target='_blank'> . </p>",
+                    "desc": "<p>compar:IA si posiziona come uno strumento di valutazione e allineamento specifico per i modelli linguistici, focalizzato sulla qualità delle risposte e sulla raccolta di dati sulle preferenze, distinguendosi così dall'approccio di classificazione globale di<a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> sviluppato da<a href='https://lmarena.ai/' target='_blank'>lmsys.org</a>e dall'allineamento etico dei modelli di IA di<a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
                     "title": "Cosa rende compar:IA unico rispetto ad altre iniziative simili?"
                 }
             },
@@ -172,13 +172,15 @@
         "ecology": {
             "questions": {
                 "1": {
+                    "desc": "",
                     "title": "Come vengono calcolati gli indicatori ecologici?"
                 },
                 "2": {
-                    "desc": "<p> La posizione dei data center influisce sull'impronta di carbonio dell'IA. Se un modello viene addestrato o utilizzato in un paese fortemente dipendente dai combustibili fossili, il suo impatto ambientale sarà maggiore rispetto a un modello ospitato in un paese che utilizza principalmente energie rinnovabili. </p> <p> Il metodo di analisi dell'impatto ambientale dell'IA sviluppato da <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (di GenAI Impact)</a> incorpora dati sul mix energetico dei diversi paesi in cui si trovano i server. Ciò consente una stima più accurata e dettagliata dell'effettiva impronta di carbonio dell'inferenza su diversi modelli di IA generativa. </p>",
+                    "desc": "<p>La posizione dei data center influisce sull'impronta di carbonio dell'IA. Se un modello viene addestrato o utilizzato in un paese fortemente dipendente dai combustibili fossili, il suo impatto ambientale sarà maggiore rispetto a un modello ospitato in un paese che utilizza principalmente energie rinnovabili.</p><p>Il metodo di analisi dell'impatto ambientale dell'IA sviluppato da <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (di GenAI Impact)</a>, incorpora dati sul mix energetico dei diversi paesi in cui si trovano i server. Ciò consente una stima più accurata e dettagliata dell'effettiva impronta carbonio dell'inferenza su diversi modelli di IA generativa.</p>",
                     "title": "Gli indicatori ambientali tengono conto del mix energetico dei diversi paesi?"
                 },
                 "3": {
+                    "desc": "<p>Gli attuali indicatori di impatto ambientale si concentrano principalmente sull'impatto dell' <strong>inferenza</strong>, ovvero sull'utilizzo di modelli di intelligenza artificiale per rispondere alle richieste. Questo approccio può dare l'illusione che l'inferenza sia meno dispendiosa in termini di energia rispetto all'addestramento del modello. Tuttavia, <strong>la realtà è più complessa.</strong>Si consideri l'analogia dell'auto:</p><ul><li>Costruire una macchina (addestramento) è un processo unico e ad alta intensità di risorse.</li> <li>Ogni viaggio in auto ( inferenza) consuma meno energia, ma questi viaggi si ripetono quotidianamente e il loro numero è potenzialmente immenso.</li></ul><p>Allo stesso modo,<strong>l'impatto cumulativo dell'inferenza, su milioni di utenti che effettuano richieste ogni giorno, può superare l'impatto dell'addestramento iniziale.</strong>Per questo motivo è fondamentale che gli strumenti di valutazione dell'impronta di carbonio dell'IA considerino<strong>l'intero ciclo di vita</strong> dei modelli, dall'addestramento all'utilizzo in produzione</p>",
                     "title": "Gli indicatori di impatto ambientale tengono conto delle risorse utilizzate per addestrare i modelli?"
                 }
             },
@@ -200,15 +202,15 @@
         "models": {
             "questions": {
                 "1": {
-                    "desc": "<p>Scegliamo i modelli in base alla loro popolarità, diversità e rilevanza per gli utenti. Prestiamo particolare attenzione a rendere accessibili i modelli chiamati<em>open weights<em> e quelli di diverse dimensioni.</p>",
+                    "desc": "<p>Scegliamo i modelli in base alla loro popolarità, diversità e rilevanza per gli utenti. Prestiamo particolare attenzione a rendere accessibili i modelli chiamati <em>open weights</em> e quelli di diverse dimensioni.</p>",
                     "title": "Come si scelgono i modelli da includere nello strumento di confronto?"
                 },
                 "2": {
-                    "desc": "<p> L'inferenza, ovvero la capacità di interrogare i modelli, è gestita dal progetto. Per la maggior parte dei modelli, utilizziamo le API Open Router e Hugging Face e applichiamo una tariffazione basata su token e sull'utilizzo. </p>",
+                    "desc": "<p>L'inferenza, ovvero la capacità di interrogare i modelli, è gestita dal progetto. Per la maggior parte dei modelli, utilizziamo le API Open Router e Hugging Face e applichiamo una tariffazione basata su token e sull'utilizzo.</p>",
                     "title": "Come fate a offrire questo servizio gratuitamente?"
                 },
                 "3": {
-                    "desc": "<p>I modelli sono ottimizzati per consumare meno risorse semplificando alcuni calcoli, pur puntando migliore qualità di risposta.</p><p>La quantizzazione è una tecnica di ottimizzazione che riduce la precisione dei numeri utilizzati per rappresentare i parametri di un modello . Ciò consente di <strong>ottenere modelli di dimensioni inferiori <strong> e </strong>di accelerare i calcoli</strong>, il che risulta vantaggioso per l'inferenza su macchine con risorse limitate</p>",
+                    "desc": "<p>I modelli sono ottimizzati per consumare meno risorse semplificando alcuni calcoli, pur puntando migliore qualità di risposta.</p><p>La quantizzazione è una tecnica di ottimizzazione che riduce la precisione dei numeri utilizzati per rappresentare i parametri di un modello . Ciò consente di <strong>diminuire la dimensione del modello</strong> e <strong>di accelerare i calcoli</strong>, il che risulta vantaggioso per l'inferenza su macchine con risorse limitate.</p>",
                     "title": "\"Modello quantificato\", che cos'è?"
                 },
                 "4": {
@@ -225,11 +227,11 @@
         "usage": {
             "questions": {
                 "1": {
-                    "desc": "<p>Gli attuali modelli di linguaggio conversazionale non sono <strong>in grado di citare le fonti</strong> utilizzate per generare una risposta. Funzionano prevedendo la parola successiva più probabile in base alla distribuzione statistica dei dati di addestramento. Sebbene possano sintetizzare informazioni da varie fonti, non tengono traccia dell'origine di tali informazioni. </p><p>Tuttavia, esistono tecniche come la<strong> Retrieval Augmented Generation (RAG)</strong> che mirano a superare questa limitazione. La RAG consente ai modelli di accedere a basi di conoscenza esterne e di<strong>fornire informazioni contestualizzate citando le fonti</strong>. Questo approccio è essenziale per migliorare la trasparenza e l'affidabilità delle risposte generate dai modelli.</p>",
+                    "desc": "<p>Gli attuali modelli di linguaggio conversazionale non sono <strong>in grado di citare le fonti</strong> utilizzate per generare una risposta. Funzionano prevedendo la parola successiva più probabile in base alla distribuzione statistica dei dati di addestramento. Sebbene possano sintetizzare informazioni da varie fonti, non tengono traccia dell'origine di tali informazioni.</p><p>Tuttavia, esistono tecniche come la <strong>Retrieval Augmented Generation (RAG)</strong> che mirano a superare questa limitazione. La RAG consente ai modelli di accedere a basi di conoscenza esterne e di <strong>fornire informazioni contestualizzate citando le fonti</strong>. Questo approccio è essenziale per migliorare la trasparenza e l'affidabilità delle risposte generate dai modelli.</p>",
                     "title": "I modelli possono citare le proprie fonti?"
                 },
                 "2": {
-                    "desc": "<p>Hai mai posto la domanda \"Spiegami la mozione di censura attualmente in discussione all'Assemblea nazionale francese e cita le tue fonti\" e sei rimasto deluso dalle risposte? È normale... </p><p><strong>I modelli di IA conversazionale grezzi\" non possono rispondere a domande sulle ultime notizie.</strong> Sono addestrati su set di dati statici e non possono interagire con il web o aprire link. Non hanno la capacità di aggiornarsi in tempo reale con gli eventi che accadono in tutto il mondo. Le informazioni a cui il modello ha accesso sono limitate alla data del suo ultimo addestramento.</p><p>Di conseguenza, se si pone una domanda su un fatto di attualità recente, il modello si baserà su informazioni potenzialmente obsolete, con il rischio di fornire risposte inesatte.</p><p> Nel caso di Perplexity, Copilot o ChatGPT, i cosiddetti modelli di IA conversazionale \"grezzi\" sono combinati con altri componenti tecnologici che consentono loro di connettersi a Internet per accedere a informazioni in tempo reale. Quest'ultimi si vengono chiamati \"agenti conversazionali\".</p>",
+                    "desc": "<p>Hai mai posto la domanda \"Spiegami la mozione di censura attualmente in discussione all'Assemblea nazionale francese e cita le tue fonti\" e sei rimasto deluso dalle risposte? È normale...</p><p><strong>I modelli di IA conversazionale grezzi\" non possono rispondere a domande sulle ultime notizie.</strong> Sono addestrati su set di dati statici e non possono interagire con il web o aprire link. Non hanno la capacità di aggiornarsi in tempo reale con gli eventi che accadono in tutto il mondo. Le informazioni a cui il modello ha accesso sono limitate alla data del suo ultimo addestramento.</p><p>Di conseguenza, se si pone una domanda su un fatto di attualità recente, il modello si baserà su informazioni potenzialmente obsolete, con il rischio di fornire risposte inesatte.</p><p>Nel caso di Perplexity, Copilot o ChatGPT, i cosiddetti modelli di IA conversazionale \"grezzi\" sono combinati con altri componenti tecnologici che consentono loro di connettersi a Internet per accedere a informazioni in tempo reale. Quest'ultimi si vengono chiamati \"agenti conversazionali\".</p>",
                     "title": "Se pongo una domanda sulle ultime notizie, il modello è in grado di rispondere?"
                 },
                 "3": {
@@ -237,7 +239,7 @@
                     "title": "Se includo un link URL in una domanda, il modello può accedervi?"
                 },
                 "4": {
-                    "desc": "<p> A volte i modelli perdono il filo di una conversazione a causa della loro <strong> finestra di contesto limitata. </strong> Questa \"finestra\" rappresenta la quantità di informazioni precedenti che il modello può conservare, fungendo da memoria breve termine. Più piccola è la finestra, maggiore è la probabilità che il modello dimentichi elementi chiave della conversazione, il che porta a risposte incoerenti. Conversazioni lunghe complesse possono saturare rapidamente la finestra di contesto, aumentando il rischio di incoerenza. </p><p> Per analogia, immaginiamo una persona che ricorda solo le ultime cinque frasi di una conversazione. Se la conversazione è breve, riesce a seguirla. Ma se la conversazione si allunga, la persona dimenticherà informazioni cruciali, rendendo le sue risposte incoerenti. Allo stesso modo, un modello di intelligenza artificiale con una piccola finestra di contesto può \"perdere il filo\" di una conversazione quando vengono scambiate troppe informazioni, dimenticando elementi chiave e producendo risposte che non hanno più senso </p>",
+                    "desc": "<p>A volte i modelli perdono il filo di una conversazione a causa della loro <strong>finestra di contesto limitata.</strong> Questa \"finestra\" rappresenta la quantità di informazioni precedenti che il modello può conservare, fungendo da memoria breve termine. Più piccola è la finestra, maggiore è la probabilità che il modello dimentichi elementi chiave della conversazione, il che porta a risposte incoerenti. Conversazioni lunghe complesse possono saturare rapidamente la finestra di contesto, aumentando il rischio di incoerenza.</p><p>Per analogia, immaginiamo una persona che ricorda solo le ultime cinque frasi di una conversazione. Se la conversazione è breve, riesce a seguirla. Ma se la conversazione si allunga, la persona dimenticherà informazioni cruciali, rendendo le sue risposte incoerenti. Allo stesso modo, un modello di intelligenza artificiale con una piccola finestra di contesto può \"perdere il filo\" di una conversazione quando vengono scambiate troppe informazioni, dimenticando elementi chiave e producendo risposte che non hanno più senso.</p>",
                     "title": "Perché alcuni modelli perdono rapidamente il filo della conversazione?"
                 },
                 "5": {
@@ -284,7 +286,7 @@
             "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato al gestore del sito web un problema di accessibilità che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
             "remedyList": "Puoi :",
             "remedyTitle": "Procedura di ricorso",
-            "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato </strong> . Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
+            "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
             "stateNavigate": "naviga tra tutte le pagine del sito utilizzando una tastiera",
             "statePrefs": "adatta il sito alle tue preferenze (dimensione del carattere, zoom dello schermo, modifica della tipografia, ecc.) senza perdita di contenuti",
             "stateScreenReader": "visualizza il sito web con un lettore di schermo.",
@@ -334,7 +336,7 @@
             "dataUseTitle": "Quali elaborazioni vengono effettuate sui dati della conversazione?",
             "desc": "Il servizio è pubblicato dal dipartimento digitale del Ministero Francese della Cultura.",
             "privacyData": "I dati raccolti sul sito sono i seguenti:",
-            "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli : domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli.",
+            "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli : domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli",
             "privacyDataForm": "Dati relativi al questionario “Aiutaci a migliorare compar:AI”.",
             "privacyDesc": "Il servizio non tratta dati personali come definiti dalla CNIL, ossia qualsiasi informazione riguardante una persona fisica che può essere identificata, direttamente o indirettamente.",
             "privacyResp": "L'utente è responsabile dei dati o dei contenuti inseriti nel campo fornito dalla piattaforma. Accettando i <a {linkProps}>termini di utilizzo</a>, l'utente si impegna a non trasmettere alcuna informazione che possa identificare lui stesso o terzi.",
@@ -461,7 +463,76 @@
             "featuresDatasets": "Il servizio raccoglie dati di dialogo (domande, risposte di entrambi i modelli) e preferenze dell'utente (voti, metadati associati). Questi dati vengono utilizzati sia per creare dataset condivisi sia per stabilire una classifica dei modelli di intelligenza artificiale visualizzati sulla piattaforma, in base ai voti espressi.",
             "featuresDatasetsMore": "L'editore si riserva il diritto di distribuire i dati relativi ai dialoghi e alle preferenze degli utenti secondo una licenza etalab aperta 2.0. Il dataset è distribuito sulla piattaforma Hugging Face tramite l'account del Ministero della Cultura Francese (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
             "featuresDesc": "Al fine di raggiungere il duplice obiettivo di sensibilizzare i cittadini sui principali modelli linguistici e di raccogliere le preferenze degli utenti, i servizi offerti dalla piattaforma senza restrizioni di accesso sono i seguenti:",
-            "featuresDescMore": "Un'interfaccia uomo-macchina che consente un dialogo simultaneo con due modelli conversazionali e la possibilità di votare la risposta preferita."
+            "featuresDescMore": "Un'interfaccia uomo-macchina che consente un dialogo simultaneo con due modelli conversazionali e la possibilità di votare la risposta preferita.",
+            "featuresModels": "I modelli integrati nella piattaforma vengono distribuiti sui server di inferenza dei vari provider di hosting e degli editori di modelli. Le richieste vengono gestite principalmente dal servizio Open Router. Sulla piattaforma sono definiti i requisiti di standardizzazione dell'inferenza per garantire un utilizzo trasparente dei modelli.",
+            "featuresModelsMore": "Un'interfaccia per confrontare i modelli.",
+            "featuresTitle": "4. Caratteristiche",
+            "featuresVote": "L'utente può visualizzare l'elenco dei modelli integrati nel comparatore e accedere a un elenco di informazioni su questi modelli.",
+            "featuresVoteMore": "Condividere, rendere disponibili e riutilizzare i dataset derivanti dalla raccolta delle preferenze degli utenti.",
+            "licenceCode": "Il codice sorgente della piattaforma è aperto e disponibile qui: <a {linkProps}>https://github.com/betagouv/languia</a>",
+            "licenceLLM": "I LLM utilizzati per alimentare i servizi sono regolati dalle seguenti licenze:",
+            "licenceLLMEvolution": "L'elenco dei modelli linguistici integrati nella piattaforma è soggetto a modifiche nel tempo e viene aggiornato a ogni modifica.",
+            "licenceLLMLicence": "Licenza",
+            "licenceLLMModel": "Modello di intelligenza artificiale conversazionale",
+            "licenceLLMUnavailable": "Non disponibile",
+            "licenceTitle": "6. Codice e licenze",
+            "respEditor": "In generale, l'editore declina ogni responsabilità in caso di utilizzo non conforme alle condizioni d'uso.",
+            "respLegal": "La piattaforma non è destinata a essere utilizzata per generare contenuti illegali o contrari all'ordine pubblico e più in generale qualsiasi generazione di contenuti che contravvenga al quadro giuridico vigente.",
+            "respLegalMore": "A tale proposito, l'utente si impegna a non inserire nel prompt contenuti o informazioni contrari alle disposizioni legali e regolamentari vigenti.",
+            "respPrivacy": "Poiché i dati inseriti dall'utente sulla piattaforma sono destinati a essere resi pubblici, l'utente si impegna a non trasmettere alcuna informazione che possa identificarlo o identificare terzi.",
+            "respPrivacyMore": "In ogni caso, l'editore si impegna ad adottare misure per garantire, per quanto possibile, l'anonimizzazione dei dati dei dialoghi prima di renderli disponibili. Qualora, nonostante gli sforzi dell'editore, nei dataset venissero pubblicati dati sensibili, è possibile segnalarlo immediatamente tramite questo modulo: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
+            "respTitle": "5. Responsabilità",
+            "respUser": "L'utente è responsabile dei dati o dei contenuti che inserisce nella sezione fornita dalla piattaforma.",
+            "scopeDesc": "L'accesso alla piattaforma è gratuito, senza necessità di registrazione e comporta l'applicazione di specifiche condizioni, elencate nelle presenti condizioni d'uso.",
+            "scopeTitle": "1. Ambito di applicazione",
+            "title": "Termini d'uso"
+        }
+    },
+    "generated": {
+        "archs": {
+            "dense": {
+                "desc": "L'architettura densa si riferisce a un tipo di rete neurale in cui ogni neurone di uno strato è connesso a tutti i neuroni dello strato successivo. Ciò consente a tutti i parametri dello strato di contribuire al calcolo dell'output.",
+                "name": "Denso"
+            },
+            "matformer": {
+                "desc": "Immagina le bambole russe (matrioske → matryoshka transformer → Matformer): ogni blocco contiene diversi sotto-modelli annidati di dimensioni crescenti, che condividono gli stessi parametri. Ciò consente, per ogni richiesta, la selezione di un modello con capacità adeguate, a seconda della memoria disponibile o della latenza, senza la necessità di riaddestrare modelli diversi.",
+                "name": "Matformer",
+                "title": "Architettura Matformer"
+            },
+            "moe": {
+                "desc": "L'architettura Mixture of Experts (MoE) utilizza un meccanismo di routing per attivare, in base all'input, solo determinati sottoinsiemi specializzati (\"esperti\") della rete neurale. Ciò consente di costruire modelli molto grandi mantenendo un basso costo computazionale, poiché ad ogni passaggio viene utilizzata solo una porzione della rete.",
+                "name": "MoE",
+                "title": "Architettura MoE"
+            },
+            "na": {
+                "desc": "L'editore non ha reso pubbliche le informazioni sull'architettura del modello.",
+                "name": "Proprietario",
+                "title": "Architettura N/A"
+            }
+        },
+        "licenses": {
+            "os": {
+                "Apache 2.0": {
+                    "license_desc": "<p>Questa licenza ti consente di utilizzare, modificare e distribuire liberamente il modello, anche a fini commerciali. Oltre alla libertà d'uso, garantisce la tutela legale includendo una clausola di rinuncia ai brevetti che funge da assicurazione: se utilizzi questo modello, i contributori si impegnano a non intentare azioni legali contro di te per violazione dei loro brevetti relativi al progetto. Questa protezione reciproca evita controversie legali tra utenti e sviluppatori. Quando si distribuiscono versioni modificate, le modifiche significative devono essere indicate con apposite note, garantendo la trasparenza per l'utente.</p>"
+                },
+                "CC-BY-NC-4.0": {
+                    "license_desc": "<p>Questa licenza consente di condividere e adattare liberamente il contenuto a condizione che venga citato l'autore, ma vieta qualsiasi utilizzo commerciale. Offre flessibilità per scopi non commerciali tutelando al contempo i diritti dell'autore.</p>",
+                    "reuse_specificities": "ma solo per usi non commerciali"
+                },
+                "Gemma": {
+                    "license_desc": "<p>Questa licenza è pensata per incoraggiare l'uso, la modifica e la ridistribuzione del software, ma include una clausola che stabilisce che tutte le versioni modificate o migliorate devono essere condivise con la comunità sotto la stessa licenza sorgente, promuovendo così la collaborazione e la trasparenza nello sviluppo del software.</p>"
+                },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "meno di 50 milioni di dollari di fatturato annuo",
+                    "license_desc": "<p>Questa licenza consente di utilizzare, riprodurre, modificare e distribuire liberamente il codice con attribuzione, ma impone restrizioni alle organizzazioni con un fatturato annuo superiore a 50 milioni di dollari.</p>"
+                },
+                "LFM 1.0": {
+                    "license_desc": "<p>Questa licenza mondiale, gratuita e non esclusiva consente l'uso, la modifica e la ridistribuzione del modello e dei suoi derivati, incluso il riutilizzo degli output per addestrare altri modelli. Rimane permissiva, ma limita l'uso commerciale alle organizzazioni con un fatturato annuo inferiore a 10 milioni dollari; oltre tale soglia, l'utilizzo non è più coperto.</p>"
+                },
+                "Llama 3 Community": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti"
+                }
+            }
         }
     }
 }
