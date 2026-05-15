@@ -8,22 +8,12 @@ BACKEND_PORT := 8008
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
 
-# Local dev values (without docker for frontend and backend)
-COMPARIA_DB_URI_FR ?= postgresql://comparia:comparia@localhost:5432/comparia
-COMPARIA_DB_URI_DA ?= postgresql://comparia:comparia@localhost:5432/comparia_da
 COMPARIA_REDIS_HOST ?= localhost
 export COMPARIA_REDIS_HOST
 
 KEEPASS_DB ?= $(HOME)/comparia_dev.kdbx
 KEEPASS_GROUP_FR ?= instances/fr
 KEEPASS_GROUP_DA ?= instances/da
-KEEPASS_GROUP ?= $(KEEPASS_GROUP_FR)
-
-# Set to true to use KeePass loading (otherwise env vars must be exported manually)
-USE_KEEPASS ?= false
-
-_keepass-load-fr = $(if $(filter true,$(USE_KEEPASS)),eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)") &&)
-_keepass-load-da = $(if $(filter true,$(USE_KEEPASS)),eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)") &&)
 
 help: ## Display this help
 	@echo "Available commands for compar:IA:"
@@ -65,7 +55,7 @@ redis-down: ## Stop Redis
 up-fr: ## Launch FR instance (frontend + backend + postgres + redis)
 	@$(MAKE) redis
 	@$(MAKE) db
-	$(_keepass-load-fr) \
+	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_FR)") && \
 	docker compose -f devops/instances/fr/app.compose.fr.yml up -d --build
 
 down-fr: ## Stop FR instance
@@ -83,7 +73,7 @@ display-env-fr: ## Display env vars loaded from KeePass for FR instance
 
 up-da: ## Launch DA instance (frontend + backend + postgres + redis)
 	@$(MAKE) db-generate-init
-	$(_keepass-load-da) \
+	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)") && \
 	docker compose -f devops/instances/da/app.compose.da.yml up -d --build
 
 down-da: ## Stop DA instance
@@ -113,14 +103,7 @@ install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
 	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
-dev: ## Launch backend and frontend with FR env vars (Ctrl+C to stop)
-	$(_keepass-load-fr) \
-	COMPARIA_DB_URI=$(COMPARIA_DB_URI_FR) DEFAULT_COUNTRY_PORTAL=fr DEFAULT_LOCALE=fr \
-	$(MAKE) -j 2 dev-backend dev-frontend
-
-dev-da: ## Launch backend and frontend with DA env vars (Ctrl+C to stop)
-	$(_keepass-load-da) \
-	COMPARIA_DB_URI=$(COMPARIA_DB_URI_DA) DEFAULT_COUNTRY_PORTAL=da DEFAULT_LOCALE=da \
+dev: ## Launch backend and frontend (env vars must be exported, e.g. source .env)
 	$(MAKE) -j 2 dev-backend dev-frontend
 
 dev-backend: ## Launch only the backend (FastAPI + Gradio)

@@ -20,9 +20,7 @@ make install
 
 ## Running locally (without Docker)
 
-There are two ways to load environment variables: manually (default) or via KeePass.
-
-### Option A: manual env setup (default)
+Local dev uses env vars set manually. Postgres and Redis are started via Docker.
 
 Copy the example env file and fill in the required values:
 
@@ -32,38 +30,22 @@ cp .env.example .env
 
 Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. For the DA instance, change `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and point `COMPARIA_DB_URI` to the DA database.
 
-Then source the env file and run:
+Start Postgres and Redis, then run:
 
 ```bash
+make db
+make redis
 source .env
-make dev      # FR instance
-make dev-da   # DA instance
+make dev      # backend on :8008, frontend on :5173
 ```
 
-### Option B: KeePass
-
-The KeePass integration loads env vars from a `.kdbx` database. Enable it with `USE_KEEPASS=true`:
-
-```bash
-USE_KEEPASS=true make dev      # FR instance
-USE_KEEPASS=true make dev-da   # DA instance
-```
-
-The database path defaults to `~/comparia_dev.kdbx`. Override with:
-
-```bash
-KEEPASS_DB=/path/to/other.kdbx USE_KEEPASS=true make dev
-```
-
-You can use the team's shared database or create your own. The expected structure is one entry per variable, inside groups `instances/fr` or `instances/da`, with **username = variable name** and **password = value**.
-
-See `devops/instances/fr/.env.fr.example` and `devops/instances/da/.env.da.example` for the full list of variables per instance.
+For the DA instance, copy `.env.example` and set `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and `COMPARIA_DB_URI` to the DA database before sourcing.
 
 ---
 
 ## Running with Docker (per instance)
 
-Each instance has its own Docker Compose file. A shared Postgres and Redis are started automatically.
+Each instance has its own Docker Compose file. Secrets are loaded from KeePass automatically. A shared Postgres and Redis are started automatically.
 
 ```bash
 make up-fr      # Start FR instance (backend + frontend + postgres + redis)
@@ -75,7 +57,15 @@ make down-da    # Stop DA instance
 make logs-da    # Follow DA instance logs
 ```
 
-These commands use manual env by default. Add `USE_KEEPASS=true` to load secrets from KeePass. To start only the shared infrastructure:
+These commands load secrets from a KeePass database (`~/comparia_dev.kdbx` by default). You can use the team's shared database or create your own — one entry per variable, in groups `instances/fr` or `instances/da`, with **username = variable name** and **password = value**. See `devops/instances/fr/.env.fr.example` and `devops/instances/da/.env.da.example` for the full variable list.
+
+Override the database path with:
+
+```bash
+KEEPASS_DB=/path/to/other.kdbx make up-fr
+```
+
+To start only the shared infrastructure:
 
 ```bash
 make db         # Start shared Postgres
@@ -86,7 +76,7 @@ make redis      # Start shared Redis
 
 ## Database
 
-Default local URIs (used by `make dev` / `make dev-da`):
+Default local URIs (set in `.env.example`):
 
 - FR: `postgresql://comparia:comparia@localhost:5432/comparia`
 - DA: `postgresql://comparia:comparia@localhost:5432/comparia_da`
