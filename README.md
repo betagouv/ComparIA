@@ -228,20 +228,20 @@ Compar:IA is a digital common. Whether you can offer funding, code, translations
 
 ## Getting started
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/betagouv/ComparIA)
-
 The platform is fully open source and self-hostable.
 
 **Self-host with Docker** (single server, automatic HTTPS via Caddy): see **[DOCKER_INSTALL.md](devops/standalone_docker_install/DOCKER_INSTALL.md)**
 
-**Local development:**
+**Local development (basic):**
 
 ```bash
-cp .env.example .env       # Configure environment
+cp .env.example .env       # Configure environment variables
 make install               # Install all dependencies
-make dev                   # Start backend + frontend
+source .env
+make dev-backend           # Backend on http://localhost:8008
+make dev-frontend          # Frontend on http://localhost:5173
 ```
 
-For the full setup guide (manual setup, testing, database, models, i18n, architecture), see **[CONTRIBUTING.md](CONTRIBUTING.md)**.
+For the full setup guide (instances, KeePass, Docker, testing, models, i18n, architecture), see **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
 <a href="https://digitalpublicgoods.net/r/comparia" target="_blank" rel="noopener noreferrer"><img src="https://github.com/DPGAlliance/dpg-resources/blob/main/docs/assets/dpg-badge.png?raw=true" width="100" alt="Digital Public Goods Badge"></a>

@@ -15,11 +15,9 @@ from backend.config import (
     ALTCHA_REPLAY_TTL_SECONDS,
     settings,
 )
-from utils.storage.redis import get_redis_client
+from utils.storage.redis import REDIS_ALTCHA_PREFIX, get_redis_client
 
 logger = logging.getLogger("languia")
-
-REDIS_PREFIX = "altcha:"
 
 
 def generate_challenge() -> dict:
@@ -61,7 +59,7 @@ def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
         return False, error
 
     # Replay prevention: check if this payload was already used
-    redis_key = f"{REDIS_PREFIX}{payload[:64]}"
+    redis_key = f"{REDIS_ALTCHA_PREFIX}{payload[:64]}"
     try:
         client = get_redis_client()
         # SET with NX returns True only if key didn't exist

@@ -16,6 +16,8 @@ from backend.config import (
 )
 from utils.storage.redis import (
     REDIS_CONVERSATIONS_KEY,
+    REDIS_CUSTOM_DAILY_KEY,
+    REDIS_CUSTOM_HOURLY_KEY,
     REDIS_USER_CHAR_COUNT,
     get_redis_client,
 )
@@ -149,10 +151,10 @@ def increment_custom_selections(ip: str) -> None:
         ip: User's IP address
     """
     client = get_redis_client()
-    client.incr(f"custom_hourly:{ip}")
-    client.expire(f"custom_hourly:{ip}", 3600)
-    client.incr(f"custom_daily:{ip}")
-    client.expire(f"custom_daily:{ip}", 86400)
+    client.incr(REDIS_CUSTOM_HOURLY_KEY.format(ip=ip))
+    client.expire(REDIS_CUSTOM_HOURLY_KEY.format(ip=ip), 3600)
+    client.incr(REDIS_CUSTOM_DAILY_KEY.format(ip=ip))
+    client.expire(REDIS_CUSTOM_DAILY_KEY.format(ip=ip), 86400)
 
 
 def is_custom_selection_ratelimited(ip: str) -> bool:
@@ -168,11 +170,11 @@ def is_custom_selection_ratelimited(ip: str) -> bool:
         bool: True if either hourly or daily limit is exceeded
     """
     client = get_redis_client()
-    hourly = client.get(f"custom_hourly:{ip}")
+    hourly = client.get(REDIS_CUSTOM_HOURLY_KEY.format(ip=ip))
     assert not isinstance(hourly, Awaitable)
     if hourly and int(hourly) >= RATELIMIT_CUSTOM_SELECTION_PER_HOUR:
         return True
-    daily = client.get(f"custom_daily:{ip}")
+    daily = client.get(REDIS_CUSTOM_DAILY_KEY.format(ip=ip))
     assert not isinstance(daily, Awaitable)
     if daily and int(daily) >= RATELIMIT_CUSTOM_SELECTION_PER_DAY:
         return True

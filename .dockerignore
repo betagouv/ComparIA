@@ -50,12 +50,12 @@ build
 serve_images
 val2014
 vqa_examples
-docker/.env
+devops/docker/.env
 
 # Secrets
 model-info-file.json
 register-api-endpoint-file*.json
-docker/.env
+devops/docker/.env
 .env
 languia-*.json
 utils/results/

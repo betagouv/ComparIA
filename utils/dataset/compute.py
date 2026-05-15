@@ -24,7 +24,7 @@ from functools import lru_cache
 
 import pandas as pd
 
-from backend.config import PORTAL_DATASET_INFOS, CountryPortal, settings
+from backend.config import CountryPortal, settings
 from backend.llms.utils import get_active_params, get_total_params
 from utils.utils import db_connection
 
@@ -248,8 +248,11 @@ def process_dataset(
 
     logger.info(f"Starting processing for dataset: {dataset_name}")
 
-    repo = PORTAL_DATASET_INFOS[country_portal]
-    repo_name = f"{repo["name"]}-{dataset_name}"
+    dataset_path = settings.HF_PUSH_DATASET_PATH
+    path_parts = dataset_path.split("/", 1) if dataset_path else []
+    repo_org = path_parts[0] if len(path_parts) == 2 else None
+    repo_base = path_parts[1] if len(path_parts) == 2 else dataset_path
+    repo_name = f"{repo_base}-{dataset_name}"
 
     logger.info(f"Folder defined for dataset: {export_base_path}")
 
@@ -277,7 +280,7 @@ def process_dataset(
                 logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
                 return True
             else:
-                push_success = commit_and_push(repo["org"], repo_name, repo_path)
+                push_success = commit_and_push(repo_org, repo_name, repo_path)
                 return push_success
 
     except Exception as e:

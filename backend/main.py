@@ -22,10 +22,14 @@ init_sentry()
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:8000",
     "http://localhost:8001",
+    "http://localhost:8002",
+    "http://localhost:8008",
 ]
 
 app.add_middleware(

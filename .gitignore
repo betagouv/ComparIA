@@ -55,13 +55,19 @@ build
 serve_images
 val2014
 vqa_examples
-docker/.env
+devops/docker/.env
+devops/db-init/init-db.sql
+devops/instances/postgres/schema.sql
+devops/instances/fr/.env.fr
+devops/instances/da/.env.da
+
+# KeePass databases
+*.kdbx
 
 # Secrets
 model-info-file.json
 register-api-endpoint-file*.json
 google_creds.json
-docker/.env
 .env
 languia-*.json
 utils/results/

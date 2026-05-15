@@ -1,8 +1,8 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: devops/Dockerfile
+      context: ../..
+      dockerfile: devops/docker/Dockerfile
       args:
         GIT_COMMIT: ${GIT_COMMIT:-}
         PUBLIC_API_URL: ${PUBLIC_API_URL:-}
@@ -17,8 +17,8 @@ services:
 
   frontend:
     build:
-      context: frontend
-      dockerfile: ../devops/Dockerfile.front
+      context: ../../frontend
+      dockerfile: ../devops/docker/Dockerfile.front
       args:
         GIT_COMMIT: ${GIT_COMMIT:-}
         PUBLIC_API_URL: ${PUBLIC_API_URL:-}
