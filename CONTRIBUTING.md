@@ -10,131 +10,90 @@ Thanks for your interest in contributing! This guide covers everything you need 
 - Node.js + yarn
 - [uv](https://docs.astral.sh/uv/) (installed automatically by `make install-backend` if missing)
 
-### Environment setup
+### Install dependencies
+
+```bash
+make install
+```
+
+---
+
+## Running locally (without Docker)
+
+There are two ways to load environment variables: manually (basic) or via KeePass (recommended for team members).
+
+### Option A: manual env setup
+
+Copy the example env file and fill in the required values:
 
 ```bash
 cp .env.example .env
 ```
 
-For real LLM calls, set `OPENROUTER_API_KEY` in your `.env`. To skip API calls entirely, uncomment `MOCK_RESPONSE=true` instead.
+Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. For the DA instance, change `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and point `COMPARIA_DB_URI` to the DA database.
 
-### With Docker
-
-`make docker-app-up`
-
-### Without Docker
-
-#### Quick start with `make`
-
-The easiest way to run Compar:IA is using the provided Makefile:
+Then start backend and frontend manually:
 
 ```bash
-# Install all dependencies (backend + frontend)
-make install
-
-# Run both backend and frontend in development mode
-make dev
+source .env
+make dev-backend   # FastAPI on http://localhost:8008
+make dev-frontend  # SvelteKit on http://localhost:5173
 ```
 
-This will start:
+### Option B: KeePass (recommended)
 
-- Backend (FastAPI) on http://localhost:8001
-- Frontend (SvelteKit) on http://localhost:5173
-
-### Manual setup
-
-**Backend:**
-
-1. Install `uv`: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-2. Install dependencies: `uv sync`
-3. Run the server: `uv run uvicorn backend.main:app --reload --timeout-graceful-shutdown 1 --port 8001`
-
-**Frontend:**
-
-1. Install Node.js and yarn
-2. Navigate to frontend: `cd frontend/`
-3. Install dependencies: `yarn install`
-4. Run dev server: `yarn run dev`
-
-**(optional) Dashboard:**
+The KeePass integration loads env vars from a `.kdbx` database and runs backend + frontend in parallel:
 
 ```bash
-uv run uvicorn controller:app --reload --port 21001
+make dev       # FR instance (loads instances/fr group from KeePass)
+make dev-da    # DA instance (loads instances/da group from KeePass)
 ```
 
-### Testing
+The database path defaults to `~/comparia_dev.kdbx`. Override with:
 
 ```bash
-# Frontend unit tests
-cd frontend && npx vitest --run
-
-# Frontend E2E tests (requires build first)
-cd frontend && yarn run build && npx playwright test
-
-# Lint & type check
-cd frontend && yarn run lint
-cd frontend && yarn run check
+KEEPASS_DB=/path/to/other.kdbx make dev
 ```
 
-No backend test suite exists currently.
+You can use the team's shared database or create your own. The expected structure is one entry per variable, inside groups `instances/fr` or `instances/da`, with **username = variable name** and **password = value**.
+
+See `devops/instances/fr/.env.fr.example` and `devops/instances/da/.env.da.example` for the full list of variables per instance.
 
 ---
 
-## Available Makefile commands
+## Running with Docker (per instance)
+
+Each instance has its own Docker Compose file. A shared Postgres and Redis are started automatically.
 
 ```bash
-make help                  # Display all available commands
-make install               # Install all dependencies
-make install-backend       # Install backend dependencies only
-make install-frontend      # Install frontend dependencies only
-make dev                   # Run backend + frontend (parallel)
-make dev-full              # Run backend + frontend with Postgres and Redis
-make dev-backend           # Run backend only
-make dev-frontend          # Run frontend only
-make dev-controller        # Run the dashboard controller
-make build-frontend        # Build frontend for production
-make clean                 # Clean generated files
-make check-requirements    # Check that required tools are installed
+make up-fr      # Start FR instance (backend + frontend + postgres + redis)
+make down-fr    # Stop FR instance
+make logs-fr    # Follow FR instance logs
 
-make lint-python           # Check python code (mypy)
-make lint-frontend         # Check frontend code
-make format-python         # Format python code
-make format-frontend       # Format frontend code
+make up-da      # Start DA instance
+make down-da    # Stop DA instance
+make logs-da    # Follow DA instance logs
+```
 
-make db-generate-init      # Generate docker/data/init-db.sql from schema files
-make redis                 # Launch Redis using docker compose
+These commands use KeePass to load secrets. To start only the shared infrastructure:
 
-make docker-app-up         # Launch full app in Docker (frontend + backend + infra)
-make docker-app-down       # Stop only app services, keep infra
-make docker-app-logs       # Show logs for frontend and backend containers
-
-make models-build          # Generates model files from JSON sources
-make models-maintenance    # Launches the model maintenance script
-make models-doc            # Build/generate LLM doc and JSON schemas
-
-make compute-rankings      # Execute the ranking pipeline
-make ranking-install       # Install ranking_methods project dependencies
-make ranking-test          # Run ranking_methods project tests
-
-make dataset-export        # Exports datasets to HuggingFace
-
-make i18n-clean-locales        # Remove unused locale keys
-make i18n-build-suggestions    # Generate prompt suggestion translations
-make i18n-build-news           # Generate news files
+```bash
+make db         # Start shared Postgres
+make redis      # Start shared Redis
 ```
 
 ---
 
 ## Database
 
-**Prerequisites:** `COMPARIA_DB_URI` environment variable configured (defaults to `postgresql://postgres:postgres@localhost:5432/languia` for local dev)
+Default local URIs (used by `make dev` / `make dev-da`):
+
+- FR: `postgresql://comparia:comparia@localhost:5432/comparia`
+- DA: `postgresql://comparia:comparia@localhost:5432/comparia_da`
 
 ```bash
-# Generate init-db.sql and start Postgres via Docker
-make db-generate-init
-
-# Or start the full dev stack with Postgres + Redis
-make dev-full
+make db                # Start Postgres via Docker (creates both databases)
+make db-reset-data     # Wipe Postgres volumes and restart fresh
 ```
 
 ---
@@ -152,23 +111,28 @@ make models-maintenance    # Run model health checks
 
 ## Datasets
 
-**Prerequisites:** `COMPARIA_DB_URI` and `HF_PUSH_DATASET_KEY` environment variables configured
+**Prerequisites:** `COMPARIA_DB_URI`, `HF_PUSH_DATASET_KEY`, and `HF_PUSH_DATASET_PATH` environment variables configured.
 
 ```bash
-# Export datasets to HuggingFace
-uv run python utils/export_dataset.py
+make dataset-export        # Export FR datasets to HuggingFace
+make dataset-export-da     # Export DA datasets to HuggingFace
 ```
 
 ---
 
-## Ranking methods
+## Testing
 
 ```bash
-# Install ranking_methods project dependencies (via Poetry)
-make ranking-install
-```
+# Frontend unit tests
+cd frontend && npx vitest --run
 
-For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_methods/README.md) and the notebooks in [`utils/ranking_methods/notebooks/`](utils/ranking_methods/notebooks/).
+# Frontend E2E tests (requires build first)
+cd frontend && yarn run build && npx playwright test
+
+# Lint & type check
+cd frontend && yarn run lint
+cd frontend && yarn run check
+```
 
 ---
 
@@ -183,9 +147,10 @@ Translation files live in `frontend/locales/messages/`. To add a new language, c
 ## Architecture
 
 - `frontend/`: SvelteKit frontend (Vite, TailwindCSS, French Design System). Runs on port 5173.
-- `backend/main.py`: FastAPI entry point. Runs on port 8001.
-- `languia/`: Backend logic (streaming, voting, reveal, rate limiting, persistence).
-- `docker/`: Docker Compose configs (infra + app overlay).
-- `utils/`: Model generation, ranking methods, database schemas, dataset export.
-- `controller.py`: Simple error monitoring dashboard (`uv run uvicorn controller:app --reload --port 21001`).
-- `templates/`: Jinja2 templates for the dashboard.
+- `backend/main.py`: FastAPI entry point. Runs on port 8008.
+- `backend/arena/`: Core arena logic (streaming, voting, rate limiting, persistence).
+- `devops/instances/`: Per-instance Docker Compose files and env examples (fr, da).
+- `devops/instances/postgres/`: Shared Postgres compose and schema init.
+- `devops/instances/redis/`: Shared Redis compose.
+- `devops/keepassxc/`: KeePass env loader script.
+- `utils/`: Model generation, database schemas, dataset export.

@@ -8,7 +8,7 @@ BACKEND_PORT := 8008
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
 
-# Valeurs de dev local (sans docker)
+# Local dev values (without docker for frontend and backend)
 COMPARIA_DB_URI_FR ?= postgresql://comparia:comparia@localhost:5432/comparia
 COMPARIA_DB_URI_DA ?= postgresql://comparia:comparia@localhost:5432/comparia_da
 COMPARIA_REDIS_HOST ?= localhost
@@ -226,30 +226,3 @@ dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASE
 		exit 1; \
 	fi
 	$(UV) run python -m utils.dataset.run da
-
-
-###################################
-# Old
-###################################
-
-
-# db-schema-init: ## Initialize database schema
-# 	@echo "Initializing database schema..."
-# 	@if [ -z "$$DATABASE_URI" ]; then \
-# 		echo "Error: DATABASE_URI is not defined"; \
-# 		exit 1; \
-# 	fi
-# 	@echo "Executing SQL scripts in utils/schemas/..."
-# 	psql $$DATABASE_URI -f utils/schemas/conversations.sql
-# 	psql $$DATABASE_URI -f utils/schemas/votes.sql
-# 	psql $$DATABASE_URI -f utils/schemas/reactions.sql
-# 	psql $$DATABASE_URI -f utils/schemas/logs.sql
-
-# db-migrate: ## Apply database migrations
-# 	@echo "Applying migrations..."
-# 	@if [ -z "$$DATABASE_URI" ]; then \
-# 		echo "Error: DATABASE_URI is not defined"; \
-# 		exit 1; \
-# 	fi
-# 	psql $$DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
-# 	psql $$DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
