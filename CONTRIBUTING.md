@@ -20,9 +20,9 @@ make install
 
 ## Running locally (without Docker)
 
-There are two ways to load environment variables: manually (basic) or via KeePass (recommended for team members).
+There are two ways to load environment variables: manually (default) or via KeePass.
 
-### Option A: manual env setup
+### Option A: manual env setup (default)
 
 Copy the example env file and fill in the required values:
 
@@ -32,27 +32,27 @@ cp .env.example .env
 
 Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. For the DA instance, change `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and point `COMPARIA_DB_URI` to the DA database.
 
-Then start backend and frontend manually:
+Then source the env file and run:
 
 ```bash
 source .env
-make dev-backend   # FastAPI on http://localhost:8008
-make dev-frontend  # SvelteKit on http://localhost:5173
+make dev      # FR instance
+make dev-da   # DA instance
 ```
 
-### Option B: KeePass (recommended)
+### Option B: KeePass
 
-The KeePass integration loads env vars from a `.kdbx` database and runs backend + frontend in parallel:
+The KeePass integration loads env vars from a `.kdbx` database. Enable it with `USE_KEEPASS=true`:
 
 ```bash
-make dev       # FR instance (loads instances/fr group from KeePass)
-make dev-da    # DA instance (loads instances/da group from KeePass)
+USE_KEEPASS=true make dev      # FR instance
+USE_KEEPASS=true make dev-da   # DA instance
 ```
 
 The database path defaults to `~/comparia_dev.kdbx`. Override with:
 
 ```bash
-KEEPASS_DB=/path/to/other.kdbx make dev
+KEEPASS_DB=/path/to/other.kdbx USE_KEEPASS=true make dev
 ```
 
 You can use the team's shared database or create your own. The expected structure is one entry per variable, inside groups `instances/fr` or `instances/da`, with **username = variable name** and **password = value**.
@@ -75,7 +75,7 @@ make down-da    # Stop DA instance
 make logs-da    # Follow DA instance logs
 ```
 
-These commands use KeePass to load secrets. To start only the shared infrastructure:
+These commands use manual env by default. Add `USE_KEEPASS=true` to load secrets from KeePass. To start only the shared infrastructure:
 
 ```bash
 make db         # Start shared Postgres
