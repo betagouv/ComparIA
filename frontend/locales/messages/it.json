@@ -530,8 +530,97 @@
                     "license_desc": "<p>Questa licenza mondiale, gratuita e non esclusiva consente l'uso, la modifica e la ridistribuzione del modello e dei suoi derivati, incluso il riutilizzo degli output per addestrare altri modelli. Rimane permissiva, ma limita l'uso commerciale alle organizzazioni con un fatturato annuo inferiore a 10 milioni dollari; oltre tale soglia, l'utilizzo non è più coperto.</p>"
                 },
                 "Llama 3 Community": {
-                    "commercial_use_specificities": "meno di 700 milioni di utenti"
+                    "commercial_use_specificities": "meno di 700 milioni di utenti",
+                    "license_desc": "<p>Questa licenza consente di utilizzare, modificare e distribuire liberamente il codice con attribuzione, ma impone restrizioni alle operazioni che superano i 700 milioni di utenti mensili e vieta il riutilizzo del codice o dei contenuti generati per l'addestramento o il miglioramento di modelli concorrenti, proteggendo così gli investimenti tecnologici e il marchio di Meta.</p>"
+                },
+                "Llama 3.1": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti",
+                    "license_desc": "<p>Questa licenza consente di utilizzare, riprodurre, modificare e distribuire liberamente il codice con attribuzione, ma impone restrizioni alle operazioni che superano i 700 milioni di utenti mensili. Il riutilizzo del codice o dei contenuti generati per l'addestramento o il miglioramento di modelli derivati è consentito a condizione che venga visualizzata la dicitura \"built with llama\" e che \"Llama\" sia incluso nel nome per qualsiasi distribuzione.</p>"
+                },
+                "Llama 3.3": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti",
+                    "license_desc": "<p>Questa licenza <strong>non esclusiva, mondiale e senza royalty</strong> consente di utilizzare, riprodurre, modificare e distribuire liberamente il codice e i Materiali di Llama 3.3, citandone la fonte. In particolare, permette il riutilizzo per migliorare i modelli derivati, ma impone restrizioni alle operazioni commerciali su larga scala.</p>"
+                },
+                "Llama 4": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti\n",
+                    "license_desc": "<p>Questa licenza non esclusiva, mondiale e senza royalty consente l'uso, la riproduzione, la modifica e la distribuzione dei Materiali Llama 4 (modelli e documentazione) con attribuzione. Tuttavia, impone due restrizioni principali: (1) le aziende con più di 700 milioni di utenti attivi mensili devono ottenere una licenza speciale da Meta e (2) <strong>esclusione totale</strong> delle persone fisiche residenti nell'UE e delle aziende con sede nell'UE dall'uso diretto dei modelli multimodali, a causa delle incertezze normative relative alla legge europea sull'IA. Gli utenti finali europei possono comunque accedere ai servizi che incorporano Llama 4, a condizione che siano erogati al di fuori dell'UE.</p>"
+                },
+                "MIT": {
+                    "license_desc": "<p>La licenza MIT è una licenza permissiva per il software libero: consente a chiunque di riutilizzare, modificare e distribuire il modello, anche a fini commerciali, a condizione che vengano incluse le menzioni di licenza e di copyright originali.</p>"
+                },
+                "Mistral AI Research License": {
+                    "license_desc": "<p>Questa licenza non esclusiva e senza royalty consente l'uso, la copia, la modifica e la distribuzione dei modelli Mistral e dei loro derivati (incluse le versioni modificate o perfezionate). Tuttavia, è strettamente limitata a scopi di ricerca.</p>",
+                    "reuse_specificities": "ma solo per usi non commerciali"
+                },
+                "Modified MIT": {
+                    "license_desc": "<p>Una variante della licenza MIT. La licenza MIT è una licenza permissiva per il software libero: consente a chiunque di riutilizzare, modificare e distribuire il modello, anche a fini commerciali, a condizione che vengano inclusi gli avvisi di licenza e copyright originali.</p>"
+                },
+                "Nemotron Open": {
+                    "license_desc": "<p>Questa licenza mondiale, senza royalty, consente di utilizzare, riprodurre, modificare e distribuire liberamente il modello e i suoi derivati, anche a fini commerciali, senza alcuna restrizione in termini di fatturato o numero di utenti. NVIDIA non rivendica alcun diritto sui contenuti generati dal modello. La licenza include una clausola di risoluzione automatica in caso di azioni legali contro NVIDIA per violazione di brevetti relativi al modello.</p>"
                 }
+            },
+            "proprio": {
+                "Alibaba": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite API sulle piattaforme di Alibaba, richiedendo un pagamento in base al numero di token elaborati o all'infrastruttura riservata."
+                },
+                "Amazon": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite Amazon Bedrock, con un costo a consumo basato sul numero di token elaborati o sull'infrastruttura riservata.",
+                    "reuse_specificities": "fatta eccezione per distillare o addestrare altri modelli sulle piattaforme di Amazon."
+                },
+                "Anthropic": {
+                    "license_desc": "Il modello è disponibile con licenza a pagamento e accessibile tramite API sulle piattaforme di Anthropic o di aziende partner, con un costo a consumo basato sul numero di token elaborati o sull'infrastruttura riservata."
+                },
+                "Google": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite API sulle piattaforme di Google, con un costo a consumo basato sul numero di token elaborati, oppure sull'infrastruttura riservata di Google.",
+                    "reuse_specificities": "fatta eccezione per l'addestramento di altri modelli su Vertex AI"
+                },
+                "Liquid": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite API sulle piattaforme di Liquid AI, con un costo a consumo basato sul numero di token elaborati."
+                },
+                "Mistral AI": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite l'API Mistral, Amazon Sagemaker e diversi altri host, richiedendo un pagamento in base al numero di token elaborati o all'infrastruttura riservata."
+                },
+                "OpenAI": {
+                    "license_desc": "Il modello è disponibile con licenza a pagamento e accessibile tramite API sulle piattaforme dell'azienda OpenAI o tramite i servizi Microsoft Azure, con un costo a consumo basato sul numero di token elaborati o sull'infrastruttura riservata."
+                },
+                "xAI": {
+                    "license_desc": "Il modello è disponibile con licenza a pagamento ed è accessibile tramite X e xAI, richiedendo un pagamento in base al numero di token elaborati o all'infrastruttura riservata."
+                }
+            }
+        },
+        "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p>Un modello di medie dimensioni, open-source e riproducibile, sviluppato da un consorzio di istituzioni svizzere. I suoi pesi e il codice di addestramento sono pubblicati con una licenza permissiva. È stato addestrato su oltre 1.800 lingue e oltre 15 trilioni di token. L'addestramento è stato effettuato sul supercomputer Alps del CSCS di Lugano, alimentato da energia idroelettrica a impatto zero.</p>",
+                "fyi": "<p>Il modello è stato addestrato sul supercomputer Alps di Lugano, utilizzando oltre 10 milioni di ore di GPU alimentate da energia idroelettrica a impatto zero. Il modello è stato pre-addestrato su 15 trilioni di token che coprono oltre 1.800 lingue, inclusa una proporzione significativa di lingue sottorappresentate.</p>\n<p>Apertus si basa su un tokenizzatore a livello di byte (BPE) con 131.000 voci, derivato dal tokenizzatore \"tekken\" di Mistral AI, ottimizzato per il multilinguismo, il codice e le espressioni matematiche. L'architettura combina diverse innovazioni: Rotary Positional Embeddings (RoPE) con base estesa e adattamento consapevole di NTK-aware per contesti lunghi, Grouped Query Attention (GQA) per una maggiore efficienza della memoria, normalizzazione QK-Norm per stabilizzare l'addestramento e una funzione di attivazione xIELU(extended Integrated ELU) che migliora le prestazioni MLP.</p>\n<p>La fase finale di perfezionamento del modello si basa su un algoritmo di allineamento chiamato QRPO (Quantile Reward-Preferring Optimization), un'alternativa al classico RLHF, che utilizza segnali di ricompensa assoluti per un apprendimento più stabile e un migliore allineamento con le preferenze umane. Pur non essendo in diretta concorrenza con i modelli proprietari più avanzati, Apertus si distingue per il suo livello di trasparenza.</p>",
+                "size_desc": "<p>Con 70 miliardi di parametri, questo modello è tra i più compatti. Può essere utilizzato localmente su un computer potente, garantendo la riservatezza dei dati, oppure ospitato su un server dotato di una singola scheda grafica, limitando così i costi dell'infrastruttura. La sua finestra di contesto di 65.536 token gli consente di elaborare documenti piuttosto lunghi.</p>"
+            },
+            "Apertus 8B Instruct": {
+                "desc": "<p>Un modello piccolo, open-source e riproducibile, sviluppato da un consorzio di istituzioni svizzere. I suoi pesi e il codice di addestramento sono pubblicati con una licenza permissiva. È stato addestrato su oltre 1.800 lingue e oltre 15 bilioni di token. L'addestramento è stato effettuato sul supercomputer Alps del CSCS di Lugano, alimentato da energia idroelettrica a impatto zero.</p>",
+                "fyi": "<p>Il modello è stato addestrato sul supercomputer Alps di Lugano, utilizzando oltre 10 milioni di ore di GPU alimentate da energia idroelettrica a impatto zero. Il modello è stato pre-addestrato su 15 bilioni di token che coprono oltre 1.800 lingue, inclusa una proporzione significativa di lingue sottorappresentate.</p>\n<p>Apertus si basa su un tokenizzatore a livello di byte (BPE) con 131.000 voci, derivato dal tokenizzatore \"tekken\" di Mistral AI, ottimizzato per il multilinguismo, il codice e le espressioni matematiche. L'architettura combina diverse innovazioni: Rotary Positional Embeddings (RoPE) con base estesa e adattamento consapevole di NTK-aware per contesti lunghi, Grouped Query Attention (GQA) per una maggiore efficienza della memoria, normalizzazione QK-Norm per stabilizzare l'addestramento e una funzione di attivazione xIELU (extended Integrated ELU) che migliora le prestazioni MLP.</p>\n<p>La fase finale di perfezionamento del modello si basa su un algoritmo di allineamento chiamato QRPO (Quantile Reward-Preferring Optimization), un'alternativa al classico RLHF, che utilizza segnali di ricompensa assoluti per un apprendimento più stabile e un migliore allineamento con le preferenze umane. Pur non essendo in diretta concorrenza con i modelli proprietari più avanzati, Apertus si distingue per il suo livello di trasparenza.</p>",
+                "size_desc": "<p>Con 8 miliardi di parametri, questo modello è tra i più compatti. Può essere utilizzato localmente su un computer potente, garantendo la riservatezza dei dati, oppure ospitato su un server dotato di una singola scheda grafica, limitando così i costi dell'infrastruttura. La sua finestra di contesto di 65.536 token gli consente di elaborare documenti piuttosto lunghi.</p>"
+            },
+            "Aya 23 8B": {
+                "desc": "<p>Modello multilingue di piccole dimensioni, specificamente addestrato in gran parte su lingue generalmente sottorappresentate.</p>",
+                "fyi": "<p>Aya 23 8B di Cohere è un piccolo modello della famiglia Command R, addestrato specificamente su corpus multilingue.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Aya Expanse 32B": {
+                "desc": "<p>Modello multilingue di medie dimensioni, in grado di trattare 23 lingue.</p>",
+                "fyi": "<p>Cohere, l'azienda canadese che ha ideato questo modello, è stata fondata nel 2019 da ex ricercatori di Google Brain, tra cui Aidan Gomez, coautore del rivoluzionario articolo \"Attention Is All You Need\", che ha rivoluzionato l'intelligenza artificiale. Il suo elemento distintivo principale risiede nella focalizzazione esclusiva sull'intelligenza artificiale generativa per le aziende, in particolare per i settori regolamentati come finanza, sanità, industria manifatturiera ed energetica, nonché per il settore pubblico. L'azienda è anche pioniera negli approcci multilingue e gestisce un laboratorio di ricerca senza scopo di lucro a supporto dell'innovazione aperta.</p>\n<p>Questo modello è stato progettato per offrire buone capacità in ciascuna delle 23 lingue presenti nel suo corpus di addestramento.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere ospitato su un server dotato di una singola scheda grafica potente, il che contribuisce a limitare i costi dell'infrastruttura.</p>\n<p>Dispone di una finestra di contesto che può contenere fino a 130.000 token, utile per analizzare documenti lunghi.</p>"
+            },
+            "Aya Expanse 8B": {
+                "desc": "<p>Modello multilingue di piccole dimensioni, iterazione di codifica della serie Aya, specificamente addestrato in gran parte su lingue generalmente sottorappresentate.</p>",
+                "fyi": "<p>Aya Expanse 8B, prodotto da Cohere, un'azienda canadese, è un piccolo modello della famiglia Command R, appositamente addestrato su un corpus multilingue.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Aya23-35B": {
+                "desc": "<p>Un modello multilingue di medie dimensioni, specificamente addestrato in gran parte su lingue generalmente sottorappresentate.</p>",
+                "fyi": "<p>Aya 23 35B di Cohere è un modello di medie dimensioni della famiglia Command R, addestrato specificamente su un corpus multilingue.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Chocolatine 14B": {
+                "desc": "<p>Basato sul modello Phi-3 Medium di Microsoft, questo modello è stato specializzato per la lingua francese.</p>"
             }
         }
     }
