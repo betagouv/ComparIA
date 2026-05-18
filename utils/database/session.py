@@ -7,7 +7,13 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.config import settings
 
-engine = create_async_engine(settings.COMPARIA_DB_URI)
+def _async_url(url: str) -> str:
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
+
+
+engine = create_async_engine(_async_url(settings.COMPARIA_DB_URI))
 
 
 async def init_db():

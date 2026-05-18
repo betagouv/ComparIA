@@ -1,0 +1,135 @@
+import logging
+import uuid
+from datetime import datetime
+
+import polars as pl
+from sqlalchemy import text
+
+from utils.database.models.messages.llm import LLMMessage
+from utils.database.session import get_session
+
+from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, save_map, source_connection
+
+logger = logging.getLogger("comparia.db.migrate")
+
+QUERY = f"""
+    SELECT conversation_pair_id, timestamp, conversation_a, conversation_b
+    FROM conversations
+    WHERE {NOT_ARCHIVED}
+"""
+
+BATCH_SIZE = 10_000
+
+
+def _build_llm_message(
+    msg: dict,
+    fallback_ts: datetime,
+) -> LLMMessage | None:
+    content = msg.get("content")
+    if not content:
+        return None
+
+    metadata = msg.get("metadata") or {}
+    generation_id = metadata.get("generation_id")
+    tokens = metadata.get("output_tokens")
+
+    if generation_id is None or tokens is None:
+        return None
+
+    return LLMMessage(
+        id=uuid.uuid4(),
+        content=str(content),
+        generation_id=str(generation_id),
+        tokens=int(tokens),
+        is_cached=bool(metadata.get("is_cached", False)),
+        created_at=fallback_ts,
+        responded_at=fallback_ts,
+        updated_at=fallback_ts,
+        reasoning_content=None,
+    )
+
+
+def _extract_assistant_messages(
+    conversation: list[dict] | None,
+) -> list[tuple[int, dict]]:
+    if not conversation:
+        return []
+    result = []
+    turn_idx = 0
+    i = 0
+    while i < len(conversation):
+        # skip system messages at start
+        if conversation[i].get("role") == "system":
+            i += 1
+            continue
+        if conversation[i].get("role") == "user" and i + 1 < len(conversation):
+            assistant_msg = conversation[i + 1]
+            if assistant_msg.get("role") == "assistant":
+                result.append((turn_idx, assistant_msg))
+                turn_idx += 1
+                i += 2
+                continue
+        i += 1
+    return result
+
+
+async def migrate_llm_messages(
+    *,
+    source_uri: str,
+    commit: bool = False,
+    maps_dir: str = "/tmp/comparia_migration",
+) -> None:
+    """
+    Step 3: migrate JSONB conversation messages → llm_message table.
+
+    Requires: comparison_map.pkl
+    Produces: llm_message_map.pkl ((pair_id, side, turn_idx) → llm_message uuid)
+    Rows with NULL generation_id or tokens are skipped.
+    """
+    ensure_maps_dir(maps_dir)
+
+    comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
+    llm_message_map: dict[tuple[str, str, int], uuid.UUID] = {}
+
+    inserted = 0
+    skipped = 0
+
+    with source_connection(source_uri, stream=True) as conn:
+        batches = pl.read_database(
+            query=text(QUERY), connection=conn, iter_batches=True, batch_size=BATCH_SIZE
+        )
+        for batch_idx, batch in enumerate(batches):
+            to_insert: list[LLMMessage] = []
+            batch_map: dict[tuple[str, str, int], uuid.UUID] = {}
+
+            for row in batch.iter_rows(named=True):
+                pair_id: str | None = row["conversation_pair_id"]
+                if not pair_id or pair_id not in comparison_map:
+                    skipped += 1
+                    continue
+
+                ts: datetime = row["timestamp"]
+
+                for side, conversation in [("a", row["conversation_a"]), ("b", row["conversation_b"])]:
+                    for turn_idx, msg in _extract_assistant_messages(conversation):
+                        llm_msg = _build_llm_message(msg, ts)
+                        if llm_msg is None:
+                            logger.debug(
+                                f"Skipping llm_message ({pair_id}, {side}, {turn_idx}): missing metadata."
+                            )
+                            skipped += 1
+                            continue
+                        to_insert.append(llm_msg)
+                        batch_map[(pair_id, side, turn_idx)] = llm_msg.id
+
+            if commit and to_insert:
+                async with get_session() as session:
+                    session.add_all(to_insert)
+                    await session.commit()
+
+            llm_message_map.update(batch_map)
+            inserted += len(to_insert)
+            logger.info(f"Batch {batch_idx}: {len(to_insert)} llm_messages processed.")
+
+    logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
+    save_map(maps_dir, "llm_message_map", llm_message_map)
