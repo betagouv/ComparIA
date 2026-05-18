@@ -1,18 +1,47 @@
 import logging
 from datetime import datetime
-from typing import Literal, Sequence, get_args
+from typing import Any, AsyncGenerator, Literal, Sequence, get_args
 
 from sqlalchemy import text
+from sqlalchemy.orm import selectinload
+from sqlmodel import col, select
 
 from utils.utils import db_connection
 
+from .models import Comparison, Turn
 from .models.comparison import ArchivedReason
+from .session import get_session
 
 TableName = Literal["conversations", "votes", "reactions"]
 TABLE_NAMES: tuple[TableName, ...] = get_args(TableName)
 
 
 logger = logging.getLogger("comparia.db")
+
+
+async def get_db_comparisons_stream(
+    filters: list[Any] | None = None,
+) -> AsyncGenerator[Comparison]:
+    async with get_session() as session:
+        query = select(Comparison).options(
+            selectinload(Comparison.turns).options(
+                selectinload(Turn.user_msg),
+                selectinload(Turn.llm_msg_a),
+                selectinload(Turn.llm_msg_b),
+            ),
+            selectinload(Comparison.system_msg_a),
+            selectinload(Comparison.system_msg_b),
+        )
+        if filters:
+            for _filter in filters:
+                query = query.filter(_filter)
+
+        query = query.order_by(col(Comparison.created_at))
+        logger.debug(f"Will query Comparison with:\n{query}")
+        stream = await session.stream(query.execution_options(yield_per=1000))
+
+        async for (s,) in stream:
+            yield s
 
 
 def archive(
