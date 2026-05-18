@@ -139,11 +139,12 @@ class Config:
         logger.debug("OpenRouter API response received.")
 
         try:
-            content = json.loads(response.choices[0].message.content)
-            if isinstance(content, list):
-                content = content[0]
+            content = response.choices[0].message.content
             if not content:
                 raise LLMAnalysisFailed("LLM response is empty.")
+            content = json.loads(content)
+            if isinstance(content, list):
+                content = content[0]
 
             return ComparisonLLMAnalysisUpdate.model_validate(content)
         except json.JSONDecodeError as e:
@@ -212,7 +213,7 @@ async def worker(
             # No more comparisons to process
             queue.task_done()
             break
-        result = await analyzer.analyze_comparison(comparison)
+        await analyzer.analyze_comparison(comparison)
         queue.task_done()
 
 
