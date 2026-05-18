@@ -47,7 +47,7 @@ async def update_comparison(
 class Config:
     MODEL_NAME = "google/gemini-3.1-flash-lite-preview"
     WORKERS = 5
-    MAX_RETRIES = 1
+    MAX_RETRIES = 3
     RETRY_DELAY = 1
     failed_analysis: list[str] = []
 
