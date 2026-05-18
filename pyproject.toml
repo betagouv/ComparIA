@@ -26,6 +26,7 @@ dependencies = [
     "altcha>=1.0.0",
     "sqlmodel>=0.0.38",
     "psycopg[binary]>=3.3.3",
+    "alembic>=1.18.4",
 ]
 
 [dependency-groups]
