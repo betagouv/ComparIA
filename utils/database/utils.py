@@ -1,11 +1,12 @@
 import logging
 from datetime import datetime
-from typing import Any, AsyncGenerator, Literal, Sequence, get_args
+from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_args
 
 from sqlalchemy import text
 from sqlalchemy.orm import selectinload
 from sqlmodel import col, select
 
+from backend.arena.models import BotPos
 from utils.utils import db_connection
 
 from .models import Comparison, Turn
@@ -139,3 +140,49 @@ def set_not_archived(timestamp: datetime):
 
             conn.commit()
             logger.info(f"Set {results.rowcount} 'archived' to FALSE on {table_name}.")
+
+
+class RawSystemMessage(TypedDict):
+    role: Literal["system"]
+    content: str
+
+
+class RawUserMessage(TypedDict):
+    role: Literal["user"]
+    content: str
+
+
+class RawLLMMessage(TypedDict):
+    role: Literal["assistant"]
+    content: str
+    reasoning_content: str | None
+
+
+AnyRawMessage = RawSystemMessage | RawUserMessage | RawLLMMessage
+
+
+def parse_full_conversation(
+    comparison: Comparison, side: BotPos
+) -> list[AnyRawMessage]:
+    conversation: list[AnyRawMessage] = []
+
+    if system_msg := getattr(comparison, f"system_msg_{side}"):
+        raw_system_msg = cast(
+            RawSystemMessage, system_msg.model_dump(include={"role", "content"})
+        )
+        conversation.append(raw_system_msg)
+
+    for turn in comparison.turns:
+        raw_user_msg = cast(
+            RawUserMessage, turn.user_msg.model_dump(include={"role", "content"})
+        )
+        conversation.append(raw_user_msg)
+
+        if llm_msg := getattr(turn, f"llm_msg_{side}"):
+            raw_llm_msg = cast(
+                RawLLMMessage,
+                llm_msg.model_dump(include={"role", "content", "reasoning_content"}),
+            )
+            conversation.append(raw_llm_msg)
+
+    return conversation
