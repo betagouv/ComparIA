@@ -12,7 +12,7 @@ from utils.utils import UTILS_DIR
 from .compute import count_dataset_rows, process_dataset
 from .queries import Datasets, get_dataset_queries
 
-logger = configure_logger(logging.getLogger("dataset"))
+logger = configure_logger(logging.getLogger("comparia.dataset"))
 
 
 def main(

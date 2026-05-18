@@ -4,7 +4,7 @@ from datetime import datetime
 
 from huggingface_hub import HfApi
 
-logger = logging.getLogger("dataset")
+logger = logging.getLogger("comparia.dataset")
 
 
 def export_data(dataframe, table_name, export_dir):

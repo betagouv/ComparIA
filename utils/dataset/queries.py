@@ -11,7 +11,7 @@ from utils.storage.queries import (
 )
 from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
 
-logger = logging.getLogger("dataset")
+logger = logging.getLogger("comparia.dataset")
 
 Datasets = Literal["conversations", "votes", "reactions", "conversations_raw"]
 
