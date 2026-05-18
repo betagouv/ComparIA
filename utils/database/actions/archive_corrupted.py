@@ -8,7 +8,8 @@ from sqlalchemy import text
 
 from utils.utils import db_connection
 
-from ..utils import TABLE_NAMES, ArchivedReason, TableName, archive
+from ..models.comparison import ArchivedReason
+from ..utils import TABLE_NAMES, TableName, archive
 
 logger = logging.getLogger("comparia.db")
 
