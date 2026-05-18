@@ -8,11 +8,39 @@ from sqlmodel import Field, Relationship, SQLModel, String
 
 from backend.arena.models import ErrorDetails
 from backend.config import CustomModelsSelection, SelectionMode
-from utils.database.utils import ArchivedReason
 
 from .messages import SystemMessage, SystemMessageRead
 from .turn import Turn, TurnPublic, TurnRead
 from .utils import AutoDatetime, ModelId, OptionalDatetime
+
+ArchivedReason = Literal[
+    "corrupted_no_model",  # some Conversations model_(a|b)_name is None
+    "corrupted_against_self",  # some Conversations model_a_name and model_b_name are equal
+    "corrupted_no_response",  # some Conversations conversation_(a|b) has no AssistantMessage at all
+    "corrupted_response_all_none",  # some Conversations conversation_(a|b) has all its AssistantMessage.content as None
+    "corrupted_response_last_none",  # some Conversations conversation_(a|b) has its last AssistantMessage.content as None
+    "corrupted_response_some_none",  # some Conversations conversation_(a|b) has at least one AssistantMessage.content as None
+    "corrupted_response_all_empty",  # some Conversations conversation_(a|b) has all its AssistantMessage.content as ''
+    "corrupted_response_last_empty",  # some Conversations conversation_(a|b) has its last AssistantMessage.content as ''
+    "corrupted_response_some_empty",  # some Conversations conversation_(a|b) has at least one AssistantMessage.content as ''
+    "corrupted_model_stream",  # some Conversations conversation_(a|b) has at least one AssistantMessage.content with ModelResponse or ModelResponseStream in it
+    "corrupted_not_equal_length",  # Conversations conversation_(a&b) lengths are not equal (excluding SystemMessage)
+    "corrupted_out_of_range_reactions",
+    "corrupted_to_model_msg_reactions",
+    "corrupted_no_choice_votes",
+    "duplicate",
+    "duplicate_has_vote",
+    "spam",
+    "unknown_llm",
+    "unknown",
+]
+# TODO could be fixed?
+# - "corrupted_response_(last|some)_(none|empty)":
+#   - remove corresponding UserMessage + AssistantMessage
+#   - remove corresponding reactions
+#   - if "some":
+#       - update other reactions msg_index accordingly
+# - "corrupted_model_stream": reparse AssistantMessage content
 
 SystemMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="system_message.id", unique=True)
