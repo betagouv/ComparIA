@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init db  db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
 
 # Variables
 PYTHON := python3
@@ -27,18 +27,43 @@ help: ## Display this help
 network: ## Create shared Docker network (idempotent)
 	@docker network create comparia-net 2>/dev/null || true
 
-db-generate-init: ## Generate devops/instances/postgres/schema.sql from schema files
+db-generate-init-old: ## (legacy) Create comparia_da and apply old SQL schema to both databases via docker exec
 	@bash devops/instances/postgres/generate-init-db.sh
+	@docker compose -f devops/instances/postgres/postgres-simple.compose.yml exec -T postgres-simple \
+		psql -U comparia -c "CREATE DATABASE comparia_da OWNER comparia;" 2>/dev/null || true
+	@sed -e 's/"languia-dev"/"comparia"/g' -e 's/"languia-prd"/"comparia"/g' -e 's/"languia"/"comparia"/g' \
+		devops/instances/postgres/schema.sql | \
+		docker compose -f devops/instances/postgres/postgres-simple.compose.yml exec -T postgres-simple \
+		psql -U comparia -d comparia
+	@sed -e 's/"languia-dev"/"comparia"/g' -e 's/"languia-prd"/"comparia"/g' -e 's/"languia"/"comparia"/g' \
+		devops/instances/postgres/schema.sql | \
+		docker compose -f devops/instances/postgres/postgres-simple.compose.yml exec -T postgres-simple \
+		psql -U comparia -d comparia_da
 
-db: ## Launch and init Postgres database using docker compose
+db: ## Launch Postgres database using docker compose (empty schema, use db-migrate to apply)
 	@$(MAKE) network
-	@$(MAKE) db-generate-init
 	@echo "Starting PostgreSQL database..."
 	docker compose -f devops/instances/postgres/postgres-simple.compose.yml up -d
 
 db-reset-data:
 	@echo "Removing docker dev data (volumes)..."
 	@docker compose -f devops/instances/postgres/postgres-simple.compose.yml down -v
+
+db-migrate: ## Apply pending Alembic migrations (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	$(UV) run alembic upgrade head
+
+db-migrate-generate: ## Generate a new Alembic migration (usage: make db-migrate-generate MSG="description", requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	$(UV) run alembic revision --autogenerate -m "$(MSG)"
+
+db-migrate-status: ## Show current Alembic migration status (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	$(UV) run alembic current
+
+db-schema-dump: ## Dump current database schema (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	pg_dump "$$COMPARIA_DB_URI" --schema-only --no-owner --no-privileges
 
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
@@ -72,7 +97,6 @@ display-env-fr: ## Display env vars loaded from KeePass for FR instance
 ###################################
 
 up-da: ## Launch DA instance (frontend + backend + postgres + redis)
-	@$(MAKE) db-generate-init
 	eval $$(uv run --group devops python devops/keepassxc/load_env.py --db $(KEEPASS_DB) --group "$(KEEPASS_GROUP_DA)") && \
 	docker compose -f devops/instances/da/app.compose.da.yml up -d --build
 

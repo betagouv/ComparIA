@@ -76,14 +76,34 @@ make redis      # Start shared Redis
 
 ## Database
 
-Default local URIs (set in `.env.example`):
+Default local URI (set in `.env.example`):
 
 - FR: `postgresql://comparia:comparia@localhost:5432/comparia`
-- DA: `postgresql://comparia:comparia@localhost:5432/comparia_da`
 
 ```bash
-make db                # Start Postgres via Docker (creates both databases)
+make db                # Start Postgres via Docker (creates the default comparia database)
 make db-reset-data     # Wipe Postgres volumes and restart fresh
+```
+
+Schema is managed with [Alembic](https://alembic.sqlalchemy.org/). Migration scripts live in `utils/database/alembic/versions/`. `COMPARIA_DB_URI` must be exported before running any migration command.
+
+First-time setup on a fresh database:
+
+```bash
+make db
+source .env
+make db-migrate        # applies all migrations, creates tables
+```
+
+After modifying a SQLModel in `utils/database/models/`:
+
+```bash
+make db-migrate-generate MSG="describe your change"
+make db-migrate
+```
+
+```bash
+make db-migrate-status   # show current migration revision
 ```
 
 ---
