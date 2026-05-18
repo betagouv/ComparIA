@@ -41,7 +41,7 @@ ArchivedReason = Literal[
 # - "corrupted_model_stream": reparse LLMMessage content
 
 SystemMessageId = Annotated[
-    uuid.UUID | None, Field(foreign_key="system_message.id", unique=True)
+    uuid.UUID | None, Field(foreign_key="system_message.id")
 ]
 
 
