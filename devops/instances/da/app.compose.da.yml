@@ -1,0 +1,46 @@
+services:
+  frontend-da:
+    build:
+      context: ../../../frontend
+      dockerfile: ../devops/docker/Dockerfile.front
+    depends_on:
+      - backend-da
+    environment:
+      DEFAULT_LOCALE: da
+      PUBLIC_LANGUIA_DEBUG: "true"
+      PUBLIC_API_LOCAL_URL: "http://backend-da:80"
+      PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8002}"
+      PUBLIC_API_DEV_MODE: "true"
+    ports:
+      - "3002:3000"
+    networks:
+      - comparia-net
+
+  backend-da:
+    environment:
+      LOGDIR: /data
+      LANGUIA_DEBUG: "true"
+      DEFAULT_COUNTRY_PORTAL: da
+      COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://comparia:comparia@postgres:5432/comparia_da}"
+      COMPARIA_REDIS_HOST: redis
+      OPENROUTER_API_KEY:
+      ORDBOGEN_API_KEY:
+      # Only needed for dataset export (uv run python -m utils.dataset.run):
+      # HF_PUSH_DATASET_KEY:
+      # HF_PUSH_DATASET_PATH: "danish-foundation-models/ai-arenaen"
+      ALTCHA_HMAC_KEY:
+      SENTRY_SAMPLE_RATE: "1.0"
+      SENTRY_ENV: "dev-da"
+      SENTRY_FRONT_DSN: "https://454e45b18f4ad93227ac60659a7d373c@sentry.incubateur.net/164"
+      SENTRY_DSN: "https://63791cc350514632a03f9907989499d7@sentry.incubateur.net/161"
+    build:
+      context: ../../..
+      dockerfile: devops/docker/Dockerfile
+    ports:
+      - "8002:80"
+    networks:
+      - comparia-net
+
+networks:
+  comparia-net:
+    external: true

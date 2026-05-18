@@ -9,6 +9,8 @@ import type { Handle } from '@sveltejs/kit'
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
 
+const DEFAULT_LOCALE = env.DEFAULT_LOCALE || ''
+
 defineCustomServerStrategy('custom-url', {
   getLocale: (request) => {
     if (!request) return
@@ -19,6 +21,8 @@ defineCustomServerStrategy('custom-url', {
       return HOST_TO_LOCALE[url.host as keyof typeof HOST_TO_LOCALE]
     } else if (locale) {
       return locale
+    } else if (DEFAULT_LOCALE) {
+      return DEFAULT_LOCALE
     }
   }
 })

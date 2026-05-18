@@ -35,7 +35,7 @@ services:
       COMPARIA_DB_URI: postgresql://${POSTGRES_USER:-comparia}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-comparia}
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
-      ALBERT_API_KEY: ${ALBERT_API_KEY:-}
+      ALBERT_KEY: ${ALBERT_KEY:-}
       ALTCHA_HMAC_KEY: ${ALTCHA_HMAC_KEY:-}
       CACHE_ENABLED: ${CACHE_ENABLED:-true}
       CACHE_PROBABILITY: ${CACHE_PROBABILITY:-0.75}
@@ -59,7 +59,6 @@ services:
       PORT: 3000
       PUBLIC_API_URL: ${PUBLIC_URL}
       PUBLIC_API_LOCAL_URL: http://backend:80
-      PRIVATE_API_URL: http://backend:80
 
   caddy:
     image: caddy:2-alpine
