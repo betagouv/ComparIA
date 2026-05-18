@@ -1,6 +1,8 @@
 import uuid
-from typing import Annotated
+from datetime import datetime
+from typing import Annotated, Literal
 
+from pydantic import computed_field
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
@@ -43,7 +45,7 @@ class ComparisonBase(SQLModel):
 
 class ComparisonWithAnalyzeData(ComparisonBase):
     # LLM analyze metadata
-    llm_analyze_failed: bool | None = None
+    llm_analyzed: bool | None = None
     contains_pii: bool | None = None
     contains_spam: bool | None = None
     short_summary: str | None = None
@@ -93,3 +95,48 @@ class ComparisonPublic(SQLModel):
     custom_models_selection: CustomModelsSelection
     error: ErrorDetails | None
     turns: list[TurnPublic]
+
+
+class ComparisonLLMAnalysisUpdate(SQLModel):
+    """
+    Model to validate LLM analysis and update Comparison
+    """
+
+    llm_analyzed: Literal[True] = True
+    contains_pii: bool
+    contains_spam: bool
+    short_summary: str
+    keywords: list[str]
+    categories: list[str]
+    languages: list[str]
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def archived(self) -> bool:
+        return self.contains_pii or self.contains_spam
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def archived_reason(self) -> Literal["spam", "pii"] | None:
+        if self.contains_spam:
+            return "spam"
+        if self.contains_pii:
+            return "pii"
+        return None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def archived_at(self) -> datetime | None:
+        return datetime.now() if self.archived else None
+
+
+class ComparisonLLMAnalysisFailedUpdate(SQLModel):
+    """
+    Model to update Comparison when LLM analysis fails.
+    """
+
+    llm_analyzed: Literal[False] = False
+    # FIXME archive it directly?
+    # archived: Literal[True] = True
+    # archived_reason: Literal["failed_analysis"] = "failed_analysis"
+    # archived_at: AutoDatetime
