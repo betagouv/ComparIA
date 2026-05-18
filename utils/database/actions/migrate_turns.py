@@ -2,7 +2,6 @@ import logging
 import uuid
 from datetime import datetime
 
-import polars as pl
 from sqlalchemy import insert as sa_insert
 from sqlalchemy import text, update
 
@@ -26,11 +25,7 @@ BATCH_SIZE = 10_000
 def _count_turns(conversation: list[dict] | None) -> int:
     if not conversation:
         return 0
-    count = 0
-    for msg in conversation:
-        if msg.get("role") == "user":
-            count += 1
-    return count
+    return sum(1 for msg in conversation if msg.get("role") == "user")
 
 
 async def migrate_turns(
@@ -56,17 +51,20 @@ async def migrate_turns(
 
     inserted = 0
     skipped = 0
+    batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        batches = pl.read_database(
-            query=text(QUERY), connection=conn, iter_batches=True, batch_size=BATCH_SIZE
-        )
-        for batch_idx, batch in enumerate(batches):
+        result = conn.execute(text(QUERY))
+        while True:
+            raw_rows = result.mappings().fetchmany(BATCH_SIZE)
+            if not raw_rows:
+                break
+
             turns_to_insert: list[dict] = []
             user_msg_backfill: list[tuple[uuid.UUID, uuid.UUID]] = []
             batch_map: dict[tuple[str, int], uuid.UUID] = {}
 
-            for row in batch.iter_rows(named=True):
+            for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
                 if not pair_id or pair_id not in comparison_map:
                     skipped += 1
@@ -119,6 +117,7 @@ async def migrate_turns(
             turn_map.update(batch_map)
             inserted += len(turns_to_insert)
             logger.info(f"Batch {batch_idx}: {len(turns_to_insert)} turns processed.")
+            batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
     save_map(maps_dir, "turn_map", turn_map)

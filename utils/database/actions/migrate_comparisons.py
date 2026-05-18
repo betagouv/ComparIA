@@ -2,7 +2,6 @@ import logging
 import uuid
 from datetime import datetime
 
-import polars as pl
 from sqlalchemy import insert as sa_insert
 from sqlalchemy import text
 
@@ -49,15 +48,18 @@ async def migrate_comparisons(
 
     inserted = 0
     skipped = 0
+    batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        batches = pl.read_database(
-            query=text(QUERY), connection=conn, iter_batches=True, batch_size=BATCH_SIZE
-        )
-        for batch_idx, batch in enumerate(batches):
+        result = conn.execute(text(QUERY))
+        while True:
+            raw_rows = result.mappings().fetchmany(BATCH_SIZE)
+            if not raw_rows:
+                break
+
             rows_to_insert: list[dict] = []
 
-            for row in batch.iter_rows(named=True):
+            for row in raw_rows:
                 pair_id = row["conversation_pair_id"]
                 if not pair_id:
                     skipped += 1
@@ -106,6 +108,7 @@ async def migrate_comparisons(
 
             inserted += len(rows_to_insert)
             logger.info(f"Batch {batch_idx}: {len(rows_to_insert)} comparisons processed.")
+            batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
     save_map(maps_dir, "comparison_map", comparison_map)

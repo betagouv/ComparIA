@@ -2,7 +2,6 @@ import logging
 import uuid
 from datetime import datetime
 
-import polars as pl
 from sqlalchemy import text
 
 from utils.database.models.messages.llm import LLMMessage
@@ -21,10 +20,11 @@ QUERY = f"""
 BATCH_SIZE = 10_000
 
 
-def _build_llm_message(
-    msg: dict,
-    fallback_ts: datetime,
-) -> LLMMessage | None:
+UNKNOWN_GENERATION_ID = "unknown"
+UNKNOWN_TOKENS = -1
+
+
+def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
     content = msg.get("content")
     if not content:
         return None
@@ -33,14 +33,11 @@ def _build_llm_message(
     generation_id = metadata.get("generation_id")
     tokens = metadata.get("output_tokens")
 
-    if generation_id is None or tokens is None:
-        return None
-
     return LLMMessage(
         id=uuid.uuid4(),
         content=str(content),
-        generation_id=str(generation_id),
-        tokens=int(tokens),
+        generation_id=str(generation_id) if generation_id is not None else UNKNOWN_GENERATION_ID,
+        tokens=int(tokens) if tokens is not None else UNKNOWN_TOKENS,
         is_cached=bool(metadata.get("is_cached", False)),
         created_at=fallback_ts,
         responded_at=fallback_ts,
@@ -49,16 +46,13 @@ def _build_llm_message(
     )
 
 
-def _extract_assistant_messages(
-    conversation: list[dict] | None,
-) -> list[tuple[int, dict]]:
+def _extract_assistant_messages(conversation: list[dict] | None) -> list[tuple[int, dict]]:
     if not conversation:
         return []
     result = []
     turn_idx = 0
     i = 0
     while i < len(conversation):
-        # skip system messages at start
         if conversation[i].get("role") == "system":
             i += 1
             continue
@@ -93,19 +87,23 @@ async def migrate_llm_messages(
 
     inserted = 0
     skipped = 0
+    batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        batches = pl.read_database(
-            query=text(QUERY), connection=conn, iter_batches=True, batch_size=BATCH_SIZE
-        )
-        for batch_idx, batch in enumerate(batches):
+        result = conn.execute(text(QUERY))
+        while True:
+            raw_rows = result.mappings().fetchmany(BATCH_SIZE)
+            if not raw_rows:
+                break
+
             to_insert: list[LLMMessage] = []
             batch_map: dict[tuple[str, str, int], uuid.UUID] = {}
 
-            for row in batch.iter_rows(named=True):
+            batch_skipped = 0
+            for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
                 if not pair_id or pair_id not in comparison_map:
-                    skipped += 1
+                    batch_skipped += 1
                     continue
 
                 ts: datetime = row["timestamp"]
@@ -115,9 +113,9 @@ async def migrate_llm_messages(
                         llm_msg = _build_llm_message(msg, ts)
                         if llm_msg is None:
                             logger.debug(
-                                f"Skipping llm_message ({pair_id}, {side}, {turn_idx}): missing metadata."
+                                f"Skipping llm_message ({pair_id}, {side}, {turn_idx}): {msg}"
                             )
-                            skipped += 1
+                            batch_skipped += 1
                             continue
                         to_insert.append(llm_msg)
                         batch_map[(pair_id, side, turn_idx)] = llm_msg.id
@@ -129,7 +127,9 @@ async def migrate_llm_messages(
 
             llm_message_map.update(batch_map)
             inserted += len(to_insert)
-            logger.info(f"Batch {batch_idx}: {len(to_insert)} llm_messages processed.")
+            skipped += batch_skipped
+            logger.info(f"Batch {batch_idx}: {len(to_insert)} inserted, {batch_skipped} skipped.")
+            batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
     save_map(maps_dir, "llm_message_map", llm_message_map)

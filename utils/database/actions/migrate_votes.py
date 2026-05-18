@@ -1,13 +1,12 @@
 import logging
 import uuid
 
-import polars as pl
 from sqlalchemy import text, update
 
 from utils.database.models.turn import Turn
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, bool_flags_to_keywords, ensure_maps_dir, load_map, source_connection
+from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, source_connection
 
 logger = logging.getLogger("comparia.db.migrate")
 
@@ -29,8 +28,10 @@ QUERY = f"""
     WHERE v.{NOT_ARCHIVED}
 """
 
-POSITIVE_COLS = ["useful", "complete", "creative", "clear_formatting"]
-NEGATIVE_COLS = ["incorrect", "superficial", "instructions_not_followed"]
+ANNOTATION_COLS = [
+    "useful", "complete", "creative", "clear_formatting",
+    "incorrect", "superficial", "instructions_not_followed",
+]
 
 BATCH_SIZE = 10_000
 
@@ -47,8 +48,7 @@ def _derive_choice(row: dict) -> str:
 
 
 def _build_keywords(row: dict, side: str) -> list[str]:
-    cols = [f"conv_{col}_{side}" for col in POSITIVE_COLS + NEGATIVE_COLS]
-    return [col.removeprefix(f"conv_").removesuffix(f"_{side}") for col in cols if row.get(col)]
+    return [col for col in ANNOTATION_COLS if row.get(f"conv_{col}_{side}")]
 
 
 async def migrate_votes(
@@ -67,7 +67,6 @@ async def migrate_votes(
     comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
     turn_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "turn_map")
 
-    # Precompute last turn per pair_id
     last_turn: dict[str, tuple[int, uuid.UUID]] = {}
     for (pair_id, turn_idx), turn_id in turn_map.items():
         if pair_id not in last_turn or turn_idx > last_turn[pair_id][0]:
@@ -75,31 +74,30 @@ async def migrate_votes(
 
     updated = 0
     skipped = 0
+    batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        batches = pl.read_database(
-            query=text(QUERY), connection=conn, iter_batches=True, batch_size=BATCH_SIZE
-        )
-        for batch_idx, batch in enumerate(batches):
+        result = conn.execute(text(QUERY))
+        while True:
+            raw_rows = result.mappings().fetchmany(BATCH_SIZE)
+            if not raw_rows:
+                break
+
             updates: list[dict] = []
 
-            for row in batch.iter_rows(named=True):
+            for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
                 if not pair_id or pair_id not in comparison_map or pair_id not in last_turn:
                     skipped += 1
                     continue
 
                 _, turn_id = last_turn[pair_id]
-                choice = _derive_choice(row)
-                kw_a = _build_keywords(row, "a")
-                kw_b = _build_keywords(row, "b")
-
                 updates.append(
                     {
                         "turn_id": turn_id,
-                        "choice": choice,
-                        "keyword_annotations_a": kw_a,
-                        "keyword_annotations_b": kw_b,
+                        "choice": _derive_choice(row),
+                        "keyword_annotations_a": _build_keywords(row, "a"),
+                        "keyword_annotations_b": _build_keywords(row, "b"),
                         "custom_annotation_a": row.get("conv_comments_a"),
                         "custom_annotation_b": row.get("conv_comments_b"),
                     }
@@ -123,5 +121,6 @@ async def migrate_votes(
 
             updated += len(updates)
             logger.info(f"Batch {batch_idx}: {len(updates)} turns updated.")
+            batch_idx += 1
 
     logger.info(f"Done: {updated} turns updated, {skipped} votes skipped.")

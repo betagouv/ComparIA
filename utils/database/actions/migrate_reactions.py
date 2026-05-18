@@ -2,7 +2,6 @@ import logging
 import uuid
 from collections import defaultdict
 
-import polars as pl
 from sqlalchemy import text, update
 
 from utils.database.models.turn import Turn
@@ -22,8 +21,10 @@ QUERY = f"""
     WHERE {NOT_ARCHIVED}
 """
 
-POSITIVE_FLAGS = ["liked", "useful", "complete", "creative", "clear_formatting"]
-NEGATIVE_FLAGS = ["disliked", "incorrect", "superficial", "instructions_not_followed"]
+REACTION_FLAGS = [
+    "liked", "disliked", "useful", "complete", "creative", "clear_formatting",
+    "incorrect", "superficial", "instructions_not_followed",
+]
 
 BATCH_SIZE = 10_000
 
@@ -46,22 +47,23 @@ async def migrate_reactions(
     comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
     turn_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "turn_map")
 
-    # Accumulate all reactions per (turn_id, side) before applying
-    # {turn_id: {"kw_a": set, "kw_b": set, "custom_a": str|None, "custom_b": str|None}}
     pending: dict[uuid.UUID, dict] = defaultdict(
         lambda: {"kw_a": set(), "kw_b": set(), "custom_a": None, "custom_b": None}
     )
 
     skipped = 0
+    batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        batches = pl.read_database(
-            query=text(QUERY), connection=conn, iter_batches=True, batch_size=BATCH_SIZE
-        )
-        for batch_idx, batch in enumerate(batches):
-            for row in batch.iter_rows(named=True):
+        result = conn.execute(text(QUERY))
+        while True:
+            raw_rows = result.mappings().fetchmany(BATCH_SIZE)
+            if not raw_rows:
+                break
+
+            for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
-                msg_rank: int | None = row["msg_rank"]
+                msg_rank = row["msg_rank"]
                 model_pos: str | None = row["model_pos"]
 
                 if not pair_id or msg_rank is None or model_pos not in ("a", "b"):
@@ -80,7 +82,7 @@ async def migrate_reactions(
                 kw_key = f"kw_{model_pos}"
                 custom_key = f"custom_{model_pos}"
 
-                for flag in POSITIVE_FLAGS + NEGATIVE_FLAGS:
+                for flag in REACTION_FLAGS:
                     if row.get(flag):
                         pending[turn_id][kw_key].add(flag)
 
@@ -89,6 +91,7 @@ async def migrate_reactions(
                     pending[turn_id][custom_key] = comment
 
             logger.info(f"Batch {batch_idx}: accumulated reactions.")
+            batch_idx += 1
 
     logger.info(f"Accumulated {len(pending)} turns to update, {skipped} reactions skipped.")
 
