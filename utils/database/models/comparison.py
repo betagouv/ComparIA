@@ -125,6 +125,12 @@ class ComparisonPublic(SQLModel):
     turns: list[TurnPublic]
 
 
+class ComparisonArchiveUpdate(SQLModel):
+    archived: Literal[True] = True
+    archived_reason: ArchivedReason
+    archived_at: datetime
+
+
 class ComparisonUnarchiveUpdate(SQLModel):
     archived: Literal[None, False] = None
     archived_reason: Literal[None] = None
