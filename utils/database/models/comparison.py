@@ -8,6 +8,7 @@ from sqlmodel import Field, Relationship, SQLModel, String
 
 from backend.arena.models import ErrorDetails
 from backend.config import CustomModelsSelection, SelectionMode
+from utils.validation import StripAndEmptyAsNone
 
 from .messages import SystemMessage, SystemMessageRead
 from .turn import Turn, TurnPublic, TurnRead
@@ -55,7 +56,7 @@ class ComparisonBase(SQLModel):
     session_hash: str
     ip: str  # WARNING: PII
     visitor_id: str | None = None
-    cohorts: str | None = None
+    cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
