@@ -92,7 +92,6 @@ def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
         logger.info(
             f"Successfully pushed changes for '{repo_path}', commit: {commit_link}"
         )
-        return True
     except Exception as exc:
         logger.error(f"Failed to push changes for '{repo_path}'.")
         raise
