@@ -44,8 +44,7 @@ async def main(
 
     # If --count flag is set, display counts and exit
     if count:
-        count_dataset_rows()
-        return
+        return await count_dataset_rows(dataset_names)
 
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not dry_run:

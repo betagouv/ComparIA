@@ -23,11 +23,13 @@ import os
 from functools import lru_cache
 
 import pandas as pd
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlmodel import and_, col
 
 from backend.config import settings
 from backend.llms.utils import get_active_params, get_total_params
 from utils.database.models import Comparison
-from utils.database.utils import get_db_comparisons_stream
+from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.utils import db_connection
 
 from .export import commit_and_push, export_data
@@ -37,7 +39,7 @@ from .models import (
     DatasetComparisonExtraMetadata,
     Datasets,
 )
-from .queries import get_dataset_queries, get_llms_data
+from .queries import get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
@@ -197,42 +199,27 @@ def fetch_and_transform_data(conn, table_name, query=None):
         return None
 
 
-def count_dataset_rows():
+async def count_dataset_rows(dataset_names: list[Datasets]):
     """Display row counts for each dataset without performing export."""
     try:
-        with db_connection(stream=True) as conn:
-            logger.info("Counting rows for each dataset...")
-            print("\n" + "=" * 60)
-            print("Dataset Row Counts")
-            print("=" * 60)
+        logger.info("Counting rows for each dataset...")
+        counts = await get_db_comparisons_counts(
+            {
+                "comparisons": and_(
+                    col(Comparison.archived) == False,
+                    col(Comparison.llm_analyzed) == True,
+                    col(Comparison.error) == JSONB.NULL,
+                    col(Comparison.cohorts).in_((None, "")),
+                ),
+                "comparisons_raw": col(Comparison.id) != None,
+            }
+        )
 
-            dataset_queries = get_dataset_queries()
-
-            for dataset_name, query in dataset_queries.items():
-                if not query:
-                    logger.warning(f"No query defined for {dataset_name}")
-                    continue
-
-                # Remove trailing semicolon and wrap the original query with COUNT(*)
-                clean_query = query.rstrip().rstrip(";")
-                count_query = (
-                    f"SELECT COUNT(*) as count FROM ({clean_query}) AS subquery"
-                )
-
-                try:
-                    result = pd.read_sql_query(count_query, conn)
-                    count = result["count"].iloc[0]
-                    print(f"{dataset_name:30} {count:>10,} rows")
-                except Exception as e:
-                    logger.error(f"Failed to count rows for {dataset_name}: {e}")
-                    print(f"{dataset_name:30} {'ERROR':>10}")
-
-            print("=" * 60 + "\n")
-            return True
-
+        for dataset_name, count in counts.items():
+            logger.info(f"{dataset_name:15} {count:>10,} rows")
     except Exception as e:
-        logger.error(f"An error occurred while counting rows: {e}")
-        return False
+        logger.error(f"An error occurred while counting rows.")
+        raise
 
 
 def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
