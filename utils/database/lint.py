@@ -36,7 +36,7 @@ ARCHIVED_QUERY = """
 """
 
 
-def log_archived(
+async def log_archived(
     *,
     days: int = 0,
     compare: bool = False,
@@ -150,11 +150,12 @@ def log_archived(
                 )
 
 
-def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = False):
+async def lint(
+    *, fix: bool = False, hard: bool = False, with_llm_analyze: bool = False
+):
     """
     Run database linting.
-    Checks for spam, corrupted data, unknown LLMs, duplicates and not archived
-    votes or reaction that should be.
+    Checks for spam, corrupted data, unknown LLMs in comparisons.
     Only logs what should be archived if no arg given.
 
     Parameters
@@ -166,21 +167,21 @@ def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = Fals
         Resets `archived=FALSE` to `NULL` before running checks to recheck
         everything excepts already archived data.
     with_llm_analyze:
-        Run LLM analyze on `archived=FALSE` conversations.
+        Run LLM analyze on `archived=FALSE` comparisons.
     """
     start_at = datetime.now()
 
     if hard:
-        reset_archived()
+        await reset_archived()
 
-    archive_spam(commit=fix)
-    archive_corrupted(commit=fix)
-    archive_unknown_llms(commit=fix and hard)
+    await archive_spam(commit=fix)
+    await archive_corrupted(commit=fix)
+    await archive_unknown_llms(commit=fix and hard)
 
     if fix:
-        set_not_archived(start_at)
+        await set_not_archived(start_at)
     if fix and with_llm_analyze:
-        logger.debug("Running LLM analyze on archived=FALSE conversations…")
-        llm_analyze()
+        logger.debug("Running LLM analyze on archived=FALSE comparisons…")
+        await llm_analyze()
 
-    log_archived()
+    await log_archived()
