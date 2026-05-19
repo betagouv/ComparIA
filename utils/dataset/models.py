@@ -10,10 +10,9 @@ from pydantic import (
 )
 from sqlmodel import SQLModel
 
-from backend.arena.models import BotPos
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
 from utils.database.models import LLMMessageFinal, SystemMessageRead, UserMessageRead
-from utils.database.models.comparison import ArchivedReason, ErrorDetails
+from utils.database.models.comparison import ArchivedReason, BotPos, ErrorDetails
 
 Datasets = Literal["comparisons", "comparisons_raw"]
 

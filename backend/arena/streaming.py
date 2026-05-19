@@ -15,7 +15,6 @@ from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
-from backend.arena.models import BOT_POS, BotPos, ErrorDetails
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
@@ -29,6 +28,7 @@ from utils.database.models import (
     TurnPublic,
     TurnRead,
 )
+from utils.database.models.comparison import BOT_POS, BotPos, ErrorDetails
 
 logger = logging.getLogger("languia")
 

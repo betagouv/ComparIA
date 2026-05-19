@@ -6,10 +6,8 @@ from typing import Literal, cast
 
 from sqlmodel import col
 
-from backend.arena.models import BOT_POS, BotPos
-
 from ..models import Comparison
-from ..models.comparison import ArchivedReason
+from ..models.comparison import BOT_POS, ArchivedReason, BotPos
 from ..utils import RawLLMMessage, archive, get_db_comparisons_stream
 
 logger = logging.getLogger("comparia.db")

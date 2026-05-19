@@ -2,8 +2,6 @@
 Data validation models using Pydantic.
 """
 
-from typing import Literal, get_args
-
 from pydantic import BaseModel, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
@@ -14,17 +12,6 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-
-BotPos = Literal["a", "b"]
-BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
-
-
-class ErrorDetails(BaseModel):
-    message: str
-    # turn_index: int
-    pos: BotPos | None = None
-    is_timeout: bool = False
-
 
 # Request/Response models for FastAPI endpoints
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)

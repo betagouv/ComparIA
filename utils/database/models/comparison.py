@@ -1,12 +1,11 @@
 import uuid
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
-from pydantic import computed_field
+from pydantic import BaseModel, computed_field
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from backend.arena.models import ErrorDetails
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
@@ -14,6 +13,8 @@ from .messages import SystemMessage, SystemMessageRead
 from .turn import Turn, TurnPublic, TurnRead
 from .utils import AutoDatetime, ModelId, OptionalDatetime
 
+BotPos = Literal["a", "b"]
+BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
     # "corrupted_no_model",  # some Conversations model_(a|b)_name is None
@@ -47,6 +48,13 @@ ArchivedReason = Literal[
 SystemMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="system_message.id", unique=True)
 ]
+
+
+class ErrorDetails(BaseModel):
+    message: str
+    # turn_index: int
+    pos: BotPos | None = None
+    is_timeout: bool = False
 
 
 class ComparisonBase(SQLModel):

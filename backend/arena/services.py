@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
 
-from backend.arena.models import BOT_POS, BotPos, ErrorDetails
 from backend.llms.data import get_llms_data
 from utils.database.models import (
     Comparison,
@@ -20,6 +19,7 @@ from utils.database.models import (
     TurnVoteChoice,
     UserMessage,
 )
+from utils.database.models.comparison import BOT_POS, BotPos, ErrorDetails
 from utils.database.session import get_session
 
 if TYPE_CHECKING:
