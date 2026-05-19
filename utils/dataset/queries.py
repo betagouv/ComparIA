@@ -1,7 +1,6 @@
 import json
 import logging
 from functools import lru_cache
-from typing import Literal
 
 from backend.llms.models import LLMData
 from utils.storage.queries import (
@@ -11,9 +10,9 @@ from utils.storage.queries import (
 )
 from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
 
-logger = logging.getLogger("comparia.dataset")
+from .models import Datasets
 
-Datasets = Literal["conversations", "votes", "reactions", "conversations_raw"]
+logger = logging.getLogger("comparia.dataset")
 
 
 @lru_cache

@@ -29,11 +29,12 @@ from backend.llms.utils import get_active_params, get_total_params
 from utils.utils import db_connection
 
 from .export import commit_and_push, export_data
+from .models import Datasets
 from .queries import get_dataset_queries, get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
-logger = logging.getLogger("dataset")
+logger = logging.getLogger("comparia.dataset")
 
 COMPARIA_DB_URI = settings.COMPARIA_DB_URI
 
@@ -227,11 +228,10 @@ def count_dataset_rows():
         return False
 
 
-def process_dataset(
-    dataset_name,
-    query,
-    export_base_path,
-    dry_run=False,
+async def process_dataset(
+    dataset_name: Datasets,
+    export_base_path: str,
+    dry_run: bool = False,
 ):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),

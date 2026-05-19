@@ -2,12 +2,19 @@ import logging
 import os
 from datetime import datetime
 
+import pandas as pd
 from huggingface_hub import HfApi
+
+from .models import Datasets
 
 logger = logging.getLogger("comparia.dataset")
 
 
-def export_data(dataframe, table_name, export_dir):
+def export_data(
+    dataframe: pd.DataFrame,
+    dataset_name: Datasets,
+    export_dir: str,
+) -> None:
     """
     Export DataFrame to multiple formats.
 
@@ -17,18 +24,18 @@ def export_data(dataframe, table_name, export_dir):
     """
     os.makedirs(export_dir, exist_ok=True)
 
-    logger.info(f"Exporting data for table: {table_name}")
+    logger.info(f"Exporting data for dataset: {dataset_name}")
     try:
         # Full dataset exports
-        logger.debug(f"  Writing {table_name}.parquet...")
-        dataframe.to_parquet(f"{export_dir}/{table_name}.parquet")
+        logger.debug(f"  Writing {dataset_name}.parquet...")
+        dataframe.to_parquet(f"{export_dir}/{dataset_name}.parquet")
 
         logger.debug(
-            f"  Writing {table_name}.jsonl (this may take several minutes for large datasets)..."
+            f"  Writing {dataset_name}.jsonl (this may take several minutes for large datasets)..."
         )
         # Write in chunks to avoid OOM for large datasets
         chunk_size = 10_000
-        with open(f"{export_dir}/{table_name}.jsonl", "w") as f:
+        with open(f"{export_dir}/{dataset_name}.jsonl", "w") as f:
             for i in range(0, len(dataframe), chunk_size):
                 chunk = dataframe.iloc[i : i + chunk_size]
                 chunk_json = chunk.to_json(
@@ -46,28 +53,28 @@ def export_data(dataframe, table_name, export_dir):
         logger.debug(f"  Creating sample ({min(len(dataframe), 1000)} rows)...")
         sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
 
-        logger.debug(f"  Writing {table_name}_samples.tsv...")
+        logger.debug(f"  Writing {dataset_name}_samples.tsv...")
         sample_df.to_csv(
-            f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False
+            f"{export_dir}/{dataset_name}_samples.tsv", sep="\t", index=False
         )
 
-        logger.debug(f"  Writing {table_name}_samples.jsonl...")
+        logger.debug(f"  Writing {dataset_name}_samples.jsonl...")
         sample_df.to_json(
-            f"{export_dir}/{table_name}_samples.jsonl",
+            f"{export_dir}/{dataset_name}_samples.jsonl",
             orient="records",
             lines=True,
             date_format="iso",
         )
 
-        logger.info(f"Export completed for table: {table_name}")
+        logger.info(f"Export completed for dataset: {dataset_name}")
     except Exception as e:
-        logger.error(f"Failed to export data for table {table_name}: {e}")
+        logger.error(f"Failed to export data for dataset {dataset_name}: {e}")
         import traceback
 
         logger.error(traceback.format_exc())
 
 
-def commit_and_push(repo_org, repo_name, repo_path):
+def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
     """
     Upload exported files to HuggingFace Hub repository.
     Uses HF upload_folder method with timestamped commit message.
