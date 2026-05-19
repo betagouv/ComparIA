@@ -50,9 +50,9 @@ def store_to_redis(data: RankingResult) -> None:
         raise
 
 
-async def main(mode: Literal["all", "redis", "json"] = "redis") -> None:
+async def main(*, mode: Literal["all", "redis", "json"] = "redis") -> None:
     """
-    Compute per group (portals + "all") `RankingResult` in redis/as file depending on mode.
+    Compute rankings and store results in redis or as file depending on mode.
     """
     ranking = await compute_ranking()
 
