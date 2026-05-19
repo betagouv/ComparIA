@@ -18,6 +18,7 @@ Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
 import hashlib
+import json
 import logging
 import os
 from functools import lru_cache
@@ -27,10 +28,11 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import and_, col
 
 from backend.config import settings
+from backend.llms.models import LLMData
 from backend.llms.utils import get_active_params, get_total_params
 from utils.database.models import Comparison
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
-from utils.utils import db_connection
+from utils.utils import LLMS_GENERATED_DATA_FILE, db_connection, read_json
 
 from .export import commit_and_push, export_data
 from .models import (
@@ -39,13 +41,33 @@ from .models import (
     DatasetComparisonExtraMetadata,
     Datasets,
 )
-from .queries import get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
 logger = logging.getLogger("comparia.dataset")
 
 COMPARIA_DB_URI = settings.COMPARIA_DB_URI
+
+
+@lru_cache
+def get_raw_llms_data() -> dict[str, LLMData]:
+    """
+    Load the generated models JSON data.
+    Used to enrich conversations with model metadata (params count, energy consumption).
+    """
+    try:
+        llms_data = read_json(LLMS_GENERATED_DATA_FILE)
+        return {
+            k: LLMData.model_validate(v)
+            for k, v in llms_data["models"].items()
+            if v.get("status") in ("enabled", "archived")
+        }
+    except FileNotFoundError:
+        logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
+        raise
+    except json.JSONDecodeError:
+        logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
+        raise
 
 
 @lru_cache
@@ -77,10 +99,10 @@ def calculate_kwh(model_name, tokens):
     Calculate energy consumption in kWh for a model based on token output.
     Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
     """
-    llm_data = get_llms_data().get(model_name)
+    llm_data = get_raw_llms_data().get(model_name)
 
     if tokens is None or not llm_data:
-        # FIXME llm can be disabled and therefore excluded from get_llms_data
+        # FIXME llm can be disabled and therefore excluded from get_raw_llms_data
         return None
 
     return (llm_data.wh_per_million_token / 1_000_000) * tokens / 1_000
@@ -130,7 +152,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
         # Add model metadata for conversations dataset
         if table_name == "conversations":
             logger.info("Adding model infos...")
-            llms_data = get_llms_data()
+            llms_data = get_raw_llms_data()
 
             # Add parameter counts (total and active) - only for models that exist in MODELS_DATA
             dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
@@ -223,7 +245,7 @@ async def count_dataset_rows(dataset_names: list[Datasets]):
 
 
 def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
-    llms = get_llms_data()
+    llms = get_raw_llms_data()
     ctx = {
         "llm_a": llms[db_comparison.llm_id_a],
         "llm_b": llms[db_comparison.llm_id_b],
@@ -257,7 +279,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
 
 
 async def build_dataframe() -> pd.DataFrame:
-    llms = get_llms_data()
+    llms = get_raw_llms_data()
     dataset = pd.DataFrame()
     failed_comparison_ids: list[str] = []
 
