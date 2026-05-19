@@ -17,7 +17,6 @@ Usage:
 Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
-import hashlib
 import json
 import logging
 import os
@@ -29,10 +28,9 @@ from sqlmodel import and_, col
 
 from backend.config import settings
 from backend.llms.models import LLMData
-from backend.llms.utils import get_active_params, get_total_params
 from utils.database.models import Comparison
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
-from utils.utils import LLMS_GENERATED_DATA_FILE, db_connection, read_json
+from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
 
 from .export import commit_and_push, export_data
 from .models import (
@@ -42,11 +40,7 @@ from .models import (
     Datasets,
 )
 
-# TODO: apply add token ecologits + topics pii + ip_map just before export
-
 logger = logging.getLogger("comparia.dataset")
-
-COMPARIA_DB_URI = settings.COMPARIA_DB_URI
 
 
 @lru_cache
@@ -68,157 +62,6 @@ def get_raw_llms_data() -> dict[str, LLMData]:
     except json.JSONDecodeError:
         logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
         raise
-
-
-@lru_cache
-def get_session_hash_to_ip_map():
-    """Load session hash to IP map from database for visitor_id fallback."""
-    try:
-        with db_connection(stream=True) as conn:
-            df = pd.read_sql_query(
-                "SELECT ip_map, session_hash FROM conversations", conn
-            )
-            # Convert DataFrame to dictionary for efficient lookup when visitor_id is missing
-            return dict(zip(df["session_hash"], df["ip_map"]))
-        return True
-
-    except Exception as e:
-        logger.error(f"Failed to load session hash IP mapping: {e}")
-        return False
-
-
-def hash_md5(value):
-    """Hash a value using MD5 for anonymization."""
-    if not value:
-        return None
-    return hashlib.md5(value.encode("utf-8")).hexdigest()
-
-
-def calculate_kwh(model_name, tokens):
-    """
-    Calculate energy consumption in kWh for a model based on token output.
-    Formula: (wh_per_million_token / 1M) * tokens / 1000 = kWh
-    """
-    llm_data = get_raw_llms_data().get(model_name)
-
-    if tokens is None or not llm_data:
-        # FIXME llm can be disabled and therefore excluded from get_raw_llms_data
-        return None
-
-    return (llm_data.wh_per_million_token / 1_000_000) * tokens / 1_000
-
-
-def fetch_and_transform_data(conn, table_name, query=None):
-    """
-    Fetch data from a database table and apply transformations.
-
-    Transformations include:
-    - Hash visitor_id with MD5 for anonymization
-    - Fallback to hashed IP map when visitor_id is missing
-    - Add model metadata (params count, energy consumption) for conversations
-    - Drop sensitive/internal columns (IP, PII flags, cohorts, etc.)
-    """
-
-    try:
-        logger.info(f"Fetching data for table: {table_name}")
-
-        # Execute SQL query and load all results into a pandas DataFrame
-        dataframe = pd.read_sql_query(query, conn)
-        logger.info(f"Retrieved {len(dataframe):,} rows for {table_name}")
-
-        if dataframe.empty:
-            logger.warning("DataFrame vide - no data to export")
-            return dataframe
-
-        # Anonymize visitor_id using MD5 hash
-        if "visitor_id" in dataframe.columns:
-            logger.info("Hashing visitor_id with MD5...")
-            dataframe["visitor_id"] = dataframe["visitor_id"].apply(
-                lambda x: hash_md5(x) if pd.notnull(x) else None
-            )
-            # Fallback: use hashed IP map for rows without visitor_id
-            logger.info("Replacing missing visitor_id with hashed IP map ID...")
-            session_hash_to_ip_map = get_session_hash_to_ip_map()
-            dataframe["visitor_id"] = dataframe.apply(
-                lambda row: (
-                    hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
-                    if pd.isnull(row["visitor_id"])
-                    and session_hash_to_ip_map.get(row["session_hash"])
-                    else row["visitor_id"]
-                ),
-                axis=1,
-            )
-
-        # Add model metadata for conversations dataset
-        if table_name == "conversations":
-            logger.info("Adding model infos...")
-            llms_data = get_raw_llms_data()
-
-            # Add parameter counts (total and active) - only for models that exist in MODELS_DATA
-            dataframe["model_a_total_params"] = dataframe["model_a_name"].apply(
-                lambda x: (
-                    get_total_params(llms_data[x.lower()])
-                    if x.lower() in llms_data
-                    else None
-                )
-            )
-            dataframe["model_b_total_params"] = dataframe["model_b_name"].apply(
-                lambda x: (
-                    get_total_params(llms_data[x.lower()])
-                    if x.lower() in llms_data
-                    else None
-                )
-            )
-            dataframe["model_a_active_params"] = dataframe["model_a_name"].apply(
-                lambda x: (
-                    get_active_params(llms_data[x.lower()])
-                    if x.lower() in llms_data
-                    else None
-                )
-            )
-            dataframe["model_b_active_params"] = dataframe["model_b_name"].apply(
-                lambda x: (
-                    get_active_params(llms_data[x.lower()])
-                    if x.lower() in llms_data
-                    else None
-                )
-            )
-
-            # Calculate energy consumption with vectorized operations
-            dataframe["total_conv_a_kwh"] = None
-            dataframe["total_conv_b_kwh"] = None
-
-            for idx, row in dataframe.iterrows():
-                dataframe.at[idx, "total_conv_a_kwh"] = calculate_kwh(
-                    row["model_a_name"], row["total_conv_a_output_tokens"]
-                )
-                dataframe.at[idx, "total_conv_b_kwh"] = calculate_kwh(
-                    row["model_b_name"], row["total_conv_b_output_tokens"]
-                )
-
-        # Drop sensitive columns before export
-        # List of sensitive columns :
-
-        columns_to_drop = [
-            "archived",
-            "pii_analyzed",
-            "ip",
-            "conversation_a_pii_removed",
-            "conversation_b_pii_removed",
-            "opening_msg_pii_removed",
-            "ip_map",
-            "cohorts",
-        ]
-        dataframe = dataframe.drop(
-            columns=[col for col in columns_to_drop if col in dataframe.columns],
-            errors="ignore",
-        )
-        return dataframe
-
-    except Exception as e:
-        logger.error(f"Failed to fetch data from {table_name}: {e}")
-        # Return None instead of empty DataFrame to indicate failure
-        return None
 
 
 async def count_dataset_rows(dataset_names: list[Datasets]):
