@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import tiktoken
 from sqlalchemy import text
@@ -35,6 +35,13 @@ def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
     generation_id = metadata.get("generation_id")
     tokens = metadata.get("output_tokens")
 
+    duration = metadata.get("duration")
+    updated_at = (
+        fallback_ts + timedelta(milliseconds=duration)
+        if duration is not None
+        else fallback_ts
+    )
+
     return LLMMessage(
         id=uuid.uuid4(),
         content=str(content),
@@ -43,7 +50,7 @@ def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
         is_cached=bool(metadata.get("is_cached", False)),
         created_at=fallback_ts,
         responded_at=fallback_ts,
-        updated_at=fallback_ts,
+        updated_at=updated_at,
         reasoning_content=None,
     )
 
