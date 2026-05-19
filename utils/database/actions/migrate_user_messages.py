@@ -14,7 +14,6 @@ logger = logging.getLogger("comparia.db.migrate")
 QUERY = f"""
     SELECT conversation_pair_id, timestamp, conversation_a
     FROM conversations
-    WHERE {NOT_ARCHIVED}
 """
 
 BATCH_SIZE = 10_000

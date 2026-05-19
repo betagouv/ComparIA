@@ -14,9 +14,9 @@ logger = logging.getLogger("comparia.db.migrate")
 
 QUERY = f"""
     SELECT DISTINCT content FROM (
-        SELECT system_prompt_a AS content FROM conversations WHERE system_prompt_a IS NOT NULL AND system_prompt_a <> '' AND {NOT_ARCHIVED}
+        SELECT system_prompt_a AS content FROM conversations WHERE system_prompt_a IS NOT NULL AND system_prompt_a <> ''
         UNION
-        SELECT system_prompt_b AS content FROM conversations WHERE system_prompt_b IS NOT NULL AND system_prompt_b <> '' AND {NOT_ARCHIVED}
+        SELECT system_prompt_b AS content FROM conversations WHERE system_prompt_b IS NOT NULL AND system_prompt_b <> ''
     ) sub
 """
 

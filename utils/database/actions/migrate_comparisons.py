@@ -22,7 +22,6 @@ QUERY = f"""
         short_summary, keywords, categories, languages,
         archived, archived_reason, archived_at
     FROM conversations
-    WHERE {NOT_ARCHIVED}
 """
 
 VALID_MODES = {"random", "big-vs-small", "small-models", "custom"}
