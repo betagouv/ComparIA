@@ -24,14 +24,14 @@ def export_data(
     """
     os.makedirs(export_dir, exist_ok=True)
 
-    logger.info(f"Exporting data for dataset: {dataset_name}")
+    logger.info(f"Exporting data for dataset: '{dataset_name}'")
     try:
         # Full dataset exports
-        logger.debug(f"  Writing {dataset_name}.parquet...")
+        logger.debug(f"  Writing '{dataset_name}.parquet'...")
         dataframe.to_parquet(f"{export_dir}/{dataset_name}.parquet")
 
         logger.debug(
-            f"  Writing {dataset_name}.jsonl (this may take several minutes for large datasets)..."
+            f"  Writing '{dataset_name}.jsonl' (this may take several minutes for large datasets)..."
         )
         # Write in chunks to avoid OOM for large datasets
         chunk_size = 10_000
@@ -53,12 +53,12 @@ def export_data(
         logger.debug(f"  Creating sample ({min(len(dataframe), 1000)} rows)...")
         sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
 
-        logger.debug(f"  Writing {dataset_name}_samples.tsv...")
+        logger.debug(f"  Writing '{dataset_name}_samples.tsv'...")
         sample_df.to_csv(
             f"{export_dir}/{dataset_name}_samples.tsv", sep="\t", index=False
         )
 
-        logger.debug(f"  Writing {dataset_name}_samples.jsonl...")
+        logger.debug(f"  Writing '{dataset_name}_samples.jsonl'...")
         sample_df.to_json(
             f"{export_dir}/{dataset_name}_samples.jsonl",
             orient="records",
@@ -66,12 +66,10 @@ def export_data(
             date_format="iso",
         )
 
-        logger.info(f"Export completed for dataset: {dataset_name}")
-    except Exception as e:
-        logger.error(f"Failed to export data for dataset {dataset_name}: {e}")
-        import traceback
-
-        logger.error(traceback.format_exc())
+        logger.info(f"Export completed for dataset: '{dataset_name}'")
+    except Exception as exc:
+        logger.error(f"Failed to export data for dataset '{dataset_name}'.")
+        raise
 
 
 def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
@@ -81,7 +79,7 @@ def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
     """
     commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     logger.info(
-        f"Uploading {repo_path} to HF {repo_org}/{repo_name} with commit message: '{commit_message}'"
+        f"Uploading '{repo_path}' to HF '{repo_org}/{repo_name}' with commit message: '{commit_message}'"
     )
 
     try:
@@ -92,9 +90,9 @@ def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
             commit_message=commit_message,
         )
         logger.info(
-            f"Successfully pushed changes for {repo_path}, commit: {commit_link}"
+            f"Successfully pushed changes for '{repo_path}', commit: {commit_link}"
         )
         return True
-    except Exception as e:
-        logger.error(f"Failed to push changes for {repo_path}: {e}")
-        return False
+    except Exception as exc:
+        logger.error(f"Failed to push changes for '{repo_path}'.")
+        raise
