@@ -169,6 +169,7 @@
         "fyi": "Flash partage l'architecture et la campagne d'entraînement de V4 Pro (environ 32 billions de jetons en précision FP4), à une exception près : certaines couches de Heavily Compressed Attention (HCA) sont remplacées par des couches d'attention à fenêtre glissante de 128 jetons, un compromis qui privilégie la vitesse d'inférence.\n\nLe tarif d'API officiel s'établit à 0,14 $ en entrée et 0,28 $ en sortie par million de jetons, ce qui le situe parmi les offres les moins chères de sa catégorie.\n\nDans les évaluations indépendantes d'Artificial Analysis, l'écart avec la version Pro reste mesuré : Flash atteint un niveau comparable à celui de Claude Sonnet 4.6, et plusieurs évaluateurs notent que son mode de raisonnement maximal rivalise avec le mode élevé de Pro sur certaines tâches, Pro conservant l'avantage sur les questions de connaissances factuelles."
       },
       {
+        "status": "archived",
         "id": "DeepSeek-V3.2",
         "simple_name": "DeepSeek V3.2",
         "license": "Apache 2.0",
@@ -205,6 +206,7 @@
         "fyi": "Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs."
       },
       {
+        "status": "archived",
         "id": "deepseek-r1-0528",
         "simple_name": "DeepSeek R1 0528",
         "license": "MIT",
@@ -429,7 +431,6 @@
         "arch": "maybe-moe",
         "params": 1700,
         "reasoning": true,
-        "new": true,
         "url": "https://x.ai/news",
         "endpoint": {
           "api_type": "openrouter",
@@ -440,6 +441,25 @@
         "fyi": "La préversion bêta de Grok 4.20 a été rendue disponible à la mi-février 2026, avant sa sortie officielle sur l'API xAI en mars 2026. Le mode multi-agent oriente chaque requête vers quatre agents spécialisés qui raisonnent en parallèle, puis synthétise leurs conclusions en une réponse unique, une approche annoncée comme bénéfique pour les tâches de raisonnement complexes. Le raisonnement est contrôlable via un paramètre d'API plutôt que via un identifiant de modèle distinct.\n\nSelon l'éditeur, Grok 4.20 introduit une architecture d'apprentissage continu qui met à jour hebdomadairement les capacités du modèle à partir de l'usage réel, sans intervention des utilisateurs. Aucun détail architectural précis (nombre de paramètres, architecture dense ou mélange d'experts) n'a été communiqué publiquement par xAI. Le modèle est proposé sous licence payante, accessible via l'API xAI et OpenRouter."
       },
       {
+        "new": true,
+        "id": "grok-4.3",
+        "simple_name": "Grok 4.3",
+        "license": "proprietary",
+        "release_date": "04/2026",
+        "arch": "maybe-moe",
+        "params": 1700,
+        "reasoning": true,
+        "url": "https://docs.x.ai/developers/models/grok-4.3",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "x-ai/grok-4.3"
+        },
+        "desc": "Modèle multimodal de xAI orienté vers les tâches agentiques en plusieurs étapes, le suivi d'instructions et l'analyse de longs documents, avec entrées texte et image. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable (aucun, bas, moyen, haut) par l'utilisateur ou le développeur.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée. Des indices laissent penser qu'il s'agit d'un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s'appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nSa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. Le niveau de raisonnement par défaut est réglé sur bas pour limiter la latence, et peut être désactivé, ou relevé à moyen ou haut selon les besoins.",
+        "fyi": "Sorti en avril 2026, Grok 4.3 est positionné par xAI comme un modèle particulièrement adapté aux tâches agentiques, à l'analyse de documents longs et aux applications exigeant une grande fiabilité factuelle. L'éditeur met en avant un faible taux d'hallucination, des appels d'outils fiables et un bon suivi d'instructions.\n\nLe modèle accepte du texte et des images en entrée et produit du texte en sortie. Il prend en charge les appels de fonctions et les sorties structurées, ce qui le rend utilisable dans des contextes agentiques. La tarification est échelonnée : au-delà de 200 000 jetons par requête, le coût par jeton est plus élevé.\n\nAucun détail n'a été communiqué sur l'architecture interne, le nombre de paramètres, le corpus d'entraînement ou l'infrastructure utilisée. Selon Artificial Analysis, Grok 4.3 atteint un score d'intelligence de 53 sur leur indice composite, au-dessus de la médiane des modèles de raisonnement de sa gamme de prix, avec une vitesse de génération d'environ 101 jetons par seconde."
+      },
+      {
+        "status": "archived",
         "id": "grok-4.1-fast",
         "simple_name": "Grok 4.1 Fast",
         "license": "proprietary",
@@ -616,6 +636,23 @@
       },
       {
         "new": true,
+        "id": "gemini-3.5-flash",
+        "simple_name": "Gemini 3.5 Flash",
+        "license": "proprietary",
+        "release_date": "05/2026",
+        "arch": "maybe-moe",
+        "params": 440,
+        "reasoning": true,
+        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3.5-flash"
+        },
+        "desc": "Modèle multimodal de Google destiné aux tâches agentiques en plusieurs étapes et à la génération de code, avec entrées texte, image, vidéo, audio et PDF. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE, Mixture of Experts). Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton, ce qui réduit la puissance de calcul nécessaire.\n\nSa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires.\n\nLes modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. Le niveau de raisonnement par défaut est réglé sur moyen pour limiter la latence et le coût, et peut être abaissé à minimal ou bas, ou relevé à haut selon les besoins.",
+        "fyi": "Présenté à Google I/O 2026, Gemini 3.5 Flash est positionné par Google comme un modèle « par défaut » de la gamme Flash, capable de rivaliser avec des modèles plus volumineux sur le code et les tâches agentiques. L'éditeur annonce une vitesse de génération environ quatre fois supérieure à celle d'autres modèles de frontière.\n\nLe modèle est nativement multimodal et accepte du texte, des images, de la vidéo, de l'audio et des fichiers PDF en entrée. Il prend en charge les appels de fonctions et les enchaînements d'étapes, ce qui le rend utilisable dans des contextes agentiques de longue durée, notamment via la plateforme Antigravity de Google.\n\nSelon l'éditeur, Gemini 3.5 Flash dépasse Gemini 3.1 Pro sur plusieurs tests de code et d'agentique : 76,2 % sur Terminal-Bench 2.1, 83,6 % sur MCP Atlas pour l'utilisation d'outils à grande échelle, 1656 points Elo sur GDPval-AA, et 84,2 % sur CharXiv Reasoning pour le raisonnement multimodal. Aucun détail n'a été communiqué sur l'architecture interne, le corpus d'entraînement ou l'infrastructure utilisée pour l'entraînement."
+      },
+      {
         "id": "gemini-3.1-flash-lite-preview",
         "simple_name": "Gemini 3.1 Flash Lite",
         "license": "proprietary",
@@ -897,6 +934,7 @@
         "fyi": "Ce modèle repose sur l'architecture hybride de Qwen 3.5, combinant Gated DeltaNet (attention linéaire en O(n)) et attention classique avec un mélange d'experts ultra-sparse : 256 experts au total, dont 8 routés et 1 partagé sont activés par jeton. Le réseau compte 40 couches organisées en blocs de 4 : 3 couches Gated DeltaNet suivies d'1 couche d'attention classique, chacune associée à un module MoE.\n\nNativement multimodal, il est entraîné en fusion précoce (early fusion) sur des jetons multimodaux (texte, images et vidéos), et prend en charge 201 langues et dialectes. Selon l'éditeur, il surpasse le Qwen3-235B-A22B de la génération précédente sur les principaux tests d'évaluation, tout en étant plus de 7 fois plus efficient en termes de paramètres activés."
       },
       {
+        "status": "archived",
         "id": "qwen3-coder-next",
         "simple_name": "Qwen3 Coder Next",
         "license": "Apache 2.0",
@@ -914,6 +952,7 @@
         "fyi": "Ce modèle a été entraîné sur plus de 800 000 tâches de code vérifiables via un processus d'apprentissage par renforcement. Il excelle dans le raisonnement sur des horizons longs, l'utilisation d'outils complexes et la récupération après des erreurs d'exécution."
       },
       {
+        "status": "archived",
         "id": "qwen3-max-2025-09-23",
         "simple_name": "Qwen 3 Max",
         "license": "proprietary",
@@ -1946,6 +1985,7 @@
         "fyi": "GLM 5 est le modèle phare de Zhipu AI, éditeur chinois fondé en 2019 par des professeurs de l'université de Tsinghua. Il repose sur une architecture de mélange d'experts (MoE) comptant 744 milliards de paramètres totaux mais n'en activant que 40 milliards par jeton généré, grâce à 256 modules experts dont 8 sont sélectionnés à chaque étape. Le pré-entraînement a porté sur 28,5 billions de jetons, en hausse par rapport aux 23 billions de la génération précédente (GLM 4.5). Le modèle intègre le mécanisme DeepSeek Sparse Attention (DSA), qui réduit les coûts de déploiement tout en préservant la capacité de traitement de longs contextes.\n\nPour le post-entraînement, Zhipu a développé une infrastructure d'apprentissage par renforcement asynchrone nommée slime, qui découple la génération de données des mises à jour de politique, atteignant un débit jusqu'à trois fois supérieur aux méthodes synchrones classiques. Ce cadre est particulièrement adapté aux tâches agentiques de longue durée. GLM 5 se distingue sur les évaluations de code (SWE-bench Verified : 77,8 %) et de navigation web (BrowseComp : 75,9 %). Le modèle a été entraîné sur des puces Huawei Ascend avec le framework MindSpore."
       },
       {
+        "status": "archived",
         "id": "glm-4.7",
         "simple_name": "GLM 4.7",
         "license": "MIT",
