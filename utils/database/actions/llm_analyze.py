@@ -6,7 +6,7 @@ from enum import Enum
 
 from pydantic import ValidationError
 from sqlalchemy import and_
-from sqlmodel import col, func, select
+from sqlmodel import col
 
 from backend.config import settings
 from utils.database.models.comparison import (
@@ -15,13 +15,17 @@ from utils.database.models.comparison import (
     ComparisonLLMAnalysisUpdate,
 )
 from utils.database.session import get_session
-from utils.database.utils import get_db_comparisons_stream, parse_full_conversation
+from utils.database.utils import (
+    get_db_comparisons_counts,
+    get_db_comparisons_stream,
+    parse_full_conversation,
+)
 
 logger = logging.getLogger("comparia.db.llm_analyze")
 
 TO_ANALYZE_CONDITION = and_(
-    col(Comparison.archived).is_(False),
-    col(Comparison.llm_analyzed).is_(None),
+    col(Comparison.archived) == False,
+    col(Comparison.llm_analyzed) == None,
 )
 
 
@@ -255,23 +259,17 @@ async def analyze_comparisons():
 
 
 async def has_comparisons_to_analyze() -> int:
-    async with get_session() as session:
-        query = select(
-            func.count(col(Comparison.id))
-            .filter(col(Comparison.llm_analyzed).is_(False))
-            .label("failed_analysis"),
-            func.count(col(Comparison.id))
-            .filter(col(Comparison.archived).is_(None))
-            .label("not_linted"),
-            func.count(col(Comparison.id))
-            .filter(TO_ANALYZE_CONDITION)
-            .label("not_analyzed"),
-        )
-        counts = (await session.exec(query)).mappings().one()
+    counts = await get_db_comparisons_counts(
+        {
+            "failed_analysis": col(Comparison.llm_analyzed) == False,
+            "not_linted": col(Comparison.archived) == None,
+            "not_analyzed": TO_ANALYZE_CONDITION,
+        }
+    )
 
-        logger.info(f"Comparisons not yet linted: {counts["not_linted"]}")
-        logger.info(f"Comparisons not yet analyzed: {counts["not_analyzed"]}")
-        logger.info(f"Comparisons with failed analysis: {counts["failed_analysis"]}")
+    logger.info(f"Comparisons not yet linted: {counts["not_linted"]}")
+    logger.info(f"Comparisons not yet analyzed: {counts["not_analyzed"]}")
+    logger.info(f"Comparisons with failed analysis: {counts["failed_analysis"]}")
 
     return counts["not_analyzed"]
 
