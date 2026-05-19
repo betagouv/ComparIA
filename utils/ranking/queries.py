@@ -35,7 +35,6 @@ async def fetch_votes() -> list[dict]:
             )
             .join(Comparison, col(Turn.comparison_id) == col(Comparison.id))
             .where(col(Comparison.archived).is_not(True))
-            .where(Comparison.contains_spam == False)
             .where(
                 col(Turn.choice).in_(["both_good", "both_bad", "a_better", "b_better"])
             )
