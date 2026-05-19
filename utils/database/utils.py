@@ -4,13 +4,13 @@ from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_
 
 from sqlalchemy import text
 from sqlalchemy.orm import selectinload
-from sqlmodel import col, func, select
+from sqlmodel import col, func, select, update
 
 from backend.arena.models import BotPos
 from utils.utils import db_connection
 
 from .models import Comparison, Turn
-from .models.comparison import ArchivedReason
+from .models.comparison import ArchivedReason, ComparisonUnarchiveUpdate
 from .session import get_session
 
 TableName = Literal["conversations", "votes", "reactions"]
@@ -102,31 +102,21 @@ def archive(
         return results.rowcount
 
 
-def reset_archived():
+async def reset_archived():
     """
-    Reset all conversations, votes and reaction 'archived' column to NULL if FALSE.
+    Reset all comparisons 'archived' column to NULL if FALSE.
     Used to run db linting in hard mode (reanalyzing).
     """
-    query = """
-        UPDATE
-            {table_name}
-        SET
-            archived = NULL
-        WHERE
-            archived = FALSE
-        ;
-    """
-    with db_connection() as conn:
-        for table_name in TABLE_NAMES:
-            logger.info(
-                f"Resetting 'achived=FALSE' to 'archived=NULL' in {table_name}."
-            )
-            results = conn.execute(text(query.format(table_name=table_name)))
-
-            conn.commit()
-            logger.info(
-                f"Resetted {results.rowcount} 'archived' to NULL on {table_name}."
-            )
+    async with get_session() as session:
+        logger.info(f"Resetting Comparisons 'achived' fields.")
+        query = (
+            update(Comparison)
+            .where(col(Comparison.archived) == False)
+            .values(ComparisonUnarchiveUpdate().model_dump())
+        )
+        results = await session.exec(query)
+        await session.commit()
+        logger.info(f"Resetted {results.rowcount} Comparisons 'archived' to NULL.")
 
 
 def set_not_archived(timestamp: datetime):

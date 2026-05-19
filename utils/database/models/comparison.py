@@ -125,6 +125,12 @@ class ComparisonPublic(SQLModel):
     turns: list[TurnPublic]
 
 
+class ComparisonUnarchiveUpdate(SQLModel):
+    archived: Literal[None] = None
+    archived_reason: Literal[None] = None
+    archived_at: Literal[None] = None
+
+
 class ComparisonLLMAnalysisUpdate(SQLModel):
     """
     Model to validate LLM analysis and update Comparison
