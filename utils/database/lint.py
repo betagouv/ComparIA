@@ -10,7 +10,6 @@ from utils.utils import db_connection
 from .actions import (
     archive_corrupted,
     archive_duplicate,
-    archive_not_archived,
     archive_spam,
     archive_unknown_llms,
     llm_analyze,
@@ -184,7 +183,6 @@ def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = Fals
     archive_corrupted(commit=fix)
     archive_unknown_llms(commit=fix and hard)
     archive_duplicate(commit=fix)
-    archive_not_archived(commit=fix)
 
     if fix:
         set_not_archived(start_at)
