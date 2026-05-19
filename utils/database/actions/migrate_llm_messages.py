@@ -2,7 +2,10 @@ import logging
 import uuid
 from datetime import datetime
 
+import tiktoken
 from sqlalchemy import text
+
+_enc = tiktoken.get_encoding("cl100k_base")
 
 from utils.database.models.messages.llm import LLMMessage
 from utils.database.session import get_session
@@ -21,7 +24,6 @@ BATCH_SIZE = 10_000
 
 
 UNKNOWN_GENERATION_ID = "unknown"
-UNKNOWN_TOKENS = -1
 
 
 def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
@@ -37,7 +39,7 @@ def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
         id=uuid.uuid4(),
         content=str(content),
         generation_id=str(generation_id) if generation_id is not None else UNKNOWN_GENERATION_ID,
-        tokens=int(tokens) if tokens is not None else UNKNOWN_TOKENS,
+        tokens=int(tokens) if tokens is not None else len(_enc.encode(str(content))),
         is_cached=bool(metadata.get("is_cached", False)),
         created_at=fallback_ts,
         responded_at=fallback_ts,
