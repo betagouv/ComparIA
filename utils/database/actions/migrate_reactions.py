@@ -44,8 +44,11 @@ async def migrate_reactions(
     """
     ensure_maps_dir(maps_dir)
 
-    comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
-    turn_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "turn_map")
+    turn_map: dict[tuple[str, int, int], uuid.UUID] = load_map(maps_dir, "turn_map")
+
+    pair_occurrences: dict[str, set[int]] = defaultdict(set)
+    for (pair_id, occ, _turn_idx) in turn_map:
+        pair_occurrences[pair_id].add(occ)
 
     pending: dict[uuid.UUID, dict] = defaultdict(
         lambda: {"kw_a": set(), "kw_b": set(), "custom_a": None, "custom_b": None}
@@ -69,26 +72,32 @@ async def migrate_reactions(
                 if not pair_id or msg_rank is None or model_pos not in ("a", "b"):
                     skipped += 1
                     continue
-                if pair_id not in comparison_map:
+
+                occs = pair_occurrences.get(pair_id)
+                if not occs:
                     skipped += 1
                     continue
 
-                turn_id = turn_map.get((pair_id, int(msg_rank)))
-                if turn_id is None:
-                    logger.debug(f"No turn for ({pair_id}, msg_rank={msg_rank}), skipping.")
-                    skipped += 1
-                    continue
-
+                rank = int(msg_rank)
                 kw_key = f"kw_{model_pos}"
                 custom_key = f"custom_{model_pos}"
-
-                for flag in REACTION_FLAGS:
-                    if row.get(flag):
-                        pending[turn_id][kw_key].add(flag)
-
                 comment = row.get("comment")
-                if comment and pending[turn_id][custom_key] is None:
-                    pending[turn_id][custom_key] = comment
+                active_flags = [flag for flag in REACTION_FLAGS if row.get(flag)]
+
+                matched = False
+                for occ in occs:
+                    turn_id = turn_map.get((pair_id, occ, rank))
+                    if turn_id is None:
+                        continue
+                    matched = True
+                    for flag in active_flags:
+                        pending[turn_id][kw_key].add(flag)
+                    if comment and pending[turn_id][custom_key] is None:
+                        pending[turn_id][custom_key] = comment
+
+                if not matched:
+                    logger.debug(f"No turn for ({pair_id}, msg_rank={msg_rank}), skipping.")
+                    skipped += 1
 
             logger.info(f"Batch {batch_idx}: accumulated reactions.")
             batch_idx += 1

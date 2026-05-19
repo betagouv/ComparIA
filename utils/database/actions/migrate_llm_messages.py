@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 import tiktoken
@@ -17,6 +18,7 @@ logger = logging.getLogger("comparia.db.migrate")
 QUERY = f"""
     SELECT conversation_pair_id, timestamp, conversation_a, conversation_b
     FROM conversations
+    ORDER BY conversation_pair_id, timestamp
 """
 
 BATCH_SIZE = 10_000
@@ -90,8 +92,9 @@ async def migrate_llm_messages(
     """
     ensure_maps_dir(maps_dir)
 
-    comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
-    llm_message_map: dict[tuple[str, str, int], uuid.UUID] = {}
+    comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "comparison_map")
+    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = {}
+    pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
     skipped = 0
@@ -105,12 +108,17 @@ async def migrate_llm_messages(
                 break
 
             to_insert: list[LLMMessage] = []
-            batch_map: dict[tuple[str, str, int], uuid.UUID] = {}
+            batch_map: dict[tuple[str, int, str, int], uuid.UUID] = {}
 
             batch_skipped = 0
             for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
-                if not pair_id or pair_id not in comparison_map:
+                if not pair_id:
+                    batch_skipped += 1
+                    continue
+                occ = pair_id_counter[pair_id]
+                pair_id_counter[pair_id] += 1
+                if (pair_id, occ) not in comparison_map:
                     batch_skipped += 1
                     continue
 
@@ -126,7 +134,7 @@ async def migrate_llm_messages(
                             batch_skipped += 1
                             continue
                         to_insert.append(llm_msg)
-                        batch_map[(pair_id, side, turn_idx)] = llm_msg.id
+                        batch_map[(pair_id, occ, side, turn_idx)] = llm_msg.id
 
             if commit and to_insert:
                 async with get_session() as session:
@@ -140,4 +148,4 @@ async def migrate_llm_messages(
             batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
-    save_map(maps_dir, "llm_message_map", llm_message_map)
+    save_map(maps_dir, "llm_message_map", llm_message_map)  # key: (pair_id, occ, side, turn_idx)

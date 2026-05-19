@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 from datetime import datetime
 
 from sqlalchemy import insert as sa_insert
@@ -22,6 +23,7 @@ QUERY = f"""
         short_summary, keywords, categories, languages,
         archived, archived_reason, archived_at
     FROM conversations
+    ORDER BY conversation_pair_id, timestamp
 """
 
 VALID_MODES = {"random", "big-vs-small", "small-models", "custom"}
@@ -43,7 +45,8 @@ async def migrate_comparisons(
     ensure_maps_dir(maps_dir)
 
     system_map: dict[str, uuid.UUID] = load_map(maps_dir, "system_message_map")
-    comparison_map: dict[str, uuid.UUID] = {}
+    comparison_map: dict[tuple[str, int], uuid.UUID] = {}
+    pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
     skipped = 0
@@ -63,6 +66,11 @@ async def migrate_comparisons(
                 if not pair_id:
                     skipped += 1
                     continue
+
+                occ = pair_id_counter[pair_id]
+                pair_id_counter[pair_id] += 1
+                if occ > 0:
+                    logger.debug(f"Duplicate pair_id={pair_id} (occurrence {occ}), inserting as new comparison.")
 
                 ts: datetime = row["timestamp"]
                 mode = row["mode"] if row["mode"] in VALID_MODES else "random"
@@ -98,7 +106,7 @@ async def migrate_comparisons(
                         "error": None,
                     }
                 )
-                comparison_map[pair_id] = comp_id
+                comparison_map[(pair_id, occ)] = comp_id
 
             if commit and rows_to_insert:
                 async with get_session() as session:

@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 
 from sqlalchemy import text, update
 
@@ -64,13 +65,16 @@ async def migrate_votes(
     """
     ensure_maps_dir(maps_dir)
 
-    comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
-    turn_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "turn_map")
+    turn_map: dict[tuple[str, int, int], uuid.UUID] = load_map(maps_dir, "turn_map")
 
-    last_turn: dict[str, tuple[int, uuid.UUID]] = {}
-    for (pair_id, turn_idx), turn_id in turn_map.items():
-        if pair_id not in last_turn or turn_idx > last_turn[pair_id][0]:
-            last_turn[pair_id] = (turn_idx, turn_id)
+    # Build per-(pair_id, occ) last turn index
+    pair_occurrences: dict[str, set[int]] = defaultdict(set)
+    last_turn: dict[tuple[str, int], tuple[int, uuid.UUID]] = {}
+    for (pair_id, occ, turn_idx), turn_id in turn_map.items():
+        pair_occurrences[pair_id].add(occ)
+        key = (pair_id, occ)
+        if key not in last_turn or turn_idx > last_turn[key][0]:
+            last_turn[key] = (turn_idx, turn_id)
 
     updated = 0
     skipped = 0
@@ -87,21 +91,32 @@ async def migrate_votes(
 
             for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
-                if not pair_id or pair_id not in comparison_map or pair_id not in last_turn:
+                occs = pair_occurrences.get(pair_id) if pair_id else None
+                if not pair_id or not occs:
                     skipped += 1
                     continue
 
-                _, turn_id = last_turn[pair_id]
-                updates.append(
-                    {
-                        "turn_id": turn_id,
-                        "choice": _derive_choice(row),
-                        "keyword_annotations_a": _build_keywords(row, "a"),
-                        "keyword_annotations_b": _build_keywords(row, "b"),
-                        "custom_annotation_a": row.get("conv_comments_a"),
-                        "custom_annotation_b": row.get("conv_comments_b"),
-                    }
-                )
+                choice = _derive_choice(row)
+                kw_a = _build_keywords(row, "a")
+                kw_b = _build_keywords(row, "b")
+                custom_a = row.get("conv_comments_a")
+                custom_b = row.get("conv_comments_b")
+
+                for occ in occs:
+                    lt = last_turn.get((pair_id, occ))
+                    if lt is None:
+                        continue
+                    _, turn_id = lt
+                    updates.append(
+                        {
+                            "turn_id": turn_id,
+                            "choice": choice,
+                            "keyword_annotations_a": kw_a,
+                            "keyword_annotations_b": kw_b,
+                            "custom_annotation_a": custom_a,
+                            "custom_annotation_b": custom_b,
+                        }
+                    )
 
             if commit and updates:
                 async with get_session() as session:

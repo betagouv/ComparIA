@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 from datetime import datetime
 
 from sqlalchemy import insert as sa_insert
@@ -16,6 +17,7 @@ logger = logging.getLogger("comparia.db.migrate")
 QUERY = f"""
     SELECT conversation_pair_id, timestamp, conversation_a
     FROM conversations
+    ORDER BY conversation_pair_id, timestamp
 """
 
 BATCH_SIZE = 10_000
@@ -42,11 +44,12 @@ async def migrate_turns(
     """
     ensure_maps_dir(maps_dir)
 
-    comparison_map: dict[str, uuid.UUID] = load_map(maps_dir, "comparison_map")
-    llm_message_map: dict[tuple[str, str, int], uuid.UUID] = load_map(maps_dir, "llm_message_map")
-    user_message_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "user_message_map")
+    comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "comparison_map")
+    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = load_map(maps_dir, "llm_message_map")
+    user_message_map: dict[tuple[str, int, int], uuid.UUID] = load_map(maps_dir, "user_message_map")
 
-    turn_map: dict[tuple[str, int], uuid.UUID] = {}
+    turn_map: dict[tuple[str, int, int], uuid.UUID] = {}
+    pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
     skipped = 0
@@ -61,25 +64,30 @@ async def migrate_turns(
 
             turns_to_insert: list[dict] = []
             user_msg_backfill: list[tuple[uuid.UUID, uuid.UUID]] = []
-            batch_map: dict[tuple[str, int], uuid.UUID] = {}
+            batch_map: dict[tuple[str, int, int], uuid.UUID] = {}
 
             for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
-                if not pair_id or pair_id not in comparison_map:
+                if not pair_id:
+                    skipped += 1
+                    continue
+                occ = pair_id_counter[pair_id]
+                pair_id_counter[pair_id] += 1
+                if (pair_id, occ) not in comparison_map:
                     skipped += 1
                     continue
 
-                comparison_id = comparison_map[pair_id]
+                comparison_id = comparison_map[(pair_id, occ)]
                 ts: datetime = row["timestamp"]
                 n_turns = _count_turns(row["conversation_a"])
 
                 for turn_idx in range(n_turns):
-                    user_msg_id = user_message_map.get((pair_id, turn_idx))
-                    llm_msg_a_id = llm_message_map.get((pair_id, "a", turn_idx))
-                    llm_msg_b_id = llm_message_map.get((pair_id, "b", turn_idx))
+                    user_msg_id = user_message_map.get((pair_id, occ, turn_idx))
+                    llm_msg_a_id = llm_message_map.get((pair_id, occ, "a", turn_idx))
+                    llm_msg_b_id = llm_message_map.get((pair_id, occ, "b", turn_idx))
 
                     if user_msg_id is None:
-                        logger.debug(f"No user_message for ({pair_id}, {turn_idx}), skipping turn.")
+                        logger.debug(f"No user_message for ({pair_id}, occ={occ}, turn={turn_idx}), skipping turn.")
                         skipped += 1
                         continue
 
@@ -100,7 +108,7 @@ async def migrate_turns(
                         }
                     )
                     user_msg_backfill.append((user_msg_id, turn_id))
-                    batch_map[(pair_id, turn_idx)] = turn_id
+                    batch_map[(pair_id, occ, turn_idx)] = turn_id
 
             if commit and turns_to_insert:
                 async with get_session() as session:
@@ -119,4 +127,4 @@ async def migrate_turns(
             batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
-    save_map(maps_dir, "turn_map", turn_map)
+    save_map(maps_dir, "turn_map", turn_map)  # key: (pair_id, occ, turn_idx)
