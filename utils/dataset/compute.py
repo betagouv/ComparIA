@@ -23,13 +23,17 @@ import os
 from functools import lru_cache
 
 import pandas as pd
+from sqlalchemy import and_
+from sqlmodel import col
 
 from backend.config import settings
 from backend.llms.utils import get_active_params, get_total_params
+from utils.database.models import Comparison
+from utils.database.utils import get_db_comparisons_stream
 from utils.utils import db_connection
 
 from .export import commit_and_push, export_data
-from .models import Datasets
+from .models import DatasetComparison, DatasetComparisonBaseMetadata, Datasets
 from .queries import get_dataset_queries, get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
@@ -228,6 +232,65 @@ def count_dataset_rows():
         return False
 
 
+def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
+    llms = get_llms_data()
+    ctx = {
+        "llm_a": llms[db_comparison.llm_id_a],
+        "llm_b": llms[db_comparison.llm_id_b],
+        "metadata": DatasetComparisonBaseMetadata.model_validate(
+            db_comparison
+        ).model_dump(),
+    }
+    comparison = DatasetComparison.model_validate(db_comparison, context=ctx)
+    comp_data = comparison.model_dump()
+    comp_meta = comp_data.pop("metadata_")
+    comp_turns = comp_data.pop("turns_")
+
+    turns = []
+    for idx, turn_data in enumerate(comp_turns):
+        turn_meta = turn_data.pop("metadata_")
+        turns.append(
+            {
+                **turn_data,
+                "turn": idx,
+                **comp_data,
+                "metadata": {**turn_meta, **comp_meta},
+            }
+        )
+
+    return turns
+
+
+async def build_dataframe() -> pd.DataFrame:
+    llms = get_llms_data()
+    dataset = pd.DataFrame()
+    failed_comparison_ids: list[str] = []
+
+    async for db_comp in get_db_comparisons_stream(
+        [
+            and_(
+                col(Comparison.archived).is_(False),
+                col(Comparison.llm_analyzed).is_(True),
+            )
+        ]
+    ):
+        try:
+            turns = comparison_to_turns(db_comp)
+            dataset = pd.concat([dataset, pd.DataFrame(turns)])
+        except Exception as exc:
+            logger.exception(f"Failed to parse Comparison '{db_comp.id}', skipping...")
+            failed_comparison_ids.append(str(db_comp.id))
+
+    logger.info("Finished generating dataframe.")
+
+    if failed_comparison_ids:
+        logger.error(
+            f"{len(failed_comparison_ids)} comparisons could not be properly parsed: \n{"\n".join([f"- '{id_}'" for id_ in failed_comparison_ids])}"
+        )
+
+    return dataset
+
+
 async def process_dataset(
     dataset_name: Datasets,
     export_base_path: str,
@@ -257,29 +320,27 @@ async def process_dataset(
     repo_path = os.path.join(export_base_path, repo_name)
 
     try:
-        with db_connection(stream=True) as conn:
-            logger.info(f"Database connection established for dataset: {dataset_name}")
+        logger.info(f"Generating '{dataset_name}'…")
 
-            # Fetch and transform data
-            data = fetch_and_transform_data(conn, dataset_name, query)
+        data = await build_dataframe()
 
-            # Check if data fetching failed
-            if data is None:
-                logger.error(
-                    f"Failed to fetch data for dataset {dataset_name}, aborting export"
-                )
-                return False
+        # Check if data fetching failed
+        if data.empty:
+            logger.error(
+                f"Failed to fetch data for dataset {dataset_name}, aborting export"
+            )
+            return False
 
-            # Export data to local files
-            export_data(data, dataset_name, repo_path)
+        # Export data to local files
+        export_data(data, dataset_name, repo_path)
 
-            # Upload to HuggingFace Hub (skip if dry_run)
-            if dry_run:
-                logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
-                return True
-            else:
-                push_success = commit_and_push(repo_org, repo_name, repo_path)
-                return push_success
+        # Upload to HuggingFace Hub (skip if dry_run)
+        if dry_run:
+            logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
+            return True
+        else:
+            push_success = commit_and_push(repo_org, repo_name, repo_path)
+            return push_success
 
     except Exception as e:
         logger.error(f"An error occurred while processing dataset {dataset_name}: {e}")
