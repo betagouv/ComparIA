@@ -9,11 +9,11 @@ Functions:
 import logging
 from typing import TypedDict
 
-from backend.arena.models import BotPos
 from backend.llms.data import get_llms_data
 from backend.llms.models import LLMData
 from backend.llms.utils import Consumption, get_llm_consumption
 from utils.database.models import ComparisonRead
+from utils.database.models.comparison import BotPos
 
 logger = logging.getLogger("languia")
 

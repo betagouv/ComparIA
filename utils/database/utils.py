@@ -6,11 +6,10 @@ from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_
 from sqlalchemy.orm import selectinload
 from sqlmodel import and_, col, func, select, update
 
-from backend.arena.models import BotPos
-
 from .models import Comparison, Turn
 from .models.comparison import (
     ArchivedReason,
+    BotPos,
     ComparisonArchiveUpdate,
     ComparisonUnarchiveUpdate,
 )
