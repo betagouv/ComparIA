@@ -1,5 +1,6 @@
 import logging
 import uuid
+from datetime import datetime
 
 import polars as pl
 from sqlalchemy import text
@@ -45,7 +46,7 @@ async def migrate_system_messages(
             continue
         msg_id = uuid.uuid4()
         system_map[content] = msg_id
-        to_insert.append(SystemMessage(id=msg_id, content=content))
+        to_insert.append(SystemMessage(id=msg_id, content=content, created_at=datetime(2025, 2, 21, 15, 54, 42, 365103)))
 
     logger.info(f"Found {len(to_insert)} distinct system prompts.")
 
