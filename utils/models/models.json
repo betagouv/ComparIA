@@ -1266,7 +1266,6 @@
         "fyi": "Ce modèle est issu d’un réentraînement du Llama 3.1 70B, d'où la présence de son modèle-source dans son nom ! Il introduit des améliorations grâce à l’apprentissage par renforcement avec retour humain (RLHF) et à l’algorithme REINFORCE : le modèle explore différentes réponses, reçoit des retours sous forme de récompenses, puis ajuste ses choix progressivement pour mieux répondre aux attentes des utilisateurs. Ce processus d'alignement est souvent utilisé quand on veut que le modèle s’adapte à des préférences humaines ou qu’il optimise ses réponses selon des critères spécifiques."
       },
       {
-        "new": true,
         "id": "nemotron-3-super-120b-a12b",
         "simple_name": "Nemotron 3 Super 120B-A12B",
         "license": "Nemotron Open",
@@ -1633,7 +1632,6 @@
         "fyi": "Ce modèle a été entraîné sur 3 000 GPU Nvidia H200. Il se positionne en concurrence directe avec les modèles semi-ouverts chinois. À sa sortie, il est compétitif avec DeepSeek V3.1, Kimi K2, GLM 4.6 et d’autres références en termes de code et cas d'usages généralistes."
       },
       {
-        "new": true,
         "id": "mistral-small-2603",
         "simple_name": "Mistral Small 4",
         "license": "Apache 2.0",
@@ -2206,7 +2204,6 @@
         "arch": "moe",
         "params": 24,
         "active_params": 2.3,
-        "new": true,
         "url": "https://huggingface.co/LiquidAI/LFM2-24B-A2B",
         "endpoint": {
           "api_type": "openrouter",
@@ -2320,7 +2317,6 @@
         "params": 230,
         "active_params": 10,
         "reasoning": true,
-        "new": true,
         "url": "https://huggingface.co/MiniMaxAI/MiniMax-M2.7",
         "endpoint": {
           "api_type": "openrouter",
@@ -2398,7 +2394,6 @@
     "proprietary_commercial_use": false,
     "models": [
       {
-        "new": true,
         "id": "odin-large",
         "simple_name": "Odin Large",
         "license": "proprietary",
@@ -2416,7 +2411,6 @@
         "fyi": "Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus grand."
       },
       {
-        "new": true,
         "id": "odin-medium",
         "simple_name": "Odin Medium",
         "license": "proprietary",
