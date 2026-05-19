@@ -1,15 +1,11 @@
 import json
 import logging
-from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 import markdown
 from pydantic import FieldSerializationInfo, PlainSerializer
-from sqlalchemy import Connection, create_engine
-from sqlalchemy.exc import OperationalError
 
-from backend.config import settings
 from utils.logger import configure_logger
 
 Obj = dict[str, Any]
@@ -61,27 +57,3 @@ def sort_dict(data: Obj, deep: bool = True) -> Obj:
     ]
 
     return dict(sorted(items, key=lambda i: i[0].lower()))
-
-
-@contextmanager
-def db_connection(stream: bool = False) -> Generator[Connection]:
-    if not settings.COMPARIA_DB_URI:
-        raise Exception(
-            "Cannot connect to the database: no $COMPARIA_DB_URI configuration provided."
-        )
-
-    engine = None
-    try:
-        engine = create_engine(
-            settings.COMPARIA_DB_URI, execution_options={"stream_results": stream}
-        )
-        with engine.connect() as conn:
-            logger.debug(f"Database connection established.")
-            yield conn
-
-    except OperationalError as e:
-        raise Exception(f"Database connection error: {e}")
-    finally:
-        if engine:
-            engine.dispose()
-            logger.debug(f"Database connection closed.")
