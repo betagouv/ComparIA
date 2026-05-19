@@ -4,7 +4,7 @@ from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_
 
 from sqlalchemy import text
 from sqlalchemy.orm import selectinload
-from sqlmodel import col, func, select, update
+from sqlmodel import and_, col, func, select, update
 
 from backend.arena.models import BotPos
 from utils.utils import db_connection
@@ -108,40 +108,36 @@ async def reset_archived():
     Used to run db linting in hard mode (reanalyzing).
     """
     async with get_session() as session:
-        logger.info(f"Resetting Comparisons 'achived' fields.")
-        query = (
-            update(Comparison)
-            .where(col(Comparison.archived) == False)
-            .values(ComparisonUnarchiveUpdate().model_dump())
-        )
+        logger.info(f"Resetting comparisons 'archived' fields.")
+        data = ComparisonUnarchiveUpdate(archived=None).model_dump()
+        query = update(Comparison).where(col(Comparison.archived) == False).values(data)
         results = await session.exec(query)
         await session.commit()
-        logger.info(f"Resetted {results.rowcount} Comparisons 'archived' to NULL.")
+        logger.info(f"Resetted {results.rowcount} comparisons 'archived' to NULL.")
 
 
-def set_not_archived(timestamp: datetime):
+async def set_not_archived(timestamp: datetime):
     """
-    Set all conversations, votes and reaction 'archived' column to FALSE if NULL.
+    Set all comparisons 'archived' column to FALSE if NULL.
     Only affects items inserted before given timestamp.
     Used after linting to mark data as analyzed.
     """
-    query = """
-        UPDATE {table_name} 
-        SET archived = FALSE
-        WHERE archived IS NULL AND timestamp < TIMESTAMP '{timestamp}';
-    """
-
-    with db_connection() as conn:
-        for table_name in TABLE_NAMES:
-            logger.info(
-                f"Set {table_name} 'archived' to FALSE if timestamp < {timestamp}."
+    async with get_session() as session:
+        logger.info(f"Set comparisons 'archived' to FALSE if timestamp < {timestamp}.")
+        data = ComparisonUnarchiveUpdate(archived=False).model_dump()
+        query = (
+            update(Comparison)
+            .where(
+                and_(
+                    col(Comparison.archived) == None,
+                    col(Comparison.updated_at) < timestamp,
+                )
             )
-            results = conn.execute(
-                text(query.format(table_name=table_name, timestamp=timestamp))
-            )
-
-            conn.commit()
-            logger.info(f"Set {results.rowcount} 'archived' to FALSE on {table_name}.")
+            .values(data)
+        )
+        results = await session.exec(query)
+        await session.commit()
+        logger.info(f"Set {results.rowcount} Comparisons 'archived' to FALSE.")
 
 
 class RawSystemMessage(TypedDict):

@@ -126,7 +126,7 @@ class ComparisonPublic(SQLModel):
 
 
 class ComparisonUnarchiveUpdate(SQLModel):
-    archived: Literal[None] = None
+    archived: Literal[None, False] = None
     archived_reason: Literal[None] = None
     archived_at: Literal[None] = None
 
