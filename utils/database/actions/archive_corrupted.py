@@ -9,50 +9,9 @@ from sqlalchemy import text
 from utils.utils import db_connection
 
 from ..models.comparison import ArchivedReason
-from ..utils import TABLE_NAMES, TableName, archive
+from ..utils import TABLE_NAMES, archive
 
 logger = logging.getLogger("comparia.db")
-
-
-CORRUPTED_NO_CHOICE_VOTES_QUERY = """
-    SELECT id FROM votes
-    WHERE
-        archived IS NULL
-        -- votes with neither chosen model nor is both_equal
-        AND (
-            chosen_model_name IS NULL 
-            AND (both_equal = FALSE OR both_equal IS NULL)
-        )
-"""
-
-CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY = """
-    SELECT r.id FROM reactions r
-    JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-    WHERE
-        r.archived IS NULL
-        -- msg_index referencing a conversation is out of range
-        AND msg_index >= GREATEST(
-            jsonb_array_length(c.conversation_a),
-            jsonb_array_length(c.conversation_b)
-        )
-    ;
-"""
-CORRUPTED_TO_MODEL_MSG_REACTIONS_QUERY = """
-    SELECT r.id FROM reactions r
-    JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
-    WHERE
-        r.archived IS NULL
-        -- Message at reacted to (at msg_index) must be from assistant role
-        -- Check in refers_to_conv_id (which is either conv_a_id or conv_b_id)
-        AND CASE
-            WHEN refers_to_conv_id = c.conv_a_id THEN
-                (c.conversation_a->msg_index->>'role' != 'assistant')
-            WHEN refers_to_conv_id = c.conv_b_id THEN
-                (c.conversation_b->msg_index->>'role' != 'assistant')
-            ELSE FALSE
-        END
-    ;
-"""
 
 
 def has_nonish_content(
@@ -94,7 +53,10 @@ def not_equal_length(conv_a: list, conv_b: list) -> bool:
     return False
 
 
-def archive_corrupted_conversations(*, commit: bool = False) -> None:
+def archive_corrupted(*, commit: bool = False) -> None:
+    """
+    Archive comparisons with corrupted data.
+    """
     query = """
         SELECT 
             conversation_pair_id,
@@ -163,39 +125,3 @@ def archive_corrupted_conversations(*, commit: bool = False) -> None:
         for tb in TABLE_NAMES:
             # archive corrupted 'conversations' and related 'votes' + 'reactions'
             archive(tb, list(ids), reason, archived_at, commit=commit)
-
-
-def archive_corrupted(*, commit: bool = False) -> None:
-    """
-    Archive conversations, votes and reaction with corrupted data.
-    """
-    logger.info("Searching for corrupted data")
-    archive_corrupted_conversations(commit=commit)
-
-    archived_at = datetime.now()
-    queries: dict[TableName, dict[ArchivedReason, str]] = {
-        "reactions": {
-            "corrupted_out_of_range_reactions": CORRUPTED_OUT_OF_RANGE_INDEX_REACTIONS_QUERY,
-            "corrupted_to_model_msg_reactions": CORRUPTED_TO_MODEL_MSG_REACTIONS_QUERY,
-        },
-        "votes": {"corrupted_no_choice_votes": CORRUPTED_NO_CHOICE_VOTES_QUERY},
-    }
-
-    for table_name, qs in queries.items():
-        logger.info(f"Searching for corrupted {table_name}")
-
-        for reason, query in qs.items():
-            with db_connection(stream=True) as conn:
-                conv_results = conn.execute(text(query)).all()
-                ids = [result[0] for result in conv_results]
-
-            if not ids:
-                logger.info(f"No '{reason}' {table_name} found!")
-            else:
-                logger.warning(
-                    f"Found {len(ids)} {table_name} with corrupted content: '{reason}'."
-                )
-
-                archive(
-                    table_name, ids, reason, archived_at, id_key="id", commit=commit
-                )
