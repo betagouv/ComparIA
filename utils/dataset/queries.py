@@ -1,39 +1,10 @@
-import json
 import logging
-from functools import lru_cache
 
-from backend.llms.models import LLMData
-from utils.storage.queries import (
-    get_conversations_db_query,
-    get_reactions_db_query,
-    get_votes_db_query,
-)
-from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
+from utils.storage.queries import get_conversations_db_query, get_votes_db_query
 
 from .models import Datasets
 
 logger = logging.getLogger("comparia.dataset")
-
-
-@lru_cache
-def get_llms_data() -> dict[str, LLMData]:
-    """
-    Load the generated models JSON data.
-    Used to enrich conversations with model metadata (params count, energy consumption).
-    """
-    try:
-        llms_data = read_json(LLMS_GENERATED_DATA_FILE)
-        return {
-            k: LLMData.model_validate(v)
-            for k, v in llms_data["models"].items()
-            if v.get("status") in ("enabled", "archived")
-        }
-    except FileNotFoundError:
-        logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
-        raise
-    except json.JSONDecodeError:
-        logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
-        raise
 
 
 def get_dataset_queries() -> dict[Datasets, str]:
