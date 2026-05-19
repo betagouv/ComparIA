@@ -1,21 +1,22 @@
 import logging
+import uuid
 from collections import defaultdict
 from datetime import datetime
 from typing import Literal, cast
 
-import polars as pl
-from sqlalchemy import text
+from sqlmodel import col
 
-from utils.utils import db_connection
+from backend.arena.models import BOT_POS, BotPos
 
+from ..models import Comparison
 from ..models.comparison import ArchivedReason
-from ..utils import TABLE_NAMES, archive
+from ..utils import RawLLMMessage, archive, get_db_comparisons_stream
 
 logger = logging.getLogger("comparia.db")
 
 
 def has_nonish_content(
-    msgs: list,
+    msgs: list[RawLLMMessage],
 ) -> tuple[Literal["all", "last", "some"], Literal["none", "empty"]] | None:
     count = len(msgs)
     are_none = [msg.get("content") is None for msg in msgs]
@@ -37,7 +38,7 @@ def has_nonish_content(
     return None
 
 
-def has_model_stream_content(msgs: list) -> bool:
+def has_model_stream_content(msgs: list[RawLLMMessage]) -> bool:
     contents = [msg.get("content", "") for msg in msgs]
     return any(
         content.startswith("ModelResponse") or "ModelResponseStream" in content
@@ -45,83 +46,58 @@ def has_model_stream_content(msgs: list) -> bool:
     )
 
 
-def not_equal_length(conv_a: list, conv_b: list) -> bool:
-    msgs_a = [msg for msg in conv_a if msg["role"] != "system"]
-    msgs_b = [msg for msg in conv_b if msg["role"] != "system"]
-    if len(msgs_a) != len(msgs_b):
-        return True
-    return False
+def get_llm_msgs(comparison: Comparison) -> dict[BotPos, list[RawLLMMessage]]:
+    llm_msgs: dict[BotPos, list[RawLLMMessage]] = {"a": [], "b": []}
+    for turn in comparison.turns:
+        for side in BOT_POS:
+            if llm_msg := getattr(turn, f"llm_msg_{side}"):
+                raw_llm_msg = cast(
+                    RawLLMMessage,
+                    llm_msg.model_dump(
+                        include={"role", "content", "reasoning_content"}
+                    ),
+                )
+                llm_msgs[side].append(raw_llm_msg)
+
+    return llm_msgs
 
 
-def archive_corrupted(*, commit: bool = False) -> None:
+async def archive_corrupted(*, commit: bool = False) -> None:
     """
     Archive comparisons with corrupted data.
     """
-    query = """
-        SELECT 
-            conversation_pair_id,
-            model_a_name,
-            model_b_name,
-            conversation_a,
-            conversation_b
-        FROM 
-            conversations
-        WHERE
-            archived IS NULL
-    """
-    logger.info("Searching for corrupted data in conversations")
+    logger.info("Searching for corrupted data in comparisons")
     archived_at = datetime.now()
-    reasons: dict[ArchivedReason, set[str]] = defaultdict(lambda: set())
+    reasons: dict[ArchivedReason, set[uuid.UUID]] = defaultdict(lambda: set())
 
-    with db_connection(stream=True) as conn:
-        result_chunks = pl.read_database(
-            query=text(query), connection=conn, iter_batches=True, batch_size=10_000
-        )
-        for index, results in enumerate(result_chunks):
-            logger.debug(f"Process batch {index} of {len(results)} conversations.")
-            for row in results.iter_rows(named=True):
-                _id = row["conversation_pair_id"]
-                if row["model_a_name"] is None or row["model_b_name"] is None:
-                    reasons["corrupted_no_model"].add(_id)
-                elif row["model_a_name"] == row["model_b_name"]:
-                    reasons["corrupted_against_self"].add(_id)
-                else:
-                    assistant_msgs = {
-                        k: [
-                            msg
-                            for msg in row[f"conversation_{k}"]
-                            if msg["role"] == "assistant"
-                        ]
-                        for k in ("a", "b")
-                    }
+    async for db_comp in get_db_comparisons_stream([col(Comparison.archived) == None]):
+        if db_comp.llm_id_a == db_comp.llm_id_b:
+            reasons["corrupted_against_self"].add(db_comp.id)
+            continue
 
-                    if any(len(msgs) == 0 for msgs in assistant_msgs.values()):
-                        reasons["corrupted_no_response"].add(_id)
-                        continue
+        llm_msgs = get_llm_msgs(db_comp)
 
-                    nonish_contents = [
-                        has_nonish_content(msgs) for msgs in assistant_msgs.values()
-                    ]
-                    if nonish := next((n for n in nonish_contents if n), None):
-                        reason = cast(
-                            ArchivedReason,
-                            f"corrupted_response_{nonish[0]}_{nonish[1]}",
-                        )
-                        reasons[reason].add(_id)
-                        continue
+        if any(len(msgs) == 0 for msgs in llm_msgs.values()):
+            reasons["corrupted_no_response"].add(db_comp.id)
+            continue
 
-                    if any(
-                        has_model_stream_content(msgs)
-                        for msgs in assistant_msgs.values()
-                    ):
-                        reasons["corrupted_model_stream"].add(_id)
-                    elif not_equal_length(row["conversation_a"], row["conversation_b"]):
-                        reasons["corrupted_not_equal_length"].add(_id)
+        nonish_contents = [has_nonish_content(msgs) for msgs in llm_msgs.values()]
+        if nonish := next((n for n in nonish_contents if n), None):
+            reason = cast(
+                ArchivedReason,
+                f"corrupted_response_{nonish[0]}_{nonish[1]}",
+            )
+            reasons[reason].add(db_comp.id)
+            continue
 
+        if any(has_model_stream_content(msgs) for msgs in llm_msgs.values()):
+            reasons["corrupted_model_stream"].add(db_comp.id)
+
+    if not any(reasons.values()):
+        logger.info(f"No comparisons with corrupted data found!")
+        return
     for reason, ids in reasons.items():
         logger.warning(
-            f"Found {len(ids)} conversations with corrupted content: '{reason}'."
+            f"Found {len(ids)} comparisons with corrupted content: '{reason}'."
         )
-        for tb in TABLE_NAMES:
-            # archive corrupted 'conversations' and related 'votes' + 'reactions'
-            archive(tb, list(ids), reason, archived_at, commit=commit)
+        await archive(list(ids), reason, archived_at, commit=commit)
