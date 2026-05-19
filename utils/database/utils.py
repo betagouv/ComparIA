@@ -4,7 +4,7 @@ from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_
 
 from sqlalchemy import text
 from sqlalchemy.orm import selectinload
-from sqlmodel import col, select
+from sqlmodel import col, func, select
 
 from backend.arena.models import BotPos
 from utils.utils import db_connection
@@ -43,6 +43,18 @@ async def get_db_comparisons_stream(
 
         async for (s,) in stream:
             yield s
+
+
+async def get_db_comparisons_counts(count_filters: dict[str, Any]):
+    async with get_session() as session:
+        query = select(
+            *[
+                func.count(col(Comparison.id)).filter(f).label(k)
+                for k, f in count_filters.items()
+            ]
+        )
+        logger.debug(f"Will query Comparison counts with:\n{query}")
+        return (await session.exec(query)).mappings().one()
 
 
 def archive(
