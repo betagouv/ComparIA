@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import (
     BeforeValidator,
@@ -12,6 +12,8 @@ from sqlmodel import SQLModel
 from backend.arena.models import BotPos
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
 from utils.database.models import LLMMessageFinal, SystemMessageRead, UserMessageRead
+
+Datasets = Literal["comparisons", "comparisons_raw"]
 
 
 class DatasetTurnMetadata(SQLModel):
