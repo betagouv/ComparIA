@@ -23,8 +23,6 @@ import os
 from functools import lru_cache
 
 import pandas as pd
-from sqlalchemy import and_
-from sqlmodel import col
 
 from backend.config import settings
 from backend.llms.utils import get_active_params, get_total_params
@@ -33,7 +31,12 @@ from utils.database.utils import get_db_comparisons_stream
 from utils.utils import db_connection
 
 from .export import commit_and_push, export_data
-from .models import DatasetComparison, DatasetComparisonBaseMetadata, Datasets
+from .models import (
+    DatasetComparison,
+    DatasetComparisonBaseMetadata,
+    DatasetComparisonExtraMetadata,
+    Datasets,
+)
 from .queries import get_dataset_queries, get_llms_data
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
@@ -240,10 +243,14 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
         "metadata": DatasetComparisonBaseMetadata.model_validate(
             db_comparison
         ).model_dump(),
+        "extra_metadata": DatasetComparisonExtraMetadata.model_validate(
+            db_comparison
+        ).model_dump(),
     }
     comparison = DatasetComparison.model_validate(db_comparison, context=ctx)
     comp_data = comparison.model_dump()
     comp_meta = comp_data.pop("metadata_")
+    comp_extra_meta = comp_data.pop("extra_metadata_")
     comp_turns = comp_data.pop("turns_")
 
     turns = []
@@ -255,6 +262,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
                 "turn": idx,
                 **comp_data,
                 "metadata": {**turn_meta, **comp_meta},
+                "extra_metadata": comp_extra_meta,
             }
         )
 
@@ -266,14 +274,7 @@ async def build_dataframe() -> pd.DataFrame:
     dataset = pd.DataFrame()
     failed_comparison_ids: list[str] = []
 
-    async for db_comp in get_db_comparisons_stream(
-        [
-            and_(
-                col(Comparison.archived).is_(False),
-                col(Comparison.llm_analyzed).is_(True),
-            )
-        ]
-    ):
+    async for db_comp in get_db_comparisons_stream():
         try:
             turns = comparison_to_turns(db_comp)
             dataset = pd.concat([dataset, pd.DataFrame(turns)])
@@ -291,8 +292,8 @@ async def build_dataframe() -> pd.DataFrame:
     return dataset
 
 
-async def process_dataset(
-    dataset_name: Datasets,
+async def process_datasets(
+    dataset_names: list[Datasets],
     export_base_path: str,
     dry_run: bool = False,
 ):
@@ -301,47 +302,40 @@ async def process_dataset(
     Export to multiple formats (parquet, jsonl, samples), and push to HF Hub.
 
     Args:
-        dataset_name: Name of the dataset to process
-        dataset_config: Configuration dict with 'query' and 'repo' keys
+        dataset_names: Names of the datasets to process
         export_base_path: Local directory for export
         dry_run: If True, skip HuggingFace upload
     """
-
-    logger.info(f"Starting processing for dataset: {dataset_name}")
+    logger.info(f"Starting processing datasets…")
 
     dataset_path = settings.HF_PUSH_DATASET_PATH
     path_parts = dataset_path.split("/", 1) if dataset_path else []
     repo_org = path_parts[0] if len(path_parts) == 2 else None
     repo_base = path_parts[1] if len(path_parts) == 2 else dataset_path
-    repo_name = f"{repo_base}-{dataset_name}"
 
     logger.info(f"Folder defined for dataset: {export_base_path}")
+    logger.info(f"Generating dataset dataframe…")
 
-    repo_path = os.path.join(export_base_path, repo_name)
+    df = await build_dataframe()
 
-    try:
+    # Check if data fetching failed
+    if df.empty:
+        raise Exception(f"Dataframe is empty, aborting export")
+
+    for dataset_name in dataset_names:
         logger.info(f"Generating '{dataset_name}'…")
+        data = df[~df["excluded"]] if dataset_name == "comparisons" else df
 
-        data = await build_dataframe()
+        if dataset_name == "comparisons":
+            data = df.drop(columns=["excluded", "extra_metadata"])
 
-        # Check if data fetching failed
-        if data.empty:
-            logger.error(
-                f"Failed to fetch data for dataset {dataset_name}, aborting export"
-            )
-            return False
-
+        repo_name = f"{repo_base}-{dataset_name}"
+        repo_path = os.path.join(export_base_path, repo_name)
         # Export data to local files
         export_data(data, dataset_name, repo_path)
 
         # Upload to HuggingFace Hub (skip if dry_run)
         if dry_run:
-            logger.info(f"[DRY RUN] Skipping HuggingFace upload for {dataset_name}")
-            return True
+            logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{dataset_name}'")
         else:
-            push_success = commit_and_push(repo_org, repo_name, repo_path)
-            return push_success
-
-    except Exception as e:
-        logger.error(f"An error occurred while processing dataset {dataset_name}: {e}")
-        return False
+            commit_and_push(repo_org, repo_name, repo_path)
