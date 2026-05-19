@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Literal
 
 from pydantic import (
@@ -12,6 +13,7 @@ from sqlmodel import SQLModel
 from backend.arena.models import BotPos
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
 from utils.database.models import LLMMessageFinal, SystemMessageRead, UserMessageRead
+from utils.database.models.comparison import ArchivedReason, ErrorDetails
 
 Datasets = Literal["comparisons", "comparisons_raw"]
 
@@ -40,6 +42,17 @@ class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
     total_tokens_b: int
     total_conso_a: float
     total_conso_b: float
+
+
+class DatasetComparisonExtraMetadata(SQLModel):
+    cohorts: str | None
+    error: ErrorDetails | None
+    llm_analyzed: bool | None = None
+    contains_pii: bool | None = None
+    contains_spam: bool | None = None
+    archived: bool | None = None
+    archived_reason: ArchivedReason | None
+    archived_at: datetime | None
 
 
 class DatasetTurn(SQLModel):
@@ -115,8 +128,10 @@ class DatasetComparison(SQLModel):
     # Extracted to build rows
     turns_: Annotated[list[DatasetTurn], Field(validation_alias="turns")]
     metadata_: Annotated[
-        DatasetComparisonMetadata,
-        Field(default=None, validate_default=True),
+        DatasetComparisonMetadata, Field(default=None, validate_default=True)
+    ]
+    extra_metadata_: Annotated[
+        DatasetComparisonExtraMetadata, Field(default=None, validate_default=True)
     ]
 
     @computed_field  # type: ignore[prop-decorator]
@@ -129,12 +144,25 @@ class DatasetComparison(SQLModel):
     def full_conversation_b(self) -> list[dict]:
         return self.parse_full_conversation("b")
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def excluded(self) -> bool:
+        if any(
+            [
+                not self.extra_metadata_.cohorts,
+                self.extra_metadata_.archived,
+                self.extra_metadata_.error is not None,
+                self.extra_metadata_.llm_analyzed is not True,
+            ]
+        ):
+            return True
+        return False
+
     @field_validator("metadata_", mode="before")
     @classmethod
     def parse_metadata(cls, value: None, info: ValidationInfo) -> dict:
         assert info.context
         turns_metadata = [turn.metadata_ for turn in info.data["turns_"]]
-        base_metadata = info.context["metadata"]
 
         return {
             **info.context["metadata"],
@@ -143,6 +171,12 @@ class DatasetComparison(SQLModel):
             "total_conso_a": sum(meta.conso_a for meta in turns_metadata),
             "total_conso_b": sum(meta.conso_b for meta in turns_metadata),
         }
+
+    @field_validator("extra_metadata_", mode="before")
+    @classmethod
+    def parse_extra_metadata(cls, value: None, info: ValidationInfo) -> dict:
+        assert info.context
+        return info.context["extra_metadata"]
 
     # HELPERS
 
