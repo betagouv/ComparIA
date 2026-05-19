@@ -69,15 +69,16 @@ remove-all-unused-imports = true
 exclude= [
     "./**/__init__.py",
     "./utils/ranking_methods",
-    "./utils/database/actions/__init__.py"
+    "./utils/database/actions/__init__.py",
+    "./utils/database/alembic"
 ]
 
 [tool.isort]
 profile = "black"
-extend_skip = ["utils/ranking_methods"]
+extend_skip = ["utils/ranking_methods", "utils/database/alembic"]
 
 [tool.black]
-extend-exclude = "utils/ranking_methods"
+extend-exclude = "utils/ranking_methods|utils/database/alembic"
 
 [tool.setuptools.packages.find]
 where = ["."]
