@@ -1,16 +1,19 @@
 import logging
+import uuid
 from datetime import datetime
 from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_args
 
-from sqlalchemy import text
 from sqlalchemy.orm import selectinload
 from sqlmodel import and_, col, func, select, update
 
 from backend.arena.models import BotPos
-from utils.utils import db_connection
 
 from .models import Comparison, Turn
-from .models.comparison import ArchivedReason, ComparisonUnarchiveUpdate
+from .models.comparison import (
+    ArchivedReason,
+    ComparisonArchiveUpdate,
+    ComparisonUnarchiveUpdate,
+)
 from .session import get_session
 
 TableName = Literal["conversations", "votes", "reactions"]
@@ -57,12 +60,10 @@ async def get_db_comparisons_counts(count_filters: dict[str, Any]):
         return (await session.exec(query)).mappings().one()
 
 
-def archive(
-    table_name: TableName,
-    ids: Sequence[str | int],
+async def archive(
+    ids: Sequence[uuid.UUID | str],
     archived_reason: ArchivedReason,
-    archived_at: datetime,
-    id_key: str = "conversation_pair_id",
+    archived_at: datetime | None = None,
     commit: bool = False,
 ) -> int:
     """
@@ -70,33 +71,23 @@ def archive(
     Log only by default what would have been archive, set 'commit' to True to
     actually archive those.
     """
-    query = """
-        UPDATE {table_name} 
-        SET 
-            archived = TRUE,
-            archived_reason = '{archived_reason}',
-            archived_at = '{archived_at}'
-        WHERE
-            {id_key} IN ({ids});
-    """.format(
-        table_name=table_name,
-        archived_reason=archived_reason,
-        archived_at=archived_at,
-        ids=", ".join([f"'{id}'" for id in ids]),
-        id_key=id_key,
-    )
+    data = ComparisonArchiveUpdate(
+        archived_reason=archived_reason, archived_at=archived_at or datetime.now()
+    ).model_dump()
 
-    with db_connection() as conn:
-        results = conn.execute(text(query))
+    async with get_session() as session:
+        logger.info("Archiving comparisons…")
+        query = update(Comparison).where(col(Comparison.id).in_(ids)).values(data)
+        results = await session.exec(query)
 
         if commit:
-            conn.commit()
+            await session.commit()
             logger.info(
-                f"Successfully archived {results.rowcount} '{archived_reason}' {table_name}."
+                f"Successfully archived {results.rowcount} comparisons '{archived_reason}'."
             )
         else:
             logger.error(
-                f"{results.rowcount} '{archived_reason}' {table_name} should be archived."
+                f"{results.rowcount} '{archived_reason}' comparisons should be archived."
             )
 
         return results.rowcount
