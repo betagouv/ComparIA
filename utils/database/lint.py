@@ -7,13 +7,7 @@ import polars as pl
 
 from utils.utils import db_connection
 
-from .actions import (
-    archive_corrupted,
-    archive_duplicate,
-    archive_spam,
-    archive_unknown_llms,
-    llm_analyze,
-)
+from .actions import archive_corrupted, archive_spam, archive_unknown_llms, llm_analyze
 from .utils import TABLE_NAMES, reset_archived, set_not_archived
 
 logger = logging.getLogger("comparia.db")
@@ -182,7 +176,6 @@ def lint(*, fix: bool = False, hard: bool = False, with_llm_analyze: bool = Fals
     archive_spam(commit=fix)
     archive_corrupted(commit=fix)
     archive_unknown_llms(commit=fix and hard)
-    archive_duplicate(commit=fix)
 
     if fix:
         set_not_archived(start_at)
