@@ -1,5 +1,5 @@
 {
-  "version": "1.4",
+  "version": "1.5",
   "description": "Regex patterns to detect prompt injection spam. Blocks structured prompt template formats that no legitimate user would type.",
   "patterns": [
     {
@@ -95,7 +95,7 @@
     },
     {
       "name": "trivial_short_prompt",
-      "regex": "^\\s*(?:hi|hello|hey|ok|okay|test|ping|say\\s+ok|say\\s+hi|say\\s+hello|hi\\s+or\\s+say\\s+ok)[\\s.!?]*$",
+      "regex": "^\\s*(?:hi|hello|hey|ok|okay|test|ping|say[\\s\\W]+ok|say[\\s\\W]+hi|say[\\s\\W]+hello|hi[\\s\\W]+or[\\s\\W]+say[\\s\\W]+ok)[\\s.!?]*$",
       "flags": "IGNORECASE",
       "description": "Whole-prompt trivial greetings/test pings ('hi', 'say OK', 'hello', 'test') used by bots to probe free-tier endpoints. Anchored to full string to avoid catching real prompts that contain these words.",
       "enabled": true

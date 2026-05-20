@@ -15,6 +15,10 @@ logger = logging.getLogger("languia")
 
 _compiled_patterns: Optional[list[re.Pattern]] = None
 
+# Zero-width and invisible characters used by bots to evade regex matching
+# (e.g. inserting U+200D between letters of 'say' so 'say ok' patterns miss).
+_INVISIBLE_CHARS = re.compile("[​-‏‪-‮⁠-⁯﻿]")
+
 
 def _load_spam_patterns() -> list[re.Pattern]:
     """Load and compile spam patterns from JSON file."""
@@ -77,4 +81,5 @@ def is_spam(prompt: str) -> bool:
     if _compiled_patterns is None:
         _compiled_patterns = _load_spam_patterns()
 
-    return any(pattern.search(prompt) for pattern in _compiled_patterns)
+    normalized = _INVISIBLE_CHARS.sub("", prompt)
+    return any(pattern.search(normalized) for pattern in _compiled_patterns)
