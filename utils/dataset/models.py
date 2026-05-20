@@ -31,9 +31,9 @@ class DatasetTurnMetadata(SQLModel):
 class DatasetComparisonBaseMetadata(SQLModel):
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
-    categories: list[str]
-    languages: list[str]
-    short_summary: str
+    categories: list[str] | None
+    languages: list[str] | None
+    short_summary: str | None
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
@@ -149,7 +149,7 @@ class DatasetComparison(SQLModel):
         if any(
             [
                 not self.extra_metadata_.cohorts,
-                self.extra_metadata_.archived,
+                self.extra_metadata_.archived is not False,
                 self.extra_metadata_.error is not None,
                 self.extra_metadata_.llm_analyzed is not True,
             ]
