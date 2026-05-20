@@ -81,7 +81,7 @@ export class ValidationError extends Error {
  */
 export class FastAPIClient {
   private baseUrl: string
-  private sessionHash: string | null = null
+  private comparisonId: string | null = null
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -95,15 +95,15 @@ export class FastAPIClient {
   }
 
   /**
-   * Get current session hash (or retrieve from localStorage)
+   * Get current comparison id (or retrieve from localStorage)
    */
-  getSessionHash(): string | null {
-    if (this.sessionHash) return this.sessionHash
+  getComparisonId(): string | null {
+    if (this.comparisonId) return this.comparisonId
 
     if (typeof window !== 'undefined' && window.sessionStorage) {
-      const stored = sessionStorage.getItem('arena-session-hash')
+      const stored = sessionStorage.getItem('arena-comparison-id')
       if (stored) {
-        this.sessionHash = stored
+        this.comparisonId = stored
         return stored
       }
     }
@@ -134,12 +134,12 @@ export class FastAPIClient {
   }
 
   /**
-   * Set session hash and store in sessionStorage
+   * Set comparison id and store in sessionStorage
    */
-  setSessionHash(hash: string): void {
-    this.sessionHash = hash
+  setComparisonId(id: string): void {
+    this.comparisonId = id
     if (typeof window !== 'undefined' && window.sessionStorage) {
-      sessionStorage.setItem('arena-session-hash', hash)
+      sessionStorage.setItem('arena-comparison-id', id)
     }
   }
 
@@ -150,10 +150,10 @@ export class FastAPIClient {
     const url = this.getUrl(path)
 
     try {
-      // Add session hash header if available
+      // Add comparison id header if available
       const headers = new Headers(options.headers || {})
-      if (this.sessionHash && !headers.has('X-Session-Hash')) {
-        headers.set('X-Session-Hash', this.sessionHash)
+      if (this.comparisonId && !headers.has('X-Comparison-Id')) {
+        headers.set('X-Comparison-Id', this.comparisonId)
       }
 
       const response = await fetch(url, {
@@ -181,12 +181,12 @@ export class FastAPIClient {
     console.debug(`Streaming from ${path}`)
 
     try {
-      // Add session hash header if available
       const headers: HeadersInit = {
         'Content-Type': 'application/json'
       }
-      if (this.sessionHash) {
-        headers['X-Session-Hash'] = this.sessionHash
+      // Add comparison id header if available
+      if (this.comparisonId) {
+        headers['X-Comparison-Id'] = this.comparisonId
       }
 
       const response = await fetch(url, {
@@ -223,8 +223,8 @@ export class FastAPIClient {
 
               // Handle special event types
               if (data.type === 'init') {
-                // Store session hash from first event
-                this.setSessionHash(data.comparison.session_hash)
+                // Store comparison id from first event
+                this.setComparisonId(data.comparison.id)
               } else if (data.type === 'error') {
                 // FIXME throw? probably not, errors are handle in chat
                 // const errorMsg = 'error' in data ? data.error : 'Unknown error'
