@@ -61,7 +61,6 @@ class ComparisonBase(SQLModel):
     id: ModelId
     created_at: AutoDatetime
     updated_at: AutoDatetime
-    session_hash: str
     ip: str  # WARNING: PII
     visitor_id: str | None = None
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
@@ -128,7 +127,6 @@ class ComparisonRead(ComparisonBase):
 
 class ComparisonPublic(SQLModel):
     id: uuid.UUID
-    session_hash: str
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
     error: ErrorDetails | None
