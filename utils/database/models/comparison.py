@@ -15,17 +15,17 @@ from .utils import AutoDatetime, ModelId, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
-    # "corrupted_no_model",  # some Conversations model_(a|b)_name is None
-    "corrupted_against_self",  # some Conversations model_a_name and model_b_name are equal
-    "corrupted_no_response",  # some Conversations conversation_(a|b) has no AssistantMessage at all
-    "corrupted_response_all_none",  # some Conversations conversation_(a|b) has all its AssistantMessage.content as None
-    "corrupted_response_last_none",  # some Conversations conversation_(a|b) has its last AssistantMessage.content as None
-    "corrupted_response_some_none",  # some Conversations conversation_(a|b) has at least one AssistantMessage.content as None
-    "corrupted_response_all_empty",  # some Conversations conversation_(a|b) has all its AssistantMessage.content as ''
-    "corrupted_response_last_empty",  # some Conversations conversation_(a|b) has its last AssistantMessage.content as ''
-    "corrupted_response_some_empty",  # some Conversations conversation_(a|b) has at least one AssistantMessage.content as ''
-    "corrupted_model_stream",  # some Conversations conversation_(a|b) has at least one AssistantMessage.content with ModelResponse or ModelResponseStream in it
-    # "corrupted_not_equal_length",  # Conversations conversation_(a&b) lengths are not equal (excluding SystemMessage)
+    # "corrupted_no_model",
+    "corrupted_against_self",  # some Comparison llm_id_(a|b) are equal
+    "corrupted_no_response",  # Comparison has no LLMMessage at all
+    "corrupted_response_all_none",  # some Comparison Turns side has all its LLMMessage.content as None
+    "corrupted_response_last_none",  # some Comparison Turn side has its last LLMMessage.content as None
+    "corrupted_response_some_none",  # some Comparison Turn side has at least one LLMMessage.content as None
+    "corrupted_response_all_empty",  # some Comparison Turn side has all its LLMMessage.content as ''
+    "corrupted_response_last_empty",  # some Comparison Turn side has its last LLMMessage.content as ''
+    "corrupted_response_some_empty",  # some Comparison Turn side has at least one LLMMessage.content as ''
+    "corrupted_model_stream",  # some Comparison Turn side has at least one LLMMessage.content with ModelResponse or ModelResponseStream in it
+    # "corrupted_not_equal_length",
     # "corrupted_out_of_range_reactions",
     # "corrupted_to_model_msg_reactions",
     # "corrupted_no_choice_votes",
@@ -37,11 +37,8 @@ ArchivedReason = Literal[
 ]
 # TODO could be fixed?
 # - "corrupted_response_(last|some)_(none|empty)":
-#   - remove corresponding UserMessage + AssistantMessage
-#   - remove corresponding reactions
-#   - if "some":
-#       - update other reactions msg_index accordingly
-# - "corrupted_model_stream": reparse AssistantMessage content
+#   - remove corresponding UserMessage + LLMMessage
+# - "corrupted_model_stream": reparse LLMMessage content
 
 SystemMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="system_message.id", unique=True)

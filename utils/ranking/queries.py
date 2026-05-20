@@ -1,8 +1,5 @@
 """
-Database queries for fetching vote and reaction data for ranking computation.
-
-Uses psycopg2 with RealDictCursor, matching the existing pattern
-from backend/arena/persistence.py and backend/utils/countries.py.
+Database queries for fetching turns vote data for ranking computation.
 """
 
 import logging

@@ -1,10 +1,8 @@
 """
-Module for handling conversations with AI models.
+Module for handling conversations with LLMs.
 
-This module manages the interaction with multiple AI models through LiteLLM,
+This module manages the interaction with LLMs through LiteLLM,
 handling streaming responses, token counting, and message tracking.
-
-Uses Pydantic Conversation model update and validation during streaming.
 """
 
 import asyncio
@@ -84,10 +82,10 @@ async def bot_response_async(
     max_new_tokens=16384,
 ) -> AsyncGenerator[LLMMessageCreate]:
     """
-    Stream a response from an AI model asynchronously.
+    Stream a response from a LLM asynchronously.
 
-    This is an async generator function that yields conversation state updates as the model
-    generates responses token by token.
+    This is an async generator function that yields LLMMessage updates as the
+    LLM generates the response token by token.
 
     Args:
         pos: Which LLM position ("a" or "b") to respond
@@ -100,10 +98,10 @@ async def bot_response_async(
         max_new_tokens: Maximum tokens to generate (default 4096)
 
     Yields:
-        Updated message list as response chunks arrive
+        Updated LLMMessageCreate as response chunks arrive
 
     Raises:
-        EmptyResponseError: If model returns empty response
+        EmptyResponseError: If the LLM returns empty response
     """
     # Try cache on first turn only
     if turn_index == 0:
@@ -122,7 +120,7 @@ async def bot_response_async(
     setattr(turn, f"llm_msg_{pos}", llm_msg)
 
     # Initialize streaming iterator from LiteLLM
-    # Use messages_for_api to avoid sending the empty AssistantMessage placeholder
+    # Use message to avoid sending the empty AssistantMessage placeholder
     # (some providers like Cohere reject messages with empty content)
     stream_iter = litellm_stream_iter(
         llm=llm,

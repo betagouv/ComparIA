@@ -1,7 +1,8 @@
 """
-Arena session management for conversation state in Redis.
+Arena session management for comparisons state in Redis.
 
-Handles storing and retrieving conversation pairs during active arena sessions.
+Handles storing and retrieving some comparison metadata not saved in db during
+active arena sessions.
 """
 
 import logging
