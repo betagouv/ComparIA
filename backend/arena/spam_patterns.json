@@ -1,5 +1,5 @@
 {
-  "version": "1.4",
+  "version": "1.5",
   "description": "Regex patterns to detect prompt injection spam. Blocks structured prompt template formats that no legitimate user would type.",
   "patterns": [
     {
@@ -112,6 +112,34 @@
       "regex": "<[^>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
       "flags": "IGNORECASE",
       "description": "Roleplay injection XML tags: <...Persona>, <Scenario>, <UserPersona>, <example_dialogs>, etc. Used in jailbreak prompts pasted from character.ai-style platforms.",
+      "enabled": true
+    },
+    {
+      "name": "qa_named_chat_replay",
+      "regex": "(?:^|\\n)\\s*Q:\\s+\\w+:[\\s\\S]{0,4000}?(?:^|\\n)\\s*A:\\s+\\w+:",
+      "flags": "",
+      "description": "Pasted chat history using 'Q: <name>:' and 'A: <name>:' alternation (character.ai / SillyTavern export style). Legitimate Q&A uses 'Q:' / 'A:' without a name after the colon.",
+      "enabled": true
+    },
+    {
+      "name": "character_ai_example_block",
+      "regex": "\\[\\s*(?:Start a new chat|End of examples\\.\\s*Begin real interaction\\.?)\\s*\\]",
+      "flags": "IGNORECASE",
+      "description": "Character.ai-style example-conversation block markers: '[Start a new chat]', '[End of examples. Begin real interaction.]'.",
+      "enabled": true
+    },
+    {
+      "name": "example_conversations_between",
+      "regex": "Example conversations? between \\S+ and \\S+\\s*:",
+      "flags": "IGNORECASE",
+      "description": "Header used to inject pre-written example dialogues: 'Example conversations between X and Y:'. Signature of pasted roleplay jailbreak templates.",
+      "enabled": true
+    },
+    {
+      "name": "mystery_response_start_token",
+      "regex": "冥_RESPONSE_START_",
+      "flags": "",
+      "description": "Literal jailbreak control token '冥_RESPONSE_START_' observed in roleplay injection payloads.",
       "enabled": true
     }
   ]
