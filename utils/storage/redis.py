@@ -11,7 +11,7 @@ REDIS_INSTANCE_PREFIX: Final[str] = (
 )
 
 # Redis keys (all namespaced by instance portal prefix)
-REDIS_CONVERSATIONS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}session:{{session_hash}}"
+REDIS_COMPARISON_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}comparison:{{id}}"
 REDIS_USER_CHAR_COUNT: Final[str] = f"{REDIS_INSTANCE_PREFIX}ip:{{ip}}"
 REDIS_CUSTOM_HOURLY_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}custom_hourly:{{ip}}"
 REDIS_CUSTOM_DAILY_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}custom_daily:{{ip}}"

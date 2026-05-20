@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 from logging.handlers import WatchedFileHandler
+
 from fastapi import Request
 from logging_loki import LokiHandler as BaseLokiHandler
 
@@ -54,7 +55,9 @@ class JSONFormatter(logging.Formatter):
                 log_data["path_params"] = dict(record.request.path_params)
                 # TODO: remove IP? (privacy concern)
                 log_data["ip"] = get_ip(record.request)
-                log_data["session_hash"] = getattr(record.request, "session_hash", None)
+                log_data["comparison_id"] = record.request.headers.get(
+                    "x-comparison-id"
+                )
 
             except:
                 pass
@@ -63,7 +66,6 @@ class JSONFormatter(logging.Formatter):
             log_data["extra"] = record.extra
 
         return json.dumps(log_data)
-
 
 
 def configure_logger() -> logging.Logger:

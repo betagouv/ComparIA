@@ -4,12 +4,11 @@ Arena session management for conversation state in Redis.
 Handles storing and retrieving conversation pairs during active arena sessions.
 """
 
-import json
 import logging
 import uuid
-from typing import Awaitable, TypedDict
+from typing import Awaitable
 
-from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel, ValidationError
 
 from backend.config import (
     RATELIMIT_CUSTOM_SELECTION_PER_DAY,
@@ -17,7 +16,7 @@ from backend.config import (
     RATELIMIT_PRICEY_MODELS_INPUT,
 )
 from utils.storage.redis import (
-    REDIS_CONVERSATIONS_KEY,
+    REDIS_COMPARISON_KEY,
     REDIS_CUSTOM_DAILY_KEY,
     REDIS_CUSTOM_HOURLY_KEY,
     REDIS_USER_CHAR_COUNT,
@@ -27,91 +26,66 @@ from utils.storage.redis import (
 logger = logging.getLogger("languia")
 
 
-class ComparisonMetadata(TypedDict):
+class ComparisonMetadata(BaseModel):
     id: uuid.UUID
-    session_hash: str
     is_streaming: bool
 
 
-def create_session() -> str:
-    """
-    Generate a new unique session hash.
-
-    Returns:
-        str: UUID-based session identifier
-    """
-    return str(uuid.uuid4())
-
-
-def store_comparison_metadata(
-    session_hash: str, id: uuid.UUID, is_streaming: bool
-) -> None:
+def store_comparison_metadata(id: uuid.UUID, is_streaming: bool) -> None:
     expire_time = 86400  # 24 hours
 
     try:
         client = get_redis_client()
         client.setex(
-            REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash),
+            REDIS_COMPARISON_KEY.format(id=id),
             expire_time,
-            json.dumps(
-                jsonable_encoder(
-                    {
-                        "id": id,
-                        "session_hash": session_hash,
-                        "is_streaming": is_streaming,
-                    }
-                )
-            ),
+            ComparisonMetadata(id=id, is_streaming=is_streaming).model_dump_json(),
         )
-        logger.info(f"[SESSION] Stored conversations for {session_hash}")
+        logger.info(f"[SESSION] Stored comparison '{id}' metadata.")
     except Exception as e:
-        logger.error(f"[SESSION] Error storing session: {e}")
+        logger.error(f"[SESSION] Error storing comparison '{id}' metadata: {e}")
         raise
 
 
-def retreive_comparison_metadata(
-    session_hash: str,
-) -> ComparisonMetadata:
+def retreive_comparison_metadata(id: uuid.UUID) -> ComparisonMetadata:
     try:
         client = get_redis_client()
-        data = client.get(REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash))
+        data = client.get(REDIS_COMPARISON_KEY.format(id=id))
         assert not isinstance(data, Awaitable)
         if not data:
-            logger.warning(f"[SESSION] Session not found: {session_hash}")
-            raise ValueError(f"Session not found: {session_hash}")
+            logger.warning(f"[SESSION] comparison metadata not found: '{id}'.")
+            raise ValueError(f"Comparison metadata not found: '{id}'.")
 
-        logger.info(f"[SESSION] Retrieved conversations for {session_hash}")
+        logger.info(f"[SESSION] Retrieved comparison '{id}' metadata.")
 
-        return json.loads(data)
+        return ComparisonMetadata.model_validate_json(data)
 
-    except json.JSONDecodeError as e:
-        logger.error(f"[SESSION] Error decoding session data: {e}")
-        raise ValueError(f"Invalid session data for {session_hash}")
+    except ValidationError as e:
+        logger.error(f"[SESSION] Error decoding comparison '{id}' metadata.: {e}")
+        raise ValueError(f"Invalid comparison '{id}' metadata.")
     except Exception as e:
-        logger.error(f"[SESSION] Error retrieving session: {e}")
+        logger.error(f"[SESSION] Error retrieving comparison '{id}' metadata.: {e}")
         raise
 
 
 # FIXME unused?
-def delete_session(session_hash: str) -> bool:
+def delete_session(id: uuid.UUID) -> bool:
     """
-    Delete a session from Redis.
+    Delete comparison metadata from Redis.
 
     Args:
-        session_hash: Unique session identifier
+        id: Unique comparison identifier
 
     Returns:
-        bool: True if session was deleted, False if it didn't exist
+        bool: True if metadata was deleted, False if it didn't exist
     """
     try:
         client = get_redis_client()
-        deleted = client.delete(
-            REDIS_CONVERSATIONS_KEY.format(session_hash=session_hash)
-        )
-        logger.info(f"[SESSION] Deleted session {session_hash}: {bool(deleted)}")
+        deleted = client.delete(REDIS_COMPARISON_KEY.format(id=id))
+        logger.info(f"[SESSION] Deleted comparison '{id}' metadata: {bool(deleted)}")
         return bool(deleted)
     except Exception as e:
-        logger.error(f"[SESSION] Error deleting session: {e}")
+        logger.error(f"[SESSION] Error deleting comparison '{id}' metadata: {e}")
         return False
 
 
