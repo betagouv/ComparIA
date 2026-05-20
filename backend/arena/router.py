@@ -112,7 +112,7 @@ def get_comparison_metadata(
 
 ComparisonMetadataAnno = Annotated[ComparisonMetadata, Depends(get_comparison_metadata)]
 
-# FIXME log conversation session data (ip, portal, cohorts, conv id) in routes?
+# FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
 
 @router.get("/challenge")
@@ -308,7 +308,7 @@ async def retry(
             detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
         )
 
-    # If conversations has not yet trully started
+    # If comparison has not yet trully started
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
         if pos := comparison.error.pos:

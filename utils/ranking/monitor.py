@@ -14,8 +14,8 @@ from .compute import RankingResult
 logger = configure_logger(logging.getLogger("ranking.monitoring"))
 
 
-async def get_conversations_llm_ids() -> set[str]:
-    """Get distinct model IDs from the conversations table."""
+async def get_comparisons_llm_ids() -> set[str]:
+    """Get distinct LLM IDs from the comparison table."""
     try:
         async with get_session() as session:
             results = await session.exec(
@@ -26,7 +26,7 @@ async def get_conversations_llm_ids() -> set[str]:
             )
             return set([result[0] for result in results.all()])
     except Exception as e:
-        logger.error(f"Failed to fetch distinct model IDs: {e}")
+        logger.error(f"Failed to fetch distinct LLM IDs: {e}")
         raise e
 
 
@@ -36,7 +36,7 @@ async def monitor(llms: dict[str, Any], data: RankingResult):
     """
 
     llm_ids = set(llms.keys())
-    db_llm_ids = await get_conversations_llm_ids()
+    db_llm_ids = await get_comparisons_llm_ids()
     new_llm_ids = set([id_ for id_ in llm_ids if llms[id_]["new"]])
     archived_llm_ids = set(
         [id_ for id_ in llm_ids if llms[id_]["status"] == "archived"]

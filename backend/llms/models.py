@@ -210,8 +210,8 @@ class LLMData(LLMDataBase, LLMDataEnhanced):
             str: French system prompt, or None for no custom system prompt
 
         Note:
-            The system prompt is included in conversations when provided.
-            This ensures consistent behavior across multiple conversations.
+            The system prompt is included in the Comparison when provided.
+            This ensures consistent behavior across multiple comparisons.
         """
         return None
 

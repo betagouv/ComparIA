@@ -40,6 +40,6 @@ async def archive_spam(*, commit: bool = False) -> None:
         logger.info(f"No comparisons with spam found!")
         return
 
-    logger.warning(f"Found {len(ids)} conversations with spam.")
+    logger.warning(f"Found {len(ids)} comparisons with spam.")
 
     await archive(ids, "spam", commit=commit)

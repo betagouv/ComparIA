@@ -1,5 +1,5 @@
 """
-Server-Sent Events (SSE) streaming support for arena conversations.
+Server-Sent Events (SSE) streaming support for arena comparisons.
 
 Handles real-time streaming of model responses to the frontend using SSE protocol.
 """
@@ -94,7 +94,7 @@ def format_sse_event(data: AnySSEEvent) -> str:
     return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
-async def stream_conversation_messages(
+async def stream_llm_response(
     pos: BotPos,
     llm: LLMDataEnabled,
     turn: TurnRead,
@@ -103,10 +103,10 @@ async def stream_conversation_messages(
     request: Request | None = None,
 ) -> AsyncGenerator[AnySSEEventMsg]:
     """
-    Stream a single bot response using Server-Sent Events format.
+    Stream a single LLM response using Server-Sent Events format.
 
     Args:
-        pos: Which model position ("a" or "b")
+        pos: Which LLM position ("a" or "b")
         llm: LLM data
         turn: Current Turn
         turn_index: Current Turn index
@@ -114,14 +114,7 @@ async def stream_conversation_messages(
         request: FastAPI Request object for logging
 
     Yields:
-        str: SSE-formatted messages (data: {...}\n\n)
-
-    SSE Format:
-        data: {"type": "chunk", "messages": [...]}
-
-        data: {"type": "complete"}
-
-        data: {"type": "error", "error": "error message"}
+        AnySSEEventMsg
     """
     from backend.arena.conversation import bot_response_async
 
@@ -184,25 +177,18 @@ async def stream_comparison_messages(
     request: Any | None = None,
 ) -> AsyncGenerator[AnySSEEvent]:
     """
-    Stream both model responses in parallel using Server-Sent Events.
+    Stream both LLMs responses in parallel using Server-Sent Events.
 
-    This function orchestrates streaming from both models simultaneously,
+    This function orchestrates streaming from both LLMs simultaneously,
     yielding updates as they arrive from either model.
 
     Args:
-        conv_a: First conversation state dict
-        conv_b: Second conversation state dict
+        comparison: current Comparison
+        turn: current Turn
         request: FastAPI Request object for logging
 
     Yields:
-        str: SSE-formatted messages with updates from both models
-
-    SSE Event Format:
-        data: {"type": "update", "a": {...}, "b": {...}}
-
-        data: {"type": "complete"}
-
-        data: {"type": "error", "error": "..."}
+        AnySSEEvent
     """
     import asyncio
 
@@ -212,7 +198,7 @@ async def stream_comparison_messages(
     try:
         # Create async generators for both models
         generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {
-            pos: stream_conversation_messages(
+            pos: stream_llm_response(
                 pos,
                 llms_data[getattr(comparison, f"llm_id_{pos}")],
                 turn,
@@ -272,7 +258,7 @@ async def stream_comparison_messages(
                             logger.warning(
                                 f"LLM '{failing_llm_id}' timed out, swapping to '{new_llm_id}'"
                             )
-                            generators[e.pos] = stream_conversation_messages(
+                            generators[e.pos] = stream_llm_response(
                                 e.pos,
                                 llms_data[new_llm_id],
                                 turn,
@@ -296,7 +282,7 @@ async def stream_comparison_messages(
         yield {"type": "complete"}
     except ChatError as e:
         # Specific chat error
-        # Error logging is done in `stream_conversation_messages()`
+        # Error logging is done in `stream_llm_response()`
         await update_comparison_error(
             comparison,
             ErrorDetails(message=e.message, pos=e.pos, is_timeout=e.is_timeout),
@@ -333,7 +319,9 @@ def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRea
 def _is_model_user_selected(
     model_name: str, mode: SelectionMode, custom_selection: CustomModelsSelection
 ) -> bool:
-    """Check if a model was explicitly chosen by the user (custom mode)."""
+    """
+    Check if a model was explicitly chosen by the user (custom mode).
+    """
     if mode != "custom" or not custom_selection:
         return False
     return model_name in custom_selection

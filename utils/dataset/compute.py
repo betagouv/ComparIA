@@ -2,17 +2,14 @@
 Export ComparIA datasets from PostgreSQL to HuggingFace Hub.
 
 This script:
-1. Fetches conversations, votes, and reactions from the database
-2. Applies transformations (hashing visitor_id, adding model metadata, calculating energy consumption)
-3. Filters out PII, archived data, and specific cohorts (Pix, do-not-track)
+1. Fetches Comparisons from the database
+2. Validate data with Dataset* models
+3. Filters out archived, errored, not analyzed and specific cohorts (Pix, do-not-track) for the public dataset
 4. Exports to multiple formats (parquet, jsonl, tsv samples)
 5. Uploads to HuggingFace Hub repositories
 
 Usage:
-    python export_dataset.py ./exports conversations
-    python export_dataset.py --dry-run
-    python export_dataset.py ./exports --dry-run
-    python export_dataset.py --count # only count db rows that would be exported exported
+    see `./comparia-cli generate datasets --help`
 
 Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
@@ -46,8 +43,8 @@ logger = logging.getLogger("comparia.dataset")
 @lru_cache
 def get_raw_llms_data() -> dict[str, LLMData]:
     """
-    Load the generated models JSON data.
-    Used to enrich conversations with model metadata (params count, energy consumption).
+    Load the generated LLMs JSON data.
+    Used to enrich datasets with metadata (params count, energy consumption).
     """
     try:
         llms_data = read_json(LLMS_GENERATED_DATA_FILE)
@@ -57,7 +54,7 @@ def get_raw_llms_data() -> dict[str, LLMData]:
             if v.get("status") in ("enabled", "archived")
         }
     except FileNotFoundError:
-        logger.error(f"Models JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
+        logger.error(f"LLMs JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
         raise
     except json.JSONDecodeError:
         logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
