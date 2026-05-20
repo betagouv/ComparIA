@@ -1,5 +1,6 @@
 import logging
 from typing import Annotated, AsyncGenerator
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
@@ -18,7 +19,6 @@ from backend.arena.services import (
 )
 from backend.arena.session import (
     ComparisonMetadata,
-    create_session,
     increment_custom_selections,
     increment_input_chars,
     is_custom_selection_ratelimited,
@@ -68,40 +68,40 @@ def assert_not_rate_limited(request: Request) -> None:
         )
 
 
-def get_session_hash(session_hash: str = Header(..., alias="X-Session-Hash")) -> str:
+def get_comparison_id(id: UUID = Header(..., alias="X-Comparison-Id")) -> UUID:
     """
-    Dependency to extract and validate session hash from headers.
+    Dependency to extract and validate comparison id from headers.
 
     Args:
-        session_hash: Session identifier from X-Session-Hash header
+        id: Comparison identifier from X-Comparison-Id header
 
     Returns:
-        str: Validated session hash
+        str: Validated comparison id
 
     Raises:
-        HTTPException: If session hash is missing or invalid
+        HTTPException: If comparison id is missing or invalid
     """
-    if not session_hash or len(session_hash) == 0:
+    if not id:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing session hash"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing comparison id"
         )
-    return session_hash
+    return id
 
 
 def get_comparison_metadata(
-    session_hash: str = Depends(get_session_hash),
+    id: UUID = Depends(get_comparison_id),
 ) -> ComparisonMetadata:
     try:
-        metadata = retreive_comparison_metadata(session_hash)
+        metadata = retreive_comparison_metadata(id)
     except Exception as e:
         # FIXME raise different errors depending on problem
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Comparison '{session_hash}' couldn't be found or parsed: {str(e)}",
+            detail=f"Comparison '{id}' couldn't be found or parsed: {str(e)}",
         )
 
     # For any arena view, raise error if chat responses are not yet finished
-    if metadata["is_streaming"]:
+    if metadata.is_streaming:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Veuillez attendre la fin de la réponse des modèles.",
@@ -168,13 +168,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
-    # Create new session
-    session_hash = create_session()
-
     # Initialize comparison and save it to db
     comparison = await create_comparison(
         ComparisonCreate(
-            session_hash=session_hash,
             ip=get_ip(request),
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
@@ -201,7 +197,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
 
         # Add first turn and save it to db (to at least save the user prompt)
         comparison, turn = await add_comparison_turn(comparison.id, args.prompt_value)
-        store_comparison_metadata(session_hash, comparison.id, is_streaming=True)
+        store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
@@ -217,7 +213,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
-        store_comparison_metadata(session_hash, comparison.id, is_streaming=False)
+        store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
@@ -248,7 +244,7 @@ async def add_text(
         HTTPException: If Comparison not found or rate limiting triggered
     """
     logger.info(
-        f"'/add_text' session={metadata["session_hash"]} called with: {args.model_dump_json()}",
+        f"'/add_text' on comparison '{metadata.id}' called with: {args.model_dump_json()}",
         extra={"request": request},
     )
 
@@ -257,10 +253,8 @@ async def add_text(
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
         # Add new turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(metadata["id"], args.message)
-        store_comparison_metadata(
-            comparison.session_hash, comparison.id, is_streaming=True
-        )
+        comparison, turn = await add_comparison_turn(metadata.id, args.message)
+        store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
@@ -277,9 +271,7 @@ async def add_text(
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
-        store_comparison_metadata(
-            comparison.session_hash, comparison.id, is_streaming=False
-        )
+        store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream())
 
@@ -305,11 +297,9 @@ async def retry(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    logger.info(
-        f"'/retry' session={metadata["session_hash"]}", extra={"request": request}
-    )
+    logger.info(f"'/retry' on comparison '{metadata.id}'", extra={"request": request})
 
-    comparison = await read_comparison(metadata["id"])
+    comparison = await read_comparison(metadata.id)
     turn = comparison.turns[-1]
 
     if turn.user_msg is None:
@@ -336,7 +326,7 @@ async def retry(
 
     await update_comparison_error(comparison, None)
 
-    store_comparison_metadata(comparison.session_hash, comparison.id, is_streaming=True)
+    store_comparison_metadata(comparison.id, is_streaming=True)
 
     logger.info(
         f"retry with user message: {turn.user_msg.content}",
@@ -362,9 +352,7 @@ async def retry(
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
-        store_comparison_metadata(
-            comparison.session_hash, comparison.id, is_streaming=False
-        )
+        store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
@@ -389,11 +377,11 @@ async def vote(
         HTTPException: If Comparison not found or forbidden vote attempts.
     """
     logger.info(
-        f"'/vote' session={metadata["session_hash"]} called with: {vote.model_dump_json()}",
+        f"'/vote' on comparison '{metadata.id}' called with: {vote.model_dump_json()}",
         extra={"request": request},
     )
 
-    comparison = await read_comparison(metadata["id"])
+    comparison = await read_comparison(metadata.id)
     turn = next((turn for turn in comparison.turns if turn.id == vote.turn_id), None)
 
     if not turn:
@@ -439,10 +427,8 @@ async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealDa
     Raises:
         HTTPException: If Comparison not found or no vote.
     """
-    logger.info(
-        f"[REVEAL] session={metadata["session_hash"]}", extra={"request": request}
-    )
-    comparison = await read_comparison(metadata["id"])
+    logger.info(f"[REVEAL] comparison '{metadata.id}'", extra={"request": request})
+    comparison = await read_comparison(metadata.id)
     last_turn = comparison.turns[-1]
 
     if last_turn.choice is None:
