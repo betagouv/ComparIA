@@ -19,8 +19,8 @@ Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 
 import json
 import logging
-import os
 from functools import lru_cache
+from pathlib import Path
 
 import pandas as pd
 from sqlalchemy.dialects.postgresql import JSONB
@@ -64,24 +64,24 @@ def get_raw_llms_data() -> dict[str, LLMData]:
         raise
 
 
-async def count_dataset_rows(dataset_names: list[Datasets]):
+async def count_dataset_rows(datasets: list[Datasets]):
     """Display row counts for each dataset without performing export."""
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
             {
-                "comparisons": and_(
+                "normal": and_(
                     col(Comparison.archived) == False,
                     col(Comparison.llm_analyzed) == True,
                     col(Comparison.error) == JSONB.NULL,
                     col(Comparison.cohorts).in_((None, "")),
                 ),
-                "comparisons_raw": col(Comparison.id) != None,
+                "raw": col(Comparison.id) != None,
             }
         )
 
-        for dataset_name, count in counts.items():
-            logger.info(f"{dataset_name:15} {count:>10,} rows")
+        for dataset, count in counts.items():
+            logger.info(f"{dataset:15} {count:>10,} rows")
     except Exception as e:
         logger.error(f"An error occurred while counting rows.")
         raise
@@ -144,9 +144,24 @@ async def build_dataframe() -> pd.DataFrame:
     return dataset
 
 
+def get_repo_infos() -> tuple[str, str]:
+    if not settings.HF_PUSH_DATASET_PATH:
+        raise Exception("Missing env var 'HF_PUSH_DATASET_PATH'")
+
+    try:
+        org, prefix = settings.HF_PUSH_DATASET_PATH.split("/", 1)
+        assert org
+        assert prefix
+        return org, prefix
+    except Exception as exc:
+        raise Exception(
+            "'HF_PUSH_DATASET_PATH' should match the pattern '{organisation}/{repo_prefix}'"
+        )
+
+
 async def process_datasets(
-    dataset_names: list[Datasets],
-    export_base_path: str,
+    datasets: list[Datasets],
+    export_base_path: Path,
     dry_run: bool = False,
 ):
     """
@@ -160,10 +175,7 @@ async def process_datasets(
     """
     logger.info(f"Starting processing datasets…")
 
-    dataset_path = settings.HF_PUSH_DATASET_PATH
-    path_parts = dataset_path.split("/", 1) if dataset_path else []
-    repo_org = path_parts[0] if len(path_parts) == 2 else None
-    repo_base = path_parts[1] if len(path_parts) == 2 else dataset_path
+    repo_org, repo_prefix = get_repo_infos()
 
     logger.info(f"Folder defined for dataset: {export_base_path}")
     logger.info(f"Generating dataset dataframe…")
@@ -174,20 +186,20 @@ async def process_datasets(
     if df.empty:
         raise Exception(f"Dataframe is empty, aborting export")
 
-    for dataset_name in dataset_names:
-        logger.info(f"Generating '{dataset_name}'…")
-        data = df[~df["excluded"]] if dataset_name == "comparisons" else df
+    for dataset in datasets:
+        repo_name = repo_prefix + ("_raw" if dataset == "raw" else "")
+        logger.info(f"Generating '{repo_name}'…")
+        data = df[~df["excluded"]] if dataset == "normal" else df
 
-        if dataset_name == "comparisons":
+        if dataset == "normal":
             data = df.drop(columns=["excluded", "extra_metadata"])
 
-        repo_name = f"{repo_base}-{dataset_name}"
-        repo_path = os.path.join(export_base_path, repo_name)
+        repo_path = export_base_path / repo_name
         # Export data to local files
-        export_data(data, dataset_name, repo_path)
+        export_data(data, repo_name, repo_path)
 
         # Upload to HuggingFace Hub (skip if dry_run)
         if dry_run:
-            logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{dataset_name}'")
+            logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{repo_name}'")
         else:
             commit_and_push(repo_org, repo_name, repo_path)

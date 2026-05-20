@@ -1,19 +1,17 @@
 import logging
-import os
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 from huggingface_hub import HfApi
-
-from .models import Datasets
 
 logger = logging.getLogger("comparia.dataset")
 
 
 def export_data(
     dataframe: pd.DataFrame,
-    dataset_name: Datasets,
-    export_dir: str,
+    dataset_name: str,
+    export_dir: Path,
 ) -> None:
     """
     Export DataFrame to multiple formats.
@@ -22,7 +20,7 @@ def export_data(
     - Full dataset: parquet, jsonl
     - 1000-row sample: tsv, jsonl
     """
-    os.makedirs(export_dir, exist_ok=True)
+    export_dir.mkdir(exist_ok=True)
 
     logger.info(f"Exporting data for dataset: '{dataset_name}'")
     try:
@@ -72,7 +70,7 @@ def export_data(
         raise
 
 
-def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
+def commit_and_push(repo_org: str, repo_name: str, repo_path: Path):
     """
     Upload exported files to HuggingFace Hub repository.
     Uses HF upload_folder method with timestamped commit message.
@@ -84,7 +82,7 @@ def commit_and_push(repo_org: str, repo_name: str, repo_path: str):
 
     try:
         commit_link = HfApi().upload_folder(
-            folder_path=repo_path,
+            folder_path=str(repo_path),
             repo_id=f"{repo_org}/{repo_name}",
             repo_type="dataset",
             commit_message=commit_message,
