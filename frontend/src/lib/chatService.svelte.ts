@@ -75,8 +75,7 @@ export interface ComparisonTurn extends BaseComparisonTurn {
 }
 
 interface BaseComparison {
-  id: number
-  session_hash: string
+  id: string
   mode: Mode
   custom_models_selection: string[]
   error?: string // ErrorDetails | None
