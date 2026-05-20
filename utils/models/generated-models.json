@@ -1,5 +1,5 @@
 {
-  "timestamp": 1777473636.498346,
+  "timestamp": 1779263609.781307,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -10,8 +10,7 @@
         "api_base": "https://router.huggingface.co/v1",
         "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
         "api_type": "huggingface",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": true,
@@ -94,8 +93,7 @@
         "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
         "api_model_id": "c4ai-aya-expanse-32b",
         "api_type": "openai",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -360,8 +358,7 @@
         "api_base": null,
         "api_model_id": "anthropic/claude-sonnet-4.5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -392,8 +389,7 @@
         "api_base": null,
         "api_model_id": "anthropic/claude-sonnet-4.6",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -424,8 +420,7 @@
         "api_base": null,
         "api_model_id": "anthropic/claude-sonnet-4",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -456,8 +451,7 @@
         "api_base": null,
         "api_model_id": "cohere/command-a",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -514,8 +508,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-chat-v3.1",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -546,8 +539,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-r1",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -578,8 +570,7 @@
         "api_base": null,
         "api_model_id": "deepseek/DeepSeek-R1-0528",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -597,7 +588,7 @@
       "reuse": true,
       "simple_name": "DeepSeek R1 0528",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
       "wh_per_million_token": 3978.900897184431
     },
@@ -610,8 +601,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-r1-distill-llama-70b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -642,8 +632,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-chat-v3-0324",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -700,8 +689,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-v3.2",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -719,7 +707,7 @@
       "reuse": true,
       "simple_name": "DeepSeek V3.2",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/deepseek/deepseek-v3.2",
       "wh_per_million_token": 3978.900897184431
     },
@@ -732,8 +720,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-v4-flash",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -764,8 +751,7 @@
         "api_base": null,
         "api_model_id": "deepseek/deepseek-v4-pro",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -796,8 +782,7 @@
         "api_base": "https://router.huggingface.co/v1",
         "api_model_id": "utter-project/EuroLLM-22B-Instruct-2512",
         "api_type": "huggingface",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -880,8 +865,7 @@
         "api_base": null,
         "api_model_id": "gemini-2.5-flash",
         "api_type": "vertex_ai",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -912,8 +896,7 @@
         "api_base": null,
         "api_model_id": "google/gemini-3-flash-preview",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -944,8 +927,7 @@
         "api_base": null,
         "api_model_id": "google/gemini-3-pro-preview",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -976,15 +958,14 @@
         "api_base": null,
         "api_model_id": "google/gemini-3.1-flash-lite-preview",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "google-color",
       "id": "gemini-3.1-flash-lite-preview",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "Google",
       "params": 250,
       "pricey": false,
@@ -1008,8 +989,7 @@
         "api_base": null,
         "api_model_id": "google/gemini-3.1-pro-preview",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1030,6 +1010,37 @@
       "status": "enabled",
       "url": null,
       "wh_per_million_token": 4289.5266051804565
+    },
+    "gemini-3.5-flash": {
+      "active_params": null,
+      "arch": "maybe-moe",
+      "commercial_use": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "google/gemini-3.5-flash",
+        "api_type": "openrouter",
+        "api_version": null
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "google-color",
+      "id": "gemini-3.5-flash",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "Google",
+      "params": 440,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "05/2026",
+      "required_ram": 440,
+      "reuse": false,
+      "simple_name": "Gemini 3.5 Flash",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
+      "wh_per_million_token": 9813.335468742105
     },
     "gemma-2-27b-it": {
       "active_params": null,
@@ -1144,8 +1155,7 @@
         "api_base": null,
         "api_model_id": "google/gemma-3-12b-it",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1176,8 +1186,7 @@
         "api_base": null,
         "api_model_id": "google/gemma-3-27b-it",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1208,8 +1217,7 @@
         "api_base": null,
         "api_model_id": "google/gemma-3-4b-it",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1240,8 +1248,7 @@
         "api_base": null,
         "api_model_id": "google/gemma-3n-e4b-it",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1272,8 +1279,7 @@
         "api_base": null,
         "api_model_id": "google/gemma-4-26b-a4b-it",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1304,8 +1310,7 @@
         "api_base": null,
         "api_model_id": "google/gemma-4-31b-it",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1336,8 +1341,7 @@
         "api_base": null,
         "api_model_id": "z-ai/glm-4.5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1368,8 +1372,7 @@
         "api_base": null,
         "api_model_id": "z-ai/glm-4.6",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1400,8 +1403,7 @@
         "api_base": null,
         "api_model_id": "z-ai/glm-4.7",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1419,7 +1421,7 @@
       "reuse": true,
       "simple_name": "GLM 4.7",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://z.ai/blog/glm-4.7",
       "wh_per_million_token": 1892.3799148434578
     },
@@ -1432,8 +1434,7 @@
         "api_base": null,
         "api_model_id": "z-ai/glm-5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1464,8 +1465,7 @@
         "api_base": null,
         "api_model_id": "z-ai/glm-5.1",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1522,8 +1522,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-4.1-mini",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -1554,8 +1553,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-4.1-nano",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1638,8 +1636,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1670,8 +1667,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5-mini",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1702,8 +1698,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5-nano",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1734,8 +1729,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.1",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1766,8 +1760,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.2",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1798,8 +1791,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.3-chat",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1830,8 +1822,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.4",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1862,8 +1853,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.4-mini",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -1894,8 +1884,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.4-nano",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -1926,8 +1915,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-5.5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1958,8 +1946,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-oss-120b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -1990,8 +1977,7 @@
         "api_base": null,
         "api_model_id": "openai/gpt-oss-20b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -2022,8 +2008,7 @@
         "api_base": null,
         "api_model_id": "x-ai/grok-3-mini-beta",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2054,8 +2039,7 @@
         "api_base": null,
         "api_model_id": "x-ai/grok-4-fast",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2086,8 +2070,7 @@
         "api_base": null,
         "api_model_id": "x-ai/grok-4.1-fast",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2105,7 +2088,7 @@
       "reuse": false,
       "simple_name": "Grok 4.1 Fast",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://x.ai/news/grok-4-1-fast",
       "wh_per_million_token": 14480.941662285395
     },
@@ -2118,15 +2101,14 @@
         "api_base": null,
         "api_model_id": "x-ai/grok-4.20",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
       "icon_path": "xai",
       "id": "grok-4.20",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "xAI",
       "params": 1700,
       "pricey": false,
@@ -2139,6 +2121,37 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://x.ai/news",
+      "wh_per_million_token": 137100.43989371642
+    },
+    "grok-4.3": {
+      "active_params": null,
+      "arch": "maybe-moe",
+      "commercial_use": null,
+      "distribution": "api-only",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "x-ai/grok-4.3",
+        "api_type": "openrouter",
+        "api_version": null
+      },
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "xai",
+      "id": "grok-4.3",
+      "license": "proprietary",
+      "new": true,
+      "organisation": "xAI",
+      "params": 1700,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "04/2026",
+      "required_ram": 1700,
+      "reuse": false,
+      "simple_name": "Grok 4.3",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://docs.x.ai/developers/models/grok-4.3",
       "wh_per_million_token": 137100.43989371642
     },
     "hermes-3-llama-3.1-405b": {
@@ -2176,8 +2189,7 @@
         "api_base": null,
         "api_model_id": "nousresearch/hermes-4-70b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -2234,8 +2246,7 @@
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2-0905",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2266,8 +2277,7 @@
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2-thinking",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2298,8 +2308,7 @@
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2.5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2330,8 +2339,7 @@
         "api_base": null,
         "api_model_id": "moonshotai/kimi-k2.6",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2388,15 +2396,14 @@
         "api_base": null,
         "api_model_id": "liquid/lfm-2-24b-a2b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
       "icon_path": "liquid",
       "id": "lfm2-24b-a2b",
       "license": "LFM 1.0",
-      "new": true,
+      "new": false,
       "organisation": "Liquid",
       "params": 24,
       "pricey": false,
@@ -2420,8 +2427,7 @@
         "api_base": null,
         "api_model_id": "liquid/lfm2-8b-a1b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -2452,8 +2458,7 @@
         "api_base": null,
         "api_model_id": "meta/llama3-405b-instruct-maas",
         "api_type": "vertex_ai",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2510,8 +2515,7 @@
         "api_base": "https://albert.api.etalab.gouv.fr/v1/",
         "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
         "api_type": "openai",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -2542,8 +2546,7 @@
         "api_base": null,
         "api_model_id": "nvidia/llama-3.1-nemotron-70b-instruct",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -2574,8 +2577,7 @@
         "api_base": null,
         "api_model_id": "meta-llama/llama-3.3-70b-instruct",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -2606,8 +2608,7 @@
         "api_base": null,
         "api_model_id": "meta-llama/llama-4-scout",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2638,8 +2639,7 @@
         "api_base": null,
         "api_model_id": "meta-llama/llama-4-maverick",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2670,8 +2670,7 @@
         "api_base": null,
         "api_model_id": "mistralai/magistral-medium-2506",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2702,8 +2701,7 @@
         "api_base": null,
         "api_model_id": "mistralai/magistral-small-2506",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -2786,8 +2784,7 @@
         "api_base": null,
         "api_model_id": "minimax/minimax-m2",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2818,8 +2815,7 @@
         "api_base": null,
         "api_model_id": "minimax/minimax-m2.5",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -2850,15 +2846,14 @@
         "api_base": null,
         "api_model_id": "minimax/minimax-m2.7",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "minimax-color",
       "id": "minimax-m2.7",
       "license": "Modified MIT",
-      "new": true,
+      "new": false,
       "organisation": "MiniMax",
       "params": 230,
       "pricey": false,
@@ -2934,8 +2929,7 @@
         "api_base": null,
         "api_model_id": "mistralai/mistral-large-2512",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -2966,8 +2960,7 @@
         "api_base": null,
         "api_model_id": "mistralai/mistral-medium-3.1",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -3024,8 +3017,7 @@
         "api_base": null,
         "api_model_id": "mistralai/mistral-saba",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3082,8 +3074,7 @@
         "api_base": null,
         "api_model_id": "mistralai/mistral-small-3.2-24b-instruct",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3114,15 +3105,14 @@
         "api_base": null,
         "api_model_id": "mistralai/mistral-small-2603",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "mistral-color",
       "id": "mistral-small-2603",
       "license": "Apache 2.0",
-      "new": true,
+      "new": false,
       "organisation": "Mistral AI",
       "params": 119,
       "pricey": false,
@@ -3250,15 +3240,14 @@
         "api_base": null,
         "api_model_id": "nvidia/nemotron-3-super-120b-a12b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "nvidia-color",
       "id": "nemotron-3-super-120b-a12b",
       "license": "Nemotron Open",
-      "new": true,
+      "new": false,
       "organisation": "Nvidia",
       "params": 120,
       "pricey": false,
@@ -3308,8 +3297,7 @@
         "api_base": null,
         "api_model_id": "openai/o4-mini",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3340,15 +3328,14 @@
         "api_base": "https://api.ordbogen.ai/v1",
         "api_model_id": "odin-large",
         "api_type": "openai",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "ordbogen.ai-color.svg",
       "id": "odin-large",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "Ordbogen",
       "params": 358,
       "pricey": false,
@@ -3374,15 +3361,14 @@
         "api_base": "https://api.ordbogen.ai/v1",
         "api_model_id": "odin-medium",
         "api_type": "openai",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "ordbogen.ai-color.svg",
       "id": "odin-medium",
       "license": "proprietary",
-      "new": true,
+      "new": false,
       "organisation": "Ordbogen",
       "params": 358,
       "pricey": false,
@@ -3434,8 +3420,7 @@
         "api_base": null,
         "api_model_id": "allenai/olmo-3-32b-think",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": true,
@@ -3544,8 +3529,7 @@
         "api_base": null,
         "api_model_id": "microsoft/phi-4",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -3576,8 +3560,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3-8b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XS",
       "fully_open_source": false,
@@ -3790,8 +3773,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3-30b-a3b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3822,8 +3804,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3-32b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3854,8 +3835,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3-coder",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3886,8 +3866,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3-coder-next",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "M",
       "fully_open_source": false,
@@ -3905,7 +3884,7 @@
       "reuse": true,
       "simple_name": "Qwen3 Coder Next",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
       "wh_per_million_token": 332.34270477516543
     },
@@ -3918,8 +3897,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3-max",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -3937,7 +3915,7 @@
       "reuse": false,
       "simple_name": "Qwen 3 Max",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
       "wh_per_million_token": 3784.7598296869155
     },
@@ -3950,8 +3928,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3.5-35b-a3b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -3982,8 +3959,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3.5-397b-a17b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
@@ -4014,8 +3990,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwen3.6-plus",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -4046,8 +4021,7 @@
         "api_base": null,
         "api_model_id": "qwen/qwq-32b",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "S",
       "fully_open_source": false,
@@ -4078,8 +4052,7 @@
         "api_base": null,
         "api_model_id": "arcee-ai/trinity-large-preview",
         "api_type": "openrouter",
-        "api_version": null,
-        "vertex_ai_location": null
+        "api_version": null
       },
       "friendly_size": "L",
       "fully_open_source": false,
