@@ -10,11 +10,9 @@ from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
 from .messages import SystemMessage, SystemMessageRead
-from .turn import Turn, TurnPublic, TurnRead
+from .turn import BotPos, Turn, TurnPublic, TurnRead
 from .utils import AutoDatetime, ModelId, OptionalDatetime
 
-BotPos = Literal["a", "b"]
-BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
     # "corrupted_no_model",  # some Conversations model_(a|b)_name is None

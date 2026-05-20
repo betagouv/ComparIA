@@ -17,8 +17,7 @@ from backend.llms.models import LLMDataArchived, LLMDataEnabled
 from utils.utils import LLMS_GENERATED_DATA_FILE
 
 if TYPE_CHECKING:
-    from utils.database.models import ComparisonRead
-    from utils.database.models.comparison import BotPos
+    from utils.database.models import BotPos, ComparisonRead
 
 
 logger = logging.getLogger("languia")

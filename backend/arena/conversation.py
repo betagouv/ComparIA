@@ -23,8 +23,7 @@ from backend.arena.cache import (
 from backend.arena.litellm import litellm_stream_iter
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
-from utils.database.models import AnyMessageRead, LLMMessageCreate, TurnRead
-from utils.database.models.comparison import BotPos
+from utils.database.models import AnyMessageRead, BotPos, LLMMessageCreate, TurnRead
 
 logger = logging.getLogger("languia")
 

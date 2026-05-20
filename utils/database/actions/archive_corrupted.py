@@ -6,8 +6,7 @@ from typing import Literal, cast
 
 from sqlmodel import col
 
-from ..models import Comparison
-from ..models.comparison import BOT_POS, ArchivedReason, BotPos
+from ..models import BOT_POS, ArchivedReason, BotPos, Comparison
 from ..utils import RawLLMMessage, archive, get_db_comparisons_stream
 
 logger = logging.getLogger("comparia.db")
