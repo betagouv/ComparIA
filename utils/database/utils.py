@@ -16,10 +16,6 @@ from .models import (
 )
 from .session import get_session
 
-TableName = Literal["conversations", "votes", "reactions"]
-TABLE_NAMES: tuple[TableName, ...] = get_args(TableName)
-
-
 logger = logging.getLogger("comparia.db")
 
 

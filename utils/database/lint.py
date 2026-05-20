@@ -12,29 +12,6 @@ from .utils import get_session, reset_archived, set_not_archived
 
 logger = logging.getLogger("comparia.db")
 
-ARCHIVED_CONVERSATIONS_QUERY = """
-    SELECT
-        timestamp,
-        archived,
-        archived_reason,
-        contains_pii,
-        contains_spam
-    FROM conversations;
-"""
-ARCHIVED_QUERY = """
-    SELECT
-        d.archived,
-        d.archived_reason,
-        d.timestamp,
-        c.contains_pii,
-        c.contains_spam
-    FROM 
-        {table_name} d
-    JOIN 
-        conversations c ON d.conversation_pair_id = c.conversation_pair_id
-    ;
-"""
-
 
 async def log_archived(
     *,
