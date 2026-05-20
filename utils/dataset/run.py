@@ -36,15 +36,11 @@ async def main(
     count: bool
         Display row counts for each dataset without exporting
     """
-    dataset_names: list[Datasets] = (
-        ["comparisons", "comparisons_raw"]
-        if (not dataset or dataset == "all")
-        else [dataset]
-    )
+    datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
 
     # If --count flag is set, display counts and exit
     if count:
-        return await count_dataset_rows(dataset_names)
+        return await count_dataset_rows(datasets)
 
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not dry_run:
@@ -54,11 +50,7 @@ async def main(
         logger.info("[DRY RUN] Skipping HuggingFace authentication")
 
     try:
-        await process_datasets(
-            dataset_names,
-            str(export_base_path),
-            dry_run=dry_run,
-        )
+        await process_datasets(datasets, export_base_path, dry_run=dry_run)
 
         logger.info("Finished processing all datasets.")
     except KeyboardInterrupt:
