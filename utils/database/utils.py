@@ -6,12 +6,13 @@ from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_
 from sqlalchemy.orm import selectinload
 from sqlmodel import and_, col, func, select, update
 
-from .models import Comparison, Turn
-from .models.comparison import (
+from .models import (
     ArchivedReason,
     BotPos,
+    Comparison,
     ComparisonArchiveUpdate,
     ComparisonUnarchiveUpdate,
+    Turn,
 )
 from .session import get_session
 

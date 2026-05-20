@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Literal, get_args
 
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
@@ -17,8 +17,10 @@ from .messages import (
 from .utils import AutoDatetime, ModelId
 
 if TYPE_CHECKING:
-    from .comparison import BotPos, Comparison
+    from .comparison import Comparison
 
+BotPos = Literal["a", "b"]
+BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 LLMMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="llm_message.id", unique=True)
 ]
@@ -90,6 +92,6 @@ class TurnVoteChoice(SQLModel):
 # TODO assert keywords are positive/negative depending on vote choice
 class TurnVoteAnnotate(SQLModel):
     turn_id: Annotated[uuid.UUID, Field(exclude=True)]
-    pos: Annotated["BotPos", Field(exclude=True)]
+    pos: Annotated[BotPos, Field(exclude=True)]
     keyword_annotations: list[PositivePref] | list[NegativePref]
     custom_annotation: Annotated[str | None, StripAndEmptyAsNone]

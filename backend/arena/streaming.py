@@ -21,14 +21,16 @@ from backend.errors import ChatError
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
+    BOT_POS,
     AnyMessageRead,
+    BotPos,
     ComparisonPublic,
     ComparisonRead,
+    ErrorDetails,
     LLMMessageCreate,
     TurnPublic,
     TurnRead,
 )
-from utils.database.models.comparison import BOT_POS, BotPos, ErrorDetails
 
 logger = logging.getLogger("languia")
 

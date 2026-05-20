@@ -11,10 +11,16 @@ from pydantic import (
 from sqlmodel import SQLModel
 
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
-from utils.database.models import LLMMessageFinal, SystemMessageRead, UserMessageRead
-from utils.database.models.comparison import ArchivedReason, BotPos, ErrorDetails
+from utils.database.models import (
+    ArchivedReason,
+    BotPos,
+    ErrorDetails,
+    LLMMessageFinal,
+    SystemMessageRead,
+    UserMessageRead,
+)
 
-Datasets = Literal["comparisons", "comparisons_raw"]
+Datasets = Literal["normal", "raw"]
 
 
 class DatasetTurnMetadata(SQLModel):
