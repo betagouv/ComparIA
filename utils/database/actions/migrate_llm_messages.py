@@ -28,9 +28,7 @@ UNKNOWN_GENERATION_ID = "unknown"
 
 
 def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
-    content = msg.get("content")
-    if not content:
-        return None
+    content = msg.get("content") or ""
 
     metadata = msg.get("metadata") or {}
     generation_id = metadata.get("generation_id")
@@ -128,9 +126,6 @@ async def migrate_llm_messages(
                     for turn_idx, msg in _extract_assistant_messages(conversation):
                         llm_msg = _build_llm_message(msg, ts)
                         if llm_msg is None:
-                            logger.debug(
-                                f"Skipping llm_message ({pair_id}, {side}, {turn_idx}): {msg}"
-                            )
                             batch_skipped += 1
                             continue
                         to_insert.append(llm_msg)
