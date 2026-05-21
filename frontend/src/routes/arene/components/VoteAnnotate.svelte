@@ -46,7 +46,7 @@
 <form
   {id}
   class="cl-vote-annotate bg-light-info px-4 py-2 mt-auto"
-  in:fly={{ y: 8, duration: 200, opacity: 0 }}
+  in:fly={{ y: 8, duration: 200 }}
 >
   <TextPrompt
     id="chatbot-prompt"

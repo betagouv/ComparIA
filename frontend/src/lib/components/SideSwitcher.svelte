@@ -2,6 +2,7 @@
   import { Button } from '$components/dsfr'
   import type { Bot } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { onDestroy } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let { children, ...props }: SvelteHTMLElements['div'] = $props()
@@ -27,9 +28,12 @@
       const { scrollLeft, scrollWidth, clientWidth } = scrollableElem
       const maxScroll = scrollWidth - clientWidth
       if (maxScroll <= 0) return
-      scrolledSide = scrollLeft / maxScroll > 0.5 ? 'b' : 'a'
+      const next: Bot = scrollLeft / maxScroll > 0.5 ? 'b' : 'a'
+      if (next !== scrolledSide) scrolledSide = next
     }, 80)
   }
+
+  onDestroy(() => clearTimeout(scrollDebounce))
 </script>
 
 <div {...props} class="min-h-0 relative flex max-w-full">
