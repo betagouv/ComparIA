@@ -11,15 +11,12 @@ _enc = tiktoken.get_encoding("cl100k_base")
 from utils.database.models.messages.llm import LLMMessage
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, save_map, source_connection
+from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, load_map_or_empty, save_map, source_connection
 
 logger = logging.getLogger("comparia.db.migrate")
 
-QUERY = f"""
-    SELECT conversation_pair_id, timestamp, conversation_a, conversation_b
-    FROM conversations
-    ORDER BY conversation_pair_id, timestamp
-"""
+_QUERY_SELECT = "SELECT conversation_pair_id, timestamp, conversation_a, conversation_b FROM conversations"
+QUERY = _QUERY_SELECT + " ORDER BY conversation_pair_id, timestamp"
 
 BATCH_SIZE = 10_000
 
@@ -80,6 +77,7 @@ async def migrate_llm_messages(
     source_uri: str,
     commit: bool = False,
     maps_dir: str = "/tmp/comparia_migration",
+    incremental: bool = False,
 ) -> None:
     """
     Step 3: migrate JSONB conversation messages → llm_message table.
@@ -91,7 +89,10 @@ async def migrate_llm_messages(
     ensure_maps_dir(maps_dir)
 
     comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "comparison_map")
-    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = {}
+    existing_llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = (
+        load_map_or_empty(maps_dir, "llm_message_map") if incremental else {}
+    )
+    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = dict(existing_llm_message_map)
     pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
@@ -99,7 +100,18 @@ async def migrate_llm_messages(
     batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        result = conn.execute(text(QUERY))
+        if incremental:
+            new_pair_ids: set[str] = load_map(maps_dir, "new_pair_ids")
+            if not new_pair_ids:
+                logger.info("No new pair_ids to process.")
+                save_map(maps_dir, "llm_message_map", llm_message_map)
+                return
+            result = conn.execute(
+                text(_QUERY_SELECT + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"),
+                {"ids": list(new_pair_ids)},
+            )
+        else:
+            result = conn.execute(text(QUERY))
         while True:
             raw_rows = result.mappings().fetchmany(BATCH_SIZE)
             if not raw_rows:

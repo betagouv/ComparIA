@@ -11,7 +11,7 @@ from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, source_conne
 
 logger = logging.getLogger("comparia.db.migrate")
 
-QUERY = f"""
+_QUERY_BASE = f"""
     SELECT
         v.conversation_pair_id,
         v.chosen_model_name, v.both_equal,
@@ -28,6 +28,9 @@ QUERY = f"""
     JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
     WHERE v.{NOT_ARCHIVED}
 """
+
+QUERY = _QUERY_BASE
+QUERY_FILTERED = _QUERY_BASE + "    AND v.conversation_pair_id = ANY(:ids)"
 
 ANNOTATION_COLS = [
     "useful", "complete", "creative", "clear_formatting",
@@ -57,6 +60,7 @@ async def migrate_votes(
     source_uri: str,
     commit: bool = False,
     maps_dir: str = "/tmp/comparia_migration",
+    incremental: bool = False,
 ) -> None:
     """
     Step 6: migrate votes → update last turn of each comparison with choice and keyword annotations.
@@ -81,7 +85,14 @@ async def migrate_votes(
     batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        result = conn.execute(text(QUERY))
+        if incremental:
+            new_pair_ids: set[str] = load_map(maps_dir, "new_pair_ids")
+            if not new_pair_ids:
+                logger.info("No new pair_ids to process.")
+                return
+            result = conn.execute(text(QUERY_FILTERED), {"ids": list(new_pair_ids)})
+        else:
+            result = conn.execute(text(QUERY))
         while True:
             raw_rows = result.mappings().fetchmany(BATCH_SIZE)
             if not raw_rows:

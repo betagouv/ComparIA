@@ -11,7 +11,7 @@ from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, source_conne
 
 logger = logging.getLogger("comparia.db.migrate")
 
-QUERY = f"""
+_QUERY_BASE = f"""
     SELECT
         conversation_pair_id, model_pos, msg_rank,
         liked, disliked, useful, complete, creative, clear_formatting,
@@ -20,6 +20,9 @@ QUERY = f"""
     FROM reactions
     WHERE {NOT_ARCHIVED}
 """
+
+QUERY = _QUERY_BASE
+QUERY_FILTERED = _QUERY_BASE + "    AND conversation_pair_id = ANY(:ids)"
 
 REACTION_FLAGS = [
     "liked", "disliked", "useful", "complete", "creative", "clear_formatting",
@@ -34,6 +37,7 @@ async def migrate_reactions(
     source_uri: str,
     commit: bool = False,
     maps_dir: str = "/tmp/comparia_migration",
+    incremental: bool = False,
 ) -> None:
     """
     Step 7: migrate reactions → update turn keyword_annotations and custom_annotation.
@@ -58,7 +62,14 @@ async def migrate_reactions(
     batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        result = conn.execute(text(QUERY))
+        if incremental:
+            new_pair_ids: set[str] = load_map(maps_dir, "new_pair_ids")
+            if not new_pair_ids:
+                logger.info("No new pair_ids to process.")
+                return
+            result = conn.execute(text(QUERY_FILTERED), {"ids": list(new_pair_ids)})
+        else:
+            result = conn.execute(text(QUERY))
         while True:
             raw_rows = result.mappings().fetchmany(BATCH_SIZE)
             if not raw_rows:

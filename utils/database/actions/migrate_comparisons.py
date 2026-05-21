@@ -9,11 +9,11 @@ from sqlalchemy import text
 from utils.database.models.comparison import Comparison
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, save_map, source_connection
+from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, load_map_or_empty, save_map, source_connection
 
 logger = logging.getLogger("comparia.db.migrate")
 
-QUERY = f"""
+_QUERY_SELECT = """
     SELECT
         conversation_pair_id, timestamp,
         session_hash, ip, visitor_id, cohorts, mode, custom_models_selection,
@@ -23,8 +23,9 @@ QUERY = f"""
         short_summary, keywords, categories, languages,
         archived, archived_reason, archived_at
     FROM conversations
-    ORDER BY conversation_pair_id, timestamp
 """
+
+QUERY = _QUERY_SELECT + "    ORDER BY conversation_pair_id, timestamp"
 
 VALID_MODES = {"random", "big-vs-small", "small-models", "custom"}
 BATCH_SIZE = 10_000
@@ -35,17 +36,25 @@ async def migrate_comparisons(
     source_uri: str,
     commit: bool = False,
     maps_dir: str = "/tmp/comparia_migration",
+    incremental: bool = False,
 ) -> None:
     """
     Step 2: migrate conversations → comparison table.
 
     Requires: system_message_map.pkl
     Produces: comparison_map.pkl (conversation_pair_id → comparison uuid)
+
+    When incremental=True, loads existing comparison_map, processes only new pair_ids,
+    and saves new_pair_ids.pkl for use by subsequent incremental steps.
     """
     ensure_maps_dir(maps_dir)
 
     system_map: dict[str, uuid.UUID] = load_map(maps_dir, "system_message_map")
-    comparison_map: dict[tuple[str, int], uuid.UUID] = {}
+
+    existing_comparison_map: dict[tuple[str, int], uuid.UUID] = (
+        load_map_or_empty(maps_dir, "comparison_map") if incremental else {}
+    )
+    comparison_map: dict[tuple[str, int], uuid.UUID] = dict(existing_comparison_map)
     pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
@@ -53,7 +62,41 @@ async def migrate_comparisons(
     batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        result = conn.execute(text(QUERY))
+        if incremental:
+            existing_pair_ids = {p for p, _ in existing_comparison_map}
+            if existing_pair_ids:
+                new_ids_result = conn.execute(
+                    text(
+                        "SELECT DISTINCT conversation_pair_id FROM conversations"
+                        " WHERE conversation_pair_id IS NOT NULL"
+                        " AND conversation_pair_id != ALL(:ids)"
+                    ),
+                    {"ids": list(existing_pair_ids)},
+                )
+            else:
+                new_ids_result = conn.execute(
+                    text(
+                        "SELECT DISTINCT conversation_pair_id FROM conversations"
+                        " WHERE conversation_pair_id IS NOT NULL"
+                    )
+                )
+            new_pair_ids: set[str] = {row[0] for row in new_ids_result.fetchall()}
+            save_map(maps_dir, "new_pair_ids", new_pair_ids)
+            if not new_pair_ids:
+                logger.info("No new pair_ids to migrate.")
+                save_map(maps_dir, "comparison_map", comparison_map)
+                return
+            logger.info(f"Incremental: {len(new_pair_ids)} new pair_ids to process.")
+            result = conn.execute(
+                text(
+                    _QUERY_SELECT
+                    + "    WHERE conversation_pair_id = ANY(:ids)"
+                    + "    ORDER BY conversation_pair_id, timestamp"
+                ),
+                {"ids": list(new_pair_ids)},
+            )
+        else:
+            result = conn.execute(text(QUERY))
         while True:
             raw_rows = result.mappings().fetchmany(BATCH_SIZE)
             if not raw_rows:

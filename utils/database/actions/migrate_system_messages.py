@@ -8,7 +8,7 @@ from sqlalchemy import text
 from utils.database.models.messages.system import SystemMessage
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, save_map, source_connection
+from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map_or_empty, save_map, source_connection
 
 logger = logging.getLogger("comparia.db.migrate")
 
@@ -26,6 +26,7 @@ async def migrate_system_messages(
     source_uri: str,
     commit: bool = False,
     maps_dir: str = "/tmp/comparia_migration",
+    incremental: bool = False,
 ) -> None:
     """
     Step 1: migrate distinct system prompts → system_message table.
@@ -34,7 +35,7 @@ async def migrate_system_messages(
     """
     ensure_maps_dir(maps_dir)
 
-    system_map: dict[str, uuid.UUID] = {}
+    system_map: dict[str, uuid.UUID] = load_map_or_empty(maps_dir, "system_message_map") if incremental else {}
     to_insert: list[SystemMessage] = []
 
     with source_connection(source_uri) as conn:

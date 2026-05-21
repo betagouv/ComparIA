@@ -10,15 +10,12 @@ from utils.database.models.messages.user import UserMessage
 from utils.database.models.turn import Turn
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, save_map, source_connection
+from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, load_map_or_empty, save_map, source_connection
 
 logger = logging.getLogger("comparia.db.migrate")
 
-QUERY = f"""
-    SELECT conversation_pair_id, timestamp, conversation_a
-    FROM conversations
-    ORDER BY conversation_pair_id, timestamp
-"""
+_QUERY_SELECT = "SELECT conversation_pair_id, timestamp, conversation_a FROM conversations"
+QUERY = _QUERY_SELECT + " ORDER BY conversation_pair_id, timestamp"
 
 BATCH_SIZE = 10_000
 
@@ -26,7 +23,19 @@ BATCH_SIZE = 10_000
 def _count_turns(conversation: list[dict] | None) -> int:
     if not conversation:
         return 0
-    return sum(1 for msg in conversation if msg.get("role") == "user")
+    count = 0
+    i = 0
+    while i < len(conversation):
+        if conversation[i].get("role") == "system":
+            i += 1
+            continue
+        if conversation[i].get("role") == "user" and i + 1 < len(conversation):
+            if conversation[i + 1].get("role") == "assistant":
+                count += 1
+                i += 2
+                continue
+        i += 1
+    return count
 
 
 async def migrate_turns(
@@ -34,6 +43,7 @@ async def migrate_turns(
     source_uri: str,
     commit: bool = False,
     maps_dir: str = "/tmp/comparia_migration",
+    incremental: bool = False,
 ) -> None:
     """
     Step 5: create turn rows linking comparison, user_message, llm_msg_a, llm_msg_b.
@@ -48,7 +58,10 @@ async def migrate_turns(
     llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = load_map(maps_dir, "llm_message_map")
     user_message_map: dict[tuple[str, int, int], uuid.UUID] = load_map(maps_dir, "user_message_map")
 
-    turn_map: dict[tuple[str, int, int], uuid.UUID] = {}
+    existing_turn_map: dict[tuple[str, int, int], uuid.UUID] = (
+        load_map_or_empty(maps_dir, "turn_map") if incremental else {}
+    )
+    turn_map: dict[tuple[str, int, int], uuid.UUID] = dict(existing_turn_map)
     pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
@@ -56,7 +69,18 @@ async def migrate_turns(
     batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
-        result = conn.execute(text(QUERY))
+        if incremental:
+            new_pair_ids: set[str] = load_map(maps_dir, "new_pair_ids")
+            if not new_pair_ids:
+                logger.info("No new pair_ids to process.")
+                save_map(maps_dir, "turn_map", turn_map)
+                return
+            result = conn.execute(
+                text(_QUERY_SELECT + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"),
+                {"ids": list(new_pair_ids)},
+            )
+        else:
+            result = conn.execute(text(QUERY))
         while True:
             raw_rows = result.mappings().fetchmany(BATCH_SIZE)
             if not raw_rows:
@@ -86,11 +110,6 @@ async def migrate_turns(
                     llm_msg_a_id = llm_message_map.get((pair_id, occ, "a", turn_idx))
                     llm_msg_b_id = llm_message_map.get((pair_id, occ, "b", turn_idx))
 
-                    if user_msg_id is None:
-                        logger.debug(f"No user_message for ({pair_id}, occ={occ}, turn={turn_idx}), skipping turn.")
-                        skipped += 1
-                        continue
-
                     turn_id = uuid.uuid4()
                     turns_to_insert.append(
                         {
@@ -107,7 +126,8 @@ async def migrate_turns(
                             "custom_annotation_b": None,
                         }
                     )
-                    user_msg_backfill.append((user_msg_id, turn_id))
+                    if user_msg_id is not None:
+                        user_msg_backfill.append((user_msg_id, turn_id))
                     batch_map[(pair_id, occ, turn_idx)] = turn_id
 
             if commit and turns_to_insert:

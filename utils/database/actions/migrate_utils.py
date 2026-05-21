@@ -35,6 +35,16 @@ def load_map(maps_dir: str, name: str) -> Any:
     return data
 
 
+def load_map_or_empty(maps_dir: str, name: str) -> dict:
+    path = os.path.join(maps_dir, f"{name}.pkl")
+    if not os.path.exists(path):
+        return {}
+    with open(path, "rb") as f:
+        data = pickle.load(f)
+    logger.info(f"Loaded {name}: {len(data)} entries from {path}")
+    return data
+
+
 @contextmanager
 def source_connection(source_uri: str, stream: bool = False) -> Generator[Connection, None, None]:
     engine = create_engine(source_uri, execution_options={"stream_results": stream})
