@@ -14,7 +14,12 @@ from backend.config import (
     SelectionMode,
 )
 from backend.llms.models import LLMDataArchived, LLMDataEnabled
+from backend.llms.weighting import compute_weights
+from backend.utils.countries import get_country_portal_ranking
+from utils.ranking.compute import RankingResult
 from utils.utils import LLMS_GENERATED_DATA_FILE
+
+_UNSET: Any = object()
 
 logger = logging.getLogger("languia")
 
@@ -24,6 +29,7 @@ class LLMsData(BaseModel):
         str,
         Annotated[LLMDataEnabled | LLMDataArchived, Field(discriminator="status")],
     ]
+    country_portal: CountryPortal
 
     @field_validator("all", mode="before")
     @classmethod
@@ -99,21 +105,18 @@ class LLMsData(BaseModel):
         """
         return [model.id for model in self.enabled.values() if model.pricey]
 
-    def pick_one(self, models: list[str], excluded: list[str] = []) -> str:
+    def pick_one(
+        self,
+        models: list[str],
+        excluded: list[str] = [],
+        ranking: RankingResult | None = _UNSET,
+    ) -> str:
         """
-        Randomly select a model from a list, excluding specified models.
-
-        Args:
-            models: List of available model names to choose from
-            excluded: List of model names to exclude from selection
-
-        Returns:
-            str: Selected model name
-
-        Raises:
-            Error: If no models are available after filtering
+        Randomly select a model, optionally weighted toward under-voted
+        models using n_match from the cached ranking data. Pass an
+        explicit `ranking` (including None) to skip the Redis lookup;
+        callers picking multiple models should fetch once and reuse.
         """
-        # Filter out excluded models
         models_pool = [_id for _id in models if _id not in excluded]
 
         logger.debug("chosing from:" + str(models_pool))
@@ -139,9 +142,21 @@ class LLMsData(BaseModel):
                 # FIXME hmm readding excluded models ?
                 models_pool = models
 
-        # Random selection from available models
-        picked_index = np.random.choice(len(models_pool), p=None)
-        return models_pool[picked_index]
+        if ranking is _UNSET:
+            ranking = get_country_portal_ranking(self.country_portal)
+
+        weights = compute_weights(models_pool, ranking)
+        picked_index = np.random.choice(len(models_pool), p=weights)
+        picked = models_pool[picked_index]
+        if weights is not None:
+            logger.debug(
+                "weighted_pick: model=%s weight=%.4f portal=%s pool_size=%d",
+                picked,
+                float(weights[picked_index]),
+                self.country_portal,
+                len(models_pool),
+            )
+        return picked
 
     def pick_two(
         self,
@@ -170,40 +185,50 @@ class LLMsData(BaseModel):
 
         # FIXME rework unavailable_models, models should be available if endpoint is defined or use class attribute to store unavailable models
 
+        ranking = get_country_portal_ranking(self.country_portal)
+
         if mode == "big-vs-small":
-            # Compare large models against small models
-            model_a_id = self.pick_one(self.big_models, excluded=unavailable_models)
-            model_b_id = self.pick_one(self.small_models, excluded=unavailable_models)
+            model_a_id = self.pick_one(
+                self.big_models, excluded=unavailable_models, ranking=ranking
+            )
+            model_b_id = self.pick_one(
+                self.small_models, excluded=unavailable_models, ranking=ranking
+            )
 
         elif mode == "small-models":
-            # Compare two small models
-            model_a_id = self.pick_one(self.small_models, excluded=unavailable_models)
+            model_a_id = self.pick_one(
+                self.small_models, excluded=unavailable_models, ranking=ranking
+            )
             model_b_id = self.pick_one(
-                self.small_models, excluded=[*unavailable_models, model_a_id]
+                self.small_models,
+                excluded=[*unavailable_models, model_a_id],
+                ranking=ranking,
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
-            # User-selected models
             # FIXME: input sanitization needed
             # if any(mode[1], not in models):
             #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
 
             if len(custom_selection) == 1:
-                # One model chosen by user, pair with random model
                 model_a_id = custom_selection[0]
                 model_b_id = self.pick_one(
-                    self.random_models, excluded=[*unavailable_models, model_a_id]
+                    self.random_models,
+                    excluded=[*unavailable_models, model_a_id],
+                    ranking=ranking,
                 )
             elif len(custom_selection) == 2:
-                # Two models chosen by user
                 model_a_id = custom_selection[0]
                 model_b_id = custom_selection[1]
 
         else:
-            # Default to random mode
-            model_a_id = self.pick_one(self.random_models, excluded=unavailable_models)
+            model_a_id = self.pick_one(
+                self.random_models, excluded=unavailable_models, ranking=ranking
+            )
             model_b_id = self.pick_one(
-                self.random_models, excluded=[*unavailable_models, model_a_id]
+                self.random_models,
+                excluded=[*unavailable_models, model_a_id],
+                ranking=ranking,
             )
 
         # Randomly swap models to avoid position bias
@@ -222,5 +247,6 @@ def get_llms_data(country_portal: CountryPortal) -> LLMsData:
     data = json.loads(LLMS_GENERATED_DATA_FILE.read_text())
 
     return LLMsData.model_validate(
-        {"all": data["models"]}, context={"country_portal": country_portal}
+        {"all": data["models"], "country_portal": country_portal},
+        context={"country_portal": country_portal},
     )

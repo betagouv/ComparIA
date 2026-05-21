@@ -179,4 +179,14 @@
       </div>
     </div>
   </section>
+
+  <section class="mt-16">
+    <h3 class="fr-h6 mb-4!">{m['ranking.methodo.sampling.title']()}</h3>
+    <p class="mb-3! text-dark-grey text-[14px]!">
+      {@html sanitize(m['ranking.methodo.sampling.desc.1']())}
+    </p>
+    <p class="text-dark-grey text-[14px]!">
+      {@html sanitize(m['ranking.methodo.sampling.desc.2']())}
+    </p>
+  </section>
 </div>

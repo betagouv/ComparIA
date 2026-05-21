@@ -1772,6 +1772,13 @@
                     "title": "Bias-reinforcing answers"
                 }
             },
+            "sampling": {
+                "desc": {
+                    "1": "To help newer or less-evaluated models catch up, model pairs are drawn with a <strong>mild bias toward models that have received fewer votes</strong>. Every model can still be picked in any matchup — popular models just become slightly less likely than they would be under pure uniform random selection.",
+                    "2": "Concretely, each model's selection weight is inversely proportional to its recorded match count (with smoothing so brand-new models don't dominate), and the ratio between any two models' weights is capped at 3×. This bias is small enough that the Bradley-Terry ranking above remains statistically reliable, while helping vote counts converge over time so comparisons between models are based on similar sample sizes."
+                },
+                "title": "How models are selected for matchups"
+            },
             "tabLabel": "The initial problem",
             "title": "Do conversational AI models respect the <span {props}>diversity</span> of European languages?"
         },

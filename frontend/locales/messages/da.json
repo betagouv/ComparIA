@@ -1762,6 +1762,13 @@
                     "title": "Bias-forstærkende svar"
                 }
             },
+            "sampling": {
+                "desc": {
+                    "1": "For at hjælpe nye eller mindre evaluerede modeller med at indhente forspringet udvælges modelparrene med en <strong>let skævvridning til fordel for modeller, der har modtaget færre stemmer</strong>. Alle modeller kan stadig vælges i en hvilken som helst sammenligning – de mest populære modeller bliver blot lidt mindre sandsynlige end ved en rent tilfældig udvælgelse.",
+                    "2": "Konkret er hver models udvælgelsesvægt omvendt proportional med dens registrerede antal kampe (med en udjævning, så helt nye modeller ikke dominerer trækningen), og forholdet mellem to modellers vægte er begrænset til 3×. Denne skævvridning er lille nok til, at Bradley-Terry-rangeringen ovenfor forbliver statistisk pålidelig, samtidig med at stemmetallene kan konvergere over tid, så sammenligninger mellem modeller bygger på sammenlignelige stikprøvestørrelser."
+                },
+                "title": "Sådan udvælges modellerne til sammenligninger"
+            },
             "tabLabel": "Det oprindelige problem",
             "title": "Respekterer samtalebaserede AI-modeller <span {props}>mangfoldigheden</span> i de europæiske sprog?"
         },
