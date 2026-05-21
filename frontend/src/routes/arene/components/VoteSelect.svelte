@@ -79,6 +79,18 @@
     }
   }
 
+  .cl-vote-select button[data-choice]:not([data-choice='idk']) {
+    transition:
+      transform 150ms ease,
+      background-color 150ms ease;
+  }
+  .cl-vote-select button[data-choice]:not([data-choice='idk']):hover:not(:disabled) {
+    transform: scale(1.02);
+  }
+  .cl-vote-select button[data-choice]:not([data-choice='idk']):active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
   @media (max-width: 47.99em) {
     .cl-vote-select button[data-choice='a_better'] {
       order: 1;

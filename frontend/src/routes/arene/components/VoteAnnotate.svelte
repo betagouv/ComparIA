@@ -4,6 +4,7 @@
   import type { APIReactionPref, VoteAnnotations } from '$lib/chatService.svelte'
   import { APINegativePrefs, APIPositivePrefs, PREFS_EMOJIS } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { fly } from 'svelte/transition'
 
   export interface VoteAnnotateProps {
     id: string
@@ -42,7 +43,11 @@
   const keywordChoices = $derived(keywords[kind])
 </script>
 
-<form {id} class="bg-light-info px-4 py-2 mt-auto">
+<form
+  {id}
+  class="bg-light-info px-4 py-2 mt-auto"
+  in:fly={{ y: 8, duration: 200, opacity: 0 }}
+>
   <TextPrompt
     id="chatbot-prompt"
     bind:value={annotations.custom_annotation}
