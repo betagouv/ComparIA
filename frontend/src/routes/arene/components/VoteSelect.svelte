@@ -23,9 +23,14 @@
     icon: choiceIcons[value]
   }))
 
+  let pickedChoice = $state<TurnChoice | null>(null)
+
   function onSubmit(e: SubmitEvent) {
     e.preventDefault()
-    onVote(e.submitter!.dataset.choice as TurnChoice)
+    if (pickedChoice) return
+    const choice = e.submitter!.dataset.choice as TurnChoice
+    pickedChoice = choice
+    setTimeout(() => onVote(choice), 280)
   }
 </script>
 
@@ -41,8 +46,12 @@
       {#each choices as choice (choice.value)}
         <button
           type="submit"
-          class="rounded-lg p-2 text-xs! bg-white cg-border flex items-center"
+          class={[
+            'rounded-lg p-2 text-xs! bg-white cg-border flex items-center',
+            { 'cl-vote-picked': pickedChoice === choice.value }
+          ]}
           data-choice={choice.value}
+          disabled={pickedChoice !== null && pickedChoice !== choice.value}
         >
           <span class={['gap-1 m-auto flex', { 'flex-row-reverse': choice.value === 'b_better' }]}>
             <Icon icon={choice.icon} block size="xs" class="text-primary" />
@@ -89,6 +98,14 @@
   }
   .cl-vote-select button[data-choice]:not([data-choice='idk']):active:not(:disabled) {
     transform: scale(0.97);
+  }
+  .cl-vote-select .cl-vote-picked {
+    background-color: var(--blue-france-main-525) !important;
+    color: white !important;
+    transform: scale(1.04);
+  }
+  .cl-vote-select .cl-vote-picked :global(.text-primary) {
+    color: white !important;
   }
 
   @media (max-width: 47.99em) {
