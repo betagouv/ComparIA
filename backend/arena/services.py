@@ -129,12 +129,13 @@ async def add_comparison_turn(
                 comparison_id=comparison_id, user_msg=UserMessage(content=prompt)
             )
         )
+        new_turn_id = db_turn.id
         session.add(db_turn)
         await session.commit()
 
     comparison = await read_comparison(comparison_id)
 
-    return (comparison, comparison.turns[-1])
+    return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
 
 async def update_turn(
