@@ -10,13 +10,34 @@
   let scrollableElem = $state<HTMLDivElement>()
 
   function doScroll() {
-    scrollableElem?.scrollTo({ left: scrolledSide === 'a' ? scrollableElem?.scrollWidth : 0 })
-    scrolledSide = scrolledSide === 'a' ? 'b' : 'a'
+    const next: Bot = scrolledSide === 'a' ? 'b' : 'a'
+    scrollableElem?.scrollTo({
+      left: next === 'b' ? scrollableElem.scrollWidth : 0,
+      behavior: 'smooth'
+    })
+    scrolledSide = next
+  }
+
+  let scrollDebounce: ReturnType<typeof setTimeout> | undefined
+  function onScroll() {
+    if (!scrollableElem) return
+    clearTimeout(scrollDebounce)
+    scrollDebounce = setTimeout(() => {
+      if (!scrollableElem) return
+      const { scrollLeft, scrollWidth, clientWidth } = scrollableElem
+      const maxScroll = scrollWidth - clientWidth
+      if (maxScroll <= 0) return
+      scrolledSide = scrollLeft / maxScroll > 0.5 ? 'b' : 'a'
+    }, 80)
   }
 </script>
 
 <div {...props} class="min-h-0 relative flex max-w-full">
-  <div class="flex w-full overflow-hidden" bind:this={scrollableElem}>
+  <div
+    class="cl-side-switcher-scroller md:overflow-hidden! flex w-full overflow-x-auto"
+    bind:this={scrollableElem}
+    onscroll={onScroll}
+  >
     {@render children?.()}
   </div>
 
@@ -34,3 +55,20 @@
     />
   {/each}
 </div>
+
+<style>
+  @media (max-width: 47.99em) {
+    .cl-side-switcher-scroller {
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cl-side-switcher-scroller::-webkit-scrollbar {
+      display: none;
+    }
+    .cl-side-switcher-scroller :global(> * > *) {
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+  }
+</style>
