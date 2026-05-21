@@ -45,7 +45,7 @@
 
 <form
   {id}
-  class="bg-light-info px-4 py-2 mt-auto"
+  class="cl-vote-annotate bg-light-info px-4 py-2 mt-auto"
   in:fly={{ y: 8, duration: 200, opacity: 0 }}
 >
   <TextPrompt
@@ -74,3 +74,21 @@
     onChange={() => onUpdate(annotations)}
   />
 </form>
+
+<style>
+  @keyframes chipPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .cl-vote-annotate :global(label:has(input:checked)) {
+    animation: chipPulse 220ms ease-out;
+  }
+</style>
