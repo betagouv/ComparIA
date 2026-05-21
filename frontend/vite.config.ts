@@ -18,6 +18,18 @@ export default defineConfig({
   server: {
     fs: {
       allow: ['./static']
+    },
+    proxy: {
+      '/models/': {
+        target: 'https://comparia.beta.gouv.fr',
+        changeOrigin: true,
+        headers: { 'X-Locale': 'fr' }
+      },
+      '/counter': {
+        target: 'https://comparia.beta.gouv.fr',
+        changeOrigin: true,
+        headers: { 'X-Locale': 'fr' }
+      }
     }
   },
   test: {
