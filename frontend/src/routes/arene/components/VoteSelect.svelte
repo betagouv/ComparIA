@@ -3,6 +3,7 @@
   import { TURN_CHOICES, type TurnChoice } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
+  import { onDestroy } from 'svelte'
 
   interface VoteSelectProps {
     id: string
@@ -24,14 +25,17 @@
   }))
 
   let pickedChoice = $state<TurnChoice | null>(null)
+  let voteTimeout: ReturnType<typeof setTimeout> | undefined
 
   function onSubmit(e: SubmitEvent) {
     e.preventDefault()
     if (pickedChoice) return
     const choice = e.submitter!.dataset.choice as TurnChoice
     pickedChoice = choice
-    setTimeout(() => onVote(choice), 280)
+    voteTimeout = setTimeout(() => onVote(choice), 280)
   }
+
+  onDestroy(() => clearTimeout(voteTimeout))
 </script>
 
 <form class="px-4 w-full" novalidate onsubmit={onSubmit}>
@@ -47,7 +51,7 @@
         <button
           type="submit"
           class={[
-            'rounded-lg p-2 text-xs! bg-white cg-border flex items-center',
+            'cl-vote-choice rounded-lg p-2 text-xs! bg-white cg-border flex items-center',
             { 'cl-vote-picked': pickedChoice === choice.value }
           ]}
           data-choice={choice.value}
@@ -88,23 +92,23 @@
     }
   }
 
-  .cl-vote-select button[data-choice]:not([data-choice='idk']) {
+  .cl-vote-choice {
     transition:
       transform 150ms ease,
       background-color 150ms ease;
   }
-  .cl-vote-select button[data-choice]:not([data-choice='idk']):hover:not(:disabled) {
+  .cl-vote-choice:hover:not(:disabled) {
     transform: scale(1.02);
   }
-  .cl-vote-select button[data-choice]:not([data-choice='idk']):active:not(:disabled) {
+  .cl-vote-choice:active:not(:disabled) {
     transform: scale(0.97);
   }
-  .cl-vote-select .cl-vote-picked {
+  .cl-vote-picked {
     background-color: var(--blue-france-main-525) !important;
     color: white !important;
     transform: scale(1.04);
   }
-  .cl-vote-select .cl-vote-picked :global(.text-primary) {
+  .cl-vote-picked :global(.text-primary) {
     color: white !important;
   }
 
