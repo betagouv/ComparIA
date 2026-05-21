@@ -41,7 +41,9 @@ class LLMMessage(LLMMessageFinal, table=True):
 
 class LLMMessageCreate(LLMMessageBase):
     content: str = ""
-    reasoning_content: str = ""
+    # Nullable: StripAndEmptyAsNone persists empty reasoning_content as NULL,
+    # so DB-loaded rows must validate back through LLMMessageCreate.
+    reasoning_content: str | None = ""
 
 
 class LLMMessageRead(LLMMessageFinal):
