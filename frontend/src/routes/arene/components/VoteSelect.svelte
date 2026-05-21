@@ -37,7 +37,7 @@
   >
     <legend id="display-fieldset-legend" class="sr-only">{m['vote.title']()}</legend>
 
-    <div class="gap-2 md:grid-cols-4 grid">
+    <div class="gap-2 grid-cols-2 md:grid-cols-4 grid">
       {#each choices as choice (choice.value)}
         <button
           type="submit"
@@ -76,6 +76,21 @@
   .cl-vote-select button {
     &:disabled {
       filter: grayscale(100%);
+    }
+  }
+
+  @media (max-width: 47.99em) {
+    .cl-vote-select button[data-choice='a_better'] {
+      order: 1;
+    }
+    .cl-vote-select button[data-choice='b_better'] {
+      order: 2;
+    }
+    .cl-vote-select button[data-choice='both_bad'] {
+      order: 3;
+    }
+    .cl-vote-select button[data-choice='both_good'] {
+      order: 4;
     }
   }
 </style>
