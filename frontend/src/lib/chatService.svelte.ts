@@ -269,8 +269,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       comparison.error = undefined
     }
 
+    let receivedEvent = false
     try {
       for await (const event of api.stream(url, body)) {
+        receivedEvent = true
         if (event.type === 'init') {
           const id = event.comparison.id.toString()
           comparisons[id] = parseAPIComparison(event.comparison)
@@ -304,15 +306,20 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
             }
           }
         }
-        loading = false
+      }
+      if (!receivedEvent && comparison) {
+        // SSE opened with no events — backend crashed before its first yield.
+        comparison.error = 'empty_stream'
+        if (turn) turn.status = 'error'
       }
     } catch (err) {
-      loading = false
       if (err instanceof ValidationError) {
         promptError = err.message in ERROR_MESSAGES ? m[ERROR_MESSAGES[err.message]]() : err.message
       } else {
         throw err
       }
+    } finally {
+      loading = false
     }
   }
 
