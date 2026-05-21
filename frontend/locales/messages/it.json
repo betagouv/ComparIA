@@ -172,7 +172,7 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "",
+                    "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto). Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello. </p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
                     "title": "Come vengono calcolati gli indicatori ecologici?"
                 },
                 "2": {
