@@ -21,7 +21,9 @@
         "scrollRight": "Rul til højre",
         "searchModel": "Søg efter en model",
         "seeMore": "Se mere",
-        "selectLanguage": "Vælg sprog"
+        "selectLanguage": "Vælg sprog",
+        "discover": "Opdag",
+        "returnArena": "Tilbage til arenaen"
     },
     "arenaHome": {
         "compareModels": {
@@ -1240,7 +1242,12 @@
     "header": {
         "banner": "Mistral 3 er kommer til arenaen!",
         "chatbot": {
-            "newDiscussion": "Ny samtale"
+            "newDiscussion": "Ny samtale",
+            "reveal": {
+                "title": "Afsløring",
+                "subtitle": "Modellerne er afsløret!",
+                "description": "Se den miljømæssige påvirkning af dine samtaler med hver model"
+            }
         },
         "help": {
             "link": {
@@ -2026,18 +2033,31 @@
                 "incorrect": "Forkert",
                 "instructions_not_followed": "Instruktionerne er ikke blevet fulgt",
                 "question": "Hvorfor kunne du ikke lide svaret?",
-                "superficial": "Overfladisk"
+                "superficial": "Overfladisk",
+                "comment": "Uddyb hvad du ikke kunne lide…"
             },
             "positive": {
                 "clear_formatting": "Klar formattering",
                 "complete": "Fuldstændigt",
                 "creative": "Kreativt",
                 "question": "Hvad kunne du lide ved svaret?",
-                "useful": "Brugbart"
+                "useful": "Brugbart",
+                "comment": "Uddyb hvad du satte pris på…"
             }
         },
         "title": "Hvilken AI-model foretrækker du?",
-        "yours": "Din stemme"
+        "yours": "Din stemme",
+        "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
+        "turn": {
+            "choices": {
+                "a_better": "A er bedst",
+                "b_better": "B er bedst",
+                "both_bad": "Begge er dårlige",
+                "both_good": "Begge er gode",
+                "idk": "Spring stemmen over"
+            },
+            "important": "Din stemme er vigtig: den bidrager til en bedre tilpasning til <a {linkProps}>dansksprogede præferencer</a>."
+        }
     },
     "welcome": {
         "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",
