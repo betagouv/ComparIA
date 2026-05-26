@@ -27,7 +27,7 @@
     "arenaHome": {
         "compareModels": {
             "count": "{count}/2 modelli",
-            "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente.",
+            "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
             "question": "Quali modelli desideri confrontare?"
         },
         "errors": {
@@ -101,7 +101,7 @@
     "datasets": {
         "access": {
             "catch": "Sviluppatori di modelli, ricercatori, aziende, ora tocca a te!",
-            "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese, lituano e riflettono un utilizzo reale e non artificiale/vincolato. Questi set di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
+            "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese e lituano e riflettono un utilizzo reale e non artificiale. Questa raccolta di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
             "repos": {
                 "conversations": {
                     "desc": "Tutte le risposte e le domande poste",
@@ -117,18 +117,19 @@
                 }
             },
             "share": "Condividi con noi come utilizzi i dati",
-            "title": "Accedi all'insieme di dati di compar:AI"
+            "title": "Accedi ai dataset di compar:IA"
         },
         "reuse": {
             "bunka": {
                 "analyze": {
-                    "desc": "Analisi delle conversazioni degli utenti con individuazione di attività (creazione, ricerca di informazioni, ecc.), argomenti (arte e cultura, istruzione, ecc.), emozioni complesse (curiosità, entusiasmo, ecc.) e tipologie linguistiche (formale, professionale, ecc.).",
+                    "desc": "Analisi delle conversazioni degli utenti con individuazione di attività (creazione, ricerca di informazioni, ecc.), argomenti (arte e cultura, istruzione, ecc.), emozioni complesse (curiosità, entusiasmo, ecc.) e tipologie linguistiche (formale, professionale, ecc.)",
                     "title": "Accedi all'analisi per indicatore"
                 },
                 "conversations": {
                     "desc": "Visualizzazione interattiva delle conversazioni, in cui ogni punto rappresenta un cluster di discussioni avviate dagli utenti (ad esempio su temi come istruzione, salute, ambiente o persino filosofia).",
                     "title": "Esplora la visualizzazione dei dati"
                 },
+                "desc": "Il team di Bunka.ai ha condotto uno studio approfondito sulle interazioni tra gli utenti della piattaforma Compar:AI e i modelli di intelligenza artificiale, esaminando gli argomenti preferiti, le attività principali e determinando se questi modelli funzionino principalmente come strumenti di automazione o come potenziamento delle capacità umane. Questa analisi si basa su un ampio campione di 25.000 conversazioni.",
                 "method": "Scopri di più sulla metodologia"
             },
             "desc": "Esempi di riutilizzo dei dataset di compar:AI",
@@ -137,7 +138,7 @@
     },
     "errors": {
         "404": {
-            "desc": "Se hai digitato l'indirizzo web nel tuo browser, verifica che sia corretto. La pagina potrebbe non essere più disponibile. In tal caso, per continuare la navigazione <br /> puoi accedere alla nostra homepage. Altrimenti <br /> contattaci e ti indirizzeremo alle informazioni corrette.",
+            "desc": "Se hai digitato l'indirizzo web nel tuo browser, verifica che sia corretto. La pagina potrebbe non essere più disponibile.<br />In tal caso, per continuare la navigazione puoi accedere alla nostra homepage.<br />Altrimenti contattaci e ti indirizzeremo alle informazioni corrette.",
             "error": "Errore 404",
             "sorry": "La pagina che stai cercando non è stata trovata. Ci scusiamo per l'inconveniente.",
             "title": "Pagina non trovata"
@@ -154,12 +155,15 @@
         "datasets": {
             "questions": {
                 "1": {
+                    "desc": "<p>I dati sulle preferenze vengono utilizzati per migliorare i modelli durante l'addestramento futuro.</p><p>Confrontando alla cieca le risposte di due modelli, gli utenti di compar:IA esprimono le proprie preferenze, indicando quali risposte sono più pertinenti. Questi dati sulle preferenze possono essere utilizzati per perfezionare l'allineamento del modello, ovvero per addestrarlo a generare risposte che meglio corrispondano alle aspettative e alle preferenze dell'utente. </p><p>Si tratta di un processo iterativo, in cui il modello impara gradualmente a generare risposte migliori in base al feedback degli utenti sulla qualità delle risposte. Essendo esposti ai dati sulle preferenze, i modelli imparano a incorporarli nel loro processo di generazione delle risposte.</p>",
                     "title": "I dati sulle preferenze hanno un effetto immediato sul miglioramento dei modelli?"
                 },
                 "2": {
+                    "desc": "<p>La caratteristica unica dei dati raccolti sulla piattaforma compar:IA è che sono scritti in italiano e corrispondono ad attività reali degli utenti. Questi dati riflettono le preferenze umane all'interno di uno specifico contesto linguistico e culturale. Ciò consente di adattare i modelli per renderli più pertinenti, accurati e in linea con il comportamento degli utenti, affrontando al contempo eventuali distorsioni o lacune nei modelli attuali.</p>",
                     "title": "Perché i dati sulle preferenze raccolti su compar:IA sono utili?"
                 },
                 "3": {
+                    "desc": "<p>compar:IA si posiziona come uno strumento di valutazione e allineamento specifico per i modelli linguistici, focalizzato sulla qualità delle risposte e sulla raccolta di dati sulle preferenze, distinguendosi così dall'approccio di classificazione globale di <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> sviluppato da <a href='https://lmarena.ai/' target='_blank'>lmsys.org</a> e dall'allineamento etico dei modelli di IA di <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
                     "title": "Cosa rende compar:IA unico rispetto ad altre iniziative simili?"
                 }
             },
@@ -168,13 +172,15 @@
         "ecology": {
             "questions": {
                 "1": {
+                    "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto). Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello. </p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
                     "title": "Come vengono calcolati gli indicatori ecologici?"
                 },
                 "2": {
-                    "desc": "<p> La posizione dei data center influisce sull'impronta di carbonio dell'IA. Se un modello viene addestrato o utilizzato in un paese fortemente dipendente dai combustibili fossili, il suo impatto ambientale sarà maggiore rispetto a un modello ospitato in un paese che utilizza principalmente energie rinnovabili. </p> <p> Il metodo di analisi dell'impatto ambientale dell'IA sviluppato da <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (di GenAI Impact)</a> incorpora dati sul mix energetico dei diversi paesi in cui si trovano i server. Ciò consente una stima più accurata e dettagliata dell'effettiva impronta di carbonio dell'inferenza su diversi modelli di IA generativa. </p>",
+                    "desc": "<p>La posizione dei data center influisce sull'impronta di carbonio dell'IA. Se un modello viene addestrato o utilizzato in un paese fortemente dipendente dai combustibili fossili, il suo impatto ambientale sarà maggiore rispetto a un modello ospitato in un paese che utilizza principalmente energie rinnovabili.</p><p>Il metodo di analisi dell'impatto ambientale dell'IA sviluppato da <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (di GenAI Impact)</a>, incorpora dati sul mix energetico dei diversi paesi in cui si trovano i server. Ciò consente una stima più accurata e dettagliata dell'effettiva impronta carbonio dell'inferenza su diversi modelli di IA generativa.</p>",
                     "title": "Gli indicatori ambientali tengono conto del mix energetico dei diversi paesi?"
                 },
                 "3": {
+                    "desc": "<p>Gli attuali indicatori di impatto ambientale si concentrano principalmente sull'impatto dell' <strong>inferenza</strong>, ovvero sull'utilizzo di modelli di intelligenza artificiale per rispondere alle richieste. Questo approccio può dare l'illusione che l'inferenza sia meno dispendiosa in termini di energia rispetto all'addestramento del modello. Tuttavia, <strong>la realtà è più complessa.</strong> Si consideri l'analogia dell'auto:</p><ul><li>Costruire una macchina (addestramento) è un processo unico e ad alta intensità di risorse.</li> <li>Ogni viaggio in auto ( inferenza) consuma meno energia, ma questi viaggi si ripetono quotidianamente e il loro numero è potenzialmente immenso.</li></ul><p>Allo stesso modo, <strong>l'impatto cumulativo dell'inferenza, su milioni di utenti che effettuano richieste ogni giorno, può superare l'impatto dell'addestramento iniziale.</strong> Per questo motivo è fondamentale che gli strumenti di valutazione dell'impronta di carbonio dell'IA considerino <strong>l'intero ciclo di vita</strong> dei modelli, dall'addestramento all'utilizzo in produzione</p>",
                     "title": "Gli indicatori di impatto ambientale tengono conto delle risorse utilizzate per addestrare i modelli?"
                 }
             },
@@ -183,8 +189,610 @@
         "i18n": {
             "questions": {
                 "1": {
+                    "desc": "<p>Si, l'internazionalizzazione di compar:IA è in corso. Stiamo iniziando con un'espansione in tre paesi pilota: Lituania, Svezia e Danimarca. Questa fase iniziale ci permette di testare l'approccio e adattare l'interfaccia ai diversi contesti linguistici e culturali europei. In seguito, la rete potrebbe espandersi ad altre lingue europee in base al feedback ricevuto da questi paesi pilota. L'obiettivo è quello di costruire gradualmente un vero e proprio spazio digitale europeo per la valutazione umana dell'IA conversazionale, con una struttura di governance collaborativa che è ancora in fase di definizione tra i diversi paesi partecipanti.</p>",
                     "title": "compar:AI inizialmente si è concentrata sul francese: sono previsti piani per altre lingue europee?"
+                },
+                "2": {
+                    "desc": "<p>Lo sviluppo di una piattaforma europea per il confronto dei modelli di intelligenza artificiale conversazionale offre diversi vantaggi concreti. Consente la raccolta di dati sulle preferenze che riflettono le reali esigenze degli utenti europei, migliorando così la pertinenza dei modelli per questo pubblico. Garantisce inoltre una migliore rappresentazione delle lingue e delle culture europee, spesso sottorappresentate nelle valutazioni globali dominate dall'inglese. Assicura inoltre la conformità con le normative europee (GDPR, AI Act) e integra criteri di valutazione in linea con le priorità europee, come la sostenibilità ambientale e la trasparenza algoritmica. Per finire, favorisce la nascita di un ecosistema europeo di intelligenza artificiale competitivo e autonomo.</p>",
+                    "title": "Quali sono i vantaggi di una piattaforma di raccolta delle preferenze specificamente europea?"
                 }
+            },
+            "title": "Internazionalizzazione"
+        },
+        "models": {
+            "questions": {
+                "1": {
+                    "desc": "<p>Scegliamo i modelli in base alla loro popolarità, diversità e rilevanza per gli utenti. Prestiamo particolare attenzione a rendere accessibili i modelli chiamati <em>open weights</em> e quelli di diverse dimensioni.</p>",
+                    "title": "Come si scelgono i modelli da includere nello strumento di confronto?"
+                },
+                "2": {
+                    "desc": "<p>L'inferenza, ovvero la capacità di interrogare i modelli, è gestita dal progetto. Per la maggior parte dei modelli, utilizziamo le API Open Router e Hugging Face e applichiamo una tariffazione basata su token e sull'utilizzo.</p>",
+                    "title": "Come fate a offrire questo servizio gratuitamente?"
+                },
+                "3": {
+                    "desc": "<p>I modelli sono ottimizzati per consumare meno risorse semplificando alcuni calcoli, pur puntando migliore qualità di risposta.</p><p>La quantizzazione è una tecnica di ottimizzazione che riduce la precisione dei numeri utilizzati per rappresentare i parametri di un modello . Ciò consente di <strong>diminuire la dimensione del modello</strong> e <strong>di accelerare i calcoli</strong>, il che risulta vantaggioso per l'inferenza su macchine con risorse limitate.</p>",
+                    "title": "\"Modello quantificato\", che cos'è?"
+                },
+                "4": {
+                    "desc": "<p><strong>La capacità di un modello di parlare più lingue è legata alla diversità linguistica dei suoi dati di addestramento, non al paese</strong>. I modelli linguistici <strong>LLM utilizzano enormi corpus in molte lingue</strong>, ma la distribuzione delle lingue nei dati di addestramento non è uniforme. Una sovrarappresentazione dell'inglese può portare a limitazioni in altre lingue. Queste limitazioni si traducono, ad esempio, in dei <strong>anglicismi o nell'incapacità di generare contenuti in alcune lingue classificate come \"a rischio di estinzione\" dall'UNESCO</strong>.</p><p><strong>L'accuratezza e la ricchezza del vocabolario di un modello dipendono dai dati utilizzati per il suo addestramento</strong>.</p>",
+                    "title": "Esiste un legame tra la nazionalità dell'azienda o del laboratorio che ha ideato il modello e la sua capacità di parlare più lingue?"
+                },
+                "5": {
+                    "desc": "<p>Pochi portatori d'interesse sono \"trasparenti” riguardo alle fonti di dati utilizzate per l'addestramento dei corpus. Queste informazioni sono spesso riservate per ragioni legali e commerciali. </p>",
+                    "title": "È possibile conoscere i dati di addestramento dei modelli?"
+                }
+            },
+            "title": "Modelli"
+        },
+        "title": "Domande frequenti",
+        "usage": {
+            "questions": {
+                "1": {
+                    "desc": "<p>Gli attuali modelli di linguaggio conversazionale non sono <strong>in grado di citare le fonti</strong> utilizzate per generare una risposta. Funzionano prevedendo la parola successiva più probabile in base alla distribuzione statistica dei dati di addestramento. Sebbene possano sintetizzare informazioni da varie fonti, non tengono traccia dell'origine di tali informazioni.</p><p>Tuttavia, esistono tecniche come la <strong>Retrieval Augmented Generation (RAG)</strong> che mirano a superare questa limitazione. La RAG consente ai modelli di accedere a basi di conoscenza esterne e di <strong>fornire informazioni contestualizzate citando le fonti</strong>. Questo approccio è essenziale per migliorare la trasparenza e l'affidabilità delle risposte generate dai modelli.</p>",
+                    "title": "I modelli possono citare le proprie fonti?"
+                },
+                "2": {
+                    "desc": "<p>Hai mai posto la domanda \"Spiegami la mozione di censura attualmente in discussione all'Assemblea nazionale francese e cita le tue fonti\" e sei rimasto deluso dalle risposte? È normale...</p><p><strong>I modelli di IA conversazionale grezzi\" non possono rispondere a domande sulle ultime notizie.</strong> Sono addestrati su set di dati statici e non possono interagire con il web o aprire link. Non hanno la capacità di aggiornarsi in tempo reale con gli eventi che accadono in tutto il mondo. Le informazioni a cui il modello ha accesso sono limitate alla data del suo ultimo addestramento.</p><p>Di conseguenza, se si pone una domanda su un fatto di attualità recente, il modello si baserà su informazioni potenzialmente obsolete, con il rischio di fornire risposte inesatte.</p><p>Nel caso di Perplexity, Copilot o ChatGPT, i cosiddetti modelli di IA conversazionale \"grezzi\" sono combinati con altri componenti tecnologici che consentono loro di connettersi a Internet per accedere a informazioni in tempo reale. Quest'ultimi si vengono chiamati \"agenti conversazionali\".</p>",
+                    "title": "Se pongo una domanda sulle ultime notizie, il modello è in grado di rispondere?"
+                },
+                "3": {
+                    "desc": "<p>Se si include un URL in una richiesta, il modello conversazionale non può accedervi direttamente. I modelli linguistici elaborano il testo della richiesta, ma non sono in grado di interagire con il web o aprire link. Sono addestrati su dataset testuali fissi e le loro risposte si basano su questi dati di addestramento. Quando viene posta una domanda, i modelli utilizzano questo addestramento per generare una risposta, ma non possono accedere a nuove informazioni online.</p><p>Per analogia, si immagini uno studente sostiene un esame senza accesso a Internet. Può utilizzare le conoscenze acquisite per rispondere alle domande ma non può consultare siti web per ulteriori informazioni.</p>",
+                    "title": "Se includo un link URL in una domanda, il modello può accedervi?"
+                },
+                "4": {
+                    "desc": "<p>A volte i modelli perdono il filo di una conversazione a causa della loro <strong>finestra di contesto limitata.</strong> Questa \"finestra\" rappresenta la quantità di informazioni precedenti che il modello può conservare, fungendo da memoria breve termine. Più piccola è la finestra, maggiore è la probabilità che il modello dimentichi elementi chiave della conversazione, il che porta a risposte incoerenti. Conversazioni lunghe complesse possono saturare rapidamente la finestra di contesto, aumentando il rischio di incoerenza.</p><p>Per analogia, immaginiamo una persona che ricorda solo le ultime cinque frasi di una conversazione. Se la conversazione è breve, riesce a seguirla. Ma se la conversazione si allunga, la persona dimenticherà informazioni cruciali, rendendo le sue risposte incoerenti. Allo stesso modo, un modello di intelligenza artificiale con una piccola finestra di contesto può \"perdere il filo\" di una conversazione quando vengono scambiate troppe informazioni, dimenticando elementi chiave e producendo risposte che non hanno più senso.</p>",
+                    "title": "Perché alcuni modelli perdono rapidamente il filo della conversazione?"
+                },
+                "5": {
+                    "title": "Quali sono le migliori pratiche per fornire suggerimenti?"
+                },
+                "6": {
+                    "desc": "<p>L'intelligenza artificiale conversazionale risponde direttamente formulando frasi basate su un ampio set di dati su cui è stato addestrato il modello, mentre un motore di ricerca suggerisce link e risorse che l'utente può esplorare in autonomia.</p>",
+                    "title": "Qual è la differenza tra porre una domanda a un modello di intelligenza artificiale conversazionale e fare una ricerca su Google?"
+                }
+            },
+            "title": "Utilizzo"
+        }
+    },
+    "footer": {
+        "backHome": "Torna alla homepage del sito - compar:AI",
+        "dpg": "Il servizio è riconosciuto come bene pubblico digitale dalla Digital Public Goods Alliance",
+        "helpUs": "Aiutaci a migliorare questo servizio!",
+        "license": {
+            "linkTitle": "Licenza etalab - nuova finestra",
+            "mention": "Salvo diversa indicazione esplicita in merito alla proprietà intellettuale detenuta da terzi, il contenuto di questo sito è offerto sotto la licenza <a {linkProps}>etalab-2.0</a>"
+        },
+        "links": {
+            "accessibility": "Accessibilità: non conforme",
+            "legal": "Avviso legale",
+            "privacy": "Politica sulla riservatezza",
+            "rgesn": "Ecodesign",
+            "sources": "Codice sorgente",
+            "tos": "Termini di utilizzo"
+        },
+        "writeUs": "Se riscontri un problema o hai commenti sullo strumento di confronto, non esitare a scriverci <a {formLinkProps}>tramite questo modulo</a>. Leggiamo tutti i vostri messaggi.<br />Grazie!"
+    },
+    "general": {
+        "a11y": {
+            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong>compara.beta.gouv.fr</strong> .",
+            "disclaimer": "<strong>compar:IA</strong> si impegna a rendere accessibili i propri servizi digitali, in conformità all'articolo 47 della legge n. 2005-102 dell'11 febbraio 2005.",
+            "improveAdress": "Indirizzo: DINUM, 20 avenue de Ségur 75007 Parigi",
+            "improveDelay": "Cerchiamo di rispondere entro 2 giorni lavorativi.",
+            "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di beta.gouv.fr per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
+            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Miglioramento e contatto",
+            "remedyAdvocate": "Scrivi un messaggio al <a {linkProps}>Difensore dei diritti</a>",
+            "remedyAdvocateAdress": "Invia una lettera per posta (gratuitamente, senza francobolli): Difensore dei Diritti - Risposta libera 71120 75342 Parigi CEDEX 07",
+            "remedyDelegateAdvocate": "Contatta il rappresentante del <a {linkProps}>Difensore dei diritti nella tua regione</a>",
+            "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato al gestore del sito web un problema di accessibilità che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
+            "remedyList": "Puoi :",
+            "remedyTitle": "Procedura di ricorso",
+            "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
+            "stateNavigate": "naviga tra tutte le pagine del sito utilizzando una tastiera",
+            "statePrefs": "adatta il sito alle tue preferenze (dimensione del carattere, zoom dello schermo, modifica della tipografia, ecc.) senza perdita di contenuti",
+            "stateScreenReader": "visualizza il sito web con un lettore di schermo.",
+            "stateTitle": "Stato di conformità",
+            "title": "Dichiarazione di accessibilità"
+        },
+        "legal": {
+            "a11yDesc": "Il rispetto degli standard di accessibilità digitale è un obiettivo successivo, ma ci impegniamo a rendere questo sito accessibile a tutti.",
+            "a11yTitle": "Accessibilità",
+            "directorDesc": "Il signor Romain Delassus, responsabile del dipartimento digitale presso il Ministero della Cultura",
+            "directorTitle": "Direttore della pubblicazione",
+            "editorDesc": "Questo sito web è pubblicato dal Ministero Francese della Cultura, 182, rue Saint-Honoré 75001 Parigi",
+            "editorTitle": "Redattore",
+            "hostingDesc": "Questo sito è ospitato da OVH SAS (<a {linkProps}>https://www.ovh.com</a>) la cui sede legale si trova in 2 rue Kellermann - 59100 Roubaix - Francia.",
+            "hostingTitle": "Hosting di siti web",
+            "reportA11y": "Se riscontri un problema di accessibilità che ti impedisce di accedere a contenuti o funzionalità del sito, ti invitiamo a comunicarcelo.",
+            "reportA11yDesc": "Per saperne di più sulla politica statale in materia di accessibilità digitale: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numeriche</a>",
+            "reportDesc": "Se non ricevi una risposta tempestiva da parte nostra, hai il diritto di inviare i tuoi reclami o una procedura di ricorso al Difensore dei diritti.",
+            "reportTitle": "Segnala un malfunzionamento",
+            "securityCertif": "Il sito è protetto da un certificato elettronico, rappresentato dall'icona di un lucchetto nella maggior parte dei browser. Questa protezione contribuisce alla riservatezza delle comunicazioni.",
+            "securityNoMail": "In nessun caso i servizi associati alla piattaforma invieranno e-mail che richiedano l'inserimento di informazioni personali.",
+            "securityTitle": "Sicurezza",
+            "sources": "Salvo diversa indicazione, tutti i testi presenti su questo sito sono soggetti alla licenza <a {etalabLinkProps}>Etalab Open 2.0</a>. Il codice sorgente di questa applicazione è liberamente riutilizzabile e accessibile su <a {githubLinkProps}>GitHub</a>.",
+            "title": "Avviso legale"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "Esatto, non era necessario cliccare su un blocco che occupava metà della pagina per dare il proprio consenso all'utilizzo dei cookie, anche se non sapevi cosa significasse!",
+            "cookiesBannerNoNeed": "Niente di eccezionale, nessun trattamento speciale legato al dominio .gouv.fr. Stiamo semplicemente rispettando la legge, che stabilisce che alcuni strumenti di tracciamento dell'audience, opportunamente configurati per rispettare la privacy, sono esenti da autorizzazione preventiva.",
+            "cookiesBannerTitle": "Perché questo sito non mostra un banner per il consenso ai cookie?",
+            "cookiesBannerTools": "A tale scopo utilizziamo <a {matomoLinkProps}>Matomo</a>, uno strumento <a {libreLinkProps}>free</a>, configurato per conformarsi alla <a {cnilLinkProps}>recommendation</a>\"Cookie\" della CNIL. Ciò significa che il tuo indirizzo IP, ad esempio, viene anonimizzato prima di essere registrato. È quindi impossibile collegare le tue visite a questo sito alla tua persona.",
+            "cookiesDesc": "Questo sito web inserisce un piccolo file di testo (un \"cookie\") sul tuo computer quando lo visiti. Ciò ci consente di misurare il numero di visite e capire quali pagine vengono visualizzate più frequentemente.",
+            "cookiesDescMore": "Puoi scegliere di non consentire il tracciamento della tua attività di navigazione su questo sito web. Ciò tutelerà la tua privacy, ma impedirà anche al proprietario del sito di apprendere dalle tue azioni e di creare un'esperienza migliore per te e per gli altri utenti.",
+            "cookiesTitle": "Cookie installati e consenso",
+            "dataAccessDatasets": "I dati relativi al dialogo e alle preferenze degli utenti vengono distribuiti sulla piattaforma Hugging Face sotto la licenza Open License 2.0 di Etalab tramite l'account del Ministero della Cultura (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Certamente! Le statistiche sull'utilizzo del sito sono disponibili gratuitamente all'indirizzo <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Contribuisco ad arricchire i vostri dati, posso accedervi?",
+            "dataExtraCountry": "Paese destinatario: Francia",
+            "dataExtraHost": "Subappaltatore: OVH",
+            "dataExtraTitle": "Chi ci aiuta a elaborare i dati?",
+            "dataExtraWarranty": "Garanzie: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Processo eseguito: Hosting",
+            "dataRespDesc": "Il dipartimento digitale del Ministero Francese della Cultura è responsabile del trattamento dei vostri dati personali.",
+            "dataRespTitle": "Chi è responsabile del trattamento dei dati?",
+            "dataTimeDesc": "I dati relativi agli utenti e alle loro conversazioni con i modelli vengono conservati a partire dalla registrazione del voto di preferenza.",
+            "dataTimeTitle": "Per quanto tempo conserviamo questi dati?",
+            "dataUseDesc": "In ogni caso, l'editore si impegna ad adottare le misure necessarie per garantire l'anonimizzazione dei dati relativi ai dialoghi prima di renderli pubblici.",
+            "dataUseTitle": "Quali elaborazioni vengono effettuate sui dati della conversazione?",
+            "desc": "Il servizio è pubblicato dal dipartimento digitale del Ministero Francese della Cultura.",
+            "privacyData": "I dati raccolti sul sito sono i seguenti:",
+            "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli : domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli",
+            "privacyDataForm": "Dati relativi al questionario “Aiutaci a migliorare compar:AI”.",
+            "privacyDesc": "Il servizio non tratta dati personali come definiti dalla CNIL, ossia qualsiasi informazione riguardante una persona fisica che può essere identificata, direttamente o indirettamente.",
+            "privacyResp": "L'utente è responsabile dei dati o dei contenuti inseriti nel campo fornito dalla piattaforma. Accettando i <a {linkProps}>termini di utilizzo</a>, l'utente si impegna a non trasmettere alcuna informazione che possa identificare lui stesso o terzi.",
+            "privacyTitle": "Trattiamo dati a carattere personale?",
+            "tallyData": "Quando compili uno di questi moduli, i dati che inserisci vengono trasmessi e ospitati da Tally (Tally BV, Belgio). Tally si impegna a non utilizzare i tuoi dati per scopi commerciali e a rispettare il GDPR. Per ulteriori informazioni, consulta l'Informativa sulla privacy di Tally <a {tallyPrivacyLinkProps}>Privacy Policy</a>.",
+            "tallyDesc": "Questo sito utilizza <a {tallyLinkProps}>Tally</a>, un servizio online per la creazione di moduli, per due funzionalità:",
+            "tallyFeedback": "Il modulo \"La tua opinione\" ci permette di raccogliere il tuo feedback sul servizio",
+            "tallyNewsletter": "Il modulo di iscrizione alla newsletter (newsletter) compar:IA",
+            "tallyTitle": "Moduli Tally",
+            "title": "Politica sulla riservatezza"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Il sito web compar:IA offre un accesso facile e gratuito a un'ampia varietà di modelli di intelligenza artificiale conversazionale, sensibilizzando così il pubblico sulle diverse sfide dell'IA generativa: diversità, pregiudizi e impatto ambientale. Inoltre, gli insiemi di dati relativi a domande e preferenze raccolti sono condivisi come open source con licenza MIT/Etalab 2.0.",
+                "2": "Gli utenti target del servizio Compar:IA sono stati identificati attraverso interviste agli utenti e una fase preliminare di analisi dei bisogni.",
+                "3": "Pertanto, tutti i cittadini sono interessati in quanto potenziali utenti, ma in particolare insegnanti, alunni, studenti, mediatori digitali, formatori di intelligenza artificiale, nonché ricercatori (informatica, intelligenza artificiale, scienze umane e sociali) e aziende interessate ad analizzare o utilizzare gli insiemi di dati condivisi in open source. Di conseguenza, il servizio digitale soddisfa le loro esigenze attraverso le seguenti caratteristiche: testare e confrontare modelli gratuitamente e utilizzare dati open source condivisi.",
+                "4": "Il servizio compar:IA si inserisce in un approccio di ecodesign volto a ridurre l'impatto ambientale. A tal fine, la presente dichiarazione è stata redatta nell'ambito dell'attuazione del Quadro generale di ecodesign per i servizi digitali (RGESN, versione 2024). Il RGESN, elaborato da Arcep e Arcom in collaborazione con ADEME, DINUM, CNIL e Inria, è disponibile sul <a {linkProps}>sito web di Arcep</a>.",
+                "title": "Scopo di questo servizio"
+            },
+            "2": {
+                "1": "L'ecodesign dei servizi digitali è un approccio volto a ridurre e limitare l'impatto ambientale di un servizio fin dalla fase di progettazione e per tutto il suo ciclo di vita.",
+                "2": {
+                    "1": "Progettare servizi digitali più sostenibili per prolungare la durata di vita dei dispositivi;",
+                    "2": "Promuovere un approccio di sobrietà ambientale di fronte a strategie volte a catturare l'attenzione dell'utente, in linea con gli obiettivi ambientali internazionali;",
+                    "3": "Ridurre le risorse IT utilizzate, ottimizzare il traffico dati e l'uso dell'infrastrutture digitali;",
+                    "4": "Aumentare il livello di trasparenza sull'impatto ambientale dei servizi digitali.",
+                    "title": "La sua attuazione persegue quattro obiettivi principali:"
+                },
+                "3": {
+                    "1": "Limita le dimensioni di una pagina",
+                    "2": "Limita la complessità di una pagina",
+                    "3": "Limitare il numero di richieste al server",
+                    "4": "Limitare il consumo energetico necessario per ospitare il servizio",
+                    "title": "In termini pratici, l'ecodesign si traduce in un insieme di buone pratiche da seguire prima, durante e dopo la creazione o il miglioramento di un servizio, consentendo, in particolare:"
+                },
+                "4": "Si tratta di un processo di miglioramento continuo e collettivo.",
+                "title": "Che cos'è l'ecodesign?"
+            },
+            "3": {
+                "1": {
+                    "1": "Semplificazione dell'esperienza utente: i percorsi di navigazione sono ottimizzati e incentrati sulle funzionalità essenziali del servizio Compar:IA (area dei modelli da testare, set di dati, classificazione) con regolari test utente.",
+                    "2": "Sensibilizzare gli utenti sull'impatto ambientale del servizio: evidenziare gli indicatori di impatto energetico nelle domande poste all'IA; promuovere usi \"parsimoniosi\", con una modalità dedicata all'interrogazione di modelli di IA conversazionale \"piccoli\" il cui impatto ambientale è minore.",
+                    "3": "Utilizzo dei componenti di interfaccia del State Design System (DSFR): sono accessibili e hanno un'impronta ecologica minimo.",
+                    "4": "La navigazione più intuitiva possibile per ridurre al minimo il tempo impiegato nella ricerca delle informazioni.",
+                    "5": "Design \"mobile-first\": tutti i contenuti sono visualizzabili su dispositivi mobili. Il sito si adatta a tutte le dimensioni dello schermo.",
+                    "6": "Esclusione dell'integrazione di video sul sito.",
+                    "title": "La sfida principale è garantire che il servizio compar:IA funzioni anche sui dispositivi utente più datati, in condizioni di connettività variabili. Durante la fase di progettazione sono state implementate diverse misure, tra cui:"
+                },
+                "title": "Strategia attuata e obiettivi relativi alla riduzione o limitazione degli impatti ambientali"
+            },
+            "4": {
+                "1": "L'autovalutazione, condotta tra maggio e ottobre 2025 dal team di prodotto (due persone si sono occupate della revisione e della convalida di tutti i criteri), ha riguardato tutte le pagine del sito. Gli strumenti utilizzati per valutare alcuni indicatori tecnici sono stati lo strumento di ispezione \"rete\" degli strumenti per sviluppatori del browser, l'estensione <a {greenitLinkProps}>Green IT Analysis</a> e lo strumento <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "Diagnosi RGESN"
+            },
+            "5": {
+                "1": {
+                    "1": "Punteggio di avanzamento nell'attuazione del RGESN, al 10/12/2025: 89%",
+                    "title": "L'autodiagnosi fornisce un tasso di conformità con le <a {linkProps}>RGENSN</a> (linee guida generali per l'ecodesign) dell'89%."
+                },
+                "2": "Il servizio digitale compar:IA punta a migliorare questo punteggio di progresso fino a raggiungere il 95% entro il 2027.",
+                "3": {
+                    "1": "Strategia: 100%",
+                    "2": "Specifiche: 78%",
+                    "3": "Architettura: 100%",
+                    "4": "Esperienza utente e interfaccia (UX/UI): 100%",
+                    "5": "Contenuti: 67%",
+                    "6": "Frontend: 82%",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90%",
+                    "9": "Algoritmi: 100%",
+                    "title": "Punteggio per tema:"
+                },
+                "4": {
+                    "date": "10 dicembre 2025",
+                    "title": "Tabella di audit RGESN"
+                },
+                "title": "Punteggio nell'implementazione del quadro"
+            },
+            "6": {
+                "1": "Il sito è stato progettato per essere accessibile da qualsiasi dispositivo mobile prodotto a partire dal 2017.",
+                "2": "Connessione minima richiesta per un accesso e un utilizzo agevoli del servizio: 3G su rete mobile e 512 Kbps su connessione fissa.",
+                "3": "Il sito è progettato per adattarsi a diverse dimensioni dello schermo (larghezza minima 320 pixel).",
+                "4": "Il sito non è accessibile tramite il browser Internet Explorer. ",
+                "title": "Requisiti minimi per accedere al sito"
+            },
+            "7": {
+                "1": "Progettare il servizio con una revisione della progettazione e una revisione del codice, uno dei cui obiettivi è ridurre l'impatto ambientale di ciascuna funzionalità (criterio 2.1)",
+                "2": "Implementare periodi di conservazione dei dati ai fini della cancellazione o dell'archiviazione: cancellazione periodica dei log nel file server \"S3\" e, in particolare, nel database (Postgres).",
+                "3": {
+                    "1": "Numero massimo di richieste al server per schermata: 40",
+                    "2": "Dimensione massima delle risorse per schermata: 600 KB",
+                    "title": "Per rispettare un peso massimo e un limite al numero di richieste per schermata (criterio 6.1):"
+                },
+                "4": "Converti le illustrazioni in WebP, AVIF, JPEG XL o in un formato immagine più efficiente per le immagini raster (criterio 5.1).",
+                "5": "Consentire la possibilità di interrompere l'inferenza (caricamento delle risposte) durante il confronto dei modelli.",
+                "6": "I punteggi dell'analisi EcoIndex dimostrano una significativa discrepanza nelle misurazioni dell'impatto, con alcune pagine che ricevono punteggi fino a E o F (peso della pagina, complessità e numero di richieste relativamente elevati); la sfida ora è comprendere questi risultati in modo più preciso caso per caso, nonostante le buone pratiche implementate, al fine di individuare ulteriori miglioramenti.",
+                "desc": "Sono stati individuati o sono tuttora in fase di individuazione diversi miglioramenti, tra cui:",
+                "title": "Miglioramenti individuati"
+            },
+            "desc": "pubblicato l'11 dicembre 2025",
+            "title": "Dichiarazione di ecodesign"
+        },
+        "tos": {
+            "contactDesc": "Per qualsiasi domanda sul servizio, puoi scrivere a <a {linkProps}>{contactLink}</a>.",
+            "contactTitle": "9. Contatti",
+            "defsEditor": "Per “editore” si intende il Servizio Digitale del Ministero della Cultura.",
+            "defsModels": "Per “Modelli” si intendono i principali modelli linguistici (LLM) riutilizzati dalla piattaforma in base alla relativa licenza per adempiere ai suoi scopi.",
+            "defsPlatform": "Per \"Piattaforma\" si intende il sito web che rende accessibili i servizi.",
+            "defsServices": "Per “Servizi” si intendono le funzionalità offerte dalla piattaforma per il raggiungimento dei suoi scopi.",
+            "defsTitle": "2. Definizioni",
+            "defsUser": "Per “Utente” si intende qualsiasi persona fisica che consulta la piattaforma e usufruisce dei suoi servizi.",
+            "descDatasets": "Questi dataset saranno resi disponibili con una licenza aperta, in particolare per promuovere l'utilizzo a fini di ricerca.",
+            "descEditor": "Pubblicato dal Servizio Digitale del Ministero della Cultura Francese, il comparatore è una piattaforma per il confronto di modelli conversazionali destinati al grande pubblico con l'obiettivo di (1) sensibilizzare i cittadini sui principali modelli linguistici (LLMs), (2) raccogliere le preferenze degli utenti per creare dataset di allineamento.",
+            "descTitle": "3. Descrizione della piattaforma",
+            "descUse": "L'utente pone una domanda in una lingua specifica e riceve risposte da due principali modelli linguistici anonimi (LLMs). Votando per il modello che fornisce la risposta che preferisci, verrà quindi rivelata l'identità dei modelli. Questo sistema di produzione partecipativa, ispirato alla piattaforma <a {linkProps}>« chatbot arena » (LMSYS)</a>, consente la creazione di dataset di preferenze umane per compiti reali, in lingua francese, che possono essere utilizzati per l'allineamento dei modelli.",
+            "dispoDesc": "La piattaforma è accessibile, salvo casi di forza maggiore o eventi al di fuori del controllo del suo editore.",
+            "dispoResp": "Pertanto, l'editore non può essere ritenuto responsabile per eventuali perdite o danni di qualsiasi natura derivanti da un malfunzionamento o dall'indisponibilità del servizio. Tali situazioni non daranno diritto agli utenti ad alcun risarcimento finanziario.",
+            "dispoRight": "L'editore si riserva il diritto di sospendere, interrompere o limitare, senza preavviso, l'accesso a tutti o parte dei servizi, in particolare per interventi di manutenzione e aggiornamenti necessari al corretto funzionamento del servizio e delle relative apparecchiature, o per qualsiasi altro motivo, inclusi motivi tecnici.",
+            "dispoTitle": "7. Disponibilità del servizio",
+            "dispoWarranty": "Il servizio non è garantito come esente da anomalie o errori. Pertanto, il servizio viene fornito senza alcuna garanzia in merito alla sua disponibilità e alle sue prestazioni.",
+            "evoDesc": "Le condizioni d'uso possono essere modificate o integrate in qualsiasi momento, senza preavviso, in base a modifiche dei servizi, sviluppi legislativi o per qualsiasi altro motivo ritenuto necessario.",
+            "evoDescMore": "Tali modifiche e aggiornamenti sono vincolanti per l'utente, il quale è pertanto tenuto a consultare regolarmente questa sezione per verificare i termini e le condizioni generali in vigore.",
+            "evoTitle": "8. Evoluzione delle modalità di utilizzo",
+            "featuresDatasets": "Il servizio raccoglie dati di dialogo (domande, risposte di entrambi i modelli) e preferenze dell'utente (voti, metadati associati). Questi dati vengono utilizzati sia per creare dataset condivisi sia per stabilire una classifica dei modelli di intelligenza artificiale visualizzati sulla piattaforma, in base ai voti espressi.",
+            "featuresDatasetsMore": "L'editore si riserva il diritto di distribuire i dati relativi ai dialoghi e alle preferenze degli utenti secondo una licenza etalab aperta 2.0. Il dataset è distribuito sulla piattaforma Hugging Face tramite l'account del Ministero della Cultura Francese (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "featuresDesc": "Al fine di raggiungere il duplice obiettivo di sensibilizzare i cittadini sui principali modelli linguistici e di raccogliere le preferenze degli utenti, i servizi offerti dalla piattaforma senza restrizioni di accesso sono i seguenti:",
+            "featuresDescMore": "Un'interfaccia uomo-macchina che consente un dialogo simultaneo con due modelli conversazionali e la possibilità di votare la risposta preferita.",
+            "featuresModels": "I modelli integrati nella piattaforma vengono distribuiti sui server di inferenza dei vari provider di hosting e degli editori di modelli. Le richieste vengono gestite principalmente dal servizio Open Router. Sulla piattaforma sono definiti i requisiti di standardizzazione dell'inferenza per garantire un utilizzo trasparente dei modelli.",
+            "featuresModelsMore": "Un'interfaccia per confrontare i modelli.",
+            "featuresTitle": "4. Caratteristiche",
+            "featuresVote": "L'utente può visualizzare l'elenco dei modelli integrati nel comparatore e accedere a un elenco di informazioni su questi modelli.",
+            "featuresVoteMore": "Condividere, rendere disponibili e riutilizzare i dataset derivanti dalla raccolta delle preferenze degli utenti.",
+            "licenceCode": "Il codice sorgente della piattaforma è aperto e disponibile qui: <a {linkProps}>https://github.com/betagouv/languia</a>",
+            "licenceLLM": "I LLM utilizzati per alimentare i servizi sono regolati dalle seguenti licenze:",
+            "licenceLLMEvolution": "L'elenco dei modelli linguistici integrati nella piattaforma è soggetto a modifiche nel tempo e viene aggiornato a ogni modifica.",
+            "licenceLLMLicence": "Licenza",
+            "licenceLLMModel": "Modello di intelligenza artificiale conversazionale",
+            "licenceLLMNoticeLink": "Link alle licenze del modello",
+            "licenceLLMUnavailable": "Non disponibile",
+            "licenceTitle": "6. Codice e licenze",
+            "respEditor": "In generale, l'editore declina ogni responsabilità in caso di utilizzo non conforme alle condizioni d'uso.",
+            "respLegal": "La piattaforma non è destinata a essere utilizzata per generare contenuti illegali o contrari all'ordine pubblico e più in generale qualsiasi generazione di contenuti che contravvenga al quadro giuridico vigente.",
+            "respLegalMore": "A tale proposito, l'utente si impegna a non inserire nel prompt contenuti o informazioni contrari alle disposizioni legali e regolamentari vigenti.",
+            "respPrivacy": "Poiché i dati inseriti dall'utente sulla piattaforma sono destinati a essere resi pubblici, l'utente si impegna a non trasmettere alcuna informazione che possa identificarlo o identificare terzi.",
+            "respPrivacyMore": "In ogni caso, l'editore si impegna ad adottare misure per garantire, per quanto possibile, l'anonimizzazione dei dati dei dialoghi prima di renderli disponibili. Qualora, nonostante gli sforzi dell'editore, nei dataset venissero pubblicati dati sensibili, è possibile segnalarlo immediatamente tramite questo modulo: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
+            "respTitle": "5. Responsabilità",
+            "respUser": "L'utente è responsabile dei dati o dei contenuti che inserisce nella sezione fornita dalla piattaforma.",
+            "scopeDesc": "L'accesso alla piattaforma è gratuito, senza necessità di registrazione e comporta l'applicazione di specifiche condizioni, elencate nelle presenti condizioni d'uso.",
+            "scopeTitle": "1. Ambito di applicazione",
+            "title": "Termini d'uso"
+        }
+    },
+    "generated": {
+        "archs": {
+            "dense": {
+                "desc": "L'architettura densa si riferisce a un tipo di rete neurale in cui ogni neurone di uno strato è connesso a tutti i neuroni dello strato successivo. Ciò consente a tutti i parametri dello strato di contribuire al calcolo dell'output.",
+                "name": "Denso"
+            },
+            "matformer": {
+                "desc": "Immagina le bambole russe (matrioske → matryoshka transformer → Matformer): ogni blocco contiene diversi sotto-modelli annidati di dimensioni crescenti, che condividono gli stessi parametri. Ciò consente, per ogni richiesta, la selezione di un modello con capacità adeguate, a seconda della memoria disponibile o della latenza, senza la necessità di riaddestrare modelli diversi.",
+                "name": "Matformer",
+                "title": "Architettura Matformer"
+            },
+            "moe": {
+                "desc": "L'architettura Mixture of Experts (MoE) utilizza un meccanismo di routing per attivare, in base all'input, solo determinati sottoinsiemi specializzati (\"esperti\") della rete neurale. Ciò consente di costruire modelli molto grandi mantenendo un basso costo computazionale, poiché ad ogni passaggio viene utilizzata solo una porzione della rete.",
+                "name": "MoE",
+                "title": "Architettura MoE"
+            },
+            "na": {
+                "desc": "L'editore non ha reso pubbliche le informazioni sull'architettura del modello.",
+                "name": "Proprietario",
+                "title": "Architettura N/A"
+            }
+        },
+        "licenses": {
+            "os": {
+                "Apache 2.0": {
+                    "license_desc": "<p>Questa licenza ti consente di utilizzare, modificare e distribuire liberamente il modello, anche a fini commerciali. Oltre alla libertà d'uso, garantisce la tutela legale includendo una clausola di rinuncia ai brevetti che funge da assicurazione: se utilizzi questo modello, i contributori si impegnano a non intentare azioni legali contro di te per violazione dei loro brevetti relativi al progetto. Questa protezione reciproca evita controversie legali tra utenti e sviluppatori. Quando si distribuiscono versioni modificate, le modifiche significative devono essere indicate con apposite note, garantendo la trasparenza per l'utente.</p>"
+                },
+                "CC-BY-NC-4.0": {
+                    "license_desc": "<p>Questa licenza consente di condividere e adattare liberamente il contenuto a condizione che venga citato l'autore, ma vieta qualsiasi utilizzo commerciale. Offre flessibilità per scopi non commerciali tutelando al contempo i diritti dell'autore.</p>",
+                    "reuse_specificities": "ma solo per usi non commerciali"
+                },
+                "Gemma": {
+                    "license_desc": "<p>Questa licenza è pensata per incoraggiare l'uso, la modifica e la ridistribuzione del software, ma include una clausola che stabilisce che tutte le versioni modificate o migliorate devono essere condivise con la comunità sotto la stessa licenza sorgente, promuovendo così la collaborazione e la trasparenza nello sviluppo del software.</p>"
+                },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "meno di 50 milioni di dollari di fatturato annuo",
+                    "license_desc": "<p>Questa licenza consente di utilizzare, riprodurre, modificare e distribuire liberamente il codice con attribuzione, ma impone restrizioni alle organizzazioni con un fatturato annuo superiore a 50 milioni di dollari.</p>"
+                },
+                "LFM 1.0": {
+                    "license_desc": "<p>Questa licenza mondiale, gratuita e non esclusiva consente l'uso, la modifica e la ridistribuzione del modello e dei suoi derivati, incluso il riutilizzo degli output per addestrare altri modelli. Rimane permissiva, ma limita l'uso commerciale alle organizzazioni con un fatturato annuo inferiore a 10 milioni dollari; oltre tale soglia, l'utilizzo non è più coperto.</p>"
+                },
+                "Llama 3 Community": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti",
+                    "license_desc": "<p>Questa licenza consente di utilizzare, modificare e distribuire liberamente il codice con attribuzione, ma impone restrizioni alle operazioni che superano i 700 milioni di utenti mensili e vieta il riutilizzo del codice o dei contenuti generati per l'addestramento o il miglioramento di modelli concorrenti, proteggendo così gli investimenti tecnologici e il marchio di Meta.</p>"
+                },
+                "Llama 3.1": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti",
+                    "license_desc": "<p>Questa licenza consente di utilizzare, riprodurre, modificare e distribuire liberamente il codice con attribuzione, ma impone restrizioni alle operazioni che superano i 700 milioni di utenti mensili. Il riutilizzo del codice o dei contenuti generati per l'addestramento o il miglioramento di modelli derivati è consentito a condizione che venga visualizzata la dicitura \"built with llama\" e che \"Llama\" sia incluso nel nome per qualsiasi distribuzione.</p>"
+                },
+                "Llama 3.3": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti",
+                    "license_desc": "<p>Questa licenza <strong>non esclusiva, mondiale e senza royalty</strong> consente di utilizzare, riprodurre, modificare e distribuire liberamente il codice e i Materiali di Llama 3.3, citandone la fonte. In particolare, permette il riutilizzo per migliorare i modelli derivati, ma impone restrizioni alle operazioni commerciali su larga scala.</p>"
+                },
+                "Llama 4": {
+                    "commercial_use_specificities": "meno di 700 milioni di utenti\n",
+                    "license_desc": "<p>Questa licenza non esclusiva, mondiale e senza royalty consente l'uso, la riproduzione, la modifica e la distribuzione dei Materiali Llama 4 (modelli e documentazione) con attribuzione. Tuttavia, impone due restrizioni principali: (1) le aziende con più di 700 milioni di utenti attivi mensili devono ottenere una licenza speciale da Meta e (2) <strong>esclusione totale</strong> delle persone fisiche residenti nell'UE e delle aziende con sede nell'UE dall'uso diretto dei modelli multimodali, a causa delle incertezze normative relative alla legge europea sull'IA. Gli utenti finali europei possono comunque accedere ai servizi che incorporano Llama 4, a condizione che siano erogati al di fuori dell'UE.</p>"
+                },
+                "MIT": {
+                    "license_desc": "<p>La licenza MIT è una licenza permissiva per il software libero: consente a chiunque di riutilizzare, modificare e distribuire il modello, anche a fini commerciali, a condizione che vengano incluse le menzioni di licenza e di copyright originali.</p>"
+                },
+                "Mistral AI Research License": {
+                    "license_desc": "<p>Questa licenza non esclusiva e senza royalty consente l'uso, la copia, la modifica e la distribuzione dei modelli Mistral e dei loro derivati (incluse le versioni modificate o perfezionate). Tuttavia, è strettamente limitata a scopi di ricerca.</p>",
+                    "reuse_specificities": "ma solo per usi non commerciali"
+                },
+                "Modified MIT": {
+                    "license_desc": "<p>Una variante della licenza MIT. La licenza MIT è una licenza permissiva per il software libero: consente a chiunque di riutilizzare, modificare e distribuire il modello, anche a fini commerciali, a condizione che vengano inclusi gli avvisi di licenza e copyright originali.</p>"
+                },
+                "Nemotron Open": {
+                    "license_desc": "<p>Questa licenza mondiale, senza royalty, consente di utilizzare, riprodurre, modificare e distribuire liberamente il modello e i suoi derivati, anche a fini commerciali, senza alcuna restrizione in termini di fatturato o numero di utenti. NVIDIA non rivendica alcun diritto sui contenuti generati dal modello. La licenza include una clausola di risoluzione automatica in caso di azioni legali contro NVIDIA per violazione di brevetti relativi al modello.</p>"
+                }
+            },
+            "proprio": {
+                "Alibaba": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite API sulle piattaforme di Alibaba, richiedendo un pagamento in base al numero di token elaborati o all'infrastruttura riservata."
+                },
+                "Amazon": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite Amazon Bedrock, con un costo a consumo basato sul numero di token elaborati o sull'infrastruttura riservata.",
+                    "reuse_specificities": "fatta eccezione per distillare o addestrare altri modelli sulle piattaforme di Amazon."
+                },
+                "Anthropic": {
+                    "license_desc": "Il modello è disponibile con licenza a pagamento e accessibile tramite API sulle piattaforme di Anthropic o di aziende partner, con un costo a consumo basato sul numero di token elaborati o sull'infrastruttura riservata."
+                },
+                "Google": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite API sulle piattaforme di Google, con un costo a consumo basato sul numero di token elaborati, oppure sull'infrastruttura riservata di Google.",
+                    "reuse_specificities": "fatta eccezione per l'addestramento di altri modelli su Vertex AI"
+                },
+                "Liquid": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite API sulle piattaforme di Liquid AI, con un costo a consumo basato sul numero di token elaborati."
+                },
+                "Mistral AI": {
+                    "license_desc": "Il modello è disponibile con una licenza a pagamento ed è accessibile tramite l'API Mistral, Amazon Sagemaker e diversi altri host, richiedendo un pagamento in base al numero di token elaborati o all'infrastruttura riservata."
+                },
+                "OpenAI": {
+                    "license_desc": "Il modello è disponibile con licenza a pagamento e accessibile tramite API sulle piattaforme dell'azienda OpenAI o tramite i servizi Microsoft Azure, con un costo a consumo basato sul numero di token elaborati o sull'infrastruttura riservata."
+                },
+                "xAI": {
+                    "license_desc": "Il modello è disponibile con licenza a pagamento ed è accessibile tramite X e xAI, richiedendo un pagamento in base al numero di token elaborati o all'infrastruttura riservata."
+                }
+            }
+        },
+        "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p>Un modello di medie dimensioni, open-source e riproducibile, sviluppato da un consorzio di istituzioni svizzere. I suoi pesi e il codice di addestramento sono pubblicati con una licenza permissiva. È stato addestrato su oltre 1.800 lingue e oltre 15 trilioni di token. L'addestramento è stato effettuato sul supercomputer Alps del CSCS di Lugano, alimentato da energia idroelettrica a impatto zero.</p>",
+                "fyi": "<p>Il modello è stato addestrato sul supercomputer Alps di Lugano, utilizzando oltre 10 milioni di ore di GPU alimentate da energia idroelettrica a impatto zero. Il modello è stato pre-addestrato su 15 trilioni di token che coprono oltre 1.800 lingue, inclusa una proporzione significativa di lingue sottorappresentate.</p>\n<p>Apertus si basa su un tokenizzatore a livello di byte (BPE) con 131.000 voci, derivato dal tokenizzatore \"tekken\" di Mistral AI, ottimizzato per il multilinguismo, il codice e le espressioni matematiche. L'architettura combina diverse innovazioni: Rotary Positional Embeddings (RoPE) con base estesa e adattamento consapevole di NTK-aware per contesti lunghi, Grouped Query Attention (GQA) per una maggiore efficienza della memoria, normalizzazione QK-Norm per stabilizzare l'addestramento e una funzione di attivazione xIELU(extended Integrated ELU) che migliora le prestazioni MLP.</p>\n<p>La fase finale di perfezionamento del modello si basa su un algoritmo di allineamento chiamato QRPO (Quantile Reward-Preferring Optimization), un'alternativa al classico RLHF, che utilizza segnali di ricompensa assoluti per un apprendimento più stabile e un migliore allineamento con le preferenze umane. Pur non essendo in diretta concorrenza con i modelli proprietari più avanzati, Apertus si distingue per il suo livello di trasparenza.</p>",
+                "size_desc": "<p>Con 70 miliardi di parametri, questo modello è tra i più compatti. Può essere utilizzato localmente su un computer potente, garantendo la riservatezza dei dati, oppure ospitato su un server dotato di una singola scheda grafica, limitando così i costi dell'infrastruttura. La sua finestra di contesto di 65.536 token gli consente di elaborare documenti piuttosto lunghi.</p>"
+            },
+            "Apertus 8B Instruct": {
+                "desc": "<p>Un modello piccolo, open-source e riproducibile, sviluppato da un consorzio di istituzioni svizzere. I suoi pesi e il codice di addestramento sono pubblicati con una licenza permissiva. È stato addestrato su oltre 1.800 lingue e oltre 15 bilioni di token. L'addestramento è stato effettuato sul supercomputer Alps del CSCS di Lugano, alimentato da energia idroelettrica a impatto zero.</p>",
+                "fyi": "<p>Il modello è stato addestrato sul supercomputer Alps di Lugano, utilizzando oltre 10 milioni di ore di GPU alimentate da energia idroelettrica a impatto zero. Il modello è stato pre-addestrato su 15 bilioni di token che coprono oltre 1.800 lingue, inclusa una proporzione significativa di lingue sottorappresentate.</p>\n<p>Apertus si basa su un tokenizzatore a livello di byte (BPE) con 131.000 voci, derivato dal tokenizzatore \"tekken\" di Mistral AI, ottimizzato per il multilinguismo, il codice e le espressioni matematiche. L'architettura combina diverse innovazioni: Rotary Positional Embeddings (RoPE) con base estesa e adattamento consapevole di NTK-aware per contesti lunghi, Grouped Query Attention (GQA) per una maggiore efficienza della memoria, normalizzazione QK-Norm per stabilizzare l'addestramento e una funzione di attivazione xIELU (extended Integrated ELU) che migliora le prestazioni MLP.</p>\n<p>La fase finale di perfezionamento del modello si basa su un algoritmo di allineamento chiamato QRPO (Quantile Reward-Preferring Optimization), un'alternativa al classico RLHF, che utilizza segnali di ricompensa assoluti per un apprendimento più stabile e un migliore allineamento con le preferenze umane. Pur non essendo in diretta concorrenza con i modelli proprietari più avanzati, Apertus si distingue per il suo livello di trasparenza.</p>",
+                "size_desc": "<p>Con 8 miliardi di parametri, questo modello è tra i più compatti. Può essere utilizzato localmente su un computer potente, garantendo la riservatezza dei dati, oppure ospitato su un server dotato di una singola scheda grafica, limitando così i costi dell'infrastruttura. La sua finestra di contesto di 65.536 token gli consente di elaborare documenti piuttosto lunghi.</p>"
+            },
+            "Aya 23 8B": {
+                "desc": "<p>Modello multilingue di piccole dimensioni, specificamente addestrato in gran parte su lingue generalmente sottorappresentate.</p>",
+                "fyi": "<p>Aya 23 8B di Cohere è un piccolo modello della famiglia Command R, addestrato specificamente su corpus multilingue.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Aya Expanse 32B": {
+                "desc": "<p>Modello multilingue di medie dimensioni, in grado di trattare 23 lingue.</p>",
+                "fyi": "<p>Cohere, l'azienda canadese che ha ideato questo modello, è stata fondata nel 2019 da ex ricercatori di Google Brain, tra cui Aidan Gomez, coautore del rivoluzionario articolo \"Attention Is All You Need\", che ha rivoluzionato l'intelligenza artificiale. Il suo elemento distintivo principale risiede nella focalizzazione esclusiva sull'intelligenza artificiale generativa per le aziende, in particolare per i settori regolamentati come finanza, sanità, industria manifatturiera ed energetica, nonché per il settore pubblico. L'azienda è anche pioniera negli approcci multilingue e gestisce un laboratorio di ricerca senza scopo di lucro a supporto dell'innovazione aperta.</p>\n<p>Questo modello è stato progettato per offrire buone capacità in ciascuna delle 23 lingue presenti nel suo corpus di addestramento.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere ospitato su un server dotato di una singola scheda grafica potente, il che contribuisce a limitare i costi dell'infrastruttura.</p>\n<p>Dispone di una finestra di contesto che può contenere fino a 130.000 token, utile per analizzare documenti lunghi.</p>"
+            },
+            "Aya Expanse 8B": {
+                "desc": "<p>Modello multilingue di piccole dimensioni, iterazione di codifica della serie Aya, specificamente addestrato in gran parte su lingue generalmente sottorappresentate.</p>",
+                "fyi": "<p>Aya Expanse 8B, prodotto da Cohere, un'azienda canadese, è un piccolo modello della famiglia Command R, appositamente addestrato su un corpus multilingue.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Aya23-35B": {
+                "desc": "<p>Un modello multilingue di medie dimensioni, specificamente addestrato in gran parte su lingue generalmente sottorappresentate.</p>",
+                "fyi": "<p>Aya 23 35B di Cohere è un modello di medie dimensioni della famiglia Command R, addestrato specificamente su un corpus multilingue.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Chocolatine 14B": {
+                "desc": "<p>Basato sul modello Phi-3 Medium di Microsoft, questo modello è stato specializzato per la lingua francese.</p>",
+                "fyi": "<p>Basato sul modello Phi-3 Medium di Microsoft, questo modello è stato specializzato per la lingua francese. Il nome del modello, 'Chocolatine', è un omaggio al progetto CroissantLLM, una delle prime iniziative per creare un piccolo modello open-source ottimizzato per il francese.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Chocolatine 2 14B": {
+                "desc": "<p>Basato sul modello Qwen2.5 di Alibaba, questo modello è stato specializzato per la lingua francese.</p>",
+                "fyi": "<p>Basato sul template Qwen 2.5 di Alibaba, questo modello è stato specializzato per la lingua francese. Il nome \"Chocolatine\" è un omaggio al progetto CroissantLLM, una delle prime iniziative per creare un piccolo modello open-source ottimizzato per il francese.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Claude 3.5 Sonnet v2": {
+                "desc": "<p>Modello di codice molto efficiente, creato dopo i miglioramenti post-addestramento rispetto a Claude 3</p>",
+                "fyi": "<p>Il miglior modello della famiglia Claude 3.5, questo modello è specializzato nella generazione di testi letterari e con un tono più naturale. La versione v2 è stata rilasciata nell'ottobre 2024.</p>",
+                "size_desc": "<p>Questi modelli, con centinaia di miliardi di parametri, sono i più complessi e avanzati in termini di prestazioni e precisione. Le risorse di calcolo e di memoria necessarie per implementarli sono tali da renderli adatti alle applicazioni più sofisticate e agli ambienti altamente specializzati.</p>"
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "<p>Un modello molto ampio, multimodale e multilingue, potente per la generazione di codici, con due modalità di risposta: l'utente può scegliere tra una modalità di ragionamento, per risposte più approfondite, o una modalità rapida, per generare direttamente la risposta finale.</p>",
+                "fyi": "<p>Claude 4 Opus è la versione più avanzata della famiglia Claude 4. È ottimizzata per la massima potenza e per compiti complessi che richiedono un ragionamento continuo per lunghi periodi: ad esempio, può lavorare su attività di lunga durata (Anthropic afferma che può funzionare in modo indipendente fino a sette ore). D'altro canto, Opus è più costoso da usare, più lento nel rispondere e richiede più risorse per funzionare.</p>\n<p>Il modello offre due modalità di utilizzo: una modalità di ragionamento con procedura passo dopo passo per problemi complessi e una modalità rapida per risposte dirette. A differenza di altri modelli, la modalità di ragionamento non è stata addestrata principalmente su dati matematici, ma adattata a casi d'uso reali.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Degli indici suggeriscono che si tratti di un modello molto grande, che richiede server dotati di più schede grafiche potenti per funzionare. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta. Dispone di una finestra di contesto fino a 200.000 token, adatta all'analisi di documenti lunghi o repository di codice.</p>"
+            },
+            "Claude 4 Sonnet": {
+                "desc": "<p>Un modello molto ampio, potente in codice, multimodale e multilingue. L'utente o lo sviluppatore che utilizza questo modello può scegliere tra diversi livelli di ragionamento.</p>",
+                "fyi": "<p>Claude 4 Sonnet è una versione più compatta di Claude 4 Opus, ottimizzata per velocità, efficienza e accessibilità. È leggermente meno efficace nei compiti che richiedono un ragionamento complesso e a più fasi. Tuttavia, è significativamente meno costoso, più veloce e consuma meno energia di Opus 4.</p>\n<p>Il modello offre la possibilità di scegliere l'intensità del \"ragionamento\". A differenza di altri modelli, la modalità di ragionamento non è stata addestrata principalmente su dati matematici, ma soprattutto su casi d'uso reali.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Degli indici suggeriscono che si tratti di un modello molto grande, che richiede server dotati di più schede grafiche potenti per funzionare. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta. Dispone di una finestra di contesto fino a 1.000.000 token, adatta all'analisi di documenti lunghi o repository di codice.</p>"
+            },
+            "Claude 4.5 Sonnet": {
+                "desc": "<p>Un modello molto ampio, multimodale e multilingue, estremamente potente in termini di codice, ragionamento e matematica. L'utente o lo sviluppatore che utilizza questo modello può scegliere tra diversi livelli di ragionamento.</p>",
+                "fyi": "<p>Claude Sonnet 4.5 è una diretta evoluzione di Sonnet 4. Il \".5\" indica le principali modifiche introdotte durante la fase di post-addestramento, che si traducono in significativi miglioramenti nel ragionamento, nella matematica e soprattutto nell'utilizzo pratico dei computer. Al momento del suo rilascio, era considerato il miglior modello al mondo per la codifica ed eccelle nella risoluzione di compiti complessi e lunghi, costituiti da più fasi. Le sue prestazioni su benchmark come SWE-bench Verified e OSWorld mostrano un netto miglioramento rispetto alle versioni precedenti, con la capacità di mantenere la \"concentrazione\" per oltre trenta ore su un singolo problema.</p>",
+                "size_desc": "<p>Le dimensioni esatte sono sconosciute. Tutte le informazioni disponibili lasciano intendere che si tratti di un modello molto grande, che richiede server dotati di più schede grafiche potenti per metterlo in funzione. Le stime di dimensioni e consumo energetico si basano su indicatori indiretti come i costi di inferenza e la latenza osservata. Claude Sonnet 4.5 ha una finestra di contesto fino a 1.000.000 di token, adatta per analizzare interi repository di codice o documenti di grandi dimensioni.</p>"
+            },
+            "Claude 4.6 Sonnet": {
+                "desc": "<p>Un modello molto ampio, multimodale e multilingue, altamente efficiente nella codifica, nel funzionamento autonomo del computer e nel ragionamento. L'utente o lo sviluppatore può scegliere tra diversi livelli di ragionamento.</p>",
+                "fyi": "<p>Claude Sonnet 4.6 succede a Sonnet 4.5 e rappresenta un importante aggiornamento per la gamma di fascia intermedia di Anthropic. Il modello raggiunge il 79,6% su SWE-bench Verified, un punteggio di riferimento per la generazione di codice, e il 72,5% su OSWorld per l'utilizzo del computer, avvicinandosi alle prestazioni di Opus 4.6 a un costo cinque volte inferiore. Anche le prestazioni matematiche (89%) sono significativamente migliorate rispetto al suo predecessore.</p>\n<p>Il modello supporta il ragionamento adattivo, consentendo di modulare l'intensità del suo ragionamento in base alla complessità del compito. La sua finestra di contesto raggiunge 1.000.000 di token in versione beta, una novità assoluta per un modello della famiglia Sonnet, consentendo l'elaborazione di interi codebase o grandi insiemi di documenti in una singola richiesta. Nei test comparativi interni, gli utenti hanno preferito Sonnet 4.6 a Sonnet 4.5 in circa il 70% dei casi.</p>",
+                "size_desc": "<p>Le dimensioni esatte sono sconosciute. Tutte le informazioni disponibili indicano che si tratta di un modello molto grande, che richiede server dotati di più schede grafiche potenti per metterlo in funzione. Le stime di dimensioni e consumo energetico si basano su indicatori indiretti come i costi di inferenza e la latenza osservata. Claude Sonnet 4.5 ha una finestra di contesto fino a 1.000.000 di token, adatta per analizzare interi repository di codice o documenti di grandi dimensioni.</p>"
+            },
+            "Command A": {
+                "desc": "<p>Modello di grandi dimensioni, alte prestazioni per la programmazione, utilizzo di strumenti esterni e \"generazione aumentata tramite recupero\" (RAG, retrieval augmented generation).</p>",
+                "fyi": "<p>Cohere, l'azienda canadese che ha ideato questo modello, è stata fondata nel 2019 da ex ricercatori di Google Brain, tra cui Aidan Gomez, coautore del famoso articolo del 2017 <a href=\"https://arxiv.org/abs/1706.03762\">\" Attention Is All You Need\"</a> che ha rivoluzionato l'intelligenza artificiale. L'azienda si distingue per la sua esclusiva focalizzazione sull'intelligenza artificiale generativa per le imprese, in particolare per i settori regolamentati come finanza, sanità industria manifatturiera ed energetica, nonché per il settore pubblico. L'azienda è anche pioniera negli approcci multilingue e gestisce un laboratorio di ricerca senza scopo di lucro a supporto dell'innovazione aperta.</p>\n<p>Questo modello è progettato per funzionare in oltre 23 lingue e per integrarsi facilmente nei sistemi aziendali. È uno dei pochi modelli distribuiti con la licenza <strong>CC-BY-NC 4.0, che consente la condivisione e la modifica, ma vieta qualsiasi utilizzo commerciale.</strong> Questa scelta di licenza riflette la scelta di Cohere di contribuire alla ricerca e alla comunità open source, mantenendo al contempo il controllo sugli usi commerciali per proteggere il proprio modello di business. Ad esempio, ciò esclude l'integrazione del modello in prodotti o servizi venduti da un'azienda ai clienti, ma consente l'uso accademico, i test o i progetti interni, limitati a un contesto non commerciale.</p>",
+                "size_desc": "<p>Con 111 miliardi di parametri, questo modello è tra i più grandi. Richiede almeno due potenti schede grafiche per l'hosting, con conseguenti costi operativi significativi.</p>\n<p>La sua finestra di contesto supporta fino a 256.000 token, adatta all'analisi di grandi insiemi di documenti o codebase.</p>"
+            },
+            "Command R": {
+                "desc": "<p>Un modello di medie dimensioni ottimizzato per la sintesi, le questioni generali, l'utilizzo degli strumenti ed è efficace nei sistemi di generazione aumentata per il recupero (RAG, retrieval augmented generation).</p>",
+                "fyi": "<p>Cohere, l'azienda canadese che ha ideato questo modello, è stata fondata nel 2019 da ex ricercatori di Google Brain, tra cui Aidan Gomez, coautore del famoso articolo \"Attention Is All You Need\", che ha rivoluzionato l'intelligenza artificiale. Il suo elemento distintivo principale risiede nella focalizzazione esclusiva sull'intelligenza artificiale generativa per le aziende, in particolare per i settori regolamentati come finanza, sanità, industria manifatturiera ed energetica, nonché per il settore pubblico. L'azienda è anche pioniera negli approcci multilingue e gestisce un laboratorio di ricerca senza scopo di lucro a supporto dell'innovazione aperta.</p>\n<p>Questo modello è stato valutato in più di 10 lingue. La sua finestra di contesto contiene 128.000 token, facilitando l'analisi di documenti lunghi. Questa finestra è stata raddoppiata nella versione successiva del modello (Comando A).</p>",
+                "size_desc": "<p>Con 35 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere ospitato su un server dotato di una singola scheda grafica potente, il che contribuisce a limitare i costi dell'infrastruttura.</p>"
+            },
+            "Command R+": {
+                "desc": "<p>Modello multilingue addestrato specificatamente per 10 lingue, specializzato per casi d'uso aziendali </p>",
+                "fyi": "<p>Il fratello maggiore della famiglia Command R di Cohere, questo modello linguistico è orientato all'uso professionale e progettato specificamente per attività di ricerca ed estrazione di informazioni.</p>",
+                "size_desc": "<p>I modelli di grandi dimensioni richiedono risorse considerevoli, ma offrono le migliori prestazioni per attività avanzate come la scrittura creativa, la modellazione dei dialoghi e le applicazioni che richiedono una profonda comprensione del contesto.</p>"
+            },
+            "DeepSeek R1": {
+                "desc": "<p>Un modello molto ampio e performante per compiti matematici, scientifici e di programmazione, che simula un passaggio di ragionamento prima di generare la sua risposta.</p>",
+                "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts (MoE) con 61 livelli. Comprende 671 miliardi di parametri, di cui 37 miliardi attivati da token. L'addestramento ha utilizzato l'apprendimento per rinforzo su larga scala, con diverse fasi di SFT (<em>supervised fine-tuning</em>:un processo supervisionato in cui il modello apprende da esempi di risposte corrette) e dati di avvio.</p>",
+                "size_desc": "<p>Con 671 miliardi di parametri, DeepSeek R1 è un modello molto grande che richiede diverse schede grafiche potenti per funzionare. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Tuttavia, l'architettura Mixture of Experts (MoE) attiva solo una parte dei parametri con ogni token, limitando così il suo impatto energetico. La finestra di contesto raggiunge i 163.840 token, il che è adatto all'analisi di documenti lunghi.</p>"
+            },
+            "DeepSeek R1 0528": {
+                "desc": "<p>Un modello molto ampio, specializzato in compiti matematici, scientifici e di programmazione. Simula un passaggio di ragionamento prima di generare la sua risposta, con l'aggiornamento di maggio 2025, ha guadagnato in profondità di analisi e precisione grazie all'ottimizzazione post-addestramento.</p>",
+                "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts (MoE) con 61 livelli. Possiede un totale di 671 miliardi di parametri, tra cui 37 miliardi attivati per token. L'addestramento ha utilizzato l'apprendimento per rinforzo su larga scala, con diverse fasi di adattamento SFT (<em>supervised fine-tuning</em> : un processo supervisionato in cui il modello apprende da esempi di risposte corrette) e dati di avvio. La sua ultima versione (DeepSeek-R1-0528) migliora significativamente le sue capacità di ragionamento, riducendo il tasso di allucinazione e aumentando l'efficienza nella programmazione, nella logica e nella function calling. Nel test AIME 2025, il suo punteggio è aumentato dal 70% all'87,5%, avvicinandolo a modelli come o3 e Gemini 2.5 Pro.</p>",
+                "size_desc": "<p>Con 671 miliardi di parametri, DeepSeek R1 è un modello molto grande che richiede diverse schede grafiche potenti per funzionare. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Tuttavia, l'architettura Mixture of Experts (MoE) attiva solo una parte dei parametri con ogni token, limitando così il suo impatto energetico. La finestra di contesto raggiunge i 163.840 token, il che è adatto all'analisi di documenti lunghi.</p>"
+            },
+            "DeepSeek R1 Llama 70B": {
+                "desc": "<p>Modello di grandi dimensioni basato su Meta Llama 3.3 70B, riaddestrato con esempi di ragionamento presi dal modello DeepSeek R1. Offre buone capacità matematiche e di programmazione.</p>",
+                "fyi": "<p>Il modello non è stato addestrato da zero. Si basa su Llama 3.3 70B, riaddestrato utilizzando i risultati generati da DeepSeek R1. Questo processo ha permesso a Llama 3.3 70B di simulare il ragionamento, senza dare all'utente la possibilità di abilitare o disabilitare questa funzione.</p>\n<p>In conformità con i requisiti della licenza Llama 3.3, l'azienda deve mantenere il riferimento al modello sorgente nel nome del modello, che è soggetto allo stesso regime di licenza.</p>",
+                "size_desc": "<p>Con 70 miliardi di parametri, questo modello è considerato di grandi dimensioni. Richiede diverse schede grafiche potenti per funzionare, con conseguenti costi operativi elevati. I modelli di ragionamento impiegano inoltre più tempo per produrre una risposta, aumentando il loro consumo energetico.</p>\n<p>La finestra di contesto è di 16.000 token, il che potrebbe rappresentare un limite per l'analisi di documenti molto lunghi.</p>"
+            },
+            "DeepSeek V3": {
+                "desc": "<p>Un modello molto ampio, progettato per compiti complessi: generazione di codice, utilizzo di strumenti e analisi di documenti lunghi. È in grado di elaborare in molte lingue, ma è particolarmente adatto all'inglese e al cinese.</p>",
+                "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts (MoE), con 671 miliardi di parametri ma attivandone solo 37 miliardi per ogni token generato. È efficiente per il tool calling, la generazione di output strutturato (JSON) e la generazione di codice.</p>",
+                "size_desc": "<p>DeepSeek V3 è un modello molto grande, che richiede più schede grafiche per funzionare. Tuttavia, l'architettura Mixture of Experts (MoE) consente di attivare solo alcuni parametri, riducendo così l'impronta ecologica rispetto a un modello denso delle stesse dimensioni.</p>\n<p>La finestra di contesto supporta 128.000 token, il che è utile per analizzare documenti lunghi.</p>"
+            },
+            "DeepSeek V3.2": {
+                "desc": "<p>Un modello molto ampio progettato per compiti complessi: orchestrazione degli agenti, generazione di codice e analisi di documenti lunghi. Questa versione è particolarmente efficace nell'utilizzo di strumenti e può simulare una fase di ragionamento prima di fornire la risposta finale.</p>",
+                "fyi": "<p>In questa versione, i costi dell'API e i requisiti computazionali sono ridotti di circa il 50% o più per contesti lunghi. Questo miglioramento si basa su \"DeepSeek Sparse Attention (DSA)\", un meccanismo di attenzione sparsa a grana fine che calcola l'attenzione in modo selettivo per ridurre la complessità su sequenze lunghe, preservando al contempo il contesto essenziale.</p>\n<p>Il modello è stato addestrato dando priorità alle capacità di ragionamento e agli usi agentivi.</p>",
+                "size_desc": "<p>DeepSeek V3.2 è un modello molto grande, che richiede più schede grafiche per funzionare. Tuttavia, l'architettura Mixture of Experts (MoE) consente di attivare solo una parte dei parametri, riducendo l'impronta ecologica rispetto a un modello denso delle stesse dimensioni. La finestra di contesto raggiunge i 163.000 token, il che è utile per analizzare documenti o codebase molto lunghi.</p>"
+            },
+            "DeepSeek V4 Flash": {
+                "desc": "<p>Una versione più piccola ed economica di DeepSeek V4 Pro, che mantiene la stessa finestra di input da un milione di token per l'analisi di documenti molto lunghi. Il suo prezzo API è tra i più bassi della sua categoria per l'elaborazione di contesti lunghi, con prestazioni paragonabili a modelli intermedi proprietari, il che la rende un'opzione interessante in termini di rapporto costo/prestazioni. Include funzionalità di ragionamento avanzate che possono essere attivate su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore.</p>",
+                "fyi": "<p>Flash condivide l'architettura e la campagna di addestramento di V4 Pro (circa 32 miliardi di token in precisione FP4), con un'eccezione: alcuni livelli di Heavily Compressed Attention (HCA) sono sostituiti da livelli di attenzione a finestra scorrevole da 128 token, un compromesso che privilegia la velocità di inferenza.</p>\n<p>La tariffa ufficiale dell'API è di 0,14 dollari per l'input e 0,28 dollari per l'output per milione di token, il che la rende una delle offerte più economiche della sua categoria.</p>\n<p>In valutazioni indipendenti di Artificial Analysis, la differenza con la versione Pro rimane moderata: Flash raggiunge un livello paragonabile a quello di Claude Sonnet 4.6 e diversi valutatori notano che la sua modalità di ragionamento massima rivaleggia con la modalità avanzata di Pro in determinati compiti, con Pro che mantiene il vantaggio nelle domande di conoscenza fattuale.</p>",
+                "size_desc": "<p>Con 284 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), attiva solo 13 miliardi di parametri per token generato, riducendo significativamente la potenza di calcolo necessaria per l'inferenza. Può essere implementato su configurazioni molto meno costose rispetto alla versione Pro.</p>\n<p>La finestra di contesto può contenere fino a 1.048.576 token, consentendo di gestire corpus di documenti molto ampi.</p>\n<p>I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Tuttavia, l'architettura Mixture of Expert Mixture consente di attivare solo una frazione dei parametri, limitando così l'impronta ecologica rispetto a un modello denso delle stesse dimensioni.</p>"
+            },
+            "DeepSeek V4 Pro": {
+                "desc": "<p>Un modello di grandi dimensioni progettato per analizzare documenti molto lunghi (fino a un milione di token di input, ovvero l'equivalente di diversi libri) e per attività di AI agentica, come la generazione di codice e l'utilizzo di strumenti. Il suo prezzo API è inferiore a quello dei principali modelli proprietari di dimensioni comparabili, il che lo rende un'opzione conveniente in termini di rapporto al costo/prestazione. Incorpora funzionalità di ragionamento avanzate che possono essere attivate su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore.</p>",
+                "fyi": "<p>La principale innovazione di DeepSeek V4 risiede in due nuovi meccanismi di attenzione, la Compressed Sparse Attention (CSA) e la Heavily Compressed Attention (HCA), che riducono significativamente la memoria necessaria per elaborare contesti molto lunghi. Secondo lo sviluppatore, con un milione di token, questo modello consuma solo il 27% delle operazioni computazionali e il 10% della memoria cache richiesta da DeepSeek V3.2 per lo stesso contesto. È questa efficienza, più che le sue dimensioni, a caratterizzare questo modello.</p>\n<p>L'addestramento è stato effettuato su circa 32 trilioni di token, utilizzando FP4 (un formato di precisione ridotta che diminuisce i costi computazionali). DeepSeek ha pubblicato sia la versione pre-addestrata (Base) che quella post-addestrata (Instruct), una scelta rara per un modello di queste dimensioni, oltre a un rapporto tecnico di 58 pagine che è stato ampiamente discusso nella comunità di ricerca.</p>\n<p>Questo modello è progettato per funzionare anche sui chip Cinesi Huawei Ascend oltre che sulle schede grafiche NVIDIA, segnando un passo avanti verso l'indipendenza dai controlli sulle esportazioni statunitensi. L'editore indica che i prezzi delle API potrebbero diminuire una volta che i supernod Ascend 950 saranno implementati su larga scala.</p> \n<p>Secondo un'analisi indipendente di Artificial Analysis, V4 Pro si posiziona al secondo posto tra i modelli di ragionamento open source, dopo Kimi K2.6 , e al primo posto tra i modelli open source nel test agentico GDPval-AA. Rimane comunque dietro ai modelli proprietari di punta (GPT-5.4, Opus 4.7, Gemini 3.1 Pro) nei domini di uso generale.</p>",
+                "size_desc": "<p>Con 1600 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), attiva solo 49 miliardi di parametri per token generato, riducendo così la sua impronte ecologica rispetto a un modello denso di pari dimensioni. Tuttavia, per l'hosting è necessario un server con diverse schede grafiche molto potenti.</p>\n<p>La finestra di contesto può contenere fino a 1.048.576 token, consentendo di gestire corpus di documenti molto ampi.</p>\n<p>I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Tuttavia, l'architettura Mixture of Experts consente di attivare solo una frazione dei parametri, limitando così l'impronta ecologica rispetto a un modello denso delle stesse dimensioni.</p>"
+            },
+            "DeepSeek v3": {
+                "desc": "<p>Rilasciato nel dicembre 2024, il modello DeepSeek V3 presenta un'architettura Mixture-of-Experts che gli consente di raggiungere dimensioni molto elevate riducendo al contempo i costi di inferenza.</p>",
+                "fyi": "<p>Rilasciato nel dicembre 2024, questo modello di punta dell'azienda cinese DeepSeek presenta un'architettura Mixture-of-Experts che gli consente di raggiungere dimensioni molto elevate riducendo al contempo i costi.</p>",
+                "size_desc": "<p>Questi modelli, con centinaia di miliardi di parametri, sono i più complessi e avanzati in termini di prestazioni e precisione. Le risorse di calcolo e di memoria necessarie per implementarli sono tali da renderli adatti alle applicazioni più sofisticate e agli ambienti altamente specializzati.</p>"
+            },
+            "DeepSeek v3.1": {
+                "desc": "<p>Un modello molto ampio, progettato per compiti complessi: generazione di codice, analisi di documenti lunghi. Questa versione è particolarmente efficace nell'utilizzo degli strumenti e può simulare una fase di ragionamento prima di fornire la risposta finale.</p>",
+                "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts (MoE), con 671 miliardi di parametri, ma ne attiva solo 37 miliardi per ogni token generato. È efficiente per i tool call, per la generazione di output strutturato (JSON) e la generazione di codice. L'addestramento utilizza il microscaling FP8, che riduce i costi computazionali e di memoria mantenendo l'accuratezza. Il modello è stato addestrato in due fasi: la prima su sequenze di 32.000 token, poi estesa a 163.000 token, consentendo una maggiore stabilità e prestazioni migliori in contesti molto lunghi.</p>",
+                "size_desc": "<p>DeepSeek V3.1 è un modello molto grande, che richiede più schede grafiche per funzionare. Tuttavia, l'architettura Mixture of Experts (MoE) consente di attivare solo alcuni parametri, riducendo così l'impronta ecologica rispetto a un modello denso delle stesse dimensioni.</p>\n<p>La finestra di contesto ora contiene 163.000 token, rispetto ai 128.000 della versione precedente, il che migliora l'analisi di documenti molto lunghi.</p>"
+            },
+            "EuroLLM 22B Instruct": {
+                "desc": "<p>Un modello multilingue progettato specificamente per la diversità linguistica europea, con solide capacità di traduzione e comprensione multilingue.</p>",
+                "fyi": "<p>EuroLLM-22B è un modello creato da un consorzio composto dall'Università della Sorbona, dall'Università Paris-Saclay, dall'Artefact Research Center, dall'Instituto Superior Técnico - Università di Lisbona, dall'Istituto de Telecomunicações, dall'Università di Edimburgo, da Aveni, Unbabel, dall'Università di Amsterdam e da Naver Labs. È stato addestrato con l'obiettivo primario di una copertura equilibrata delle lingue europee. Copre le 24 lingue ufficiali dell'Unione Europea, oltre a 11 lingue aggiuntive. L'addestramento è stato effettuato su circa 4 miliardi di token, utilizzando 400 GPU Nvidia H100 sul supercomputer MareNostrum 5, gestito dal Barcelona Supercomputing Center. Il progetto ha ricevuto il supporto istituzionale europeo tramite Horizon Europe ed EuroHPC, nell'ambito di un'allocazione di risorse di calcolo \"su scala estrema\".</p>\n<p>I dati di addestramento combinano dati web, dati paralleli multilingue (en–xx e xx–en) e dataset di alta qualità accuratamente selezionati, con una forte enfasi sull'equilibrio tra le lingue europee. Il modello offre prestazioni particolarmente elevate per le attività di traduzione multilingue.</p>",
+                "size_desc": "<p>Con 22 miliardi di parametri, questo modello rientra nella categoria dei modelli di medie dimensioni. Il suo utilizzo richiede un computer personale molto potente o, più in generale, un server con almeno una scheda grafica ad alte prestazioni. La finestra di contesto contiene 32.000 token.</p>"
+            },
+            "Gemini 1.5 Pro": {
+                "desc": "<p>Rilasciato nel settembre 2024, questo modello multimodale si applica alla generazione di testo e immagini, all'analisi video e alla trascrizione audio.</p>",
+                "fyi": "<p>Rilasciato nel febbraio 2024 e migliorato nel settembre 2024, questo modello multilingue e multimodale è in grado di elaborare un volume molto elevato di dati input, qualsiasi sia il testo, l'immagine e il suono(fino a 11 ore di audio ) o video (fino ad un'ora ). Questo è il modello LLM che alimenta il chatbot Gemini di Google.</p>",
+                "size_desc": "<p>Questi modelli, con centinaia di miliardi di parametri, sono i più complessi e avanzati in termini di prestazioni e precisione. Le risorse di calcolo e di memoria necessarie per implementarli sono tali da renderli adatti alle applicazioni più sofisticate e agli ambienti altamente specializzati.</p>"
+            },
+            "Gemini 2.0 Flash": {
+                "desc": "<p>Lanciato nel dicembre 2024, questo è il modello multilingue e multimodale più piccolo, che appartiene alla famiglia Gemini Flash e consente risposte molto rapide per ragionamenti meno complessi.</p>",
+                "fyi": "<p>Lanciato nel dicembre 2024, questo è il modello multilingue e multimodale più piccolo che appartiene alla famiglia Gemini Flash e consente risposte molto rapide per ragionamenti meno complessi rispetto ai modelli Gemini Pro.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Gemini 2.5 Flash": {
+                "desc": "<p>Modello multimodale e multilingue di grandi dimensioni con due modalità di risposta: l'utente può scegliere tra una modalità di ragionamento, per delle risposte più approfondite, o una modalità rapida, per arrivare direttamente alla risposta finale.</p>",
+                "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts (MoE) ed è stato ottimizzato mantenendo solo un'approssimazione delle previsioni del modello di riferimento, Gemini 2.5 Pro. È stato addestrato su un'architettura TPUv5p che incorpora miglioramenti quali la capacità di continuare automaticamente l'addestramento anche in caso di errori di addestramento, danneggiamento dei dati o problemi di memoria.</p>\n<p>Gemini 2.5 Flash gestisce contesti fino a 1 milione di token e tre ore di contenuti video. L'elaborazione ottimizzata della visione consente di elaborare video circa tre volte più lunghi all'interno della stessa finestra di contesto: sono necessari solo 66 token visivi per generare un'immagine, rispetto ai 258 precedenti. Questo modello consente anche la generazione audio nativa per dialoghi e sintesi vocale.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Dei dati suggeriscono che si tratti di un modello di grandi dimensioni, che richiede diverse schede grafiche potenti per funzionare. Tuttavia, l'architettura Mixture of Experts (MoE) attiva solo un insieme di parametri per ogni token, limitandone così il consumo energetico. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta. La sua finestra di contesto può gestire fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi.</p>"
+            },
+            "Gemini 3 Flash": {
+                "desc": "<p>Modello nativo, multimodale e multilingue di grandi dimensioni, derivato da Gemini 3 Pro. Incorpora una capacità di ragionamento avanzata(\"Deep Think\") attivabile su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore. Il modello supporta nativamente il testo, l'audio, le immagini, i video e i PDF.</p>",
+                "fyi": "<p>Il modello è stato addestrato su un'infrastruttura composta esclusivamente da TPU (Tensor Processing Unit). Gemini 3 Flash è in grado di elaborare grandi volumi di contenuti multimodali per ogni richiesta: fino a 900 immagini, 900 PDF da 900 pagine ciascuno, video da 45 minuti a 1 ora e fino a 8,4 ore di audio. Al momento del suo lancio, Gemini 3 Flash si è dimostrato molto potente pur essendo circa nove volte meno costoso di Gemini 3 Pro.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello non sono divulgate, ma si basa su un'architettura Mixture of Experts (MoE). Questa architettura attiva solo un sottoinsieme di parametri per ogni token, riducendo così la potenza di calcolo richiesta. La sua finestra di contesto si estende a 1 milione di token. Il modello è circa 9 volte meno costoso di Gemini 3 Pro. L'impatto ambientale varia a seconda del livello di ragionamento scelto: un ragionamento più approfondito genera più token e quindi consuma più risorse.</p>"
+            },
+            "Gemini 3 Pro": {
+                "desc": "<p>Modello di grande dimensioni, nativo, multimodale e multilingue. Integra una capacità di ragionamento avanzata (\"Deep Think\") che può essere attivata su richiesta per compiti complessi (matematica, logica, codifica), separatamente dalla sua capacità di generazione standard più rapida. Il modello supporta nativamente testo, codice, audio, immagini, video e 3D.</p>",
+                "fyi": "<p>Il modello è stato addestrato su un'infrastruttura composta esclusivamente da Tensor Processing Unit (TPU). Al momento del suo rilascio, il modello rappresenta un significativo passo avanti nelle valutazioni, ad esempio su Humanity's Last Exam, ARC-AGI-2 e MathArena Apex. Il modello è ottimizzato per l'uso \"agentivo\": è stato addestrato per simulare la pianificazione, l'utilizzo di strumenti, l'esecuzione del codice e l'autocorrezione all'interno di ambienti di programmazione. La sua comprensione multimodale è stata perfezionata per ridurre significativamente il numero di token necessari per la codifica video e audio.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello non sono divulgate, ma si basa su un'architettura Mixture of Experts (MoE). Questa architettura attiva solo un sottoinsieme di parametri per ogni token di input, richiedendo quindi una minore potenza di calcolo per la generazione. La sua finestra di contesto si estende fino a 1 milione di token, risultando adatta all'analisi di grandi insiemi di documenti, inclusi interi repository di codice e file video.</p>"
+            },
+            "Gemini 3.1 Flash Lite": {
+                "desc": "<p>Un modello di medie dimensioni, multimodale e veloce, adatto all'uso automatizzato o a compiti relativamente semplici: traduzione, classificazione, moderazione dei contenuti. Offre livelli di ragionamento regolabili, dal meno al più approfondito.</p>",
+                "fyi": "<p>Questo modello deriva da Gemini 3 Pro e utilizza un'architettura Mixture of Experts (MoE). La sua caratteristica distintiva è la capacità di offrire livelli ragionamento regolabili: minimo (predefinito), basso, medio e alto. Questa funzionalità consente agli sviluppatori di controllare minuziosamente il compromesso tra velocità e di ragionamento a seconda della complessità del compito. Accetta come input testo, immagini, audio, video e documenti PDF, ma produce in output solo testo.</p>\n<p>Addestrato sui processori TPU di Google con i framework JAX e ML Pathways, il modello è progettato per applicazioni ad alto volume. Secondo il fornitore, è 2,5 volte più veloce di Gemini 2.5 Flash nel tempo di prima risposta e il 45% più veloce nell'elaborazione degli output. Nei test di valutazione, ha raggiunto l'86,9% su GPQA Diamond e l'88,9% su MMMLU, punteggi vicini a quelli di modelli più costosi.</p>",
+                "size_desc": "<p>Le dimensioni esatte di questo modello non sono note pubblicamente. La sua architettura Mixture of Experts (MoE) consente di attivare solo un insieme di parametri per ogni richiesta, rendendolo molto veloce ed economico. La sua finestra di contesto può gestire 1.048.576 token di input, permettendogli di elaborare documenti molto lunghi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Gemini 3.1 Pro": {
+                "desc": "<p>Un modello multimodale, nativo, multilingue e di grandi dimensioni, un'evoluzione di Gemini 3 Pro. Mantiene le stesse capacità multimodali e la stessa modalità di ragionamento (\"Deep Think\"), aggiungendo un terzo livello intermedio di ragionamento e miglioramenti nelle attività di pianificazione e utilizzo degli strumenti.</p>",
+                "fyi": "<p>Gemini G3.1 Pro conserva l'architettura MoE e le funzionalità multimodali native di Gemini 3 Pro (testo, immagini, audio, video, PDF fino a 1.000 pagine), nonché l'addestramento e l'ottimizzazione delle TPU per usi agentici.</p>\n<p>La principale novità è l'aggiunta di un livello di ragionamento intermedio (\"medio\") alla modalità Deep Think, che in precedenza offriva solo due livelli (basso e alto). Questo livello mira a un compromesso tra qualità della risposta e latenza. Il modello introduce anche le \"firme del pensiero\" (thought signatures), delle rappresentazioni numeriche del ragionamento intermedio che preservano il contesto del pensiero durante interazioni a più fasi. Secondo lo sviluppatore, questi miglioramenti si traducono in un miglioramento delle prestazioni relative del 40-60% nei compiti di pianificazione complessi rispetto alla generazione precedente e in una maggiore resistenza alle allucinazioni. Ottiene un punteggio del 77,1% su ARC-AGI-2, del 94,3% su GPQA Diamond e dell'80,6% su SWE-Bench Verified.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello non sono state divulgate, ma si basa sulla stessa architettura Mixture of Experts (MoE) di Gemini 3 Pro. Questa architettura attiva solo un sottoinsieme di parametri per ogni token, riducendo la potenza di calcolo necessaria rispetto a un modello denso di dimensioni equivalenti. La sua finestra di contesto si estende a 1 milione di token di input e 65.000 token di output. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Gemma 2 27B": {
+                "desc": "<p>Un modello ad alte prestazioni di dimensioni adeguate, il cui costo relativamente elevato lo rende adatto ad usi specifici che richiedono una grande precisione.</p>",
+                "fyi": "<p>Con un numero di parametri tre volte superiore rispetto al suo fratello minore nella famiglia Gemma 2, questo modello è più preciso nel rispondere alle istruzioni. Il modello utilizzato qui è la versione quantizzata (q8).</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni, pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Gemma 2 2B": {
+                "desc": "<p>Un modello molto compatto che offre prestazioni altamente competitive per le sue dimensioni e per la maggior parte delle attività.</p>",
+                "fyi": "<p>Il fratello minore della famiglia Gemma 2, questo modello molto compatto, lanciato a luglio 2024, riesce a competere con modelli ben più grandi.</p>",
+                "size_desc": "<p>I modelli molto piccoli, con meno di 7 miliardi di parametri, sono i meno complessi e i più efficienti in termini di risorse, offrendo prestazioni sufficienti per attività semplici come la classificazione del testo.</p>"
+            },
+            "Gemma 2 9B": {
+                "desc": "<p>Il fratello minore della famiglia Gemma 2, questo modello, lanciato a giugno 2024, è addestrato a rispondere a istruzioni specifiche, elaborare richieste complesse e offrire soluzioni creative.</p>",
+                "fyi": "<p>Il fratello minore della famiglia Gemma 2, questo modello, lanciato a giugno 2024, è addestrato a rispondere a istruzioni specifiche, elaborare richieste complesse e offrire soluzioni creative.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Gemma 3 12B": {
+                "desc": "<p>Un modello piccolo e multimodale, adatto a compiti comuni come sessioni di domande e risposte, riassunti o interpretazione di immagini.</p>",
+                "fyi": "<p>Elabora testo e immagini e può essere eseguito localmente su potenti portatili o server con una singola scheda grafica. È stato addestrato per interagire con strumenti esterni (ricerca su Internet, ecc...) tramite function call, rendendolo utilizzabile in contesti agentici.</p>",
+                "size_desc": "<p>Con 12 miliardi di parametri, è uno dei modelli più piccoli. Può essere utilizzato localmente su una computer personale per preservare la riservatezza dei dati, oppure su un server economico per limitare i costi rispetto a un modello più grande.</p>\n<p>La finestra di contesto può contenere fino a 128.000 token, consentendo l'elaborazione di documenti lunghi.</p>"
+            },
+            "Gemma 3 27B": {
+                "desc": "<p>Un modello multimodale di medie dimensioni, adatto a compiti comuni come sessioni di domande e risposte, riassunti o interpretazione di immagini.</p>",
+                "fyi": "<p>È in grado di elaborare testo e immagini su un server dotato di una singola scheda grafica potente. È stato addestrato per interagire con strumenti esterni (ricerca su internet, ecc.) tramite function call, rendendolo utilizzabile in contesti agentici.</p>",
+                "size_desc": "<p>Con 27 miliardi di parametri, rientra nella categoria dei modelli di medie dimensioni. Può essere implementato su un server con una singola scheda grafica (GPU).</p>\n<p>Accetta contesti fino a 128.000 token, il che lo rende adatto all'analisi di documenti lunghi.</p>"
+            },
+            "Gemma 3 4B": {
+                "desc": "<p>Modello molto piccolo, compatto e multimodale adatto a compiti comuni come sessioni di domande e risposte, riassunti o interpretazione di immagini.</p>",
+                "fyi": "<p>È in grado di elaborare testo e immagini anche su dispositivi a bassa potenza, inclusi smartphone e tablet. È stato addestrato per interagire con strumenti esterni (ricerca su Internet, ecc...) tramite function call, rendendolo utilizzabile in contesti agentici. </p>",
+                "size_desc": "<p>Con 4 miliardi di parametri, è uno dei modelli più piccoli. Può essere utilizzato localmente per preservare la riservatezza dei dati, oppure su un server per limitare i costi rispetto a un modello più grande.</p>\n<p>La sua finestra di contesto può contenere fino a 128.000 token, consentendo l'analisi di documenti lunghi.</p>"
+            },
+            "Gemma 3n 4B": {
+                "desc": "<p>Un modello molto piccolo, compatto e multimodale, progettato per funzionare localmente su un computer o uno smartphone, senza bisogno di un server: è in grado di adattare la sua potenza in base alla capacità e alle esigenze.</p>",
+                "fyi": "<p>Questo modello è in grado di elaborare testo, immagini e audio. Si basa sull'architettura MatFormer e su un sistema cache PLE (per-layer embeddings), che attiva solo i parametri necessari a seconda dell'attività, adattandosi alle capacità delle macchine sulle quali il modello funziona.</p>",
+                "size_desc": "<p>Con 4 miliardi di parametri, è uno dei modelli più piccoli. Può essere utilizzato localmente su un computer o uno smartphone per preservare la riservatezza dei dati, oppure su un server per limitare i costi rispetto a un modello più grande.</p>\n<p>La sua finestra di contesto può contenere fino 32.000 token.</p>"
+            },
+            "Gemma 4 26B A4B": {
+                "desc": "<p>Variante Mixture of Experts (MoE) della famiglia Gemma 4, questo modello multilingue e multimodale offre prestazioni simili alla versione densa a 31B con un costo di inferenza significativamente inferiore. Incorpora una capacità di ragionamento avanzata che può essere attivata su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore.</p>"
             }
         }
     }
