@@ -96,7 +96,9 @@ async def migrate_llm_messages(
     pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
-    skipped = 0
+    skipped_no_pair_id = 0
+    skipped_not_in_map = 0
+    skipped_no_msg = 0
     batch_idx = 0
 
     with source_connection(source_uri, stream=True) as conn:
@@ -120,16 +122,18 @@ async def migrate_llm_messages(
             to_insert: list[LLMMessage] = []
             batch_map: dict[tuple[str, int, str, int], uuid.UUID] = {}
 
-            batch_skipped = 0
+            batch_no_pair_id = 0
+            batch_not_in_map = 0
+            batch_no_msg = 0
             for row in raw_rows:
                 pair_id: str | None = row["conversation_pair_id"]
                 if not pair_id:
-                    batch_skipped += 1
+                    batch_no_pair_id += 1
                     continue
                 occ = pair_id_counter[pair_id]
                 pair_id_counter[pair_id] += 1
                 if (pair_id, occ) not in comparison_map:
-                    batch_skipped += 1
+                    batch_not_in_map += 1
                     continue
 
                 ts: datetime = row["timestamp"]
@@ -138,7 +142,7 @@ async def migrate_llm_messages(
                     for turn_idx, msg in _extract_assistant_messages(conversation):
                         llm_msg = _build_llm_message(msg, ts)
                         if llm_msg is None:
-                            batch_skipped += 1
+                            batch_no_msg += 1
                             continue
                         to_insert.append(llm_msg)
                         batch_map[(pair_id, occ, side, turn_idx)] = llm_msg.id
@@ -150,9 +154,19 @@ async def migrate_llm_messages(
 
             llm_message_map.update(batch_map)
             inserted += len(to_insert)
-            skipped += batch_skipped
-            logger.info(f"Batch {batch_idx}: {len(to_insert)} inserted, {batch_skipped} skipped.")
+            skipped_no_pair_id += batch_no_pair_id
+            skipped_not_in_map += batch_not_in_map
+            skipped_no_msg += batch_no_msg
+            batch_skipped = batch_no_pair_id + batch_not_in_map + batch_no_msg
+            logger.info(
+                f"Batch {batch_idx}: {len(to_insert)} inserted, {batch_skipped} skipped"
+                f" (no_pair_id={batch_no_pair_id}, not_in_map={batch_not_in_map}, no_msg={batch_no_msg})."
+            )
             batch_idx += 1
 
-    logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
+    total_skipped = skipped_no_pair_id + skipped_not_in_map + skipped_no_msg
+    logger.info(
+        f"Done: {inserted} inserted, {total_skipped} skipped"
+        f" (no_pair_id={skipped_no_pair_id}, not_in_map={skipped_not_in_map}, no_msg={skipped_no_msg})."
+    )
     save_map(maps_dir, "llm_message_map", llm_message_map)  # key: (pair_id, occ, side, turn_idx)
