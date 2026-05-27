@@ -1,5 +1,5 @@
 {
-  "timestamp": 1779263609.781307,
+  "timestamp": 1779801299.015851,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -4070,8 +4070,39 @@
       "reuse": true,
       "simple_name": "Trinity Large",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://huggingface.co/arcee-ai/Trinity-Large-Preview",
+      "wh_per_million_token": 1523.5118865981776
+    },
+    "trinity-large-thinking": {
+      "active_params": 13,
+      "arch": "moe",
+      "commercial_use": true,
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "arcee-ai/trinity-large-thinking",
+        "api_type": "openrouter",
+        "api_version": null
+      },
+      "friendly_size": "L",
+      "fully_open_source": false,
+      "icon_path": "arcee",
+      "id": "trinity-large-thinking",
+      "license": "Apache 2.0",
+      "new": true,
+      "organisation": "Arcee",
+      "params": 398,
+      "pricey": false,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "04/2026",
+      "required_ram": 398,
+      "reuse": true,
+      "simple_name": "Trinity Large Thinking",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/arcee-ai/Trinity-Large-Thinking",
       "wh_per_million_token": 1523.5118865981776
     },
     "Yi-1.5-9B-Chat": {
