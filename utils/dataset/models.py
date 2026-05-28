@@ -26,8 +26,8 @@ Datasets = Literal["normal", "raw"]
 class DatasetTurnMetadata(SQLModel):
     tokens_a: int
     tokens_b: int
-    conso_a: float
-    conso_b: float
+    conso_a: float | None  # None for legacy comparisons with empty llm_id
+    conso_b: float | None  # None for legacy comparisons with empty llm_id
     duration_a: float
     duration_b: float
     latency_a: float
@@ -45,8 +45,8 @@ class DatasetComparisonBaseMetadata(SQLModel):
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
     total_tokens_a: int
     total_tokens_b: int
-    total_conso_a: float
-    total_conso_b: float
+    total_conso_a: float | None  # None for legacy comparisons with empty llm_id
+    total_conso_b: float | None  # None for legacy comparisons with empty llm_id
 
 
 class DatasetComparisonExtraMetadata(SQLModel):
@@ -101,8 +101,8 @@ class DatasetTurn(SQLModel):
         return {
             "tokens_a": msg_a.tokens,
             "tokens_b": msg_b.tokens,
-            "conso_a": (llm_a.wh_per_million_token / 1_000_000) * msg_a.tokens / 1_000,
-            "conso_b": (llm_b.wh_per_million_token / 1_000_000) * msg_b.tokens / 1_000,
+            "conso_a": (llm_a.wh_per_million_token / 1_000_000) * msg_a.tokens / 1_000 if llm_a else None,
+            "conso_b": (llm_b.wh_per_million_token / 1_000_000) * msg_b.tokens / 1_000 if llm_b else None,
             "latency_a": (msg_a.responded_at - msg_a.created_at).total_seconds(),
             "latency_b": (msg_b.responded_at - msg_b.created_at).total_seconds(),
             "duration_a": (msg_a.updated_at - msg_a.responded_at).total_seconds(),
@@ -173,8 +173,8 @@ class DatasetComparison(SQLModel):
             **info.context["metadata"],
             "total_tokens_a": sum(meta.tokens_a for meta in turns_metadata),
             "total_tokens_b": sum(meta.tokens_b for meta in turns_metadata),
-            "total_conso_a": sum(meta.conso_a for meta in turns_metadata),
-            "total_conso_b": sum(meta.conso_b for meta in turns_metadata),
+            "total_conso_a": sum(meta.conso_a for meta in turns_metadata) if all(meta.conso_a is not None for meta in turns_metadata) else None,
+            "total_conso_b": sum(meta.conso_b for meta in turns_metadata) if all(meta.conso_b is not None for meta in turns_metadata) else None,
         }
 
     @field_validator("extra_metadata_", mode="before")

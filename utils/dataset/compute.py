@@ -87,8 +87,9 @@ async def count_dataset_rows(datasets: list[Datasets]):
 def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     llms = get_raw_llms_data()
     ctx = {
-        "llm_a": llms[db_comparison.llm_id_a],
-        "llm_b": llms[db_comparison.llm_id_b],
+        # .get() tolerates empty/unknown llm_id (legacy comparisons)
+        "llm_a": llms.get(db_comparison.llm_id_a),
+        "llm_b": llms.get(db_comparison.llm_id_b),
         "metadata": DatasetComparisonBaseMetadata.model_validate(
             db_comparison
         ).model_dump(),
