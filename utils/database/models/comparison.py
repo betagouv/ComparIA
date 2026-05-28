@@ -25,7 +25,7 @@ ArchivedReason = Literal[
     "corrupted_response_last_empty",  # some Comparison Turn side has its last LLMMessage.content as ''
     "corrupted_response_some_empty",  # some Comparison Turn side has at least one LLMMessage.content as ''
     "corrupted_model_stream",  # some Comparison Turn side has at least one LLMMessage.content with ModelResponse or ModelResponseStream in it
-    # "corrupted_not_equal_length",
+    "corrupted_not_equal_length",
     # "corrupted_out_of_range_reactions",
     # "corrupted_to_model_msg_reactions",
     # "corrupted_no_choice_votes",
