@@ -24,14 +24,14 @@ Datasets = Literal["normal", "raw"]
 
 
 class DatasetTurnMetadata(SQLModel):
-    tokens_a: int
-    tokens_b: int
+    tokens_a: int | None
+    tokens_b: int | None
     conso_a: float | None  # None for legacy comparisons with empty llm_id
     conso_b: float | None  # None for legacy comparisons with empty llm_id
-    duration_a: float
-    duration_b: float
-    latency_a: float
-    latency_b: float
+    duration_a: float | None
+    duration_b: float | None
+    latency_a: float | None
+    latency_b: float | None
 
 
 class DatasetComparisonBaseMetadata(SQLModel):
@@ -43,8 +43,8 @@ class DatasetComparisonBaseMetadata(SQLModel):
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
-    total_tokens_a: int
-    total_tokens_b: int
+    total_tokens_a: int | None
+    total_tokens_b: int | None
     total_conso_a: float | None  # None for legacy comparisons with empty llm_id
     total_conso_b: float | None  # None for legacy comparisons with empty llm_id
 
@@ -71,8 +71,8 @@ class DatasetTurn(SQLModel):
 
     # Excluded, used to compute responses
     user_msg: Annotated[UserMessageRead, Field(exclude=True)]
-    llm_msg_a: Annotated[LLMMessageFinal, Field(exclude=True)]
-    llm_msg_b: Annotated[LLMMessageFinal, Field(exclude=True)]
+    llm_msg_a: Annotated[LLMMessageFinal | None, Field(exclude=True)]
+    llm_msg_b: Annotated[LLMMessageFinal | None, Field(exclude=True)]
 
     # Extracted then merged with DatasetComparisonMetadata
     metadata_: Annotated[
@@ -94,30 +94,28 @@ class DatasetTurn(SQLModel):
     def parse_metadata(cls, value: None, info: ValidationInfo) -> dict:
         assert info.context
         llm_a = info.context["llm_a"]
-        msg_a = info.data["llm_msg_a"]
+        msg_a = info.data.get("llm_msg_a")
         llm_b = info.context["llm_b"]
-        msg_b = info.data["llm_msg_b"]
+        msg_b = info.data.get("llm_msg_b")
 
         return {
-            "tokens_a": msg_a.tokens,
-            "tokens_b": msg_b.tokens,
-            "conso_a": (llm_a.wh_per_million_token / 1_000_000) * msg_a.tokens / 1_000 if llm_a else None,
-            "conso_b": (llm_b.wh_per_million_token / 1_000_000) * msg_b.tokens / 1_000 if llm_b else None,
-            "latency_a": (msg_a.responded_at - msg_a.created_at).total_seconds(),
-            "latency_b": (msg_b.responded_at - msg_b.created_at).total_seconds(),
-            "duration_a": (msg_a.updated_at - msg_a.responded_at).total_seconds(),
-            "duration_b": (msg_b.updated_at - msg_b.responded_at).total_seconds(),
+            "tokens_a": msg_a.tokens if msg_a else None,
+            "tokens_b": msg_b.tokens if msg_b else None,
+            "conso_a": (llm_a.wh_per_million_token / 1_000_000) * msg_a.tokens / 1_000 if (llm_a and msg_a) else None,
+            "conso_b": (llm_b.wh_per_million_token / 1_000_000) * msg_b.tokens / 1_000 if (llm_b and msg_b) else None,
+            "latency_a": (msg_a.responded_at - msg_a.created_at).total_seconds() if msg_a else None,
+            "latency_b": (msg_b.responded_at - msg_b.created_at).total_seconds() if msg_b else None,
+            "duration_a": (msg_a.updated_at - msg_a.responded_at).total_seconds() if msg_a else None,
+            "duration_b": (msg_b.updated_at - msg_b.responded_at).total_seconds() if msg_b else None,
         }
 
     # HELPERS
 
     def parse_response(self, side: BotPos) -> list[dict]:
-        return [
-            self.user_msg.model_dump(include={"role", "content"}),
-            getattr(self, f"llm_msg_{side}").model_dump(
-                include={"role", "content", "reasoning_content"}
-            ),
-        ]
+        msgs = [self.user_msg.model_dump(include={"role", "content"})]
+        if llm_msg := getattr(self, f"llm_msg_{side}"):
+            msgs.append(llm_msg.model_dump(include={"role", "content", "reasoning_content"}))
+        return msgs
 
 
 class DatasetComparison(SQLModel):
@@ -171,8 +169,8 @@ class DatasetComparison(SQLModel):
 
         return {
             **info.context["metadata"],
-            "total_tokens_a": sum(meta.tokens_a for meta in turns_metadata),
-            "total_tokens_b": sum(meta.tokens_b for meta in turns_metadata),
+            "total_tokens_a": sum(meta.tokens_a for meta in turns_metadata if meta.tokens_a is not None) if all(meta.tokens_a is not None for meta in turns_metadata) else None,
+            "total_tokens_b": sum(meta.tokens_b for meta in turns_metadata if meta.tokens_b is not None) if all(meta.tokens_b is not None for meta in turns_metadata) else None,
             "total_conso_a": sum(meta.conso_a for meta in turns_metadata) if all(meta.conso_a is not None for meta in turns_metadata) else None,
             "total_conso_b": sum(meta.conso_b for meta in turns_metadata) if all(meta.conso_b is not None for meta in turns_metadata) else None,
         }
