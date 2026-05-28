@@ -15,7 +15,7 @@ from .utils import AutoDatetime, ModelId, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
-    # "corrupted_no_model",
+    "corrupted_no_model",
     "corrupted_against_self",  # some Comparison llm_id_(a|b) are equal
     "corrupted_no_response",  # Comparison has no LLMMessage at all
     "corrupted_response_all_none",  # some Comparison Turns side has all its LLMMessage.content as None
