@@ -5,9 +5,17 @@ import logging
 from cyclopts import App
 
 from utils.database.cli import cli_db
+from utils.dataset.run import main as generate_datasets
 from utils.logger import configure_logger
+from utils.ranking.run import main as generate_rankings
 
 cli = App()
+
+cli_gen = App(name="generate", help="Generation utilities.")
+cli_gen.command(generate_rankings, name="rankings")
+cli_gen.command(generate_datasets, name="datasets")
+
+cli.command(cli_gen)
 cli.command(cli_db)
 
 if __name__ == "__main__":

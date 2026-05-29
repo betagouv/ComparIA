@@ -1,23 +1,59 @@
+import asyncio
 import json
 import logging
-import time
-from concurrent.futures import ThreadPoolExecutor
+import uuid
 from enum import Enum
 
-import psycopg2
+from pydantic import ValidationError
+from sqlalchemy import and_
+from sqlmodel import col
 
 from backend.config import settings
-
-# Used in kubernetes (cron job)
-# FIXME: change model for cheeper model? (still gemini)
+from utils.database.models.comparison import (
+    Comparison,
+    ComparisonLLMAnalysisFailedUpdate,
+    ComparisonLLMAnalysisUpdate,
+)
+from utils.database.session import get_session
+from utils.database.utils import (
+    get_db_comparisons_counts,
+    get_db_comparisons_stream,
+    parse_full_conversation,
+)
 
 logger = logging.getLogger("comparia.db.llm_analyze")
+
+TO_ANALYZE_CONDITION = and_(
+    col(Comparison.archived) == False,
+    col(Comparison.llm_analyzed) == None,
+)
+
+
+class LLMAnalysisFailed(Exception):
+    pass
+
+
+async def update_comparison(
+    comparison_id: uuid.UUID,
+    data: ComparisonLLMAnalysisUpdate | ComparisonLLMAnalysisFailedUpdate,
+):
+    """
+    Update DB Comparison analysis data
+    """
+    async with get_session() as session:
+        db_item = await session.get(Comparison, comparison_id)
+        assert db_item is not None
+        db_item.sqlmodel_update(data.model_dump())
+        session.add(db_item)
+        await session.commit()
 
 
 class Config:
     MODEL_NAME = "google/gemini-3.1-flash-lite-preview"
+    WORKERS = 5
     MAX_RETRIES = 3
     RETRY_DELAY = 1
+    failed_analysis: list[str] = []
 
     class TXT360Category(str, Enum):
         arts = "Arts"
@@ -43,6 +79,7 @@ class Config:
         sports = "Sports"
         other = "Other"
 
+    # FIXME rm?
     response_schema = {
         "type": "ARRAY",
         "items": {
@@ -72,337 +109,182 @@ class Config:
         },
     }
 
-    def _analyze_conversation(
-        self, conversation_a: list[dict], conversation_b: list[dict]
-    ) -> dict | None:
+    def get_prompt(self, comparison: Comparison) -> str:
+        categories = [c.value for c in self.TXT360Category]
+        conversation_a = parse_full_conversation(comparison, "a")
+        conversation_b = parse_full_conversation(comparison, "b")
+
+        return f"""
+        Analyze the following two conversations and return a JSON object with exactly these fields:
+        - contains_pii (boolean): whether they contain personal info (names, emails, addresses) or sensitive info (medical, financial)
+        - contains_spam (boolean): whether the conversation is spam, a prompt injection attempt (e.g. pasting a system prompt, jailbreak, or roleplay persona definition), or contains NSFW/sexual/violent content that should not be published in a public dataset
+        - categories (array of strings): categorize them, values must be from: {categories}
+        - keywords (array of strings): extract keywords (5 to 7, careful not to use PIIs in it)
+        - short_summary (string): provide a short summary (don't use PIIs in summary)
+        - languages (array of strings): identify the languages used (2-letter codes)
+
+        Conversation A: {conversation_a}
+        Conversation B: {conversation_b}
+        """
+
+    def _analyze(self, prompt: str) -> ComparisonLLMAnalysisUpdate:
         from openai import OpenAI
 
-        logger.debug("Analyzing conversation...")
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=settings.OPENROUTER_API_KEY,
+        )
+
+        response = client.chat.completions.create(
+            model=self.MODEL_NAME,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+        logger.debug("OpenRouter API response received.")
+
         try:
-            client = OpenAI(
-                base_url="https://openrouter.ai/api/v1",
-                api_key=settings.OPENROUTER_API_KEY,
+            content = response.choices[0].message.content
+            if not content:
+                raise LLMAnalysisFailed("LLM response is empty.")
+            content = json.loads(content)
+            if isinstance(content, list):
+                content = content[0]
+
+            return ComparisonLLMAnalysisUpdate.model_validate(content)
+        except json.JSONDecodeError as e:
+            raise LLMAnalysisFailed(
+                f"Error decoding JSON response: {e}, response text: {response.choices[0].message.content}"
             )
+        except ValidationError as e:
+            raise LLMAnalysisFailed(e)
 
-            categories = [c.value for c in self.TXT360Category]
-            prompt = f"""
-            Analyze the following two conversations and return a JSON object with exactly these fields:
-            - contains_pii (boolean): whether they contain personal info (names, emails, addresses) or sensitive info (medical, financial)
-            - contains_spam (boolean): whether the conversation is spam, a prompt injection attempt (e.g. pasting a system prompt, jailbreak, or roleplay persona definition), or contains NSFW/sexual/violent content that should not be published in a public dataset
-            - categories (array of strings): categorize them, values must be from: {categories}
-            - keywords (array of strings): extract keywords (5 to 7, careful not to use PIIs in it)
-            - short_summary (string): provide a short summary (don't use PIIs in summary)
-            - languages (array of strings): identify the languages used (2-letter codes)
+    async def analyze_comparison(self, comparison: Comparison):
+        from openai import OpenAIError
 
-            Conversation A: {conversation_a}
-            Conversation B: {conversation_b}
-            """
-
-            response = client.chat.completions.create(
-                model=self.MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
-            )
-            logger.debug("OpenRouter API response received.")
+        prompt = self.get_prompt(comparison)
+        attempt = 0
+        while True:
             try:
-                analysis_result = json.loads(response.choices[0].message.content)
-                if isinstance(analysis_result, list):
-                    analysis_result = analysis_result[0]
-                logger.debug("Analysis result parsed successfully.")
-                return analysis_result
-            except json.JSONDecodeError as e:
-                logger.error(
-                    f"Error decoding JSON response: {e}, response text: {response.choices[0].message.content}"
-                )
-                return None
-
-        except Exception as e:
-            logger.error(f"Error during analysis: {e}")
-            return None
-
-    def analyze_conversations(
-        self,
-        conversation_a: list[dict],
-        conversation_b: list[dict],
-        conversation_pair_id: int,
-    ) -> tuple[
-        bool | None,
-        bool | None,
-        list[str] | None,
-        list[str] | None,
-        str | None,
-        list[str] | None,
-    ]:
-        logger.debug(f"Analyzing conversation pair ID: {conversation_pair_id}")
-        analysis_result = self._analyze_conversation(conversation_a, conversation_b)
-        if analysis_result:
-            contains_pii = analysis_result.get("contains_pii")
-            contains_spam = analysis_result.get("contains_spam", False)
-            categories = analysis_result.get("categories")
-            keywords = analysis_result.get("keywords")
-            short_summary = analysis_result.get("short_summary")
-            languages = analysis_result.get("languages")
-
-            return (
-                contains_pii,
-                contains_spam,
-                categories,
-                keywords,
-                short_summary,
-                languages,
-            )
-        else:
-            return None, None, None, None, None, None
-
-
-def process_conversation(conversation, analyzer, db_params):
-    conn = None
-    conversation_pair_id = conversation[0]  # Extract ID early
-    try:
-        conn = psycopg2.connect(db_params)
-        cursor = conn.cursor()
-
-        (
-            _,  # conversation_pair_id already extracted
-            conversation_a,
-            conversation_b,
-            existing_summary,
-            existing_keywords,
-            existing_languages,
-            existing_contains_pii,
-            existing_pii_analyzed,
-            postprocess_failed,  # Retrieve the new field
-        ) = conversation
-
-        logger.debug(f"Processing conversation pair ID: {conversation_pair_id}")
-        if postprocess_failed:
-            logger.warning(
-                f"Conversation {conversation_pair_id} marked as postprocess failed, skipping."
-            )
-            return None
-
-        if existing_summary or existing_keywords or existing_languages:
-            logger.warning(
-                f"Conversation {conversation_pair_id} already has data:\n"
-                f"  Short Summary: {existing_summary}\n"
-                f"  Keywords: {existing_keywords}\n"
-                f"  Languages: {existing_languages}\n"
-                f"  Contains PII: {existing_contains_pii}\n"
-                f"  PII Analyzed: {existing_pii_analyzed}"
-            )
-            return None  # Indicate no analysis was performed
-
-        for attempt in range(Config.MAX_RETRIES):
-            logger.debug(
-                f"Attempt {attempt + 1}/{Config.MAX_RETRIES} for conversation pair ID: {conversation_pair_id}"
-            )
-            (
-                contains_pii,
-                contains_spam,
-                categories,
-                keywords,
-                short_summary,
-                languages,
-            ) = analyzer.analyze_conversations(
-                conversation_a, conversation_b, conversation_pair_id
-            )
-            # If llm call worked, insert metadata in db
-            if contains_pii is not None:
                 logger.debug(
-                    f"Data to be inserted for {conversation_pair_id}:\n"
-                    f"  Short Summary: {short_summary}\n"
-                    f"  Keywords: {keywords}\n"
-                    f"  Languages: {languages}\n"
-                    f"  categories: {categories}\n"
-                    f"  Contains PII: {contains_pii}\n"
-                    f"  Contains Spam: {contains_spam}"
+                    f"Attempt {attempt}/{self.MAX_RETRIES} analyzing Comparison '{comparison.id}'."
                 )
-                cursor.execute(
-                    """
-                    UPDATE conversations 
-                    SET 
-                        pii_analyzed = TRUE,
-                        contains_pii = %s,
-                        contains_spam = %s,
-                        short_summary = %s,
-                        keywords = %s,
-                        categories = %s,
-                        languages = %s,
-                        postprocess_failed = FALSE
-                    WHERE conversation_pair_id = %s;
-                    """,
-                    (
-                        contains_pii,
-                        contains_spam,
-                        short_summary,
-                        json.dumps(keywords),
-                        json.dumps(categories),
-                        json.dumps(languages),
-                        conversation_pair_id,
-                    ),
+                data = self._analyze(prompt)
+                await update_comparison(comparison.id, data)
+                logger.info(
+                    f"Succesfully added analysis metadata to Comparison '{comparison.id}', {data}."
                 )
-                conn.commit()
-                logger.debug(
-                    f"Conversation pair ID: {conversation_pair_id} enriched successfully."
-                )
-                return None  # Return None if successful
-            else:
-                logger.debug(
-                    f"Analysis failed for conversation pair ID: {conversation_pair_id} on attempt {attempt + 1}."
-                )
-                if attempt < Config.MAX_RETRIES - 1:
-                    logger.debug(f"Retrying in {Config.RETRY_DELAY} second(s)...")
-                    time.sleep(Config.RETRY_DELAY)
+                return
+            except Exception as exc:
 
-        # If all retries failed
-        logger.error(
-            f"Analysis failed after {Config.MAX_RETRIES} retries for conversation pair ID: {conversation_pair_id}"
-        )
-        with open("topics-pii-error.log", "a") as f:
-            f.write(f"{conversation_pair_id}\n")
-        cursor.execute(
-            """
-            UPDATE conversations 
-            SET postprocess_failed = TRUE 
-            WHERE conversation_pair_id = %s;
-            """,
-            (conversation_pair_id,),
-        )
-        conn.commit()
-        return conversation_pair_id  # return the id of the failed conversation
-    except psycopg2.Error as e:
-        logger.error(
-            f"Database Error in process_conversation for ID {conversation_pair_id}: {e}"
-        )
-        return conversation_pair_id
-    finally:
-        if conn:
-            cursor.close()
-            conn.close()
+                if attempt < self.MAX_RETRIES and isinstance(
+                    exc, (LLMAnalysisFailed, OpenAIError)
+                ):
+                    logger.error(
+                        f"Error while analyzing Comparison '{comparison.id}': {exc}"
+                    )
+                    # Retry on LLMAnalysisFailed or OpenAIError only
+                    attempt += 1
+                    logger.debug(f"Retrying in {self.RETRY_DELAY} second(s)...")
+                    await asyncio.sleep(self.RETRY_DELAY)
+                    continue
+
+                if isinstance(exc, LLMAnalysisFailed):
+                    # After n attempts and still no good response, set llm_analyzed as False (failed)
+                    await update_comparison(
+                        comparison.id, ComparisonLLMAnalysisFailedUpdate()
+                    )
+                    self.failed_analysis.append(str(comparison.id))
+
+                    logger.error(
+                        f"Failed to properly parse LLM response after {self.MAX_RETRIES} retries, setting 'llm_analyzed' to False for Comparison '{comparison.id}'.",
+                        exc_info=exc,
+                    )
+                    return
+
+                # Simply raise other errors to quit the program
+                raise
 
 
-def process_conversations(db_params, analyzer: Config):
-    conn = None
-    failed_calls = []
-    try:
-        conn = psycopg2.connect(db_params)
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT
-                COUNT(*) FILTER (WHERE short_summary IS NULL AND NOT postprocess_failed) AS no_summary,
-                COUNT(*) FILTER (WHERE short_summary IS NOT NULL AND NOT postprocess_failed) AS has_summary,
-                COUNT(*) FILTER (WHERE keywords IS NULL AND NOT postprocess_failed) AS no_keywords,
-                COUNT(*) FILTER (WHERE keywords IS NOT NULL AND NOT postprocess_failed) AS has_keywords,
-                COUNT(*) FILTER (WHERE contains_pii = FALSE AND NOT postprocess_failed) AS pii_false,
-                COUNT(*) FILTER (WHERE contains_pii = TRUE AND NOT postprocess_failed) AS pii_true,
-                COUNT(*) FILTER (WHERE contains_pii IS NULL AND NOT postprocess_failed) AS pii_null,
-                COUNT(*) FILTER (WHERE NOT pii_analyzed AND NOT postprocess_failed) AS pii_not_analyzed,
-                COUNT(*) FILTER (WHERE pii_analyzed AND NOT postprocess_failed) AS pii_analyzed,
-                COUNT(*) FILTER (WHERE contains_spam = TRUE AND NOT postprocess_failed) AS spam_true
-            FROM conversations
-            WHERE archived = FALSE;
-            """)
-        (
-            no_summary_count,
-            summary_count,
-            no_keywords_count,
-            keywords_count,
-            contains_pii_false_count,
-            contains_pii_true_count,
-            contains_pii_null_count,
-            pii_analyzed_false_count,
-            pii_analyzed_true_count,
-            contains_spam_true_count,
-        ) = cursor.fetchone()
-
-        logger.info(
-            f"{no_summary_count} conversations with no short summary and not marked as failed."
-        )
-        logger.info(
-            f"{summary_count} conversations with a short summary and not marked as failed."
-        )
-        logger.info(
-            f"{no_keywords_count} conversations with no keywords and not marked as failed."
-        )
-        logger.info(
-            f"{keywords_count} conversations with keywords and not marked as failed."
-        )
-        logger.info(
-            f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed."
-        )
-        logger.info(
-            f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed."
-        )
-        logger.info(
-            f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed."
-        )
-        logger.info(
-            f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed."
-        )
-        logger.info(
-            f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
-        )
-        logger.info(
-            f"{contains_spam_true_count} conversations with contains_spam = TRUE and not marked as failed."
-        )
-
-        # Include the postprocess_failed field in the select statement and filter
-        cursor.execute("""
-            SELECT 
-                conversation_pair_id,
-                conversation_a,
-                conversation_b,
-                short_summary,
-                keywords,
-                languages,
-                contains_pii,
-                pii_analyzed,
-                postprocess_failed
-            FROM conversations
-            WHERE 
-                (pii_analyzed = FALSE OR short_summary IS NULL)
-                AND postprocess_failed = FALSE
-                AND archived = FALSE
-            ;
-            """)
-
-        conversations_to_process = cursor.fetchall()
-        cursor.close()
-
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            futures = [
-                executor.submit(process_conversation, conversation, analyzer, db_params)
-                for conversation in conversations_to_process
-            ]
-            for future in futures:
-                result = future.result()
-                if result is not None:
-                    failed_calls.append(result)
-
-        if failed_calls:
-            logger.error(f"Failed calls for conversation_pair_ids: {failed_calls}")
-
-            with open("topics-pii-error.log", "a") as f:
-                f.write(f"{failed_calls}\n")
-
-    except psycopg2.Error as e:
-        logger.error(f"Database Error: {e}")
-    finally:
-        if failed_calls:
-            logger.error(f"Failed calls for conversation_pair_ids: {failed_calls}")
-            with open("topics-pii-error.log", "a") as f:
-                f.write(f"{failed_calls}\n")
-        if conn:
-            cursor.close()
-            conn.close()
-
-
-def llm_analyze():
+async def worker(
+    analyzer: Config, queue: asyncio.Queue[Comparison | None], worker_id: int
+):
     """
-    Analyze not yet analyzed and archived=FALSE conversations.
+    Consume comparisons from the queue and run LLM analysis.
+    """
+    while True:
+        comparison = await queue.get()
+        if comparison is None:
+            # No more comparisons to process
+            queue.task_done()
+            break
+        await analyzer.analyze_comparison(comparison)
+        queue.task_done()
 
-    Will analyze if conversations contains pii or spam, define some categories, keywords, summary and language.
+
+async def analyze_comparisons():
+    """
+    Query Comparisons as a stream and queue them up while running analysis
+    with multiple workers.
+    Will mark analysis as failed if the LLM fails to properly answer the
+    prompt, but if any other error occurs, tasks will be cancelled asap.
     """
     analyzer = Config()
-    process_conversations(settings.COMPARIA_DB_URI, analyzer)
+    queue: asyncio.Queue[Comparison | None] = asyncio.Queue()
+    workers = [
+        asyncio.create_task(worker(analyzer, queue, i)) for i in range(analyzer.WORKERS)
+    ]
+
+    async for comp in get_db_comparisons_stream([TO_ANALYZE_CONDITION]):
+        await queue.put(comp)
+
+    # Stop workers
+    for _ in workers:
+        await queue.put(None)
+
+    try:
+        await asyncio.gather(*workers)
+        logger.info("Finished analyzing comparisons")
+
+        if failed := analyzer.failed_analysis:
+            logger.error(
+                f"During analysis, {len(failed)} comparisons could not be properly analyzed: \n{"\n".join([f"- '{id_}'" for id_ in failed])}"
+            )
+    except Exception as exc:
+        logger.error(
+            f"An unexpected error occured, cancelling all workers…: {exc}", exc_info=exc
+        )
+        for w in workers:
+            w.cancel()
+        await asyncio.gather(*workers, return_exceptions=True)
+
+
+async def has_comparisons_to_analyze() -> int:
+    counts = await get_db_comparisons_counts(
+        {
+            "failed_analysis": col(Comparison.llm_analyzed) == False,
+            "not_linted": col(Comparison.archived) == None,
+            "not_analyzed": TO_ANALYZE_CONDITION,
+        }
+    )
+
+    logger.info(f"Comparisons not yet linted: {counts["not_linted"]}")
+    logger.info(f"Comparisons not yet analyzed: {counts["not_analyzed"]}")
+    logger.info(f"Comparisons with failed analysis: {counts["failed_analysis"]}")
+
+    return counts["not_analyzed"]
+
+
+async def llm_analyze():
+    """
+    Analyze not yet analyzed and archived=FALSE comparisons.
+
+    Will analyze if comparisons contains pii or spam, define some categories, keywords, summary and languages.
+    """
+    to_analyze_count = await has_comparisons_to_analyze()
+
+    if not to_analyze_count:
+        logger.info("No new comparisons to analyze, exiting…")
+        return
+
+    logger.info(f"{to_analyze_count} new comparisons to analyze…")
+    await analyze_comparisons()

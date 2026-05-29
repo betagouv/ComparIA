@@ -21,8 +21,7 @@
         "scrollRight": "Desplazar a la derecha",
         "searchModel": "Buscar un modelo",
         "seeMore": "Ver más",
-        "selectLanguage": "Seleccionar idioma",
-        "vote": "Dar retroalimentación"
+        "selectLanguage": "Seleccionar idioma"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,8 +54,7 @@
             "other": {
                 "message": "Se ha producido un error temporal.",
                 "retry": "Puedes volver a intentar y solicitar los modelos nuevamente.",
-                "title": "Oops, error temporal",
-                "vote": "O finaliza tu experiencia dando preferencia a estos modelos."
+                "title": "Oops, error temporal"
             },
             "tooLong": {
                 "message": "Cada modelo está limitado por el tamaño de conversación que puede manejar.",

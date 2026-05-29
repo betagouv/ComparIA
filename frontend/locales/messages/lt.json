@@ -16,8 +16,7 @@
         "home": "Pagrindinis puslapis",
         "returnHome": "Grįžti į pagrindinį puslapį",
         "seeMore": "Matyti daugiau",
-        "selectLanguage": "Pasirinkite kalbą",
-        "vote": "Pateikti savo nuomonę"
+        "selectLanguage": "Pasirinkite kalbą"
     },
     "arenaHome": {
         "compareModels": {
@@ -50,14 +49,12 @@
             "other": {
                 "message": "Įvyko laikina klaida.",
                 "retry": "Galite pabandyti dar kartą kreiptis į modelius.",
-                "title": "Oi, laikina klaida",
-                "vote": "Arba baigkite patirtį, nurodydami savo pasirinkimą iš šių modelių."
+                "title": "Oi, laikina klaida"
             },
             "tooLong": {
                 "message": "Kiekvienas modelis turi ribotą pokalbių, kuriuos jis gali apdoroti, skaičių.",
                 "retry": "Galite pradėti pokalbį su dviem naujais modeliais.",
-                "title": "Oi, pokalbis yra per ilgas vienam iš modelių.",
-                "vote": "Dar galite pareikšti savo nuomonę apie šiuos modelius arba pradėti pokalbį su dviem naujais."
+                "title": "Oi, pokalbis yra per ilgas vienam iš modelių."
             }
         },
         "loading": "Įkeliami atsakymai",

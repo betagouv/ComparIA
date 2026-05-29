@@ -5,20 +5,20 @@ from typing import Literal
 import cyclopts
 from huggingface_hub import login
 
-from backend.config import CountryPortal, settings
+from backend.config import settings
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
 
-from .compute import count_dataset_rows, process_dataset
-from .queries import Datasets, get_dataset_queries
+from .compute import count_dataset_rows, process_datasets
+from .models import Datasets
 
-logger = configure_logger(logging.getLogger("dataset"))
+logger = logging.getLogger("comparia.dataset")
 
 
-def main(
-    country_portal: CountryPortal,
+async def main(
+    *,
     export_base_path: Path = UTILS_DIR / "local_dataset",
-    dataset: Literal[Datasets, "all"] | None = "all",
+    dataset: Literal[Datasets, "all"] = "all",
     dry_run: bool = False,
     count: bool = False,
 ):
@@ -27,27 +27,20 @@ def main(
 
     Parameters
     ----------
-    country_portal: CountryPortal
-        Specific dataset portal to export
     export_base_path: str
         Directory for local export (default: utils/local_dataset)
     dataset: str
-        Specific dataset to export (conversations, votes, reactions, conversations_raw). Default: all
+        Specific dataset to export (comparisons, comparisons_raw). Default: all
     dry_run: bool
         Skip HuggingFace upload (only export to utils/local_dataset/)
     count: bool
         Display row counts for each dataset without exporting
     """
-    country_portal = None if country_portal == "all" else country_portal
-    dataset = None if dataset == "all" else dataset
+    datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
 
     # If --count flag is set, display counts and exit
     if count:
-        count_dataset_rows(country_portal)
-        return
-
-    # Log spam detection info
-    logger.info("Spam detection enabled for filtering dataset")
+        return await count_dataset_rows(datasets)
 
     # Authenticate with HuggingFace CLI (skip if dry_run)
     if not dry_run:
@@ -56,28 +49,16 @@ def main(
     else:
         logger.info("[DRY RUN] Skipping HuggingFace authentication")
 
-    if dataset:
-        logger.warning(f"only processing dataset: {dataset}")
-
-    # Process each dataset (or just the specified one)
     try:
-        dataset_queries = get_dataset_queries(country_portal)
-
-        for dataset_name, query in dataset_queries.items():
-            if not dataset or dataset == dataset_name:
-                process_dataset(
-                    dataset_name,
-                    query,
-                    country_portal,
-                    export_base_path,
-                    dry_run=dry_run,
-                )
+        await process_datasets(datasets, export_base_path, dry_run=dry_run)
 
         logger.info("Finished processing all datasets.")
     except KeyboardInterrupt:
         logger.warning("\n⚠️  Export interrupted by user (Ctrl+C)")
-        return
+    except Exception as exc:
+        logger.exception(f"An error occurred while processing datasets: {exc}")
 
 
 if __name__ == "__main__":
+    configure_logger(logger)
     cyclopts.run(main)

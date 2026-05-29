@@ -1,32 +1,80 @@
 <script lang="ts">
-  import type { ChatRound, OnReactionFn } from '$lib/chatService.svelte'
+  import Pending from '$components/Pending.svelte'
+  import SideSwitcher from '$components/SideSwitcher.svelte'
+  import type { AnyAPIVote, ComparisonTurn } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
-  import { MessageBot, MessageUser } from '.'
+  import { m } from '$lib/i18n/messages'
+  import { onMount, type Snippet } from 'svelte'
+  import { ErrorDisplay, MessageBot, MessageUser, VoteSelect } from '.'
 
   let {
-    round,
+    turn,
     disabled,
-    onReactionChange
+    error,
+    onVote,
+    onRetry,
+    children
   }: {
-    round: ChatRound
+    turn: ComparisonTurn
     disabled: boolean
-    onReactionChange: OnReactionFn
+    error?: string
+    onVote: (data: AnyAPIVote) => void
+    onRetry: () => void
+    children: Snippet<[]> | undefined
   } = $props()
 
+  let userBlockElem = $state<HTMLDivElement>()
   let userMessageSize = $state(0)
+
+  onMount(() => {
+    userMessageSize = userBlockElem!.offsetHeight
+  })
 </script>
 
 <div
-  class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16"
+  class="grouped-messages px-4 py-5 md:px-8 xl:px-16 flex flex-col"
   style="--message-size: {userMessageSize}px;"
   {@attach scrollTo}
 >
-  <MessageUser bind:size={userMessageSize} message={round.user} />
+  <div class="mb-5 md:flex" bind:this={userBlockElem}>
+    {@render children?.()}
 
-  <div class="gap-10 md:grid-cols-2 md:gap-6 grid">
-    {#if round.a && round.b && round.showMessages}
-      <MessageBot message={round.a} index={round.index} {disabled} {onReactionChange} />
-      <MessageBot message={round.b} index={round.index} {disabled} {onReactionChange} />
-    {/if}
+    <MessageUser message={turn.user_msg} />
   </div>
+  {#if turn.status === 'pending'}
+    <Pending message={m['chatbot.loading']()} class="m-auto" />
+  {:else if turn.status === 'error' && error}
+    <ErrorDisplay {error} class="mt-10" {onRetry} />
+  {:else}
+    <SideSwitcher>
+      <div class="gap-4 sm:gap-6 md:w-full flex">
+        {#if turn.a.llm_msg && turn.b.llm_msg}
+          <MessageBot
+            id="{turn.id}-a"
+            turnSide={turn.a}
+            bot="a"
+            choice={turn.choice}
+            {disabled}
+            onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+          />
+
+          <MessageBot
+            id="{turn.id}-b"
+            turnSide={turn.b}
+            bot="b"
+            choice={turn.choice}
+            {disabled}
+            onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+          />
+        {/if}
+      </div>
+    </SideSwitcher>
+  {/if}
+
+  {#if turn.status === 'complete' && !turn.choice}
+    <VoteSelect
+      id="vote-select-{turn.id}"
+      onVote={(choice) => onVote({ turn_id: turn.id, choice })}
+    />
+  {/if}
 </div>

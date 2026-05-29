@@ -1,4 +1,4 @@
-from backend.arena.models import BotPos
+from utils.database.models import BotPos
 
 # from enum import StrEnum
 # TODO raise errors with error keys and add i18n on front
