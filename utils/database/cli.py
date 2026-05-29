@@ -8,6 +8,8 @@ from .actions import (
     archive_corrupted,
     archive_spam,
     archive_unknown_llms,
+    backfill_all_choices,
+    backfill_choices_from_reactions,
     llm_analyze,
     migrate_comparisons,
     migrate_llm_messages,
@@ -35,6 +37,8 @@ cli_migrate.command(migrate_turns, name="turns")
 cli_migrate.command(migrate_votes, name="votes")
 cli_migrate.command(migrate_reactions, name="reactions")
 cli_migrate.command(migrate_reasoning_content, name="reasoning_content")
+cli_migrate.command(backfill_choices_from_reactions, name="backfill_choices_from_reactions")
+cli_migrate.command(backfill_all_choices, name="backfill_all_choices")
 
 cli_db = App(name="db", help="Database related utilities.")
 cli_db.command(lint)

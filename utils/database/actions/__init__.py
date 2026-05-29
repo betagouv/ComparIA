@@ -1,4 +1,6 @@
 from .archive_corrupted import archive_corrupted
+from .backfill_all_choices import backfill_all_choices
+from .backfill_choices_from_reactions import backfill_choices_from_reactions
 from .archive_spam import archive_spam
 from .archive_unknown_llms import archive_unknown_llms
 from .llm_analyze import llm_analyze
