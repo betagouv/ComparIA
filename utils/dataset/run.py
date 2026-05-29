@@ -36,7 +36,10 @@ async def main(
     count: bool
         Display row counts for each dataset without exporting
     """
-    logger.info(f"Connecting to database: '{settings.COMPARIA_DB_URI}'")
+    from urllib.parse import urlparse
+
+    db_name = urlparse(settings.COMPARIA_DB_URI).path.lstrip("/")
+    logger.info(f"Connecting to database: '{db_name}'")
 
     datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
 
