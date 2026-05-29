@@ -110,7 +110,11 @@
 
 <style>
   #send-area {
-    background: linear-gradient(180deg, #fcfcfd 0%, #ebecfe 100%);
+    background: linear-gradient(
+      180deg,
+      var(--cg-very-light-grey) 0%,
+      var(--blue-france-950-100) 100%
+    );
   }
 
   :global(#chat-area .grouped-messages) {

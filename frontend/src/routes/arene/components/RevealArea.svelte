@@ -146,6 +146,11 @@
 <style>
   #reveal-area {
     scroll-margin-top: calc(var(--second-header-size) + 1rem);
-    background: linear-gradient(180deg, #fcfcfd 0%, #ebecfe 50%, #e8edff 100%);
+    background: linear-gradient(
+      180deg,
+      var(--cg-very-light-grey) 0%,
+      var(--blue-france-950-100) 50%,
+      var(--info-950-100) 100%
+    );
   }
 </style>
