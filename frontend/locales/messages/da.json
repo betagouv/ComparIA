@@ -14,16 +14,16 @@
             "do": "Kopiér beskeden",
             "done": "Besked kopieret"
         },
+        "discover": "Opdag",
         "downloadData": "Download data",
         "home": "Hjemmeside",
+        "returnArena": "Tilbage til arenaen",
         "returnHome": "Tilbage til startsiden",
         "scrollLeft": "Rul til venstre",
         "scrollRight": "Rul til højre",
         "searchModel": "Søg efter en model",
         "seeMore": "Se mere",
-        "selectLanguage": "Vælg sprog",
-        "discover": "Opdag",
-        "returnArena": "Tilbage til arenaen"
+        "selectLanguage": "Vælg sprog"
     },
     "arenaHome": {
         "compareModels": {
@@ -867,6 +867,11 @@
                 "fyi": "<p>Gemini 3.1 Pro viderefører MoE-arkitekturen og de native multimodale egenskaber fra Gemini 3 Pro (tekst, billeder, lyd, video, PDF op til 1.000 sider), samt træning på TPU og optimering til agentiske anvendelser.</p>\n<p>Den vigtigste nyhed er tilføjelsen af et mellemliggende ræsonneringsniveau (\"medium\") til Deep Think-tilstanden, som tidligere kun tilbød to niveauer (lavt og højt). Dette niveau sigter mod et kompromis mellem svarkvalitet og latenstid. Modellen introducerer også \"tankesignaturer\" (thought signatures), krypterede repræsentationer af mellemliggende ræsonnering, der gør det muligt at bevare refleksionskonteksten ved flertrinssinteraktioner. Ifølge udgiveren resulterer disse udviklinger i en relativ forbedring på 40-60 % på komplekse planlægningsopgaver sammenlignet med den foregående generation, samt bedre modstandsdygtighed over for hallucinationer. Den opnår 77,1 % på ARC-AGI-2, 94,3 % på GPQA Diamond og 80,6 % på SWE-Bench Verified.</p>",
                 "size_desc": "<p>Modellens nøjagtige størrelse oplyses ikke, men den bygger på den samme mixture of experts-arkitektur (MoE) som Gemini 3 Pro. Denne arkitektur aktiverer kun en delmængde af parametrene for hvert token, hvilket reducerer den nødvendige beregningskraft sammenlignet med en tæt model af tilsvarende størrelse. Kontekstvinduet strækker sig op til 1 million tokens som input og 65.000 tokens som output. Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
             },
+            "Gemini 3.5 Flash": {
+                "desc": "<p>Multimodal model fra Google rettet mod agentiske opgaver i flere trin og kodegenerering, med input i form af tekst, billeder, video, lyd og PDF. Den integrerer en avanceret ræsonneringsevne, der kan aktiveres efter behov, med et ræsonneringsniveau der kan konfigureres af brugeren eller udvikleren.</p>",
+                "fyi": "<p>Præsenteret på Google I/O 2026 positioneres Gemini 3.5 Flash af Google som en \"standardmodel\" i Flash-serien, i stand til at konkurrere med større modeller på kode og agentiske opgaver. Udgiveren angiver en genereringshastighed cirka fire gange højere end andre topmodeller.</p>\n<p>Modellen er multimodal og accepterer tekst, billeder, video, lyd og PDF-filer som input. Den understøtter funktionskald hvilket gør den anvendelig i langvarige agentiske kontekster, bl.a. via Googles Antigravity-platform.</p>\n<p>Ifølge udgiveren overgår Gemini 3.5 Flash Gemini 3.1 Pro på flere tests inden for kode og agentiske opgaver: 76,2 % på Terminal-Bench 2.1, 83,6 % på MCP Atlas for værktøjsbrug (tool-use) i stor skala, 1656 Elo-point på GDPval-AA og 84,2 % på CharXiv multimodal reasoning. Der er ikke oplyst detaljer om den interne arkitektur, træningskorpus eller den anvendte træningsinfrastruktur.</p>",
+                "size_desc": "<p>Modellens nøjagtige størrelse oplyses ikke, men den bygger på en mixture of experts-arkitektur (MoE). Denne arkitektur aktiverer kun en delmængde af parametrene for hvert token, hvilket reducerer den nødvendige beregningskraft.</p>\n<p>Dens kontekstvindue rækker op til 1 million tokens, hvilket gør det muligt at behandle meget store korpora.</p>\n<p>Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget. Standardniveauet for ræsonnering er sat til middel for at begrænse latens og omkostninger, og kan sænkes til minimal eller lav, eller hæves til høj efter behov.</p>"
+            },
             "Gemma 2 27B": {
                 "desc": "<p>Performant model med en passende størrelse, dens relativt høje omkostninger gør den egnet til specifikke anvendelser, der kræver høj præcision.</p>",
                 "fyi": "<p>Med tre gange så mange parametre som sin lillebror fra Gemma 2-familien er denne model mere præcis til at følge instruktioner. Den model, der anvendes her, er den kvantiserede version (q8).</p>",
@@ -931,6 +936,11 @@
                 "desc": "<p>En stor ny iteration af Grok, xAI's modelfamilie. Den skiller sig ud med en multi-agent-tilstand, hvor fire agenter ræsonnerer parallelt over det samme spørgsmål, før deres svar syntetiseres til ét, samt med et usædvanligt stort kontekstvindue på 2 millioner tokens. Udgiveren annoncerer også en løbende læringsevne med ugentlige opdateringer baseret på reel brug. Ræsonneringen kan slås til eller fra efter behov.</p>",
                 "fyi": "<p>En beta-preview af Grok 4.20 blev stillet til rådighed i midten af februar 2026, inden den officielle udgivelse på xAI's API i marts 2026. Multi-agent-tilstanden dirigerer hver forespørgsel til fire specialiserede agenter, der ræsonnerer parallelt, og syntetiserer derefter deres konklusioner til ét svar, en tilgang der præsenteres som nyttig til komplekse ræsonneringsopgaver. Ræsonneringen styres via en API-parameter snarere end en separat modelidentifikator.</p>\n<p>Ifølge udgiveren introducerer Grok 4.20 en arkitektur til løbende læring, der ugentligt opdaterer modellens evner ud fra reel brug, uden brugerindgriben. Ingen præcise arkitektoniske detaljer (parameterantal, tæt eller Mixture of Experts-arkitektur) er blevet offentliggjort af xAI. Modellen tilbydes under en betalt licens og er tilgængelig via xAI's API og OpenRouter.</p>",
                 "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indicierne tyder på, at det er en meget stor model, der kræver servere med flere kraftige grafikkort for at kunne køre. De tilgængelige estimater bygger på indirekte ledetråde som inferensomkostninger og svartid. Dens kontekstvindue går op til 2 millioner tokens, hvilket gør det muligt at behandle meget store dokumentkorpora. Ræsonneringsmodeller af denne type kører længere for at producere et svar, hvilket øger energiforbruget.</p>"
+            },
+            "Grok 4.3": {
+                "desc": "<p>Multimodal model fra xAI rettet mod agentiske opgaver i flere trin, instruktionsfølgning og analyse af lange dokumenter, med input i form af tekst og billeder. Den integrerer en avanceret ræsonneringsevne, der kan aktiveres efter behov, med et ræsonneringsniveau (ingen, lav, middel, høj) der kan konfigureres af brugeren eller udvikleren.</p>",
+                "fyi": "<p>Udgivet i april 2026 positioneres Grok 4.3 af xAI som en model særligt egnet til agentiske opgaver, analyse af lange dokumenter og applikationer der kræver høj faktuel pålidelighed. Udgiveren fremhæver en lav hallucinationsrate, pålidelige værktøjskald og god instruktionsfølgning.</p>\n<p>Modellen accepterer tekst og billeder som input og producerer tekst som output. Den understøtter funktionskald og strukturerede outputs, hvilket gør den anvendelig i agentiske kontekster. Prissætningen er trinvis: ud over 200.000 tokens pr. forespørgsel er prisen pr. token højere.</p>\n<p>Der er ikke oplyst detaljer om den interne arkitektur, antallet af parametre, træningskorpus eller den anvendte infrastruktur. Ifølge Artificial Analysis opnår Grok 4.3 en score på 53 på deres sammensatte intelligensindeks, over medianen for ræsonneringsmodeller i samme prisklasse, med en genereringshastighed på cirka 101 tokens pr. sekund.</p>",
+                "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indicier tyder på, at det er en meget stor model, som kræver servere med flere kraftfulde grafikkort for at fungere. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlatens.</p>\n<p>Dens kontekstvindue rækker op til 1 million tokens, hvilket gør det muligt at behandle meget store dokumentkorpora.</p>\n<p>Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget. Standardniveauet for ræsonnering er sat til lav for at begrænse latens, og kan deaktiveres eller hæves til middel eller høj efter behov.</p>"
             },
             "Hermes 3 405B": {
                 "desc": "<p>Meget stor model gentrænet ud fra Llama 3.1 405B, justeret til bedre at imødekomme brugernes forespørgsler og lette brugen af eksterne værktøjer.</p>",
@@ -1266,16 +1276,6 @@
                 "desc": "<p>Mellemstor ræsonneringsmodel, specialiseret og meget ydeevnedygtig inden for matematik, kodegenerering og løsning af logiske problemer.</p>",
                 "fyi": "<p>Denne model er blevet trænet med en forstærkningslæringsmetode (RL) for at optimere håndteringen af matematikproblemer og programmeringsopgaver. Den bruger flere nyere teknikker til at forbedre kvaliteten af svarene. For eksempel gør RoPE-metoden (Rotary Position Embedding) det muligt for den at forstå rækkefølgen af ord i en tekst bedre. Aktiveringsfunktionen SwiGLU er en mere effektiv måde at håndtere beregninger inden i det neurale netværk på, som hjælper modellen med at producere mere pålidelige svar. QKV-justeringsmetoden (Query Key Value-bias) forbedrer den måde, modellen identificerer og udvælger vigtige oplysninger på. Endelig kan den takket være YaRN-metoden (Yet another RoPE extensioN method) behandle meget lange tekster på op til 130.000 tokens, hvilket gør det muligt for den at arbejde med komplekse eller meget detaljerede dokumenter.</p>",
                 "size_desc": "<p>Med 32 milliarder parametre tilhører denne model kategorien af mellemstore modeller. Den kan køre på en server udstyret med et enkelt kraftfuldt grafikkort, hvilket begrænser infrastrukturomkostningerne. Ræsonneringsmodeller af denne type kører dog længere tid for at producere et svar, da en ræsonneringsfase går forud for genereringen af det endelige resultat, hvilket øger energiforbruget.</p>"
-            },
-            "Gemini 3.5 Flash": {
-                "desc": "<p>Multimodal model fra Google rettet mod agentiske opgaver i flere trin og kodegenerering, med input i form af tekst, billeder, video, lyd og PDF. Den integrerer en avanceret ræsonneringsevne, der kan aktiveres efter behov, med et ræsonneringsniveau der kan konfigureres af brugeren eller udvikleren.</p>",
-                "fyi": "<p>Præsenteret på Google I/O 2026 positioneres Gemini 3.5 Flash af Google som en \"standardmodel\" i Flash-serien, i stand til at konkurrere med større modeller på kode og agentiske opgaver. Udgiveren angiver en genereringshastighed cirka fire gange højere end andre topmodeller.</p>\n<p>Modellen er multimodal og accepterer tekst, billeder, video, lyd og PDF-filer som input. Den understøtter funktionskald hvilket gør den anvendelig i langvarige agentiske kontekster, bl.a. via Googles Antigravity-platform.</p>\n<p>Ifølge udgiveren overgår Gemini 3.5 Flash Gemini 3.1 Pro på flere tests inden for kode og agentiske opgaver: 76,2 % på Terminal-Bench 2.1, 83,6 % på MCP Atlas for værktøjsbrug (tool-use) i stor skala, 1656 Elo-point på GDPval-AA og 84,2 % på CharXiv multimodal reasoning. Der er ikke oplyst detaljer om den interne arkitektur, træningskorpus eller den anvendte træningsinfrastruktur.</p>",
-                "size_desc": "<p>Modellens nøjagtige størrelse oplyses ikke, men den bygger på en mixture of experts-arkitektur (MoE). Denne arkitektur aktiverer kun en delmængde af parametrene for hvert token, hvilket reducerer den nødvendige beregningskraft.</p>\n<p>Dens kontekstvindue rækker op til 1 million tokens, hvilket gør det muligt at behandle meget store korpora.</p>\n<p>Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget. Standardniveauet for ræsonnering er sat til middel for at begrænse latens og omkostninger, og kan sænkes til minimal eller lav, eller hæves til høj efter behov.</p>"
-            },
-            "Grok 4.3": {
-                "desc": "<p>Multimodal model fra xAI rettet mod agentiske opgaver i flere trin, instruktionsfølgning og analyse af lange dokumenter, med input i form af tekst og billeder. Den integrerer en avanceret ræsonneringsevne, der kan aktiveres efter behov, med et ræsonneringsniveau (ingen, lav, middel, høj) der kan konfigureres af brugeren eller udvikleren.</p>",
-                "fyi": "<p>Udgivet i april 2026 positioneres Grok 4.3 af xAI som en model særligt egnet til agentiske opgaver, analyse af lange dokumenter og applikationer der kræver høj faktuel pålidelighed. Udgiveren fremhæver en lav hallucinationsrate, pålidelige værktøjskald og god instruktionsfølgning.</p>\n<p>Modellen accepterer tekst og billeder som input og producerer tekst som output. Den understøtter funktionskald og strukturerede outputs, hvilket gør den anvendelig i agentiske kontekster. Prissætningen er trinvis: ud over 200.000 tokens pr. forespørgsel er prisen pr. token højere.</p>\n<p>Der er ikke oplyst detaljer om den interne arkitektur, antallet af parametre, træningskorpus eller den anvendte infrastruktur. Ifølge Artificial Analysis opnår Grok 4.3 en score på 53 på deres sammensatte intelligensindeks, over medianen for ræsonneringsmodeller i samme prisklasse, med en genereringshastighed på cirka 101 tokens pr. sekund.</p>",
-                "size_desc": "<p>Modellens nøjagtige størrelse er ikke kendt. Indicier tyder på, at det er en meget stor model, som kræver servere med flere kraftfulde grafikkort for at fungere. De tilgængelige estimater bygger på indirekte indikatorer som inferensomkostninger og svarlatens.</p>\n<p>Dens kontekstvindue rækker op til 1 million tokens, hvilket gør det muligt at behandle meget store dokumentkorpora.</p>\n<p>Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget. Standardniveauet for ræsonnering er sat til lav for at begrænse latens, og kan deaktiveres eller hæves til middel eller høj efter behov.</p>"
             }
         }
     },
@@ -1284,9 +1284,9 @@
         "chatbot": {
             "newDiscussion": "Ny samtale",
             "reveal": {
-                "title": "Afsløring",
+                "description": "Se den miljømæssige påvirkning af dine samtaler med hver model",
                 "subtitle": "Modellerne er afsløret!",
-                "description": "Se den miljømæssige påvirkning af dine samtaler med hver model"
+                "title": "Afsløring"
             }
         },
         "help": {
@@ -2071,24 +2071,23 @@
     "vote": {
         "choices": {
             "negative": {
+                "comment": "Uddyb hvad du ikke kunne lide…",
                 "incorrect": "Forkert",
                 "instructions_not_followed": "Instruktionerne er ikke blevet fulgt",
                 "question": "Hvorfor kunne du ikke lide svaret?",
-                "superficial": "Overfladisk",
-                "comment": "Uddyb hvad du ikke kunne lide…"
+                "superficial": "Overfladisk"
             },
             "positive": {
                 "clear_formatting": "Klar formattering",
+                "comment": "Uddyb hvad du satte pris på…",
                 "complete": "Fuldstændigt",
                 "creative": "Kreativt",
                 "question": "Hvad kunne du lide ved svaret?",
-                "useful": "Brugbart",
-                "comment": "Uddyb hvad du satte pris på…"
+                "useful": "Brugbart"
             }
         },
-        "title": "Hvilken AI-model foretrækker du?",
-        "yours": "Din stemme",
         "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
+        "title": "Hvilken AI-model foretrækker du?",
         "turn": {
             "choices": {
                 "a_better": "A er bedst",
@@ -2098,7 +2097,8 @@
                 "idk": "Spring stemmen over"
             },
             "important": "Din stemme er vigtig: den bidrager til en bedre tilpasning til <a {linkProps}>dansksprogede præferencer</a>."
-        }
+        },
+        "yours": "Din stemme"
     },
     "welcome": {
         "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",
