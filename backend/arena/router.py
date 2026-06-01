@@ -26,8 +26,8 @@ from backend.arena.session import (
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
+from backend.arena.streaming.ask import stream_comparison_messages
 from backend.arena.streaming.events import create_sse_response, format_sse_event
-from backend.arena.streaming.streaming import stream_comparison_messages
 from backend.arena.web_search import search_web
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
