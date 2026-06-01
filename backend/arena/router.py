@@ -26,7 +26,7 @@ from backend.arena.session import (
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
-from backend.arena.streaming.ask import stream_comparison_messages
+from backend.arena.streaming.ask import ask_llms
 from backend.arena.streaming.events import create_sse_response, format_sse_event
 from backend.arena.web_search import search_web
 from backend.llms.data import get_llms_data, pick_replacement_model
@@ -208,7 +208,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
+        async for chunk in ask_llms(comparison, turn, request):
             yield format_sse_event(chunk)
 
         if not comparison.error:
@@ -265,7 +265,7 @@ async def add_text(
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
+        async for chunk in ask_llms(comparison, turn, request):
             yield format_sse_event(chunk)
 
         if not comparison.error:
@@ -346,7 +346,7 @@ async def retry(
         )
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
+        async for chunk in ask_llms(comparison, turn, request):
             yield format_sse_event(chunk)
 
         if not comparison.error:
