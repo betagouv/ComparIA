@@ -1,11 +1,11 @@
 import logging
-from typing import Annotated, AsyncGenerator
-from uuid import UUID
+from typing import AsyncGenerator
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
+from backend.arena.dependencies import ComparisonMetadataAnno, RateLimitGuard
 from backend.arena.models import AddFirstTextBody, AddTextBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services.comparison import (
@@ -16,12 +16,9 @@ from backend.arena.services.comparison import (
 )
 from backend.arena.services.turn import add_turn, update_turn, update_turn_vote
 from backend.arena.session import (
-    ComparisonMetadata,
     increment_custom_selections,
     increment_input_chars,
     is_custom_selection_ratelimited,
-    is_ratelimited,
-    retreive_comparison_metadata,
     store_comparison_metadata,
 )
 from backend.arena.streaming.ask import ask_llms
@@ -46,68 +43,6 @@ router = APIRouter(
 )
 
 
-# Dependencies
-
-
-def assert_not_rate_limited(request: Request) -> None:
-    """Dependency to check rate limiting based on IP address."""
-    ip = get_ip(request)
-
-    if is_ratelimited(ip):
-        logger.error(
-            f"Too much text submitted to pricey models for ip {ip}",
-            extra={"request": request},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
-        )
-
-
-def get_comparison_id(id: UUID = Header(..., alias="X-Comparison-Id")) -> UUID:
-    """
-    Dependency to extract and validate comparison id from headers.
-
-    Args:
-        id: Comparison identifier from X-Comparison-Id header
-
-    Returns:
-        str: Validated comparison id
-
-    Raises:
-        HTTPException: If comparison id is missing or invalid
-    """
-    if not id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing comparison id"
-        )
-    return id
-
-
-def get_comparison_metadata(
-    id: UUID = Depends(get_comparison_id),
-) -> ComparisonMetadata:
-    try:
-        metadata = retreive_comparison_metadata(id)
-    except Exception as e:
-        # FIXME raise different errors depending on problem
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Comparison '{id}' couldn't be found or parsed: {str(e)}",
-        )
-
-    # For any arena view, raise error if chat responses are not yet finished
-    if metadata.is_streaming:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Veuillez attendre la fin de la réponse des modèles.",
-        )
-
-    return metadata
-
-
-ComparisonMetadataAnno = Annotated[ComparisonMetadata, Depends(get_comparison_metadata)]
-
 # FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
 
@@ -117,7 +52,7 @@ async def get_challenge() -> dict:
     return generate_challenge()
 
 
-@router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/add_first_text", dependencies=[RateLimitGuard])
 async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
@@ -222,7 +157,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     return create_sse_response(event_stream(comparison))
 
 
-@router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/add_text", dependencies=[RateLimitGuard])
 async def add_text(
     args: AddTextBody,
     metadata: ComparisonMetadataAnno,
@@ -280,7 +215,7 @@ async def add_text(
     return create_sse_response(event_stream())
 
 
-@router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/retry", dependencies=[RateLimitGuard])
 async def retry(
     metadata: ComparisonMetadataAnno,
     request: Request,
