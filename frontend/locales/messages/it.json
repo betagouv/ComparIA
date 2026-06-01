@@ -21,8 +21,7 @@
         "scrollRight": "Scorri verso destra",
         "searchModel": "Cerca un modello",
         "seeMore": "Scopri di più",
-        "selectLanguage": "Seleziona una lingua",
-        "vote": "Esprimi un tuo parere"
+        "selectLanguage": "Seleziona una lingua"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +54,12 @@
             "other": {
                 "message": "Si è verificato un errore temporaneo.",
                 "retry": "Puoi provare a sollecitare nuovamente i modelli.",
-                "title": "Ops, errore temporaneo",
-                "vote": "Oppure puoi concludere la tua esperienza esprimendo la tua opinione sui modelli."
+                "title": "Ops, errore temporaneo"
             },
             "tooLong": {
                 "message": "Ciascun modello è limitato nella dimensione delle conversazioni che è in grado di elaborare.",
                 "retry": "Puoi riprendere la conversazione con due nuovi modelli.",
-                "title": "Ops, la conversazione è troppo lunga per uno dei modelli.",
-                "vote": "Puoi ancora esprimere la tua opinione su questi modelli o avviare una conversazione con due nuovi."
+                "title": "Ops, la conversazione è troppo lunga per uno dei modelli."
             }
         },
         "loading": "Caricamento delle risposte",

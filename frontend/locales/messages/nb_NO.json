@@ -1255,16 +1255,7 @@
     "header": {
         "banner": "🏆 Modellrangeringene er nå tilgjengelige! Se rangeringene.",
         "chatbot": {
-            "newDiscussion": "Ny chat",
-            "step": "Steg",
-            "stepOne": {
-                "description": "Ta både form og innhold i betraktning, og vurder deretter hvert svar",
-                "title": "Hva synes du om svarene?"
-            },
-            "stepTwo": {
-                "description": "Se klimaavtrykket av samtalene dine med hver enkelt modell",
-                "title": "Modellene har blitt avslørt!"
-            }
+            "newDiscussion": "Ny chat"
         },
         "help": {
             "link": {
@@ -2046,16 +2037,13 @@
         }
     },
     "vote": {
-        "bothEqual": "Begge er like gode",
         "choices": {
-            "altText": "{choice} for modellen {model}",
             "negative": {
                 "incorrect": "Uriktig",
                 "instructions_not_followed": "Instruksjoner ikke fulgt",
                 "question": "Hvorfor passer ikke svaret?",
                 "superficial": "Overfladisk"
             },
-            "other": "Annet…",
             "positive": {
                 "clear_formatting": "Fjern formatering",
                 "complete": "Fullstendig",
@@ -2063,25 +2051,6 @@
                 "question": "Hva likte du med dette svaret?",
                 "useful": "Nyttig"
             }
-        },
-        "comment": {
-            "add": "Legg til kommentarer",
-            "placeholder": "Du kan legge til detaljer om dette svaret fra {model}-modellen"
-        },
-        "dislike": {
-            "label": "Jeg liker det ikke",
-            "selectedLabel": "Jeg liker ikke (valgt)"
-        },
-        "introA": "Før vi avslører modellenes identitet, trenger vi din stemme.",
-        "introB": "Det gjør at vi kan videreutvikle compar:IA-datasettene, som har som mål å forbedre fremtidige KI-modeller på språk med færre tilgjengelige språkressurser",
-        "like": {
-            "label": "Jeg liker det",
-            "selectedLabel": "Jeg liker (valgt)"
-        },
-        "qualify": {
-            "addDetails": "Legg til detaljer",
-            "placeholder": "Svarene fra modellen {model} er...",
-            "question": "Hvordan ville du beskrevet modellens svar?"
         },
         "title": "Hvilken KI-modell foretrekker du?",
         "yours": "Din stemme"
