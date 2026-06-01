@@ -1,7 +1,7 @@
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast, get_args
+from typing import Any, AsyncGenerator, Literal, Sequence, TypedDict, cast
 
 from sqlalchemy.orm import selectinload
 from sqlmodel import and_, col, func, select, update

@@ -8,7 +8,12 @@ from sqlalchemy import text
 from utils.database.models.messages.system import SystemMessage
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map_or_empty, save_map, source_connection
+from .migrate_utils import (
+    ensure_maps_dir,
+    load_map_or_empty,
+    save_map,
+    source_connection,
+)
 
 logger = logging.getLogger("comparia.db.migrate")
 
@@ -35,7 +40,9 @@ async def migrate_system_messages(
     """
     ensure_maps_dir(maps_dir)
 
-    system_map: dict[str, uuid.UUID] = load_map_or_empty(maps_dir, "system_message_map") if incremental else {}
+    system_map: dict[str, uuid.UUID] = (
+        load_map_or_empty(maps_dir, "system_message_map") if incremental else {}
+    )
     to_insert: list[SystemMessage] = []
 
     with source_connection(source_uri) as conn:
@@ -47,7 +54,13 @@ async def migrate_system_messages(
             continue
         msg_id = uuid.uuid4()
         system_map[content] = msg_id
-        to_insert.append(SystemMessage(id=msg_id, content=content, created_at=datetime(2025, 2, 21, 15, 54, 42, 365103)))
+        to_insert.append(
+            SystemMessage(
+                id=msg_id,
+                content=content,
+                created_at=datetime(2025, 2, 21, 15, 54, 42, 365103),
+            )
+        )
 
     logger.info(f"Found {len(to_insert)} distinct system prompts.")
 

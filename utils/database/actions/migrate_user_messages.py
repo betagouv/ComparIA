@@ -8,11 +8,19 @@ from sqlalchemy import text
 from utils.database.models.messages.user import UserMessage
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, load_map_or_empty, save_map, source_connection
+from .migrate_utils import (
+    ensure_maps_dir,
+    load_map,
+    load_map_or_empty,
+    save_map,
+    source_connection,
+)
 
 logger = logging.getLogger("comparia.db.migrate")
 
-_QUERY_SELECT = "SELECT conversation_pair_id, timestamp, conversation_a FROM conversations"
+_QUERY_SELECT = (
+    "SELECT conversation_pair_id, timestamp, conversation_a FROM conversations"
+)
 QUERY = _QUERY_SELECT + " ORDER BY conversation_pair_id, timestamp"
 
 BATCH_SIZE = 10_000
@@ -58,11 +66,15 @@ async def migrate_user_messages(
     """
     ensure_maps_dir(maps_dir)
 
-    comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "comparison_map")
+    comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(
+        maps_dir, "comparison_map"
+    )
     existing_user_message_map: dict[tuple[str, int, int], uuid.UUID] = (
         load_map_or_empty(maps_dir, "user_message_map") if incremental else {}
     )
-    user_message_map: dict[tuple[str, int, int], uuid.UUID] = dict(existing_user_message_map)
+    user_message_map: dict[tuple[str, int, int], uuid.UUID] = dict(
+        existing_user_message_map
+    )
     pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
@@ -77,7 +89,10 @@ async def migrate_user_messages(
                 save_map(maps_dir, "user_message_map", user_message_map)
                 return
             result = conn.execute(
-                text(_QUERY_SELECT + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"),
+                text(
+                    _QUERY_SELECT
+                    + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"
+                ),
                 {"ids": list(new_pair_ids)},
             )
         else:
@@ -105,7 +120,11 @@ async def migrate_user_messages(
 
                 for turn_idx, content in _extract_user_messages(row["conversation_a"]):
                     msg_id = uuid.uuid4()
-                    to_insert.append(UserMessage(id=msg_id, content=content, created_at=ts, turn_id=None))
+                    to_insert.append(
+                        UserMessage(
+                            id=msg_id, content=content, created_at=ts, turn_id=None
+                        )
+                    )
                     batch_map[(pair_id, occ, turn_idx)] = msg_id
 
             if commit and to_insert:
@@ -119,4 +138,6 @@ async def migrate_user_messages(
             batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")
-    save_map(maps_dir, "user_message_map", user_message_map)  # key: (pair_id, occ, turn_idx)
+    save_map(
+        maps_dir, "user_message_map", user_message_map
+    )  # key: (pair_id, occ, turn_idx)

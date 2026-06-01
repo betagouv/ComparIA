@@ -54,10 +54,14 @@ async def migrate_reasoning_content(
     """
     ensure_maps_dir(maps_dir)
 
-    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = load_map(maps_dir, "llm_message_map")
+    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = load_map(
+        maps_dir, "llm_message_map"
+    )
 
     # Group pair_ids to query
-    pair_ids_in_map: set[str] = {pair_id for (pair_id, _occ, _side, _turn_idx) in llm_message_map}
+    pair_ids_in_map: set[str] = {
+        pair_id for (pair_id, _occ, _side, _turn_idx) in llm_message_map
+    }
 
     if incremental:
         new_pair_ids: set[str] = load_map(maps_dir, "new_pair_ids")
@@ -68,7 +72,9 @@ async def migrate_reasoning_content(
     else:
         pair_ids_to_process = pair_ids_in_map
 
-    logger.info(f"Processing {len(pair_ids_to_process)} pair_ids for reasoning_content backfill.")
+    logger.info(
+        f"Processing {len(pair_ids_to_process)} pair_ids for reasoning_content backfill."
+    )
 
     # Build lookup: pair_id → list of occurrences (sorted)
     pair_occ_map: dict[str, list[int]] = defaultdict(set)
@@ -88,10 +94,17 @@ async def migrate_reasoning_content(
     with source_connection(source_uri, stream=True) as conn:
         for batch_start in range(0, len(pair_ids_list), BATCH_SIZE):
             batch_ids = pair_ids_list[batch_start : batch_start + BATCH_SIZE]
-            rows = conn.execute(
-                text(_QUERY_SELECT + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"),
-                {"ids": batch_ids},
-            ).mappings().fetchall()
+            rows = (
+                conn.execute(
+                    text(
+                        _QUERY_SELECT
+                        + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"
+                    ),
+                    {"ids": batch_ids},
+                )
+                .mappings()
+                .fetchall()
+            )
 
             for row in rows:
                 pair_id: str | None = row["conversation_pair_id"]
@@ -101,7 +114,10 @@ async def migrate_reasoning_content(
                 occ = pair_id_counter[pair_id]
                 pair_id_counter[pair_id] += 1
 
-                for side, conversation in [("a", row["conversation_a"]), ("b", row["conversation_b"])]:
+                for side, conversation in [
+                    ("a", row["conversation_a"]),
+                    ("b", row["conversation_b"]),
+                ]:
                     for turn_idx, rc in _extract_reasoning(conversation):
                         if not rc:
                             continue
@@ -109,7 +125,9 @@ async def migrate_reasoning_content(
                         if msg_id is not None:
                             updates[msg_id] = rc
 
-    logger.info(f"Found {len(updates)} llm_messages with reasoning_content to backfill.")
+    logger.info(
+        f"Found {len(updates)} llm_messages with reasoning_content to backfill."
+    )
 
     if not updates:
         logger.info("Nothing to update.")

@@ -9,7 +9,13 @@ from sqlalchemy import text
 from utils.database.models.comparison import Comparison
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, load_map_or_empty, save_map, source_connection
+from .migrate_utils import (
+    ensure_maps_dir,
+    load_map,
+    load_map_or_empty,
+    save_map,
+    source_connection,
+)
 
 logger = logging.getLogger("comparia.db.migrate")
 
@@ -113,7 +119,9 @@ async def migrate_comparisons(
                 occ = pair_id_counter[pair_id]
                 pair_id_counter[pair_id] += 1
                 if occ > 0:
-                    logger.debug(f"Duplicate pair_id={pair_id} (occurrence {occ}), inserting as new comparison.")
+                    logger.debug(
+                        f"Duplicate pair_id={pair_id} (occurrence {occ}), inserting as new comparison."
+                    )
 
                 ts: datetime = row["timestamp"]
                 mode = row["mode"] if row["mode"] in VALID_MODES else "random"
@@ -134,8 +142,12 @@ async def migrate_comparisons(
                         "custom_models_selection": row["custom_models_selection"],
                         "llm_id_a": row["model_a_name"] or "",
                         "llm_id_b": row["model_b_name"] or "",
-                        "system_msg_a_id": system_map.get(system_prompt_a) if system_prompt_a else None,
-                        "system_msg_b_id": system_map.get(system_prompt_b) if system_prompt_b else None,
+                        "system_msg_a_id": (
+                            system_map.get(system_prompt_a) if system_prompt_a else None
+                        ),
+                        "system_msg_b_id": (
+                            system_map.get(system_prompt_b) if system_prompt_b else None
+                        ),
                         "llm_analyzed": row["pii_analyzed"],
                         "contains_pii": row["contains_pii"],
                         "contains_spam": row["contains_spam"],
@@ -157,7 +169,9 @@ async def migrate_comparisons(
                     await session.commit()
 
             inserted += len(rows_to_insert)
-            logger.info(f"Batch {batch_idx}: {len(rows_to_insert)} comparisons processed.")
+            logger.info(
+                f"Batch {batch_idx}: {len(rows_to_insert)} comparisons processed."
+            )
             batch_idx += 1
 
     logger.info(f"Done: {inserted} inserted, {skipped} skipped.")

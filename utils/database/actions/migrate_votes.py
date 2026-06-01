@@ -33,8 +33,13 @@ QUERY = _QUERY_BASE
 QUERY_FILTERED = _QUERY_BASE + "    AND v.conversation_pair_id = ANY(:ids)"
 
 ANNOTATION_COLS = [
-    "useful", "complete", "creative", "clear_formatting",
-    "incorrect", "superficial", "instructions_not_followed",
+    "useful",
+    "complete",
+    "creative",
+    "clear_formatting",
+    "incorrect",
+    "superficial",
+    "instructions_not_followed",
 ]
 
 BATCH_SIZE = 10_000

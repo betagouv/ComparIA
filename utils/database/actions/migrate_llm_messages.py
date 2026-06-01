@@ -11,7 +11,13 @@ _enc = tiktoken.get_encoding("cl100k_base")
 from utils.database.models.messages.llm import LLMMessage
 from utils.database.session import get_session
 
-from .migrate_utils import NOT_ARCHIVED, ensure_maps_dir, load_map, load_map_or_empty, save_map, source_connection
+from .migrate_utils import (
+    ensure_maps_dir,
+    load_map,
+    load_map_or_empty,
+    save_map,
+    source_connection,
+)
 
 logger = logging.getLogger("comparia.db.migrate")
 
@@ -41,7 +47,9 @@ def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
     return LLMMessage(
         id=uuid.uuid4(),
         content=str(content),
-        generation_id=str(generation_id) if generation_id is not None else UNKNOWN_GENERATION_ID,
+        generation_id=(
+            str(generation_id) if generation_id is not None else UNKNOWN_GENERATION_ID
+        ),
         tokens=int(tokens) if tokens is not None else len(_enc.encode(str(content))),
         is_cached=bool(metadata.get("is_cached", False)),
         created_at=fallback_ts,
@@ -51,7 +59,9 @@ def _build_llm_message(msg: dict, fallback_ts: datetime) -> LLMMessage | None:
     )
 
 
-def _extract_assistant_messages(conversation: list[dict] | None) -> list[tuple[int, dict]]:
+def _extract_assistant_messages(
+    conversation: list[dict] | None,
+) -> list[tuple[int, dict]]:
     if not conversation:
         return []
     result = []
@@ -88,11 +98,15 @@ async def migrate_llm_messages(
     """
     ensure_maps_dir(maps_dir)
 
-    comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(maps_dir, "comparison_map")
+    comparison_map: dict[tuple[str, int], uuid.UUID] = load_map(
+        maps_dir, "comparison_map"
+    )
     existing_llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = (
         load_map_or_empty(maps_dir, "llm_message_map") if incremental else {}
     )
-    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = dict(existing_llm_message_map)
+    llm_message_map: dict[tuple[str, int, str, int], uuid.UUID] = dict(
+        existing_llm_message_map
+    )
     pair_id_counter: dict[str, int] = defaultdict(int)
 
     inserted = 0
@@ -109,7 +123,10 @@ async def migrate_llm_messages(
                 save_map(maps_dir, "llm_message_map", llm_message_map)
                 return
             result = conn.execute(
-                text(_QUERY_SELECT + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"),
+                text(
+                    _QUERY_SELECT
+                    + " WHERE conversation_pair_id = ANY(:ids) ORDER BY conversation_pair_id, timestamp"
+                ),
                 {"ids": list(new_pair_ids)},
             )
         else:
@@ -138,7 +155,10 @@ async def migrate_llm_messages(
 
                 ts: datetime = row["timestamp"]
 
-                for side, conversation in [("a", row["conversation_a"]), ("b", row["conversation_b"])]:
+                for side, conversation in [
+                    ("a", row["conversation_a"]),
+                    ("b", row["conversation_b"]),
+                ]:
                     for turn_idx, msg in _extract_assistant_messages(conversation):
                         llm_msg = _build_llm_message(msg, ts)
                         if llm_msg is None:
@@ -169,4 +189,6 @@ async def migrate_llm_messages(
         f"Done: {inserted} inserted, {total_skipped} skipped"
         f" (no_pair_id={skipped_no_pair_id}, not_in_map={skipped_not_in_map}, no_msg={skipped_no_msg})."
     )
-    save_map(maps_dir, "llm_message_map", llm_message_map)  # key: (pair_id, occ, side, turn_idx)
+    save_map(
+        maps_dir, "llm_message_map", llm_message_map
+    )  # key: (pair_id, occ, side, turn_idx)

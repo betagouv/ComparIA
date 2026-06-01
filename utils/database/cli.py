@@ -26,7 +26,9 @@ cli_archive.command(archive_spam, name="spam")
 cli_archive.command(archive_corrupted, name="corrupted")
 cli_archive.command(archive_unknown_llms, name="unknown_llms")
 
-cli_migrate = App(name="migrate", help="Migrate data from old schema to new SQLModel schema.")
+cli_migrate = App(
+    name="migrate", help="Migrate data from old schema to new SQLModel schema."
+)
 cli_migrate.command(migrate_system_messages, name="system_messages")
 cli_migrate.command(migrate_comparisons, name="comparisons")
 cli_migrate.command(migrate_llm_messages, name="llm_messages")

@@ -25,8 +25,15 @@ QUERY = _QUERY_BASE
 QUERY_FILTERED = _QUERY_BASE + "    AND conversation_pair_id = ANY(:ids)"
 
 REACTION_FLAGS = [
-    "liked", "disliked", "useful", "complete", "creative", "clear_formatting",
-    "incorrect", "superficial", "instructions_not_followed",
+    "liked",
+    "disliked",
+    "useful",
+    "complete",
+    "creative",
+    "clear_formatting",
+    "incorrect",
+    "superficial",
+    "instructions_not_followed",
 ]
 
 BATCH_SIZE = 10_000
@@ -51,7 +58,7 @@ async def migrate_reactions(
     turn_map: dict[tuple[str, int, int], uuid.UUID] = load_map(maps_dir, "turn_map")
 
     pair_occurrences: dict[str, set[int]] = defaultdict(set)
-    for (pair_id, occ, _turn_idx) in turn_map:
+    for pair_id, occ, _turn_idx in turn_map:
         pair_occurrences[pair_id].add(occ)
 
     pending: dict[uuid.UUID, dict] = defaultdict(
@@ -107,13 +114,17 @@ async def migrate_reactions(
                         pending[turn_id][custom_key] = comment
 
                 if not matched:
-                    logger.debug(f"No turn for ({pair_id}, msg_rank={msg_rank}), skipping.")
+                    logger.debug(
+                        f"No turn for ({pair_id}, msg_rank={msg_rank}), skipping."
+                    )
                     skipped += 1
 
             logger.info(f"Batch {batch_idx}: accumulated reactions.")
             batch_idx += 1
 
-    logger.info(f"Accumulated {len(pending)} turns to update, {skipped} reactions skipped.")
+    logger.info(
+        f"Accumulated {len(pending)} turns to update, {skipped} reactions skipped."
+    )
 
     if commit and pending:
         async with get_session() as session:

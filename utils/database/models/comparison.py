@@ -40,9 +40,7 @@ ArchivedReason = Literal[
 #   - remove corresponding UserMessage + LLMMessage
 # - "corrupted_model_stream": reparse LLMMessage content
 
-SystemMessageId = Annotated[
-    uuid.UUID | None, Field(foreign_key="system_message.id")
-]
+SystemMessageId = Annotated[uuid.UUID | None, Field(foreign_key="system_message.id")]
 
 
 class ErrorDetails(BaseModel):

@@ -46,7 +46,9 @@ def load_map_or_empty(maps_dir: str, name: str) -> dict:
 
 
 @contextmanager
-def source_connection(source_uri: str, stream: bool = False) -> Generator[Connection, None, None]:
+def source_connection(
+    source_uri: str, stream: bool = False
+) -> Generator[Connection, None, None]:
     engine = create_engine(source_uri, execution_options={"stream_results": stream})
     try:
         with engine.connect() as conn:

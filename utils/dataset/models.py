@@ -101,12 +101,36 @@ class DatasetTurn(SQLModel):
         return {
             "tokens_a": msg_a.tokens if msg_a else None,
             "tokens_b": msg_b.tokens if msg_b else None,
-            "conso_a": (llm_a.wh_per_million_token / 1_000_000) * msg_a.tokens / 1_000 if (llm_a and msg_a) else None,
-            "conso_b": (llm_b.wh_per_million_token / 1_000_000) * msg_b.tokens / 1_000 if (llm_b and msg_b) else None,
-            "latency_a": (msg_a.responded_at - msg_a.created_at).total_seconds() if msg_a else None,
-            "latency_b": (msg_b.responded_at - msg_b.created_at).total_seconds() if msg_b else None,
-            "duration_a": (msg_a.updated_at - msg_a.responded_at).total_seconds() if msg_a else None,
-            "duration_b": (msg_b.updated_at - msg_b.responded_at).total_seconds() if msg_b else None,
+            "conso_a": (
+                (llm_a.wh_per_million_token / 1_000_000) * msg_a.tokens / 1_000
+                if (llm_a and msg_a)
+                else None
+            ),
+            "conso_b": (
+                (llm_b.wh_per_million_token / 1_000_000) * msg_b.tokens / 1_000
+                if (llm_b and msg_b)
+                else None
+            ),
+            "latency_a": (
+                (msg_a.responded_at - msg_a.created_at).total_seconds()
+                if msg_a
+                else None
+            ),
+            "latency_b": (
+                (msg_b.responded_at - msg_b.created_at).total_seconds()
+                if msg_b
+                else None
+            ),
+            "duration_a": (
+                (msg_a.updated_at - msg_a.responded_at).total_seconds()
+                if msg_a
+                else None
+            ),
+            "duration_b": (
+                (msg_b.updated_at - msg_b.responded_at).total_seconds()
+                if msg_b
+                else None
+            ),
         }
 
     # HELPERS
@@ -114,7 +138,9 @@ class DatasetTurn(SQLModel):
     def parse_response(self, side: BotPos) -> list[dict]:
         msgs = [self.user_msg.model_dump(include={"role", "content"})]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
-            msgs.append(llm_msg.model_dump(include={"role", "content", "reasoning_content"}))
+            msgs.append(
+                llm_msg.model_dump(include={"role", "content", "reasoning_content"})
+            )
         return msgs
 
 
@@ -169,10 +195,34 @@ class DatasetComparison(SQLModel):
 
         return {
             **info.context["metadata"],
-            "total_tokens_a": sum(meta.tokens_a for meta in turns_metadata if meta.tokens_a is not None) if all(meta.tokens_a is not None for meta in turns_metadata) else None,
-            "total_tokens_b": sum(meta.tokens_b for meta in turns_metadata if meta.tokens_b is not None) if all(meta.tokens_b is not None for meta in turns_metadata) else None,
-            "total_conso_a": sum(meta.conso_a for meta in turns_metadata) if all(meta.conso_a is not None for meta in turns_metadata) else None,
-            "total_conso_b": sum(meta.conso_b for meta in turns_metadata) if all(meta.conso_b is not None for meta in turns_metadata) else None,
+            "total_tokens_a": (
+                sum(
+                    meta.tokens_a
+                    for meta in turns_metadata
+                    if meta.tokens_a is not None
+                )
+                if all(meta.tokens_a is not None for meta in turns_metadata)
+                else None
+            ),
+            "total_tokens_b": (
+                sum(
+                    meta.tokens_b
+                    for meta in turns_metadata
+                    if meta.tokens_b is not None
+                )
+                if all(meta.tokens_b is not None for meta in turns_metadata)
+                else None
+            ),
+            "total_conso_a": (
+                sum(meta.conso_a for meta in turns_metadata)
+                if all(meta.conso_a is not None for meta in turns_metadata)
+                else None
+            ),
+            "total_conso_b": (
+                sum(meta.conso_b for meta in turns_metadata)
+                if all(meta.conso_b is not None for meta in turns_metadata)
+                else None
+            ),
         }
 
     @field_validator("extra_metadata_", mode="before")
