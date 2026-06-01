@@ -24,6 +24,7 @@ Datasets = Literal["normal", "raw"]
 
 
 class DatasetTurnMetadata(SQLModel):
+    # FIXME all those shouldn't be None?
     tokens_a: int | None
     tokens_b: int | None
     conso_a: float | None  # None for legacy comparisons with empty llm_id
@@ -43,6 +44,7 @@ class DatasetComparisonBaseMetadata(SQLModel):
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
+    # FIXME all those shouldn't be None?
     total_tokens_a: int | None
     total_tokens_b: int | None
     total_conso_a: float | None  # None for legacy comparisons with empty llm_id
@@ -71,8 +73,12 @@ class DatasetTurn(SQLModel):
 
     # Excluded, used to compute responses
     user_msg: Annotated[UserMessageRead, Field(exclude=True)]
-    llm_msg_a: Annotated[LLMMessageFinal | None, Field(exclude=True)]
-    llm_msg_b: Annotated[LLMMessageFinal | None, Field(exclude=True)]
+    llm_msg_a: Annotated[
+        LLMMessageFinal | None, Field(exclude=True)
+    ]  # FIXME shouldn't be None?
+    llm_msg_b: Annotated[
+        LLMMessageFinal | None, Field(exclude=True)
+    ]  # FIXME shouldn't be None?
 
     # Extracted then merged with DatasetComparisonMetadata
     metadata_: Annotated[
@@ -94,10 +100,11 @@ class DatasetTurn(SQLModel):
     def parse_metadata(cls, value: None, info: ValidationInfo) -> dict:
         assert info.context
         llm_a = info.context["llm_a"]
-        msg_a = info.data.get("llm_msg_a")
+        msg_a = info.data.get("llm_msg_a")  # FIXME shouldn't be None?
         llm_b = info.context["llm_b"]
-        msg_b = info.data.get("llm_msg_b")
+        msg_b = info.data.get("llm_msg_b")  # FIXME shouldn't be None?
 
+        # FIXME all next shouldn't be None?
         return {
             "tokens_a": msg_a.tokens if msg_a else None,
             "tokens_b": msg_b.tokens if msg_b else None,
@@ -200,6 +207,7 @@ class DatasetComparison(SQLModel):
 
         return {
             **info.context["metadata"],
+            # FIXME all next shouldn't be None?
             "total_tokens_a": (
                 sum(
                     meta.tokens_a

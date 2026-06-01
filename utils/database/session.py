@@ -9,6 +9,7 @@ from backend.config import settings
 
 
 def _async_url(url: str) -> str:
+    # FIXME LEGACY
     if url.startswith("postgresql://"):
         return url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
