@@ -4,19 +4,17 @@ Server-Sent Events (SSE) streaming support for arena comparisons.
 Handles real-time streaming of model responses to the frontend using SSE protocol.
 """
 
-import json
 import logging
 import traceback
-from typing import Any, AsyncGenerator, Literal, TypedDict
+from typing import Any, AsyncGenerator
 
 import litellm
 import sentry_sdk
 from fastapi import Request
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import StreamingResponse
 
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.arena.streaming.conversation import bot_response_async
+from backend.arena.streaming.events import AnySSEEvent, AnySSEEventMsg
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
 from backend.llms.data import get_llms_data, pick_replacement_model
@@ -25,74 +23,12 @@ from utils.database.models import (
     BOT_POS,
     AnyMessageRead,
     BotPos,
-    ComparisonPublic,
     ComparisonRead,
     ErrorDetails,
-    LLMMessageCreate,
-    TurnPublic,
     TurnRead,
 )
 
 logger = logging.getLogger("languia")
-
-
-class SSEEventMsgChunk(TypedDict):
-    type: Literal["chunk"]
-    pos: BotPos
-    llm_msg: LLMMessageCreate
-
-
-class SSEEventMsgComplete(TypedDict):
-    type: Literal["complete"]
-    pos: BotPos
-
-
-class SSEEventMsgError(TypedDict):
-    type: Literal["error"]
-    pos: BotPos
-    error: str
-
-
-class SSEEventInit(TypedDict):
-    type: Literal["init"]
-    comparison: ComparisonPublic
-
-
-class SSEEventSwap(TypedDict):
-    type: Literal["swap"]
-    pos: BotPos
-
-
-class SSEEventTurn(TypedDict):
-    type: Literal["add", "update"]
-    turn: TurnPublic
-
-
-class SSEEventComplete(TypedDict):
-    type: Literal["complete"]
-
-
-class SSEEventError(TypedDict):
-    type: Literal["error"]
-    error: str
-
-
-AnySSEEventMsg = SSEEventMsgChunk | SSEEventMsgComplete | SSEEventMsgError
-AnySSEEvent = (
-    AnySSEEventMsg
-    | SSEEventInit
-    | SSEEventTurn
-    | SSEEventSwap
-    | SSEEventComplete
-    | SSEEventError
-)
-
-
-def format_sse_event(data: AnySSEEvent) -> str:
-    """
-    Format event for sse streaming with fastapi json encoder.
-    """
-    return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
 async def stream_llm_response(
@@ -325,24 +261,3 @@ def _is_model_user_selected(
     if mode != "custom" or not custom_selection:
         return False
     return model_name in custom_selection
-
-
-def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:
-    """
-    Create a FastAPI StreamingResponse configured for Server-Sent Events.
-
-    Args:
-        generator: AsyncGenerator yielding SSE-formatted strings
-
-    Returns:
-        StreamingResponse configured with proper SSE headers
-    """
-    return StreamingResponse(
-        generator,
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # Disable buffering for Nginx
-        },
-    )
