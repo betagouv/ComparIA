@@ -29,6 +29,9 @@
             "help": "Si elige solo uno, el segundo sera elegido al azar",
             "question": "¿Qué modelo te gustaría elegir?"
         },
+        "errors": {
+            "rateLimitCustomSelection": "La selección de modelos está limitada para garantizar un acceso equitativo para todos. Puedes continuar usando el modo aleatorio o intentarlo más tarde."
+        },
         "modelSelection": "Selección de modelo",
         "prompt": {
             "label": "Escribir tu primer mensaje",
@@ -42,10 +45,7 @@
             "generateAnother": "Generar otra instrucción",
             "title": "Instrucciones sugeridas"
         },
-        "title": "¿Cómo puedo ayudarte el día de hoy?",
-        "errors": {
-            "rateLimitCustomSelection": "La selección de modelos está limitada para garantizar un acceso equitativo para todos. Puedes continuar usando el modo aleatorio o intentarlo más tarde."
-        }
+        "title": "¿Cómo puedo ayudarte el día de hoy?"
     },
     "chatbot": {
         "continuePrompt": "Continuar la conversación con los modelos de IA",
