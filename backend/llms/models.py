@@ -27,8 +27,6 @@ from pydantic import (
     field_validator,
 )
 
-from backend.config import CountryPortal
-
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
 Distribution = Literal[
@@ -158,7 +156,7 @@ class LLMDataBase(BaseModel):
     url: str | None
     endpoint: Endpoint | None
     pricey: bool
-    specific_portals: list[CountryPortal] | None
+    specific_portals: list[str] | None
 
 
 class LLMDataEnhanced(BaseModel):
@@ -212,8 +210,8 @@ class LLMData(LLMDataBase, LLMDataEnhanced):
             str: French system prompt, or None for no custom system prompt
 
         Note:
-            The system prompt is included in conversations when provided.
-            This ensures consistent behavior across multiple conversations.
+            The system prompt is included in the Comparison when provided.
+            This ensures consistent behavior across multiple comparisons.
         """
         return None
 

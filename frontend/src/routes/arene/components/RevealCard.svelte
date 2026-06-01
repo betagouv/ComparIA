@@ -84,14 +84,14 @@
 </script>
 
 <svelte:window onresize={() => checkIfScollable()} {onscroll} />
-<div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex flex-col">
+<div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex h-full flex-col">
   <div>
     <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
       <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
       <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
       {#if selected}
         <div
-          class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px]"
+          class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px] text-nowrap"
         >
           {m['vote.yours']()}
         </div>
@@ -185,7 +185,7 @@
           )}
         </Tooltip>
       </h6>
-      <div class="gap-6 flex items-start">
+      <div class="gap-6 sm:flex-row flex flex-col items-start">
         <p class="text-grey! md:text-[13px]! mb-0! lh-normal! text-[12px]!">
           {m['reveal.equivalent.desc']()}
         </p>

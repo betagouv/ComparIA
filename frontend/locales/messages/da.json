@@ -22,7 +22,8 @@
         "searchModel": "Søg efter en model",
         "seeMore": "Se mere",
         "selectLanguage": "Vælg sprog",
-        "vote": "Giv feedback"
+        "discover": "Opdag",
+        "returnArena": "Tilbage til arenaen"
     },
     "arenaHome": {
         "compareModels": {
@@ -55,14 +56,12 @@
             "other": {
                 "message": "Der er opstået en midlertidig fejl.",
                 "retry": "Du kan prøve at skrive til modellerne igen.",
-                "title": "Ups, midlertidig fejl",
-                "vote": "Eller afslut oplevelsen ved at angive din præference for disse modeller."
+                "title": "Ups, midlertidig fejl"
             },
             "tooLong": {
                 "message": "Hver model er begrænset i størrelsen af de samtaler, den kan håndtere.",
                 "retry": "Du kan genstarte en chat med to nye modeller.",
-                "title": "Ups, samtalen er for lang for en af modellerne.",
-                "vote": "Du kan stadig angive dine præferencer for disse modeller eller starte en samtale med to nye."
+                "title": "Ups, samtalen er for lang for en af modellerne."
             }
         },
         "loading": "Indlæser svar",
@@ -1284,14 +1283,10 @@
         "banner": "Mistral 3 er kommer til arenaen!",
         "chatbot": {
             "newDiscussion": "Ny samtale",
-            "step": "Trin",
-            "stepOne": {
-                "description": "Vær opmærksom på både indhold og form, og vurdér derefter hvert svar.",
-                "title": "Hvad synes du om svarene?"
-            },
-            "stepTwo": {
-                "description": "Se den miljømæssige påvirkning af dine samtaler med hver model",
-                "title": "Modellerne er afsløres!"
+            "reveal": {
+                "title": "Afsløring",
+                "subtitle": "Modellerne er afsløret!",
+                "description": "Se den miljømæssige påvirkning af dine samtaler med hver model"
             }
         },
         "help": {
@@ -2074,45 +2069,36 @@
         }
     },
     "vote": {
-        "bothEqual": "Begge er lige gode",
         "choices": {
-            "altText": "{choice} for modellen {model}",
             "negative": {
                 "incorrect": "Forkert",
                 "instructions_not_followed": "Instruktionerne er ikke blevet fulgt",
                 "question": "Hvorfor kunne du ikke lide svaret?",
-                "superficial": "Overfladisk"
+                "superficial": "Overfladisk",
+                "comment": "Uddyb hvad du ikke kunne lide…"
             },
-            "other": "Andet…",
             "positive": {
                 "clear_formatting": "Klar formattering",
                 "complete": "Fuldstændigt",
                 "creative": "Kreativt",
                 "question": "Hvad kunne du lide ved svaret?",
-                "useful": "Brugbart"
+                "useful": "Brugbart",
+                "comment": "Uddyb hvad du satte pris på…"
             }
         },
-        "comment": {
-            "add": "Tilføj kommentarer",
-            "placeholder": "Du kan tilføje detaljer om model {model}s svar"
-        },
-        "dislike": {
-            "label": "Jeg kan ikke lide",
-            "selectedLabel": "Jeg kan ikke lide (udvalgt)"
-        },
-        "introA": "Før vi finder ud af modellernes identitet, har vi brug for din stemme.",
-        "introB": "Det giver os mulighed for at forbedre compar:IA-datasættene, hvis formål er at forfine fremtidige AI-modeller på sprog med færre ressourcer",
-        "like": {
-            "label": "Jeg kan godt lide",
-            "selectedLabel": "Jeg kan godt lide (udvalgte)"
-        },
-        "qualify": {
-            "addDetails": "Tilføj detaljer",
-            "placeholder": "Svarene fra {model} modellen er...",
-            "question": "Hvordan vil du beskrive dens svar?"
-        },
         "title": "Hvilken AI-model foretrækker du?",
-        "yours": "Din stemme"
+        "yours": "Din stemme",
+        "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
+        "turn": {
+            "choices": {
+                "a_better": "A er bedst",
+                "b_better": "B er bedst",
+                "both_bad": "Begge er dårlige",
+                "both_good": "Begge er gode",
+                "idk": "Spring stemmen over"
+            },
+            "important": "Din stemme er vigtig: den bidrager til en bedre tilpasning til <a {linkProps}>dansksprogede præferencer</a>."
+        }
     },
     "welcome": {
         "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",

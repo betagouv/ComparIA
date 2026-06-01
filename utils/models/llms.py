@@ -11,7 +11,6 @@ from pydantic_core import PydanticCustomError
 
 from backend.llms.models import (
     FRIENDLY_SIZE,
-    CountryPortal,
     Distribution,
     Endpoint,
     FriendlySize,
@@ -85,7 +84,7 @@ class LLMDataRawBase(LLMDataBase):
     endpoint: Annotated[Endpoint | None, Field(description=descs["endpoint"])] = None
     pricey: Annotated[bool, Field(description=descs["pricey"])] = False
     specific_portals: Annotated[
-        list[CountryPortal] | None, Field(description=descs["specific_portals"])
+        list[str] | None, Field(description=descs["specific_portals"])
     ] = None
 
     # Raw specific fields

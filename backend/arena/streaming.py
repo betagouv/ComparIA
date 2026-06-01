@@ -1,5 +1,5 @@
 """
-Server-Sent Events (SSE) streaming support for arena conversations.
+Server-Sent Events (SSE) streaming support for arena comparisons.
 
 Handles real-time streaming of model responses to the frontend using SSE protocol.
 """
@@ -15,88 +15,120 @@ from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
-from backend.arena.models import (
-    BOT_POS,
-    AnyMessage,
-    BotPos,
-    Conversation,
-    Conversations,
-    ErrorDetails,
-    UserMessage,
-    create_conversation,
-)
+from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
-from backend.llms.data import get_llms_data
+from backend.llms.data import get_llms_data, pick_replacement_model
+from backend.llms.models import LLMDataEnabled
+from utils.database.models import (
+    BOT_POS,
+    AnyMessageRead,
+    BotPos,
+    ComparisonPublic,
+    ComparisonRead,
+    ErrorDetails,
+    LLMMessageCreate,
+    TurnPublic,
+    TurnRead,
+)
 
 logger = logging.getLogger("languia")
 
 
-def format_sse_event(data: Any) -> str:
+class SSEEventMsgChunk(TypedDict):
+    type: Literal["chunk"]
+    pos: BotPos
+    llm_msg: LLMMessageCreate
+
+
+class SSEEventMsgComplete(TypedDict):
+    type: Literal["complete"]
+    pos: BotPos
+
+
+class SSEEventMsgError(TypedDict):
+    type: Literal["error"]
+    pos: BotPos
+    error: str
+
+
+class SSEEventInit(TypedDict):
+    type: Literal["init"]
+    comparison: ComparisonPublic
+
+
+class SSEEventSwap(TypedDict):
+    type: Literal["swap"]
+    pos: BotPos
+
+
+class SSEEventTurn(TypedDict):
+    type: Literal["add", "update"]
+    turn: TurnPublic
+
+
+class SSEEventComplete(TypedDict):
+    type: Literal["complete"]
+
+
+class SSEEventError(TypedDict):
+    type: Literal["error"]
+    error: str
+
+
+AnySSEEventMsg = SSEEventMsgChunk | SSEEventMsgComplete | SSEEventMsgError
+AnySSEEvent = (
+    AnySSEEventMsg
+    | SSEEventInit
+    | SSEEventTurn
+    | SSEEventSwap
+    | SSEEventComplete
+    | SSEEventError
+)
+
+
+def format_sse_event(data: AnySSEEvent) -> str:
     """
     Format event for sse streaming with fastapi json encoder.
     """
     return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
-class SSEEventInit(TypedDict):
-    type: Literal["init"]
-    pos: BotPos
-    session_hash: str
-
-
-class SSEEventComplete(TypedDict):
-    type: Literal["complete"]
-    pos: BotPos
-
-
-class SSEEventChunk(TypedDict):
-    type: Literal["chunk"]
-    pos: BotPos
-    messages: list[AnyMessage]
-
-
-class SSEEventError(TypedDict):
-    type: Literal["error"]
-    pos: BotPos
-    error: str
-
-
-AnySSEEvent = SSEEventInit | SSEEventChunk | SSEEventComplete | SSEEventError
-
-
-async def stream_conversation_messages(
-    pos: BotPos, conv: Conversation, request: Request
-) -> AsyncGenerator[AnySSEEvent]:
+async def stream_llm_response(
+    pos: BotPos,
+    llm: LLMDataEnabled,
+    turn: TurnRead,
+    turn_index: int,
+    messages: list[AnyMessageRead],
+    request: Request | None = None,
+) -> AsyncGenerator[AnySSEEventMsg]:
     """
-    Stream a single bot response using Server-Sent Events format.
+    Stream a single LLM response using Server-Sent Events format.
 
     Args:
-        pos: Which model position ("a" or "b")
-        conv_state: Conversation state dict with messages and model info
+        pos: Which LLM position ("a" or "b")
+        llm: LLM data
+        turn: Current Turn
+        turn_index: Current Turn index
+        messages: List of messages to be serialized for llm call
         request: FastAPI Request object for logging
 
     Yields:
-        str: SSE-formatted messages (data: {...}\n\n)
-
-    SSE Format:
-        data: {"type": "chunk", "messages": [...]}
-
-        data: {"type": "complete"}
-
-        data: {"type": "error", "error": "error message"}
+        AnySSEEventMsg
     """
     from backend.arena.conversation import bot_response_async
 
     try:
         # Stream responses from bot_response_async generator
-        async for messages in bot_response_async(pos, conv, request):
-            yield {"type": "chunk", "pos": pos, "messages": messages}
+        async for llm_msg in bot_response_async(
+            pos, llm, turn, turn_index, messages, request
+        ):
+            yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
 
         yield {"type": "complete", "pos": pos}
 
         logger.info(
-            f"response_modele_{pos} ({conv.model_name}): {str(conv.messages[-1].content)}",
+            f"response_modele_{pos} ({llm.id}): {llm_msg.content}",
             extra={"request": request},
         )
 
@@ -108,14 +140,16 @@ async def stream_conversation_messages(
             # TODO: only capture model name to sort more easily in sentry
             sentry_sdk.capture_exception(e)
 
-        error_reason = f"error_during_convo: {conv.model_name}, {conv.llm.endpoint.api_type}, {error_message}"
+        error_reason = (
+            f"error_during_convo: {llm.id}, {llm.endpoint.api_type}, {error_message}"
+        )
 
         # TODO ContextLengthError: do not log to controller?
         try:
             import requests
 
             requests.post(
-                f"{settings.LANGUIA_CONTROLLER_URL}/models/{conv.model_name}/error",
+                f"{settings.LANGUIA_CONTROLLER_URL}/models/{llm.id}/error",
                 json={"error": error_reason},
                 timeout=1,
             )
@@ -138,46 +172,46 @@ async def stream_conversation_messages(
 
 
 async def stream_comparison_messages(
-    conversations: Conversations, request: Any
-) -> AsyncGenerator[str]:
+    comparison: ComparisonRead,
+    turn: TurnRead,
+    request: Any | None = None,
+) -> AsyncGenerator[AnySSEEvent]:
     """
-    Stream both model responses in parallel using Server-Sent Events.
+    Stream both LLMs responses in parallel using Server-Sent Events.
 
-    This function orchestrates streaming from both models simultaneously,
+    This function orchestrates streaming from both LLMs simultaneously,
     yielding updates as they arrive from either model.
 
     Args:
-        conv_a: First conversation state dict
-        conv_b: Second conversation state dict
+        comparison: current Comparison
+        turn: current Turn
         request: FastAPI Request object for logging
 
     Yields:
-        str: SSE-formatted messages with updates from both models
-
-    SSE Event Format:
-        data: {"type": "update", "a": {...}, "b": {...}}
-
-        data: {"type": "complete"}
-
-        data: {"type": "error", "error": "..."}
+        AnySSEEvent
     """
     import asyncio
 
+    turn_index = len(comparison.turns) - 1
+    llms_data = get_llms_data().enabled
+
     try:
         # Create async generators for both models
-        generators: dict[BotPos, AsyncGenerator[AnySSEEvent]] = {
-            "a": stream_conversation_messages(
-                "a", conversations.conversation_a, request
-            ),
-            "b": stream_conversation_messages(
-                "b", conversations.conversation_b, request
-            ),
+        generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {
+            pos: stream_llm_response(
+                pos,
+                llms_data[getattr(comparison, f"llm_id_{pos}")],
+                turn,
+                turn_index,
+                _get_messages(comparison, pos),
+                request,
+            )
+            for pos in BOT_POS
         }
         # Track state from both generators
         complete: dict[BotPos, bool] = {"a": False, "b": False}
         # Track timeout swap attempts (max one per position)
         retried: dict[BotPos, bool] = {"a": False, "b": False}
-        is_first_turn = conversations.conv_turns == 0
 
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):
@@ -206,40 +240,34 @@ async def stream_comparison_messages(
                     event = task.result()
                 except ChatError as e:
                     # On first-turn timeout, swap the model if it wasn't user-selected
+                    failing_llm_id = getattr(comparison, f"llm_id_{e.pos}")
                     if (
                         e.is_timeout
-                        and is_first_turn
+                        and turn_index == 0
                         and not retried[e.pos]
                         and not _is_model_user_selected(
-                            getattr(conversations, f"conversation_{e.pos}").model_name,
-                            conversations.mode,
-                            conversations.custom_models_selection,
+                            failing_llm_id,
+                            comparison.mode,
+                            comparison.custom_models_selection,
                         )
                     ):
-                        new_model = _pick_replacement_model(conversations, e.pos)
-                        if new_model:
-                            old_conv = getattr(conversations, f"conversation_{e.pos}")
+                        if new_llm_id := pick_replacement_model(comparison, e.pos):
+                            await update_comparison_llm_id(
+                                comparison, e.pos, new_llm_id
+                            )
                             logger.warning(
-                                f"Model '{old_conv.model_name}' timed out, swapping to '{new_model}'"
+                                f"LLM '{failing_llm_id}' timed out, swapping to '{new_llm_id}'"
                             )
-                            user_msg = UserMessage(content=conversations.opening_msg)
-                            new_conv = create_conversation(
-                                new_model,
-                                conversations.country_portal,
-                                user_msg,
-                            )
-                            # Preserve conv_id so conversation_pair_id stays stable
-                            new_conv.conv_id = old_conv.conv_id
-                            setattr(
-                                conversations,
-                                f"conversation_{e.pos}",
-                                new_conv,
-                            )
-                            generators[e.pos] = stream_conversation_messages(
-                                e.pos, new_conv, request
+                            generators[e.pos] = stream_llm_response(
+                                e.pos,
+                                llms_data[new_llm_id],
+                                turn,
+                                turn_index,
+                                _get_messages(comparison, e.pos),
+                                request,
                             )
                             retried[e.pos] = True
-                            yield format_sse_event({"type": "swap", "pos": e.pos})
+                            yield {"type": "swap", "pos": e.pos}
                             continue
                         # No replacement available, fall through to raise
                     raise
@@ -248,61 +276,55 @@ async def stream_comparison_messages(
                     if event["type"] == "complete":
                         complete[event["pos"]] = True
 
-                yield format_sse_event(event)
+                yield event
 
         # Signal completion
-        yield format_sse_event({"type": "complete"})
+        yield {"type": "complete"}
     except ChatError as e:
         # Specific chat error
-        # Error logging is done in `stream_conversation_messages()`
-        conversations.error = ErrorDetails(
-            message=e.message, pos=e.pos, is_timeout=e.is_timeout
+        # Error logging is done in `stream_llm_response()`
+        await update_comparison_error(
+            comparison,
+            ErrorDetails(message=e.message, pos=e.pos, is_timeout=e.is_timeout),
         )
-        yield format_sse_event({"type": "error", "error": e.message, "pos": e.pos})
+
+        yield {"type": "error", "error": e.message, "pos": e.pos}
     except Exception as e:
         # General error
         if settings.SENTRY_DSN:
             # Error is silenced to be sent thru sse message, send it to sentry manually
             sentry_sdk.capture_exception(e)
 
-        conversations.error = ErrorDetails(message=str(e))
+        await update_comparison_error(comparison, ErrorDetails(message=str(e)))
         logger.error(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
-        yield format_sse_event({"type": "error", "error": str(e)})
+        yield {"type": "error", "error": str(e)}
+
+
+def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:
+    messages: list[AnyMessageRead] = []
+
+    if system_msg := getattr(comparison, f"system_msg_{pos}"):
+        messages.append(system_msg)
+
+    for turn in comparison.turns:
+        messages.append(turn.user_msg)
+        if llm_msg := getattr(turn, f"llm_msg_{pos}"):
+            messages.append(llm_msg)
+
+    return messages
 
 
 def _is_model_user_selected(
     model_name: str, mode: SelectionMode, custom_selection: CustomModelsSelection
 ) -> bool:
-    """Check if a model was explicitly chosen by the user (custom mode)."""
+    """
+    Check if a model was explicitly chosen by the user (custom mode).
+    """
     if mode != "custom" or not custom_selection:
         return False
     return model_name in custom_selection
-
-
-def _pick_replacement_model(conversations: Conversations, pos: BotPos) -> str | None:
-    """Pick a replacement model from the appropriate pool, excluding both current models."""
-    models = get_llms_data(conversations.country_portal)
-    other_pos: BotPos = "b" if pos == "a" else "a"
-    failing = getattr(conversations, f"conversation_{pos}").model_name
-    other = getattr(conversations, f"conversation_{other_pos}").model_name
-    excluded = [failing, other]
-
-    # Pick from the right pool based on mode
-    if conversations.mode == "small-models":
-        pool = models.small_models
-    elif conversations.mode == "big-vs-small":
-        pool = (
-            models.big_models if failing in models.big_models else models.small_models
-        )
-    else:
-        pool = models.random_models
-
-    try:
-        return models.pick_one(pool, excluded=excluded)
-    except Exception:
-        return None
 
 
 def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:

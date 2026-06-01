@@ -24,6 +24,9 @@ dependencies = [
     "sentry-sdk>=2.50.0",
     "uvicorn>=0.40.0",
     "altcha>=1.0.0",
+    "sqlmodel>=0.0.38",
+    "psycopg[binary]>=3.3.3",
+    "alembic>=1.18.4",
 ]
 
 [dependency-groups]
@@ -66,15 +69,16 @@ remove-all-unused-imports = true
 exclude= [
     "./**/__init__.py",
     "./utils/ranking_methods",
-    "./utils/database/actions/__init__.py"
+    "./utils/database/actions/__init__.py",
+    "./utils/database/alembic"
 ]
 
 [tool.isort]
 profile = "black"
-extend_skip = ["utils/ranking_methods"]
+extend_skip = ["utils/ranking_methods", "utils/database/alembic"]
 
 [tool.black]
-extend-exclude = "utils/ranking_methods"
+extend-exclude = "utils/ranking_methods|utils/database/alembic"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -1,65 +1,52 @@
 import logging
-from datetime import datetime
 
 import polars as pl
+from sqlmodel import and_, col, or_, select
 
-from utils.utils import LLMS_GENERATED_DATA_FILE, db_connection, read_json
+from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
 
-from ..utils import TABLE_NAMES, archive
+from ..models import Comparison
+from ..session import get_session
+from ..utils import archive
 
 logger = logging.getLogger("comparia.db")
 
-UNKNOWN_LLM_IDS_CONVERSATIONS_QUERY = """
-SELECT 
-    conversation_pair_id,
-    model_a_name,
-    model_b_name,
-    timestamp
-FROM 
-    conversations 
-WHERE 
-    (archived IS NULL OR archived IS FALSE)
-    AND (
-        model_a_name NOT IN ({llm_ids})
-        OR model_b_name NOT IN ({llm_ids})
-    );
-"""
 
-
-def archive_unknown_llms(*, commit: bool = False) -> None:
+async def archive_unknown_llms(*, commit: bool = False) -> None:
     """
-    Archive conversations, votes and reactions that refers to an unknown LLM
-    (not in LLM list).
+    Archive comparisons that refers to an unknown LLM (not in LLM list).
     """
     logger.info(f"Searching for unknown LLMs.")
-    llm_ids = set(read_json(LLMS_GENERATED_DATA_FILE)["models"].keys())
+    llm_ids = list(set(read_json(LLMS_GENERATED_DATA_FILE)["models"].keys()))
 
-    with db_connection() as conn:
-        data = pl.read_database(
-            UNKNOWN_LLM_IDS_CONVERSATIONS_QUERY.format(
-                llm_ids=", ".join([f"'{id}'" for id in llm_ids])
-            ),
-            conn,
+    async with get_session() as session:
+        query = select(Comparison.id, Comparison.llm_id_a, Comparison.llm_id_b).where(
+            and_(
+                col(Comparison.archived) == None,
+                or_(
+                    col(Comparison.llm_id_a).not_in(llm_ids),
+                    col(Comparison.llm_id_b).not_in(llm_ids),
+                ),
+            )
         )
 
-    ids = data["conversation_pair_id"].to_list()
+        data = pl.DataFrame((await session.exec(query)).all())
+
+    ids = data["id"].to_list() if not data.is_empty() else []
     if not ids:
-        logger.info("No conversations with unknown LLM ids found!")
+        logger.info("No comparisons with unknown LLM ids found!")
         return
 
-    logger.warning(f"Found {len(ids)} conversations with unknown LLM ids:")
+    logger.warning(f"Found {len(ids)} comparisons with unknown LLM ids:")
 
     unknown_llm_ids = set(
-        data["model_a_name"].append(data["model_b_name"]).unique().to_list()
+        data["llm_id_a"].append(data["llm_id_b"]).unique().to_list()
     ).difference(llm_ids)
 
     for id in unknown_llm_ids:
         count = len(
-            data.filter((pl.col("model_a_name") == id) | (pl.col("model_b_name") == id))
+            data.filter((pl.col("llm_id_a") == id) | (pl.col("llm_id_b") == id))
         )
-        logger.warning(f"    {count} conversations with unknown LLM id: '{id}'")
+        logger.warning(f"{count:4} comparisons with unknown LLM id: '{id}'")
 
-    archived_at = datetime.now()
-    for table_name in TABLE_NAMES:
-        # archive corrupted 'conversations' and related 'votes' + 'reactions'
-        archive(table_name, ids, "unknown_llm", archived_at, commit=commit)
+    await archive(ids, "unknown_llm", commit=commit)

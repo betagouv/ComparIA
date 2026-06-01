@@ -1,9 +1,11 @@
 import { consumeAltchaToken } from '$lib/captcha.svelte'
-import { api, ValidationError, type AnySSEEvent } from '$lib/fastapi-client'
+import { api, ValidationError } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import type { APIBotModel, BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
+import { createContext } from 'svelte'
+import { InternalError } from './fastapi-client'
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -23,84 +25,102 @@ export type ModeInfos = {
   description: string
 }
 
-// CHAT
+// COMPARISON
 
 export type Bot = 'a' | 'b'
-export type BotChoice = Bot | 'both_equal'
-
-export type LLMPos = 'a' | 'b'
-export type ChatStatus = 'pending' | 'error' | 'complete' | 'generating'
-
 export interface UserMessage {
   role: 'user'
   content: string
-  error: { round_index: number; pos: Bot; content: string } | null
 }
 export interface AssistantMessage {
   role: 'assistant'
-  pos: Bot
-  metadata: {
-    bot: Bot
-    duration: number | null
-    generation_id: string
-  }
+  duration: number | null
+  generation_id: string
   content: string
-  reasoning: string | ''
-
-  generating?: boolean
+  reasoning_content: string | ''
 }
 export type AnyMessage = UserMessage | AssistantMessage
 
-interface Chat {
-  messages: AnyMessage[]
-  status: ChatStatus
-  // error: string | null
-}
-export interface ChatRound {
-  user: UserMessage
-  a?: AssistantMessage
-  b?: AssistantMessage
-  showMessages: boolean
-  index: number
+export const TURN_CHOICES = ['a_better', 'both_good', 'idk', 'both_bad', 'b_better'] as const
+export type TurnChoice = (typeof TURN_CHOICES)[number]
+
+export type ComparisonTurnStatus = 'pending' | 'generating' | 'error' | 'complete'
+export type ComparisonStatus = ComparisonTurnStatus | 'revealed'
+
+export interface ComparisonTurnSide {
+  status: ComparisonTurnStatus
+  llm_msg?: AssistantMessage
+  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  custom_annotation: string
 }
 
-// REACTIONS
+interface BaseComparisonTurn {
+  id: number
+  user_msg: UserMessage
+  choice?: TurnChoice
+}
+export interface APIComparisonTurn extends BaseComparisonTurn {
+  llm_msg_a?: AssistantMessage
+  keyword_annotations_a: APIPositivePref[] | APINegativePref[]
+  custom_annotation_a: string
+  llm_msg_b?: AssistantMessage
+  keyword_annotations_b: APIPositivePref[] | APINegativePref[]
+  custom_annotation_b: string
+}
+export interface ComparisonTurn extends BaseComparisonTurn {
+  a: ComparisonTurnSide
+  b: ComparisonTurnSide
+
+  status: ComparisonTurnStatus
+}
+
+interface BaseComparison {
+  id: string
+  mode: Mode
+  custom_models_selection: string[]
+  error?: string // ErrorDetails | None
+  reveal?: APIRevealData
+}
+export interface APIComparison extends BaseComparison {
+  turns: APIComparisonTurn[]
+}
+export interface Comparison extends BaseComparison {
+  turns: ComparisonTurn[]
+}
+
+// ANNOTATIONS
 
 export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
 export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
-export type APIReactionPref = (typeof APIPositivePrefs)[number] | (typeof APINegativePrefs)[number]
-
-export type ReactionKind = 'like' | 'comment'
-export type APIReactionData = {
-  bot: Bot
-  index: number
-  value: string
-  liked: boolean | null
-  prefs: APIReactionPref[]
-  comment?: string
+export const PREFS_EMOJIS: Record<APIReactionPref, string> = {
+  useful: '🙌',
+  complete: '💯',
+  creative: '🌀',
+  clear_formatting: '🎨',
+  incorrect: '❌',
+  superficial: '🚩',
+  instructions_not_followed: '🚫'
 }
-export type OnReactionFn = (reaction: APIReactionData) => void
-
-// VOTE
-
-export interface APIVoteData {
-  chosen_llm: BotChoice
-  prefs_a: APIReactionPref[]
-  prefs_b: APIReactionPref[]
-  comment_a: string
-  comment_b: string
+export type APIPositivePref = (typeof APIPositivePrefs)[number]
+export type APINegativePref = (typeof APINegativePrefs)[number]
+export type APIReactionPref = APIPositivePref | APINegativePref
+export interface VoteAnnotations {
+  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  custom_annotation: string
+}
+export interface APIVoteChoice {
+  turn_id: number
+  choice: TurnChoice
 }
 
-interface VoteDetails {
-  like: APIReactionPref[]
-  dislike: APIReactionPref[]
-  comment: string
+export interface APIVoteAnnotate {
+  turn_id: number
+  pos: Bot
+  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  custom_annotation: string
 }
-export interface VoteData {
-  selected?: BotChoice
-  a: VoteDetails
-  b: VoteDetails
-}
+
+export type AnyAPIVote = APIVoteChoice | APIVoteAnnotate
 
 // REVEAL
 // Equivalence types for scaled impact comparisons
@@ -112,7 +132,7 @@ export type EquivalenceType =
   | 'mango_import'
   | 'pool_filing'
 
-export interface APIEquivalence {
+interface APIEquivalence {
   type: EquivalenceType
   value: number
 }
@@ -135,7 +155,7 @@ interface APIRevealModelData {
 
 export interface APIRevealData {
   b64: string
-  chosen_llm: BotChoice
+  chosen_llm: Bot | null
   a: APIRevealModelData
   b: APIRevealModelData
 }
@@ -146,7 +166,7 @@ export interface RevealModelData extends APIConsoData {
 }
 
 export interface RevealData {
-  selected: BotChoice
+  selected: Bot | null
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
 }
@@ -168,187 +188,41 @@ export const modeInfos: ModeInfos[] = (
   description: m[`modes.${item.value}.description`]()
 }))
 
-export const arena = $state<{
-  currentScreen: 'prompt' | 'chat'
-  mode?: Mode
-  chat: {
-    step?: 1 | 2
-    status: ChatStatus
-    a: Chat
-    b: Chat
-    error: string | null
-  }
-}>({
-  currentScreen: 'prompt',
-  chat: {
-    step: 1,
-    status: 'pending',
-    a: { status: 'pending', messages: [] },
-    b: { status: 'pending', messages: [] },
-    error: null
-  }
-})
+// COMPARISON LOGIC
 
-// API CALLS
+type ComparisonsCtx = Record<string, Comparison>
+export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
-function onSSEEvent(event: AnySSEEvent) {
-  if (event.type === 'init') {
-    arena.chat.status = 'pending'
-  } else if (event.type === 'error') {
-    arena.chat.error = event.error
-    arena.chat.status = 'error'
-    if (event.pos) {
-      arena.chat[event.pos].status = 'error'
-    }
-  } else if (event.type === 'chunk') {
-    arena.chat[event.pos].messages = event.messages
-    arena.chat[event.pos].status = 'generating'
-    arena.chat.status = 'generating'
-  } else if (event.type === 'complete') {
-    if (event.pos) {
-      arena.chat[event.pos].status = 'complete'
-    } else {
-      arena.chat.status = 'complete'
-    }
-  }
-}
-
-export async function runChatBots(args: APIModeAndPromptData): Promise<string | undefined> {
-  arena.chat.status = 'pending'
-  arena.chat.error = null
-
-  try {
-    const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
-    if (cohorts === null) {
-      console.error(
-        `[COHORT] cohorts is None and it should not happen, maybe cohorts detection has not been called.`
-      )
-    }
-    if (cohorts) {
-      console.debug(`[COHORT] call to '/arena/add_first_text' with found cohorts: '${cohorts}'`)
-    }
-
-    const stream = api.stream('/arena/add_first_text', {
-      prompt_value: args.prompt_value,
-      mode: args.mode,
-      custom_models_selection: args.custom_models_selection,
-      cohorts,
-      altcha_token: consumeAltchaToken()
-    })
-
-    // Stream from FastAPI endpoint
-    for await (const event of stream) {
-      if (arena.currentScreen !== 'chat') {
-        arena.currentScreen = 'chat'
-        arena.mode = args.mode
-        arena.chat.step = 1
-      }
-      onSSEEvent(event)
-    }
-
-    arena.chat.status = arena.chat.status = [
-      arena.chat.status,
-      arena.chat.a.status,
-      arena.chat.b.status
-    ].some((status) => status === 'error')
-      ? 'error'
-      : 'complete'
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      arena.chat.status = 'complete'
-      return error.message
-    }
-    arena.chat.status = 'error'
-    throw error
-  }
-
-  return arena.chat.status
-}
-
-export async function askChatBots(text: string): Promise<string | undefined> {
-  arena.chat.status = 'pending'
-  arena.chat.error = null
-  try {
-    // Stream from FastAPI endpoint
-    for await (const event of api.stream('/arena/add_text', {
-      message: text,
-      altcha_token: consumeAltchaToken()
-    })) {
-      onSSEEvent(event)
-    }
-
-    arena.chat.status = arena.chat.status = [
-      arena.chat.status,
-      arena.chat.a.status,
-      arena.chat.b.status
-    ].some((status) => status === 'error')
-      ? 'error'
-      : 'complete'
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      arena.chat.status = 'complete'
-      return error.message
-    }
-    arena.chat.status = 'error'
-    throw error
-  }
-}
-
-export async function retryAskChatBots(): Promise<string | undefined> {
-  arena.chat.status = 'pending'
-  arena.chat.error = null
-  try {
-    // Stream from FastAPI endpoint
-    for await (const event of api.stream('/arena/retry', {})) {
-      onSSEEvent(event)
-    }
-
-    arena.chat.status = arena.chat.status = [
-      arena.chat.status,
-      arena.chat.a.status,
-      arena.chat.b.status
-    ].some((status) => status === 'error')
-      ? 'error'
-      : 'complete'
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      arena.chat.status = 'complete'
-      return error.message
-    }
-    arena.chat.status = 'error'
-    throw error
-  }
-}
-
-export async function updateReaction(reaction: APIReactionData) {
-  await api.request('/arena/react', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(reaction)
-  })
-}
-
-export async function postVoteGetReveal(vote: Required<VoteData>) {
-  const data = {
-    chosen_llm: vote.selected,
-    prefs_a: [...vote.a.like, ...vote.a.dislike],
-    prefs_b: [...vote.b.like, ...vote.b.dislike],
-    comment_a: vote.a.comment,
-    comment_b: vote.b.comment
-  } satisfies APIVoteData
-
-  const revealData = await api.request<APIRevealData>('/arena/vote', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
+  const status = !turn.llm_msg_a && !turn.llm_msg_b ? 'pending' : 'complete'
+  return {
+    id: turn.id,
+    status,
+    choice: turn.choice,
+    user_msg: turn.user_msg,
+    a: {
+      status: !turn.llm_msg_a ? 'pending' : 'complete',
+      llm_msg: turn.llm_msg_a,
+      custom_annotation: '',
+      keyword_annotations: []
     },
-    body: JSON.stringify(data)
-  })
-
-  return parseAPIRevealData(revealData)
+    b: {
+      status: !turn.llm_msg_b ? 'pending' : 'complete',
+      llm_msg: turn.llm_msg_b,
+      custom_annotation: '',
+      keyword_annotations: []
+    }
+  }
 }
 
-function parseAPIRevealData(data: APIRevealData): RevealData {
+function parseAPIComparison(comparison: APIComparison): Comparison {
+  return {
+    ...comparison,
+    turns: comparison.turns.map(parseAPITurn)
+  }
+}
+
+export function parseAPIRevealData(data: APIRevealData): RevealData {
   return {
     selected: data.chosen_llm,
     modelsData: (['a', 'b'] as const).map((pos) => ({
@@ -360,10 +234,170 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export async function getReveal(): Promise<RevealData> {
-  const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
-    method: 'GET'
+export function initComparisonsContext(data: APIComparison[]) {
+  const comparisons = $state(
+    Object.fromEntries(data.map((c) => [c.id.toString(), parseAPIComparison(c)]))
+  )
+  setComparisonsContext(comparisons)
+}
+
+const ERROR_MESSAGES = {
+  rate_limit_custom_selection: 'arenaHome.errors.rateLimitCustomSelection'
+} as const
+
+export function getComparison<Id extends string | undefined>(comparisonId: Id) {
+  const comparisons = getComparisonsContext()
+  let comparisonId_ = $state<Id>(comparisonId)
+  let loading = $state(false)
+  let promptError = $state<string>()
+
+  const comparison = $derived(comparisonId_ ? comparisons[comparisonId_] : null)
+  const errorMsg = $derived(comparison?.error)
+  const turn = $derived(comparison?.turns[comparison.turns.length - 1])
+
+  const status = $derived.by(() => {
+    if (errorMsg || promptError) return 'error'
+    if (!comparison || !turn) return 'pending'
+    if (comparison.reveal) return 'revealed'
+    return turn.status
   })
 
-  return parseAPIRevealData(revealData)
+  async function ask(url: string, body: any) {
+    loading = true
+    promptError = undefined
+    if (comparison) {
+      comparison.error = undefined
+    }
+
+    let receivedEvent = false
+    try {
+      for await (const event of api.stream(url, body)) {
+        receivedEvent = true
+        if (event.type === 'init') {
+          const id = event.comparison.id.toString()
+          comparisons[id] = parseAPIComparison(event.comparison)
+          comparisonId_ = id as Id
+        } else {
+          if (!comparison) throw new InternalError('No comparison to update')
+
+          if (event.type === 'add') {
+            comparison.turns.push(parseAPITurn(event.turn))
+          } else {
+            if (!turn) throw new InternalError('No turn to update')
+
+            if (event.type === 'update') {
+              comparison.turns[comparison.turns.length - 1] = parseAPITurn(event.turn)
+            } else if (event.type === 'error') {
+              if (event.pos) {
+                turn[event.pos].status = 'error'
+              }
+              turn.status = 'error'
+              comparison.error = event.error
+            } else if (event.type === 'chunk') {
+              turn.status = 'generating'
+              turn[event.pos].status = 'generating'
+              turn[event.pos].llm_msg = event.llm_msg
+            } else if (event.type === 'complete') {
+              if (event.pos) {
+                turn[event.pos].status = 'complete'
+              } else {
+                turn.status = 'complete'
+              }
+            }
+          }
+        }
+      }
+      if (!receivedEvent && comparison) {
+        // SSE opened with no events — backend crashed before its first yield.
+        comparison.error = 'empty_stream'
+        if (turn) turn.status = 'error'
+      }
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        promptError = err.message in ERROR_MESSAGES ? m[ERROR_MESSAGES[err.message]]() : err.message
+      } else {
+        throw err
+      }
+    } finally {
+      loading = false
+    }
+  }
+
+  return {
+    get comparison() {
+      return comparison as Id extends string ? Comparison : Comparison | null
+    },
+    get comparisonId() {
+      return comparisonId_
+    },
+    get status() {
+      return status
+    },
+    get loading() {
+      return loading
+    },
+    get error() {
+      return errorMsg
+    },
+    get promptError() {
+      return promptError
+    },
+
+    async askFirst(args: APIModeAndPromptData) {
+      const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
+      if (cohorts === null) {
+        console.error(
+          `[COHORT] cohorts is None and it should not happen, maybe cohorts detection has not been called.`
+        )
+      } else if (cohorts) {
+        console.debug(`[COHORT] call to '/arena/add_first_text' with found cohorts: '${cohorts}'`)
+      }
+
+      return await ask('/arena/add_first_text', {
+        prompt_value: args.prompt_value,
+        mode: args.mode,
+        custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
+        cohorts,
+        altcha_token: consumeAltchaToken()
+      })
+    },
+
+    async ask(text: string) {
+      if (!comparison?.turns.every((turn) => !!turn.choice)) return
+      return await ask('/arena/add_text', {
+        message: text,
+        altcha_token: consumeAltchaToken()
+      })
+    },
+
+    async retry() {
+      return await ask('/arena/retry', {})
+    },
+
+    async vote(data: AnyAPIVote) {
+      await api.request<APIRevealData>('/arena/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      const turn = comparison!.turns.find((t) => t.id === data.turn_id)!
+      if ('choice' in data) {
+        turn.choice = data.choice
+      } else {
+        turn[data.pos].custom_annotation = data.custom_annotation
+        turn[data.pos].keyword_annotations = data.keyword_annotations
+      }
+    },
+
+    async reveal() {
+      if (!comparison) throw new InternalError('No comparison to reveal.')
+      const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
+        method: 'GET'
+      })
+
+      comparison.reveal = revealData
+    }
+  }
 }

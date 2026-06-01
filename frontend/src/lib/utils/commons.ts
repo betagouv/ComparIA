@@ -6,7 +6,7 @@ export function sanitize(html: string): string {
   return sanitizeHtml(html, {
     allowedAttributes: {
       span: ['class'],
-      a: ['href', 'rel', 'target', 'title', 'class'],
+      a: ['href', 'rel', 'target', 'title', 'class', 'data-fr-opened', 'aria-controls'],
       br: []
     }
   })
