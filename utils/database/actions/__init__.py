@@ -3,12 +3,4 @@ from .archive_corrupted import archive_corrupted
 from .archive_spam import archive_spam
 from .archive_unknown_llms import archive_unknown_llms
 from .llm_analyze import llm_analyze
-from .migrate_comparisons import migrate_comparisons
-from .migrate_llm_messages import migrate_llm_messages
-from .migrate_reactions import migrate_reactions
-from .migrate_reasoning_content import migrate_reasoning_content
-from .migrate_system_messages import migrate_system_messages
-from .migrate_turns import migrate_turns
-from .migrate_user_messages import migrate_user_messages
-from .migrate_votes import migrate_votes
 from .rename_llm import rename_llm
