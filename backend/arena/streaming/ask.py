@@ -21,7 +21,10 @@ from backend.arena.cache import (
     get_cached_response,
     store_cached_response,
 )
-from backend.arena.services import update_comparison_error, update_comparison_llm_id
+from backend.arena.services.comparison import (
+    update_comparison_error,
+    update_comparison_llm_id,
+)
 from backend.arena.streaming.events import AnySSEEvent, AnySSEEventMsg
 from backend.arena.streaming.litellm import litellm_stream_iter
 from backend.config import CustomModelsSelection, SelectionMode, settings

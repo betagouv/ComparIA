@@ -8,15 +8,13 @@ from fastapi.responses import StreamingResponse
 from backend.arena.captcha import generate_challenge
 from backend.arena.models import AddFirstTextBody, AddTextBody
 from backend.arena.reveal import RevealData, get_reveal_data
-from backend.arena.services import (
-    add_comparison_turn,
+from backend.arena.services.comparison import (
     create_comparison,
     read_comparison,
     update_comparison_error,
     update_comparison_llm_id,
-    update_turn,
-    update_turn_vote,
 )
+from backend.arena.services.turn import add_turn, update_turn, update_turn_vote
 from backend.arena.session import (
     ComparisonMetadata,
     increment_custom_selections,
@@ -200,7 +198,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         )
 
         # Add first turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(
+        comparison, turn = await add_turn(
             comparison.id, args.prompt_value, web_search_results
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
@@ -259,7 +257,7 @@ async def add_text(
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
         # Add new turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(metadata.id, args.message)
+        comparison, turn = await add_turn(metadata.id, args.message)
         store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
