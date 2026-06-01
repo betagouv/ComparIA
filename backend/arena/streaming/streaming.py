@@ -16,6 +16,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
+from backend.arena.streaming.conversation import bot_response_async
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
 from backend.llms.data import get_llms_data, pick_replacement_model
@@ -116,7 +117,6 @@ async def stream_llm_response(
     Yields:
         AnySSEEventMsg
     """
-    from backend.arena.conversation import bot_response_async
 
     try:
         # Stream responses from bot_response_async generator

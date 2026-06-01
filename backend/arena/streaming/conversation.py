@@ -18,7 +18,7 @@ from backend.arena.cache import (
     get_cached_response,
     store_cached_response,
 )
-from backend.arena.litellm import litellm_stream_iter
+from backend.arena.streaming.litellm import litellm_stream_iter
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import AnyMessageRead, BotPos, LLMMessageCreate, TurnRead

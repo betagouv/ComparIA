@@ -26,7 +26,7 @@ from backend.arena.session import (
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
-from backend.arena.streaming import (
+from backend.arena.streaming.streaming import (
     create_sse_response,
     format_sse_event,
     stream_comparison_messages,
