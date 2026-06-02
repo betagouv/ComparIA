@@ -131,7 +131,6 @@
     "icon_path": "deepseek-color",
     "models": [
       {
-        "new": true,
         "id": "deepseek-v4-pro",
         "simple_name": "DeepSeek V4 Pro",
         "license": "MIT",
@@ -150,7 +149,6 @@
         "fyi": "L'innovation principale de DeepSeek V4 réside dans deux nouveaux mécanismes d'attention, la Compressed Sparse Attention (CSA) et la Heavily Compressed Attention (HCA), qui réduisent fortement la mémoire nécessaire pour traiter les contextes très longs. Selon l'éditeur, à un million de jetons, ce modèle ne consomme que 27 % des opérations de calcul et 10 % de la mémoire de cache requises par DeepSeek V3.2 pour le même contexte. C'est cette efficacité, plus que la taille brute, qui caractérise ce modèle.\n\nL'entraînement s'est déroulé sur environ 32 billions de jetons, avec un recours au FP4 (un format de précision réduit qui diminue les coûts de calcul). DeepSeek a publié à la fois la version pré-entraînée (Base) et la version post-entraînée (Instruct), un choix rare pour un modèle de cette taille, ainsi qu'un rapport technique de 58 pages largement commenté dans la communauté de recherche.\n\nCe modèle est par ailleurs conçu pour fonctionner sur les puces chinoises Huawei Ascend en plus des cartes graphiques NVIDIA, ce qui marque une étape vers une indépendance vis-à-vis des contrôles à l'export américains. L'éditeur indique que les prix d'API pourraient baisser une fois les supernœuds Ascend 950 déployés à grande échelle.\n\nSelon l'analyse indépendante d'Artificial Analysis, V4 Pro se classe au deuxième rang des modèles de raisonnement à poids ouverts, derrière Kimi K2.6, et au premier rang des modèles ouverts sur le test agentique GDPval-AA. Il reste en retrait des modèles propriétaires les mieux classés (GPT-5.4, Opus 4.7, Gemini 3.1 Pro) sur les domaines généralistes."
       },
       {
-        "new": true,
         "id": "deepseek-v4-flash",
         "simple_name": "DeepSeek V4 Flash",
         "license": "MIT",
@@ -426,7 +424,6 @@
         "params": 398,
         "active_params": 13,
         "reasoning": true,
-        "new": true,
         "url": "https://huggingface.co/arcee-ai/Trinity-Large-Thinking",
         "endpoint": {
           "api_type": "openrouter",
@@ -461,7 +458,6 @@
         "fyi": "La préversion bêta de Grok 4.20 a été rendue disponible à la mi-février 2026, avant sa sortie officielle sur l'API xAI en mars 2026. Le mode multi-agent oriente chaque requête vers quatre agents spécialisés qui raisonnent en parallèle, puis synthétise leurs conclusions en une réponse unique, une approche annoncée comme bénéfique pour les tâches de raisonnement complexes. Le raisonnement est contrôlable via un paramètre d'API plutôt que via un identifiant de modèle distinct.\n\nSelon l'éditeur, Grok 4.20 introduit une architecture d'apprentissage continu qui met à jour hebdomadairement les capacités du modèle à partir de l'usage réel, sans intervention des utilisateurs. Aucun détail architectural précis (nombre de paramètres, architecture dense ou mélange d'experts) n'a été communiqué publiquement par xAI. Le modèle est proposé sous licence payante, accessible via l'API xAI et OpenRouter."
       },
       {
-        "new": true,
         "id": "grok-4.3",
         "simple_name": "Grok 4.3",
         "license": "proprietary",
@@ -715,7 +711,6 @@
         "arch": "dense",
         "params": 31,
         "reasoning": true,
-        "new": true,
         "url": "https://huggingface.co/google/gemma-4-31b-it",
         "endpoint": {
           "api_type": "openrouter",
@@ -734,7 +729,6 @@
         "params": 26,
         "active_params": 4,
         "reasoning": true,
-        "new": true,
         "url": "https://huggingface.co/google/gemma-4-26b-a4b-it",
         "endpoint": {
           "api_type": "openrouter",
@@ -900,6 +894,25 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "id": "qwen3.7-max",
+        "simple_name": "Qwen3.7 Max",
+        "license": "proprietary",
+        "release_date": "05/2026",
+        "arch": "moe",
+        "params": 1000,
+        "active_params": 32,
+        "reasoning": true,
+        "new": true,
+        "url": "https://qwen.ai/blog?id=qwen3.7",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3.7-max"
+        },
+        "desc": "Très grand modèle agentique, optimisé pour la génération de code et l'exécution autonome de tâches sur de longs horizons. Modèle phare propriétaire de la série Qwen3.7, ce qui reste rare au sein de cette série majoritairement ouverte. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE, Mixture of Experts), comme le reste de la série Qwen3.7. Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton, ce qui réduit la puissance de calcul nécessaire. Des indices laissent penser qu'il s'agit d'un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques très puissantes pour fonctionner.\n\nSa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. L'architecture de mélange d'experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.",
+        "fyi": "Développé par l'équipe Qwen d'Alibaba, ce modèle est le fleuron agentique de la série Qwen3.7, présenté comme particulièrement performant en génération de code, en tâches bureautiques et dans l'exécution autonome de tâches sur de longs horizons. Il intègre nativement la prédiction multi-jetons (MTP, Multi-Token Prediction) comme accélérateur d'inférence : le modèle génère en interne des séquences de jetons candidates qui sont vérifiées en une seule passe, ce qui réduit la latence et augmente le débit sans recourir à un modèle brouillon distinct. Il prend également en charge la mise en cache explicite des invites pour réutiliser efficacement un contexte répété.\n\nContrairement à la majorité des modèles Qwen, distribués en accès ouvert, la série Max est propriétaire : la taille du modèle, son architecture détaillée et ses données d'entraînement n'ont pas été communiquées."
+      },
+      {
         "id": "qwen3.6-plus",
         "simple_name": "Qwen 3.6 Plus",
         "license": "proprietary",
@@ -907,7 +920,6 @@
         "arch": "maybe-moe",
         "params": 500,
         "reasoning": true,
-        "new": true,
         "url": "https://chat.qwen.ai/",
         "endpoint": {
           "api_type": "openrouter",
@@ -1196,7 +1208,6 @@
         "params": 1000,
         "active_params": 32,
         "reasoning": true,
-        "new": true,
         "url": "https://huggingface.co/moonshotai/Kimi-K2.6",
         "endpoint": {
           "api_type": "openrouter",
@@ -1311,7 +1322,6 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
         "id": "gpt-5.5",
         "simple_name": "GPT 5.5",
         "license": "proprietary",
@@ -1331,6 +1341,7 @@
       },
       {
         "id": "gpt-5.4",
+        "status": "archived",
         "simple_name": "GPT 5.4",
         "license": "proprietary",
         "release_date": "03/2026",
@@ -1974,7 +1985,6 @@
         "params": 744,
         "active_params": 40,
         "reasoning": true,
-        "new": true,
         "url": "https://huggingface.co/zai-org/GLM-5.1",
         "endpoint": {
           "api_type": "openrouter",
@@ -1986,6 +1996,7 @@
       },
       {
         "id": "glm-5",
+        "status": "archived",
         "simple_name": "GLM 5",
         "license": "MIT",
         "release_date": "02/2026",
@@ -2348,6 +2359,7 @@
       },
       {
         "id": "minimax-m2.5",
+        "status": "archived",
         "simple_name": "MiniMax M2.5",
         "license": "Modified MIT",
         "release_date": "02/2026",
@@ -2446,6 +2458,29 @@
         "desc": "La version moyenne des modèles Odin de la société danoise Ordbogen.com.",
         "size_desc": "La taille des modèles utilisés par le système Odin n'est pas connue. L'architecture est probablement basée sur un « mélange d'experts » (Mixture of Experts, MoE), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects.",
         "fyi": "Il s'agit du premier modèle commercialisé par cette société, qui comprend deux modèles, dont celui-ci est le plus petit."
+      }
+    ]
+  },
+  {
+    "name": "IBM",
+    "icon_path": "ibm",
+    "models": [
+      {
+        "id": "granite-4.1-8b",
+        "simple_name": "Granite 4.1 8B",
+        "license": "Apache 2.0",
+        "release_date": "04/2026",
+        "arch": "dense",
+        "params": 8,
+        "new": true,
+        "url": "https://research.ibm.com/blog/granite-4-1-ai-foundation-models",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "ibm-granite/granite-4.1-8b"
+        },
+        "desc": "Petit modèle multilingue conçu pour les usages d'entreprise, offrant de bonnes capacités en utilisation d'outils externes, en génération augmentée de récupération (RAG, retrieval augmented generation) et en génération de code.",
+        "size_desc": "Avec 8 milliards de paramètres, ce modèle fait partie des petits modèles. Il peut être utilisé localement sur un ordinateur puissant, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d'une seule carte graphique, ce qui limite les coûts d'infrastructure.\n\nSa fenêtre de contexte va jusqu'à 512 000 jetons, ce qui permet de traiter de très longs documents.",
+        "fyi": "Développé par IBM, Granite 4.1 8B fait partie d'une famille qui comprend également des versions de 3 et 30 milliards de paramètres. Contrairement à la génération Granite 4.0, qui reposait sur une architecture hybride combinant des couches Mamba-2 et des couches transformeur, la série 4.1 revient à une architecture dense classique (decoder-only), homogène sur l'ensemble des tailles.\n\nLe modèle a été entraîné sur environ 15 billions de jetons, selon une approche en plusieurs étapes orientant progressivement l'entraînement vers des données techniques, scientifiques et mathématiques de meilleure qualité. Le post-entraînement a combiné un affinage supervisé (SFT, supervised fine-tuning) puis plusieurs phases d'apprentissage par renforcement ciblant des capacités distinctes. Le modèle prend en charge l'utilisation d'outils dans un format compatible avec celui d'OpenAI, la complétion de code par remplissage interne (fill-in-the-middle) et fonctionne dans une douzaine de langues.\n\nSelon l'éditeur, la version 8B égale ou dépasse le modèle Granite 4.0 32B à mélange d'experts (MoE, Mixture of Experts) sur de nombreux tests. Le modèle se distingue par sa fiabilité dans le suivi d'instructions et sa faible tendance aux hallucinations, des qualités utiles pour l'extraction de données structurées en contexte professionnel."
       }
     ]
   }
