@@ -185,7 +185,7 @@ async def process_datasets(
         raise Exception(f"Dataframe is empty, aborting export")
 
     for dataset in datasets:
-        repo_name = repo_prefix + ("_raw" if dataset == "raw" else "")
+        repo_name = repo_prefix + ("-raw" if dataset == "raw" else "")
         logger.info(f"Generating '{repo_name}'…")
         data = df[~df["excluded"]] if dataset == "normal" else df
 
