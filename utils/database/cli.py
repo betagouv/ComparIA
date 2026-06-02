@@ -5,6 +5,7 @@ from cyclopts import App
 from utils.logger import configure_logger
 
 from .actions import (
+    archive_blacklisted_grok,
     archive_corrupted,
     archive_spam,
     archive_unknown_llms,
@@ -25,6 +26,7 @@ cli_archive = App(name="archive", help="Individual archival utilities.")
 cli_archive.command(archive_spam, name="spam")
 cli_archive.command(archive_corrupted, name="corrupted")
 cli_archive.command(archive_unknown_llms, name="unknown_llms")
+cli_archive.command(archive_blacklisted_grok, name="blacklisted_grok")
 
 cli_migrate = App(
     name="migrate", help="Migrate data from old schema to new SQLModel schema."

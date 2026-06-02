@@ -1,5 +1,5 @@
 {
-  "timestamp": 1780415399.659021,
+  "timestamp": 1780420209.311006,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -2150,7 +2150,7 @@
       "reuse": false,
       "simple_name": "Grok 4.20",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://x.ai/news",
       "wh_per_million_token": 137100.43989371642
     },
@@ -2181,7 +2181,7 @@
       "reuse": false,
       "simple_name": "Grok 4.3",
       "specific_portals": null,
-      "status": "enabled",
+      "status": "archived",
       "url": "https://docs.x.ai/developers/models/grok-4.3",
       "wh_per_million_token": 137100.43989371642
     },
