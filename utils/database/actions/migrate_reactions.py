@@ -25,7 +25,7 @@ QUERY = _QUERY_BASE
 QUERY_FILTERED = _QUERY_BASE + "    AND conversation_pair_id = ANY(:ids)"
 
 REACTION_FLAGS = [
-    "liked", "disliked", "useful", "complete", "creative", "clear_formatting",
+    "useful", "complete", "creative", "clear_formatting",
     "incorrect", "superficial", "instructions_not_followed",
 ]
 
