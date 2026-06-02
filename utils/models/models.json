@@ -441,6 +441,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "status": "archived",
         "id": "grok-4.20",
         "simple_name": "Grok 4.20",
         "license": "proprietary",
@@ -458,6 +459,7 @@
         "fyi": "La préversion bêta de Grok 4.20 a été rendue disponible à la mi-février 2026, avant sa sortie officielle sur l'API xAI en mars 2026. Le mode multi-agent oriente chaque requête vers quatre agents spécialisés qui raisonnent en parallèle, puis synthétise leurs conclusions en une réponse unique, une approche annoncée comme bénéfique pour les tâches de raisonnement complexes. Le raisonnement est contrôlable via un paramètre d'API plutôt que via un identifiant de modèle distinct.\n\nSelon l'éditeur, Grok 4.20 introduit une architecture d'apprentissage continu qui met à jour hebdomadairement les capacités du modèle à partir de l'usage réel, sans intervention des utilisateurs. Aucun détail architectural précis (nombre de paramètres, architecture dense ou mélange d'experts) n'a été communiqué publiquement par xAI. Le modèle est proposé sous licence payante, accessible via l'API xAI et OpenRouter."
       },
       {
+        "status": "archived",
         "id": "grok-4.3",
         "simple_name": "Grok 4.3",
         "license": "proprietary",
