@@ -124,6 +124,7 @@ async def build_dataframe() -> pd.DataFrame:
     all_turns: list[dict] = []
     failed_comparison_ids: list[str] = []
 
+    n_comparisons = 0
     async for db_comp in get_db_comparisons_stream():
         try:
             turns = comparison_to_turns(db_comp)
@@ -131,8 +132,11 @@ async def build_dataframe() -> pd.DataFrame:
         except Exception as exc:
             logger.exception(f"Failed to parse Comparison '{db_comp.id}', skipping...")
             failed_comparison_ids.append(str(db_comp.id))
+        n_comparisons += 1
+        if n_comparisons % 10_000 == 0:
+            logger.info(f"Progress: {n_comparisons:,} comparisons processed, {len(all_turns):,} turns accumulated.")
 
-    logger.info("Finished generating dataframe.")
+    logger.info(f"Finished: {n_comparisons:,} comparisons, {len(all_turns):,} turns.")
 
     if failed_comparison_ids:
         logger.error(
