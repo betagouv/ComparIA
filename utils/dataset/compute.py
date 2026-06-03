@@ -136,7 +136,9 @@ async def build_dataframe() -> pd.DataFrame:
         if n_comparisons % 10_000 == 0:
             logger.info(f"Progress: {n_comparisons:,} comparisons processed, {len(all_turns):,} turns accumulated.")
 
-    logger.info(f"Finished: {n_comparisons:,} comparisons, {len(all_turns):,} turns.")
+    logger.info(
+        f"Finished: {n_comparisons:,} comparisons processed, {len(all_turns):,} turns accumulated, {len(failed_comparison_ids):,} skipped (validation error)."
+    )
 
     if failed_comparison_ids:
         logger.error(
