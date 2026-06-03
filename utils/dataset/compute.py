@@ -190,6 +190,17 @@ async def process_datasets(
     if df.empty:
         raise Exception(f"Dataframe is empty, aborting export")
 
+    # Log exclusion breakdown before export
+    n_total = len(df)
+    n_excluded = int(df["excluded"].sum())
+    logger.info(f"Dataset breakdown: {n_total:,} total turns, {n_total - n_excluded:,} included (normal), {n_excluded:,} excluded.")
+
+    extra = pd.DataFrame(df["extra_metadata"].tolist())
+    for field in ("archived", "llm_analyzed", "cohorts"):
+        counts = extra[field].value_counts(dropna=False).to_dict()
+        logger.info(f"  [{field}] {counts}")
+    logger.info(f"  [error] has_error={extra['error'].notna().sum():,}")
+
     for dataset in datasets:
         repo_name = repo_prefix + ("-raw" if dataset == "raw" else "")
         logger.info(f"Generating '{repo_name}'…")
