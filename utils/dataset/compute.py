@@ -196,7 +196,7 @@ async def process_datasets(
         data = df[~df["excluded"]] if dataset == "normal" else df
 
         if dataset == "normal":
-            data = df.drop(columns=["excluded", "extra_metadata"])
+            data = data.drop(columns=["excluded", "extra_metadata"])
 
         repo_path = export_base_path / repo_name
         # Export data to local files
