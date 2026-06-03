@@ -119,7 +119,11 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     return turns
 
 
-async def build_dataframe() -> pd.DataFrame:
+async def build_dataframe(cache_path: Path | None = None) -> pd.DataFrame:
+    if cache_path and cache_path.exists():
+        logger.info(f"Loading dataframe from cache: {cache_path}")
+        return pd.read_pickle(cache_path)
+
     llms = get_raw_llms_data()
     all_turns: list[dict] = []
     failed_comparison_ids: list[str] = []
@@ -145,7 +149,13 @@ async def build_dataframe() -> pd.DataFrame:
             f"{len(failed_comparison_ids)} comparisons could not be properly parsed: \n{"\n".join([f"- '{id_}'" for id_ in failed_comparison_ids])}"
         )
 
-    return pd.DataFrame(all_turns)
+    df = pd.DataFrame(all_turns)
+
+    if cache_path:
+        logger.info(f"Saving dataframe cache to: {cache_path}")
+        df.to_pickle(cache_path)
+
+    return df
 
 
 def get_repo_infos() -> tuple[str, str]:
@@ -167,6 +177,7 @@ async def process_datasets(
     datasets: list[Datasets],
     export_base_path: Path,
     dry_run: bool = False,
+    cache_path: Path | None = None,
 ):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
@@ -184,7 +195,7 @@ async def process_datasets(
     logger.info(f"Folder defined for dataset: {export_base_path}")
     logger.info(f"Generating dataset dataframe…")
 
-    df = await build_dataframe()
+    df = await build_dataframe(cache_path=cache_path)
 
     # Check if data fetching failed
     if df.empty:

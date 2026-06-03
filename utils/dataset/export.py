@@ -3,6 +3,8 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 from huggingface_hub import HfApi
 
 logger = logging.getLogger("comparia.dataset")
@@ -26,7 +28,27 @@ def export_data(
     try:
         # Full dataset exports
         logger.debug(f"  Writing '{dataset_name}.parquet'...")
-        dataframe.to_parquet(f"{export_dir}/{dataset_name}.parquet")
+        parquet_path = f"{export_dir}/{dataset_name}.parquet"
+        chunk_size = 50_000
+
+        # Pass 1: unify schema across all chunks (handles null-typed columns in early chunks)
+        schema = None
+        for i in range(0, len(dataframe), chunk_size):
+            chunk_schema = pa.Table.from_pandas(dataframe.iloc[i : i + chunk_size]).schema
+            schema = pa.unify_schemas([schema, chunk_schema]) if schema else chunk_schema
+
+        # Pass 2: write with the unified schema
+        writer = None
+        try:
+            for i in range(0, len(dataframe), chunk_size):
+                chunk = dataframe.iloc[i : i + chunk_size]
+                table = pa.Table.from_pandas(chunk, schema=schema)
+                if writer is None:
+                    writer = pq.ParquetWriter(parquet_path, schema)
+                writer.write_table(table)
+        finally:
+            if writer:
+                writer.close()
 
         logger.debug(
             f"  Writing '{dataset_name}.jsonl' (this may take several minutes for large datasets)..."
