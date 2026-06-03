@@ -1,13 +1,30 @@
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 from huggingface_hub import HfApi
 
 logger = logging.getLogger("comparia.dataset")
+
+NESTED_COLUMNS = [
+    "response_a",
+    "response_b",
+    "full_conversation_a",
+    "full_conversation_b",
+    "metadata",
+    "extra_metadata",
+]
+
+
+def _serialize_nested(dataframe: pd.DataFrame) -> pd.DataFrame:
+    """Serialize nested columns (lists, dicts) to JSON strings for uniform parquet schema."""
+    df = dataframe.copy()
+    for col in NESTED_COLUMNS:
+        if col in df.columns:
+            df[col] = df[col].apply(lambda v: json.dumps(v, default=str) if v is not None else None)
+    return df
 
 
 def export_data(
@@ -26,52 +43,33 @@ def export_data(
 
     logger.info(f"Exporting data for dataset: '{dataset_name}'")
     try:
+        serialized = _serialize_nested(dataframe)
+
         # Full dataset exports
         logger.debug(f"  Writing '{dataset_name}.parquet'...")
-        parquet_path = f"{export_dir}/{dataset_name}.parquet"
-        chunk_size = 50_000
-
-        # Pass 1: unify schema across all chunks (handles null-typed columns in early chunks)
-        schema = None
-        for i in range(0, len(dataframe), chunk_size):
-            chunk_schema = pa.Table.from_pandas(dataframe.iloc[i : i + chunk_size]).schema
-            schema = pa.unify_schemas([schema, chunk_schema]) if schema else chunk_schema
-
-        # Pass 2: write with the unified schema
-        writer = None
-        try:
-            for i in range(0, len(dataframe), chunk_size):
-                chunk = dataframe.iloc[i : i + chunk_size]
-                table = pa.Table.from_pandas(chunk, schema=schema)
-                if writer is None:
-                    writer = pq.ParquetWriter(parquet_path, schema)
-                writer.write_table(table)
-        finally:
-            if writer:
-                writer.close()
+        serialized.to_parquet(f"{export_dir}/{dataset_name}.parquet", index=False)
 
         logger.debug(
             f"  Writing '{dataset_name}.jsonl' (this may take several minutes for large datasets)..."
         )
-        # Write in chunks to avoid OOM for large datasets
         chunk_size = 10_000
         with open(f"{export_dir}/{dataset_name}.jsonl", "w") as f:
-            for i in range(0, len(dataframe), chunk_size):
-                chunk = dataframe.iloc[i : i + chunk_size]
+            for i in range(0, len(serialized), chunk_size):
+                chunk = serialized.iloc[i : i + chunk_size]
                 chunk_json = chunk.to_json(
                     orient="records", lines=True, date_format="iso"
                 )
                 f.write(chunk_json)
-                if i + chunk_size < len(dataframe):
+                if i + chunk_size < len(serialized):
                     f.write("\n")
                 if (i // chunk_size) % 10 == 0:
                     logger.debug(
-                        f"    Progress: {i+len(chunk):,}/{len(dataframe):,} rows"
+                        f"    Progress: {i+len(chunk):,}/{len(serialized):,} rows"
                     )
 
         # Sample dataset exports (max 1000 rows)
-        logger.debug(f"  Creating sample ({min(len(dataframe), 1000)} rows)...")
-        sample_df = dataframe.sample(n=min(len(dataframe), 1000), random_state=42)
+        logger.debug(f"  Creating sample ({min(len(serialized), 1000)} rows)...")
+        sample_df = serialized.sample(n=min(len(serialized), 1000), random_state=42)
 
         logger.debug(f"  Writing '{dataset_name}_samples.tsv'...")
         sample_df.to_csv(
