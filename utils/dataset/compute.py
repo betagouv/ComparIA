@@ -121,13 +121,13 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
 
 async def build_dataframe() -> pd.DataFrame:
     llms = get_raw_llms_data()
-    dataset = pd.DataFrame()
+    all_turns: list[dict] = []
     failed_comparison_ids: list[str] = []
 
     async for db_comp in get_db_comparisons_stream():
         try:
             turns = comparison_to_turns(db_comp)
-            dataset = pd.concat([dataset, pd.DataFrame(turns)])
+            all_turns.extend(turns)
         except Exception as exc:
             logger.exception(f"Failed to parse Comparison '{db_comp.id}', skipping...")
             failed_comparison_ids.append(str(db_comp.id))
@@ -139,7 +139,7 @@ async def build_dataframe() -> pd.DataFrame:
             f"{len(failed_comparison_ids)} comparisons could not be properly parsed: \n{"\n".join([f"- '{id_}'" for id_ in failed_comparison_ids])}"
         )
 
-    return dataset
+    return pd.DataFrame(all_turns)
 
 
 def get_repo_infos() -> tuple[str, str]:
