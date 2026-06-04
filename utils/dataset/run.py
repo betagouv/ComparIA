@@ -21,7 +21,6 @@ async def main(
     dataset: Literal[Datasets, "all"] = "all",
     dry_run: bool = False,
     count: bool = False,
-    cache_path: Path = Path("/tmp/comparia_dataset_cache.pkl"),
 ):
     """
     Export ComparIA datasets from PostgreSQL to HuggingFace Hub.
@@ -51,7 +50,7 @@ async def main(
         logger.info("[DRY RUN] Skipping HuggingFace authentication")
 
     try:
-        await process_datasets(datasets, export_base_path, dry_run=dry_run, cache_path=cache_path)
+        await process_datasets(datasets, export_base_path, dry_run=dry_run)
 
         logger.info("Finished processing all datasets.")
     except KeyboardInterrupt:
