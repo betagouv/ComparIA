@@ -10,7 +10,7 @@ from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
 from .turn import BotPos, Turn, TurnPublic, TurnRead
-from .utils import AutoDatetime, ModelId, OptionalDatetime
+from .utils import BaseDBModel, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
@@ -49,10 +49,7 @@ class ErrorDetails(BaseModel):
     is_timeout: bool = False
 
 
-class ComparisonBase(SQLModel):
-    id: ModelId
-    created_at: AutoDatetime
-    updated_at: AutoDatetime
+class ComparisonBase(BaseDBModel):
     ip: str  # WARNING: PII
     visitor_id: str | None = None
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
