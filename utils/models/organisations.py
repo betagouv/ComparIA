@@ -38,6 +38,7 @@ descs = {
 
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
+    db_id: str
     name: Annotated[str, Field(description=descs["name"])]
     icon_path: Annotated[str | None, Field(description=descs["icon_path"])] = (
         None  # FIXME required?

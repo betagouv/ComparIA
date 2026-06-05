@@ -54,6 +54,7 @@ class LLMDataRawBase(LLMDataBase):
     Gets enriched with license data and architecture info to become `LLMDataRaw` class.
     """
 
+    db_id: str
     new: Annotated[bool, Field(description=descs["new"])] = False
     status: Annotated[
         Literal["archived", "missing_data", "disabled", "enabled"],

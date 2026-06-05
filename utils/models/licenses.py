@@ -35,6 +35,7 @@ class License(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
+    db_id: str
     license: Annotated[str, Field(description=descs["license"])]
     license_desc: Annotated[
         str, MarkdownSerializer, Field(description=descs["license_desc"])
