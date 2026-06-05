@@ -34,13 +34,18 @@ async def archive_blacklisted_grok(*, commit: bool = False) -> None:
     logger.warning(f"Found {len(ids)} comparisons involving Grok models.")
 
     grok_ids = set(
-        data["llm_id_a"].append(data["llm_id_b"])
+        data["llm_id_a"]
+        .append(data["llm_id_b"])
         .filter(data["llm_id_a"].append(data["llm_id_b"]).str.starts_with("grok-"))
         .unique()
         .to_list()
     )
     for grok_id in sorted(grok_ids):
-        count = len(data.filter((pl.col("llm_id_a") == grok_id) | (pl.col("llm_id_b") == grok_id)))
+        count = len(
+            data.filter(
+                (pl.col("llm_id_a") == grok_id) | (pl.col("llm_id_b") == grok_id)
+            )
+        )
         logger.warning(f"{count:4} comparisons with '{grok_id}'")
 
     await archive(ids, "blacklist_grok", commit=commit)
