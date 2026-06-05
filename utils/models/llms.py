@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from pydantic import (
@@ -91,6 +92,14 @@ class LLMDataRawBase(LLMDataBase):
     desc: Annotated[str, MarkdownSerializer, Field(description=descs["desc"])]
     size_desc: Annotated[str, MarkdownSerializer, Field(description=descs["size_desc"])]
     fyi: Annotated[str, MarkdownSerializer, Field(description=descs["fyi"])]
+
+    # new fields for migration
+    context_tokens: int
+    eu_hostable: bool
+    inputs: list[Literal["text", "image", "audio", "video"]]
+    knowledge_cutoff: datetime
+    price_in: float
+    price_out: float
 
     @field_validator("arch", mode="after")
     @classmethod

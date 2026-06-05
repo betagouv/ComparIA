@@ -26,6 +26,7 @@ EXCLUDED_LLMS_STATUS = {"missing_data"}
 descs = {
     "name": "Organisation's name",
     "icon_path": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`",
+    "origin_country": "2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1",
     "proprietary_license_desc": "Description of the optional organisation's proprietary license",
     "proprietary_reuse": "Whether LLMs can be reused/redistributed according to this proprietary license",
     "proprietary_commercial_use": "Whether commercial use is permitted with this proprietary license",
@@ -41,6 +42,7 @@ class RawOrganisation(BaseModel):
     icon_path: Annotated[str | None, Field(description=descs["icon_path"])] = (
         None  # FIXME required?
     )
+    origin_country: Annotated[str, Field(description=descs["origin_country"])]
     proprietary_license_desc: Annotated[
         str | None, Field(description=descs["proprietary_license_desc"])
     ] = ""
