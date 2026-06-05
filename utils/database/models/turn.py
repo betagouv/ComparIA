@@ -14,7 +14,7 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
-from .utils import AutoDatetime, ModelId, OptionalDatetime
+from .utils import BaseDBModel, OptionalDatetime
 
 if TYPE_CHECKING:
     from .comparison import Comparison
@@ -29,11 +29,8 @@ KeywordAnnotations = Annotated[
 ]
 
 
-class TurnBase(SQLModel):
-    id: ModelId
+class TurnBase(BaseDBModel):
     comparison_id: Annotated[uuid.UUID, Field(foreign_key="comparison.id")]
-    created_at: AutoDatetime
-    updated_at: AutoDatetime
     choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
     # Set when the user submits their choice vote (once per turn). Used to
     # measure how long they took to vote after both models finished.
