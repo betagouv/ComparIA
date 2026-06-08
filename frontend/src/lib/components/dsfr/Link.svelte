@@ -1,11 +1,11 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import type { ButtonProps } from './Button.svelte'
 
   type LinkProps = {
     href: string
-    text: string
     button?: boolean
     hideExternalIcon?: boolean
   } & ButtonProps &
@@ -77,7 +77,7 @@
   ])
 </script>
 
-<a {...externalProps} {...props} {href} class={classes}>
+<a {...externalProps} {...props} href={resolve(href as any)} class={classes}>
   {#if children}{@render children()}{:else}{text}{/if}
 </a>
 
