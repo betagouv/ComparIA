@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     GIT_COMMIT: str | None = None
     SENTRY_DSN: str | None = None
     SENTRY_ENVIRONMENT: str = "dev"
-    SENTRY_SAMPLE_RATE: float = 0.2
+    SENTRY_SAMPLE_RATE: float = 1.0
     LINKUP_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
     ALBERT_KEY: str | None = None
