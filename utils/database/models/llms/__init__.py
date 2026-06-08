@@ -1,4 +1,4 @@
-from .endpoint import LLMEndpoint
-from .lab import LLMLab
-from .license import LLMLicense
-from .llm import LLMData
+from .endpoint import LLMEndpoint, LLMEndpointPublic, LLMEndpointUpsert
+from .lab import LLMLab, LLMLabPublic, LLMLabUpsert
+from .license import LLMLicense, LLMLicensePublic, LLMLicenseUpsert
+from .llm import LLMData, LLMDataPublic, LLMDataUpsert
