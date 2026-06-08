@@ -32,5 +32,9 @@ class LLMLicense(LLMLicenseBase, table=True):
     __tablename__ = "llm_license"
 
 
+class LLMLicenseUpsert(LLMLicenseBase):
+    pass
+
+
 class LLMLicensePublic(LLMLicenseBase):
     pass

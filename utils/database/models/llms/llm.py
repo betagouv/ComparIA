@@ -125,6 +125,11 @@ class LLMData(LLMDataBase, table=True):
     )
 
 
+class LLMDataUpsert(LLMDataBase):
+    # FIXME add validator disabled = not endpoint or not api model id
+    pass
+
+
 class LLMDataPublic(LLMDataBase):
     # add license + lab?
     pass
