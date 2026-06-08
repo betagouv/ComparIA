@@ -178,7 +178,7 @@ class DatasetComparison(SQLModel):
     def excluded(self) -> bool:
         if any(
             [
-                not self.extra_metadata_.cohorts,
+                bool(self.extra_metadata_.cohorts),
                 self.extra_metadata_.archived is not False,
                 self.extra_metadata_.error is not None,
                 self.extra_metadata_.llm_analyzed is not True,
