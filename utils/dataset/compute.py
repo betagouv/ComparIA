@@ -374,10 +374,73 @@ def get_repo_infos() -> tuple[str, str]:
         )
 
 
+def _write_normal_from_raw_parquet(
+    raw_parquet_path: Path,
+    repo_name: str,
+    export_dir: Path,
+) -> int:
+    """
+    Regenerate the normal dataset from the raw parquet without hitting the DB.
+    Stays in Arrow throughout (filter + drop + write) to avoid OOM from
+    converting large nested columns to Python objects.
+    Sample files are written from the first 1000 filtered rows (not random,
+    but fast and memory-bounded).
+    """
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    import pyarrow.parquet as pq
+
+    DROP_COLS = ["excluded", "extra_metadata"]
+    SAMPLE_SIZE = 1000
+
+    export_dir.mkdir(exist_ok=True)
+    parquet_path = export_dir / f"{repo_name}.parquet"
+
+    reader = pq.ParquetFile(raw_parquet_path)
+    writer: pq.ParquetWriter | None = None
+    sample_batches: list[pa.Table] = []
+    n_rows = 0
+
+    for batch in reader.iter_batches(batch_size=10_000):
+        table = pa.Table.from_batches([batch])
+        table = table.filter(pc.equal(table.column("excluded"), False))
+        table = table.drop(DROP_COLS)
+
+        if len(table) == 0:
+            continue
+
+        if writer is None:
+            writer = pq.ParquetWriter(parquet_path, table.schema)
+        writer.write_table(table)
+
+        if n_rows < SAMPLE_SIZE:
+            needed = SAMPLE_SIZE - n_rows
+            sample_batches.append(table.slice(0, min(needed, len(table))))
+
+        n_rows += len(table)
+        logger.debug(f"Cache: {n_rows:,} rows written to normal parquet")
+
+    if writer:
+        writer.close()
+
+    if sample_batches:
+        import pandas as pd
+        sample_df = pa.concat_tables(sample_batches).to_pandas()
+        sample_df.to_csv(export_dir / f"{repo_name}_samples.tsv", sep="\t", index=False)
+        sample_df.to_json(
+            export_dir / f"{repo_name}_samples.jsonl",
+            orient="records", lines=True, date_format="iso",
+        )
+
+    logger.info(f"Cache mode: {n_rows:,} rows written ({len(sample_df) if sample_batches else 0:,} sampled).")
+    return n_rows
+
+
 async def process_datasets(
     datasets: list[Datasets],
     export_base_path: Path,
     dry_run: bool = False,
+    use_cache: bool = False,
 ):
     """
     Process a single dataset: fetch from DB, transform (anonymize, add metadata),
@@ -387,21 +450,37 @@ async def process_datasets(
         dataset_names: Names of the datasets to process
         export_base_path: Local directory for export
         dry_run: If True, skip HuggingFace upload
+        use_cache: If True and raw parquet exists, regenerate normal from it (skips DB)
     """
     logger.info(f"Starting processing datasets…")
 
     repo_org, repo_prefix = get_repo_infos()
+    raw_parquet_path = (
+        export_base_path / (repo_prefix + "-raw") / (repo_prefix + "-raw.parquet")
+    )
 
     logger.info(f"Folder defined for dataset: {export_base_path}")
-    logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
 
-    exporters = _build_exporters(datasets, repo_prefix, export_base_path)
-    await stream_to_exporters(exporters)
-
-    for dataset, exporter in exporters.items():
-        repo_name = exporter.dataset_name
-        repo_path = export_base_path / repo_name
+    if use_cache and "normal" in datasets and raw_parquet_path.exists():
+        logger.info(f"Cache mode: reading from {raw_parquet_path}")
+        normal_repo_name = repo_prefix
+        normal_export_dir = export_base_path / normal_repo_name
+        _write_normal_from_raw_parquet(raw_parquet_path, normal_repo_name, normal_export_dir)
         if dry_run:
-            logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{repo_name}'")
+            logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{normal_repo_name}'")
         else:
-            commit_and_push(repo_org, repo_name, repo_path)
+            commit_and_push(repo_org, normal_repo_name, normal_export_dir)
+    else:
+        if use_cache:
+            logger.warning(f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export")
+        logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
+        exporters = _build_exporters(datasets, repo_prefix, export_base_path)
+        await stream_to_exporters(exporters)
+
+        for dataset, exporter in exporters.items():
+            repo_name = exporter.dataset_name
+            repo_path = export_base_path / repo_name
+            if dry_run:
+                logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{repo_name}'")
+            else:
+                commit_and_push(repo_org, repo_name, repo_path)
