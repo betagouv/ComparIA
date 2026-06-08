@@ -69,8 +69,7 @@ body {
   flex-direction: column;
   margin: 0 !important;
 }
-#app,
-main {
+#app {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
