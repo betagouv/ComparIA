@@ -25,5 +25,9 @@ class LLMLab(LLMLabBase, table=True):
     __tablename__ = "llm_lab"
 
 
+class LLMLabUpsert(LLMLabBase):
+    pass
+
+
 class LLMLabPublic(LLMLabBase):
     pass

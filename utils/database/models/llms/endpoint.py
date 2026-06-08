@@ -37,5 +37,9 @@ class LLMEndpoint(LLMEndpointPrivate, table=True):
     __tablename__ = "llm_endpoint"
 
 
+class LLMEndpointUpsert(LLMEndpointPrivate):
+    pass
+
+
 class LLMEndpointPublic(LLMEndpointBase):
     pass
