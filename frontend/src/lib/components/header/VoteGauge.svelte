@@ -11,13 +11,13 @@
   const votesData = getVotesContext()
   const votes = $derived({
     count: NumberFormater.format(votesData.count),
-    objective: NumberFormater.format(votesData.objective),
+    objective: NumberFormater.format(votesData.objective / 1000),
     ratio: (100 * (votesData.count / votesData.objective)).toFixed() + '%'
   })
 </script>
 
 {#if votes}
-  <div class="gap-3 text-xs lg:gap-1 flex w-full items-center justify-center">
+  <div class="gap-3 text-xs lg:gap-1 flex w-full items-center">
     <div
       class="linear-gauge rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
       style:--gauge-ratio={votes?.ratio}
@@ -28,7 +28,7 @@
         </span>
       </div>
     </div>
-    <span class="objective font-medium">
+    <div class="objective font-medium whitespace-pre">
       {m['header.votes.objective']({ count: votes.objective })}&nbsp;<Tooltip
         {id}
         size="xs"
@@ -36,7 +36,7 @@
       >
         {@html sanitize(m['header.votes.tooltip']())}
       </Tooltip>
-    </span>
+    </div>
   </div>
 {/if}
 
