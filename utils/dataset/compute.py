@@ -208,7 +208,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     extra_meta = DatasetComparisonExtraMetadata.model_validate(comp).model_dump()
 
     excluded = bool(
-        not extra_meta["cohorts"]
+        extra_meta["cohorts"]
         or extra_meta["archived"] is not False
         or extra_meta["error"] is not None
         or extra_meta["llm_analyzed"] is not True
