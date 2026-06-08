@@ -16,7 +16,9 @@
         },
         "discover": "Découvrir",
         "downloadData": "Télécharger les données",
+        "expandMenu": "Étendre le menu",
         "home": "Page d'accueil",
+        "reduceMenu": "Réduire le menu",
         "returnArena": "Revenir à l’arène",
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
@@ -1453,7 +1455,7 @@
         "votes": {
             "count": "{count} votes",
             "legend": "Légende",
-            "objective": "Obj : {count}",
+            "objective": "Obj : {count}k",
             "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
         }
     },
@@ -2241,6 +2243,7 @@
             "product": "À propos",
             "ranking": "Classement",
             "rgesn": "Déclaration d’écoconception",
+            "settings": "Paramètres",
             "share": "Mon bilan"
         }
     },
