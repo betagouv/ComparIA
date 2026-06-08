@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -40,9 +41,18 @@ def read_json(path: Path) -> Any:
     return data
 
 
+def _json_default(o):
+    if isinstance(o, date):  # also matches datetime
+        return o.isoformat()
+    raise TypeError(f"Object of type {o.__class__.__name__} is not JSON serializable")
+
+
 def write_json(path: Path, data, indent: int = 2) -> None:
     logger.debug(f"Saving '{path.relative_to(ROOT_DIR)}'...")
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=indent) + "\n")
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=indent, default=_json_default)
+        + "\n"
+    )
     logger.info(f"Successfully saved '{path.relative_to(ROOT_DIR)}'!")
 
 

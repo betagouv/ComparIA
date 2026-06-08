@@ -95,12 +95,16 @@ class LLMDataRawBase(LLMDataBase):
     fyi: Annotated[str, MarkdownSerializer, Field(description=descs["fyi"])]
 
     # new fields for migration
+    # context_tokens and knowledge_cutoff are Optional: some providers do not
+    # publish a context window or a knowledge cutoff, so `None` records that the
+    # value is unknown rather than guessing one.
+    public_weights: bool
     public_training_data: bool
     public_training_code: bool
-    context_tokens: int
+    context_tokens: int | None = None
     eu_hostable: bool
     inputs: list[Literal["text", "image", "audio", "video"]]
-    knowledge_cutoff: datetime
+    knowledge_cutoff: datetime | None = None
     price_in: float
     price_out: float
 
