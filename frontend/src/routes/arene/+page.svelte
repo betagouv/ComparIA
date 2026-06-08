@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Link } from '$components/dsfr'
-  import Header from '$components/header/Header.svelte'
+  import { NavBar } from '$components/header'
   import SeoHead from '$components/SEOHead.svelte'
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
   import { getComparison, initComparisonsContext } from '$lib/chatService.svelte'
@@ -30,58 +30,55 @@
 
 <TOSModal />
 
-<Header
-  hideNavigation
-  hideDiscussBtn
-  hideVoteGauge={showInitialPrompt}
-  hideLanguageSelector={!showInitialPrompt}
-  showHelpLink={showInitialPrompt}
-  small
-/>
+<div class="lg:flex min-h-screen">
+  <NavBar />
 
-{#if comparator.status === 'revealed'}
-  <div
-    bind:this={secondHeader}
-    id="second-header"
-    class="fr-container--fluid bg-light-grey top-0 py-3 md:py-4 sticky z-3 drop-shadow-[--raised-shadow]"
-  >
-    <div class="fr-container gap-3 md:flex-row flex flex-col items-center">
-      <div class="gap-3 md:flex-row flex basis-2/3 flex-col items-center">
-        <div
-          class="bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-[18px] text-nowrap"
-        >
-          {m['header.chatbot.reveal.title']()}
-        </div>
-        <div class="md:text-left flex flex-col text-center">
-          <strong class="text-dark-grey">
-            {m['header.chatbot.reveal.subtitle']()}
-          </strong>
-          <p class="mt-2! mb-0! text-sm! leading-normal! text-grey md:mt-0!">
-            {m['header.chatbot.reveal.description']()}
-          </p>
+  <main class="lg:max-h-screen w-full overflow-y-auto">
+    {#if comparator.status === 'revealed'}
+      <div
+        bind:this={secondHeader}
+        id="second-header"
+        class="fr-container--fluid bg-light-grey top-0 py-3 md:py-4 sticky z-3 drop-shadow-[--raised-shadow]"
+      >
+        <div class="fr-container gap-3 md:flex-row flex flex-col items-center">
+          <div class="gap-3 md:flex-row flex basis-2/3 flex-col items-center">
+            <div
+              class="bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-[18px] text-nowrap"
+            >
+              {m['header.chatbot.reveal.title']()}
+            </div>
+            <div class="md:text-left flex flex-col text-center">
+              <strong class="text-dark-grey">
+                {m['header.chatbot.reveal.subtitle']()}
+              </strong>
+              <p class="mt-2! mb-0! text-sm! leading-normal! text-grey md:mt-0!">
+                {m['header.chatbot.reveal.description']()}
+              </p>
+            </div>
+          </div>
+          <div class="md:block hidden w-full basis-1/3 items-center text-right">
+            <Link
+              button
+              icon="edit-line"
+              href="../arene/?cgu_acceptees"
+              text={m['header.chatbot.newDiscussion']()}
+              class="md:w-auto! w-full!"
+            />
+          </div>
         </div>
       </div>
-      <div class="md:block hidden w-full basis-1/3 items-center text-right">
-        <Link
-          button
-          icon="edit-line"
-          href="../arene/?cgu_acceptees"
-          text={m['header.chatbot.newDiscussion']()}
-          class="md:w-auto! w-full!"
+    {/if}
+
+    <div class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
+      {#if showInitialPrompt}
+        <ViewPrompt
+          loading={comparator.loading}
+          promptError={comparator.promptError}
+          onPrompt={comparator.askFirst}
         />
-      </div>
+      {:else}
+        <ViewChat comparisonId={comparator.comparisonId!} />
+      {/if}
     </div>
-  </div>
-{/if}
-
-<main class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
-  {#if showInitialPrompt}
-    <ViewPrompt
-      loading={comparator.loading}
-      promptError={comparator.promptError}
-      onPrompt={comparator.askFirst}
-    />
-  {:else}
-    <ViewChat comparisonId={comparator.comparisonId!} />
-  {/if}
-</main>
+  </main>
+</div>
