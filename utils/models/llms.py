@@ -95,6 +95,8 @@ class LLMDataRawBase(LLMDataBase):
     fyi: Annotated[str, MarkdownSerializer, Field(description=descs["fyi"])]
 
     # new fields for migration
+    public_training_data: bool
+    public_training_code: bool
     context_tokens: int
     eu_hostable: bool
     inputs: list[Literal["text", "image", "audio", "video"]]

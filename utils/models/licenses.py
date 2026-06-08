@@ -43,8 +43,6 @@ class License(BaseModel):
     distribution: Annotated[Distribution, Field(description=descs["distribution"])]
     reuse: Annotated[bool, Field(description=descs["reuse"])]
     public_weights: bool
-    public_training_data: bool
-    public_training_code: bool
     commercial_use: Annotated[
         bool | None, Field(description=descs["commercial_use"])
     ] = None
