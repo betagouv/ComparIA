@@ -74,6 +74,57 @@ interface Tokenizer {
   renderer: (token: any) => string
 }
 
+function createBlockMathTokenizer(): Tokenizer {
+  return {
+    name: 'blockMath',
+    level: 'block',
+    start(src) {
+      const i1 = src.indexOf('$$')
+      const i2 = src.indexOf('\\[')
+      if (i1 === -1 && i2 === -1) return undefined
+      if (i1 === -1) return i2
+      if (i2 === -1) return i1
+      return Math.min(i1, i2)
+    },
+    tokenizer(src) {
+      let match = /^\$\$([\s\S]+?)\$\$/.exec(src)
+      if (match) return { type: 'blockMath', raw: match[0], text: match[1].trim() }
+      match = /^\\\[([\s\S]+?)\\\]/.exec(src)
+      if (match) return { type: 'blockMath', raw: match[0], text: match[1].trim() }
+      return undefined
+    },
+    renderer(token) {
+      return `<div class="math-block">${escape(token.text, true)}</div>\n`
+    }
+  }
+}
+
+function createInlineMathTokenizer(): Tokenizer {
+  return {
+    name: 'inlineMath',
+    level: 'inline',
+    start(src) {
+      const i1 = src.indexOf('$')
+      const i2 = src.indexOf('\\(')
+      if (i1 === -1 && i2 === -1) return undefined
+      if (i1 === -1) return i2
+      if (i2 === -1) return i1
+      return Math.min(i1, i2)
+    },
+    tokenizer(src) {
+      if (src.startsWith('$$')) return undefined
+      let match = /^\$([^$\n\s][^$\n]*?[^$\n\s]|[^$\n\s])\$/.exec(src)
+      if (match) return { type: 'inlineMath', raw: match[0], text: match[1] }
+      match = /^\\\(([\s\S]+?)\\\)/.exec(src)
+      if (match) return { type: 'inlineMath', raw: match[0], text: match[1] }
+      return undefined
+    },
+    renderer(token) {
+      return `<span class="math-inline">${escape(token.text, true)}</span>`
+    }
+  }
+}
+
 function createMermaidTokenizer(): Tokenizer {
   return {
     name: 'mermaid',
@@ -179,7 +230,7 @@ export function create_marked({
   }
 
   marked.use({
-    extensions: [createMermaidTokenizer()]
+    extensions: [createBlockMathTokenizer(), createInlineMathTokenizer(), createMermaidTokenizer()]
   })
 
   return marked
