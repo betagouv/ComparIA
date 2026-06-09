@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Tabs, Toggle, Tooltip } from '$components/dsfr'
-  import SeoHead from '$components/SEOHead.svelte'
+  import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
   import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
   import { styleControl } from '$lib/styleControl.svelte'
@@ -124,11 +124,11 @@
   // }
 </script>
 
-<SeoHead title={m['seo.titles.ranking']()} />
-
-<div class="px-4 md:px-6 pt-12 pb-30">
-  <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
-
+<PageLayout
+  seoTitle={m['seo.titles.ranking']()}
+  title={m['ranking.title']()}
+  bubble={m['seo.titles.ranking']()}
+>
   {#if lastUpdateDate}
     <div class="relative">
       <Tabs {tabs} noBorders kind="nav">
@@ -171,4 +171,4 @@
   {:else}
     <p>{m['ranking.no_data']()}</p>
   {/if}
-</div>
+</PageLayout>
