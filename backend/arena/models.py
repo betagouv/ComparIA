@@ -26,6 +26,7 @@ class AddFirstTextBody(BaseModel):
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
     altcha_token: str
+    web_search: bool = False
 
     @field_validator("prompt_value")
     @classmethod

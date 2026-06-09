@@ -136,7 +136,12 @@ class DatasetTurn(SQLModel):
     # HELPERS
 
     def parse_response(self, side: BotPos) -> list[dict]:
-        msgs = [self.user_msg.model_dump(include={"role", "content"})]
+        msgs = [
+            self.user_msg.model_dump(
+                include={"role", "content", "user_content"},
+                context={"merge_web_search": True},
+            )
+        ]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
             msgs.append(
                 llm_msg.model_dump(include={"role", "content", "reasoning_content"})

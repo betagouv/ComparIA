@@ -39,7 +39,7 @@
   <div class="mb-5 md:flex" bind:this={userBlockElem}>
     {@render children?.()}
 
-    <MessageUser message={turn.user_msg} />
+    <MessageUser id={`user-${turn.id}`} message={turn.user_msg} />
   </div>
   {#if turn.status === 'pending'}
     <Pending message={m['chatbot.loading']()} class="m-auto" />

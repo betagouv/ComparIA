@@ -47,7 +47,13 @@
             "generateAnother": "Generér en ny prompt",
             "title": "Foreslåede prompts"
         },
-        "title": "Hvordan kan jeg hjælpe dig i dag?"
+        "title": "Hvordan kan jeg hjælpe dig i dag?",
+        "webSearch": {
+            "label": "Websøgning",
+            "enabled": "Websøgning aktiveret",
+            "disabled": "Websøgning deaktiveret",
+            "tooltip": "Aktivér websøgning for at lade modellerne bruge onlinekilder og citere mere opdateret information.<br><strong>Uden websøgning</strong> svarer modellerne baseret på det, de lærte under træning (deres træningsdata). De kan ikke verificere information online, så meget nye eller meget specifikke fakta kan være ufuldstændige."
+        }
     },
     "chatbot": {
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
@@ -69,7 +75,10 @@
             "finished": "Tænkning afsluttet",
             "inProgress": "Tænker…"
         },
-        "revealButton": "Afslør modellerne"
+        "revealButton": "Afslør modellerne",
+        "webSearch": {
+            "label": "Tilknyttede websøgeresultater."
+        }
     },
     "closeModal": "Luk pop op-vinduet",
     "components": {

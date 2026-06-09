@@ -47,7 +47,13 @@
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
-        "title": "Comment puis-je vous aider aujourd'hui ?"
+        "title": "Comment puis-je vous aider aujourd'hui ?",
+        "webSearch": {
+            "disabled": "Recherche web désactivée",
+            "enabled": "Recherche web activée",
+            "label": "Recherche web",
+            "tooltip": "Activez la recherche sur le Web pour permettre aux modèles d'utiliser des sources en ligne et de citer des informations plus récentes.<br><strong>Sans la recherche sur le Web</strong>, les modèles répondent en se basant sur ce qu'ils ont appris pendant leur formation (leurs données d'entraînement). Ils ne peuvent pas vérifier les informations en ligne ; par conséquent, les faits très récents ou très spécifiques peuvent être incomplets."
+        }
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter…",
@@ -69,7 +75,10 @@
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
-        "revealButton": "Terminer la discussion et découvrir les deux modèles"
+        "revealButton": "Terminer la discussion et découvrir les deux modèles",
+        "webSearch": {
+            "label": "Résultats de recherche Web associés."
+        }
     },
     "closeModal": "Fermer la fenêtre modale",
     "components": {

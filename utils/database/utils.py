@@ -159,7 +159,10 @@ def parse_full_conversation(
 
     for turn in comparison.turns:
         raw_user_msg = cast(
-            RawUserMessage, turn.user_msg.model_dump(include={"role", "content"})
+            RawUserMessage,
+            turn.user_msg.model_dump(
+                include={"role", "content"}, context={"merge_web_search": True}
+            ),
         )
         conversation.append(raw_user_msg)
 

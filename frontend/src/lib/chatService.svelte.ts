@@ -14,6 +14,7 @@ export interface APIModeAndPromptData {
   prompt_value: string
   mode: Mode
   custom_models_selection: string[]
+  web_search: boolean
 }
 
 export type ModeInfos = {
@@ -28,9 +29,20 @@ export type ModeInfos = {
 // COMPARISON
 
 export type Bot = 'a' | 'b'
+
+export interface WebSearchResults {
+  type: 'text'
+  name: string
+  url: string
+  content: string
+  favicon: string
+}
+
 export interface UserMessage {
   role: 'user'
   content: string
+  user_content: string
+  web_search_results: WebSearchResults[] | null
 }
 export interface AssistantMessage {
   role: 'assistant'
@@ -357,6 +369,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         prompt_value: args.prompt_value,
         mode: args.mode,
         custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
+        web_search: args.web_search,
         cohorts,
         altcha_token: consumeAltchaToken()
       })

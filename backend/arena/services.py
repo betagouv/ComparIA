@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
+from linkup import LinkupSearchTextResult
 
 from backend.llms.data import get_llms_data
 from utils.database.models import (
@@ -121,12 +122,22 @@ async def update_comparison_error(
 
 
 async def add_comparison_turn(
-    comparison_id: uuid.UUID, prompt: str
+    comparison_id: uuid.UUID,
+    prompt: str,
+    web_search_results: list[LinkupSearchTextResult] | None = None,
 ) -> tuple[ComparisonRead, TurnRead]:
     async with get_session() as session:
         db_turn = Turn.model_validate(
             TurnCreate(
-                comparison_id=comparison_id, user_msg=UserMessage(content=prompt)
+                comparison_id=comparison_id,
+                user_msg=UserMessage(
+                    content=prompt,
+                    web_search_results=(
+                        [w.model_dump() for w in web_search_results]
+                        if web_search_results
+                        else None
+                    ),
+                ),
             )
         )
         new_turn_id = db_turn.id

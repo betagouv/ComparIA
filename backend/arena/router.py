@@ -31,6 +31,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
+from backend.arena.web_search import search_web
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
@@ -168,6 +169,12 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
+    web_search_results = None
+    if args.web_search:
+        web_search_results = await search_web(args.prompt_value)
+        if web_search_results:
+            logger.info("Web search returned context", extra={"request": request})
+
     # Initialize comparison and save it to db
     comparison = await create_comparison(
         ComparisonCreate(
@@ -196,7 +203,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         )
 
         # Add first turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(comparison.id, args.prompt_value)
+        comparison, turn = await add_comparison_turn(
+            comparison.id, args.prompt_value, web_search_results
+        )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
