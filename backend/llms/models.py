@@ -186,7 +186,7 @@ class LLMData(LLMDataBase, LLMDataEnhanced):
     See `utils/models/llms.py`.
     """
 
-    model_config = ConfigDict(frozen=True, extra="forbid")
+    model_config = ConfigDict(frozen=True, extra="ignore")
 
     status: Literal["archived", "enabled"]
     friendly_size: FriendlySize
