@@ -101,6 +101,17 @@ def _duration(msg: LLMMessage | None) -> float | None:
     return (msg.updated_at - msg.responded_at).total_seconds() if msg else None
 
 
+def _time_to_vote(
+    voted_at: datetime | None, msg_a: LLMMessage | None, msg_b: LLMMessage | None
+) -> float | None:
+    # Seconds between both models finishing (the later of the two) and the vote.
+    # None when the turn was not voted on, or no answer carries a timestamp.
+    finished = [m.updated_at for m in (msg_a, msg_b) if m]
+    if voted_at is None or not finished:
+        return None
+    return (voted_at - max(finished)).total_seconds()
+
+
 def _total(turns_metadata: list[dict], key: str) -> float | int | None:
     # Sum across turns, but only when every turn has the value.
     values = [meta[key] for meta in turns_metadata]
@@ -181,6 +192,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
                 "duration_b": _duration(msg_b),
                 "latency_a": _latency(msg_a),
                 "latency_b": _latency(msg_b),
+                "time_to_vote": _time_to_vote(turn.voted_at, msg_a, msg_b),
             }
         )
         partial_rows.append(
@@ -226,6 +238,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             "comparison_id": comparison_id,
             "model_a": comp.llm_id_a,
             "model_b": comp.llm_id_b,
+            "timestamp": comp.created_at,
             "full_conversation_a": full_conversation_a,
             "full_conversation_b": full_conversation_b,
             "excluded": excluded,
@@ -257,6 +270,7 @@ def _reference_rows() -> list[dict]:
             "comparison_id": "ref",
             "model_a": "x",
             "model_b": "x",
+            "timestamp": datetime(2024, 1, 1),
             "full_conversation_a": [system, user, assistant],
             "full_conversation_b": [system, user, assistant],
             "excluded": False,
@@ -269,6 +283,7 @@ def _reference_rows() -> list[dict]:
                 "duration_b": 1.0,
                 "latency_a": 1.0,
                 "latency_b": 1.0,
+                "time_to_vote": 1.0,
                 "mode": "random",
                 "custom_models_selection": ["x"],
                 "categories": ["x"],

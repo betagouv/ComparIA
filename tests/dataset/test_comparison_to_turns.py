@@ -111,12 +111,13 @@ def llm_msg(
     )
 
 
-def turn(user, a, b, choice=None):
+def turn(user, a, b, choice=None, voted_at=None):
     t = Turn(created_at=T0)
     t.user_msg = user
     t.llm_msg_a = a
     t.llm_msg_b = b
     t.choice = choice
+    t.voted_at = voted_at
     return t
 
 
@@ -285,6 +286,23 @@ def equivalent_cases():
         archived=False,
         contains_pii=False,
         contains_spam=False,
+    )
+
+    # voted_at set -> time_to_vote = voted_at - max(updated_at_a, updated_at_b).
+    # llm_msg updated_at defaults to 12:00:03; vote at 12:00:10 -> 7.0s.
+    yield "voted turn -> time_to_vote computed", comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a", 100),
+                llm_msg("b", 200),
+                "a_better",
+                voted_at=datetime(2024, 1, 1, 12, 0, 10),
+            )
+        ],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
     )
 
     yield "multi-turn, b missing in one turn -> totals None", comparison(
