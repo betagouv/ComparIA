@@ -5,6 +5,7 @@
   import { tick } from 'svelte'
   import { standardHtmlAndSvgTags } from './html-tags'
   import './prism.css'
+  import 'katex/dist/katex.min.css'
   import { copy, create_marked, sanitize } from './utils'
 
   let {
@@ -102,11 +103,38 @@
           nodes: Array.from(mermaidDivs).map((node) => node as HTMLElement)
         })
       }
+
+      const mathInline = el.querySelectorAll('.math-inline')
+      const mathBlock = el.querySelectorAll('.math-block')
+      if (mathInline.length > 0 || mathBlock.length > 0) {
+        const { default: katex } = await import('katex')
+        mathInline.forEach((node) => {
+          try {
+            node.innerHTML = katex.renderToString(node.textContent ?? '', {
+              throwOnError: false,
+              displayMode: false
+            })
+          } catch {
+            // leave raw LaTeX visible if rendering fails
+          }
+        })
+        mathBlock.forEach((node) => {
+          try {
+            node.innerHTML = katex.renderToString(node.textContent ?? '', {
+              throwOnError: false,
+              displayMode: true
+            })
+          } catch {
+            // leave raw LaTeX visible if rendering fails
+          }
+        })
+      }
     }
   }
 
   $effect(() => {
     if (el && document.body.contains(el)) {
+      void html // re-run when content changes (e.g. during streaming)
       render_html()
     } else {
       console.error('Element is not in the DOM')
