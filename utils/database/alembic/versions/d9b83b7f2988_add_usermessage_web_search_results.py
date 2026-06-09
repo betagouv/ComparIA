@@ -1,7 +1,7 @@
 """add UserMessage 'web_search_results'
 
 Revision ID: d9b83b7f2988
-Revises: 88e025e5dbfa
+Revises: 67e629fed515
 Create Date: 2026-05-26 11:58:52.626059
 
 """
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = 'd9b83b7f2988'
-down_revision: Union[str, Sequence[str], None] = '88e025e5dbfa'
+down_revision: Union[str, Sequence[str], None] = '67e629fed515'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
