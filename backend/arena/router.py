@@ -1,36 +1,28 @@
 import logging
-from typing import Annotated, AsyncGenerator
-from uuid import UUID
+from typing import AsyncGenerator
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
+from backend.arena.dependencies import ComparisonMetadataAnno, RateLimitGuard
 from backend.arena.models import AddFirstTextBody, AddTextBody
 from backend.arena.reveal import RevealData, get_reveal_data
-from backend.arena.services import (
-    add_comparison_turn,
+from backend.arena.services.comparison import (
     create_comparison,
     read_comparison,
     update_comparison_error,
     update_comparison_llm_id,
-    update_turn,
-    update_turn_vote,
 )
+from backend.arena.services.turn import add_turn, update_turn, update_turn_vote
 from backend.arena.session import (
-    ComparisonMetadata,
     increment_custom_selections,
     increment_input_chars,
     is_custom_selection_ratelimited,
-    is_ratelimited,
-    retreive_comparison_metadata,
     store_comparison_metadata,
 )
-from backend.arena.streaming import (
-    create_sse_response,
-    format_sse_event,
-    stream_comparison_messages,
-)
+from backend.arena.streaming.ask import ask_llms
+from backend.arena.streaming.events import create_sse_response, format_sse_event
 from backend.arena.web_search import search_web
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
@@ -51,68 +43,6 @@ router = APIRouter(
 )
 
 
-# Dependencies
-
-
-def assert_not_rate_limited(request: Request) -> None:
-    """Dependency to check rate limiting based on IP address."""
-    ip = get_ip(request)
-
-    if is_ratelimited(ip):
-        logger.error(
-            f"Too much text submitted to pricey models for ip {ip}",
-            extra={"request": request},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
-        )
-
-
-def get_comparison_id(id: UUID = Header(..., alias="X-Comparison-Id")) -> UUID:
-    """
-    Dependency to extract and validate comparison id from headers.
-
-    Args:
-        id: Comparison identifier from X-Comparison-Id header
-
-    Returns:
-        str: Validated comparison id
-
-    Raises:
-        HTTPException: If comparison id is missing or invalid
-    """
-    if not id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing comparison id"
-        )
-    return id
-
-
-def get_comparison_metadata(
-    id: UUID = Depends(get_comparison_id),
-) -> ComparisonMetadata:
-    try:
-        metadata = retreive_comparison_metadata(id)
-    except Exception as e:
-        # FIXME raise different errors depending on problem
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Comparison '{id}' couldn't be found or parsed: {str(e)}",
-        )
-
-    # For any arena view, raise error if chat responses are not yet finished
-    if metadata.is_streaming:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Veuillez attendre la fin de la réponse des modèles.",
-        )
-
-    return metadata
-
-
-ComparisonMetadataAnno = Annotated[ComparisonMetadata, Depends(get_comparison_metadata)]
-
 # FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
 
@@ -122,7 +52,7 @@ async def get_challenge() -> dict:
     return generate_challenge()
 
 
-@router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/add_first_text", dependencies=[RateLimitGuard])
 async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
@@ -203,7 +133,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         )
 
         # Add first turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(
+        comparison, turn = await add_turn(
             comparison.id, args.prompt_value, web_search_results
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
@@ -211,7 +141,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
+        async for chunk in ask_llms(comparison, turn, request):
             yield format_sse_event(chunk)
 
         if not comparison.error:
@@ -227,7 +157,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     return create_sse_response(event_stream(comparison))
 
 
-@router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/add_text", dependencies=[RateLimitGuard])
 async def add_text(
     args: AddTextBody,
     metadata: ComparisonMetadataAnno,
@@ -262,13 +192,13 @@ async def add_text(
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
         # Add new turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(metadata.id, args.message)
+        comparison, turn = await add_turn(metadata.id, args.message)
         store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
+        async for chunk in ask_llms(comparison, turn, request):
             yield format_sse_event(chunk)
 
         if not comparison.error:
@@ -285,7 +215,7 @@ async def add_text(
     return create_sse_response(event_stream())
 
 
-@router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/retry", dependencies=[RateLimitGuard])
 async def retry(
     metadata: ComparisonMetadataAnno,
     request: Request,
@@ -349,7 +279,7 @@ async def retry(
         )
 
         # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
+        async for chunk in ask_llms(comparison, turn, request):
             yield format_sse_event(chunk)
 
         if not comparison.error:
