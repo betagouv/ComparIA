@@ -27,7 +27,7 @@
             index: '3',
             noDate: true,
             title: m[`product.history.steps.i18n.items.3.title`]({
-              linkProps: propsToAttrs({ href: '/ranking' })
+              linkProps: propsToAttrs({ href: '/arene/ranking' })
             }),
             desc: m[`product.history.steps.i18n.items.3.desc`]({
               linkProps: externalLinkProps('https://www.peren.gouv.fr/')

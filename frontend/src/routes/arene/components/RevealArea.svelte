@@ -119,7 +119,7 @@
           <Link
             button
             size="lg"
-            href="/ranking"
+            href="/arene/ranking"
             icon="trophy-line"
             text={m['reveal.thanks.cta']()}
             class="sm:w-auto! w-full!"
