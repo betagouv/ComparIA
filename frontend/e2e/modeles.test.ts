@@ -4,7 +4,7 @@ test.describe('Models page', () => {
   test('opens model modal from URL hash', async ({ page }) => {
     // Navigate directly to a model page with hash
     // Using a known model ID from the production API
-    await page.goto('/modeles#gemini-2.5-flash')
+    await page.goto('/arene/modeles#gemini-2.5-flash')
     await page.waitForLoadState('networkidle')
 
     // Wait for DSFR to initialize and open the modal
@@ -19,7 +19,7 @@ test.describe('Models page', () => {
   })
 
   test('does not open modal when hash does not match any model', async ({ page }) => {
-    await page.goto('/modeles#invalid-model-id')
+    await page.goto('/arene/modeles#invalid-model-id')
 
     await page.waitForLoadState('networkidle')
 
@@ -29,7 +29,7 @@ test.describe('Models page', () => {
   })
 
   test('page loads normally without hash', async ({ page }) => {
-    await page.goto('/modeles')
+    await page.goto('/arene/modeles')
 
     await page.waitForLoadState('networkidle')
 
