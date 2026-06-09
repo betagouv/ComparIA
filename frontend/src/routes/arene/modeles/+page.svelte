@@ -10,7 +10,7 @@
   } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import SeoHead from '$components/SEOHead.svelte'
+  import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
   import type { License, Organisation, Sizes } from '$lib/models'
   import { getModelsContext, SIZES } from '$lib/models'
@@ -108,15 +108,18 @@
   const selectedModelData = $derived(models.find((m) => m.id === selectedModel))
 </script>
 
-<SeoHead title={m['seo.titles.modeles']()} />
-
-<div class="px-4 md:px-6 pb-10 md:flex md:flex-row md:py-10">
+<PageLayout
+  seoTitle={m['seo.titles.modeles']()}
+  title={m['models.list.title']()}
+  subtitle={m['models.list.intro']()}
+  class="md:flex py-0!"
+>
   <aside
     class="fr-sidemenu mb-5 md:mb-0 md:basis-1/3"
     role="navigation"
     aria-labelledby="sidemenu-title"
   >
-    <div class="fr-sidemenu__inner h-full">
+    <div class="fr-sidemenu__inner md:pt-5! h-full">
       <button
         id="results-count"
         aria-expanded="false"
@@ -132,7 +135,7 @@
         {/if}
       </button>
       <div class="fr-collapse" id="fr-modal-filters-section">
-        <p class="fr-h5 -mt-4! mb-5! md:block hidden">
+        <p class="fr-h5 mb-5! md:block hidden">
           {filteredModels.length}
           {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
         </p>
@@ -221,10 +224,7 @@
     </div>
   </aside>
 
-  <div class="basis-full">
-    <!-- <h2 class="fr-h2">{m['models.list.title']()}</h2>
-      <p class="fr-text--lead">{m['models.list.intro']()}</p> -->
-
+  <div class="md:pt-9! pb-6 basis-full">
     <p class="fr-h6 mb-4! md:hidden">
       {filteredModels.length}
       {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
@@ -265,7 +265,7 @@
       <p class="fr-text--lead fr-mt-4w">{m['models.list.noresults']()}</p>
     {/if}
   </div>
-</div>
+</PageLayout>
 
 <ModelInfoModal
   model={selectedModelData}
