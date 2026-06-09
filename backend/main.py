@@ -16,8 +16,9 @@ configure_uvicorn_logging()
 # Log séparateur au démarrage pour marquer les redémarrages
 logger.info("=" * 80)
 
+logger.info("[startup] init_sentry")
 init_sentry()
-
+logger.info("[startup] init_sentry done")
 
 origins = [
     "http://localhost",
@@ -40,11 +41,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+logger.info("[startup] Instrumentator")
 # Prometheus metrics instrumentation
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+logger.info("[startup] Instrumentator done")
 
+logger.info("[startup] include_router models")
 app.include_router(models_router)
+logger.info("[startup] include_router arena")
 app.include_router(arena_router)
+logger.info("[startup] routers done")
 
 
 @app.get("/counter")
