@@ -110,7 +110,7 @@
 
 <SeoHead title={m['seo.titles.modeles']()} />
 
-<div class="px-6 pb-10 md:flex md:flex-row md:py-10">
+<div class="px-4 md:px-6 pb-10 md:flex md:flex-row md:py-10">
   <aside
     class="fr-sidemenu mb-5 md:mb-0 md:basis-1/3"
     role="navigation"
