@@ -105,11 +105,12 @@ def _time_to_vote(
     voted_at: datetime | None, msg_a: LLMMessage | None, msg_b: LLMMessage | None
 ) -> float | None:
     # Seconds between both models finishing (the later of the two) and the vote.
-    # None when the turn was not voted on, or no answer carries a timestamp.
-    finished = [m.updated_at for m in (msg_a, msg_b) if m]
-    if voted_at is None or not finished:
+    # Requires both answers: a one-sided turn has no "both finished" moment, so
+    # we return None rather than a misleading value (legacy/corrupt rows can have
+    # voted_at set with a side missing, even though the live route forbids it).
+    if voted_at is None or msg_a is None or msg_b is None:
         return None
-    return (voted_at - max(finished)).total_seconds()
+    return (voted_at - max(msg_a.updated_at, msg_b.updated_at)).total_seconds()
 
 
 def _total(turns_metadata: list[dict], key: str) -> float | int | None:

@@ -105,7 +105,6 @@ class DatasetTurn(SQLModel):
         msg_b = info.data.get("llm_msg_b")
 
         voted_at = info.data.get("voted_at")
-        finished = [m.updated_at for m in (msg_a, msg_b) if m]
 
         return {
             "tokens_a": msg_a.tokens if msg_a else None,
@@ -141,8 +140,8 @@ class DatasetTurn(SQLModel):
                 else None
             ),
             "time_to_vote": (
-                (voted_at - max(finished)).total_seconds()
-                if (voted_at and finished)
+                (voted_at - max(msg_a.updated_at, msg_b.updated_at)).total_seconds()
+                if (voted_at and msg_a and msg_b)
                 else None
             ),
         }
