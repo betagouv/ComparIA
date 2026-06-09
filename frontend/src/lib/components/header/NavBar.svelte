@@ -8,7 +8,7 @@
 
   const navLinks = [
     { href: '/arene', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
-    { href: '/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
+    { href: '/arene/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
     { href: '/arene/modeles', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' }
     // { href: '/dataviz', label: 'FIXME' },
   ] as const
