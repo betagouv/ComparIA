@@ -64,12 +64,12 @@
 
 {#snippet footer()}
   <div class="gap-4 flex flex-col">
-    {@render renderLink({
+    <!-- {@render renderLink({
       href: '/settings',
       label: m['seo.titles.settings'](),
       icon: 'i-ri-settings-4-line',
       class: 'text-sm! text-black!'
-    })}
+    })} -->
 
     <div class={{ hidden: !expanded }}>
       <!-- <LanguageSelector id="translate" />
