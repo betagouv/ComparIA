@@ -126,14 +126,13 @@
 
 <SeoHead title={m['seo.titles.ranking']()} />
 
-<main class="bg-light-grey pt-12 pb-30">
-  <div class="fr-container">
-    <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
+<div class="px-4 md:px-6 pt-12 pb-30">
+  <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
-    {#if lastUpdateDate}
-      <div class="relative">
-        <Tabs {tabs} noBorders kind="nav">
-          {#snippet tab({ id })}
+  {#if lastUpdateDate}
+    <div class="relative">
+      <Tabs {tabs} noBorders kind="nav">
+        {#snippet tab({ id })}
           {#if id === 'ranking'}
             <p class="mb-12! text-dark-grey text-[14px]!">
               {@html sanitize(
@@ -148,31 +147,28 @@
             <Energy onDownloadData={() => onDownloadData('energy')} />
             <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
-            {:else if id === 'methodo'}
-              <Methodology />
-            {/if}
-          {/snippet}
-        </Tabs>
+          {:else if id === 'methodo'}
+            <Methodology />
+          {/if}
+        {/snippet}
+      </Tabs>
 
-        <!-- Placed after the tabs in the DOM so it paints above the tab list and
-             stays clickable; absolutely positioned over the tab row on md+. -->
-        <div
-          class="z-10 mb-4 flex items-center gap-2 md:absolute md:top-0 md:right-0 md:mb-0"
-        >
-          <Toggle
-            id="style-control"
-            bind:value={styleEnabled}
-            label={m['ranking.styleControl.label']()}
-            hideCheckLabel
-            class="mb-0! whitespace-nowrap pr-13! font-medium text-[14px]!"
-          />
-          <Tooltip id="style-control-help" size="sm">
-            {@html sanitize(m['ranking.styleControl.help']())}
-          </Tooltip>
-        </div>
+      <!-- Placed after the tabs in the DOM so it paints above the tab list and
+           stays clickable; absolutely positioned over the tab row on md+. -->
+      <div class="mb-4 gap-2 md:absolute md:top-0 md:right-0 md:mb-0 z-10 flex items-center">
+        <Toggle
+          id="style-control"
+          bind:value={styleEnabled}
+          label={m['ranking.styleControl.label']()}
+          hideCheckLabel
+          class="mb-0! pr-13! font-medium text-[14px]! whitespace-nowrap"
+        />
+        <Tooltip id="style-control-help" size="sm">
+          {@html sanitize(m['ranking.styleControl.help']())}
+        </Tooltip>
       </div>
-    {:else}
-      <p>{m['ranking.no_data']()}</p>
-    {/if}
-  </div>
-</main>
+    </div>
+  {:else}
+    <p>{m['ranking.no_data']()}</p>
+  {/if}
+</div>
