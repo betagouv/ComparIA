@@ -1,11 +1,11 @@
 import json
 import logging
-from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar, overload
 
 import markdown
-from pydantic import FieldSerializationInfo, PlainSerializer
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel, FieldSerializationInfo, PlainSerializer
 
 from utils.logger import configure_logger
 
@@ -33,26 +33,51 @@ MarkdownSerializer = PlainSerializer(to_markdown, when_used="unless-none")
 
 # Helpers
 
+TModel = TypeVar("T", bound=BaseModel)
 
-def read_json(path: Path) -> Any:
+
+@overload
+def read_json(path: Path) -> Any: ...
+@overload
+def read_json(path: Path, model: type[TModel]) -> TModel: ...
+def read_json(path: Path, model: type[TModel] | None = None) -> Any:
+    """
+    Read json data from file.
+    If given a pydantic model, will validate and return specified object
+    """
     logger.debug(f"Reading '{path.relative_to(ROOT_DIR)}'...")
     data = json.loads(path.read_text())
     logger.info(f"Successfully read '{path.relative_to(ROOT_DIR)}'!")
+
+    if model:
+        data = model.model_validate(data)
+        logger.info(f"Successfully validated '{path.relative_to(ROOT_DIR)}'!")
+
     return data
 
 
-def _json_default(o):
-    if isinstance(o, date):  # also matches datetime
-        return o.isoformat()
-    raise TypeError(f"Object of type {o.__class__.__name__} is not JSON serializable")
-
-
-def write_json(path: Path, data, indent: int = 2) -> None:
+def write_json(
+    path: Path,
+    data: dict[str, Any] | list[Any] | BaseModel,
+    indent: int = 2,
+    sort_keys: bool = False,
+) -> None:
+    """
+    Serialize and writes data to json file.
+    """
     logger.debug(f"Saving '{path.relative_to(ROOT_DIR)}'...")
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=indent, default=_json_default)
-        + "\n"
-    )
+
+    if sort_keys or not isinstance(data, BaseModel):
+        data = jsonable_encoder(
+            data.model_dump() if isinstance(data, BaseModel) else data
+        )
+        json_data = json.dumps(
+            data, ensure_ascii=False, indent=indent, sort_keys=sort_keys
+        )
+    else:
+        json_data = data.model_dump_json(ensure_ascii=False, indent=indent)
+
+    path.write_text(json_data + "\n")
     logger.info(f"Successfully saved '{path.relative_to(ROOT_DIR)}'!")
 
 
