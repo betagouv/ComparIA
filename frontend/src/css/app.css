@@ -14,8 +14,6 @@
   --outline-color: #0a76f6;
 
   /* CUSTOM */
-  --cg-light-primary: #eaeeff;
-  --cg-very-light-primary: #f7f9ff;
   --cg-very-light-grey: #fcfcfd;
   --cg-light-grey: #f3f5f9;
   --cg-very-light-blue: #f9fbff;
@@ -37,9 +35,6 @@
   --cg-very-light-grey: #0a0a0b;
   --cg-light-grey: #1c1e22;
   --cg-very-light-blue: #0a0a0b;
-  /* FIXME need equivalent in dark */
-  --cg-light-primary: #eaeeff;
-  --cg-very-light-primary: #f7f9ff;
 }
 
 @media (min-width: 36em) {
