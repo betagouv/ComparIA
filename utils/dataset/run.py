@@ -51,7 +51,9 @@ async def main(
         logger.info("[DRY RUN] Skipping HuggingFace authentication")
 
     try:
-        await process_datasets(datasets, export_base_path, dry_run=dry_run, use_cache=use_cache)
+        await process_datasets(
+            datasets, export_base_path, dry_run=dry_run, use_cache=use_cache
+        )
 
         logger.info("Finished processing all datasets.")
     except KeyboardInterrupt:

@@ -2,12 +2,11 @@ import datetime
 import json
 import logging
 import os
+import queue
 import sys
 from logging.handlers import WatchedFileHandler
 
 from fastapi import Request
-import queue
-
 from logging_loki import LokiQueueHandler as BaseLokiQueueHandler
 
 

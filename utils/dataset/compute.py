@@ -424,15 +424,18 @@ def _write_normal_from_raw_parquet(
         writer.close()
 
     if sample_batches:
-        import pandas as pd
         sample_df = pa.concat_tables(sample_batches).to_pandas()
         sample_df.to_csv(export_dir / f"{repo_name}_samples.tsv", sep="\t", index=False)
         sample_df.to_json(
             export_dir / f"{repo_name}_samples.jsonl",
-            orient="records", lines=True, date_format="iso",
+            orient="records",
+            lines=True,
+            date_format="iso",
         )
 
-    logger.info(f"Cache mode: {n_rows:,} rows written ({len(sample_df) if sample_batches else 0:,} sampled).")
+    logger.info(
+        f"Cache mode: {n_rows:,} rows written ({len(sample_df) if sample_batches else 0:,} sampled)."
+    )
     return n_rows
 
 
@@ -465,14 +468,20 @@ async def process_datasets(
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
         normal_repo_name = repo_prefix
         normal_export_dir = export_base_path / normal_repo_name
-        _write_normal_from_raw_parquet(raw_parquet_path, normal_repo_name, normal_export_dir)
+        _write_normal_from_raw_parquet(
+            raw_parquet_path, normal_repo_name, normal_export_dir
+        )
         if dry_run:
-            logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{normal_repo_name}'")
+            logger.info(
+                f"[DRY RUN] Skipping HuggingFace upload for '{normal_repo_name}'"
+            )
         else:
             commit_and_push(repo_org, normal_repo_name, normal_export_dir)
     else:
         if use_cache:
-            logger.warning(f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export")
+            logger.warning(
+                f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export"
+            )
         logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
         exporters = _build_exporters(datasets, repo_prefix, export_base_path)
         await stream_to_exporters(exporters)
