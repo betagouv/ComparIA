@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from pydantic import (
@@ -53,6 +54,7 @@ class LLMDataRawBase(LLMDataBase):
     Gets enriched with license data and architecture info to become `LLMDataRaw` class.
     """
 
+    db_id: str
     new: Annotated[bool, Field(description=descs["new"])] = False
     status: Annotated[
         Literal["archived", "missing_data", "disabled", "enabled"],
@@ -91,6 +93,20 @@ class LLMDataRawBase(LLMDataBase):
     desc: Annotated[str, MarkdownSerializer, Field(description=descs["desc"])]
     size_desc: Annotated[str, MarkdownSerializer, Field(description=descs["size_desc"])]
     fyi: Annotated[str, MarkdownSerializer, Field(description=descs["fyi"])]
+
+    # new fields for migration
+    # context_tokens and knowledge_cutoff are Optional: some providers do not
+    # publish a context window or a knowledge cutoff, so `None` records that the
+    # value is unknown rather than guessing one.
+    public_weights: bool
+    public_training_data: bool
+    public_training_code: bool
+    context_tokens: int | None = None
+    eu_hostable: bool
+    inputs: list[Literal["text", "image", "audio", "video"]]
+    knowledge_cutoff: datetime | None = None
+    price_in: float
+    price_out: float
 
     @field_validator("arch", mode="after")
     @classmethod

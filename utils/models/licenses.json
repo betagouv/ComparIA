@@ -1,11 +1,13 @@
 [
   {
+    "db_id": "5729b48d-d7a3-43ff-b512-a66aaae6a2ee",
     "license": "proprietary",
     "distribution": "api-only",
     "reuse": false,
     "license_desc": "FIXME (add default?)"
   },
   {
+    "db_id": "b57e5efd-9032-467c-a164-81c613ed3358",
     "license": "CC-BY-NC-4.0",
     "distribution": "open-weights",
     "reuse": true,
@@ -14,6 +16,7 @@
     "license_desc": "Cette licence permet de partager et adapter le contenu librement à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur."
   },
   {
+    "db_id": "a2ca0915-121a-4bd2-9674-be9efb04acf6",
     "license": "Apache 2.0",
     "distribution": "open-weights",
     "reuse": true,
@@ -21,6 +24,7 @@
     "license_desc": "Cette licence permet d'utiliser, modifier et distribuer librement le modèle, y compris à des fins commerciales. Outre la liberté d'utilisation, elle garantit la protection juridique en incluant une clause de concession de brevets qui fonctionne comme une assurance : si vous utilisez ce modèle, les contributeurs s'engagent à ne pas vous poursuivre pour violation de leurs brevets liés au projet. Cette protection mutuelle évite les conflits juridiques entre utilisateurs et développeurs. Lors de la distribution de versions modifiées, les changements significatifs doivent être signalés par des mentions appropriées, garantissant la transparence pour l'utilisateur."
   },
   {
+    "db_id": "33a5b6d1-270c-4d26-8521-b881d3c56b33",
     "license": "Jamba Open Model",
     "distribution": "open-weights",
     "reuse": true,
@@ -29,6 +33,7 @@
     "license_desc": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels."
   },
   {
+    "db_id": "cbd299a7-1765-484d-b81e-5d8f77e7bd26",
     "license": "Llama 3 Community",
     "distribution": "open-weights",
     "reuse": false,
@@ -37,6 +42,7 @@
     "license_desc": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta."
   },
   {
+    "db_id": "ecd66295-d2b8-40b1-b278-40c638264dbb",
     "license": "Llama 3.1",
     "distribution": "open-weights",
     "reuse": true,
@@ -45,6 +51,7 @@
     "license_desc": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution."
   },
   {
+    "db_id": "627c6e77-224b-4434-98d3-a4de57b22a16",
     "license": "Llama 4",
     "distribution": "open-weights",
     "reuse": true,
@@ -53,6 +60,7 @@
     "license_desc": "Cette licence non-exclusive, mondiale et sans redevance permet d'utiliser, reproduire, modifier et distribuer les Matériaux Llama 4 (modèles et documentation) avec attribution. Cependant, elle impose deux restrictions majeures : (1) les entreprises dépassant 700 millions d'utilisateurs actifs mensuels doivent obtenir une licence spéciale de Meta, et (2) **exclusion totale** des personnes résidant dans l'UE et des entreprises ayant leur siège social dans l'UE pour l'utilisation directe des modèles multimodaux, en raison des incertitudes réglementaires liées à l'AI Act européen. Les utilisateurs finaux européens peuvent néanmoins accéder à des services intégrant Llama 4, à condition qu'ils soient fournis depuis l'extérieur de l'UE."
   },
   {
+    "db_id": "20dc4205-28d8-4d3f-a5c9-c85b1d125544",
     "license": "Mistral AI Research License",
     "distribution": "open-weights",
     "reuse": true,
@@ -61,6 +69,7 @@
     "license_desc": "Cette licence non-exclusive et sans redevance autorise l'utilisation, la copie, la modification et la distribution des modèles Mistral et de leurs dérivés (incluant les versions modifiées ou affinées). Cependant, elle est strictement limitée aux fins de recherche."
   },
   {
+    "db_id": "7ce73c4f-e14c-47e1-8aac-bd9b03e391d6",
     "license": "Llama 3.3",
     "distribution": "open-weights",
     "reuse": true,
@@ -69,6 +78,7 @@
     "license_desc": "Cette licence **non-exclusive, mondiale et sans redevance** permet d'utiliser, reproduire, modifier et distribuer librement le code et les Matériaux Llama 3.3 avec attribution. Elle autorise notamment la réutilisation pour l'amélioration de modèles dérivés, mais impose des restrictions pour les opérations commerciales de très grande envergure."
   },
   {
+    "db_id": "e59309ac-b937-4ee9-b219-ac467e53397f",
     "license": "MIT",
     "distribution": "open-weights",
     "reuse": true,
@@ -76,6 +86,7 @@
     "license_desc": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur."
   },
   {
+    "db_id": "34b2d6fd-0a6a-4aae-a7d4-a607bba3d260",
     "license": "Modified MIT",
     "distribution": "open-weights",
     "reuse": true,
@@ -83,6 +94,7 @@
     "license_desc": "Variante de la license MIT. La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur."
   },
   {
+    "db_id": "c5a58549-086a-4764-bac8-908e0017ea37",
     "license": "Gemma",
     "distribution": "open-weights",
     "reuse": true,
@@ -90,6 +102,7 @@
     "license_desc": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagées avec la communauté sous la même licence source, favorisant ainsi la collaboration et la transparence dans le développement logiciel."
   },
   {
+    "db_id": "06ecc1d1-c20c-4f7c-9421-9105757cde59",
     "license": "LFM 1.0",
     "distribution": "open-weights",
     "reuse": true,
@@ -97,6 +110,7 @@
     "license_desc": "Cette licence mondiale, gratuite et non-exclusive autorise l’usage, la modification et la redistribution du modèle et de ses dérivés, y compris la réutilisation des sorties pour entraîner d’autres modèles. Elle reste permissive, mais limite tout usage commercial aux organisations dont les revenus annuels sont inférieurs à 10 millions de dollars, au-delà desquels l’usage n’est plus couvert."
   },
   {
+    "db_id": "345e97e6-a548-4880-b6ba-628f2f23925c",
     "license": "Nemotron Open",
     "distribution": "open-weights",
     "reuse": true,
