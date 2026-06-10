@@ -274,7 +274,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     return turn.status
   })
 
-  async function ask(url: string, body: any) {
+  async function ask(url: string, body: any): Promise<boolean> {
     loading = true
     promptError = undefined
     if (comparison) {
@@ -333,6 +333,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     } finally {
       loading = false
     }
+
+    return !comparison?.error && !promptError
   }
 
   return {
