@@ -13,6 +13,7 @@ Obj = dict[str, Any]
 
 UTILS_DIR = Path(__file__).parent
 ROOT_DIR = UTILS_DIR.parent
+DATA_DIR = ROOT_DIR / "data"
 # LLMs data
 LLMS_GENERATED_DATA_FILE = UTILS_DIR / "models" / "generated-models.json"
 # Frontend
