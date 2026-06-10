@@ -15,7 +15,8 @@ UTILS_DIR = Path(__file__).parent
 ROOT_DIR = UTILS_DIR.parent
 DATA_DIR = ROOT_DIR / "data"
 # LLMs data
-LLMS_GENERATED_DATA_FILE = UTILS_DIR / "models" / "generated-models.json"
+DEFAULT_LLM_DATA_PATH = DATA_DIR / "llms-data.json"
+LLMS_GENERATED_DATA_FILE = UTILS_DIR / "models" / "generated-models.json"  # FIXME rm
 # Frontend
 FRONTEND_DIR = ROOT_DIR / "frontend"
 FRONTEND_MAIN_I18N_FILE = FRONTEND_DIR / "locales" / "messages" / "fr.json"
