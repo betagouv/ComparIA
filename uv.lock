@@ -487,16 +487,16 @@ wheels = [
 
 [[package]]
 name = "ecologits"
-version = "0.10.1"
+version = "0.10.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
     { name = "pydantic" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/60/39/22ae958fff6a877ac32449642dc56d055bc7054c9688a53613840d3afc53/ecologits-0.10.1.tar.gz", hash = "sha256:e4b4013e7132713e2b392559d3766f24df1ec4661580ca12f87f48adbb0263c7", size = 1011502, upload-time = "2026-04-09T12:17:50.668Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3f/7b/a8af782f0305bd08f6c61614680f9c4a70e4c30831bba435d5bab603bac4/ecologits-0.10.2.tar.gz", hash = "sha256:cdbd1f67a82d4008c6bb2d3373912f5f58fba4eedb25531972544b950bab5332", size = 1020789, upload-time = "2026-06-04T17:31:08.75Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/3c/cb9cf568b2fb0cc34be2230a780a301bdcde4299008efdc064ee11fef358/ecologits-0.10.1-py3-none-any.whl", hash = "sha256:5dc95f379e87f60025f6bcd28d50c84cbc8024fea3ada909480e74a2c7dd1d4b", size = 47075, upload-time = "2026-04-09T12:17:52.173Z" },
+    { url = "https://files.pythonhosted.org/packages/06/6b/a6d8354a9816401f52f5a8a08b038cf525b40f2b4efddda41d72eb392eb4/ecologits-0.10.2-py3-none-any.whl", hash = "sha256:d98973a196566f640c8b213f371b44b6d0b11a4b49a9551d3771fee77ac798d7", size = 50769, upload-time = "2026-06-04T17:31:09.999Z" },
 ]
 
 [[package]]
@@ -1306,12 +1306,12 @@ devops = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.18.4" },
     { name = "altcha", specifier = ">=1.0.0" },
-    { name = "ecologits", specifier = "==0.10.1" },
+    { name = "ecologits", specifier = "==0.10.2" },
     { name = "fastapi", specifier = ">=0.128.0" },
     { name = "google-auth", specifier = ">=2.38.0" },
     { name = "json5", specifier = ">=0.13.0" },
     { name = "linkup-sdk", specifier = ">=0.13.0" },
-    { name = "litellm", specifier = "==1.86.0" },
+    { name = "litellm", specifier = "==1.88.0" },
     { name = "markdown", specifier = ">=3.10.1" },
     { name = "numpy", specifier = ">=2.4.1" },
     { name = "prometheus-fastapi-instrumentator", specifier = ">=7.0.0" },
@@ -1418,7 +1418,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.86.0"
+version = "1.88.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1434,9 +1434,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2f/a7/26b8b04e4fcff26b60200ffe7458a255552ae51014468188f5db45674eb2/litellm-1.86.0.tar.gz", hash = "sha256:eccab86e0820b60b3f9484b233fb8d818b97afb19d5b4fa08d0d045621350ba4", size = 15379195, upload-time = "2026-05-24T02:42:10.865Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/8c/6cfce5d15554e076b8438a955436e9e6e2a2bd39c76539656c1c3861c369/litellm-1.88.0.tar.gz", hash = "sha256:4ff794493e40bd86c6f13e91dcb3e1aad697403fd46a96902196d93356ba48f4", size = 13886026, upload-time = "2026-06-06T23:25:17.93Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ff/0b/9a044c061a69e801de042e962c34f5bc2e094810e28b49ce0b3bedee9327/litellm-1.86.0-py3-none-any.whl", hash = "sha256:9d8171ca1a17705b7c7a6fdce8cfc07bbf641284b46c1b6047f83a779159990c", size = 17011225, upload-time = "2026-05-24T02:42:00.629Z" },
+    { url = "https://files.pythonhosted.org/packages/da/71/deb6637475253b83eb4577c058863eec4b4ddaef2d08dcd93981b1aa4209/litellm-1.88.0-py3-none-any.whl", hash = "sha256:abd3037e0bf5703f833f5565c87bdfd93578d3de46cbcb36dfa108c3ef58021c", size = 15276203, upload-time = "2026-06-06T23:25:07.257Z" },
 ]
 
 [[package]]

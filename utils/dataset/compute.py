@@ -23,6 +23,7 @@ from pathlib import Path
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import and_, col
 
+from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import LLMData
 from utils.database.models import Comparison
@@ -126,9 +127,9 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
     return {
-        "role": msg.role,
         "content": msg.content,
         "reasoning_content": msg.reasoning_content,
+        "role": msg.role,
     }
 
 
@@ -175,7 +176,13 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
 
         msg_a, msg_b = turn.llm_msg_a, turn.llm_msg_b
 
-        user_entry = {"role": turn.user_msg.role, "content": turn.user_msg.content}
+        raw_content = turn.user_msg.content
+        content = (
+            merge_web_search_with_content(raw_content, turn.user_msg.web_search_results)
+            if turn.user_msg.web_search_results
+            else raw_content
+        )
+        user_entry = {"role": turn.user_msg.role, "content": content, "user_content": raw_content}
         response_a = [user_entry] + ([_llm_response_entry(msg_a)] if msg_a else [])
         response_b = [user_entry] + ([_llm_response_entry(msg_b)] if msg_b else [])
         full_conversation_a.extend(response_a)
@@ -258,8 +265,8 @@ def _reference_rows() -> list[dict]:
     front instead of inferred from a first batch where they may be all-null.
     The equivalence test pins that this matches real `comparison_to_turns` output.
     """
-    user = {"role": "user", "content": "x"}
-    assistant = {"role": "assistant", "content": "x", "reasoning_content": "x"}
+    user = {"role": "user", "content": "x", "user_content": "x"}
+    assistant = {"content": "x", "reasoning_content": "x", "role": "assistant"}
     system = {"role": "system", "content": "x"}
     return [
         {
