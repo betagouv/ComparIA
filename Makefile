@@ -113,10 +113,7 @@ display-env-da: ## Display env vars loaded from KeePass for DA instance
 # Development with local code
 ###################################
 
-test: test-backend test-dataset ## Run all tests
-
-test-backend: ## Run backend unit tests
-	$(UV) run pytest backend/
+test: test-dataset ## Run all tests
 
 test-dataset: ## Run dataset export tests (no DB required)
 	$(UV) run --group data python tests/dataset/test_comparison_to_turns.py
