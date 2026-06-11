@@ -9,6 +9,7 @@ from .actions import (
     archive_corrupted,
     archive_spam,
     archive_unknown_llms,
+    backfill_pii_spam,
     llm_analyze,
     migrate_comparisons,
     migrate_llm_messages,
@@ -45,6 +46,7 @@ cli_db.command(lint)
 cli_db.command(log_archived)
 cli_db.command(rename_llm)
 cli_db.command(llm_analyze)
+cli_db.command(backfill_pii_spam)
 cli_db.command(cli_archive)
 cli_db.command(cli_migrate)
 
