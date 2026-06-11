@@ -10,6 +10,7 @@ from pydantic import (
 )
 from sqlmodel import SQLModel
 
+from backend.arena.web_search import web_search_results_to_dicts
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
 from utils.database.models import (
     ArchivedReason,
@@ -94,6 +95,12 @@ class DatasetTurn(SQLModel):
     @property
     def response_b(self) -> list[dict]:
         return self.parse_response("b")
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def web_search_results(self) -> list[dict] | None:
+        # Structured retrieval trace, kept alongside the search-merged `content`.
+        return web_search_results_to_dicts(self.user_msg.web_search_results)
 
     @field_validator("metadata_", mode="before")
     @classmethod

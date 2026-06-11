@@ -23,7 +23,10 @@ from pathlib import Path
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import and_, col
 
-from backend.arena.web_search import merge_web_search_with_content
+from backend.arena.web_search import (
+    merge_web_search_with_content,
+    web_search_results_to_dicts,
+)
 from backend.config import settings
 from backend.llms.models import LLMData
 from utils.database.models import Comparison
@@ -209,6 +212,11 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
                 "choice": turn.choice,
                 "response_a": response_a,
                 "response_b": response_b,
+                # Structured retrieval trace, kept alongside the search-merged
+                # `content` so sources stay queryable. None when no search ran.
+                "web_search_results": web_search_results_to_dicts(
+                    turn.user_msg.web_search_results
+                ),
             }
         )
 
@@ -274,6 +282,7 @@ def _reference_rows() -> list[dict]:
             "choice": "a_better",
             "response_a": [user, assistant],
             "response_b": [user, assistant],
+            "web_search_results": [{"name": "x", "url": "x", "content": "x"}],
             "turn": 0,
             "comparison_id": "ref",
             "model_a": "x",
