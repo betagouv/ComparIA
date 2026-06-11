@@ -5,7 +5,12 @@ from pydantic import FilePath
 
 from utils.database.session import get_session
 from utils.llms.data import LLMImportData, get_llms_data
-from utils.llms.services import upsert_llm, upsert_llm_lab, upsert_llm_license
+from utils.llms.services import (
+    upsert_llm,
+    upsert_llm_endpoint,
+    upsert_llm_lab,
+    upsert_llm_license,
+)
 from utils.utils import DEFAULT_LLM_DATA_PATH, read_json, write_json
 
 logger = logging.getLogger("comparia.llms")
@@ -20,6 +25,9 @@ async def llms_import(
     data = read_json(file, LLMImportData)
 
     async with get_session() as session:
+        for endpoint in data.endpoints:
+            await upsert_llm_endpoint(endpoint, session)
+
         for license in data.licenses:
             await upsert_llm_license(license, session)
 
