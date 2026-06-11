@@ -165,11 +165,12 @@ async def update_turn_vote(
 ) -> None:
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
-        data = (
-            {f"{k}_{vote.pos}": v for k, v in vote.model_dump().items()}
-            if isinstance(vote, TurnVoteAnnotate)
-            else vote.model_dump()
-        )
+        if isinstance(vote, TurnVoteAnnotate):
+            data = {f"{k}_{vote.pos}": v for k, v in vote.model_dump().items()}
+        else:
+            # A choice vote can only be cast once (enforced in the router), so
+            # this stamps the single moment the user decided.
+            data = {**vote.model_dump(), "voted_at": datetime.now()}
         db_turn.sqlmodel_update(data)
         session.add(db_turn)
         await session.commit()

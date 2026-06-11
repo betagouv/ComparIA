@@ -111,12 +111,13 @@ def llm_msg(
     )
 
 
-def turn(user, a, b, choice=None):
+def turn(user, a, b, choice=None, voted_at=None):
     t = Turn(created_at=T0)
     t.user_msg = user
     t.llm_msg_a = a
     t.llm_msg_b = b
     t.choice = choice
+    t.voted_at = voted_at
     return t
 
 
@@ -287,6 +288,40 @@ def equivalent_cases():
         contains_spam=False,
     )
 
+    # voted_at set -> time_to_vote = voted_at - max(updated_at_a, updated_at_b).
+    # llm_msg updated_at defaults to 12:00:03; vote at 12:00:10 -> 7.0s.
+    yield "voted turn -> time_to_vote computed", comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a", 100),
+                llm_msg("b", 200),
+                "a_better",
+                voted_at=datetime(2024, 1, 1, 12, 0, 10),
+            )
+        ],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    # voted_at set but one side never answered -> no "both finished" moment, so
+    # time_to_vote must be None (not computed off the single answer).
+    yield "voted but b missing -> time_to_vote None", comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a", 70),
+                None,
+                "a_better",
+                voted_at=datetime(2024, 1, 1, 12, 0, 10),
+            )
+        ],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
     yield "multi-turn, b missing in one turn -> totals None", comparison(
         [
             turn(user_msg(), llm_msg("a1", 100), llm_msg("b1", 100)),
@@ -328,6 +363,49 @@ def _raises(fn, comp):
         return True
 
 
+def time_to_vote_value_cases():
+    # (name, comparison, expected time_to_vote). Pins the actual value, because
+    # equivalence alone can't catch a bug that lives in both code paths.
+    both = comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a", 70),  # updated_at 12:00:03
+                llm_msg("b", 80, updated_at=datetime(2024, 1, 1, 12, 0, 4)),
+                "a_better",
+                voted_at=datetime(2024, 1, 1, 12, 0, 10),
+            )
+        ],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+    one_sided = comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a", 70),
+                None,
+                "a_better",
+                voted_at=datetime(2024, 1, 1, 12, 0, 10),
+            )
+        ],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+    no_vote = comparison(
+        [turn(user_msg("q"), llm_msg("a", 70), llm_msg("b", 80))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+    # both finished (later of 12:00:03 / 12:00:04) -> vote at 12:00:10 -> 6.0s
+    yield "both answered + voted", both, 6.0
+    yield "one side missing + voted", one_sided, None
+    yield "both answered, no vote", no_vote, None
+
+
 def run():
     failures = []
 
@@ -354,6 +432,13 @@ def run():
         else:
             print(f"  ok  skip: {name}")
 
+    for name, comp, expected in time_to_vote_value_cases():
+        got = compute.comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        if got != expected:
+            failures.append(f"[TIME_TO_VOTE {name}] got {got!r}, expected {expected!r}")
+        else:
+            print(f"  ok  time_to_vote: {name}  ({got!r})")
+
     print()
     if failures:
         print(f"FAILED ({len(failures)}):")
@@ -374,6 +459,12 @@ def test_equivalence():
 def test_skips():
     for name, comp in skip_cases():
         assert _raises(compute.comparison_to_turns, comp), name
+
+
+def test_time_to_vote_values():
+    for name, comp, expected in time_to_vote_value_cases():
+        got = compute.comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
 
 
 if __name__ == "__main__":

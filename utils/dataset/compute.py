@@ -23,6 +23,7 @@ from pathlib import Path
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import and_, col
 
+from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import LLMData
 from utils.database.models import Comparison
@@ -101,6 +102,18 @@ def _duration(msg: LLMMessage | None) -> float | None:
     return (msg.updated_at - msg.responded_at).total_seconds() if msg else None
 
 
+def _time_to_vote(
+    voted_at: datetime | None, msg_a: LLMMessage | None, msg_b: LLMMessage | None
+) -> float | None:
+    # Seconds between both models finishing (the later of the two) and the vote.
+    # Requires both answers: a one-sided turn has no "both finished" moment, so
+    # we return None rather than a misleading value (legacy/corrupt rows can have
+    # voted_at set with a side missing, even though the live route forbids it).
+    if voted_at is None or msg_a is None or msg_b is None:
+        return None
+    return (voted_at - max(msg_a.updated_at, msg_b.updated_at)).total_seconds()
+
+
 def _total(turns_metadata: list[dict], key: str) -> float | int | None:
     # Sum across turns, but only when every turn has the value.
     values = [meta[key] for meta in turns_metadata]
@@ -114,9 +127,9 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
     return {
-        "role": msg.role,
         "content": msg.content,
         "reasoning_content": msg.reasoning_content,
+        "role": msg.role,
     }
 
 
@@ -163,7 +176,13 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
 
         msg_a, msg_b = turn.llm_msg_a, turn.llm_msg_b
 
-        user_entry = {"role": turn.user_msg.role, "content": turn.user_msg.content}
+        raw_content = turn.user_msg.content
+        content = (
+            merge_web_search_with_content(raw_content, turn.user_msg.web_search_results)
+            if turn.user_msg.web_search_results
+            else raw_content
+        )
+        user_entry = {"role": turn.user_msg.role, "content": content, "user_content": raw_content}
         response_a = [user_entry] + ([_llm_response_entry(msg_a)] if msg_a else [])
         response_b = [user_entry] + ([_llm_response_entry(msg_b)] if msg_b else [])
         full_conversation_a.extend(response_a)
@@ -181,6 +200,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
                 "duration_b": _duration(msg_b),
                 "latency_a": _latency(msg_a),
                 "latency_b": _latency(msg_b),
+                "time_to_vote": _time_to_vote(turn.voted_at, msg_a, msg_b),
             }
         )
         partial_rows.append(
@@ -226,6 +246,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             "comparison_id": comparison_id,
             "model_a": comp.llm_id_a,
             "model_b": comp.llm_id_b,
+            "timestamp": comp.created_at,
             "full_conversation_a": full_conversation_a,
             "full_conversation_b": full_conversation_b,
             "excluded": excluded,
@@ -244,8 +265,8 @@ def _reference_rows() -> list[dict]:
     front instead of inferred from a first batch where they may be all-null.
     The equivalence test pins that this matches real `comparison_to_turns` output.
     """
-    user = {"role": "user", "content": "x"}
-    assistant = {"role": "assistant", "content": "x", "reasoning_content": "x"}
+    user = {"role": "user", "content": "x", "user_content": "x"}
+    assistant = {"content": "x", "reasoning_content": "x", "role": "assistant"}
     system = {"role": "system", "content": "x"}
     return [
         {
@@ -257,6 +278,7 @@ def _reference_rows() -> list[dict]:
             "comparison_id": "ref",
             "model_a": "x",
             "model_b": "x",
+            "timestamp": datetime(2024, 1, 1),
             "full_conversation_a": [system, user, assistant],
             "full_conversation_b": [system, user, assistant],
             "excluded": False,
@@ -269,6 +291,7 @@ def _reference_rows() -> list[dict]:
                 "duration_b": 1.0,
                 "latency_a": 1.0,
                 "latency_b": 1.0,
+                "time_to_vote": 1.0,
                 "mode": "random",
                 "custom_models_selection": ["x"],
                 "categories": ["x"],

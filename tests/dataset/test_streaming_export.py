@@ -158,6 +158,7 @@ def check_reference_schema(failures):
                 fix.llm_msg("a", 100, reasoning="r"),
                 fix.llm_msg("b", 90, reasoning="r"),
                 "a_better",
+                voted_at=datetime(2024, 1, 1, 12, 0, 5),
             )
         ],
         sys_a=fix.system_msg("s"),
@@ -209,6 +210,7 @@ def check_temporal_nulls(failures):
             "comparison_id": f"c{i}",
             "model_a": "a",
             "model_b": "b",
+            "timestamp": datetime(2024, 1, 1),
             "full_conversation_a": [{"role": "user", "content": "q"}],
             "full_conversation_b": [{"role": "user", "content": "q"}],
             "excluded": False,
@@ -221,6 +223,7 @@ def check_temporal_nulls(failures):
                 "duration_b": None,
                 "latency_a": 1.0,
                 "latency_b": None,
+                "time_to_vote": 1.0 if populated else None,
                 "mode": "random",
                 "custom_models_selection": (["m"] if populated else None),
                 "categories": (["c"] if populated else None),
