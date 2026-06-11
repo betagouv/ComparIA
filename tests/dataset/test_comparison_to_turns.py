@@ -264,6 +264,28 @@ def equivalent_cases():
         llm_analyzed=False,
         archived=False,
     )
+    yield "excluded: contains_pii True", comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+        contains_pii=True,
+    )
+    yield "excluded: contains_spam True", comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+        contains_spam=True,
+    )
+    yield "kept: contains_pii False, contains_spam False", comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+        contains_pii=False,
+        contains_spam=False,
+    )
 
     yield "multi-turn, b missing in one turn -> totals None", comparison(
         [

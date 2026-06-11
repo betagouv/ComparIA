@@ -70,6 +70,8 @@ async def count_dataset_rows(datasets: list[Datasets]):
                 "normal": and_(
                     col(Comparison.archived) == False,
                     col(Comparison.llm_analyzed) == True,
+                    col(Comparison.contains_pii) != True,
+                    col(Comparison.contains_spam) != True,
                     col(Comparison.error) == JSONB.NULL,
                     col(Comparison.cohorts).in_((None, "")),
                 ),
@@ -210,6 +212,8 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     excluded = bool(
         extra_meta["cohorts"]
         or extra_meta["archived"] is not False
+        or extra_meta["contains_pii"]
+        or extra_meta["contains_spam"]
         or extra_meta["error"] is not None
         or extra_meta["llm_analyzed"] is not True
     )

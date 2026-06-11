@@ -185,6 +185,8 @@ class DatasetComparison(SQLModel):
             [
                 bool(self.extra_metadata_.cohorts),
                 self.extra_metadata_.archived is not False,
+                bool(self.extra_metadata_.contains_pii),
+                bool(self.extra_metadata_.contains_spam),
                 self.extra_metadata_.error is not None,
                 self.extra_metadata_.llm_analyzed is not True,
             ]
