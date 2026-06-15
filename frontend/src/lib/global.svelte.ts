@@ -8,8 +8,20 @@ const disabledLocaleCodes = env.PUBLIC_DISABLED_LOCALES
   : null
 
 export type LocaleOption = { code: Locale; short: string; long: string; host: string }
+export type Instance = { host: string; label: string }
 
 const DEFAULT_HOST = dev ? 'localhost:5173' : 'comparia.beta.gouv.fr'
+
+export const INSTANCES: Instance[] = dev
+  ? [
+      { host: 'localhost:5173', label: 'ComparIA (FR)' },
+      { host: 'localhost:8080', label: 'AI Arena (DA)' }
+    ]
+  : [
+      { host: 'comparia.beta.gouv.fr', label: 'ComparIA (FR)' },
+      { host: 'ai-arenaen.dk', label: 'AI Arena (DA)' }
+    ]
+
 export const HOST_TO_LOCALE = dev
   ? {
       '127.0.0.1:8080': 'da'
