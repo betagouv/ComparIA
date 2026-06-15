@@ -6,11 +6,11 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationError
 
 from backend.llms.models import Distribution
 from utils.logger import configure_logger, log_pydantic_parsed_errors
-from utils.utils import MarkdownSerializer, read_json
+from utils.utils import UTILS_DIR, MarkdownSerializer, read_json
 
 logger = configure_logger(logging.getLogger("llms:licenses"))
 
-LICENSES_FILE = Path(__file__).parent / "licenses.json"
+LICENSES_FILE = UTILS_DIR / "database/alembic/extras/licenses.json"
 
 
 descs = {
