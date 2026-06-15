@@ -22,6 +22,8 @@
         "searchModel": "Søg efter en model",
         "seeMore": "Se mere",
         "selectLanguage": "Vælg sprog",
+        "selectLocale": "Sprog",
+        "selectInstance": "Portal",
         "discover": "Opdag",
         "returnArena": "Tilbage til arenaen"
     },

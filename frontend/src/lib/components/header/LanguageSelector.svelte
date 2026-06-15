@@ -42,6 +42,9 @@
     </Button>
 
     <div class="fr-collapse fr-translate__menu fr-menu" {id}>
+      <p class="fr-text--xs fr-mb-0 px-4 pt-2 text-[var(--text-mention-grey)] uppercase">
+        {m['actions.selectLocale']()}
+      </p>
       <ul class="fr-menu__list">
         {#each localeOptions as locale (locale.code)}
           <li>
@@ -57,6 +60,9 @@
         {/each}
       </ul>
       <hr class="my-1 mx-4 border-[var(--border-default-grey)]" />
+      <p class="fr-text--xs fr-mb-0 px-4 pt-1 text-[var(--text-mention-grey)] uppercase">
+        {m['actions.selectInstance']()}
+      </p>
       <ul class="fr-menu__list">
         {#each INSTANCES as instance (instance.host)}
           <li>

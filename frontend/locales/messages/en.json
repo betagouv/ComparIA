@@ -21,7 +21,9 @@
         "scrollRight": "Scroll right",
         "searchModel": "Search for a model",
         "seeMore": "See more",
-        "selectLanguage": "Select a language"
+        "selectLanguage": "Select a language",
+        "selectLocale": "Language",
+        "selectInstance": "Portal"
     },
     "arenaHome": {
         "compareModels": {

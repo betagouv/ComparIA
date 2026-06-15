@@ -21,7 +21,9 @@
         "scrollRight": "Scrolla till höger",
         "searchModel": "Sök modell",
         "seeMore": "Visa mer",
-        "selectLanguage": "Välj språk"
+        "selectLanguage": "Välj språk",
+        "selectLocale": "Språk",
+        "selectInstance": "Portal"
     },
     "arenaHome": {
         "compareModels": {
