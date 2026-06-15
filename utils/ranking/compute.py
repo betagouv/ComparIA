@@ -11,10 +11,16 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS
 from backend.llms.models import DatasetData, PreferencesData
-from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_votes
+from utils.ranking.style_control import (
+    STYLE_FEATURES,
+    bootstrap_style_controlled,
+    style_vector,
+)
 from utils.utils import configure_logger
 
 logger = configure_logger(logging.getLogger("ranking.compute"))
@@ -25,17 +31,39 @@ class RankingResult:
     timestamp: float
     rankings: dict[str, DatasetData] = field(default_factory=dict)
     preferences: dict[str, PreferencesData] = field(default_factory=dict)
+    # Style coefficients from the style-controlled fit (one per STYLE_FEATURES
+    # entry); exposed for transparency about how much presentation drives votes.
+    style_coefficients: dict[str, float] = field(default_factory=dict)
 
 
-def _votes_to_battles(votes: list[dict]) -> list[tuple[str, str, str]]:
-    """Convert vote records to battle tuples, filtering ties."""
-    battles = []
+def _votes_to_battles(
+    votes: list[dict],
+) -> tuple[list[tuple[str, str, str]], np.ndarray, np.ndarray]:
+    """
+    Convert vote records to decisive battle tuples plus aligned style vectors.
+
+    Ties (both_good / both_bad) carry no winner and are dropped from the
+    Bradley-Terry fit. Returns ``(battles, style_a, style_b)`` where the two
+    arrays are (n_battles, n_features) raw style measurements row-aligned with
+    ``battles`` for the style-controlled solver.
+    """
+    battles: list[tuple[str, str, str]] = []
+    style_a: list[np.ndarray] = []
+    style_b: list[np.ndarray] = []
     for v in votes:
-        if v["choice"] in ("a_better", "b_better"):
-            winner = v["llm_id_a"] if v["choice"] == "a_better" else v["llm_id_b"]
-            battles.append((v["llm_id_a"], v["llm_id_b"], winner))
+        if v["choice"] not in ("a_better", "b_better"):
+            continue
+        winner = v["llm_id_a"] if v["choice"] == "a_better" else v["llm_id_b"]
+        battles.append((v["llm_id_a"], v["llm_id_b"], winner))
+        style_a.append(style_vector(v.get("content_a"), v.get("tokens_a")))
+        style_b.append(style_vector(v.get("content_b"), v.get("tokens_b")))
 
-    return battles
+    n_feat = len(STYLE_FEATURES)
+    return (
+        battles,
+        np.array(style_a) if style_a else np.empty((0, n_feat)),
+        np.array(style_b) if style_b else np.empty((0, n_feat)),
+    )
 
 
 def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
@@ -76,13 +104,19 @@ def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
 
 def _compute_ranking(votes: list[dict]) -> RankingResult:
     """Compute ranking and preferences for a single group of votes/reactions."""
-    all_battles = _votes_to_battles(votes)
+    all_battles, style_a, style_b = _votes_to_battles(votes)
 
     if not all_battles:
         return RankingResult(timestamp=time.time())
 
-    # (point_estimate, lower_2.5, upper_97.5) per model
-    ci = bootstrap_confidence_intervals(all_battles)
+    # Style-controlled Bradley-Terry: per-model strengths with answer length and
+    # markdown formatting regressed out, so the Elo reflects substance rather
+    # than presentation. (point_estimate, lower_2.5, upper_97.5) per model.
+    ci, style_coefficients = bootstrap_style_controlled(all_battles, style_a, style_b)
+    logger.info(
+        "[Ranking] Style coefficients: "
+        + ", ".join(f"{k}={v:+.3f}" for k, v in style_coefficients.items())
+    )
 
     # Count matches and wins per model
     match_counts: dict[str, int] = defaultdict(int)
@@ -146,6 +180,7 @@ def _compute_ranking(votes: list[dict]) -> RankingResult:
         timestamp=time.time(),
         rankings=rankings,
         preferences=preferences,
+        style_coefficients=style_coefficients,
     )
 
 
