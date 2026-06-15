@@ -13,13 +13,13 @@ from pydantic import (
 from pydantic_core import PydanticCustomError
 
 from utils.logger import configure_logger, log_pydantic_parsed_errors
-from utils.utils import FRONTEND_DIR, ROOT_DIR
+from utils.utils import FRONTEND_DIR, ROOT_DIR, UTILS_DIR
 
 from .llms import LLMDataRaw, LLMDataRawBase
 
 logger = configure_logger(logging.getLogger("llms:organisations"))
 
-LLMS_RAW_DATA_FILE = Path(__file__).parent / "models.json"
+LLMS_RAW_DATA_FILE = UTILS_DIR / "database/alembic/extras/models.json"
 
 EXCLUDED_LLMS_STATUS = {"missing_data"}
 
