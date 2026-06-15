@@ -1,13 +1,29 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { getModelsWithDataContext, type BotModelWithData } from '$lib/models'
+  import {
+    getModelsWithDataContext,
+    getStyleCoefficients,
+    type BotModelWithData
+  } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
   import { WinHistogram } from '.'
 
   const { lastUpdateDate, models: data } = getModelsWithDataContext()
+
+  // Live style-control coefficients, in the documented feature order. A positive
+  // value means that presentation axis is associated with a higher win
+  // probability once model strength is accounted for, i.e. how much raw votes
+  // reward it; Style Control removes exactly this from the ranking.
+  const STYLE_FEATURE_KEYS = ['length', 'md_headers', 'md_bold', 'md_lists'] as const
+  const styleCoefficients = getStyleCoefficients()
+  const styleRows = STYLE_FEATURE_KEYS.filter((key) => key in styleCoefficients).map((key) => ({
+    key,
+    label: m[`ranking.methodo.style.features.${key}`](),
+    value: styleCoefficients[key]
+  }))
 
   type WinKey = 'mean_win_prob' | 'win_rate'
 
@@ -105,6 +121,47 @@
         </div>
       {/each}
     </div>
+  </section>
+
+  <section class="mt-16">
+    <h3 class="fr-h6 mb-4!">{m['ranking.methodo.style.title']()}</h3>
+    <p class="mb-4! text-dark-grey text-[14px]!">
+      {@html sanitize(m['ranking.methodo.style.desc.1']())}
+    </p>
+    <p class="mb-6! text-dark-grey text-[14px]!">
+      {@html sanitize(m['ranking.methodo.style.desc.2']())}
+    </p>
+
+    {#if styleRows.length > 0}
+      <div class="cg-border rounded-sm! max-w-[640px] bg-white p-6">
+        <h4 class="mb-1! text-lg!">{m['ranking.methodo.style.coef.title']()}</h4>
+        <p class="mb-5! text-dark-grey text-[13px]!">
+          {@html sanitize(m['ranking.methodo.style.coef.hint']())}
+        </p>
+
+        <ul class="m-0! p-0! list-none!">
+          {#each styleRows as row (row.key)}
+            <li
+              class="not-last:mb-3 not-last:border-b not-last:border-[--border-default-grey] flex items-center justify-between gap-4 pb-3"
+            >
+              <span class="text-[14px]">{row.label}</span>
+              <span
+                class={[
+                  'font-mono text-[14px] font-bold',
+                  row.value >= 0 ? 'text-info' : 'text-[--text-default-success]'
+                ]}
+              >
+                {row.value >= 0 ? '+' : ''}{row.value.toFixed(3)}
+              </span>
+            </li>
+          {/each}
+        </ul>
+
+        <p class="mt-5! mb-0! text-dark-grey text-[12px]!">
+          {@html sanitize(m['ranking.methodo.style.coef.footnote']())}
+        </p>
+      </div>
+    {/if}
   </section>
 
   <section class="mt-16">

@@ -14,7 +14,8 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS
-from backend.llms.models import DatasetData, PreferencesData
+from backend.llms.models import DatasetData, PreferencesData, RankingVariant
+from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_votes
 from utils.ranking.style_control import (
     STYLE_FEATURES,
@@ -116,38 +117,27 @@ def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
     return result
 
 
-def _compute_ranking(votes: list[dict]) -> RankingResult:
-    """Compute ranking and preferences for a single group of votes/reactions."""
-    all_battles, style_a, style_b = _votes_to_battles(votes)
+def _variant_table(
+    ci: dict[str, tuple[float, float, float]],
+    match_counts: dict[str, int],
+    win_counts: dict[str, int],
+) -> dict[str, dict]:
+    """
+    Turn a ``{model: (elo, lower, upper)}`` CI map into per-model ranking fields.
 
-    if not all_battles:
-        return RankingResult(timestamp=time.time())
-
-    # Style-controlled Bradley-Terry: per-model strengths with answer length and
-    # markdown formatting regressed out, so the Elo reflects substance rather
-    # than presentation. (point_estimate, lower_2.5, upper_97.5) per model.
-    ci, style_coefficients = bootstrap_style_controlled(all_battles, style_a, style_b)
-    logger.info(
-        "[Ranking] Style coefficients: "
-        + ", ".join(f"{k}={v:+.3f}" for k, v in style_coefficients.items())
-    )
-
-    # Count matches and wins per model
-    match_counts: dict[str, int] = defaultdict(int)
-    win_counts: dict[str, int] = defaultdict(int)
-    for a, b, winner in all_battles:
-        match_counts[a] += 1
-        match_counts[b] += 1
-        win_counts[winner] += 1
-
-    # Drop degenerate models (never won or never lost in the full data)
+    Shared by the style-controlled and plain Bradley-Terry views so both are
+    built identically (rank, CI-overlap rank bounds, mean win probability, win
+    rate); only the input CI differs. Degenerate models (any NaN bound) are
+    dropped here. Returns a ``{model: fields}`` dict ready to splat into a
+    ``RankingVariant`` / ``DatasetData``.
+    """
     ci = {m: v for m, v in ci.items() if not any(math.isnan(x) for x in v)}
 
     # Sort by point-estimate Elo descending
     sorted_models = sorted(ci, key=lambda m: -ci[m][0])
     n_total = len(sorted_models)
 
-    rankings: dict[str, DatasetData] = {}
+    table: dict[str, dict] = {}
     for rank, model in enumerate(sorted_models, 1):
         elo_point, elo_lower, elo_upper = ci[model]
         n_match = match_counts.get(model, 0)
@@ -176,7 +166,7 @@ def _compute_ranking(votes: list[dict]) -> RankingResult:
             win_probs.append(strength_i / (strength_i + strength_j))
         mean_win_prob = sum(win_probs) / len(win_probs) if win_probs else 0.5
 
-        rankings[model] = DatasetData(
+        table[model] = dict(
             elo=round(elo_point),
             score_p2_5=round(elo_lower),
             score_p97_5=round(elo_upper),
@@ -186,6 +176,50 @@ def _compute_ranking(votes: list[dict]) -> RankingResult:
             n_match=n_match,
             mean_win_prob=round(mean_win_prob, 4),
             win_rate=round(wins / n_match, 4) if n_match > 0 else 0.0,
+        )
+
+    return table
+
+
+def _compute_ranking(votes: list[dict]) -> RankingResult:
+    """Compute ranking and preferences for a single group of votes/reactions."""
+    all_battles, style_a, style_b = _votes_to_battles(votes)
+
+    if not all_battles:
+        return RankingResult(timestamp=time.time())
+
+    # Two rankings from the same battles so the frontend "Contrôle du style"
+    # toggle can switch views without a recompute:
+    #   - style-controlled (default): answer length and markdown formatting
+    #     regressed out, so the Elo reflects substance over presentation;
+    #   - uncontrolled: the plain MM Bradley-Terry fit (presentation included).
+    # Both are (point_estimate, lower_2.5, upper_97.5) per model.
+    ci_controlled, style_coefficients = bootstrap_style_controlled(
+        all_battles, style_a, style_b
+    )
+    ci_plain = bootstrap_confidence_intervals(all_battles)
+    logger.info(
+        "[Ranking] Style coefficients: "
+        + ", ".join(f"{k}={v:+.3f}" for k, v in style_coefficients.items())
+    )
+
+    # Count matches and wins per model (shared by both views)
+    match_counts: dict[str, int] = defaultdict(int)
+    win_counts: dict[str, int] = defaultdict(int)
+    for a, b, winner in all_battles:
+        match_counts[a] += 1
+        match_counts[b] += 1
+        win_counts[winner] += 1
+
+    controlled = _variant_table(ci_controlled, match_counts, win_counts)
+    plain = _variant_table(ci_plain, match_counts, win_counts)
+
+    rankings: dict[str, DatasetData] = {}
+    for model, fields in controlled.items():
+        uncontrolled = plain.get(model)
+        rankings[model] = DatasetData(
+            **fields,
+            uncontrolled=RankingVariant(**uncontrolled) if uncontrolled else None,
         )
 
     preferences = _aggregate_preferences(votes)

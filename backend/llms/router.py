@@ -36,4 +36,7 @@ async def get_available_models():
     return {
         "data_timestamp": data.timestamp,
         "models": models_list,
+        # Global style-control coefficients (one per presentation feature), for
+        # the transparency panel on the ranking page's methodology tab.
+        "style_coefficients": data.style_coefficients,
     }

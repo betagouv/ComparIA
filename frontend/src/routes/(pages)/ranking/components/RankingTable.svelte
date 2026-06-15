@@ -5,7 +5,7 @@
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { getModelsWithDataContext, type Archs } from '$lib/models'
+  import { applyStyleControl, getModelsWithDataContext, type Archs } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -45,7 +45,8 @@
 
   const votesData = getVotesContext()
   const totalVotes = $derived(NumberFormater.format(votesData.count))
-  const { lastUpdateDate, models: data } = getModelsWithDataContext()
+  const { lastUpdateDate, models: baseModels } = getModelsWithDataContext()
+  const data = $derived(applyStyleControl(baseModels))
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 
