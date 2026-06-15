@@ -4115,6 +4115,37 @@
     "origin_country": "CN",
     "models": [
       {
+        "db_id": "2c088caf-39d3-4b04-b879-3a45721d4655",
+        "id": "minimax-m3",
+        "simple_name": "MiniMax M3",
+        "license": "Modified MIT",
+        "release_date": "06/2026",
+        "arch": "moe",
+        "params": 428,
+        "active_params": 23,
+        "reasoning": true,
+        "url": "https://huggingface.co/MiniMaxAI/MiniMax-M3",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "minimax/minimax-m3"
+        },
+        "desc": "Très grand modèle multimodal à poids ouverts, conçu pour des tâches complexes : génération de code et orchestration agentique sur de longs horizons. Il traite nativement le texte, l'image et la vidéo. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "Avec 428 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Il repose sur une architecture de mélange d'experts (MoE, Mixture of Experts) qui n'active que 23 milliards de paramètres par jeton généré. Il nécessite un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires.\n\nL'architecture de mélange d'experts n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les modèles de raisonnement de ce type fonctionnent toutefois plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.",
+        "fyi": "Développé par l'entreprise chinoise MiniMax, M3 introduit un mécanisme d'attention parcimonieuse baptisé MiniMax Sparse Attention (MSA), qui remplace l'attention complète par une sélection de blocs clé-valeur afin de réduire le coût de calcul par jeton sur les longs contextes. Selon l'éditeur, ce mécanisme divise par 20 le calcul par jeton par rapport à la génération précédente à 1 million de jetons de contexte, avec un gain de vitesse supérieur à 9 fois lors de la phase de préremplissage et supérieur à 15 fois lors du décodage.\n\nLe modèle a été entraîné nativement en multimodalité (texte, image et vidéo) dès les premières étapes. Il propose trois modes de raisonnement contrôlés par un paramètre dédié : activé en permanence, adaptatif (le modèle décide lui-même de raisonner ou non), ou désactivé pour minimiser la latence.\n\nSelon l'éditeur, M3 vise des performances de premier plan sur les tâches de code et les tâches agentiques de long horizon. Sur le test SWE-Bench Pro, il obtient 59,0 %, sur Terminal-Bench 2.1 66,0 %, sur MCP Atlas 74,2 % et sur KernelBench Hard 28,8 %. Ces scores rapportés par l'éditeur n'avaient pas encore fait l'objet d'une vérification indépendante au moment de sa sortie. La licence autorise la réutilisation et la redistribution des poids ; l'usage commercial est permis avec la mention « Built with MiniMax » et notification de l'éditeur, mais les organisations dépassant 20 millions de dollars de revenus annuels doivent obtenir une autorisation écrite préalable.",
+        "public_weights": true,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1000000,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 0.2419,
+        "price_out": 0.9676
+      },
+      {
         "db_id": "725d230c-993f-4a98-b752-01aa81d850f6",
         "id": "minimax-m2.7",
         "simple_name": "MiniMax M2.7",
