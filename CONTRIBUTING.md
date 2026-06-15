@@ -28,7 +28,7 @@ Copy the example env file and fill in the required values:
 cp .env.example .env
 ```
 
-Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. For the DA instance, change `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and point `COMPARIA_DB_URI` to the DA database.
+Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. For the DA instance, change `DEFAULT_LOCALE=da` and point `COMPARIA_DB_URI` to the DA database.
 
 Start Postgres and Redis, then run:
 
@@ -39,7 +39,7 @@ source .env
 make dev      # backend on :8008, frontend on :5173
 ```
 
-For the DA instance, copy `.env.example` and set `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and `COMPARIA_DB_URI` to the DA database before sourcing.
+For the DA instance, copy `.env.example` and set `DEFAULT_LOCALE=da` and `COMPARIA_DB_URI` to the DA database before sourcing.
 
 ---
 

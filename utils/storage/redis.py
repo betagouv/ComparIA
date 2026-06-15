@@ -6,9 +6,8 @@ import redis
 
 from backend.config import settings
 
-# TODO drop DEFAULT_COUNTRY_PORTAL env var + add REDIS_INSTANCE_PREFIX?
 REDIS_INSTANCE_PREFIX: Final[str] = (
-    f"{settings.DEFAULT_COUNTRY_PORTAL}:" if settings.DEFAULT_COUNTRY_PORTAL else ""
+    f"{settings.DEFAULT_LOCALE}:" if settings.DEFAULT_LOCALE else ""
 )
 
 # Redis keys (all namespaced by instance portal prefix)

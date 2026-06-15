@@ -16,7 +16,9 @@
         "home": "Pagrindinis puslapis",
         "returnHome": "Grįžti į pagrindinį puslapį",
         "seeMore": "Matyti daugiau",
-        "selectLanguage": "Pasirinkite kalbą"
+        "selectLanguage": "Pasirinkite kalbą",
+        "selectLocale": "Kalba",
+        "selectInstance": "Portalas"
     },
     "arenaHome": {
         "compareModels": {

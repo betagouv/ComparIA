@@ -1,24 +1,24 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { Button } from '$components/dsfr'
-  import { LOCALES, type LocaleOption } from '$lib/global.svelte'
+  import { INSTANCES, LOCALES, type Instance, type LocaleOption } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
-  import { SvelteURL } from 'svelte/reactivity'
 
   let { id }: { id: string } = $props()
 
   const currentLocale = getLocale()
+  const currentHost = page.url.host
+
+  const localeOptions = LOCALES.filter((l) => l.host === currentHost)
 
   function onLocaleSelect(locale: LocaleOption) {
-    if (page.url.host !== locale.host) {
-      const url = new SvelteURL(window.location.href)
-      url.host = locale.host
-      url.search = `locale=${locale.code}`
-      window.location.href = url.href
-    } else {
-      setLocale(locale.code)
-    }
+    setLocale(locale.code)
+  }
+
+  function onInstanceSelect(instance: Instance) {
+    if (instance.host === currentHost) return
+    window.location.href = `${window.location.protocol}//${instance.host}`
   }
 </script>
 
@@ -42,16 +42,36 @@
     </Button>
 
     <div class="fr-collapse fr-translate__menu fr-menu" {id}>
+      <p class="fr-text--xs fr-mb-0 px-4 pt-2 text-[var(--text-mention-grey)] uppercase">
+        {m['actions.selectLocale']()}
+      </p>
       <ul class="fr-menu__list">
-        {#each LOCALES as locale (locale.code)}
+        {#each localeOptions as locale (locale.code)}
           <li>
             <button
               class="fr-translate__language fr-nav__link"
               lang={locale.code}
-              aria-current={locale.code == currentLocale}
+              aria-current={locale.code === currentLocale}
               onclick={() => onLocaleSelect(locale)}
             >
               {locale.long}
+            </button>
+          </li>
+        {/each}
+      </ul>
+      <hr class="my-1 mx-4 border-[var(--border-default-grey)]" />
+      <p class="fr-text--xs fr-mb-0 px-4 pt-1 text-[var(--text-mention-grey)] uppercase">
+        {m['actions.selectInstance']()}
+      </p>
+      <ul class="fr-menu__list">
+        {#each INSTANCES as instance (instance.host)}
+          <li>
+            <button
+              class="fr-translate__language fr-nav__link"
+              aria-current={instance.host === currentHost}
+              onclick={() => onInstanceSelect(instance)}
+            >
+              {instance.label}
             </button>
           </li>
         {/each}

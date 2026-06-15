@@ -23,7 +23,9 @@
         "scrollRight": "Défiler vers la droite",
         "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
-        "selectLanguage": "Sélectionner une langue"
+        "selectLanguage": "Sélectionner une langue",
+        "selectLocale": "Langue",
+        "selectInstance": "Portail"
     },
     "arenaHome": {
         "compareModels": {

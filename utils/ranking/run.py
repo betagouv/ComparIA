@@ -43,7 +43,7 @@ def store_to_redis(data: RankingResult) -> None:
             value=json.dumps(data),
         )
         logger.info(
-            f"[SESSION] Stored ranking data for {settings.DEFAULT_COUNTRY_PORTAL}"
+            f"[SESSION] Stored ranking data for {settings.DEFAULT_LOCALE}"
         )
     except Exception as e:
         logger.error(f"[SESSION] Error storing ranking data: {e}")
