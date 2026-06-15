@@ -41,6 +41,8 @@ ArchivedReason = Literal[
 #   - remove corresponding UserMessage + LLMMessage
 # - "corrupted_model_stream": reparse LLMMessage content
 
+LLMDataId = Annotated[uuid.UUID, Field(foreign_key="llm_data.id")]
+
 
 class ErrorDetails(BaseModel):
     message: str
@@ -59,11 +61,11 @@ class ComparisonBase(BaseDBModel):
     )
 
     # a
-    llm_id_a: str
+    llm_id_a: LLMDataId
     system_msg_a: str | None = None
 
     # b
-    llm_id_b: str
+    llm_id_b: LLMDataId
     system_msg_b: str | None = None
 
     error: Annotated[ErrorDetails | None, Field(sa_type=JSONB)] = None
