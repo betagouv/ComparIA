@@ -42,7 +42,7 @@ class LLMsData(BaseModel):
             if model["status"] != "disabled"
             and (
                 not model["specific_portals"]
-                or settings.DEFAULT_COUNTRY_PORTAL in model["specific_portals"]
+                or settings.DEFAULT_LOCALE in model["specific_portals"]
             )
         }
 

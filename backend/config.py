@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     HF_PUSH_DATASET_KEY: str = ""
     HF_PUSH_DATASET_PATH: str = ""
 
-    DEFAULT_COUNTRY_PORTAL: str = "fr"
+    DEFAULT_LOCALE: str = "fr"
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
@@ -84,7 +84,7 @@ CONSUMPTION_SCALE_FACTOR: Final[float] = {
     # 48.4% of ppl aged 16–74 in 2025 https://ec.europa.eu/eurostat/fr/web/products-eurostat-news/w/ddn-20251216-3
     # population count of 16-74 https://en.wikipedia.org/wiki/Demographics_of_Denmark
     "da": 4_350_000 * 0.484,
-}[settings.DEFAULT_COUNTRY_PORTAL]
+}[settings.DEFAULT_LOCALE]
 
 # Language model selection modes
 SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
