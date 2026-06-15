@@ -24,6 +24,7 @@ class LLMDataBase(BaseDBModel):
     license_id: Annotated[UUID, Field(foreign_key="llm_license.id")]
     endpoint_id: Annotated[UUID | None, Field(foreign_key="llm_endpoint.id")]
 
+    human_id: Annotated[str, Field(index=True, unique=True)]
     api_model_id: str | None  # used to computed litellm args alongside LLMEndpoint data
     status: Annotated[LLMStatus, Field(sa_type=String)]
     name: str
