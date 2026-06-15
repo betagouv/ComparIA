@@ -116,14 +116,5 @@
     "reuse": true,
     "commercial_use": true,
     "license_desc": "Cette licence mondiale, gratuite et sans redevance permet d’utiliser, reproduire, modifier et distribuer librement le modèle et ses dérivés, y compris à des fins commerciales, sans restriction de seuil de revenus ou d’utilisateurs. NVIDIA ne revendique aucun droit sur les contenus générés par le modèle. La licence inclut une clause de terminaison automatique en cas de poursuite judiciaire contre NVIDIA pour violation de brevet liée au modèle."
-  },
-  {
-    "db_id": "1042c089-76a9-441d-8d5f-446127a74473",
-    "license": "Kimi K3",
-    "distribution": "open-weights",
-    "reuse": true,
-    "commercial_use": true,
-    "commercial_use_specificities": "une licence distincte est requise pour exploiter un service d'inférence commercial au-delà de 20 millions de dollars de revenus annuels ; les produits dépassant 100 millions d’utilisateurs actifs mensuels ou 20 millions de dollars de revenus mensuels doivent afficher « Kimi K3 ».",
-    "license_desc": "La licence Kimi K3 autorise gratuitement l’utilisation, la copie, la modification, la distribution, la sous-licence et la vente des poids, du code et de leurs dérivés. Elle impose de conserver les mentions de droit d’auteur et prévoit des obligations supplémentaires pour certains services d’inférence commerciaux de très grande ampleur."
   }
 ]
