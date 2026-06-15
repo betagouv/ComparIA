@@ -7,7 +7,7 @@ with heavier markdown formatting (headers, bold, bullet lists) rather than by
 being more correct. This module removes that confound the same way the LMArena
 "Style Control" does: it fits a logistic regression whose design matrix is the
 usual per-model strength indicators *augmented* with a handful of presentation
-features (the normalized A-vs-B difference in length and markdown density).
+features (the normalized A-vs-B difference in length and markdown formatting).
 
 The presentation coefficients absorb the part of the vote explained by style,
 so the per-model strengths become a *style-debiased* Elo: what the ranking
@@ -53,24 +53,28 @@ def style_vector(content: str | None, tokens: int | None) -> np.ndarray:
     return np.array([length, headers, bold, lists], dtype=float)
 
 
-def _normalized_standardized_diffs(
-    style_a: np.ndarray, style_b: np.ndarray
-) -> np.ndarray:
+def _style_regressors(style_a: np.ndarray, style_b: np.ndarray) -> np.ndarray:
     """
     Turn raw per-answer style measurements into model-agnostic regressors.
 
     For each feature we take the *normalized* difference (a - b) / (a + b) so a
     long answer beating a short one looks the same whether both are 50 or 5000
-    tokens, then standardize each column to unit variance so the logistic
-    coefficients are directly comparable across features.
+    tokens, then scale each column to unit variance so the logistic coefficients
+    are comparable across features.
+
+    The difference is deliberately left un-centered. Swapping the A and B answer
+    flips both the outcome label and this regressor's sign, which is exactly the
+    antisymmetry a Bradley-Terry model requires; subtracting a column mean would
+    fold a constant intercept into ``style . gamma`` and bias the style
+    coefficients whenever A/B ordering is not perfectly balanced.
 
     Args:
         style_a, style_b: (n_battles, n_features) raw measurements for the A and
             B answer of each battle.
 
     Returns:
-        (n_battles, n_features) standardized difference matrix. All-zero columns
-        (a feature that never varies) are left at zero rather than divided by 0.
+        (n_battles, n_features) scaled difference matrix. All-zero columns (a
+        feature that never varies) are left at zero rather than divided by 0.
     """
     denom = style_a + style_b
     diff = np.divide(
@@ -78,12 +82,22 @@ def _normalized_standardized_diffs(
     )
     std = diff.std(axis=0)
     std[std == 0] = 1.0
-    return (diff - diff.mean(axis=0)) / std
+    return diff / std
 
 
 # --------------------------------------------------------------------------- #
 # Logistic Bradley-Terry solver with style covariates
 # --------------------------------------------------------------------------- #
+
+
+def _sigmoid(x: np.ndarray) -> np.ndarray:
+    """Logistic sigmoid, evaluated branchwise so large |x| never overflows exp."""
+    out = np.empty_like(x, dtype=float)
+    pos = x >= 0
+    out[pos] = 1.0 / (1.0 + np.exp(-x[pos]))
+    ex = np.exp(x[~pos])
+    out[~pos] = ex / (1.0 + ex)
+    return out
 
 
 def _fit_logistic(
@@ -137,7 +151,7 @@ def _fit_logistic(
     for _ in range(max_iter):
         beta, gamma = theta[:m], theta[m:]
         logits = beta[ja] - beta[jb] + style @ gamma
-        p = 1.0 / (1.0 + np.exp(-logits))
+        p = _sigmoid(logits)
         w = p * (1.0 - p)
         resid = y - p
 
@@ -205,7 +219,10 @@ def fit_style_controlled(
     Returns:
         (elo_by_model, style_coefficients) where style_coefficients maps each
         name in ``STYLE_FEATURES`` to its logistic coefficient (positive = that
-        presentation axis independently raises an answer's win probability).
+        presentation axis is associated with a higher win probability after
+        model strength is controlled for). Length and the markdown counts are
+        correlated, so the coefficients should be read jointly rather than as
+        independent per-feature effects.
     """
     if not battles:
         return {}, {f: 0.0 for f in STYLE_FEATURES}
@@ -218,7 +235,7 @@ def fit_style_controlled(
         (b[2] == b[0] for b in battles), dtype=bool, count=len(battles)
     )
 
-    style = _normalized_standardized_diffs(style_a, style_b)
+    style = _style_regressors(style_a, style_b)
     elo, gamma = _fit_logistic(ia, ib, winner_is_a, style, len(models), ridge=ridge)
     return (
         dict(zip(models, elo.tolist())),
@@ -230,7 +247,7 @@ def bootstrap_style_controlled(
     battles: list[tuple[str, str, str]],
     style_a: np.ndarray,
     style_b: np.ndarray,
-    n_samples: int = 200,
+    n_samples: int = 500,
     ridge: float = 1e-3,
 ) -> tuple[dict[str, tuple[float, float, float]], dict[str, float]]:
     """
@@ -258,7 +275,7 @@ def bootstrap_style_controlled(
     winner_is_a = np.fromiter(
         (b[2] == b[0] for b in battles), dtype=bool, count=n_battles
     )
-    style = _normalized_standardized_diffs(style_a, style_b)
+    style = _style_regressors(style_a, style_b)
 
     point_elo, gamma = _fit_logistic(ia, ib, winner_is_a, style, n_models, ridge=ridge)
 

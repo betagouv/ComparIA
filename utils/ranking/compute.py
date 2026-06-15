@@ -43,20 +43,34 @@ def _votes_to_battles(
     Convert vote records to decisive battle tuples plus aligned style vectors.
 
     Ties (both_good / both_bad) carry no winner and are dropped from the
-    Bradley-Terry fit. Returns ``(battles, style_a, style_b)`` where the two
-    arrays are (n_battles, n_features) raw style measurements row-aligned with
-    ``battles`` for the style-controlled solver.
+    Bradley-Terry fit. Decisive votes whose answers have no token count are also
+    dropped: a zero-length style vector would read as an extreme "minimal style"
+    signal rather than as missing data. Returns ``(battles, style_a, style_b)``
+    where the two arrays are (n_battles, n_features) raw style measurements
+    row-aligned with ``battles`` for the style-controlled solver.
     """
     battles: list[tuple[str, str, str]] = []
     style_a: list[np.ndarray] = []
     style_b: list[np.ndarray] = []
+    dropped_no_length = 0
     for v in votes:
         if v["choice"] not in ("a_better", "b_better"):
             continue
+        tokens_a, tokens_b = v.get("tokens_a"), v.get("tokens_b")
+        if not tokens_a or not tokens_b:
+            dropped_no_length += 1
+            continue
         winner = v["llm_id_a"] if v["choice"] == "a_better" else v["llm_id_b"]
         battles.append((v["llm_id_a"], v["llm_id_b"], winner))
-        style_a.append(style_vector(v.get("content_a"), v.get("tokens_a")))
-        style_b.append(style_vector(v.get("content_b"), v.get("tokens_b")))
+        style_a.append(style_vector(v.get("content_a"), tokens_a))
+        style_b.append(style_vector(v.get("content_b"), tokens_b))
+
+    if dropped_no_length:
+        logger.warning(
+            "[Ranking] Dropped %d decisive vote(s) with no answer token count "
+            "from the style-controlled fit.",
+            dropped_no_length,
+        )
 
     n_feat = len(STYLE_FEATURES)
     return (

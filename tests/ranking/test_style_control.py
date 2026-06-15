@@ -95,6 +95,36 @@ def test_style_control_deflates_inflated_model():
     assert plain_gap > 15  # the bias is clearly visible without control
 
 
+def test_matches_plain_bradley_terry_when_style_is_neutral():
+    from utils.ranking.bradley_terry import fit_bradley_terry
+
+    # Identical style on both sides of every battle -> the style regressors are
+    # all zero, so the style-controlled fit must reproduce the plain MM Bradley-
+    # Terry ranking. This guards the production swap of MM for this Newton solver:
+    # when presentation is neutral the leaderboard must not move.
+    battles, _, _ = _synthetic_battles()
+    n = len(battles)
+    flat = np.ones((n, len(STYLE_FEATURES)))
+
+    elo, coeffs = fit_style_controlled(battles, flat, flat)
+    plain = fit_bradley_terry(battles)
+
+    assert all(v == 0.0 for v in coeffs.values())  # no style signal to absorb
+    assert max(abs(elo[m] - plain[m]) for m in plain) < 0.01
+
+
+def test_style_regressor_is_antisymmetric():
+    from utils.ranking.style_control import _style_regressors
+
+    # Swapping the A and B answers must flip the regressor's sign exactly, the
+    # antisymmetry a Bradley-Terry style term requires (no mean-centering bias).
+    sa = np.array([[600.0, 2, 3, 4], [15.0, 0, 0, 0], [120.0, 1, 0, 2]])
+    sb = np.array([[15.0, 0, 0, 0], [300.0, 1, 1, 1], [120.0, 1, 0, 2]])
+    np.testing.assert_allclose(
+        _style_regressors(sa, sb), -_style_regressors(sb, sa), atol=1e-12
+    )
+
+
 def test_degenerate_models_return_nan():
     # "always_wins" never loses -> Bradley-Terry MLE is degenerate -> NaN.
     battles = [("always_wins", "loser", "always_wins")] * 50
