@@ -11,7 +11,7 @@ router = APIRouter(
 
 @router.get("/")
 async def get_available_models():
-    models = get_llms_data()
+    models = await get_llms_data()
     data = get_ranking()
 
     if not data:

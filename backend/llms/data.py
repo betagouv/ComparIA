@@ -234,9 +234,11 @@ async def get_llms_data() -> LLMsData:
         raise
 
 
-def pick_replacement_model(comparison: "ComparisonRead", pos: "BotPos") -> str | None:
+async def pick_replacement_model(
+    comparison: "ComparisonRead", pos: "BotPos"
+) -> str | None:
     """Pick a replacement model from the appropriate pool, excluding both current models."""
-    models = get_llms_data()
+    models = await get_llms_data()
     other_pos: BotPos = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
     other = getattr(comparison, f"llm_id_{other_pos}")
