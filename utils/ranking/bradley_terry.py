@@ -5,12 +5,16 @@ Computes Elo-like ratings from pairwise comparison data (battles).
 Uses vectorized numpy operations for performance.
 """
 
+from uuid import UUID
+
 import numpy as np
+
+Battle = tuple[UUID, UUID, UUID]
 
 
 def _index_battles(
-    battles: list[tuple[str, str, str]],
-) -> tuple[list[str], np.ndarray, np.ndarray, np.ndarray]:
+    battles: list[Battle],
+) -> tuple[list[UUID], np.ndarray, np.ndarray, np.ndarray]:
     """Convert string battle tuples to indexed numpy arrays."""
     models = sorted({m for b in battles for m in (b[0], b[1])})
     idx = {m: i for i, m in enumerate(models)}
@@ -79,10 +83,10 @@ def _fit_from_arrays(
 
 
 def fit_bradley_terry(
-    battles: list[tuple[str, str, str]],
+    battles: list[Battle],
     max_iter: int = 500,
     tol: float = 1e-6,
-) -> dict[str, float]:
+) -> dict[UUID, float]:
     """
     Fit a Bradley-Terry model using the MM algorithm.
 
@@ -104,9 +108,9 @@ def fit_bradley_terry(
 
 
 def bootstrap_confidence_intervals(
-    battles: list[tuple[str, str, str]],
+    battles: list[Battle],
     n_samples: int = 500,
-) -> dict[str, tuple[float, float, float]]:
+) -> dict[UUID, tuple[float, float, float]]:
     """
     Compute Bradley-Terry ratings with bootstrap confidence intervals.
 
