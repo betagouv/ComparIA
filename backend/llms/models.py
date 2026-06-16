@@ -33,22 +33,24 @@ Distribution = Literal[
 FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
-class Endpoint(BaseModel):
+class LitellmEndpoint(BaseModel):
     """
-    API endpoint configuration for model access.
+    Litellm API endpoint configuration for LLM access.
 
     Specifies how to reach a model's API (OpenAI-compatible, custom, etc).
+    Computed from LLMDataEnabled
 
     Attributes:
-        api_type: API format (default "openai" for OpenAI-compatible APIs)
-        api_base: Base URL for the API endpoint
-        api_model_id: Model identifier used in API calls
+        model: Model identifier used in API calls
+        api_key: API secret key
+        base_url: Base URL for the API endpoint (optional)
+        api_verson: API version (optional)
     """
 
-    api_type: str | None = "openai"
-    api_base: str | None = None
-    api_version: str | None = None
-    api_model_id: str
+    model: str
+    api_key: str
+    base_url: str | None
+    api_version: str | None
 
 
 # Type alias: rounds floats to nearest integer
@@ -193,3 +195,16 @@ class LLMDataEnabled(APILLMDataBase):
     status: Literal["enabled"]
     api_model_id: str
     endpoint: LLMEndpoint
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def litellm_endpoint(self) -> LitellmEndpoint:
+        """
+        Litellm API endpoint args.
+        """
+        return LitellmEndpoint(
+            api_version=self.endpoint.api_version,
+            base_url=self.endpoint.api_base,
+            api_key=self.endpoint.api_key,
+            model=f"{self.endpoint.api_type}/{self.api_model_id}",
+        )
