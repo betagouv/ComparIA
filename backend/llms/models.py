@@ -19,13 +19,11 @@ The models are organized in hierarchy:
 
 from typing import Annotated, Any, Literal, get_args
 
-from pydantic import (
-    AfterValidator,
-    BaseModel,
-    ConfigDict,
-    computed_field,
-    field_validator,
-)
+from pydantic import AfterValidator, BaseModel, computed_field, field_validator
+
+from backend.llms.utils import convert_range_to_value, get_llm_impact
+from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
+from utils.database.models.llms.llm import LLMDataBase
 
 # Type definitions for model categorization
 FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
@@ -149,98 +147,49 @@ class PreferencesData(BaseModel):
         return value
 
 
-class LLMDataBase(BaseModel):
-    """
-    Individual LLM base model definition (before enrichment).
-
-    See `utils/models/llms.py`.
-
-    !Warning: Make sure to reflect changes to `LLMDataRawBase`
-    """
-
-    new: bool
-    status: Literal["archived", "missing_data", "disabled", "enabled"]
-    id: str
-    simple_name: str
-    license: str
-    fully_open_source: bool
-    release_date: str
-    arch: str
-    params: int | float
-    active_params: int | float | None
-    reasoning: bool | Literal["hybrid"]
-    quantization: Literal["q4", "q8"] | None
-    url: str | None
-    endpoint: Endpoint | None
-    pricey: bool
-    specific_portals: list[str] | None
-
-
-class LLMDataEnhanced(BaseModel):
-    """
-    Individual LLM enhanced model definition (after enrichment from Organisation).
-
-    See `utils/models/llms.py`.
-
-    !Warning: Make sure to reflect changes to `LLMDataRaw`
-    """
-
-    # Merged from License
-    distribution: Distribution
-    reuse: bool
-    commercial_use: bool | None
-    # Merged from Organisation
-    organisation: str
-    icon_path: str
-
-
-class LLMData(LLMDataBase, LLMDataEnhanced):
-    """
-    Final individual LLM model definition.
-
-    Populated with 'utils/models/generated-models.json' data.
-    It is immutable and no default values are defined so it expects complete data.
-    See `utils/models/llms.py`.
-    """
-
-    model_config = ConfigDict(frozen=True, extra="ignore")
-
-    status: Literal["archived", "enabled"]
-    friendly_size: FriendlySize
-    required_ram: int | float
-    wh_per_million_token: int | float
+class APILLMDataBase(LLMDataBase):
+    status: Literal["enabled", "archived"]
+    license: LLMLicensePublic
+    lab: LLMLabPublic
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def system_prompt(self) -> str | None:
-        """
-        Get model-specific system prompt if configured.
+    def friendly_size(self) -> FriendlySize:
+        intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
 
-        Allows customization of model behavior through system prompts.
-        Currently only specific French models (chocolatine, lfm-40b) have custom prompts.
-        Other models use None (no system prompt by default).
+        for i, (lower, upper) in enumerate(intervals):
+            if lower <= self.params < upper:
+                return FRIENDLY_SIZE[i]
 
-        Args:
-            model_name: Model identifier (e.g., "openai/gpt-4", "chocolatine")
+        raise Exception("Error: Could not guess friendly_size")
 
-        Returns:
-            str: French system prompt, or None for no custom system prompt
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def required_ram(self) -> int | float:
+        if self.quantization == "q8":
+            return self.params * 2
 
-        Note:
-            The system prompt is included in the Comparison when provided.
-            This ensures consistent behavior across multiple comparisons.
-        """
-        return None
+        # We suppose from q4 to fp16
+        return self.params
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def wh_per_million_token(self) -> int | float:
+        impact = get_llm_impact(self, 1_000_000, None)
+        energy_kwh = convert_range_to_value(impact.energy.value)
+
+        return energy_kwh * 1000
 
 
-class LLMDataArchived(LLMData):
+class LLMDataArchived(APILLMDataBase):
     status: Literal["archived"]
 
 
-class LLMDataEnabled(LLMData):
+class LLMDataEnabled(APILLMDataBase):
     """
     Enabled LLM for proper typing with required Endpoint
     """
 
     status: Literal["enabled"]
-    endpoint: Endpoint
+    api_model_id: str
+    endpoint: LLMEndpoint
