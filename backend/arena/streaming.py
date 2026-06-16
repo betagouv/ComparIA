@@ -196,7 +196,7 @@ async def stream_comparison_messages(
     import asyncio
 
     turn_index = len(comparison.turns) - 1
-    llms_data = get_llms_data().enabled
+    llms_data = (await get_llms_data()).enabled
 
     try:
         # Create async generators for both models
@@ -254,7 +254,9 @@ async def stream_comparison_messages(
                             comparison.custom_models_selection,
                         )
                     ):
-                        if new_llm_id := pick_replacement_model(comparison, e.pos):
+                        if new_llm_id := await pick_replacement_model(
+                            comparison, e.pos
+                        ):
                             await update_comparison_llm_id(
                                 comparison, e.pos, new_llm_id
                             )

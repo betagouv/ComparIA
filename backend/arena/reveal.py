@@ -10,7 +10,7 @@ import logging
 from typing import TypedDict
 
 from backend.llms.data import get_llms_data
-from backend.llms.models import LLMData
+from backend.llms.models import APILLMDataBase
 from backend.llms.utils import Consumption, get_llm_consumption
 from utils.database.models import BotPos, ComparisonRead
 
@@ -18,7 +18,7 @@ logger = logging.getLogger("languia")
 
 
 class RevealModelData(TypedDict):
-    llm: LLMData
+    llm: APILLMDataBase
     conso: Consumption
 
 
@@ -54,7 +54,7 @@ def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
     return None
 
 
-def get_reveal_data(comparison: ComparisonRead) -> RevealData:
+async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     """
     Build reveal screen data with LLM comparison and environmental impact metrics.
 
@@ -88,7 +88,7 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # request_latency = conv.finish_tstamp - conv.start_tstamp
 
     chosen_llm = get_chosen_llm(comparison)
-    llms = get_llms_data().enabled
+    llms = (await get_llms_data()).enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {
