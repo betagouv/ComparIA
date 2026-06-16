@@ -203,7 +203,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     guardrail = await run_guardrail(args.prompt_value, "prompt_value", request)
 
     # Select LLMs
-    llms_data = get_llms_data()
+    llms_data = await get_llms_data()
     llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
 
     logger.info(
@@ -325,7 +325,7 @@ async def add_text(
             yield format_sse_event(chunk)
 
         if not comparison.error:
-            llms_data = get_llms_data()
+            llms_data = await get_llms_data()
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
@@ -382,7 +382,7 @@ async def retry(
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
-            if new_llm_id := pick_replacement_model(comparison, pos):
+            if new_llm_id := await pick_replacement_model(comparison, pos):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
@@ -406,7 +406,7 @@ async def retry(
             yield format_sse_event(chunk)
 
         if not comparison.error:
-            llms_data = get_llms_data()
+            llms_data = await get_llms_data()
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
@@ -500,4 +500,4 @@ async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealDa
         )
 
     # Return computed reveal data with environmental impact
-    return get_reveal_data(comparison)
+    return await get_reveal_data(comparison)
