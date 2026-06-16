@@ -104,17 +104,9 @@
             "catch": "Modelio leidėjai, tyrėjai, įmonės, dabar jūsų eilė!",
             "desc": "Platformos klausimai ir pageidavimai yra pateikiami daugiausia prancūzų, danų, švedų ir lietuvių kalbomis, atspindintys natūralų, realaus naudojimo kontekstą, o ne dirbtinius užklausimus. Šie duomenų rinkiniai yra viešai prieinami <a {linkProps}>data.gouv.fr</a> ir Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Visi klausimai ir atsakymai",
-                    "title": "/pokalbiai"
-                },
-                "reactions": {
-                    "desc": "Visos reakcijos į žinutes",
-                    "title": "/reakcijos"
-                },
-                "votes": {
-                    "desc": "Visi išreikšti pasirinkimai",
-                    "title": "/balsai"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Pokalbiai, atsakymai, reakcijos ir pasirinkimai viename duomenų rinkinyje"
                 }
             },
             "share": "Parodyk mums, kaip panaudoji duomenis",

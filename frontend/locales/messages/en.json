@@ -109,17 +109,9 @@
             "catch": "Model publishers, researchers, companies, now it's your turn!",
             "desc": "The platform’s questions and preferences are primarily in French, Danish, Swedish and Lithuanian, capturing organic, real-world usage - not artificial prompts. These datasets are publicly available on <a {linkProps}>data.gouv.fr</a> and Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "All the questions and answers",
-                    "title": "/conversations"
-                },
-                "reactions": {
-                    "desc": "All the reactions to messages",
-                    "title": "/reactions"
-                },
-                "votes": {
-                    "desc": "All the preferences expressed",
-                    "title": "/votes"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Conversations, answers, reactions and preferences gathered in a single dataset"
                 }
             },
             "share": "Show us how you’re using the data",

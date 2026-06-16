@@ -111,17 +111,9 @@
             "catch": "Modeludgivere, forskere, virksomheder, nu er det jeres tur!",
             "desc": "Platformens spørgsmål og præferencer er tilgængelige på dansk, engelsk, fransk og forventes udvidet i fremtiden til blandt andet at inkludere svensk. Spørgsmålene afspejler organisk brug – ikke kunstige spørgsmål. Disse datasæt er offentligt tilgængelige på <a {linkProps}>data.gouv.fr</a> og Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Alle spørgsmål og svar",
-                    "title": "/samtaler"
-                },
-                "reactions": {
-                    "desc": "Alle reaktioner på beskeder",
-                    "title": "/reaktioner"
-                },
-                "votes": {
-                    "desc": "Alle de udtrykte præferencer",
-                    "title": "/stemmer"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Samtaler, svar, reaktioner og præferencer samlet i ét datasæt"
                 }
             },
             "share": "Vis os, hvordan du bruger datasættene",

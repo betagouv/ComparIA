@@ -111,17 +111,9 @@
             "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
             "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Ensemble des réponses et des questions posées",
-                    "title": "/conversations"
-                },
-                "reactions": {
-                    "desc": "Ensemble des réactions exprimées",
-                    "title": "/réactions"
-                },
-                "votes": {
-                    "desc": "Ensemble des préférences exprimées",
-                    "title": "/votes"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Conversations, réponses, réactions et préférences réunies dans un seul jeu de données"
                 }
             },
             "share": "Partagez-nous vos réutilisations",
