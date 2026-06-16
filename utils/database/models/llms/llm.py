@@ -2,8 +2,9 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator
+from pydantic import AfterValidator, ValidationInfo, field_validator, model_validator
 from pydantic.networks import HttpUrl
+from pydantic_core import PydanticCustomError
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
@@ -127,8 +128,30 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
-    # FIXME add validator disabled = not endpoint or not api model id
-    pass
+    @field_validator("active_params", mode="before")
+    @classmethod
+    def check_active_params_is_defined_if_moe(
+        cls, value: float | None, info: ValidationInfo
+    ) -> int | float | None:
+        """
+        Assert active_params is defined if arch == "moe".
+        """
+        if "moe" in info.data["arch"] and value is None:
+            raise PydanticCustomError(
+                "missing_active_params",
+                f"LLM's arch is '{info.data['arch']}' and requires 'active_params' to be defined.",
+            )
+
+        return value
+
+    @model_validator(mode="after")
+    def check_endpoint(self):
+        """
+        Disable LLM if endpoint is not defined.
+        """
+        if self.status == "enabled" and (not self.endpoint_id or not self.api_model_id):
+            self.status == "disabled"
+        return self
 
 
 class LLMDataPublic(LLMDataBase):
