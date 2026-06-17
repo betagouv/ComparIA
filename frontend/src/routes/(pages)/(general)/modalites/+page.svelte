@@ -86,17 +86,17 @@
       <tbody>
         {#each models as model (model.id)}
           <tr>
-            <td>{model['simple_name']}</td>
+            <td>{model.name}</td>
             <td>
-              {#if model.url}
-                <a href={model.url} target="_blank" rel="noopener external">
-                  {model.url}
+              {#if model.links?.[0]}
+                <a href={model.links?.[0].url} target="_blank" rel="noopener external">
+                  {model.links?.[0].url}
                 </a>
               {:else}
                 {m['general.tos.licenceLLMUnavailable']()}
               {/if}
             </td>
-            <td>{model['license']}</td>
+            <td>{model.license.name}</td>
           </tr>
         {/each}
       </tbody>

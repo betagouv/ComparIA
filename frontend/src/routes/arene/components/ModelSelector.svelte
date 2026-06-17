@@ -27,11 +27,11 @@
   const filteredModels = $derived.by(() => {
     const _search = search.toLowerCase()
     return models
-      .filter((m) => !_search || m.search.includes(_search))
-      .map((m) => ({
-        ...m,
-        label: m.simple_name,
-        value: m.id
+      .filter((llm) => !_search || llm.search.includes(_search))
+      .map((llm) => ({
+        ...llm,
+        label: llm.name,
+        value: llm.id!
       }))
   })
 
@@ -92,12 +92,12 @@
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
-      <AILogo iconPath={modelA.icon_path} alt={modelA.simple_name} class="me-1 inline" />
-      {modelA.simple_name}
+      <AILogo logo={modelA.lab.logo} alt={modelA.lab.logo} class="me-1 inline" />
+      {modelA.name}
       <strong class="mx-2">VS</strong>
       {#if modelB}
-        <AILogo iconPath={modelB.icon_path} alt={modelB.simple_name} class="me-1 inline" />
-        {modelB.simple_name}
+        <AILogo logo={modelB.lab.logo} alt={modelB.lab.logo} class="me-1 inline" />
+        {modelB.name}
       {:else}
         {m['words.random']()}
       {/if}
@@ -200,16 +200,17 @@
                   onChange={toggleModelSelection}
                 >
                   {#snippet option(opt, labelProps, input)}
-                    {@const modelBadges = (['license', 'releaseDate', 'size'] as const)
+                    {@const modelBadges = (['license', 'release', 'size'] as const)
                       .map((k) => opt.badges[k])
                       .filter((b) => !!b)}
 
                     <label {...labelProps}>
                       {@render input(opt)}
                       <div class="text-dark-grey flex">
-                        <AILogo iconPath={opt.icon_path} alt={opt.organisation} class="me-2" />
-                        <span class="organisation md:inline hidden">{opt.organisation}/</span
-                        ><strong>{opt.simple_name}</strong>
+                        <AILogo logo={opt.lab.logo} alt={opt.lab.name} class="me-2" />
+                        <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
+                          >{opt.name}</strong
+                        >
                       </div>
                       <ul class="fr-badges-group mt-3! md:flex! hidden!">
                         {#each modelBadges as badge, i (i)}

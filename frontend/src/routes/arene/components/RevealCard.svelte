@@ -14,7 +14,7 @@
   const i18nData = getI18nContext()
   const model = $derived(data.model)
   const modelBadges = $derived(
-    (['license', 'size', 'releaseDate'] as const).map((k) => model.badges[k]).filter((b) => !!b)
+    (['license', 'size', 'release'] as const).map((k) => model.badges[k]).filter((b) => !!b)
   )
   const conso = $derived.by(() => {
     const co2 = data.scaled_co2_t

@@ -3,54 +3,14 @@
   import { Badge, Button, Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
-  import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   let { model, modalId, onClose }: { model?: BotModel; modalId: string; onClose?: () => void } =
     $props()
 
   const badges = $derived.by(() => {
     if (!model) return []
-    const { license, releaseDate, reasoning } = model.badges
-    return [license, releaseDate, reasoning].filter((b) => !!b)
-  })
-
-  const licenseCards = $derived.by(() => {
-    if (!model) return []
-    return [
-      model.commercial_use === null
-        ? null
-        : !model.commercial_use
-          ? {
-              title: m['models.conditions.commercialUse.question'](),
-              badge: { variant: 'red' as const, text: m['models.conditions.types.forbidden']() }
-            }
-          : {
-              title: m['models.conditions.commercialUse.title'](),
-              badge: model.licenseInfos.commercialUseSpecificities
-                ? {
-                    variant: 'purple' as const,
-                    text: m['models.conditions.types.conditions']()
-                  }
-                : { variant: 'green' as const, text: m['models.conditions.types.allowed']() },
-              subtitle: model.licenseInfos.commercialUseSpecificities
-            },
-      !model.reuse
-        ? {
-            title: m['models.conditions.reuse.question'](),
-            badge: { variant: 'red' as const, text: m['models.conditions.types.forbidden']() },
-            subtitle: m['models.conditions.reuse.subTitle']()
-          }
-        : {
-            title: m['models.conditions.reuse.title'](),
-            badge: model.licenseInfos.reuseSpecificities
-              ? {
-                  variant: 'purple' as const,
-                  text: m['models.conditions.types.conditions']()
-                }
-              : { variant: 'green' as const, text: m['models.conditions.types.allowed']() },
-            subtitle: model.licenseInfos.reuseSpecificities
-          }
-    ].filter((b) => !!b)
+    const { release } = model.badges
+    return [release].filter((b) => !!b)
   })
 
   const dsfrEvents = {
@@ -88,9 +48,9 @@
                 id="{modalId}-title"
                 class="mb-3! text-lg! font-normal! text-dark-grey gap-2 flex items-center"
               >
-                <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
+                <AILogo logo={model.lab.logo} size="lg" alt={model.lab.name} />
                 <div>
-                  {model.organisation}/<span class="font-extrabold">{model.simple_name}</span>
+                  {model.lab.name}/<span class="font-extrabold">{model.name}</span>
                 </div>
               </h5>
 
@@ -99,8 +59,6 @@
                   <li><Badge id="general-badge-{i}" {...badge} /></li>
                 {/each}
               </ul>
-
-              {@html sanitize(model.desc).replaceAll('<p>', '<p class="last:mb-5!">')}
 
               <div class="gap-5 lg:grid-cols-8 grid">
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
@@ -112,12 +70,7 @@
                     <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
                   </div>
 
-                  <div class="fr-message block!">
-                    {@html sanitize(model.sizeDesc).replaceAll(
-                      '<p>',
-                      '<p class="text-sm! mb-3! last:mb-0!">'
-                    )}
-                  </div>
+                  <div class="fr-message block!"></div>
                 </div>
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
@@ -134,59 +87,7 @@
                     />
                   </div>
 
-                  <div class="fr-message block!">
-                    {@html sanitize(model.fyi).replaceAll(
-                      '<p>',
-                      '<p class="text-sm! mb-3! last:mb-0!">'
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  class={[
-                    'cg-border gap-4 bg-white p-4 pb-6 lg:col-span-6 grid',
-                    licenseCards.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-3'
-                  ]}
-                >
-                  <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>
-                    <div class="mb-2 gap-2 flex flex-wrap">
-                      <h6 class="mb-0! text-sm! flex">
-                        <Icon icon="i-ri-copyright-line" block class="me-2" />
-                        {m['models.conditions.title']()}
-                      </h6>
-                      <Badge {...model.badges.licenseName} size="sm" class="ms-auto self-center!" />
-                    </div>
-
-                    <div class="fr-message block!">
-                      {@html sanitize(model.licenseInfos.desc).replaceAll(
-                        '<p>',
-                        '<p class="text-xs! mb-3! last:mb-0!">'
-                      )}
-                    </div>
-                  </div>
-
-                  <div
-                    class={[
-                      'text-xs! gap-4 grid',
-                      licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
-                    ]}
-                  >
-                    {#each licenseCards as card, i (i)}
-                      <div
-                        class={[
-                          'cg-border p-3 flex w-full flex-col items-center text-center',
-                          { 'justify-between': !!card.subtitle }
-                        ]}
-                      >
-                        <p class="mb-3! text-xs! font-bold">{card.title}</p>
-
-                        <Badge {...card.badge} size="sm" />
-                        {#if !!card.subtitle}
-                          <p class="mt-3! mb-0! text-xs!">{card.subtitle}</p>
-                        {/if}
-                      </div>
-                    {/each}
-                  </div>
+                  <div class="fr-message block!"></div>
                 </div>
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
@@ -194,26 +95,6 @@
                     <Icon icon="i-ri-link" block class="me-2" />
                     {m['models.extra.title']()}
                   </h6>
-
-                  <p class="mb-3! text-xs! text-grey">
-                    {@html sanitize(
-                      m[
-                        `models.extra.experts.${model.distribution === 'api-only' ? 'api-only' : 'open-weights'}`
-                      ]({
-                        linkProps: externalLinkProps(model.url || '#')
-                      })
-                    )}
-                  </p>
-                  <p class="mb-0! text-xs! text-grey">
-                    {@html sanitize(
-                      m['models.extra.impacts']({
-                        linkProps1: externalLinkProps(
-                          'https://huggingface.co/spaces/genai-impact/ecologits-calculator'
-                        ),
-                        linkProps2: externalLinkProps('https://impactco2.fr')
-                      })
-                    )}
-                  </p>
                 </div>
               </div>
             </div>
