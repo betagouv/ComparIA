@@ -4,6 +4,7 @@ import logging
 
 from cyclopts import App
 
+from internal.cli import cli_internal
 from utils.database.cli import cli_db
 from utils.dataset.run import main as generate_datasets
 from utils.llms.cli import cli_llms
@@ -21,6 +22,7 @@ cli.command(cli_gen)
 cli.command(cli_db)
 cli.command(cli_maintenance)
 cli.command(cli_llms)
+cli.command(cli_internal)
 
 if __name__ == "__main__":
     configure_logger(logging.getLogger("comparia"))
