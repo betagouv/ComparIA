@@ -6,17 +6,17 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
+
+from backend.config import settings
+
+# Import all table models to populate SQLModel.metadata
+from utils.database.models import Comparison, Turn  # noqa: F401
 from utils.database.models.auth import (  # noqa: F401
     AuthSession,
     ConsentLog,
     LoginCode,
     User,
 )
-
-from backend.config import settings
-
-# Import all table models to populate SQLModel.metadata
-from utils.database.models import Comparison, Turn  # noqa: F401
 from utils.database.models.llms import (  # noqa: F401
     LLMData,
     LLMEndpoint,
