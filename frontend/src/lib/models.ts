@@ -1,3 +1,4 @@
+import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
 import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from '$lib/generated/models'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
@@ -15,74 +16,7 @@ export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
 
-interface RankingVariant {
-  elo: number
-  score_p2_5: number
-  score_p97_5: number
-  rank: number
-  rank_p2_5: number
-  rank_p97_5: number
-  n_match: number
-  mean_win_prob: number
-  win_rate: number
-  trust_range: [number, number]
-}
-
-interface DatasetData extends RankingVariant {
-  // Plain Bradley-Terry view, shown when Style Control is toggled off. Null for
-  // models that are degenerate (never won/lost) in the plain fit.
-  uncontrolled: RankingVariant | null
-}
-
-interface PreferencesData {
-  positive_prefs_ratio: number
-  total_prefs: number
-  // Positive count
-  useful: number
-  clear_formatting: number
-  complete: number
-  creative: number
-  // Negative count
-  incorrect: number
-  instructions_not_followed: number
-  superficial: number
-}
-
-export interface APIBotModel {
-  new: boolean
-  status: 'archived' | 'enabled'
-  id: string
-  simple_name: Model
-  organisation: Organisation
-  icon_path: string
-  distribution: 'api-only' | 'open-weights' | 'fully-open-source'
-  license: License
-  reuse: boolean
-  commercial_use: boolean | null
-  release_date: string
-  params: number
-  active_params: number | null
-  friendly_size: Sizes
-  arch: AllArchs
-  reasoning: boolean | 'hybrid'
-  quantization: 'q4' | 'q8' | null
-  required_ram: number
-  url: string | null // FIXME required?
-  // conditions: 'free' | 'copyleft' | 'restricted'
-  wh_per_million_token: number
-  data: DatasetData | null
-  prefs: PreferencesData | null
-}
-export type APIData = {
-  data_timestamp: number
-  models: APIBotModel[]
-  style_coefficients?: Record<string, number>
-}
-export type Data = {
-  lastUpdateDate: string | null
-  models: BotModel[]
-  styleCoefficients: Record<string, number>
-}
+export type Data = { lastUpdateDate: string | null; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
@@ -90,7 +24,7 @@ function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
 }
 
-export function parseModel(model: APIBotModel) {
+export function parseModel(model: APILLMData) {
   return {
     ...model,
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
@@ -167,8 +101,8 @@ export function parseModel(model: APIBotModel) {
   }
 }
 
-export function setModelsContext(data: APIData) {
-  setContext('data', {
+export function setModelsContext(data: LLMList) {
+  setContext<Data>('data', {
     lastUpdateDate: data.data_timestamp
       ? new Date(data.data_timestamp * 1000).toLocaleDateString()
       : null,

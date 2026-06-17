@@ -1,7 +1,8 @@
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
+import type { APILLMData } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
-import type { APIBotModel, BotModel } from '$lib/models'
+import type { BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
@@ -161,7 +162,7 @@ interface APIConsoData {
 }
 
 interface APIRevealModelData {
-  llm: APIBotModel
+  llm: APILLMData
   conso: APIConsoData
 }
 
