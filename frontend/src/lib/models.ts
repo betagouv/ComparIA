@@ -2,6 +2,7 @@ import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/gen
 import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from '$lib/generated/models'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
+import { getLocale } from './i18n/runtime'
 import { styleControl } from './styleControl.svelte'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
@@ -25,30 +26,23 @@ function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
 }
 
 export function parseModel(model: APILLMData) {
+  const locale = getLocale()
+  if (model.public_training_code && model.public_training_data && model.public_weights) {
+    model.license.kind = 'open-source'
+  }
+  const licenseType = model.license.kind
+  const release_date = new Date(model.release_date)
+
   return {
     ...model,
+    id: model.id!,
+    release_date,
+    // FIXME use created_at date instead?
+    new: Math.floor((new Date() - release_date) / (1000 * 60 * 60 * 24)) < 60,
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
-    desc: m[`generated.models.${model.simple_name}.desc`](),
-    sizeDesc: m[`generated.models.${model.simple_name}.size_desc`](),
-    fyi: m[`generated.models.${model.simple_name}.fyi`](),
-    licenseInfos:
-      model.license === 'proprietary'
-        ? {
-            desc: m[`generated.licenses.proprio.${model.organisation}.license_desc`](),
-            reuseSpecificities:
-              m[`generated.licenses.proprio.${model.organisation}.reuse_specificities`](),
-            commercialUseSpecificities:
-              m[`generated.licenses.proprio.${model.organisation}.commercial_use_specificities`]()
-          }
-        : {
-            desc: m[`generated.licenses.os.${model.license}.license_desc`](),
-            reuseSpecificities: m[`generated.licenses.os.${model.license}.reuse_specificities`](),
-            commercialUseSpecificities:
-              m[`generated.licenses.os.${model.license}.commercial_use_specificities`]()
-          },
     badges: {
       license: {
-        'fully-open-source': {
+        'open-source': {
           id: `model-os-${model.id}`,
           variant: 'green' as const,
           text: m['models.licenses.type.openSource'](),
@@ -60,44 +54,39 @@ export function parseModel(model: APILLMData) {
           text: m['models.licenses.type.semiOpen'](),
           tooltip: m['models.openWeight.tooltips.openWeight']()
         },
-        'api-only': {
+        proprietary: {
           id: `model-proprietary-${model.id}`,
           variant: 'orange' as const,
           text: m['models.licenses.type.proprietary']()
         }
-      }[model.distribution],
-      releaseDate: model.release_date
-        ? ({
-            variant: '' as const,
-            text: m['models.release']({ date: model.release_date })
-          } as const)
-        : null,
-      licenseName: {
+      }[licenseType],
+      release: {
         variant: '' as const,
-        text:
-          model.license === 'proprietary' ? m['models.licenses.type.proprietary']() : model.license
-      },
+        text: m['models.release']({
+          date: release_date.toLocaleString(locale, {
+            year: 'numeric',
+            month: 'numeric'
+          })
+        })
+      } as const,
       size: {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
         text:
-          model.distribution === 'open-weights' || model.distribution === 'fully-open-source'
+          licenseType === 'open-weights' || licenseType === 'open-source'
             ? m['models.parameters']({ number: model.params })
             : m['models.size.estimated']({ size: model.friendly_size }),
         tooltip:
-          model.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
+          licenseType === 'proprietary' ? m['models.openWeight.tooltips.params']() : undefined
       },
       arch: {
         id: `model-arch-${model.id}`,
         variant: 'yellow' as const,
         text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
         tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
-      },
-      reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
+      }
     },
-    search: (['id', 'simple_name', 'organisation'] as const)
-      .map((key) => model[key].toLowerCase())
-      .join(' ')
+    search: [model.human_id, model.name, model.lab.name].join(' ')
   }
 }
 

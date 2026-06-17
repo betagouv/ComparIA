@@ -27,7 +27,7 @@
   const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
   const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
-      const availableModelIds = new Set(models.map((m) => m.id))
+      const availableModelIds = new Set(models.map((llm) => llm.id))
       return parsed.filter((id) => availableModelIds.has(id))
     }
     return []
