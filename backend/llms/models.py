@@ -17,9 +17,16 @@ The models are organized in hierarchy:
 - DatasetData/PreferencesData: Rankings and user preferences
 """
 
-from typing import Annotated, Any, Literal, get_args
+from typing import Annotated, Any, Literal, Self, get_args
 
-from pydantic import AfterValidator, BaseModel, computed_field, field_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ValidationInfo,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
@@ -150,6 +157,10 @@ class PreferencesData(BaseModel):
 
 
 class APILLMDataBase(LLMDataBase):
+    """
+    Base LLM class used for LLM picker and LLM list.
+    """
+
     status: Literal["enabled", "archived"]
     license: LLMLicensePublic
     lab: LLMLabPublic
@@ -208,3 +219,21 @@ class LLMDataEnabled(APILLMDataBase):
             api_key=self.endpoint.api_key,
             model=f"{self.endpoint.api_type}/{self.api_model_id}",
         )
+
+
+class APILLMData(APILLMDataBase):
+    """
+    LLM data used for LLM list, sent to clients.
+    !Warning: make sure there's no secrets.
+    """
+
+    data: DatasetData | None = None
+    prefs: PreferencesData | None = None
+
+    @model_validator(mode="after")
+    def inject_ranking_data(self, info: ValidationInfo) -> Self:
+        if data := info.context.get("ranking"):
+            self.data = data.rankings.get(str(self.id))
+            self.prefs = data.preferences.get(str(self.id))
+
+        return self
