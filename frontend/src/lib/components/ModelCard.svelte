@@ -2,7 +2,6 @@
   import AILogo from '$components/AILogo.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
-  import { sanitize } from '$lib/utils/commons'
   import { Badge } from './dsfr'
 
   let {
@@ -15,8 +14,8 @@
     modalId: string
   } = $props()
 
-  const { license, releaseDate, size } = model.badges
-  const badges = [license, releaseDate, size].filter((b) => !!b)
+  const { license, release, size } = model.badges
+  const badges = [license, release, size].filter((b) => !!b)
 </script>
 
 <div
@@ -30,22 +29,20 @@
       <h6
         class="fr-card__title mb-3! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
       >
-        <AILogo iconPath={model.icon_path} alt={model.organisation} />
+        <AILogo logo={model.lab.logo} alt={model.lab.name} />
         <div>
-          {model.organisation}/<a
+          {model.lab.name}/<a
             class="text-black! after:text-primary"
             data-fr-opened="false"
             aria-controls={modalId}
             href="#{model.id}"
             onclick={() => onModelSelected(model.id)}
-            ><span class="font-extrabold">{model.simple_name}</span></a
+            ><span class="font-extrabold">{model.name}</span></a
           >
         </div>
       </h6>
 
-      <div class="fr-card__desc">
-        {@html sanitize(model.desc).replaceAll('<p>', '<p class="last:mb-0!">')}
-      </div>
+      <div class="fr-card__desc"></div>
 
       <div class="fr-card__start order-2!">
         <ul class="fr-badges-group">

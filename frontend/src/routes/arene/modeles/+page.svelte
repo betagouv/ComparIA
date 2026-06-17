@@ -12,7 +12,7 @@
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { License, Organisation, Sizes } from '$lib/models'
+  import type { Sizes } from '$lib/models'
   import { getModelsContext, SIZES } from '$lib/models'
 
   const models = getModelsContext().models
@@ -20,9 +20,9 @@
   const editorFilter = {
     id: 'editor',
     legend: m['models.list.filters.editor.legend'](),
-    options: [...new Set(models.map((m) => m.organisation))]
+    options: [...new Set(models.map((llm) => llm.lab.name))]
       .sort()
-      .map((org) => ({ value: org, count: models.filter((m) => m.organisation === org).length }))
+      .map((org) => ({ value: org, count: models.filter((llm) => llm.lab.name === org).length }))
   }
 
   const sizeFilter = {
@@ -31,18 +31,18 @@
     options: SIZES.map((value) => ({
       value,
       label: m[`models.list.filters.size.labels.${value}`](),
-      count: models.filter((m) => m.friendly_size === value).length
+      count: models.filter((llm) => llm.friendly_size === value).length
     }))
   }
 
   const licenseFilter = {
     id: 'license',
     legend: m['models.list.filters.license.legend'](),
-    options: [...new Set(models.map((m) => m.license))].map((license) => ({
+    options: [...new Set(models.map((llm) => llm.license.name))].map((license) => ({
       label:
         license === 'proprietary' ? m['models.licenses.type.proprietary']() : (license as string),
       value: license as string,
-      count: models.filter((m) => m.license === license).length
+      count: models.filter((llm) => llm.license.name === license).length
     }))
   }
 
@@ -53,9 +53,9 @@
     })
   )
 
-  let editors = $state<Organisation[]>([])
+  let editors = $state<string[]>([])
   let sizes = $state<Sizes[]>([])
-  let licenses = $state<License[]>([])
+  let licenses = $state<string[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let showArchived = $state(false)
   let search = $state('')
@@ -66,17 +66,17 @@
       .filter((model) => {
         const searchMatch = !_search || model.search.includes(_search)
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
-        const orgMatch = editors.length === 0 || editors.includes(model.organisation)
-        const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
+        const orgMatch = editors.length === 0 || editors.includes(model.lab.name)
+        const licenseMatch = licenses.length === 0 || licenses.includes(model.license.name)
         const archivedMatch = model.status === 'enabled' || showArchived
         return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
           case 'date-desc':
-            if (a.release_date && b.release_date && a.release_date !== b.release_date) {
+            if (a.release_date !== b.release_date) {
               // @ts-expect-error date works
-              return new Date('01/' + b.release_date) - new Date('01/' + a.release_date)
+              return new Date(b.release_date) - new Date(a.release_date)
             } else if (a.release_date) {
               return -1
             } else if (b.release_date) {
@@ -89,9 +89,9 @@
             }
           // falls through
           case 'org-asc':
-            return a.organisation.localeCompare(b.organisation)
+            return a.lab.name.localeCompare(b.lab.name)
           default:
-            return a.simple_name.localeCompare(b.simple_name)
+            return a.name.localeCompare(b.name)
         }
       })
   })
