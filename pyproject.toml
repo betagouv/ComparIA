@@ -28,6 +28,7 @@ dependencies = [
     "psycopg[binary]>=3.3.3",
     "alembic>=1.18.4",
     "linkup-sdk>=0.13.0",
+    "async-lru>=2.3.0",
 ]
 
 [dependency-groups]
@@ -55,6 +56,7 @@ dev = [
     "types-markdown>=3.10.0.20251106",
     "types-psycopg2>=2.9.21.20251012",
     "types-requests>=2.32.4.20260107",
+    "pydantic-to-typescript>=2.0.0",
 ]
 
 [tool.mypy]
