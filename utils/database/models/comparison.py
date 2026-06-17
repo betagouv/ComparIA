@@ -58,6 +58,7 @@ class ComparisonBase(SQLModel):
     updated_at: AutoDatetime
     ip: str  # WARNING: PII
     visitor_id: str | None = None
+    user_id: Annotated[uuid.UUID | None, Field(foreign_key="auth_user.id")] = None
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (

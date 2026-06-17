@@ -10,6 +10,7 @@ from alembic import context
 
 # Import all table models to populate SQLModel.metadata
 from utils.database.models import Comparison, Turn  # noqa: F401
+from utils.database.models.auth import AuthSession, ConsentLog, LoginCode, User  # noqa: F401
 from utils.database.models.messages import LLMMessage, SystemMessage, UserMessage  # noqa: F401
 
 from backend.config import settings

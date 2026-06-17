@@ -1,3 +1,4 @@
+from .auth import AuthSession, ConsentLog, LoginCode, User
 from .comparison import (
     ArchivedReason,
     Comparison,
