@@ -42,7 +42,6 @@ cli_internal.command(types, name="types")
 cli_internal.command(i18n, name="i18n")
 cli_internal.command(run_all, name="all")
 
-
 if __name__ == "__main__":
     configure_logger(logging.getLogger("comparia"))
     cli_internal()
