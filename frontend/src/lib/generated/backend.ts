@@ -1,0 +1,130 @@
+/* tslint:disable */
+/* eslint-disable */
+/**
+/* This file was automatically generated from pydantic models by running pydantic2ts.
+/* Do not modify it by hand - just update the pydantic models and then re-run the script
+*/
+
+export interface LLMList {
+  data_timestamp: number | null;
+  models: APILLMData[];
+}
+/**
+ * LLM data used for LLM list, sent to clients.
+ * !Warning: make sure there's no secrets.
+ */
+export interface APILLMData {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  lab_id: string;
+  license_id: string;
+  endpoint_id: string | null;
+  human_id: string;
+  api_model_id: string | null;
+  status: "enabled" | "archived";
+  name: string;
+  rate_limited: boolean;
+  release_date: string;
+  knowledge_cutoff: string | null;
+  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-dense" | "na";
+  params: number;
+  active_params: number | null;
+  context_tokens: number | null;
+  quantization: ("q4" | "q8") | null;
+  inputs: ("text" | "image" | "audio" | "video")[];
+  public_weights: boolean;
+  public_training_data: boolean;
+  public_training_code: boolean;
+  eu_hostable: boolean;
+  price_in: number;
+  price_out: number;
+  system_prompt: string | null;
+  links?: Link[];
+  license: LLMLicensePublic;
+  lab: LLMLabPublic;
+  data?: DatasetData | null;
+  prefs?: PreferencesData | null;
+  friendly_size: "XS" | "S" | "M" | "L" | "XL";
+  required_ram: number;
+  wh_per_million_token: number;
+  [k: string]: unknown;
+}
+export interface Link {
+  text: string;
+  url: string;
+  [k: string]: unknown;
+}
+export interface LLMLicensePublic {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  kind: "proprietary" | "open-weights" | "open-source";
+  name: string;
+  reuse: boolean;
+  commercial_use: boolean;
+  [k: string]: unknown;
+}
+export interface LLMLabPublic {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  name: string;
+  logo: string;
+  origin_country: string;
+  [k: string]: unknown;
+}
+/**
+ * Ranking/evaluation data from benchmark datasets.
+ *
+ * Contains Elo ratings and confidence intervals from model comparison datasets
+ * (e.g., LMSYS arena, ComparIA own data).
+ *
+ * Attributes:
+ *     elo: Estimated Elo rating (median/central estimate)
+ *     score_p2_5/p97_5: Confidence interval bounds (2.5th and 97.5th percentile)
+ *     rank/rank_p2_5/rank_p97_5: Model ranking with confidence bounds
+ *     n_match: Number of comparisons in dataset
+ *     mean_win_prob: Probability model wins in random matchup
+ *     win_rate: Percentage of matches won
+ *     trust_range: Computed confidence interval for ranking
+ */
+export interface DatasetData {
+  elo: number;
+  score_p2_5: number;
+  score_p97_5: number;
+  rank_p2_5: number;
+  rank_p97_5: number;
+  rank: number;
+  n_match: number;
+  mean_win_prob: number;
+  win_rate: number;
+  /**
+   * Confidence interval: [lower bound, upper bound] for ranking.
+   */
+  trust_range: number[];
+  [k: string]: unknown;
+}
+/**
+ * User preference statistics from ComparIA voting.
+ *
+ * Aggregated counts of user ratings for specific quality attributes.
+ *
+ * Attributes:
+ *     positive_prefs_ratio: Percentage of positive preferences (useful, complete, etc.)
+ *     total_prefs: Total number of preference votes received
+ *     useful/complete/creative/clear_formatting: Count of positive preferences
+ *     incorrect/superficial/instructions_not_followed: Count of negative preferences
+ */
+export interface PreferencesData {
+  positive_prefs_ratio: number;
+  total_prefs: number;
+  useful: number;
+  clear_formatting: number;
+  complete: number;
+  creative: number;
+  incorrect: number;
+  instructions_not_followed: number;
+  superficial: number;
+  [k: string]: unknown;
+}
