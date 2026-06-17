@@ -12,7 +12,8 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
-from backend.llms.models import LLMDataArchived, LLMDataEnabled
+from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
+from backend.utils.countries import get_ranking
 from utils.database.models.llms import LLMData
 from utils.database.session import get_session
 from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, redis_cache
@@ -232,6 +233,27 @@ async def get_llms_data() -> LLMsData:
     except Exception as e:
         logger.error(f"[DB] Error loading LLMsData: {e}")
         raise
+
+
+class LLMList(BaseModel):
+    data_timestamp: float | None
+    models: list[APILLMData]
+    style_coefficients: dict[UUID, float]
+
+
+# FIXME use cache?
+async def get_llms_list() -> LLMList:
+    llms = await get_llms_data()
+    ranking = get_ranking()
+
+    return LLMList.model_validate(
+        {
+            "models": llms.all.values(),
+            "data_timestamp": ranking.timestamp if ranking else None,
+            "style_coefficients": ranking.style_coefficients,
+        },
+        context={"ranking": ranking},
+    )
 
 
 async def pick_replacement_model(
