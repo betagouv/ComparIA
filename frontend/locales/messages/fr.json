@@ -1732,6 +1732,43 @@
             },
             "estimated": "Taille estimée ({size})",
             "title": "Taille"
+        },
+        "technical": {
+            "arch": {
+                "title": "Architecture",
+                "tooltip": "FIXME"
+            },
+            "context": {
+                "chars_count": "Soit envir. {count}k caractères",
+                "desc": "Peut analyser environ plusieurs centaines de pages de texte",
+                "title": "Contexte",
+                "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>jetons</span>",
+                "tooltip": "FIXME"
+            },
+            "modalities": {
+                "title": "Modalités d’entrée",
+                "types": {
+                    "audio": "Audio",
+                    "image": "Image",
+                    "text": "Texte",
+                    "video": "Vidéo"
+                }
+            },
+            "price": {
+                "desc": "Entrée = question envoyée, Sortie = réponse générée",
+                "price_count": "{count}<span {midProps}>/M</span>",
+                "price_in": "Prix d’entrée",
+                "price_out": "Prix de sortie",
+                "title": "Prix"
+            },
+            "size": {
+                "active_params_count": "Dont {count}mds actifs",
+                "desc": "Plus un modèle a de paramètres, plus il demande de ressources",
+                "estimated": "Estimation",
+                "params_count": "{count}<span {midProps}>mds</span> <span {smallProps}>paramètres</span>",
+                "title": "Taille"
+            },
+            "title": "Caractéristiques techniques"
         }
     },
     "modes": {
