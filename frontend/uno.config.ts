@@ -64,7 +64,8 @@ export default defineConfig({
     {
       'cg-border': 'border-1 border-[--grey-925-125] border-solid rounded-xl',
       'c-bot-disk-a': 'w-[22px] h-[22px] rounded-full bg-purple',
-      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange'
+      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange',
+      'text-xxs': 'text-[10px] leading-normal'
     }
   ],
   safelist: [
