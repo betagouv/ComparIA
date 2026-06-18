@@ -13,6 +13,7 @@ from utils.maintenance.cli import cli_maintenance
 from utils.ranking.run import main as generate_rankings
 
 cli = App()
+cli.register_install_completion_command()
 
 cli_gen = App(name="generate", help="Generation utilities.")
 cli_gen.command(generate_rankings, name="rankings")
