@@ -21,7 +21,7 @@ export type Data = { lastUpdateDate: string | null; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
-function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
+export function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
 }
 
@@ -69,6 +69,18 @@ export function parseModel(model: APILLMData) {
           })
         })
       } as const,
+      knowledge: model.knowledge_cutoff
+        ? ({
+            variant: '' as const,
+            text: m['models.knowledge.badge']({
+              date: new Date(model.knowledge_cutoff).toLocaleString(locale, {
+                year: 'numeric',
+                month: 'numeric'
+              })
+            }),
+            tooltip: m['models.knowledge.tooltip']()
+          } as const)
+        : undefined,
       size: {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
