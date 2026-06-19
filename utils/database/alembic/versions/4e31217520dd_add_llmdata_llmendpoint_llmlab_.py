@@ -23,7 +23,8 @@ depends_on: Union[str, Sequence[str], None] = None
 import json
 import os
 from datetime import datetime
-from pathlib import Path
+
+from utils.utils import LLMS_LICENSES_FILE, LLMS_RAW_DATA_FILE
 
 
 def parse_date(d: str) -> datetime:
@@ -39,11 +40,6 @@ def add_base_info(raw_data, date):
 
 
 def get_new_llms_raw_data():
-
-    EXTRAS_DIR = Path(__file__).parent.parent / "extras"
-    RAW_DATA_PATH = EXTRAS_DIR / "models.json"
-    RAW_LICENSES_PATH = EXTRAS_DIR / "licenses.json"
-
     OPENROUTER_ENDPOINT_ID = "9667ee84-9b07-4d3d-890c-57fc9ffe9c33"
     HUGGINGFACE_ENDPOINT_ID = "3f9547a8-6033-4223-98f4-2245d3be4a3d"
     ORDBOGEN_ENDPOINT_ID = "24a47a21-d767-4352-8de8-be188b2863f9"
@@ -74,8 +70,8 @@ def get_new_llms_raw_data():
             "api_key": os.getenv("ORDBOGEN_API_KEY"),
         },
     ]
-    raw_orgas = json.loads(RAW_DATA_PATH.read_text())
-    raw_licenses = json.loads(RAW_LICENSES_PATH.read_text())
+    raw_orgas = json.loads(LLMS_RAW_DATA_FILE.read_text())
+    raw_licenses = json.loads(LLMS_LICENSES_FILE.read_text())
 
     endpoints = []
     licenses = []

@@ -16,11 +16,21 @@ ROOT_DIR = UTILS_DIR.parent
 DATA_DIR = ROOT_DIR / "data"
 # LLMs data
 DEFAULT_LLM_DATA_PATH = DATA_DIR / "llms-data.json"
-LLMS_GENERATED_DATA_FILE = UTILS_DIR / "models" / "generated-models.json"  # FIXME rm
 # Frontend
 FRONTEND_DIR = ROOT_DIR / "frontend"
 FRONTEND_MAIN_I18N_FILE = FRONTEND_DIR / "locales" / "messages" / "fr.json"
 FRONTEND_GENERATED_DIR = FRONTEND_DIR / "src" / "lib" / "generated"
+
+# Legacy LLM files (be carefull to not remove those file, needed in migrations)
+LLMS_RAW_DATA_FILE = (
+    UTILS_DIR / "models" / "models.json"
+)  # FIXME to move to alembic folder at some point
+LLMS_LICENSES_FILE = (
+    UTILS_DIR / "models" / "licenses.json"
+)  # FIXME to move to alembic folder at some point
+LLMS_GENERATED_DATA_FILE = (
+    UTILS_DIR / "models" / "generated-models.json"
+)  # FIXME to rm at some point
 
 logger = configure_logger(logging.getLogger("utils"))
 

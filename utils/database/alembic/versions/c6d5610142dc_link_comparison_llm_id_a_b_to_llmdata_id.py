@@ -21,14 +21,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 # start custom
 import json
-from pathlib import Path
+
+from utils.utils import LLMS_LICENSES_FILE, LLMS_RAW_DATA_FILE
 
 
 def update_table_ids(reversed: bool = False):
-    EXTRAS_DIR = Path(__file__).parent.parent / "extras"
-    RAW_DATA_PATH = EXTRAS_DIR / "models.json"
-
-    raw_orgas = json.loads(RAW_DATA_PATH.read_text())
+    raw_orgas = json.loads(LLMS_RAW_DATA_FILE.read_text())
     llm_ids_map = {}
 
     for raw_orga in raw_orgas:
