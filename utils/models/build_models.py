@@ -7,6 +7,7 @@ from utils.utils import (
     FRONTEND_GENERATED_DIR,
     FRONTEND_MAIN_I18N_FILE,
     LLMS_GENERATED_DATA_FILE,
+    LLMS_RAW_DATA_FILE,
     read_json,
     sort_dict,
     write_json,
@@ -14,7 +15,7 @@ from utils.utils import (
 
 from .archs import get_archs
 from .licenses import get_licenses
-from .organisations import LLMS_RAW_DATA_FILE, Orgas, validate_orgas_and_models
+from .organisations import Orgas, validate_orgas_and_models
 
 logger = configure_logger(logging.getLogger("llms"))
 
@@ -79,9 +80,9 @@ def main(fetch_latest_dataset_results: bool = True) -> None:
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
     # Integrate translatable content to frontend locales
-    frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
-    frontend_i18n["generated"] = sort_dict(i18n)
-    write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
+    # frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
+    # frontend_i18n["generated"] = sort_dict(i18n)
+    # write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
 
     # Save generated models
     write_json(
@@ -94,13 +95,14 @@ def main(fetch_latest_dataset_results: bool = True) -> None:
 
     # Save typescript types in frontend code
     TS_DATA_FILE.write_text(
-        f"""export const LICENSES = {[l for l in context["licenses"].keys()]} as const
-export const ARCHS = {[a for a in context["archs"]]} as const
-export const MAYBE_ARCHS = {[f"maybe-{a}" for a in context["archs"] if a != 'na']} as const
-export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
-export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
-export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in orga["icon_path"]]}
-"""
+        f"export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in orga["icon_path"]]}"
+        #         f"""export const LICENSES = {[l for l in context["licenses"].keys()]} as const
+        # export const ARCHS = {[a for a in context["archs"]]} as const
+        # export const MAYBE_ARCHS = {[f"maybe-{a}" for a in context["archs"] if a != 'na']} as const
+        # export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
+        # export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
+        # export const ICONS = {[orga["icon_path"] for orga in dumped_orgas if not "." in orga["icon_path"]]}
+        # """
     )
 
     logger.info("Generation is successfull!")

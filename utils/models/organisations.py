@@ -12,13 +12,11 @@ from pydantic import (
 from pydantic_core import PydanticCustomError
 
 from utils.logger import configure_logger, log_pydantic_parsed_errors
-from utils.utils import FRONTEND_DIR, ROOT_DIR, UTILS_DIR
+from utils.utils import FRONTEND_DIR, ROOT_DIR
 
 from .llms import LLMDataRaw, LLMDataRawBase
 
 logger = configure_logger(logging.getLogger("llms:organisations"))
-
-LLMS_RAW_DATA_FILE = UTILS_DIR / "database/alembic/extras/models.json"
 
 EXCLUDED_LLMS_STATUS = {"missing_data"}
 
@@ -35,7 +33,7 @@ descs = {
 }
 
 
-# Model to validate organisations data from 'utils/models/models.json'
+# Model to validate organisations data from LLMS_RAW_DATA_FILE
 class RawOrganisation(BaseModel):
     db_id: str
     name: Annotated[str, Field(description=descs["name"])]
