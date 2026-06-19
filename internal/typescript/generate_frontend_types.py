@@ -2,7 +2,7 @@ import re
 
 from pydantic2ts import generate_typescript_defs
 
-from backend.llms.models import SIZE_CLASSES
+from backend.llms.models import ENERGY_CLASSES, SIZE_CLASSES
 from internal.archs import get_archs
 from utils.utils import FRONTEND_DIR, FRONTEND_GENERATED_DIR
 
@@ -28,6 +28,7 @@ def generate_frontend_constants() -> None:
 
     constants = {
         "SIZE_CLASSES": list(SIZE_CLASSES),
+        "ENERGY_CLASSES": list(ENERGY_CLASSES),
         "ARCHS": archs,
         "MAYBE_ARCHS": [f"maybe-{a}" for a in archs if a != "na"],
     }

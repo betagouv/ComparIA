@@ -44,6 +44,18 @@ SIZE_CLASSES_SCALE: dict[SizeClass, int | float] = {
     "XL": float("inf"),
 }
 
+EnergyClass = Literal["A", "B", "C", "D", "E", "F"]
+ENERGY_CLASSES: tuple[EnergyClass, ...] = get_args(EnergyClass)
+ENERGY_CLASSES_SCALE: dict[EnergyClass, int | float] = {
+    # in wh
+    "A": 100,
+    "B": 300,
+    "C": 1_000,
+    "D": 3_000,
+    "E": 10_000,
+    "F": float("inf"),
+}
+
 ClassT = TypeVar("ClassT", bound=SizeClass)
 
 
@@ -200,6 +212,11 @@ class APILLMDataBase(LLMDataBase):
         energy_kwh = convert_range_to_value(impact.energy.value)
 
         return energy_kwh * 1000
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def energy_class(self) -> EnergyClass:
+        return get_class(ENERGY_CLASSES_SCALE, self.wh_per_million_token)
 
 
 class LLMDataArchived(APILLMDataBase):
