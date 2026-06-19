@@ -1,24 +1,19 @@
 import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
-import { ARCHS, MAYBE_ARCHS } from '$lib/generated/constants'
+import type { Archs, MaybeArchs } from '$lib/generated/constants'
+import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
 import { styleControl } from './styleControl.svelte'
 
-export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
 export const CONSO_SIZES = ['S', 'M', 'L'] as const
-
-export type Sizes = (typeof SIZES)[number]
 export type ConsoSizes = (typeof CONSO_SIZES)[number]
-export type Archs = (typeof ARCHS)[number]
-export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
-export type AllArchs = Archs | MaybeArchs
 
 export type Data = { lastUpdateDate: string | null; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
-export function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
+export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
 }
 
@@ -84,7 +79,7 @@ export function parseModel(model: APILLMData) {
         text:
           licenseType === 'open-weights' || licenseType === 'open-source'
             ? m['models.parameters']({ number: model.params })
-            : m['models.size.estimated']({ size: model.friendly_size }),
+            : m['models.size.estimated']({ size: model.size_class }),
         tooltip:
           licenseType === 'proprietary' ? m['models.openWeight.tooltips.params']() : undefined
       },

@@ -2,10 +2,11 @@
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import type { Archs } from '$lib/generated/constants'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { applyStyleControl, getModelsWithDataContext, type Archs } from '$lib/models'
+  import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -219,7 +220,7 @@
         >
       </div>
     {:else if col.id === 'size'}
-      <strong>{model.friendly_size}</strong> -
+      <strong>{model.size_class}</strong> -
       {#if model.distribution === 'api-only'}
         <span class="text-xs">{m['ranking.table.data.estimation']()}</span>
       {:else}

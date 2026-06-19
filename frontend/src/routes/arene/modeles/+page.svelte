@@ -11,9 +11,9 @@
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
+  import { SIZE_CLASSES, type SizeClasses } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import type { Sizes } from '$lib/models'
-  import { getModelsContext, SIZES } from '$lib/models'
+  import { getModelsContext } from '$lib/models'
 
   const models = getModelsContext().models
 
@@ -28,10 +28,10 @@
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
-    options: SIZES.map((value) => ({
+    options: SIZE_CLASSES.map((value) => ({
       value,
       label: m[`models.list.filters.size.labels.${value}`](),
-      count: models.filter((llm) => llm.friendly_size === value).length
+      count: models.filter((llm) => llm.size_class === value).length
     }))
   }
 
@@ -54,7 +54,7 @@
   )
 
   let editors = $state<string[]>([])
-  let sizes = $state<Sizes[]>([])
+  let sizes = $state<SizeClasses[]>([])
   let licenses = $state<string[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let showArchived = $state(false)
@@ -65,7 +65,7 @@
     return models
       .filter((model) => {
         const searchMatch = !_search || model.search.includes(_search)
-        const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
+        const sizeMatch = sizes.length === 0 || sizes.includes(model.size_class)
         const orgMatch = editors.length === 0 || editors.includes(model.lab.name)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license.name)
         const archivedMatch = model.status === 'enabled' || showArchived
