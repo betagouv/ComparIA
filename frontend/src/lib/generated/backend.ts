@@ -45,9 +45,10 @@ export interface APILLMData {
   lab: LLMLabPublic;
   data?: DatasetData | null;
   prefs?: PreferencesData | null;
-  friendly_size: "XS" | "S" | "M" | "L" | "XL";
+  size_class: "XS" | "S" | "M" | "L" | "XL";
   required_ram: number;
   wh_per_million_token: number;
+  energy_class: "A" | "B" | "C" | "D" | "E" | "F";
   [k: string]: unknown;
 }
 export interface Link {
