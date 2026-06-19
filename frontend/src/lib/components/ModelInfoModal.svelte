@@ -129,7 +129,7 @@
                 </div>
               </h1>
 
-              <div>
+              <div class="gap-4 flex flex-col">
                 <section class="gap-3 flex flex-col">
                   <h2 class="text-base! mb-0!">{m['models.technical.title']()}</h2>
                   <ul class="fr-badges-group">
@@ -143,10 +143,25 @@
                   <div class="xl:grid-cols-5 gap-4 md:grid-cols-3 sm:grid-cols-2 grid">
                     {#each technicalCards as card, i (i)}
                       <article class="cg-border bg-white p-4 relative">
-                        <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
-                          <Icon icon={card.icon} size="xs" block class="text-info" />
-                          {card.title}
-                        </h2>
+                        <div class="flex">
+                          <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
+                            <Icon icon={card.icon} size="xs" block class="text-info" />
+                            {card.title}
+                          </h2>
+                          {#if card.id === 'size'}
+                            <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
+                          {/if}
+                        </div>
+
+                        {#if card.tooltip}
+                          <Tooltip
+                            id="technical-tooltip-{card.id}"
+                            size="xs"
+                            class="top-3 right-4 absolute"
+                          >
+                            {@html sanitize(card.tooltip)}
+                          </Tooltip>
+                        {/if}
 
                         {#if card.id === 'modalities'}
                           FIXME
@@ -174,16 +189,6 @@
                           {/if}
                         {/if}
 
-                        {#if card.tooltip}
-                          <Tooltip
-                            id="technical-tooltip-{card.id}"
-                            size="xs"
-                            class="top-3 right-4 absolute"
-                          >
-                            {@html sanitize(card.tooltip)}
-                          </Tooltip>
-                        {/if}
-
                         {#if card.desc}
                           <p
                             class="bg-very-light-primary text-xxs p-1 mb-0! mt-3 b-light-primary rounded-sm border"
@@ -195,43 +200,61 @@
                     {/each}
                   </div>
                 </section>
-              </div>
 
-              <div class="gap-5 lg:grid-cols-8 grid">
-                <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
-                  <div class="mb-4 flex">
-                    <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="i-ri-ruler-line" block class="text-info me-2" />
-                      {m['models.size.title']()}
-                    </h6>
-                    <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
-                  </div>
+                <div class="gap-4 flex">
+                  <section class="basis-3/5">
+                    <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
 
-                  <div class="fr-message block!"></div>
+                    <div class="gap-4 flex">
+                      <article class="cg-border bg-white p-4 relative basis-1/2">
+                        <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
+                          <Icon icon="i-ri-cpu-line" size="xs" block class="text-grey" />
+                          {m['models.envImpact.hardware.title']()}
+                        </h2>
+
+                        <Tooltip
+                          id="hardware-tooltip"
+                          text={m['models.envImpact.hardware.tooltip']()}
+                          size="xs"
+                          class="top-3 right-4 absolute"
+                        />
+                      </article>
+
+                      <article class="cg-border bg-white p-4 relative basis-1/2">
+                        <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
+                          <Icon icon="i-ri-leaf-line" size="xs" block class="text-success" />
+                          {m['models.envImpact.conso.title']()}
+                        </h2>
+
+                        <Tooltip
+                          id="conso-tooltip"
+                          text={m['models.envImpact.conso.tooltip']()}
+                          size="xs"
+                          class="top-3 right-4 absolute"
+                        />
+                      </article>
+                    </div>
+                  </section>
+
+                  <section class="basis-2/5">
+                    <h2 class="text-base! mb-3!">{m['models.opennessSovereignty.title']()}</h2>
+
+                    <div class="cg-border bg-white p-4"></div>
+                  </section>
                 </div>
 
-                <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
-                  <div class="mb-4 flex">
-                    <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="i-ri-lightbulb-line" block class="text-yellow me-2" />
-                      {m['models.arch.title']()}
-                    </h6>
-                    <Badge
-                      {...model.badges.arch}
-                      id={modalId + '-arch'}
-                      size="sm"
-                      class="ms-auto self-center!"
-                    />
-                  </div>
+                <div class="gap-4 flex">
+                  <section class="basis-3/5">
+                    <h2 class="text-base! mb-3!">{m['models.performance.title']()}</h2>
 
-                  <div class="fr-message block!"></div>
-                </div>
+                    <div class="cg-border bg-white p-4"></div>
+                  </section>
 
-                <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
-                  <h6 class="mb-2! text-sm! flex">
-                    <Icon icon="i-ri-link" block class="me-2" />
-                    {m['models.extra.title']()}
-                  </h6>
+                  <section class="basis-2/5">
+                    <h2 class="text-base! mb-3!">{m['models.infosSources.title']()}</h2>
+
+                    <div class="cg-border bg-white p-4"></div>
+                  </section>
                 </div>
               </div>
             </article>
