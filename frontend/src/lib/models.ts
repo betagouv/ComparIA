@@ -1,5 +1,5 @@
 import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
-import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from '$lib/generated/models'
+import { ARCHS, MAYBE_ARCHS } from '$lib/generated/constants'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
@@ -13,9 +13,6 @@ export type ConsoSizes = (typeof CONSO_SIZES)[number]
 export type Archs = (typeof ARCHS)[number]
 export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
 export type AllArchs = Archs | MaybeArchs
-export type License = (typeof LICENSES)[number]
-export type Organisation = (typeof ORGANISATIONS)[number]
-export type Model = (typeof MODELS)[number]
 
 export type Data = { lastUpdateDate: string | null; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
