@@ -1,3 +1,5 @@
+import re
+
 from pydantic2ts import generate_typescript_defs
 
 from backend.llms.models import SIZE_CLASSES
@@ -17,6 +19,10 @@ def generate_frontend_types():
     )
 
 
+def to_pascal_case(s: str) -> str:
+    return "".join(w.capitalize() for w in re.split(r"[_\-\s]+", s.lower()))
+
+
 def generate_frontend_constants() -> None:
     archs = [arch.id for arch in get_archs().root]
 
@@ -26,6 +32,9 @@ def generate_frontend_constants() -> None:
         "MAYBE_ARCHS": [f"maybe-{a}" for a in archs if a != "na"],
     }
 
-    file_lines = [f"export const {k} = {v} as const" for k, v in constants.items()]
+    file_lines = [f"export const {k} = {v} as const" for k, v in constants.items()] + [
+        f"export type {to_pascal_case(k)} = (typeof {k})[number]"
+        for k, v in constants.items()
+    ]
 
     FRONTEND_CONSTANTS.write_text("\n".join(file_lines) + "\n")
