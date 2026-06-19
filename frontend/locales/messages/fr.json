@@ -1648,6 +1648,43 @@
             },
             "filterLegend": "Filtre par consommation énergétique moyenne pour 1000 tokens"
         },
+        "envImpact": {
+            "conso": {
+                "class": {
+                    "A": "FIXME",
+                    "B": "Modèle compact, moins énergivore que les très grands modèles ou les modèles denses",
+                    "C": "FIXME",
+                    "D": "FIXME",
+                    "E": "FIXME",
+                    "F": "FIXME"
+                },
+                "title": "Classe de consommation énergétique",
+                "tooltip": "FIXME"
+            },
+            "hardware": {
+                "title": "Matériel nécessaire",
+                "tooltip": "FIXME",
+                "types": {
+                    "laptop": {
+                        "detail": "Aucune carte graphique nécessaire",
+                        "title": "Fonctionne sur un ordinateur portable"
+                    },
+                    "server": {
+                        "detail": "Serveur multi-GPU",
+                        "title": "Nécessite {count} cartes graphiques"
+                    },
+                    "smartphone": {
+                        "detail": "Aucune carte graphique nécessaire",
+                        "title": "Fonctionne sur un smartphone"
+                    },
+                    "workstation": {
+                        "detail": "Station de travail puissante (1 GPU)",
+                        "title": "Nécessite une carte graphique"
+                    }
+                }
+            },
+            "title": "Impact environnemental"
+        },
         "extra": {
             "experts": {
                 "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>",
@@ -1655,6 +1692,13 @@
             },
             "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>.",
             "title": "Pour aller plus loin"
+        },
+        "infosSources": {
+            "title": "Plus d’informations et sources"
+        },
+        "knowledge": {
+            "badge": "Données jusqu’en {date}",
+            "tooltip": "FIXME"
         },
         "licenses": {
             "type": {
@@ -1709,6 +1753,20 @@
             "a": "Modèle A",
             "b": "Modèle B"
         },
+        "opennessSovereignty": {
+            "fields": {
+                "commercial_use": "Usage commercial",
+                "eu_hostable": "Hébergeable dans l’UE",
+                "license_name": "Licence",
+                "license_type": "Type",
+                "origin_country": "Pays d’origine de l’éditeur",
+                "public_training_code": "Code d’entraînement",
+                "public_training_data": "Jeux de données d’entraînement",
+                "public_weights": "Poids du modèle",
+                "reuse": "Réutilisation des sorties"
+            },
+            "title": "Ouverture et Souveraineté"
+        },
         "openWeight": {
             "tooltips": {
                 "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
@@ -1720,6 +1778,25 @@
             }
         },
         "parameters": "{number} mds de paramètres",
+        "performance": {
+            "fields": {
+                "rank": {
+                    "detail": "/{count} modèles",
+                    "title": "Rang classement",
+                    "to": "à"
+                },
+                "score": {
+                    "detail": "(confiance ±{count})",
+                    "title": "Score Bradley-Terry"
+                },
+                "votes": {
+                    "title": "Votes enregistrés"
+                }
+            },
+            "group": "Groupe {count}",
+            "rankFromTo": "Rang {min} à {max}",
+            "title": "Niveau de performance par rapport aux autres modèles"
+        },
         "ram": "{min} à {max} Go",
         "release": "Sortie {date}",
         "size": {
@@ -2379,13 +2456,17 @@
     },
     "words": {
         "activated": "Activé",
+        "allowed": "autorisé",
         "archived": "Archivé",
         "back": "Retour",
         "close": "Fermer",
         "deactivated": "Désactivé",
+        "forbidden": "interdit",
         "loading": "Chargement",
         "NA": "N/A",
         "new": "Nouveau",
+        "private": "privé",
+        "public": "public",
         "random": "Aléatoire",
         "regenerate": "Regénérer",
         "reset": "Réinitialiser",
