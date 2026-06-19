@@ -1,6 +1,6 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button, Icon, Tooltip } from '$components/dsfr'
+  import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { isMaybeArch, type BotModel } from '$lib/models'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
@@ -250,11 +250,21 @@
                     <div class="cg-border bg-white p-4"></div>
                   </section>
 
-                  <section class="basis-2/5">
-                    <h2 class="text-base! mb-3!">{m['models.infosSources.title']()}</h2>
+                  {#if model.links?.length}
+                    <section class="basis-2/5">
+                      <h2 class="text-base! mb-3!">{m['models.infosSources.title']()}</h2>
 
-                    <div class="cg-border bg-white p-4"></div>
-                  </section>
+                      <div class="cg-border bg-white p-4">
+                        <ul class="p-0 m-0 grid w-full grid-cols-2">
+                          {#each model.links as link (link.url)}
+                            <li class="list-none">
+                              <Link href={link.url} text={link.text} class="inline" />
+                            </li>
+                          {/each}
+                        </ul>
+                      </div>
+                    </section>
+                  {/if}
                 </div>
               </div>
             </article>
