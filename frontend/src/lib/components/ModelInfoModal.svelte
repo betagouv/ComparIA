@@ -106,6 +106,31 @@
       { id: 'eu_hostable', value: model.eu_hostable }
     ] as const
   })
+
+  const hardwares = [
+    { tier: 'smartphone' as const, icon: 'i-ri-smartphone-line' },
+    { tier: 'laptop' as const, icon: 'i-ri-computer-line' },
+    { tier: 'workstation' as const, icon: 'i-ri-hard-drive-3-line' },
+    { tier: 'server' as const, icon: 'i-ri-server-line' }
+  ]
+  type HardwareTier = (typeof hardwares)[number]['tier']
+  const hardware = $derived.by(() => {
+    if (!model) return
+
+    function ramToHardwareTier(ramGb: number): {
+      tier: HardwareTier
+      icon: string
+      gpuCount: number
+    } {
+      const gpuCount = Math.max(1, Math.ceil(ramGb / 80)) // ~80 GB / GPU
+      if (ramGb <= 3) return { ...hardwares[0], gpuCount }
+      if (ramGb <= 16) return { ...hardwares[1], gpuCount }
+      if (gpuCount <= 1) return { ...hardwares[2], gpuCount }
+      return { ...hardwares[3], gpuCount }
+    }
+
+    return ramToHardwareTier(model.required_ram)
+  })
 </script>
 
 <button class="hidden" data-fr-opened={!!model} aria-controls={modalId}>Hidden</button>
@@ -229,6 +254,58 @@
                           size="xs"
                           class="top-3 right-4 absolute"
                         />
+                        {#if hardware}
+                          <Icon
+                            icon={hardware.icon}
+                            size="lg"
+                            class="text-primary mt-6 mb-3 block h-[44px]! w-[44px]!"
+                          />
+                          <p class="font-bold mb-0!">
+                            {m[`models.envImpact.hardware.types.${hardware.tier}.title`]({
+                              count: hardware.gpuCount
+                            })}
+                          </p>
+                          <p class="text-grey text-sm! mb-0!">
+                            {m[`models.envImpact.hardware.types.${hardware.tier}.detail`]()}
+                          </p>
+
+                          <div class="my-7 flex w-full justify-between">
+                            {#each hardwares as h, i (h.tier)}
+                              <div class="gap-1 flex basis-1/4 flex-col items-center">
+                                <Icon
+                                  icon={h.icon}
+                                  size="md"
+                                  block
+                                  class={h.tier === hardware.tier
+                                    ? 'text-primary'
+                                    : 'text-[#B3B3B3]'}
+                                />
+                                <span
+                                  class={[
+                                    'text-xxs text-center',
+                                    { 'text-[#B3B3B3]': h.tier !== hardware.tier }
+                                  ]}
+                                >
+                                  {m[`models.envImpact.hardware.types.${h.tier}.name`]()}
+                                </span>
+                              </div>
+                              {#if i < 3}
+                                <Icon
+                                  icon="i-ri-arrow-right-s-line"
+                                  size="md"
+                                  class="text-[#B3B3B3]"
+                                  block
+                                />
+                              {/if}
+                            {/each}
+                          </div>
+
+                          <p
+                            class="bg-very-light-primary text-xxs p-1 mb-0! b-light-primary rounded-sm border"
+                          >
+                            FIXME
+                          </p>
+                        {/if}
                       </article>
 
                       <article class="cg-border bg-white p-4 relative basis-1/2">

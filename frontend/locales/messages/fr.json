@@ -1613,18 +1613,22 @@
                 "types": {
                     "laptop": {
                         "detail": "Aucune carte graphique nécessaire",
+                        "name": "Ordinateur",
                         "title": "Fonctionne sur un ordinateur portable"
                     },
                     "server": {
                         "detail": "Serveur multi-GPU",
+                        "name": "Serveur",
                         "title": "Nécessite {count} cartes graphiques"
                     },
                     "smartphone": {
                         "detail": "Aucune carte graphique nécessaire",
+                        "name": "Smartphone",
                         "title": "Fonctionne sur un smartphone"
                     },
                     "workstation": {
                         "detail": "Station de travail puissante (1 GPU)",
+                        "name": "Station",
                         "title": "Nécessite une carte graphique"
                     }
                 }
