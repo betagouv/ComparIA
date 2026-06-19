@@ -1,8 +1,9 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
+  import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import { isMaybeArch, type BotModel } from '$lib/models'
+  import { ENERGY_CLASS_COLORS, isMaybeArch, type BotModel } from '$lib/models'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
 
   let { model, modalId, onClose }: { model?: BotModel; modalId: string; onClose?: () => void } =
@@ -131,6 +132,12 @@
 
     return ramToHardwareTier(model.required_ram)
   })
+
+  const energyRows = ENERGY_CLASSES.map((letter, i) => ({
+    letter,
+    color: ENERGY_CLASS_COLORS[letter],
+    width: 50 + (50 / ENERGY_CLASSES.length) * (i + 1)
+  }))
 </script>
 
 <button class="hidden" data-fr-opened={!!model} aria-controls={modalId}>Hidden</button>
@@ -237,13 +244,15 @@
                   </div>
                 </section>
 
-                <div class="gap-4 flex">
-                  <section class="basis-3/5">
+                <div class="gap-4 xl:grid-cols-5 grid">
+                  <section class="col-span-3">
                     <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
 
                     <div class="gap-4 flex">
-                      <article class="cg-border bg-white p-4 relative basis-1/2">
-                        <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
+                      <article
+                        class="cg-border bg-white p-4 relative flex basis-1/2 flex-col justify-between"
+                      >
+                        <h2 class="text-sm gap-1 font-normal mb-0! flex items-center">
                           <Icon icon="i-ri-cpu-line" size="xs" block class="text-grey" />
                           {m['models.envImpact.hardware.title']()}
                         </h2>
@@ -255,49 +264,48 @@
                           class="top-3 right-4 absolute"
                         />
                         {#if hardware}
-                          <Icon
-                            icon={hardware.icon}
-                            size="lg"
-                            class="text-primary mt-6 mb-3 block h-[44px]! w-[44px]!"
-                          />
-                          <p class="font-bold mb-0!">
-                            {m[`models.envImpact.hardware.types.${hardware.tier}.title`]({
-                              count: hardware.gpuCount
-                            })}
-                          </p>
-                          <p class="text-grey text-sm! mb-0!">
-                            {m[`models.envImpact.hardware.types.${hardware.tier}.detail`]()}
-                          </p>
+                          <div class="my-6">
+                            <Icon
+                              icon={hardware.icon}
+                              size="lg"
+                              class="text-primary mb-3 block h-[44px]! w-[44px]!"
+                              aria-label={m[
+                                `models.envImpact.hardware.types.${hardware.tier}.name`
+                              ]()}
+                            />
+                            <p class="font-bold mb-0!">
+                              {m[`models.envImpact.hardware.types.${hardware.tier}.title`]({
+                                count: hardware.gpuCount
+                              })}
+                            </p>
+                            <p class="text-grey text-sm! mb-0!">
+                              {m[`models.envImpact.hardware.types.${hardware.tier}.detail`]()}
+                            </p>
 
-                          <div class="my-7 flex w-full justify-between">
-                            {#each hardwares as h, i (h.tier)}
-                              <div class="gap-1 flex basis-1/4 flex-col items-center">
-                                <Icon
-                                  icon={h.icon}
-                                  size="md"
-                                  block
-                                  class={h.tier === hardware.tier
-                                    ? 'text-primary'
-                                    : 'text-[#B3B3B3]'}
-                                />
-                                <span
-                                  class={[
-                                    'text-xxs text-center',
-                                    { 'text-[#B3B3B3]': h.tier !== hardware.tier }
-                                  ]}
-                                >
-                                  {m[`models.envImpact.hardware.types.${h.tier}.name`]()}
-                                </span>
-                              </div>
-                              {#if i < 3}
-                                <Icon
-                                  icon="i-ri-arrow-right-s-line"
-                                  size="md"
-                                  class="text-[#B3B3B3]"
-                                  block
-                                />
-                              {/if}
-                            {/each}
+                            <div class="mt-7 flex w-full justify-between" aria-hidden="true">
+                              {#each hardwares as h, i (h.tier)}
+                                {@const active = h.tier === hardware.tier}
+                                <div class="gap-1 flex basis-1/4 flex-col items-center">
+                                  <Icon
+                                    icon={h.icon}
+                                    size="md"
+                                    block
+                                    class={active ? 'text-primary' : 'text-[#B3B3B3]'}
+                                  />
+                                  <span class="text-xxs text-center" class:text-[#B3B3B3]={!active}>
+                                    {m[`models.envImpact.hardware.types.${h.tier}.name`]()}
+                                  </span>
+                                </div>
+                                {#if i < 3}
+                                  <Icon
+                                    icon="i-ri-arrow-right-s-line"
+                                    size="md"
+                                    class="text-[#B3B3B3]"
+                                    block
+                                  />
+                                {/if}
+                              {/each}
+                            </div>
                           </div>
 
                           <p
@@ -308,8 +316,10 @@
                         {/if}
                       </article>
 
-                      <article class="cg-border bg-white p-4 relative basis-1/2">
-                        <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
+                      <article
+                        class="cg-border bg-white p-4 relative flex basis-1/2 flex-col justify-between"
+                      >
+                        <h2 class="text-sm gap-1 font-normal mb-0! flex items-center">
                           <Icon icon="i-ri-leaf-line" size="xs" block class="text-success" />
                           {m['models.envImpact.conso.title']()}
                         </h2>
@@ -320,14 +330,49 @@
                           size="xs"
                           class="top-3 right-4 absolute"
                         />
+
+                        <div
+                          class="gap-2 my-6 flex w-full flex-col"
+                          aria-label="{m['models.envImpact.conso.title']()} {model.energy_class}"
+                        >
+                          {#each energyRows as row (row.letter)}
+                            {@const active = row.letter === model.energy_class}
+                            <div class="text-sm font-bold text-white flex h-[23px] items-center">
+                              <div class="w-9/10">
+                                <div
+                                  class="ps-2 flex h-full items-center justify-start"
+                                  style="background-color: {row.color}; width: {row.width}%; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+                                  class:opacity-30={!active}
+                                >
+                                  {row.letter}
+                                </div>
+                              </div>
+                              {#if active}
+                                <div
+                                  class="rounded-sm bg-primary ms-auto flex h-full w-[23px] items-center justify-center leading-none"
+                                >
+                                  <span class="">
+                                    {row.letter}
+                                  </span>
+                                </div>
+                              {/if}
+                            </div>
+                          {/each}
+                        </div>
+
+                        <p
+                          class="bg-very-light-primary text-xxs p-1 mb-0! b-light-primary rounded-sm border"
+                        >
+                          FIXME
+                        </p>
                       </article>
                     </div>
                   </section>
 
-                  <section class="basis-2/5">
+                  <section class="col-span-2 flex flex-col">
                     <h2 class="text-base! mb-3!">{m['models.opennessSovereignty.title']()}</h2>
 
-                    <div class="cg-border bg-white p-4">
+                    <div class="cg-border bg-white p-4 h-full">
                       <dl class="p-0">
                         {#each sovFields as field (field.id)}
                           <div class="py-1 flex border-[--grey-925-125] not-last:border-b">
