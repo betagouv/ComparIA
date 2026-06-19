@@ -91,6 +91,21 @@
       title: m[`models.technical.${card.id}.title`]()
     }))
   })
+
+  const sovFields = $derived.by(() => {
+    if (!model) return []
+    return [
+      { id: 'license_type', value: model.badges.license },
+      { id: 'license_name', value: model.license.name },
+      { id: 'reuse', value: model.license.reuse },
+      { id: 'commercial_use', value: model.license.commercial_use },
+      { id: 'public_weights', value: model.public_weights },
+      { id: 'public_training_data', value: model.public_training_data },
+      { id: 'public_training_code', value: model.public_training_code },
+      { id: 'origin_country', value: model.lab.origin_country },
+      { id: 'eu_hostable', value: model.eu_hostable }
+    ] as const
+  })
 </script>
 
 <button class="hidden" data-fr-opened={!!model} aria-controls={modalId}>Hidden</button>
@@ -142,26 +157,22 @@
 
                   <div class="xl:grid-cols-5 gap-4 md:grid-cols-3 sm:grid-cols-2 grid">
                     {#each technicalCards as card, i (i)}
-                      <article class="cg-border bg-white p-4 relative">
+                      <article class="cg-border bg-white p-4">
                         <div class="flex">
                           <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
                             <Icon icon={card.icon} size="xs" block class="text-info" />
                             {card.title}
                           </h2>
-                          {#if card.id === 'size'}
-                            <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
-                          {/if}
+                          <div class="ms-auto">
+                            {#if card.id === 'size'}
+                              <Badge {...model.badges.size} size="sm" />
+                            {:else if card.tooltip}
+                              <Tooltip id="technical-tooltip-{card.id}" size="xs">
+                                {@html sanitize(card.tooltip)}
+                              </Tooltip>
+                            {/if}
+                          </div>
                         </div>
-
-                        {#if card.tooltip}
-                          <Tooltip
-                            id="technical-tooltip-{card.id}"
-                            size="xs"
-                            class="top-3 right-4 absolute"
-                          >
-                            {@html sanitize(card.tooltip)}
-                          </Tooltip>
-                        {/if}
 
                         {#if card.id === 'modalities'}
                           FIXME
@@ -239,7 +250,37 @@
                   <section class="basis-2/5">
                     <h2 class="text-base! mb-3!">{m['models.opennessSovereignty.title']()}</h2>
 
-                    <div class="cg-border bg-white p-4"></div>
+                    <div class="cg-border bg-white p-4">
+                      <dl class="p-0">
+                        {#each sovFields as field (field.id)}
+                          <div class="py-1 flex border-[--grey-925-125] not-last:border-b">
+                            <dt class="p-0 text-grey text-xs">
+                              {m[`models.opennessSovereignty.fields.${field.id}`]()}
+                            </dt>
+                            <dd class="p-0 text-sm font-bold ms-auto">
+                              {#if field.id === 'license_type'}
+                                <Badge {...field.value} size="sm" />
+                              {:else if field.id === 'license_name'}
+                                {field.value}
+                              {:else if field.id === 'origin_country'}
+                                <!-- FIXME flag -->
+                                {field.value.toUpperCase()}
+                              {:else}
+                                {@const words =
+                                  field.id === 'eu_hostable'
+                                    ? (['yes', 'no'] as const)
+                                    : field.id === 'reuse' || field.id === 'commercial_use'
+                                      ? (['allowed', 'forbidden'] as const)
+                                      : (['public', 'private'] as const)}
+                                <span class={field.value ? 'text-success' : 'text-error'}>
+                                  {m[`words.${field.value ? words[0] : words[1]}`]()}
+                                </span>
+                              {/if}
+                            </dd>
+                          </div>
+                        {/each}
+                      </dl>
+                    </div>
                   </section>
                 </div>
 

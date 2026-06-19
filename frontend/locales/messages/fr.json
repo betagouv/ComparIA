@@ -2415,6 +2415,7 @@
         "loading": "Chargement",
         "NA": "N/A",
         "new": "Nouveau",
+        "no": "No",
         "private": "privé",
         "public": "public",
         "random": "Aléatoire",
@@ -2425,6 +2426,7 @@
         "search": "Rechercher",
         "send": "Envoyer",
         "tooltip": "Infobulle",
-        "validate": "Valider"
+        "validate": "Valider",
+        "yes": "Oui"
     }
 }
