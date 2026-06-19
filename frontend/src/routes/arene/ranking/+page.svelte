@@ -46,7 +46,7 @@
       { key: 'rank_p97_5' as const, label: 'Rank p97.5' },
       { key: 'n_match' as const, label: 'Total votes' },
       { key: 'consumption' as const, label: 'Consumption mWh (1000 tokens)', energy: true },
-      { key: 'friendly_size' as const, label: 'Size', energy: true },
+      { key: 'size_class' as const, label: 'Size', energy: true },
       { key: 'params' as const, label: 'Parameters (B)', energy: true },
       { key: 'arch' as const, label: 'Architecture', energy: true },
       { key: 'release_date' as const, label: 'Release' },
