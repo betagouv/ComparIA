@@ -10,16 +10,14 @@ from pydantic import (
 )
 from pydantic_core import PydanticCustomError
 
-from backend.llms.models import (
-    FRIENDLY_SIZE,
-    Distribution,
-    Endpoint,
-    FriendlySize,
-    LLMDataBase,
-    LLMDataEnhanced,
-)
+from backend.llms.models import Endpoint, LLMDataBase, LLMDataEnhanced
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.utils import MarkdownSerializer
+
+from .licenses import Distribution
+
+FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
+FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 descs = {
     "new": "Whether this LLM was released within the last two months, based on its release date",

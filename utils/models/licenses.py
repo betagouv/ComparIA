@@ -1,10 +1,8 @@
 import logging
-from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationError
 
-from backend.llms.models import Distribution
 from utils.logger import configure_logger, log_pydantic_parsed_errors
 from utils.utils import UTILS_DIR, MarkdownSerializer, read_json
 
@@ -12,6 +10,9 @@ logger = configure_logger(logging.getLogger("llms:licenses"))
 
 LICENSES_FILE = UTILS_DIR / "database/alembic/extras/licenses.json"
 
+Distribution = Literal[
+    "api-only", "open-weights", "fully-open-source"
+]  # License/access types
 
 descs = {
     "license": "Human-readable License name (e.g. 'Apache 2.0' or 'MIT')",

@@ -32,13 +32,6 @@ from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
 from utils.database.models.llms.llm import LLMDataBase
 
-# Type definitions for model categorization
-FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
-Distribution = Literal[
-    "api-only", "open-weights", "fully-open-source"
-]  # License/access types
-FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
-
 
 class LitellmEndpoint(BaseModel):
     """
