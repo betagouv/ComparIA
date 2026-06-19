@@ -4,11 +4,10 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationError
 
 from utils.logger import configure_logger, log_pydantic_parsed_errors
-from utils.utils import UTILS_DIR, MarkdownSerializer, read_json
+from utils.utils import LLMS_LICENSES_FILE, MarkdownSerializer, read_json
 
 logger = configure_logger(logging.getLogger("llms:licenses"))
 
-LICENSES_FILE = UTILS_DIR / "database/alembic/extras/licenses.json"
 
 Distribution = Literal[
     "api-only", "open-weights", "fully-open-source"
@@ -58,7 +57,7 @@ Licenses = RootModel[list[License]]
 
 
 def get_licenses() -> Licenses:
-    raw_licenses = read_json(LICENSES_FILE)
+    raw_licenses = read_json(LLMS_LICENSES_FILE)
 
     try:
         licenses = Licenses(raw_licenses)

@@ -6,8 +6,7 @@ from sqlmodel import col, select, union
 from utils.database.models import Comparison
 from utils.database.session import get_session
 from utils.logger import configure_logger
-from utils.models.organisations import LLMS_RAW_DATA_FILE
-from utils.utils import ROOT_DIR
+from utils.utils import LLMS_RAW_DATA_FILE, ROOT_DIR
 
 from .compute import RankingResult
 

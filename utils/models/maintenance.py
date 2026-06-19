@@ -2,8 +2,7 @@ import logging
 from datetime import date
 
 from utils.logger import configure_logger
-from utils.models.build_models import LLMS_RAW_DATA_FILE
-from utils.utils import read_json, write_json
+from utils.utils import LLMS_RAW_DATA_FILE, read_json, write_json
 
 from .archs import get_archs
 from .licenses import get_licenses
