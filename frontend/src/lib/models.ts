@@ -1,5 +1,5 @@
 import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
-import type { Archs, MaybeArchs } from '$lib/generated/constants'
+import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
@@ -8,6 +8,15 @@ import { styleControl } from './styleControl.svelte'
 
 export const CONSO_SIZES = ['S', 'M', 'L'] as const
 export type ConsoSizes = (typeof CONSO_SIZES)[number]
+
+export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
+  A: '#00963a',
+  B: '#4fb648',
+  C: '#bdd732',
+  D: '#ffec00',
+  E: '#f9a01b',
+  F: '#e30613'
+}
 
 export type Data = { lastUpdateDate: string | null; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
