@@ -1,10 +1,10 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
-  import { ARCHS } from '$lib/generated/models'
+  import { ARCHS, SIZE_CLASSES, type Archs, type SizeClasses } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import type { Archs, ConsoSizes, Sizes } from '$lib/models'
-  import { applyStyleControl, CONSO_SIZES, getModelsWithDataContext, SIZES } from '$lib/models'
+  import type { ConsoSizes } from '$lib/models'
+  import { applyStyleControl, CONSO_SIZES, getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
@@ -26,7 +26,7 @@
           ...m,
           x: m.consumption,
           y: m.data.elo,
-          radius: dotSizes[m.friendly_size],
+          radius: dotSizes[m.size_class],
           class: m.license === 'proprietary' ? 'na' : m.arch,
           consoSize:
             m.consumption < 150
@@ -39,13 +39,13 @@
   )
 
   let search = $state('')
-  let sizes = $state<Sizes[]>([])
+  let sizes = $state<SizeClasses[]>([])
   let consos = $state<ConsoSizes[]>(['S', 'M'])
   let showArchived = $state(true)
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
-    options: SIZES.map((value) => ({
+    options: SIZE_CLASSES.map((value) => ({
       value,
       label: m[`models.size.count.${value}`]()
     }))
@@ -62,7 +62,7 @@
   const filteredModels = $derived.by(() => {
     const _search = search.toLowerCase()
     return models.filter((m) => {
-      const sizeMatch = sizes.length === 0 || sizes.includes(m.friendly_size)
+      const sizeMatch = sizes.length === 0 || sizes.includes(m.size_class)
       const consoMatch = consos.length === 0 || consos.includes(m.consoSize)
       const searchMatch = !_search || m.search.includes(_search)
       const archivedMatch = m.status === 'enabled' || showArchived
