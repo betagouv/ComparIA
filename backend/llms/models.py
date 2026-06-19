@@ -17,7 +17,7 @@ The models are organized in hierarchy:
 - DatasetData/PreferencesData: Rankings and user preferences
 """
 
-from typing import Annotated, Any, Literal, Self, get_args
+from typing import Annotated, Any, Literal, Self, TypeVar, get_args
 
 from pydantic import (
     AfterValidator,
@@ -31,6 +31,27 @@ from pydantic import (
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
 from utils.database.models.llms.llm import LLMDataBase
+
+# LLM scale classes
+SizeClass = Literal["XS", "S", "M", "L", "XL"]
+SIZE_CLASSES: tuple[SizeClass, ...] = get_args(SizeClass)
+SIZE_CLASSES_SCALE: dict[SizeClass, int | float] = {
+    # in billion params
+    "XS": 15,
+    "S": 60,
+    "M": 100,
+    "L": 400,
+    "XL": float("inf"),
+}
+
+ClassT = TypeVar("ClassT", bound=SizeClass)
+
+
+def get_class(scale: dict[ClassT, int | float], v: int | float) -> ClassT:
+    for k, kv in scale.items():
+        if v < kv:
+            return k
+    raise Exception("Error: Could not compute scale value")
 
 
 class LitellmEndpoint(BaseModel):
@@ -160,14 +181,8 @@ class APILLMDataBase(LLMDataBase):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def friendly_size(self) -> FriendlySize:
-        intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
-
-        for i, (lower, upper) in enumerate(intervals):
-            if lower <= self.params < upper:
-                return FRIENDLY_SIZE[i]
-
-        raise Exception("Error: Could not guess friendly_size")
+    def size_class(self) -> SizeClass:
+        return get_class(SIZE_CLASSES_SCALE, self.params)
 
     @computed_field  # type: ignore[prop-decorator]
     @property
