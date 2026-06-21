@@ -1733,7 +1733,7 @@
                 "rank": {
                     "detail": "/{count} modèles",
                     "title": "Rang classement",
-                    "to": "à"
+                    "to": "#{min} à {max}"
                 },
                 "score": {
                     "detail": "(confiance ±{count})",
@@ -1744,8 +1744,10 @@
                 }
             },
             "group": "Groupe {count}",
+            "level": "Niveau {count} sur {total}",
             "rankFromTo": "Rang {min} à {max}",
-            "title": "Niveau de performance par rapport aux autres modèles"
+            "title": "Niveau de performance par rapport aux autres modèles",
+            "tooltip": "FIXME"
         },
         "ram": "{min} à {max} Go",
         "release": "Sortie {date}",
@@ -2415,7 +2417,7 @@
         "loading": "Chargement",
         "NA": "N/A",
         "new": "Nouveau",
-        "no": "No",
+        "no": "Non",
         "private": "privé",
         "public": "public",
         "random": "Aléatoire",
