@@ -4,7 +4,7 @@
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Commons } from '$lib/models'
-  import { ENERGY_CLASS_COLORS, isMaybeArch } from '$lib/models'
+  import { ENERGY_CLASS_COLORS, isMaybeArch, MODALITIES } from '$lib/models'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
 
@@ -220,9 +220,16 @@
                     {/each}
                   </ul>
 
-                  <div class="xl:grid-cols-5 gap-4 md:grid-cols-3 sm:grid-cols-2 grid">
+                  <div class="xl:grid-cols-24 gap-4 md:grid-cols-9 sm:grid-cols-2 grid">
                     {#each technicalCards as card, i (i)}
-                      <article class="cg-border bg-white p-4">
+                      <article
+                        class={[
+                          'cg-border bg-white p-4',
+                          card.id === 'modalities'
+                            ? 'md:col-span-2 xl:col-span-4'
+                            : 'md:col-span-3 xl:col-span-5'
+                        ]}
+                      >
                         <div class="flex">
                           {@render iconHeading({ ...card, classes: 'mb-2!' })}
 
@@ -238,7 +245,23 @@
                         </div>
 
                         {#if card.id === 'modalities'}
-                          FIXME
+                          <div class="grid grid-cols-2 gap-[1px] bg-[#E0E0E0]">
+                            {#each MODALITIES as mod (mod.id)}
+                              {@const active = model.inputs.includes(mod.id)}
+                              <div
+                                class="bg-white p-2 text-xs gap-1 flex flex-col items-center"
+                                aria-hidden={active ? 'false' : 'true'}
+                              >
+                                <Icon
+                                  icon={mod.icon}
+                                  size="sm"
+                                  block
+                                  class={active ? 'text-primary' : 'text-[#B3B3B3]'}
+                                />
+                                <span class={{ 'text-[#B3B3B3]': !active }}>{mod.title}</span>
+                              </div>
+                            {/each}
+                          </div>
                         {:else if card.id === 'price'}
                           <div class="flex w-full">
                             {#each card.content as c, i (i)}
@@ -276,7 +299,7 @@
                 </section>
 
                 <div class="gap-4 xl:grid-cols-5 grid">
-                  <section class="col-span-3">
+                  <section class="lg:col-span-3">
                     <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
 
                     <div class="gap-4 md:flex-row flex flex-col">
@@ -402,7 +425,7 @@
                     </div>
                   </section>
 
-                  <section class="col-span-2 flex flex-col">
+                  <section class="lg:col-span-2 flex w-full flex-col">
                     <h2 class="text-base! mb-3!">{m['models.opennessSovereignty.title']()}</h2>
 
                     <div class="cg-border bg-white p-4 h-full">
@@ -440,7 +463,7 @@
                 </div>
 
                 <div class="gap-4 xl:grid-cols-5 grid">
-                  <section class="col-span-3">
+                  <section class="xl:col-span-3">
                     <h2 class="text-base! mb-3!">{m['models.performance.title']()}</h2>
 
                     <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
@@ -543,7 +566,7 @@
                   </section>
 
                   {#if model.links?.length}
-                    <section class="col-span-2">
+                    <section class="xl:col-span-2">
                       <h2 class="text-base! mb-3!">{m['models.infosSources.title']()}</h2>
 
                       <div class="cg-border bg-white p-4">

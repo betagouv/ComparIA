@@ -17,6 +17,18 @@ export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
   E: '#f9a01b',
   F: '#e30613'
 }
+export const MODALITIES = (
+  [
+    { id: 'text', icon: 'i-ri-file-text-line' },
+    { id: 'image', icon: 'i-ri-image-upload-line' },
+    { id: 'audio', icon: 'i-ri-volume-up-line' },
+    { id: 'video', icon: 'i-ri-video-line' }
+  ] as const
+).map((item) => ({
+  ...item,
+  title: m[`models.technical.modalities.types.${item.id}`]()
+}))
+
 export type RankClass = '1' | '2' | '3' | '4' | '5'
 type ModelRevisedRank = { rank: number; rankClass: RankClass }
 export type Commons = {
