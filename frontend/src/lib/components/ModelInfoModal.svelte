@@ -3,11 +3,17 @@
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import { ENERGY_CLASS_COLORS, isMaybeArch, type BotModel } from '$lib/models'
+  import type { BotModel, Commons } from '$lib/models'
+  import { ENERGY_CLASS_COLORS, isMaybeArch } from '$lib/models'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
+  import type { ClassValue } from 'svelte/elements'
 
-  let { model, modalId, onClose }: { model?: BotModel; modalId: string; onClose?: () => void } =
-    $props()
+  let {
+    model,
+    modalId,
+    commons,
+    onClose
+  }: { model?: BotModel; modalId: string; commons: Commons; onClose?: () => void } = $props()
 
   const badges = $derived.by(() => {
     if (!model) return []
@@ -138,9 +144,36 @@
     color: ENERGY_CLASS_COLORS[letter],
     width: 50 + (50 / ENERGY_CLASSES.length) * (i + 1)
   }))
+
+  const rankingRows = [
+    { c: '1', emoji: '🥇' },
+    { c: '2', emoji: '🥈' },
+    { c: '3', emoji: '🥉' },
+    { c: '4', emoji: '4️⃣' },
+    { c: '5', emoji: '5️⃣' }
+  ] as const
 </script>
 
 <button class="hidden" data-fr-opened={!!model} aria-controls={modalId}>Hidden</button>
+
+{#snippet iconHeading({
+  icon,
+  title,
+  tag = 'h2',
+  iconClass = 'text-info',
+  classes = 'mb-0!'
+}: {
+  icon: string
+  title: string
+  tag?: string
+  iconClass?: ClassValue
+  classes?: ClassValue
+})}
+  <svelte:element this={tag} class={['text-sm gap-1 font-normal flex items-center', classes]}>
+    <Icon {icon} size="xs" block class={iconClass} />
+    {title}
+  </svelte:element>
+{/snippet}
 
 <dialog
   aria-labelledby="{modalId}-title"
@@ -191,10 +224,8 @@
                     {#each technicalCards as card, i (i)}
                       <article class="cg-border bg-white p-4">
                         <div class="flex">
-                          <h2 class="text-sm gap-1 font-normal mb-2! flex items-center">
-                            <Icon icon={card.icon} size="xs" block class="text-info" />
-                            {card.title}
-                          </h2>
+                          {@render iconHeading({ ...card, classes: 'mb-2!' })}
+
                           <div class="ms-auto">
                             {#if card.id === 'size'}
                               <Badge {...model.badges.size} size="sm" />
@@ -248,14 +279,15 @@
                   <section class="col-span-3">
                     <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
 
-                    <div class="gap-4 flex">
+                    <div class="gap-4 md:flex-row flex flex-col">
                       <article
                         class="cg-border bg-white p-4 relative flex basis-1/2 flex-col justify-between"
                       >
-                        <h2 class="text-sm gap-1 font-normal mb-0! flex items-center">
-                          <Icon icon="i-ri-cpu-line" size="xs" block class="text-grey" />
-                          {m['models.envImpact.hardware.title']()}
-                        </h2>
+                        {@render iconHeading({
+                          icon: 'i-ri-cpu-line',
+                          title: m['models.envImpact.hardware.title'](),
+                          iconClass: 'text-grey'
+                        })}
 
                         <Tooltip
                           id="hardware-tooltip"
@@ -319,10 +351,11 @@
                       <article
                         class="cg-border bg-white p-4 relative flex basis-1/2 flex-col justify-between"
                       >
-                        <h2 class="text-sm gap-1 font-normal mb-0! flex items-center">
-                          <Icon icon="i-ri-leaf-line" size="xs" block class="text-success" />
-                          {m['models.envImpact.conso.title']()}
-                        </h2>
+                        {@render iconHeading({
+                          icon: 'i-ri-leaf-line',
+                          title: m['models.envImpact.conso.title'](),
+                          iconClass: 'text-success'
+                        })}
 
                         <Tooltip
                           id="conso-tooltip"
@@ -406,15 +439,111 @@
                   </section>
                 </div>
 
-                <div class="gap-4 flex">
-                  <section class="basis-3/5">
+                <div class="gap-4 xl:grid-cols-5 grid">
+                  <section class="col-span-3">
                     <h2 class="text-base! mb-3!">{m['models.performance.title']()}</h2>
 
-                    <div class="cg-border bg-white p-4"></div>
+                    <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
+                      <Tooltip
+                        id="perf-tooltip"
+                        text={m['models.performance.tooltip']()}
+                        size="xs"
+                        class="top-3 right-4 absolute"
+                      />
+                      {#if model.data}
+                        <dl class="md:gap-15 p-0 gap-5 md:flex-row flex flex-col">
+                          <div>
+                            {@render iconHeading({
+                              tag: 'dt',
+                              icon: 'i-ri-thumb-up-line',
+                              title: m['models.performance.fields.votes.title']()
+                            })}
+
+                            <dd class="p-0 mb-0! font-bold text-[22px]!">
+                              {model.data.n_match}
+                            </dd>
+                          </div>
+
+                          <div>
+                            {@render iconHeading({
+                              tag: 'dt',
+                              icon: 'i-ri-equalizer-2-line',
+                              title: m['models.performance.fields.score.title']()
+                            })}
+
+                            <dd class="p-0 mb-0! font-bold text-[20px]!">
+                              {model.data.elo}
+                              <span class="text-grey text-xs! font-normal">
+                                {m['models.performance.fields.score.detail']({
+                                  count: 'FIXME'
+                                })}
+                              </span>
+                            </dd>
+                          </div>
+
+                          <div>
+                            {@render iconHeading({
+                              tag: 'dt',
+                              icon: 'i-ri-trophy-line',
+                              title: m['models.performance.fields.rank.title'](),
+                              iconClass: 'text-yellow'
+                            })}
+
+                            <dd class="p-0 mb-0! font-bold text-[20px]!">
+                              {m['models.performance.fields.rank.to'](
+                                commons.rankingTiers[model.data.rankClass]
+                              )}<span class="text-grey font-normal text-xs!">
+                                {m['models.performance.fields.rank.detail']({
+                                  count: commons.modelsCount
+                                })}
+                              </span>
+                            </dd>
+                          </div>
+                        </dl>
+
+                        <div
+                          class="bg-very-light-primary py-2 px-4 b-light-primary rounded-sm flex flex-col items-center border"
+                        >
+                          <div
+                            class="h-4 from-primary mt-4 w-full rounded-full bg-linear-to-r to-[#AA5050]"
+                          ></div>
+                          <div
+                            class="gap-2 flex w-9/10 justify-between"
+                            aria-label={m['models.performance.level']({
+                              count: model.data.rankClass,
+                              total: rankingRows.length
+                            })}
+                          >
+                            {#each rankingRows as row (row.c)}
+                              {@const active = row.c === model.data.rankClass}
+                              <div class="gap-2 -mt-9 flex flex-col items-center">
+                                <Icon
+                                  icon="i-ri-triangle-fill"
+                                  class={['text-primary -scale-100', { invisible: !active }]}
+                                />
+                                <div class="h-2 w-2 bg-white rounded-full"></div>
+
+                                <div class="lh-normal! text-center">
+                                  <div class="text-lg">{row.emoji}</div>
+                                  <div class="text-xs font-bold" class:opacity-50={!active}>
+                                    {m['models.performance.group']({ count: row.c })}<br />
+                                  </div>
+                                  <div class="text-xxs" class:opacity-50={!active}>
+                                    {m['models.performance.rankFromTo'](
+                                      commons.rankingTiers[row.c]
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            {/each}
+                          </div>
+                        </div>
+                      {/if}
+                    </div>
                   </section>
 
                   {#if model.links?.length}
-                    <section class="basis-2/5">
+                    <section class="col-span-2">
                       <h2 class="text-base! mb-3!">{m['models.infosSources.title']()}</h2>
 
                       <div class="cg-border bg-white p-4">
