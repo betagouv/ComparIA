@@ -15,7 +15,7 @@
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
 
-  const models = getModelsContext().models
+  const { models, commons } = getModelsContext()
 
   const editorFilter = {
     id: 'editor',
@@ -270,6 +270,7 @@
 <ModelInfoModal
   model={selectedModelData}
   modalId="modal-model"
+  {commons}
   onClose={() => window.history.replaceState(null, '', page.url.pathname)}
 />
 
