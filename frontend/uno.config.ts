@@ -87,6 +87,11 @@ export default defineConfig({
     'i-ri-bowl-line',
     'i-ri-music-2-line',
     'i-ri-book-open-line',
+    // modalities
+    'i-ri-file-text-line',
+    'i-ri-image-upload-line',
+    'i-ri-volume-up-line',
+    'i-ri-video-line',
     ...ICONS.map((icon) => 'i-ai-' + icon)
   ]
 })
