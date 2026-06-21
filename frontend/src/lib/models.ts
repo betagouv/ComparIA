@@ -1,4 +1,4 @@
-import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
+import type { APILLMData, LLMList } from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { getContext, setContext } from 'svelte'
@@ -17,16 +17,29 @@ export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
   E: '#f9a01b',
   F: '#e30613'
 }
-
-export type Data = { lastUpdateDate: string | null; models: BotModel[] }
+export type RankClass = '1' | '2' | '3' | '4' | '5'
+type ModelRevisedRank = { rank: number; rankClass: RankClass }
+export type Commons = {
+  modelsCount: number
+  rankingTiers: Record<RankClass, Record<'min' | 'max', number>>
+}
+export type Data = {
+  lastUpdateDate: string | null
+  styleCoefficients: Record<string, number>
+  models: BotModel[]
+  commons: Commons
+}
 export type BotModel = ReturnType<typeof parseModel>
-export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
+export type BotModelWithData = BotModel & {
+  data: Required<BotModel['data']>
+  prefs: Required<BotModel['prefs']>
+}
 
 export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
 }
 
-export function parseModel(model: APILLMData) {
+export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
     model.license.kind = 'open-source'
@@ -99,17 +112,46 @@ export function parseModel(model: APILLMData) {
         tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       }
     },
-    search: [model.human_id, model.name, model.lab.name].join(' ')
+    search: [model.human_id, model.name, model.lab.name].join(' '),
+    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null
   }
 }
 
 export function setModelsContext(data: LLMList) {
+  const rankedModels = data.models
+    .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
+    .sort((a, b) => a.data!.rank - b.data!.rank)
+    .map((llm, i) => ({ id: llm.id, rank: i + 1 }))
+
+  const modelsCount = rankedModels.length
+  const groupRatios = [0.1, 0.25, 0.5, 0.75]
+  const groupMax = groupRatios.map((r) => Math.ceil(r * modelsCount))
+  function getGroup(rank: number): RankClass {
+    for (let i = 0; i < groupMax.length; i++) {
+      if (rank <= groupMax[i]) return (i + 1).toString() as RankClass
+    }
+    return '5'
+  }
+  const revisedRankData: Record<string, ModelRevisedRank> = Object.fromEntries(
+    rankedModels.map(({ id, rank }) => [id, { rank, rankClass: getGroup(rank) }])
+  )
+
   setContext<Data>('data', {
     lastUpdateDate: data.data_timestamp
       ? new Date(data.data_timestamp * 1000).toLocaleDateString()
       : null,
     styleCoefficients: data.style_coefficients ?? {},
-    models: data.models.map((model) => parseModel(model))
+    models: data.models.map((model) => parseModel(model, revisedRankData[model.id!])),
+    commons: {
+      modelsCount,
+      rankingTiers: {
+        '1': { min: 1, max: groupMax[0] },
+        '2': { min: groupMax[0] + 1, max: groupMax[1] },
+        '3': { min: groupMax[1] + 1, max: groupMax[2] },
+        '4': { min: groupMax[2] + 1, max: groupMax[3] },
+        '5': { min: groupMax[3] + 1, max: modelsCount }
+      }
+    }
   })
 }
 
@@ -125,14 +167,7 @@ export function getModelsWithDataContext() {
   const { models, ...data } = getContext<Data>('data')
   return {
     ...data,
-    models: (
-      models.filter((m) => {
-        if (m.data == null) return false
-        if (m.prefs == null) return false
-        if (m.data.trust_range[0] > 30 || m.data.trust_range[1] > 30) return false
-        return true
-      }) as BotModelWithData[]
-    )
+    models: (models.filter((llm) => !!llm.data) as BotModelWithData[])
       .sort((a, b) => a.data.rank - b.data.rank)
       .map((m, i) => ({
         ...m,
