@@ -45,9 +45,12 @@ class Settings(BaseSettings):
     AUTH_SESSION_LENGTH_DAYS: int = 30
     AUTH_TERMS_VERSION: str = "1.0"
 
-    # Brevo email
-    BREVO_API_KEY: str | None = None
-    BREVO_LOGIN_CODE_TEMPLATE_ID: int | None = None
+    # SMTP (Brevo relay or any SMTP provider)
+    SMTP_HOST: str | None = None
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str | None = None
+    SMTP_PASSWORD: str | None = None
+    SMTP_STARTTLS: bool = True
     EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
     EMAIL_FROM_NAME: str = "ComparIA"
 
