@@ -24,6 +24,9 @@
             "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
             "question": "Kuriuos modelius norėtumėte palyginti?"
         },
+        "errors": {
+            "rateLimitCustomSelection": "Modelių pasirinkimas yra ribotas, kad būtų užtikrinta vienoda prieiga visiems. Galite toliau naudoti atsitiktinį režimą arba bandyti vėliau."
+        },
         "modelSelection": "Modelių pasirinkimas",
         "prompt": {
             "label": "Parašykite savo pirmąją žinutę",
@@ -38,9 +41,6 @@
             "title": "Siūlomos užklausos"
         },
         "title": "Kaip galime Jums padėti?",
-        "errors": {
-            "rateLimitCustomSelection": "Modelių pasirinkimas yra ribotas, kad būtų užtikrinta vienoda prieiga visiems. Galite toliau naudoti atsitiktinį režimą arba bandyti vėliau."
-        },
         "webSearch": {
             "label": "Paieška internete",
             "enabled": "Paieška internete įjungta",

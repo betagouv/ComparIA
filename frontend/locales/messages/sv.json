@@ -29,6 +29,9 @@
             "help": "Om bara en är vald, kommer den andra att väljas slumpmässigt",
             "question": "Vilka modeller vill du jämföra?"
         },
+        "errors": {
+            "rateLimitCustomSelection": "Modellval är begränsat för att säkerställa rättvis åtkomst för alla. Du kan fortsätta använda slumpmässigt läge eller försöka igen senare."
+        },
         "modelSelection": "Val av modeller",
         "prompt": {
             "label": "Skriv ditt första meddelande",
@@ -43,9 +46,6 @@
             "title": "Förslag på prompter"
         },
         "title": "Hur kan jag hjälpa dig idag?",
-        "errors": {
-            "rateLimitCustomSelection": "Modellval är begränsat för att säkerställa rättvis åtkomst för alla. Du kan fortsätta använda slumpmässigt läge eller försöka igen senare."
-        },
         "webSearch": {
             "label": "Webbsökning",
             "enabled": "Webbsökning aktiverad",
