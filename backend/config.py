@@ -48,6 +48,18 @@ class Settings(BaseSettings):
     GUARDRAIL_MODEL: str = "openrouter/nvidia/nemotron-3.5-content-safety:free"
     GUARDRAIL_TIMEOUT: float = 2.5
 
+    # Auth
+    AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = "anonymous_first"
+    AUTH_DOMAIN_ALLOWLIST: list[str] = []
+    AUTH_SESSION_LENGTH_DAYS: int = 30
+    AUTH_TERMS_VERSION: str = "1.0"
+
+    # Brevo email
+    BREVO_API_KEY: str | None = None
+    BREVO_LOGIN_CODE_TEMPLATE_ID: int | None = None
+    EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
+    EMAIL_FROM_NAME: str = "ComparIA"
+
     # Response caching
     CACHE_ENABLED: bool = False
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
