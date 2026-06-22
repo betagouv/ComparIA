@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from backend.arena.router import router as arena_router
+from backend.auth.middleware import auth_middleware
+from backend.auth.router import router as auth_router
 from backend.config import settings
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
@@ -40,11 +42,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.middleware("http")(auth_middleware)
+
 # Prometheus metrics instrumentation
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 app.include_router(models_router)
 app.include_router(arena_router)
+app.include_router(auth_router)
 
 
 @app.get("/counter")
