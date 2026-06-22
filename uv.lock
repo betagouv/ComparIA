@@ -253,21 +253,6 @@ wheels = [
 ]
 
 [[package]]
-name = "brevo-python"
-version = "4.0.10"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httpx" },
-    { name = "pydantic" },
-    { name = "pydantic-core" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/92/79/573272ac0ac158e5498690daf06452fbca1785dcd1f85bdcb7bcda86d090/brevo_python-4.0.10.tar.gz", hash = "sha256:3ba2808937556b02d7afe4aaf6392438e1af3a8db77ef97349e46307bbf27311", size = 428199, upload-time = "2026-04-10T14:10:25.699Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/b7/cf28d6ac954cc98f2f5297f52bc57f3032f6360e0ad77d1fb36518ef4691/brevo_python-4.0.10-py3-none-any.whl", hash = "sha256:4fb38f4143ce2c440b35e574696f2ae667cf6454d592409af7750eb675703de0", size = 877575, upload-time = "2026-04-10T14:10:24.21Z" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.1.4"
 source = { registry = "https://pypi.org/simple" }
