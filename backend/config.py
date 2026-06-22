@@ -23,7 +23,8 @@ class Settings(BaseSettings):
     GIT_COMMIT: str | None = None
     SENTRY_DSN: str | None = None
     SENTRY_ENVIRONMENT: str = "dev"
-    SENTRY_SAMPLE_RATE: float = 0.2
+    SENTRY_SAMPLE_RATE: float = 1.0
+    LINKUP_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
     ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
@@ -111,3 +112,6 @@ BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
 ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end
 ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
 ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
+
+# Web search intro for LLM
+WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"

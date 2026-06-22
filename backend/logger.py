@@ -2,19 +2,17 @@ import datetime
 import json
 import logging
 import os
+import queue
 import sys
 from logging.handlers import WatchedFileHandler
 
 from fastapi import Request
-from logging_loki import LokiHandler as BaseLokiHandler
+from logging_loki import LokiQueueHandler as BaseLokiQueueHandler
 
 
-class LokiHandler(BaseLokiHandler):
-    def emit(self, record: logging.LogRecord) -> None:
-        try:
-            super().emit(record)
-        except Exception:
-            pass
+class LokiHandler(BaseLokiQueueHandler):
+    def __init__(self, **kwargs):
+        super().__init__(queue=queue.Queue(-1), **kwargs)
 
     def handleError(self, record: logging.LogRecord) -> None:
         pass

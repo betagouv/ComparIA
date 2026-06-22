@@ -129,7 +129,12 @@ def litellm_stream_iter(
         # max_retries can be added if needed
         "model": litellm_model_name,
         # Only pass supported message args 'role' and 'content'
-        "messages": [msg.model_dump(include={"role", "content"}) for msg in messages],
+        "messages": [
+            msg.model_dump(
+                include={"role", "content"}, context={"merge_web_search": True}
+            )
+            for msg in messages
+        ],
         "temperature": temperature,
         "max_tokens": max_new_tokens,
         "stream": True,  # Enable streaming for real-time responses

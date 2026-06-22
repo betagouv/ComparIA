@@ -45,7 +45,13 @@
             "generateAnother": "Skapa ett nytt meddelande",
             "title": "Förslag på prompter"
         },
-        "title": "Hur kan jag hjälpa dig idag?"
+        "title": "Hur kan jag hjälpa dig idag?",
+        "webSearch": {
+            "label": "Webbsökning",
+            "enabled": "Webbsökning aktiverad",
+            "disabled": "Webbsökning inaktiverad",
+            "tooltip": "Aktivera webbsökning för att låta modellerna använda onlinekällor och citera mer aktuell information.<br><strong>Utan webbsökning</strong> svarar modellerna baserat på vad de lärde sig under träning (deras träningsdata). De kan inte verifiera information online, så mycket nya eller specifika fakta kan vara ofullständiga."
+        }
     },
     "chatbot": {
         "continuePrompt": "Fortsätt chatta med AI-modellerna",
@@ -67,7 +73,10 @@
             "finished": "Resonemang avslutat",
             "inProgress": "Resonemang pågår…"
         },
-        "revealButton": "Visa vilka modeller som användes"
+        "revealButton": "Visa vilka modeller som användes",
+        "webSearch": {
+            "label": "Tillhörande webbsökresultat."
+        }
     },
     "closeModal": "Stäng modalfönstret",
     "components": {

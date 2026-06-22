@@ -47,7 +47,13 @@
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
-        "title": "Comment puis-je vous aider aujourd'hui ?"
+        "title": "Comment puis-je vous aider aujourd'hui ?",
+        "webSearch": {
+            "disabled": "Recherche web désactivée",
+            "enabled": "Recherche web activée",
+            "label": "Recherche web",
+            "tooltip": "Activez la recherche sur le Web pour permettre aux modèles d'utiliser des sources en ligne et de citer des informations plus récentes.<br><strong>Sans la recherche sur le Web</strong>, les modèles répondent en se basant sur ce qu'ils ont appris pendant leur formation (leurs données d'entraînement). Ils ne peuvent pas vérifier les informations en ligne ; par conséquent, les faits très récents ou très spécifiques peuvent être incomplets."
+        }
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter…",
@@ -69,7 +75,10 @@
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
-        "revealButton": "Terminer la discussion et découvrir les deux modèles"
+        "revealButton": "Terminer la discussion et découvrir les deux modèles",
+        "webSearch": {
+            "label": "Résultats de recherche Web associés."
+        }
     },
     "closeModal": "Fermer la fenêtre modale",
     "components": {
@@ -637,6 +646,11 @@
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
                     "reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI"
                 },
+                "IBM": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "jpacifico": {
                     "commercial_use_specificities": "",
                     "license_desc": "",
@@ -1035,6 +1049,11 @@
                 "fyi": "<p>Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA.</p>",
                 "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
             },
+            "Granite 4.1 8B": {
+                "desc": "<p>Petit modèle multilingue conçu pour les usages d'entreprise, offrant de bonnes capacités en utilisation d'outils externes, en génération augmentée de récupération (RAG, retrieval augmented generation) et en génération de code.</p>",
+                "fyi": "<p>Développé par IBM, Granite 4.1 8B fait partie d'une famille qui comprend également des versions de 3 et 30 milliards de paramètres. Contrairement à la génération Granite 4.0, qui reposait sur une architecture hybride combinant des couches Mamba-2 et des couches transformeur, la série 4.1 revient à une architecture dense classique (decoder-only), homogène sur l'ensemble des tailles.</p>\n<p>Le modèle a été entraîné sur environ 15 billions de jetons, selon une approche en plusieurs étapes orientant progressivement l'entraînement vers des données techniques, scientifiques et mathématiques de meilleure qualité. Le post-entraînement a combiné un affinage supervisé (SFT, supervised fine-tuning) puis plusieurs phases d'apprentissage par renforcement ciblant des capacités distinctes. Le modèle prend en charge l'utilisation d'outils dans un format compatible avec celui d'OpenAI, la complétion de code par remplissage interne (fill-in-the-middle) et fonctionne dans une douzaine de langues.</p>\n<p>Selon l'éditeur, la version 8B égale ou dépasse le modèle Granite 4.0 32B à mélange d'experts (MoE, Mixture of Experts) sur de nombreux tests. Le modèle se distingue par sa fiabilité dans le suivi d'instructions et sa faible tendance aux hallucinations, des qualités utiles pour l'extraction de données structurées en contexte professionnel.</p>",
+                "size_desc": "<p>Avec 8 milliards de paramètres, ce modèle fait partie des petits modèles. Il peut être utilisé localement sur un ordinateur puissant, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d'une seule carte graphique, ce qui limite les coûts d'infrastructure.</p>\n<p>Sa fenêtre de contexte va jusqu'à 512 000 jetons, ce qui permet de traiter de très longs documents.</p>"
+            },
             "Grok 3 Mini": {
                 "desc": "<p>Version plus légère du modèle Grok 3, permettant de réduire les coûts tout en conservant de bonnes performances pour de nombreuses tâches. Il peut simuler une phase de raisonnement avant de fournir une réponse finale.</p>",
                 "fyi": "<p>Grok 3 Mini est une version distillée de Grok 3: il s’en approche en termes de capacités, tout en étant plus rapide et moins coûteux.\nLe modèle propose deux modes : un mode réflexion avec raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses immédiates.\nSa fenêtre de contexte atteint 131 000 jetons, ce qui le rend adapté à l’analyse de longs documents.</p>",
@@ -1174,6 +1193,11 @@
                 "desc": "<p>Très grand modèle semi-ouvert spécialisé dans le code et les tâches agentiques, conçu par MiniMax, entreprise basée à Shanghai. Il est présenté par l'éditeur comme un modèle « auto-évolutif » : il optimise de manière autonome ses propres méthodes de résolution de tâches, avec un gain de performance significatif revendiqué. Selon l'éditeur, il rivalise avec les meilleurs modèles propriétaires sur l'ingénierie logicielle tout en étant publié en poids ouverts.</p>",
                 "fyi": "<p>Annoncé le 18 mars 2026 puis publié en poids ouverts le 12 avril 2026, M2.7 optimise de manière autonome ses propres scaffolds de programmation sur plus d'une centaine de cycles, avec un gain de performance d'environ 30 % revendiqué par MiniMax. L'architecture s'appuie sur 256 experts dont 8 sont activés par jeton, dans la continuité de la génération M2.5.</p>\n<p>Selon l'éditeur, le modèle obtient 56,22 % sur SWE-Pro, au niveau de GPT 5.3 Codex, et 76,5 % sur SWE Multilingual. Son score ELO de 1495 sur GDPval-AA serait le plus élevé parmi les modèles à poids ouverts. Le modèle met l'accent sur la collaboration multi-agents avec une identité de rôle stable, la recherche dynamique d'outils et l'orchestration de compétences complexes, notamment pour des tâches d'analyse de métriques, de vérification de causes racines et de décisions de type SRE (Site Reliability Engineering). La licence autorise un usage non commercial libre mais impose une autorisation écrite préalable pour tout usage commercial.</p>",
                 "size_desc": "<p>Avec 230 milliards de paramètres, MiniMax M2.7 se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active que 10 milliards de paramètres par jeton généré, ce qui réduit considérablement l'empreinte par rapport à un modèle dense de même taille. Sa fenêtre de contexte atteint environ 200 000 jetons, ce qui est adapté à l'analyse de longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.</p>"
+            },
+            "MiniMax M3": {
+                "desc": "<p>Très grand modèle multimodal à poids ouverts, conçu pour des tâches complexes : génération de code et orchestration agentique sur de longs horizons. Il traite nativement le texte, l'image et la vidéo. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.</p>",
+                "fyi": "<p>Développé par l'entreprise chinoise MiniMax, M3 introduit un mécanisme d'attention parcimonieuse baptisé MiniMax Sparse Attention (MSA), qui remplace l'attention complète par une sélection de blocs clé-valeur afin de réduire le coût de calcul par jeton sur les longs contextes. Selon l'éditeur, ce mécanisme divise par 20 le calcul par jeton par rapport à la génération précédente à 1 million de jetons de contexte, avec un gain de vitesse supérieur à 9 fois lors de la phase de préremplissage et supérieur à 15 fois lors du décodage.</p>\n<p>Le modèle a été entraîné nativement en multimodalité (texte, image et vidéo) dès les premières étapes. Il propose trois modes de raisonnement contrôlés par un paramètre dédié : activé en permanence, adaptatif (le modèle décide lui-même de raisonner ou non), ou désactivé pour minimiser la latence.</p>\n<p>Selon l'éditeur, M3 vise des performances de premier plan sur les tâches de code et les tâches agentiques de long horizon. Sur le test SWE-Bench Pro, il obtient 59,0 %, sur Terminal-Bench 2.1 66,0 %, sur MCP Atlas 74,2 % et sur KernelBench Hard 28,8 %. Ces scores rapportés par l'éditeur n'avaient pas encore fait l'objet d'une vérification indépendante au moment de sa sortie. La licence autorise la réutilisation et la redistribution des poids ; l'usage commercial est permis avec la mention « Built with MiniMax » et notification de l'éditeur, mais les organisations dépassant 20 millions de dollars de revenus annuels doivent obtenir une autorisation écrite préalable.</p>",
+                "size_desc": "<p>Avec 428 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Il repose sur une architecture de mélange d'experts (MoE, Mixture of Experts) qui n'active que 23 milliards de paramètres par jeton généré. Il nécessite un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires.</p>\n<p>L'architecture de mélange d'experts n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les modèles de raisonnement de ce type fonctionnent toutefois plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.</p>"
             },
             "Ministral": {
                 "desc": "<p>Petit modèle multilingue conçu pour fonctionner sur un ordinateur portable sans connexion à un serveur, tout en offrant de bonnes capacités en synthèse de texte, réponses à des questions simples et utilisation d’outils.</p>",
@@ -1379,6 +1403,11 @@
                 "desc": "<p>Modèle conçu spécifiquement pour le code (notamment pour du développement local). Grâce à une architecture hybride combinant Gated DeltaNet, Gated Attention et MoE, il atteint des performances comparables à des modèles bien plus grands tout en n'activant que 3 milliards de paramètres sur 80 milliards au total.</p>",
                 "fyi": "<p>Ce modèle a été entraîné sur plus de 800 000 tâches de code vérifiables via un processus d'apprentissage par renforcement. Il excelle dans le raisonnement sur des horizons longs, l'utilisation d'outils complexes et la récupération après des erreurs d'exécution.</p>",
                 "size_desc": "<p>Qwen3-Coder-Next utilise une architecture de mélange d'experts (MoE) ultra-sparse avec 512 experts, dont seulement 10 sont activés par jeton. Cette conception permet de faire fonctionner le modèle sur du matériel haut de gamme mais grand public (MacBook 64 Go, RTX 5090 ou AMD Radeon 7900 XTX) tout en conservant une fenêtre de contexte native de 256 000 jetons.</p>"
+            },
+            "Qwen3.7 Max": {
+                "desc": "<p>Très grand modèle agentique, optimisé pour la génération de code et l'exécution autonome de tâches sur de longs horizons. Modèle phare propriétaire de la série Qwen3.7, ce qui reste rare au sein de cette série majoritairement ouverte. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.</p>",
+                "fyi": "<p>Développé par l'équipe Qwen d'Alibaba, ce modèle est le fleuron agentique de la série Qwen3.7, présenté comme particulièrement performant en génération de code, en tâches bureautiques et dans l'exécution autonome de tâches sur de longs horizons. Il intègre nativement la prédiction multi-jetons (MTP, Multi-Token Prediction) comme accélérateur d'inférence : le modèle génère en interne des séquences de jetons candidates qui sont vérifiées en une seule passe, ce qui réduit la latence et augmente le débit sans recourir à un modèle brouillon distinct. Il prend également en charge la mise en cache explicite des invites pour réutiliser efficacement un contexte répété.</p>\n<p>Contrairement à la majorité des modèles Qwen, distribués en accès ouvert, la série Max est propriétaire : la taille du modèle, son architecture détaillée et ses données d'entraînement n'ont pas été communiquées.</p>",
+                "size_desc": "<p>La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE, Mixture of Experts), comme le reste de la série Qwen3.7. Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton, ce qui réduit la puissance de calcul nécessaire. Des indices laissent penser qu'il s'agit d'un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques très puissantes pour fonctionner.</p>\n<p>Sa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. L'architecture de mélange d'experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.</p>"
             },
             "qwq 32B": {
                 "desc": "<p>Modèle de raisonnement de taille moyenne spécialisé et très performant en mathématiques, génération de code, et résolution de problèmes logiques.</p>",

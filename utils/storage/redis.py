@@ -1,3 +1,4 @@
+import hashlib
 from functools import lru_cache
 from typing import Final
 
@@ -21,6 +22,9 @@ REDIS_LLM_RESPONSES_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}llm_cache:{{model_name}}:{{prompt_hash}}"
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
+REDIS_WEB_SEARCH_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}web_search_cache:{{prompt_hash}}"
+)
 
 
 @lru_cache
@@ -40,3 +44,9 @@ def get_redis_client() -> redis.Redis:
         return client
     except Exception as e:
         raise Exception(f"Redis Connection Error: {e}")
+
+
+def hash_content(content: str) -> str:
+    """Normalize and hash content."""
+    normalized = content.strip().lower()
+    return hashlib.sha256(normalized.encode()).hexdigest()[:16]

@@ -1,12 +1,14 @@
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
+  import type { Snippet } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   type ToggleProps = {
     id: string
     value: boolean
-    label: string
+    label?: string
     help?: string
+    labelPos?: 'left' | 'right'
     hideCheckLabel?: boolean
     checkedLabel?: string
     uncheckedLabel?: string
@@ -14,6 +16,7 @@
     inline?: boolean
     groupClass?: string
     checkLabelClass?: string
+    children?: Snippet
   }
 
   let {
@@ -21,18 +24,27 @@
     value = $bindable(),
     label,
     help,
+    labelPos = 'left',
     hideCheckLabel = false,
     checkedLabel = m['words.activated'](),
     uncheckedLabel = m['words.deactivated'](),
     variant = 'secondary',
     inline = true,
-    checkLabelClass,
     groupClass,
+    checkLabelClass,
+    children,
     ...props
   }: ToggleProps & SvelteHTMLElements['label'] = $props()
 </script>
 
-<div class={['fr-toggle', `toggle-${variant}`, { 'l-toggle-block': !inline }, groupClass]}>
+<div
+  class={[
+    'fr-toggle',
+    `toggle-${variant}`,
+    { 'l-toggle-block': !inline, 'l-label-left': labelPos === 'left' },
+    groupClass
+  ]}
+>
   <input
     type="checkbox"
     class="fr-toggle__input"
@@ -41,29 +53,31 @@
     aria-describedby="toggle-hint-{id}"
   />
   {#if !inline}
-    <div aria-hidden="true" class={['fr-label w-full', props.class]}>{label}</div>
+    <div aria-hidden="true" class={['fr-label w-full', props.class]}>
+      {#if label}{label}{:else}{@render children?.()}{/if}
+    </div>
   {/if}
   <label
     {...props}
     for={id}
-    data-fr-checked-label={checkedLabel}
-    data-fr-unchecked-label={uncheckedLabel}
     class={['fr-toggle__label', ...(!inline ? ['max-w-[2.5rem]!'] : [props.class])]}
   >
-    <div class={['block', { 'sr-only': !inline }]}>{label}</div>
+    {#if label}
+      <div class={['block', { 'sr-only': !inline }]}>{label}</div>
+    {:else}
+      {@render children?.()}
+    {/if}
   </label>
-  {#if !hideCheckLabel}
-    <div
-      aria-hidden="true"
-      class={[
-        'text-sm w-full text-end text-[#3A3A3A]',
-        { 'ms-2 w-auto! text-start leading-[1.5rem]': !inline },
-        checkLabelClass
-      ]}
-    >
-      {value ? checkedLabel : uncheckedLabel}
-    </div>
-  {/if}
+  <div
+    class={[
+      'text-sm w-full text-end text-[#3A3A3A]',
+      { 'ms-2 w-auto! text-start leading-[1.5rem]': !inline },
+      { 'sr-only': hideCheckLabel },
+      checkLabelClass
+    ]}
+  >
+    {value ? checkedLabel : uncheckedLabel}
+  </div>
   {#if help}
     <p class="fr-hint-text mt-1!" id="toggle-hint-{id}">{help}</p>
   {/if}
@@ -71,23 +85,27 @@
 
 <style lang="postcss">
   .fr-toggle {
-    label::before {
-      content: '' !important;
-    }
-    &:not(.l-toggle-block) {
-      label::before {
-        position: absolute;
-        right: 0;
-        margin-right: 0 !important;
+    &.l-label-left {
+      &:not(.l-toggle-block) {
+        label::before {
+          position: absolute;
+          right: 0;
+          margin-right: 0 !important;
+        }
+        label::after {
+          left: unset;
+          right: 1rem;
+        }
       }
-      label::after {
-        left: unset;
-        right: 1rem;
+      &.l-toggle-block label {
+        position: relative;
       }
     }
 
-    &.l-toggle-block label {
-      position: relative;
+    &:not(.l-label-left) {
+      label::before {
+        margin-inline-end: 5px;
+      }
     }
 
     /* Override only light theme blue to purple */

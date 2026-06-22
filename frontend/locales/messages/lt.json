@@ -40,7 +40,13 @@
             "generateAnother": "Sukurti dar vieną užklausą",
             "title": "Siūlomos užklausos"
         },
-        "title": "Kaip galime Jums padėti?"
+        "title": "Kaip galime Jums padėti?",
+        "webSearch": {
+            "label": "Paieška internete",
+            "enabled": "Paieška internete įjungta",
+            "disabled": "Paieška internete išjungta",
+            "tooltip": "Įjunkite paiešką internete, kad modeliai galėtų naudoti internetinius šaltinius ir cituoti naujesnę informaciją.<br><strong>Be paieškos internete</strong> modeliai atsako remdamiesi tuo, ką išmoko mokymo metu (savo mokymo duomenimis). Jie negali patikrinti informacijos internete, todėl labai nauji ar labai specifiniai faktai gali būti neišsamūs."
+        }
     },
     "chatbot": {
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",
@@ -62,7 +68,10 @@
             "finished": "Mąstymas baigtas",
             "inProgress": "Mąstoma…"
         },
-        "revealButton": "Atskleisti modelius"
+        "revealButton": "Atskleisti modelius",
+        "webSearch": {
+            "label": "Susiję paieškos internete rezultatai."
+        }
     },
     "closeModal": "Uždaryti iškylantį langą",
     "components": {

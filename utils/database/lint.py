@@ -6,7 +6,13 @@ import numpy as np
 import polars as pl
 from sqlmodel import select
 
-from .actions import archive_corrupted, archive_spam, archive_unknown_llms, llm_analyze
+from .actions import (
+    archive_blacklisted_grok,
+    archive_corrupted,
+    archive_spam,
+    archive_unknown_llms,
+    llm_analyze,
+)
 from .models import Comparison
 from .utils import get_session, reset_archived, set_not_archived
 
@@ -132,6 +138,7 @@ async def lint(
     await archive_spam(commit=fix)
     await archive_corrupted(commit=fix)
     await archive_unknown_llms(commit=fix and hard)
+    await archive_blacklisted_grok(commit=fix)
 
     if fix:
         await set_not_archived(start_at)

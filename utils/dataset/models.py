@@ -32,6 +32,9 @@ class DatasetTurnMetadata(SQLModel):
     duration_b: float | None
     latency_a: float | None
     latency_b: float | None
+    # Seconds between both models finishing and the user casting their vote.
+    # None when the turn was not voted on (or timestamps are missing).
+    time_to_vote: float | None
 
 
 class DatasetComparisonBaseMetadata(SQLModel):
@@ -74,6 +77,9 @@ class DatasetTurn(SQLModel):
     llm_msg_a: Annotated[LLMMessageFinal | None, Field(exclude=True)]
     llm_msg_b: Annotated[LLMMessageFinal | None, Field(exclude=True)]
 
+    # Excluded, used to compute time_to_vote
+    voted_at: Annotated[datetime | None, Field(exclude=True)] = None
+
     # Extracted then merged with DatasetComparisonMetadata
     metadata_: Annotated[
         DatasetTurnMetadata, Field(default=None, validate_default=True)
@@ -97,6 +103,8 @@ class DatasetTurn(SQLModel):
         msg_a = info.data.get("llm_msg_a")
         llm_b = info.context["llm_b"]
         msg_b = info.data.get("llm_msg_b")
+
+        voted_at = info.data.get("voted_at")
 
         return {
             "tokens_a": msg_a.tokens if msg_a else None,
@@ -131,12 +139,22 @@ class DatasetTurn(SQLModel):
                 if msg_b
                 else None
             ),
+            "time_to_vote": (
+                (voted_at - max(msg_a.updated_at, msg_b.updated_at)).total_seconds()
+                if (voted_at and msg_a and msg_b)
+                else None
+            ),
         }
 
     # HELPERS
 
     def parse_response(self, side: BotPos) -> list[dict]:
-        msgs = [self.user_msg.model_dump(include={"role", "content"})]
+        msgs = [
+            self.user_msg.model_dump(
+                include={"role", "content", "user_content"},
+                context={"merge_web_search": True},
+            )
+        ]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
             msgs.append(
                 llm_msg.model_dump(include={"role", "content", "reasoning_content"})
@@ -153,6 +171,7 @@ class DatasetComparison(SQLModel):
     comparison_id: Annotated[str, BeforeValidator(str), Field(validation_alias="id")]
     model_a: Annotated[str, Field(validation_alias="llm_id_a")]
     model_b: Annotated[str, Field(validation_alias="llm_id_b")]
+    timestamp: Annotated[datetime, Field(validation_alias="created_at")]
 
     # Extracted to build rows
     turns_: Annotated[list[DatasetTurn], Field(validation_alias="turns")]
@@ -178,8 +197,10 @@ class DatasetComparison(SQLModel):
     def excluded(self) -> bool:
         if any(
             [
-                not self.extra_metadata_.cohorts,
+                bool(self.extra_metadata_.cohorts),
                 self.extra_metadata_.archived is not False,
+                bool(self.extra_metadata_.contains_pii),
+                bool(self.extra_metadata_.contains_spam),
                 self.extra_metadata_.error is not None,
                 self.extra_metadata_.llm_analyzed is not True,
             ]

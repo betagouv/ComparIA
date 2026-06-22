@@ -22,7 +22,18 @@ defineCustomServerStrategy('custom-url', {
     } else if (locale) {
       return locale
     } else if (DEFAULT_LOCALE) {
-      return DEFAULT_LOCALE
+      // Only apply DEFAULT_LOCALE if no user cookie is already set.
+      // Paraglide runs custom strategies before built-in ones (including cookie),
+      // so without this check DEFAULT_LOCALE would silently override the user's
+      // locale preference stored in PARAGLIDE_LOCALE.
+      const cookieLocale = request.headers
+        .get('cookie')
+        ?.split('; ')
+        .find((c) => c.startsWith('PARAGLIDE_LOCALE='))
+        ?.split('=')[1]
+      if (!cookieLocale) {
+        return DEFAULT_LOCALE
+      }
     }
   }
 })

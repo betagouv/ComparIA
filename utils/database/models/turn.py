@@ -14,7 +14,7 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
-from .utils import AutoDatetime, ModelId
+from .utils import AutoDatetime, ModelId, OptionalDatetime
 
 if TYPE_CHECKING:
     from .comparison import Comparison
@@ -35,6 +35,9 @@ class TurnBase(SQLModel):
     created_at: AutoDatetime
     updated_at: AutoDatetime
     choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
+    # Set when the user submits their choice vote (once per turn). Used to
+    # measure how long they took to vote after both models finished.
+    voted_at: OptionalDatetime = None
 
     # a
     llm_msg_a_id: LLMMessageId = None

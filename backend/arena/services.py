@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
+from linkup import LinkupSearchTextResult
 
 from backend.llms.data import get_llms_data
 from utils.database.models import (
@@ -121,12 +122,22 @@ async def update_comparison_error(
 
 
 async def add_comparison_turn(
-    comparison_id: uuid.UUID, prompt: str
+    comparison_id: uuid.UUID,
+    prompt: str,
+    web_search_results: list[LinkupSearchTextResult] | None = None,
 ) -> tuple[ComparisonRead, TurnRead]:
     async with get_session() as session:
         db_turn = Turn.model_validate(
             TurnCreate(
-                comparison_id=comparison_id, user_msg=UserMessage(content=prompt)
+                comparison_id=comparison_id,
+                user_msg=UserMessage(
+                    content=prompt,
+                    web_search_results=(
+                        [w.model_dump() for w in web_search_results]
+                        if web_search_results
+                        else None
+                    ),
+                ),
             )
         )
         new_turn_id = db_turn.id
@@ -154,11 +165,12 @@ async def update_turn_vote(
 ) -> None:
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
-        data = (
-            {f"{k}_{vote.pos}": v for k, v in vote.model_dump().items()}
-            if isinstance(vote, TurnVoteAnnotate)
-            else vote.model_dump()
-        )
+        if isinstance(vote, TurnVoteAnnotate):
+            data = {f"{k}_{vote.pos}": v for k, v in vote.model_dump().items()}
+        else:
+            # A choice vote can only be cast once (enforced in the router), so
+            # this stamps the single moment the user decided.
+            data = {**vote.model_dump(), "voted_at": datetime.now()}
         db_turn.sqlmodel_update(data)
         session.add(db_turn)
         await session.commit()

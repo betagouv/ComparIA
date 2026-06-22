@@ -32,7 +32,9 @@ ArchivedReason = Literal[
     # "duplicate",
     # "duplicate_has_vote",
     "spam",
+    "pii",
     "unknown_llm",
+    "blacklist_grok",
     "unknown",
 ]
 # TODO could be fixed?

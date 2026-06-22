@@ -45,7 +45,13 @@
             "generateAnother": "Genereeri veel üks viip",
             "title": "Soovitatud viibad"
         },
-        "title": "Millega sind täna aidata saan?"
+        "title": "Millega sind täna aidata saan?",
+        "webSearch": {
+            "label": "Veebiotsing",
+            "enabled": "Veebiotsing aktiveeritud",
+            "disabled": "Veebiotsing deaktiveeritud",
+            "tooltip": "Luba veebiotsing, et mudelid saaksid kasutada veebiallikaid ja viidata ajakohasemale teabele.<br><strong>Ilma veebiotsinguta</strong> vastavad mudelid oma treeningandmete põhjal. Nad ei saa teavet veebist kontrollida, seega väga uued või väga spetsiifilised faktid võivad olla puudulikud."
+        }
     },
     "chatbot": {
         "continuePrompt": "Jätka nende keelemudelitega vestlemist",
@@ -67,7 +73,10 @@
             "finished": "Arutlemine lõpetatud",
             "inProgress": "Arutlemine on käimas …"
         },
-        "revealButton": "Näita mudeleid"
+        "revealButton": "Näita mudeleid",
+        "webSearch": {
+            "label": "Seotud veebiotsingu tulemused."
+        }
     },
     "closeModal": "Sulge hüpikaken",
     "components": {

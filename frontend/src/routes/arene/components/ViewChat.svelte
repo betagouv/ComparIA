@@ -22,6 +22,13 @@
       comparator.comparison.turns.every((turn) => !!turn.choice)
   )
 
+  async function onPromptSubmit() {
+    const success = await comparator.ask(prompt)
+    if (success) {
+      prompt = ''
+    }
+  }
+
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
   let footerSize: number = $derived(footer ? footer.offsetHeight : 0)
@@ -89,7 +96,7 @@
           size="md"
           rows={3}
           maxRows={4}
-          onSubmit={() => comparator.ask(prompt)}
+          onSubmit={onPromptSubmit}
           class="mb-0! w-full"
         />
       </div>

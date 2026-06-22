@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { Button } from '$components/dsfr'
+  import { Button, Toggle, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
+  import { sanitize } from '$lib/utils/commons'
   import { tick } from 'svelte'
   import { GuidedPromptSuggestions, ModelSelector } from '.'
 
@@ -31,6 +32,7 @@
     }
     return []
   })
+  let webSearch = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading)
 
@@ -53,7 +55,8 @@
     onPrompt({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
-      prompt_value: prompt
+      prompt_value: prompt,
+      web_search: webSearch
     })
   }
 
@@ -118,18 +121,35 @@
         />
       </div>
 
-      <ModelSelector
-        bind:mode={mode.value}
-        bind:modelsSelection={modelsSelection.value}
-        {models}
-        {disabled}
-      />
+      <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
+        <ModelSelector
+          bind:mode={mode.value}
+          bind:modelsSelection={modelsSelection.value}
+          {models}
+          {disabled}
+        />
+        <Toggle
+          id="web-search"
+          bind:value={webSearch}
+          checkedLabel={m['arenaHome.webSearch.enabled']()}
+          uncheckedLabel={m['arenaHome.webSearch.disabled']()}
+          hideCheckLabel
+          labelPos="right"
+          class="font-medium w-full! text-[14px]!"
+          groupClass="grow my-auto"
+        >
+          {m['arenaHome.webSearch.label']()}
+          <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
+            {@html sanitize(m['arenaHome.webSearch.tooltip']())}
+          </Tooltip>
+        </Toggle>
+      </div>
 
       <Button
         type="submit"
         text={m['words.send']()}
         {disabled}
-        class="md:w-auto! md:order-none order-2 w-full! min-w-[130px] place-self-end"
+        class="md:w-auto! md:order-none order-2 h-full w-full! min-w-[130px] place-self-end"
         onclick={() => onPromptSubmit()}
       />
     </div>
