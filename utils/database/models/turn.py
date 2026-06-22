@@ -38,6 +38,10 @@ class TurnBase(SQLModel):
     # Set when the user submits their choice vote (once per turn). Used to
     # measure how long they took to vote after both models finished.
     voted_at: OptionalDatetime = None
+    # Content-safety guardrail verdict for this turn's user prompt (see
+    # backend/arena/moderation.py GuardrailVerdict.as_record). Raw-only: not
+    # exposed in TurnPublic, intended for the -raw dataset, not the public one.
+    guardrail: Annotated[dict | None, Field(sa_type=JSONB)] = None
 
     # a
     llm_msg_a_id: LLMMessageId = None
