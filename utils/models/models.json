@@ -3497,6 +3497,37 @@
     "origin_country": "CN",
     "models": [
       {
+        "db_id": "51e17915-a07b-4a81-a121-ff618d5e6c16",
+        "id": "glm-5.2",
+        "simple_name": "GLM 5.2",
+        "license": "MIT",
+        "release_date": "06/2026",
+        "arch": "moe",
+        "params": 744,
+        "active_params": 40,
+        "reasoning": true,
+        "new": true,
+        "url": "https://huggingface.co/zai-org/GLM-5.2",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "z-ai/glm-5.2"
+        },
+        "desc": "Très grand modèle conçu pour des tâches complexes : génération de code, orchestration agentique et analyse de documents longs. Il est particulièrement optimisé pour les tâches de programmation au long cours (long-horizon), comme la réalisation de projets logiciels complets en une seule session. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.",
+        "size_desc": "Avec 744 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active qu'environ 40 milliards de paramètres par jeton généré, ce qui le rend plus efficace que des modèles denses de taille similaire. Il nécessite néanmoins un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé.\n\nSa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. L'architecture de mélange d'experts (MoE) permet néanmoins de n'activer qu'une fraction des paramètres, ce qui réduit l'empreinte par rapport à un modèle dense de même taille.",
+        "fyi": "Développé par Z.ai (anciennement Zhipu AI), GLM 5.2 prolonge la lignée GLM en se concentrant sur les usages de programmation et les tâches agentiques de longue durée. Son architecture combine un mélange d'experts (MoE, Mixture of Experts) comptant 256 experts, dont 8 activés par jeton, et un mécanisme d'attention éparse (sparse attention) qui rend exploitable sa fenêtre de contexte d'un million de jetons. Il propose deux niveaux d'effort de raisonnement (High et Max), l'éditeur recommandant le mode Max pour les tâches de code.\n\nLes poids du modèle sont publiés en accès ouvert sous licence MIT, ce qui autorise une utilisation, une modification et un déploiement commercial sans restriction.",
+        "public_weights": true,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1048576,
+        "eu_hostable": true,
+        "inputs": [
+          "text"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 0.98,
+        "price_out": 3.08
+      },
+      {
         "db_id": "fc09ff20-4de4-4667-b678-2e34405482a0",
         "id": "glm-5.1",
         "simple_name": "GLM 5.1",
