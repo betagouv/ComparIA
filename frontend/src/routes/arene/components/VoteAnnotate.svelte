@@ -69,8 +69,8 @@
     choices={keywordChoices.choices}
     multiple
     {disabled}
-    containerClass="flex flex-wrap gap-3"
-    choiceClass="px-3 py-2 rounded-full lh-none! has-checked:text-primary! text-[14px]! bg-white"
+    containerClass="flex flex-wrap gap-1"
+    choiceClass="px-2 py-1 md:px-3 md:py-2 rounded-full lh-none! has-checked:text-primary! text-xs! md:text-[14px]! bg-white"
     onChange={() => onUpdate(annotations)}
   />
 </form>
