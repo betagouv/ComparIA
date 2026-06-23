@@ -47,9 +47,9 @@
         },
         "title": "Millega sind täna aidata saan?",
         "webSearch": {
-            "label": "Veebiotsing",
-            "enabled": "Veebiotsing aktiveeritud",
             "disabled": "Veebiotsing deaktiveeritud",
+            "enabled": "Veebiotsing aktiveeritud",
+            "label": "Veebiotsing",
             "tooltip": "Luba veebiotsing, et mudelid saaksid kasutada veebiallikaid ja viidata ajakohasemale teabele.<br><strong>Ilma veebiotsinguta</strong> vastavad mudelid oma treeningandmete põhjal. Nad ei saa teavet veebist kontrollida, seega väga uued või väga spetsiifilised faktid võivad olla puudulikud."
         }
     },
@@ -110,8 +110,8 @@
             "desc": "Keelemudelite võrdlusplatvormi kaudu on kogutud küsimusi ja eelistusi prantsuse, taani, rootsi, leedu ja nüüd ka eesti keeles ning need kajastavad orgaanilist, päriselulist kasutust, mitte tehislikke viipasid. Need andmestikud on avalikult kättesaadavad veebilehel <a {linkProps}>data.gouv.fr</a> ja Hugging Face’is.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Vestlused, vastused, reaktsioonid ja eelistused ühes andmestikus"
+                    "desc": "Vestlused, vastused, reaktsioonid ja eelistused ühes andmestikus",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Jagage meiega, kuidas te andmeid kasutate",
