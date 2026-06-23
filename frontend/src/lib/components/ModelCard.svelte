@@ -1,26 +1,33 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
+  import { Badge } from '$components/dsfr'
+  import InfoCard from '$components/InfoCard.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel } from '$lib/models'
-  import { Badge } from './dsfr'
+  import type { BotModel, Commons } from '$lib/models'
+  import { getModelCards } from '$lib/models'
 
   let {
     model,
+    commons,
     onModelSelected,
     modalId
   }: {
     model: BotModel
+    commons: Commons
     onModelSelected: (name: string) => void
     modalId: string
   } = $props()
 
-  const { license, release, size } = model.badges
-  const badges = [license, release, size].filter((b) => !!b)
+  const cards = $derived.by(() => {
+    if (!model) return []
+    const cards = getModelCards(model, 'xs', commons)
+    return [cards.size, cards.license, cards.release, cards.energy, cards.sovereignty, cards.rank]
+  })
 </script>
 
-<div
+<article
   class={[
-    'fr-card fr-enlarge-link cg-border rounded-xl bg-none!',
+    'fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! bg-none!',
     { 'border-primary!': model.new }
   ]}
 >
@@ -42,7 +49,17 @@
         </div>
       </h6>
 
-      <div class="fr-card__desc"></div>
+      <dl class="fr-card__desc p-0 gap-2 grid grid-cols-3">
+        {#each cards as card (card.id)}
+          <InfoCard {...card} badge={undefined} size="xs" titleTag="dt" titleClass="text-grey">
+            <dd class="p-0 font-bold text-base">
+              {#if card.badge}
+                <Badge {...card.badge} tooltip={undefined} size="sm" />
+              {/if}
+            </dd>
+          </InfoCard>
+        {/each}
+      </dl>
 
       <div class="fr-card__start order-2!">
         <ul class="fr-badges-group">
@@ -56,11 +73,8 @@
               {m[model.new ? 'words.new' : 'words.archived']()}
             </li>
           {/if}
-          {#each badges as badge, i (i)}
-            <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
-          {/each}
         </ul>
       </div>
     </div>
   </div>
-</div>
+</article>
