@@ -103,8 +103,8 @@
             "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese e lituano e riflettono un utilizzo reale e non artificiale. Questa raccolta di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Conversazioni, risposte, reazioni e preferenze raccolte in un unico dataset"
+                    "desc": "Conversazioni, risposte, reazioni e preferenze raccolte in un unico dataset",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Condividi con noi come utilizzi i dati",
