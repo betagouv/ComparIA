@@ -21,6 +21,7 @@
     class?: string
     onSubmit?: (value: string) => void
     onBlur?: (value: string) => void
+    onFocus?: () => void
   } & Partial<Pick<HTMLTextAreaElement, 'disabled' | 'placeholder' | 'rows'>>
 
   let {
@@ -41,6 +42,7 @@
     class: classNames = '',
     onSubmit = noop,
     onBlur = noop,
+    onFocus = noop,
     ...nativeTextAreaProps
   }: TextAreaProps = $props()
 
@@ -84,7 +86,7 @@
       {rows}
       class={[
         roundedClass,
-        'fr-input cg-border bg-white! md:min-h-10! rounded-b-none! border-solid!'
+        'fr-input cg-border bg-white! text-sm! md:text-base md:min-h-10! rounded-b-none! border-solid!'
       ]}
       {...nativeTextAreaProps}
       aria-describedby="messages-{id}"
@@ -92,6 +94,7 @@
       onblur={() => onBlur?.(value)}
       {@attach updateAuto}
       {@attach updateRows}
+      onfocus={onFocus}
     ></textarea>
     {#if submitBtn}
       <Button
