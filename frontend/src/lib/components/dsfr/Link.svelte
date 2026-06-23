@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import type { ButtonProps } from './Button.svelte'
@@ -77,7 +76,7 @@
   ])
 </script>
 
-<a {...externalProps} {...props} href={resolve(href as any)} class={classes}>
+<a {...externalProps} {...props} {href} class={classes}>
   {#if children}{@render children()}{:else}{text}{/if}
 </a>
 
