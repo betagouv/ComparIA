@@ -42,9 +42,9 @@
         },
         "title": "Kaip galime Jums padėti?",
         "webSearch": {
-            "label": "Paieška internete",
-            "enabled": "Paieška internete įjungta",
             "disabled": "Paieška internete išjungta",
+            "enabled": "Paieška internete įjungta",
+            "label": "Paieška internete",
             "tooltip": "Įjunkite paiešką internete, kad modeliai galėtų naudoti internetinius šaltinius ir cituoti naujesnę informaciją.<br><strong>Be paieškos internete</strong> modeliai atsako remdamiesi tuo, ką išmoko mokymo metu (savo mokymo duomenimis). Jie negali patikrinti informacijos internete, todėl labai nauji ar labai specifiniai faktai gali būti neišsamūs."
         }
     },
@@ -105,8 +105,8 @@
             "desc": "Platformos klausimai ir pageidavimai yra pateikiami daugiausia prancūzų, danų, švedų ir lietuvių kalbomis, atspindintys natūralų, realaus naudojimo kontekstą, o ne dirbtinius užklausimus. Šie duomenų rinkiniai yra viešai prieinami <a {linkProps}>data.gouv.fr</a> ir Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Pokalbiai, atsakymai, reakcijos ir pasirinkimai viename duomenų rinkinyje"
+                    "desc": "Pokalbiai, atsakymai, reakcijos ir pasirinkimai viename duomenų rinkinyje",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Parodyk mums, kaip panaudoji duomenis",
