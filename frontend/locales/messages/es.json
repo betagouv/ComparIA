@@ -47,9 +47,9 @@
         },
         "title": "¿Cómo puedo ayudarte el día de hoy?",
         "webSearch": {
-            "label": "Búsqueda web",
-            "enabled": "Búsqueda web activada",
             "disabled": "Búsqueda web desactivada",
+            "enabled": "Búsqueda web activada",
+            "label": "Búsqueda web",
             "tooltip": "Activa la búsqueda web para que los modelos utilicen fuentes en línea y citen información más actualizada.<br><strong>Sin búsqueda web</strong>, los modelos responden basándose en lo que aprendieron durante su entrenamiento (sus datos de entrenamiento). No pueden verificar información en línea, por lo que los datos muy recientes o muy específicos pueden ser incompletos."
         }
     },
@@ -109,8 +109,8 @@
             "catch": "Modelo publicado, investigación, compañías, ¡ahora es tu turno!",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Conversaciones, respuestas, reacciones y preferencias reunidas en un solo conjunto de datos"
+                    "desc": "Conversaciones, respuestas, reacciones y preferencias reunidas en un solo conjunto de datos",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Comparte con nosotros como usas los datos",
