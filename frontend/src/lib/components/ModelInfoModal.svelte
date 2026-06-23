@@ -4,9 +4,10 @@
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Commons } from '$lib/models'
-  import { ENERGY_CLASS_COLORS, isMaybeArch, MODALITIES } from '$lib/models'
-  import { propsToAttrs, sanitize } from '$lib/utils/commons'
+  import { ENERGY_CLASS_COLORS, getModelCards, MODALITIES } from '$lib/models'
+  import { sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
+  import InfoCard from './InfoCard.svelte'
 
   let {
     model,
@@ -24,79 +25,15 @@
   const dsfrEvents = {
     'ondsfr.conceal': () => onClose?.()
   }
-  const technicalCards = $derived.by(() => {
-    if (!model) return []
-    const midProps = propsToAttrs({ class: 'text-base!' })
-    const smallProps = propsToAttrs({ class: 'text-sm!' })
-    const cards = [
-      {
-        id: 'size',
-        icon: 'i-ri-ruler-line',
-        content: m['models.technical.size.params_count']({
-          count: model.params,
-          midProps,
-          smallProps
-        }),
-        subContent:
-          model.license.kind === 'proprietary'
-            ? m['models.technical.size.estimated']()
-            : model.active_params
-              ? m['models.technical.size.active_params_count']({ count: model.active_params })
-              : undefined,
-        desc: m['models.technical.size.desc']()
-      } as const,
-      {
-        id: 'arch',
-        icon: 'i-ri-stack-line',
-        tooltip: m['models.technical.arch.tooltip'](),
-        content: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.name`](),
-        subContent: model.arch === 'moe' ? m['generated.archs.moe.title']() : undefined,
-        desc: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
-      } as const,
-      {
-        id: 'context',
-        icon: 'i-ri-text-snippet',
-        tooltip: m['models.technical.context.tooltip'](),
-        content: m['models.technical.context.tokens_count']({
-          count: model.context_tokens ? Math.floor(model.context_tokens / 1000) : 'FIXME',
-          midProps,
-          smallProps
-        }),
-        subContent: m['models.technical.context.chars_count']({
-          count: model.context_tokens ? Math.floor((model.context_tokens * 4) / 1000) : 'FIXME'
-        }),
-        desc: 'FIXME'
-      } as const,
-      {
-        id: 'price',
-        icon: 'i-ri-price-tag-3-line',
-        desc: m['models.technical.price.desc'](),
-        content: [
-          {
-            content: m['models.technical.price.price_count']({
-              count: model.price_in.toFixed(2),
-              midProps
-            }),
-            subContent: m['models.technical.price.price_in']()
-          },
-          {
-            content: m['models.technical.price.price_count']({
-              count: model.price_out.toFixed(2),
-              midProps
-            }),
-            subContent: m['models.technical.price.price_out']()
-          }
-        ]
-      } as const,
-      {
-        id: 'modalities',
-        icon: 'i-ri-shapes-line'
-      } as const
-    ]
-    return cards.map((card) => ({
-      ...card,
-      title: m[`models.technical.${card.id}.title`]()
-    }))
+  const cards = $derived.by(() => {
+    if (!model) return {}
+    const cards = getModelCards(model, 'md', commons)
+
+    return {
+      technical: [cards.size, cards.arch, cards.context, cards.price, cards.modalities],
+      energy: cards.energy,
+      rank: cards.rank
+    } as const
   })
 
   const sovFields = $derived.by(() => {
@@ -215,36 +152,35 @@
                   <ul class="fr-badges-group">
                     {#each badges as badge, i (i)}
                       <li>
-                        <Badge id="general-badge-{i}" {...badge} variant="yellow" class="mb-0!" />
+                        <Badge id="general-badge-{i}" {...badge} class="mb-0!" />
                       </li>
                     {/each}
                   </ul>
 
                   <div class="xl:grid-cols-24 gap-4 md:grid-cols-9 sm:grid-cols-2 grid">
-                    {#each technicalCards as card, i (i)}
-                      <article
-                        class={[
-                          'cg-border bg-white p-4',
-                          card.id === 'modalities'
-                            ? 'md:col-span-2 xl:col-span-4'
-                            : 'md:col-span-3 xl:col-span-5'
-                        ]}
+                    {#each cards.technical as card, i (i)}
+                      <InfoCard
+                        {...card}
+                        id="technical-{card.id}"
+                        iconClass="text-info"
+                        class={card.id === 'modalities'
+                          ? 'md:col-span-2 xl:col-span-4'
+                          : 'md:col-span-3 xl:col-span-5'}
                       >
-                        <div class="flex">
-                          {@render iconHeading({ ...card, classes: 'mb-2!' })}
-
-                          <div class="ms-auto">
-                            {#if card.id === 'size'}
-                              <Badge {...model.badges.size} size="sm" />
-                            {:else if card.tooltip}
-                              <Tooltip id="technical-tooltip-{card.id}" size="xs">
-                                {@html sanitize(card.tooltip)}
-                              </Tooltip>
-                            {/if}
+                        {#if card.id === 'price'}
+                          <div class="flex w-full">
+                            {#each card.contents as c, i (i)}
+                              <div class="basis-1/2">
+                                <p class="mb-0! font-bold text-[22px]!">
+                                  ${@html sanitize(c.content)}
+                                </p>
+                                <p class="text-sm! text-grey mb-0!">
+                                  {c.subContent}
+                                </p>
+                              </div>
+                            {/each}
                           </div>
-                        </div>
-
-                        {#if card.id === 'modalities'}
+                        {:else if card.id === 'modalities'}
                           <div class="grid grid-cols-2 gap-[1px] bg-[#E0E0E0]">
                             {#each MODALITIES as mod (mod.id)}
                               {@const active = model.inputs.includes(mod.id)}
@@ -262,38 +198,8 @@
                               </div>
                             {/each}
                           </div>
-                        {:else if card.id === 'price'}
-                          <div class="flex w-full">
-                            {#each card.content as c, i (i)}
-                              <div class="basis-1/2">
-                                <p class="mb-0! font-bold text-[22px]!">
-                                  ${@html sanitize(c.content)}
-                                </p>
-                                <p class="text-sm! text-grey mb-0!">
-                                  {c.subContent}
-                                </p>
-                              </div>
-                            {/each}
-                          </div>
-                        {:else}
-                          <p class="mb-0! font-bold text-[22px]!">
-                            {@html sanitize(card.content)}
-                          </p>
-                          {#if card.subContent}
-                            <p class="text-sm! text-grey mb-0! ù">
-                              {card.subContent}
-                            </p>
-                          {/if}
-                        {/if}
-
-                        {#if card.desc}
-                          <p
-                            class="bg-very-light-primary text-xxs p-1 mb-0! mt-3 b-light-primary rounded-sm border"
-                          >
-                            {card.desc}
-                          </p>
-                        {/if}
-                      </article>
+                        {:else}{/if}
+                      </InfoCard>
                     {/each}
                   </div>
                 </section>
@@ -370,58 +276,38 @@
                           </p>
                         {/if}
                       </article>
-
-                      <article
-                        class="cg-border bg-white p-4 relative flex basis-1/2 flex-col justify-between"
-                      >
-                        {@render iconHeading({
-                          icon: 'i-ri-leaf-line',
-                          title: m['models.envImpact.conso.title'](),
-                          iconClass: 'text-success'
-                        })}
-
-                        <Tooltip
-                          id="conso-tooltip"
-                          text={m['models.envImpact.conso.tooltip']()}
-                          size="xs"
-                          class="top-3 right-4 absolute"
-                        />
-
-                        <div
-                          class="gap-2 my-6 flex w-full flex-col"
-                          aria-label="{m['models.envImpact.conso.title']()} {model.energy_class}"
-                        >
-                          {#each energyRows as row (row.letter)}
-                            {@const active = row.letter === model.energy_class}
-                            <div class="text-sm font-bold text-white flex h-[23px] items-center">
-                              <div class="w-9/10">
-                                <div
-                                  class="ps-2 flex h-full items-center justify-start"
-                                  style="background-color: {row.color}; width: {row.width}%; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
-                                  class:opacity-30={!active}
-                                >
-                                  {row.letter}
-                                </div>
-                              </div>
-                              {#if active}
-                                <div
-                                  class="rounded-sm bg-primary ms-auto flex h-full w-[23px] items-center justify-center leading-none"
-                                >
-                                  <span class="">
+                      {#if cards.energy}
+                        <InfoCard {...cards.energy} class="basis-1/2 justify-between">
+                          <div
+                            class="gap-2 my-6 flex w-full flex-col"
+                            aria-label="{m['models.cards.energy.title_md']()} {model.energy_class}"
+                          >
+                            {#each energyRows as row (row.letter)}
+                              {@const active = row.letter === model.energy_class}
+                              <div class="text-sm font-bold text-white flex h-[23px] items-center">
+                                <div class="w-9/10">
+                                  <div
+                                    class="ps-2 flex h-full items-center justify-start"
+                                    style="background-color: {row.color}; width: {row.width}%; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+                                    class:opacity-30={!active}
+                                  >
                                     {row.letter}
-                                  </span>
+                                  </div>
                                 </div>
-                              {/if}
-                            </div>
-                          {/each}
-                        </div>
-
-                        <p
-                          class="bg-very-light-primary text-xxs p-1 mb-0! b-light-primary rounded-sm border"
-                        >
-                          FIXME
-                        </p>
-                      </article>
+                                {#if active}
+                                  <div
+                                    class="rounded-sm bg-primary ms-auto flex h-full w-[23px] items-center justify-center leading-none"
+                                  >
+                                    <span class="">
+                                      {row.letter}
+                                    </span>
+                                  </div>
+                                {/if}
+                              </div>
+                            {/each}
+                          </div>
+                        </InfoCard>
+                      {/if}
                     </div>
                   </section>
 
@@ -473,7 +359,7 @@
                         size="xs"
                         class="top-3 right-4 absolute"
                       />
-                      {#if model.data}
+                      {#if model.data && cards.rank}
                         <dl class="md:gap-15 p-0 gap-5 md:flex-row flex flex-col">
                           <div>
                             {@render iconHeading({
@@ -507,16 +393,14 @@
                           <div>
                             {@render iconHeading({
                               tag: 'dt',
-                              icon: 'i-ri-trophy-line',
-                              title: m['models.performance.fields.rank.title'](),
+                              icon: cards.rank.icon,
+                              title: cards.rank.title,
                               iconClass: 'text-yellow'
                             })}
 
                             <dd class="p-0 mb-0! font-bold text-[20px]!">
-                              {m['models.performance.fields.rank.to'](
-                                commons.rankingTiers[model.data.rankClass]
-                              )}<span class="text-grey font-normal text-xs!">
-                                {m['models.performance.fields.rank.detail']({
+                              {cards.rank.content}<span class="text-grey font-normal text-xs!">
+                                {m['models.cards.rank.detail']({
                                   count: commons.modelsCount
                                 })}
                               </span>
