@@ -71,6 +71,14 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       title:
         m[`models.cards.size.title${model.license.kind === 'proprietary' ? '_estimated' : ''}`](),
       badge: model.badges.size_short,
+      content:
+        size !== 'xs'
+          ? m['models.cards.size.params_count']({
+              count: model.params,
+              midProps,
+              smallProps
+            })
+          : undefined,
       subContent:
         model.license.kind === 'proprietary'
           ? m['models.cards.size.estimated']()
