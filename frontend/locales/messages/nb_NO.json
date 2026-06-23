@@ -47,9 +47,9 @@
         },
         "title": "Hva kan jeg hjelpe deg med i dag?",
         "webSearch": {
-            "label": "Nettsøk",
-            "enabled": "Nettsøk aktivert",
             "disabled": "Nettsøk deaktivert",
+            "enabled": "Nettsøk aktivert",
+            "label": "Nettsøk",
             "tooltip": "Aktiver nettsøk for å la modellene bruke nettkilder og sitere mer oppdatert informasjon.<br><strong>Uten nettsøk</strong> svarer modellene basert på det de lærte under trening (treningsdataene sine). De kan ikke verifisere informasjon på nettet, så svært nye eller svært spesifikke fakta kan være ufullstendige."
         }
     },
@@ -110,8 +110,8 @@
             "desc": "Plattformens spørsmål og preferanser er hovedsakelig på fransk, dansk, svensk og litauisk, på vanlig, dagligdags språk - ikke kunstige spørsmål. Datasettene er offentlig tilgjengelige på <a {linkProps}>data.gouv</a> og Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Samtaler, svar, reaksjoner og preferanser samlet i ett datasett"
+                    "desc": "Samtaler, svar, reaksjoner og preferanser samlet i ett datasett",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Vis oss hvordan du bruker dataene",
