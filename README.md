@@ -34,33 +34,6 @@
   </a>
 </div>
 
-```mermaid
-flowchart LR
-    U["👤 Ask"] --> A["🤖 Compare"] --> V["🗳️ Vote"] --> R["🔍 Reveal"]
-
-    R --> L["🏆 Leaderboard"]
-    R --> T["🧠 Rare data for model training"]
-    R --> M["🗺️ Use case mapping"]
-    R --> E1["💡 Model diversity"]
-    R --> E2["⚖️ Bias awareness"]
-    R --> E3["🌱 Env. impact"]
-
-    style U fill:#f0f4ff,stroke:#3558a2
-    style A fill:#f0f4ff,stroke:#3558a2
-    style V fill:#f0f4ff,stroke:#3558a2
-    style R fill:#f0f4ff,stroke:#3558a2
-    style E1 fill:#e8f5e9,stroke:#388e3c
-    style E2 fill:#e8f5e9,stroke:#388e3c
-    style E3 fill:#e8f5e9,stroke:#388e3c
-    style L fill:#fff3e0,stroke:#e65100
-    style T fill:#fff3e0,stroke:#e65100
-    style M fill:#fff3e0,stroke:#e65100
-```
-
-<p align="center">
-  <em>🟦 User journey &nbsp;&nbsp; 🟩 Awareness value &nbsp;&nbsp; 🟧 Dataset value</em>
-</p>
-
 ---
 
 ## 🇫🇷 The French use case
@@ -71,11 +44,7 @@ flowchart LR
 
 Launched in October 2024 by [DINUM](https://www.numerique.gouv.fr/dinum/) and the French [Ministry of Culture](https://www.culture.gouv.fr/) to address the lack of French-language preference data for LLM training nd evaluation.
 
-Since launch: **600,000+ prompts**, **250,000+ preference votes**, 300,000+ visitors. One of the largest non-English human preference datasets available. All data published openly on Hugging Face:
-
-- [comparia-conversations](https://huggingface.co/datasets/ministere-culture/comparia-conversations) (460k+ entries)
-- [comparia-votes](https://huggingface.co/datasets/ministere-culture/comparia-votes) (149k+ entries)
-- [comparia-reactions](https://huggingface.co/datasets/ministere-culture/comparia-reactions) (89k+ entries)
+Since launch: **700,000+ prompts**, **250,000+ preference votes**, 450,000+ visitors. One of the largest non-English human preference datasets available. All data published openly on Hugging Face:[comparIA/comparia-fr-arena](https://huggingface.co/datasets/comparIA/comparia-fr-arena)
 
 We published a [pre-print](https://huggingface.co/papers/2602.06669) to dive deep into the project's strategy in France.
 
@@ -191,24 +160,22 @@ Compar:IA is a digital common. Whether you can offer funding, code, translations
 ## Roadmap
 
 ### 🟢 In Progress
-- **Dataset publication pipeline** configurable per language/platform, with customizable publication delays and anonymization pipelines _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
-- **Web search** (🇪🇺 ALT-EDIC)
-- **Easier deployment, observability and cleaner DB** (🇪🇺 ALT-EDIC)
-- **New voting system** (🇪🇺 ALT-EDIC, 🇫🇷 Ministry of Culture)
-
+- [Authentication](https://github.com/betagouv/ComparIA/milestone/11)  _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- Style control https://github.com/betagouv/ComparIA/pull/532 _(🇫🇷 Ministry of Culture)_
+- Prompt moderation https://github.com/betagouv/ComparIA/pull/542 _(🇫🇷 Ministry of Culture)_
+- [Improved model cards](https://github.com/betagouv/ComparIA/milestone/14) _(🇫🇷 Ministry of Culture)_
 
 ### 🔮 Up Next
 
-- Web search 
-- Authentication
-- Style control [#273](https://github.com/betagouv/ComparIA/pull/273)
-- Message history
-- Easier deployment and streamlined onboarding
-- Improved anonymization pipeline
-- Live use-case mapping
+- Live use-case mapping _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- Message history _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- Socio-demographic data collection _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
+- [Back-office management](https://github.com/betagouv/ComparIA/milestone/17)  _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
 
 ### ⛵ Shipped
-
+- New voting system _(🇪🇺 ALT-EDIC, 🇫🇷 Ministry of Culture)_
+- Web search _(🇪🇺 ALT-EDIC)_
+- Separation of all platforms into separate instances _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
 - Ranking consolidation and internationalization _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
 - Language/platform-specific model support _(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)_
 - Gradio → FastAPI migration _(🇫🇷 Ministry of Culture, 🇫🇷 DINUM, 🇪🇺 ALT-EDIC)_
