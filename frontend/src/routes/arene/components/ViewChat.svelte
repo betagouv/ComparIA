@@ -121,7 +121,7 @@
     :global(.grouped-responses) {
       max-height: calc(100vh - 2rem);
       scroll-margin-top: 2rem;
-      min-height: 500px;
+      min-height: 400px;
 
       @media (min-width: 48em) and (min-height: 48em) {
         max-height: calc(100vh - var(--footer-size) - 2rem);
@@ -129,10 +129,18 @@
     }
 
     :global(&:last-of-type .grouped-responses) {
-      height: calc(100vh - 6rem);
+      max-height: calc(100vh - 6rem);
 
       @media (min-width: 48em) and (min-height: 48em) {
-        height: calc(100vh - var(--footer-size) - 4rem);
+        max-height: calc(100vh - var(--footer-size) - 2rem);
+      }
+
+      &.generating {
+        height: calc(100vh - 6rem);
+
+        @media (min-width: 48em) and (min-height: 48em) {
+          height: calc(100vh - var(--footer-size) - 4rem);
+        }
       }
     }
   }

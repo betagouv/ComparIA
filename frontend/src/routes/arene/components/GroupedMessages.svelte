@@ -30,7 +30,11 @@
 
     <MessageUser id={`user-${turn.id}`} message={turn.user_msg} />
   </div>
-  <div class="grouped-responses flex flex-col" {@attach scrollTo}>
+  <div
+    class="grouped-responses flex flex-col"
+    class:generating={turn.status === 'pending' || turn.status === 'generating'}
+    {@attach scrollTo}
+  >
     {#if turn.status === 'pending'}
       <Pending message={m['chatbot.loading']()} class="m-auto" />
     {:else if turn.status === 'error' && error}
