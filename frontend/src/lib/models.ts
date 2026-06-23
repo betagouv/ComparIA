@@ -29,6 +29,14 @@ export const MODALITIES = (
   ...item,
   title: m[`models.cards.modalities.types.${item.id}`]()
 }))
+export const SOVEREIGNTY_FIELDS = [
+  'reuse',
+  'commercial_use',
+  'public_weights',
+  'public_training_data',
+  'public_training_code',
+  'eu_hostable'
+] as const
 
 export type RankClass = '1' | '2' | '3' | '4' | '5'
 type ModelRevisedRank = { rank: number; rankClass: RankClass }
@@ -122,6 +130,18 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       icon: 'i-ri-shapes-line',
       title: m['models.cards.modalities.title']()
     } as const,
+    license: {
+      id: 'license',
+      icon: 'i-ri-copyright-line',
+      title: m['models.cards.license.title'](),
+      badge: model.badges.license
+    } as const,
+    release: {
+      id: 'release',
+      icon: 'i-ri-calendar-line',
+      title: m['models.cards.release.title'](),
+      badge: model.badges.release_short
+    } as const,
     energy: {
       id: 'energy',
       icon: 'i-ri-leaf-line',
@@ -130,6 +150,12 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       tooltip: m['models.cards.energy.tooltip'](),
       desc: m['models.cards.energy.desc'](),
       content: size === 'xs' ? model.energy_class : undefined
+    } as const,
+    sovereignty: {
+      id: 'sovereignty',
+      icon: 'i-ri-government-line',
+      title: m['models.cards.sovereignty.title'](),
+      content: `${model.sovereignty_score}/${SOVEREIGNTY_FIELDS.length}`
     } as const,
     rank: {
       id: 'rank',
@@ -157,6 +183,10 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
     // FIXME use created_at date instead?
     new: Math.floor((new Date() - release_date) / (1000 * 60 * 60 * 24)) < 60,
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
+    sovereignty_score: SOVEREIGNTY_FIELDS.reduce((score, v) => {
+      const obj = v === 'commercial_use' || v === 'reuse' ? model.license : model
+      return obj[v] ? score + 1 : score
+    }, 0),
     badges: {
       license: {
         'open-source': {
