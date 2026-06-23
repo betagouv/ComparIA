@@ -12,11 +12,13 @@ from typing import Awaitable
 from pydantic import BaseModel, ValidationError
 
 from backend.config import (
+    RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
     RATELIMIT_CUSTOM_SELECTION_PER_DAY,
     RATELIMIT_CUSTOM_SELECTION_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
 )
 from utils.storage.redis import (
+    REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
     REDIS_CUSTOM_DAILY_KEY,
     REDIS_CUSTOM_HOURLY_KEY,
@@ -168,4 +170,32 @@ def is_ratelimited(ip: str) -> bool:
     if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
         return True
     else:
+        return False
+
+
+def increment_blocked_prompts(ip: str) -> None:
+    """
+    Count guardrail-blocked prompts per IP in a rolling 1h window (cooldown for
+    abuse / jailbreak probing). Fails open: a Redis error must not break the flow.
+    """
+    try:
+        client = get_redis_client()
+        client.incr(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
+        client.expire(REDIS_BLOCKED_COUNT_KEY.format(ip=ip), 3600)
+    except Exception as e:
+        logger.error(f"[SESSION] Error incrementing blocked count for '{ip}': {e}")
+
+
+def is_block_cooldown(ip: str) -> bool:
+    """
+    True if an IP has had too many guardrail-blocked prompts in the window.
+    Fails open (returns False) on Redis error so a hiccup can't lock users out.
+    """
+    try:
+        client = get_redis_client()
+        counter = client.get(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
+        assert not isinstance(counter, Awaitable)
+        return bool(counter and int(counter) >= RATELIMIT_BLOCKED_PROMPTS_PER_HOUR)
+    except Exception as e:
+        logger.error(f"[SESSION] Error checking block cooldown for '{ip}': {e}")
         return False
