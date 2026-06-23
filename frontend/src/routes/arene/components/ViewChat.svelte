@@ -1,10 +1,8 @@
 <script lang="ts">
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import Footer from '$components/Footer.svelte'
-  import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
-  import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { GroupedMessages, RevealArea, VoteModal } from '.'
 
@@ -68,10 +66,6 @@
         {/if}
       </GroupedMessages>
     {/each}
-
-    {#if comparator.loading}
-      <Pending message={m['chatbot.loading']()} class="m-auto" {@attach scrollTo} />
-    {/if}
   </div>
 
   {#if comparator.status === 'revealed' && comparator.comparison.reveal}
@@ -81,25 +75,24 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)"
+      class="-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)"
     >
-      <div class="gap-3 md:flex-row flex w-full flex-col">
-        <TextPrompt
-          id="chatbot-prompt"
-          bind:value={prompt}
-          label={m['chatbot.continuePrompt']()}
-          placeholder={m['chatbot.continuePrompt']()}
-          error={comparator.promptError}
-          hideLabel
-          submitBtn
-          submitDisabled={!canContinue || prompt === ''}
-          size="md"
-          rows={3}
-          maxRows={4}
-          onSubmit={onPromptSubmit}
-          class="mb-0! w-full"
-        />
-      </div>
+      <TextPrompt
+        id="chatbot-prompt"
+        bind:value={prompt}
+        label={m['chatbot.continuePrompt']()}
+        placeholder={m['chatbot.continuePrompt']()}
+        error={comparator.promptError}
+        hideLabel
+        submitBtn
+        submitDisabled={!canContinue || prompt === ''}
+        size="md"
+        rows={3}
+        maxRows={4}
+        onSubmit={onPromptSubmit}
+        onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
+        class="mb-0! w-full"
+      />
 
       <Button
         text={m['chatbot.revealButton']()}
@@ -125,11 +118,22 @@
   }
 
   :global(#chat-area .grouped-messages) {
-    max-height: calc(100vh - var(--second-header-size) - var(--footer-size));
-    scroll-margin-top: calc(var(--second-header-size));
+    :global(.grouped-responses) {
+      max-height: calc(100vh - 2rem);
+      scroll-margin-top: 2rem;
+      min-height: 500px;
 
-    &:last-of-type {
-      height: calc(100vh - var(--second-header-size) - var(--footer-size));
+      @media (min-width: 48em) and (min-height: 48em) {
+        max-height: calc(100vh - var(--footer-size) - 2rem);
+      }
+    }
+
+    :global(&:last-of-type .grouped-responses) {
+      height: calc(100vh - 6rem);
+
+      @media (min-width: 48em) and (min-height: 48em) {
+        height: calc(100vh - var(--footer-size) - 4rem);
+      }
     }
   }
 </style>
