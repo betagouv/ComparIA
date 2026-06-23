@@ -9,29 +9,12 @@
   const locale = getLocale()
   const i18nData = getI18nContext()
 
-  const datasetCards = (
-    [
-      {
-        i18nKey: 'conversations',
-        img: `/datasets/conversations-${locale === 'fr' ? 'fr' : 'en'}.png`,
-        link: 'https://huggingface.co/datasets/ministere-culture/comparia-conversations'
-      },
-      {
-        i18nKey: 'reactions',
-        img: `/datasets/reactions-${locale === 'fr' ? 'fr' : 'en'}.png`,
-        link: 'https://huggingface.co/datasets/ministere-culture/comparia-reactions'
-      },
-      {
-        i18nKey: 'votes',
-        img: `/datasets/votes-${locale === 'fr' ? 'fr' : 'en'}.png`,
-        link: 'https://huggingface.co/datasets/ministere-culture/comparia-votes'
-      }
-    ] as const
-  ).map(({ i18nKey, ...card }) => ({
-    ...card,
-    title: m[`datasets.access.repos.${i18nKey}.title`](),
-    desc: m[`datasets.access.repos.${i18nKey}.desc`]()
-  }))
+  const datasetCard = {
+    img: `/datasets/conversations-${locale === 'fr' ? 'fr' : 'en'}.png`,
+    link: 'https://huggingface.co/datasets/comparIA/comparia-fr-arena',
+    title: m['datasets.access.repos.arena.title'](),
+    desc: m['datasets.access.repos.arena.desc']()
+  }
 
   const bunkaCards = (
     [
@@ -81,26 +64,27 @@
           />
         </div>
 
-        <div
-          class="gap-4 sm:grid-cols-3 md:content-center md:gap-6 lg:grid-cols-2 xl:grid-cols-3 grid grid-cols-2"
-        >
-          {#each datasetCards as card, i (i)}
-            <div class="cg-border bg-very-light-grey">
-              <img
-                src={card.img}
-                class="fr-responsive-img rounded-t-xl"
-                data-fr-js-ratio="true"
-                aria-hidden="true"
-                alt=""
-              />
-              <div class="px-3 pt-2 pb-4">
-                <p class="mb-1! text-sm!">
-                  <Link variant="primary" href={card.link} text={card.title} native={false} />
-                </p>
-                <p class="mb-0! text-xs! text-grey">{card.desc}</p>
-              </div>
+        <div class="md:content-center grid">
+          <div class="cg-border bg-very-light-grey mx-auto w-full max-w-xs">
+            <img
+              src={datasetCard.img}
+              class="fr-responsive-img rounded-t-xl"
+              data-fr-js-ratio="true"
+              aria-hidden="true"
+              alt=""
+            />
+            <div class="px-3 pt-2 pb-4">
+              <p class="mb-1! text-sm!">
+                <Link
+                  variant="primary"
+                  href={datasetCard.link}
+                  text={datasetCard.title}
+                  native={false}
+                />
+              </p>
+              <p class="mb-0! text-xs! text-grey">{datasetCard.desc}</p>
             </div>
-          {/each}
+          </div>
         </div>
       </div>
     </div>

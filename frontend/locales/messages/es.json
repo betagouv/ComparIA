@@ -108,8 +108,9 @@
         "access": {
             "catch": "Modelo publicado, investigación, compañías, ¡ahora es tu turno!",
             "repos": {
-                "votes": {
-                    "title": "/votos"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Conversaciones, respuestas, reacciones y preferencias reunidas en un solo conjunto de datos"
                 }
             },
             "share": "Comparte con nosotros como usas los datos",
