@@ -1,5 +1,5 @@
 {
-  "timestamp": 1781538917.069934,
+  "timestamp": 1782215562.168236,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
@@ -2133,6 +2133,49 @@
       "specific_portals": null,
       "status": "enabled",
       "url": "https://huggingface.co/zai-org/GLM-5.1",
+      "wh_per_million_token": 4095.385537682941
+    },
+    "glm-5.2": {
+      "active_params": 40,
+      "arch": "moe",
+      "commercial_use": true,
+      "context_tokens": 1048576,
+      "db_id": "e59309ac-b937-4ee9-b219-ac467e53397f",
+      "distribution": "open-weights",
+      "endpoint": {
+        "api_base": null,
+        "api_model_id": "z-ai/glm-5.2",
+        "api_type": "openrouter",
+        "api_version": null
+      },
+      "eu_hostable": true,
+      "friendly_size": "XL",
+      "fully_open_source": false,
+      "icon_path": "zhipu-color",
+      "id": "glm-5.2",
+      "inputs": [
+        "text"
+      ],
+      "knowledge_cutoff": null,
+      "license": "MIT",
+      "new": true,
+      "organisation": "Zhipu",
+      "params": 744,
+      "price_in": 0.98,
+      "price_out": 3.08,
+      "pricey": false,
+      "public_training_code": false,
+      "public_training_data": false,
+      "public_weights": true,
+      "quantization": null,
+      "reasoning": true,
+      "release_date": "06/2026",
+      "required_ram": 744,
+      "reuse": true,
+      "simple_name": "GLM 5.2",
+      "specific_portals": null,
+      "status": "enabled",
+      "url": "https://huggingface.co/zai-org/GLM-5.2",
       "wh_per_million_token": 4095.385537682941
     },
     "gpt-3.5-turbo-0301": {
