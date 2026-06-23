@@ -82,7 +82,7 @@
         bind:value={prompt}
         label={m['chatbot.continuePrompt']()}
         placeholder={m['chatbot.continuePrompt']()}
-        error={comparator.promptError}
+        bind:error={comparator.promptError}
         hideLabel
         submitBtn
         submitDisabled={!canContinue || prompt === ''}

@@ -360,6 +360,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     get promptError() {
       return promptError
     },
+    set promptError(v: string | undefined) {
+      promptError = v
+    },
 
     async askFirst(args: APIModeAndPromptData) {
       const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
