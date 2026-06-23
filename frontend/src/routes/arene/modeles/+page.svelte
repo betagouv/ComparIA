@@ -112,7 +112,7 @@
   seoTitle={m['seo.titles.modeles']()}
   title={m['models.list.title']()}
   subtitle={m['models.list.intro']()}
-  class="md:flex py-0!"
+  class="py-0!"
 >
   <aside
     class="fr-sidemenu mb-5 md:mb-0 md:basis-1/3"
@@ -256,6 +256,7 @@
         <ModelCard
           {model}
           modalId="modal-model"
+          {commons}
           onModelSelected={(name) => (selectedModel = name)}
         />
       {/each}
