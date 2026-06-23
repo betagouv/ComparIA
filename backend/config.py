@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
     COMPARIA_REDIS_HOST: str = "localhost"
     MOCK_RESPONSE: bool = False
-    LOGDIR: Path = ROOT_DIR / "data"
+    LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None
