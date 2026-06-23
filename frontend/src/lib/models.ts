@@ -1,6 +1,7 @@
 import type { APILLMData, LLMList } from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
+import { propsToAttrs } from '$lib/utils/commons'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
@@ -26,7 +27,7 @@ export const MODALITIES = (
   ] as const
 ).map((item) => ({
   ...item,
-  title: m[`models.technical.modalities.types.${item.id}`]()
+  title: m[`models.cards.modalities.types.${item.id}`]()
 }))
 
 export type RankClass = '1' | '2' | '3' | '4' | '5'
@@ -46,9 +47,99 @@ export type BotModelWithData = BotModel & {
   data: Required<BotModel['data']>
   prefs: Required<BotModel['prefs']>
 }
+export type ModelCardSize = 'xs' | 'sm' | 'md'
 
 export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
+}
+
+export function getModelCards(model: BotModel, size: ModelCardSize, commons: Commons) {
+  const midProps = propsToAttrs({ class: 'text-base!' })
+  const smallProps = propsToAttrs({ class: 'text-sm!' })
+  return {
+    size: {
+      id: 'size',
+      icon: 'i-ri-ruler-line',
+      title:
+        m[`models.cards.size.title${model.license.kind === 'proprietary' ? '_estimated' : ''}`](),
+      badge: model.badges.size_short,
+      subContent:
+        model.license.kind === 'proprietary'
+          ? m['models.cards.size.estimated']()
+          : model.active_params
+            ? m['models.cards.size.active_params_count']({ count: model.active_params })
+            : undefined,
+      desc: m['models.cards.size.desc']()
+    } as const,
+    arch: {
+      id: 'arch',
+      icon: 'i-ri-stack-line',
+      title: m['models.cards.arch.title'](),
+      tooltip: m['models.cards.arch.tooltip'](),
+      content: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.name`](),
+      subContent: model.arch === 'moe' ? m['generated.archs.moe.title']() : undefined,
+      desc: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
+    } as const,
+    context: {
+      id: 'context',
+      icon: 'i-ri-text-snippet',
+      title: m['models.cards.context.title'](),
+      tooltip: m['models.cards.context.tooltip'](),
+      content: m['models.cards.context.tokens_count']({
+        count: model.context_tokens ? Math.floor(model.context_tokens / 1000) : 'FIXME',
+        midProps,
+        smallProps
+      }),
+      subContent: m['models.cards.context.chars_count']({
+        count: model.context_tokens ? Math.floor((model.context_tokens * 4) / 1000) : 'FIXME'
+      }),
+      desc: 'FIXME'
+    } as const,
+    price: {
+      id: 'price',
+      icon: 'i-ri-price-tag-3-line',
+      title: m['models.cards.price.title'](),
+      desc: m['models.cards.price.desc'](),
+      contents: [
+        {
+          content: m['models.cards.price.price_count']({
+            count: model.price_in.toFixed(2),
+            midProps
+          }),
+          subContent: m['models.cards.price.price_in']()
+        },
+        {
+          content: m['models.cards.price.price_count']({
+            count: model.price_out.toFixed(2),
+            midProps
+          }),
+          subContent: m['models.cards.price.price_out']()
+        }
+      ]
+    } as const,
+    modalities: {
+      id: 'modalities',
+      icon: 'i-ri-shapes-line',
+      title: m['models.cards.modalities.title']()
+    } as const,
+    energy: {
+      id: 'energy',
+      icon: 'i-ri-leaf-line',
+      iconClass: 'text-yellow',
+      title: m[`models.cards.energy.title_${size}`](),
+      tooltip: m['models.cards.energy.tooltip'](),
+      desc: m['models.cards.energy.desc'](),
+      content: size === 'xs' ? model.energy_class : undefined
+    } as const,
+    rank: {
+      id: 'rank',
+      icon: 'i-ri-trophy-line',
+      title: m[`models.cards.rank.title${size === 'xs' ? '_xs' : ''}`](),
+      content: model.data
+        ? m['models.cards.rank.to'](commons.rankingTiers[model.data.rankClass])
+        : m['words.NA']()
+    } as const
+  }
 }
 
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
@@ -87,17 +178,18 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
         }
       }[licenseType],
       release: {
-        variant: '' as const,
+        variant: 'yellow' as const,
         text: m['models.release']({
-          date: release_date.toLocaleString(locale, {
-            year: 'numeric',
-            month: 'numeric'
-          })
+          date: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
         })
+      } as const,
+      release_short: {
+        variant: '' as const,
+        text: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
       } as const,
       knowledge: model.knowledge_cutoff
         ? ({
-            variant: '' as const,
+            variant: 'yellow' as const,
             text: m['models.knowledge.badge']({
               date: new Date(model.knowledge_cutoff).toLocaleString(locale, {
                 year: 'numeric',
@@ -110,18 +202,16 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       size: {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
-        text:
-          licenseType === 'open-weights' || licenseType === 'open-source'
-            ? m['models.parameters']({ number: model.params })
-            : m['models.size.estimated']({ size: model.size_class }),
-        tooltip:
-          licenseType === 'proprietary' ? m['models.openWeight.tooltips.params']() : undefined
+        text: m[licenseType === 'proprietary' ? 'models.size.estimated' : 'models.size.title']({
+          size: model.size_class
+        })
+        // tooltip:
+        //   licenseType === 'proprietary' ? m['models.openWeight.tooltips.params']() : undefined
       },
-      arch: {
-        id: `model-arch-${model.id}`,
-        variant: 'yellow' as const,
-        text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
-        tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
+      size_short: {
+        id: `model-parameters-${model.id}`,
+        variant: 'info' as const,
+        text: m['models.size.title']({ size: model.size_class })
       }
     },
     search: [model.human_id, model.name, model.lab.name].join(' '),

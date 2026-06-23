@@ -1620,6 +1620,75 @@
         "title": "Site en maintenance"
     },
     "models": {
+        "cards": {
+            "arch": {
+                "title": "Architecture",
+                "tooltip": "FIXME"
+            },
+            "context": {
+                "chars_count": "Soit envir. {count}k caractères",
+                "desc": "Peut analyser environ plusieurs centaines de pages de texte",
+                "title": "Contexte",
+                "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>jetons</span>",
+                "tooltip": "FIXME"
+            },
+            "modalities": {
+                "title": "Multimodalités",
+                "types": {
+                    "audio": "Audio",
+                    "image": "Image",
+                    "text": "Texte",
+                    "video": "Vidéo"
+                }
+            },
+            "price": {
+                "desc": "Entrée = question envoyée, Sortie = réponse générée",
+                "price_count": "{count}<span {midProps}>/M</span>",
+                "price_in": "Prix d’entrée",
+                "price_out": "Prix de sortie",
+                "title": "Prix"
+            },
+            "size": {
+                "active_params_count": "Dont {count}mds actifs",
+                "desc": "Plus un modèle a de paramètres, plus il demande de ressources",
+                "estimated": "Estimation",
+                "params_count": "{count}<span {midProps}>mds</span> <span {smallProps}>paramètres</span>",
+                "title": "Taille",
+                "title_estimated": "Taille estimée"
+            },
+            "license": {
+                "title": "Licence"
+            },
+            "sovereignty": {
+                "title": "Souveraineté",
+                "tooltip": "FIXME"
+            },
+            "rank": {
+                "title": "Rang classement",
+                "title_xs": "Classement",
+                "tooltip": "FIXME",
+                "detail": "/{count} modèles",
+                "to": "#{min} à {max}"
+            },
+            "energy": {
+                "title_md": "Classe de consommation énergétique",
+                "title_sm": "Score énergétique",
+                "title_xs": "Score énergie",
+                "tooltip": "FIXME",
+                "desc": "FIXME",
+                "class": {
+                    "A": "FIXME",
+                    "B": "Modèle compact, moins énergivore que les très grands modèles ou les modèles denses",
+                    "C": "FIXME",
+                    "D": "FIXME",
+                    "E": "FIXME",
+                    "F": "FIXME"
+                }
+            },
+            "release": {
+                "title": "Sortie"
+            }
+        },
         "arch": {
             "title": "Le saviez-vous ?"
         },
@@ -1649,18 +1718,6 @@
             "filterLegend": "Filtre par consommation énergétique moyenne pour 1000 tokens"
         },
         "envImpact": {
-            "conso": {
-                "class": {
-                    "A": "FIXME",
-                    "B": "Modèle compact, moins énergivore que les très grands modèles ou les modèles denses",
-                    "C": "FIXME",
-                    "D": "FIXME",
-                    "E": "FIXME",
-                    "F": "FIXME"
-                },
-                "title": "Classe de consommation énergétique",
-                "tooltip": "FIXME"
-            },
             "hardware": {
                 "title": "Matériel nécessaire",
                 "tooltip": "FIXME",
@@ -1784,11 +1841,6 @@
         "parameters": "{number} mds de paramètres",
         "performance": {
             "fields": {
-                "rank": {
-                    "detail": "/{count} modèles",
-                    "title": "Rang classement",
-                    "to": "#{min} à {max}"
-                },
                 "score": {
                     "detail": "(confiance ±{count})",
                     "title": "Score Bradley-Terry"
@@ -1813,44 +1865,10 @@
                 "XL": ">400 mds",
                 "XS": "<15 mds"
             },
-            "estimated": "Taille estimée ({size})",
-            "title": "Taille"
+            "estimated": "Taille estimée {size}",
+            "title": "Taille {size}"
         },
         "technical": {
-            "arch": {
-                "title": "Architecture",
-                "tooltip": "FIXME"
-            },
-            "context": {
-                "chars_count": "Soit envir. {count}k caractères",
-                "desc": "Peut analyser environ plusieurs centaines de pages de texte",
-                "title": "Contexte",
-                "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>jetons</span>",
-                "tooltip": "FIXME"
-            },
-            "modalities": {
-                "title": "Modalités d’entrée",
-                "types": {
-                    "audio": "Audio",
-                    "image": "Image",
-                    "text": "Texte",
-                    "video": "Vidéo"
-                }
-            },
-            "price": {
-                "desc": "Entrée = question envoyée, Sortie = réponse générée",
-                "price_count": "{count}<span {midProps}>/M</span>",
-                "price_in": "Prix d’entrée",
-                "price_out": "Prix de sortie",
-                "title": "Prix"
-            },
-            "size": {
-                "active_params_count": "Dont {count}mds actifs",
-                "desc": "Plus un modèle a de paramètres, plus il demande de ressources",
-                "estimated": "Estimation",
-                "params_count": "{count}<span {midProps}>mds</span> <span {smallProps}>paramètres</span>",
-                "title": "Taille"
-            },
             "title": "Caractéristiques techniques"
         }
     },
