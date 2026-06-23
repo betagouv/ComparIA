@@ -2,7 +2,7 @@
   import { Link } from '$components/dsfr'
   import Header from '$components/header/Header.svelte'
   import SeoHead from '$components/SEOHead.svelte'
-  import { fetchAndSolve } from '$lib/captcha.svelte'
+  import { fetchAndSolveSilently } from '$lib/captcha.svelte'
   import { getComparison, initComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
@@ -10,7 +10,7 @@
   // TODO query user comparisons
   initComparisonsContext([])
   // Start solving Altcha challenge on page load (runs in background)
-  fetchAndSolve()
+  fetchAndSolveSilently()
 
   const comparator = getComparison(undefined)
   const showInitialPrompt = $derived(!comparator.comparisonId)

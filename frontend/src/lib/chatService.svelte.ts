@@ -1,4 +1,4 @@
-import { consumeAltchaToken } from '$lib/captcha.svelte'
+import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import type { APIBotModel, BotModel } from '$lib/models'
@@ -283,7 +283,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     let receivedEvent = false
     try {
-      for await (const event of api.stream(url, body)) {
+      const altcha_token = await consumeAltchaToken()
+
+      for await (const event of api.stream(url, { ...body, altcha_token })) {
         receivedEvent = true
         if (event.type === 'init') {
           const id = event.comparison.id.toString()
@@ -327,6 +329,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     } catch (err) {
       if (err instanceof ValidationError) {
         promptError = err.message in ERROR_MESSAGES ? m[ERROR_MESSAGES[err.message]]() : err.message
+      } else if (err instanceof CaptchaError) {
+        promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
       } else {
         throw err
       }
@@ -372,17 +376,13 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         mode: args.mode,
         custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
         web_search: args.web_search,
-        cohorts,
-        altcha_token: consumeAltchaToken()
+        cohorts
       })
     },
 
     async ask(text: string) {
       if (!comparison?.turns.every((turn) => !!turn.choice)) return
-      return await ask('/arena/add_text', {
-        message: text,
-        altcha_token: consumeAltchaToken()
-      })
+      return await ask('/arena/add_text', { message: text })
     },
 
     async retry() {
