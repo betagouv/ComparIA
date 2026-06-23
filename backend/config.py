@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
     COMPARIA_REDIS_HOST: str = "localhost"
     MOCK_RESPONSE: bool = False
-    LOGDIR: Path = ROOT_DIR / "data"
+    LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None
     GIT_COMMIT: str | None = None
@@ -38,6 +38,15 @@ class Settings(BaseSettings):
     REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
+
+    # Content-safety guardrail (Nemotron via OpenRouter). No-ops without OPENROUTER_API_KEY.
+    # ENABLED runs the check and records the verdict (shadow mode); ENFORCE must
+    # also be on for an egregious prompt to actually be blocked. Ship in shadow
+    # first, watch the verdicts, then turn ENFORCE on.
+    GUARDRAIL_ENABLED: bool = True
+    GUARDRAIL_ENFORCE: bool = False
+    GUARDRAIL_MODEL: str = "openrouter/nvidia/nemotron-3.5-content-safety:free"
+    GUARDRAIL_TIMEOUT: float = 2.5
 
     # Response caching
     CACHE_ENABLED: bool = False
@@ -104,6 +113,13 @@ RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 # Rate limiting for custom model selection per IP
 RATELIMIT_CUSTOM_SELECTION_PER_HOUR = 3
 RATELIMIT_CUSTOM_SELECTION_PER_DAY = 5
+
+# Cooldown for IPs that hit the content-safety guardrail too often (abuse /
+# jailbreak probing). Counts only enforced blocks in a rolling window; once an
+# IP crosses the threshold it is cooled down for the rest of the window WITHOUT
+# calling the guardrail (protects OpenRouter quota). Kept generous because gov
+# users share NAT IPs (hospitals, ministries) and must not be locked out.
+RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
 
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000

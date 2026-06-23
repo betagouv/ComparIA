@@ -109,17 +109,9 @@
             "catch": "Modellskapare, forskare, företag, det är er tur!",
             "desc": "Frågorna som ställs på plattformen är mestadels på franska och återspeglar verklig användning utan restriktioner. Dessa datamängder finns tillgängliga på <a {linkProps}>data.gouv</a> och Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Frågor och svar",
-                    "title": "/konversationer"
-                },
-                "reactions": {
-                    "desc": "Alla reaktioner",
-                    "title": "/reaktioner"
-                },
-                "votes": {
-                    "desc": "Alla uttryckta preferenser",
-                    "title": "/röster"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Konversationer, svar, reaktioner och preferenser samlade i en datauppsättning"
                 }
             },
             "share": "Visa hur du använder datan",

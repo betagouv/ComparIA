@@ -75,7 +75,7 @@
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
-        "revealButton": "Terminer la discussion et découvrir les deux modèles",
+        "revealButton": "Terminer et découvrir les modèles",
         "webSearch": {
             "label": "Résultats de recherche Web associés."
         }
@@ -111,17 +111,9 @@
             "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
             "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Ensemble des réponses et des questions posées",
-                    "title": "/conversations"
-                },
-                "reactions": {
-                    "desc": "Ensemble des réactions exprimées",
-                    "title": "/réactions"
-                },
-                "votes": {
-                    "desc": "Ensemble des préférences exprimées",
-                    "title": "/votes"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Conversations, réponses, réactions et préférences réunies dans un seul jeu de données"
                 }
             },
             "share": "Partagez-nous vos réutilisations",
@@ -963,6 +955,11 @@
                 "desc": "<p>Très grand modèle conçu pour des tâches complexes : ingénierie logicielle, orchestration agentique et raisonnement avancé. Il simule une étape de raisonnement avant de générer sa réponse. Cette version améliore sensiblement les performances en code et en exécution autonome prolongée par rapport à GLM 5.</p>",
                 "fyi": "<p>Zhipu AI (désormais Z.ai) a publié GLM 5.1 en avril 2026, une mise à jour de GLM 5 reposant sur la même architecture de mélange d'experts (MoE, Mixture of Experts) : 744 milliards de paramètres totaux, 40 milliards activés par jeton via 256 modules experts avec routage top-8 et un expert partagé. Le modèle intègre le mécanisme Multi-head Latent Attention (MLA) et DeepSeek Sparse Attention (DSA), qui réduisent les coûts d'inférence tout en préservant la capacité de traitement de longs contextes. L'entraînement a été réalisé sur des puces Huawei Ascend 910B avec le framework MindSpore.</p>\n<p>La principale avancée de cette version concerne les capacités agentiques prolongées : le modèle peut travailler de manière autonome sur une tâche unique pendant plus de 8 heures, enchaînant jusqu'à 1 700 étapes avec un cycle continu d'expérimentation, d'analyse et d'optimisation. Il peut générer jusqu'à 128 000 jetons en une seule réponse.</p>\n<p>Selon l'éditeur, GLM 5.1 obtient 58,4 % sur SWE-Bench Pro, ce qui le placerait au premier rang mondial devant GPT-5.4 (57,7 %) et Claude Opus 4.6 (57,3 %). Sur d'autres évaluations, il atteint 95,3 % sur AIME 2026, 86,2 % sur GPQA-Diamond, 68,7 % sur CyberGym et 68,0 % sur BrowseComp. Des évaluations indépendantes estiment sa performance globale en code à environ 94,6 % de celle de Claude Opus 4.6.</p>",
                 "size_desc": "<p>Avec 744 milliards de paramètres, ce modèle fait partie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts) comptant 256 experts dont 8 activés par jeton, il n'utilise que 40 milliards de paramètres par inférence, ce qui réduit l'empreinte par rapport à un modèle dense de même taille, tout en nécessitant un serveur doté de plusieurs cartes graphiques puissantes pour être hébergé. Sa fenêtre de contexte atteint environ 200 000 jetons, ce qui permet de traiter de très longs documents. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique.</p>"
+            },
+            "GLM 5.2": {
+                "desc": "<p>Très grand modèle conçu pour des tâches complexes : génération de code, orchestration agentique et analyse de documents longs. Il est particulièrement optimisé pour les tâches de programmation au long cours (long-horizon), comme la réalisation de projets logiciels complets en une seule session. Il intègre une capacité de raisonnement avancée activable à la demande, avec un niveau de raisonnement paramétrable par l'utilisateur ou le développeur.</p>",
+                "fyi": "<p>Développé par Z.ai (anciennement Zhipu AI), GLM 5.2 prolonge la lignée GLM en se concentrant sur les usages de programmation et les tâches agentiques de longue durée. Son architecture combine un mélange d'experts (MoE, Mixture of Experts) comptant 256 experts, dont 8 activés par jeton, et un mécanisme d'attention éparse (sparse attention) qui rend exploitable sa fenêtre de contexte d'un million de jetons. Il propose deux niveaux d'effort de raisonnement (High et Max), l'éditeur recommandant le mode Max pour les tâches de code.</p>\n<p>Les poids du modèle sont publiés en accès ouvert sous licence MIT, ce qui autorise une utilisation, une modification et un déploiement commercial sans restriction.</p>",
+                "size_desc": "<p>Avec 744 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d'experts (MoE, Mixture of Experts), il n'active qu'environ 40 milliards de paramètres par jeton généré, ce qui le rend plus efficace que des modèles denses de taille similaire. Il nécessite néanmoins un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé.</p>\n<p>Sa fenêtre de contexte va jusqu'à 1 million de jetons, ce qui permet de traiter de très grands corpus documentaires. Les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse, ce qui augmente la consommation énergétique. L'architecture de mélange d'experts (MoE) permet néanmoins de n'activer qu'une fraction des paramètres, ce qui réduit l'empreinte par rapport à un modèle dense de même taille.</p>"
             },
             "GPT 4.1 Nano": {
                 "desc": "<p>Plus petite version allégée du modèle GPT 4.1 , conçue pour limiter les coûts tout en restant compétitive sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.</p>",

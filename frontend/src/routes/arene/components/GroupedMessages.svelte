@@ -4,7 +4,7 @@
   import type { AnyAPIVote, ComparisonTurn } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { onMount, type Snippet } from 'svelte'
+  import { type Snippet } from 'svelte'
   import { ErrorDisplay, MessageBot, MessageUser, VoteSelect } from '.'
 
   let {
@@ -22,59 +22,54 @@
     onRetry: () => void
     children: Snippet<[]> | undefined
   } = $props()
-
-  let userBlockElem = $state<HTMLDivElement>()
-  let userMessageSize = $state(0)
-
-  onMount(() => {
-    userMessageSize = userBlockElem!.offsetHeight
-  })
 </script>
 
-<div
-  class="grouped-messages px-4 py-5 md:px-8 xl:px-16 flex flex-col"
-  style="--message-size: {userMessageSize}px;"
-  {@attach scrollTo}
->
-  <div class="mb-5 md:flex" bind:this={userBlockElem}>
+<div class="grouped-messages px-4 py-2 md:py-5 md:px-8 xl:px-16 gap-2 md:gap-5 flex flex-col">
+  <div class="md:flex">
     {@render children?.()}
 
     <MessageUser id={`user-${turn.id}`} message={turn.user_msg} />
   </div>
-  {#if turn.status === 'pending'}
-    <Pending message={m['chatbot.loading']()} class="m-auto" />
-  {:else if turn.status === 'error' && error}
-    <ErrorDisplay {error} class="mt-10" {onRetry} />
-  {:else}
-    <SideSwitcher>
-      <div class="gap-4 sm:gap-6 md:w-full flex">
-        {#if turn.a.llm_msg && turn.b.llm_msg}
-          <MessageBot
-            id="{turn.id}-a"
-            turnSide={turn.a}
-            bot="a"
-            choice={turn.choice}
-            {disabled}
-            onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
-          />
+  <div
+    class="grouped-responses flex flex-col"
+    class:generating={turn.status === 'pending' || turn.status === 'generating'}
+    {@attach scrollTo}
+  >
+    {#if turn.status === 'pending'}
+      <Pending message={m['chatbot.loading']()} class="m-auto" />
+    {:else if turn.status === 'error' && error}
+      <ErrorDisplay {error} class="mt-10" {onRetry} />
+    {:else}
+      <SideSwitcher>
+        <div class="gap-4 sm:gap-6 md:w-full flex">
+          {#if turn.a.llm_msg && turn.b.llm_msg}
+            <MessageBot
+              id="{turn.id}-a"
+              turnSide={turn.a}
+              bot="a"
+              choice={turn.choice}
+              {disabled}
+              onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+            />
 
-          <MessageBot
-            id="{turn.id}-b"
-            turnSide={turn.b}
-            bot="b"
-            choice={turn.choice}
-            {disabled}
-            onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
-          />
-        {/if}
-      </div>
-    </SideSwitcher>
-  {/if}
+            <MessageBot
+              id="{turn.id}-b"
+              turnSide={turn.b}
+              bot="b"
+              choice={turn.choice}
+              {disabled}
+              onVoteAnnotate={(data) => onVote({ turn_id: turn.id, ...data })}
+            />
+          {/if}
+        </div>
+      </SideSwitcher>
+    {/if}
 
-  {#if turn.status === 'complete' && !turn.choice}
-    <VoteSelect
-      id="vote-select-{turn.id}"
-      onVote={(choice) => onVote({ turn_id: turn.id, choice })}
-    />
-  {/if}
+    {#if turn.status === 'complete' && !turn.choice}
+      <VoteSelect
+        id="vote-select-{turn.id}"
+        onVote={(choice) => onVote({ turn_id: turn.id, choice })}
+      />
+    {/if}
+  </div>
 </div>

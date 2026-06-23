@@ -109,17 +109,9 @@
             "catch": "Mudelite avaldajad, teadlased, ettevõtted – nüüd on teie kord!",
             "desc": "Keelemudelite võrdlusplatvormi kaudu on kogutud küsimusi ja eelistusi prantsuse, taani, rootsi, leedu ja nüüd ka eesti keeles ning need kajastavad orgaanilist, päriselulist kasutust, mitte tehislikke viipasid. Need andmestikud on avalikult kättesaadavad veebilehel <a {linkProps}>data.gouv.fr</a> ja Hugging Face’is.",
             "repos": {
-                "conversations": {
-                    "desc": "Kõik küsimused ja vastused",
-                    "title": "/vestlused"
-                },
-                "reactions": {
-                    "desc": "Kõik reaktsioonid sõnumitele",
-                    "title": "/reaktsioonid"
-                },
-                "votes": {
-                    "desc": "Kõik eelistused",
-                    "title": "/hääled"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Vestlused, vastused, reaktsioonid ja eelistused ühes andmestikus"
                 }
             },
             "share": "Jagage meiega, kuidas te andmeid kasutate",

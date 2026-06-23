@@ -102,17 +102,9 @@
             "catch": "Sviluppatori di modelli, ricercatori, aziende, ora tocca a te!",
             "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese e lituano e riflettono un utilizzo reale e non artificiale. Questa raccolta di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Tutte le risposte e le domande poste",
-                    "title": "/conversazioni"
-                },
-                "reactions": {
-                    "desc": "Tutte le reazioni espresse",
-                    "title": "/reazioni"
-                },
-                "votes": {
-                    "desc": "Tutte le preferenze espresse",
-                    "title": "/voti"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Conversazioni, risposte, reazioni e preferenze raccolte in un unico dataset"
                 }
             },
             "share": "Condividi con noi come utilizzi i dati",

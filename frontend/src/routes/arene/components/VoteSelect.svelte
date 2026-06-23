@@ -38,20 +38,20 @@
   onDestroy(() => clearTimeout(voteTimeout))
 </script>
 
-<form class="px-4 w-full" novalidate onsubmit={onSubmit}>
+<form class="px-1 md:px-4 w-full" novalidate onsubmit={onSubmit}>
   <fieldset
     {id}
     aria-labelledby="{id}-legend {id}-help"
-    class="cl-vote-select xl:max-w-[950px] bg-light-info py-2 px-5 rounded-b-xl shadow-md gap-1 mx-auto flex flex-col"
+    class="cl-vote-select xl:max-w-[950px] bg-light-info py-2 px-2 md:px-5 rounded-b-xl shadow-md gap-1 mx-auto flex flex-col"
   >
     <legend id="display-fieldset-legend" class="sr-only">{m['vote.title']()}</legend>
 
-    <div class="gap-2 grid-cols-2 md:grid-cols-4 grid">
+    <div class="gap-1 md:gap-2 md:grid-cols-4 grid grid-cols-2">
       {#each choices as choice (choice.value)}
         <button
           type="submit"
           class={[
-            'cl-vote-choice rounded-lg p-2 text-xs! bg-white cg-border flex items-center',
+            'cl-vote-choice rounded-lg px-1 py-2 md:p-2 text-xs! bg-white cg-border flex items-center',
             { 'cl-vote-picked': pickedChoice === choice.value }
           ]}
           data-choice={choice.value}
@@ -71,7 +71,10 @@
       </button>
     </div>
 
-    <p id="{id}-help" class="mb-0! text-grey lh-normal! text-center text-[11px]!">
+    <p
+      id="{id}-help"
+      class="mb-0! text-grey lh-normal! md:not-sr-only sr-only text-center text-[11px]!"
+    >
       {@html sanitize(
         m['vote.turn.important']({
           linkProps: propsToAttrs({

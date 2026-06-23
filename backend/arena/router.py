@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
 from backend.arena.models import AddFirstTextBody, AddTextBody
+from backend.arena.moderation import GuardrailVerdict, check_prompt
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -19,8 +20,10 @@ from backend.arena.services import (
 )
 from backend.arena.session import (
     ComparisonMetadata,
+    increment_blocked_prompts,
     increment_custom_selections,
     increment_input_chars,
+    is_block_cooldown,
     is_custom_selection_ratelimited,
     is_ratelimited,
     retreive_comparison_metadata,
@@ -67,6 +70,33 @@ def assert_not_rate_limited(request: Request) -> None:
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
         )
+
+
+def assert_not_block_cooldown(request: Request) -> None:
+    """Cool down IPs that keep tripping the content-safety guardrail."""
+    if is_block_cooldown(get_ip(request)):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
+        )
+
+
+async def run_guardrail(
+    text: str, field: str, request: Request
+) -> GuardrailVerdict | None:
+    """
+    Run the content-safety guardrail on a user prompt. Raises a 422 (shaped like
+    a Pydantic validation error so the frontend renders it under the input) when
+    the prompt is blocked, otherwise returns the verdict to persist on the turn.
+    """
+    verdict = await check_prompt(text, request)
+    if verdict and verdict.should_block:
+        increment_blocked_prompts(get_ip(request))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[{"loc": ["body", field], "msg": verdict.block_message, "type": "value_error"}],
+        )
+    return verdict
 
 
 def get_comparison_id(id: UUID = Header(..., alias="X-Comparison-Id")) -> UUID:
@@ -122,7 +152,10 @@ async def get_challenge() -> dict:
     return generate_challenge()
 
 
-@router.post("/add_first_text", dependencies=[Depends(assert_not_rate_limited)])
+@router.post(
+    "/add_first_text",
+    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+)
 async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
@@ -160,6 +193,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
                 detail="rate_limit_custom_selection",
             )
         increment_custom_selections(ip)
+
+    guardrail = await run_guardrail(args.prompt_value, "prompt_value", request)
 
     # Select LLMs
     llms_data = get_llms_data()
@@ -204,7 +239,10 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
 
         # Add first turn and save it to db (to at least save the user prompt)
         comparison, turn = await add_comparison_turn(
-            comparison.id, args.prompt_value, web_search_results
+            comparison.id,
+            args.prompt_value,
+            web_search_results,
+            guardrail=guardrail.as_record() if guardrail else None,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
@@ -227,7 +265,10 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     return create_sse_response(event_stream(comparison))
 
 
-@router.post("/add_text", dependencies=[Depends(assert_not_rate_limited)])
+@router.post(
+    "/add_text",
+    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+)
 async def add_text(
     args: AddTextBody,
     metadata: ComparisonMetadataAnno,
@@ -257,12 +298,18 @@ async def add_text(
         extra={"request": request},
     )
 
+    guardrail = await run_guardrail(args.message, "message", request)
+
     # Assert last turn has vote
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
         # Add new turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(metadata.id, args.message)
+        comparison, turn = await add_comparison_turn(
+            metadata.id,
+            args.message,
+            guardrail=guardrail.as_record() if guardrail else None,
+        )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})

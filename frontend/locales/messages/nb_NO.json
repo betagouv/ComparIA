@@ -109,17 +109,9 @@
             "catch": "Modellutgivere, forskere, selskaper, nå er det deres tur!",
             "desc": "Plattformens spørsmål og preferanser er hovedsakelig på fransk, dansk, svensk og litauisk, på vanlig, dagligdags språk - ikke kunstige spørsmål. Datasettene er offentlig tilgjengelige på <a {linkProps}>data.gouv</a> og Hugging Face.",
             "repos": {
-                "conversations": {
-                    "desc": "Alle spørsmål og svar",
-                    "title": "/samtaler"
-                },
-                "reactions": {
-                    "desc": "Alle reaksjoner på meldinger",
-                    "title": "/reaksjoner"
-                },
-                "votes": {
-                    "desc": "Alle uttrykte preferanser",
-                    "title": "/stemmer"
+                "arena": {
+                    "title": "/comparia-fr-arena",
+                    "desc": "Samtaler, svar, reaksjoner og preferanser samlet i ett datasett"
                 }
             },
             "share": "Vis oss hvordan du bruker dataene",
