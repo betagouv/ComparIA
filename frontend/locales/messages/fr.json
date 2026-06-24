@@ -57,6 +57,46 @@
             "tooltip": "Activez la recherche sur le Web pour permettre aux modèles d'utiliser des sources en ligne et de citer des informations plus récentes.<br><strong>Sans la recherche sur le Web</strong>, les modèles répondent en se basant sur ce qu'ils ont appris pendant leur formation (leurs données d'entraînement). Ils ne peuvent pas vérifier les informations en ligne ; par conséquent, les faits très récents ou très spécifiques peuvent être incomplets."
         }
     },
+    "auth": {
+        "discussions": {
+            "title": "Discussions",
+            "prompt": "Connectez-vous pour accéder à votre historique de discussion",
+            "signIn": "Se connecter"
+        },
+        "modal": {
+            "close": "Fermer",
+            "email": {
+                "title": "Se connecter ou s'inscrire",
+                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur compar:IA",
+                "emailLabel": "Email",
+                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/modalites' target='_blank'>conditions générales d'utilisation</a>",
+                "submit": "Recevoir le code de connexion",
+                "submitting": "Envoi en cours..."
+            },
+            "code": {
+                "title": "Entrez votre code",
+                "subtitle": "Un code à 6 chiffres a été envoyé à {email}.",
+                "label": "Code à 6 chiffres",
+                "submit": "Valider",
+                "verifying": "Vérification...",
+                "resend": "Renvoyer un code",
+                "error": "Code invalide ou expiré."
+            },
+            "info": {
+                "dataTitle": "Comment mes données sont-elles utilisées ?",
+                "dataDesc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d'IA plus inclusifs.",
+                "datasetsTitle": "Les jeux de données compar:IA",
+                "datasetsDesc": "Les conversations sont publiées en open data dans des jeux de données de recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans vos conversations :",
+                "neverName": "votre nom, prénom ou celui d'un tiers",
+                "neverAddress": "des adresses (postale, email)",
+                "neverPhone": "des numéros de téléphone",
+                "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
+                "neverOther": "tout autre élément permettant de vous identifier",
+                "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers."
+            }
+        },
+        "success": "Vous êtes connecté !"
+    },
     "chatbot": {
         "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
