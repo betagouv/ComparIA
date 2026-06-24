@@ -93,7 +93,11 @@
                 "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter."
             }
         },
-        "success": "Du er nu logget ind!"
+        "success": "Du er nu logget ind!",
+        "settings": {
+            "title": "Indstillinger",
+            "logout": "Log ud"
+        }
     },
     "chatbot": {
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
