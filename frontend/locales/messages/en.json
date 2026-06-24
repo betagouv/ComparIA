@@ -93,7 +93,11 @@
                 "emailPrivacy": "Your email is never published or shared with third parties."
             }
         },
-        "success": "You are signed in!"
+        "success": "You are signed in!",
+        "settings": {
+            "title": "Settings",
+            "logout": "Sign out"
+        }
     },
     "chatbot": {
         "continuePrompt": "Continue the discussion…",

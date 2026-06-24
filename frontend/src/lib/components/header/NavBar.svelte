@@ -2,7 +2,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
-  import { auth } from '$lib/auth.svelte'
+  import { auth, logout } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { VoteGauge } from '.'
@@ -15,6 +15,7 @@
   ] as const
 
   let expanded = $state(true)
+  let settingsOpen = $state(false)
 </script>
 
 {#snippet helpLink()}
@@ -83,15 +84,36 @@
 
 {#snippet footer()}
   <div class="gap-2 flex flex-col">
-    <!-- {@render renderLink({
-      href: '/settings',
-      label: m['seo.titles.settings'](),
-      icon: 'i-ri-settings-4-line',
-      class: 'text-sm! text-black!'
-    })} -->
+    {#if auth.user}
+      <div class="pt-3 pb-1 relative">
+        {#if settingsOpen}
+          <div class="absolute bottom-full left-0 right-0 mb-1 bg-white shadow-md border border-[--grey-925-125] rounded-sm">
+            <button
+              class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! px-3!"
+              onclick={() => { settingsOpen = false; logout() }}
+            >
+              <span class="fr-icon-logout-box-r-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+              {m['auth.settings.logout']()}
+            </button>
+          </div>
+        {/if}
 
-    {#if auth.user && expanded}
-      <p class="fr-text--sm mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
+        <button
+          class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
+          onclick={() => (settingsOpen = !settingsOpen)}
+          aria-expanded={settingsOpen}
+        >
+          <span class="fr-icon-settings-5-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+          <span class={{ 'sr-only': !expanded }}>{m['auth.settings.title']()}</span>
+          {#if expanded}
+            <span class={['fr-icon--sm ml-auto', settingsOpen ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line']} aria-hidden="true"></span>
+          {/if}
+        </button>
+
+        {#if expanded}
+          <p class="fr-text--xs mb-0! mt-1! text-[--text-mention-grey] truncate px-1">{auth.user.email}</p>
+        {/if}
+      </div>
     {/if}
 
     <div class={{ hidden: !expanded }}>

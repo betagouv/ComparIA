@@ -95,7 +95,11 @@
                 "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers."
             }
         },
-        "success": "Vous êtes connecté !"
+        "success": "Vous êtes connecté !",
+        "settings": {
+            "title": "Paramètres",
+            "logout": "Se déconnecter"
+        }
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter…",
