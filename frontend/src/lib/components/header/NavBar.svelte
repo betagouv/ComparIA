@@ -72,7 +72,7 @@
         {m['auth.discussions.prompt']()}
       </p>
       <button
-        class="fr-btn fr-btn--tertiary fr-btn--sm w-full!"
+        class="fr-btn fr-btn--secondary fr-btn--sm w-full! rounded-lg! justify-center!"
         onclick={() => document.getElementById('fr-signin-trigger')?.click()}
       >
         <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
@@ -84,37 +84,35 @@
 
 {#snippet footer()}
   <div class="gap-2 flex flex-col">
-    {#if auth.user}
-      <div class="relative">
-        {#if settingsOpen}
-          <div class="absolute bottom-full left-0 right-0 mb-1 bg-white shadow-md border border-[--grey-925-125] rounded-sm">
-            <button
-              class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
-              onclick={() => { settingsOpen = false; logout() }}
-            >
-              <span class="fr-icon-logout-box-r-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-              {m['auth.settings.logout']()}
-            </button>
-          </div>
-        {/if}
+    <div class="relative">
+      {#if settingsOpen && auth.user}
+        <div class="absolute bottom-full left-0 right-0 mb-1 bg-white shadow-md border border-[--grey-925-125] rounded-sm">
+          <button
+            class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
+            onclick={() => { settingsOpen = false; logout() }}
+          >
+            <span class="fr-icon-logout-box-r-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+            {m['auth.settings.logout']()}
+          </button>
+        </div>
+      {/if}
 
-        <button
-          class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! -ml-2!"
-          onclick={() => (settingsOpen = !settingsOpen)}
-          aria-expanded={settingsOpen}
-        >
-          <span class="fr-icon-settings-5-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-          <span class={{ 'sr-only': !expanded }}>{m['auth.settings.title']()}</span>
-          {#if expanded}
-            <span class={['fr-icon--sm ml-auto', settingsOpen ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line']} aria-hidden="true"></span>
-          {/if}
-        </button>
-
+      <button
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! -ml-2!"
+        onclick={() => (settingsOpen = !settingsOpen)}
+        aria-expanded={settingsOpen}
+      >
+        <span class="fr-icon-settings-5-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+        <span class={{ 'sr-only': !expanded }}>{m['auth.settings.title']()}</span>
         {#if expanded}
-          <p class="fr-text--xs mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
+          <span class={['fr-icon--sm ml-auto', settingsOpen ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line']} aria-hidden="true"></span>
         {/if}
-      </div>
-    {/if}
+      </button>
+
+      {#if expanded && auth.user}
+        <p class="fr-text--xs mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
+      {/if}
+    </div>
 
     <div class={{ hidden: !expanded }}>
       <!-- <LanguageSelector id="translate" />
