@@ -3,6 +3,7 @@
   import { consumeAltchaToken } from '$lib/captcha.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { m } from '$lib/i18n/messages'
   import { auth } from '$lib/auth.svelte'
 
   let step = $state<'email' | 'code'>('email')
@@ -46,9 +47,9 @@
       })
       auth.user = { email: result.email }
       closeButton.click()
-      useToast('Vous etes connecte !', 4000)
+      useToast(m['auth.success'](), 4000)
     } catch {
-      error = 'Code invalide ou expire.'
+      error = m['auth.modal.code.error']()
     } finally {
       loading = false
     }
@@ -75,17 +76,15 @@
               <div class="px-8 py-10">
                 {#if step === 'email'}
                   <h2 id="fr-modal-title-signin" class="text-primary! text-2xl! font-bold! mb-3!">
-                    Se connecter ou s'inscrire
+                    {m['auth.modal.email.title']()}
                   </h2>
                   <p class="fr-text--sm mb-6! text-[--text-mention-grey]">
-                    Accelez a votre historique de discussion et a un quota plus eleve d'utilisation
-                    de modeles en etant connecte. La creation de compte reste facultative sur
-                    compar:IA
+                    {m['auth.modal.email.subtitle']()}
                   </p>
 
                   <form onsubmit={requestCode}>
                     <div class="fr-input-group mb-5!">
-                      <label class="fr-label" for="auth-email">Email</label>
+                      <label class="fr-label" for="auth-email">{m['auth.modal.email.emailLabel']()}</label>
                       <input
                         id="auth-email"
                         class="fr-input"
@@ -101,7 +100,7 @@
                     <Checkbox
                       id="auth-consent"
                       bind:checked={consented}
-                      label="J'ai pris connaissance de l'utilisation de mes donnees et j'accepte les <a href='/modalites' target='_blank'>conditions generales d'utilisation</a>"
+                      label={m['auth.modal.email.consent']()}
                     />
 
                     {#if error}
@@ -113,21 +112,21 @@
                       class="fr-btn w-full! mt-6!"
                       disabled={!consented || loading}
                     >
-                      {loading ? 'Envoi en cours...' : 'Recevoir le code de connexion'}
+                      {loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
                     </button>
                   </form>
 
                 {:else}
                   <h2 id="fr-modal-title-signin" class="text-primary! text-2xl! font-bold! mb-3!">
-                    Entrez votre code
+                    {m['auth.modal.code.title']()}
                   </h2>
                   <p class="fr-text--sm mb-6! text-[--text-mention-grey]">
-                    Un code a 6 chiffres a été envoyé a <strong>{email}</strong>.
+                    {m['auth.modal.code.subtitle']({ email })}
                   </p>
 
                   <form onsubmit={verifyCode}>
                     <div class="fr-input-group mb-5!">
-                      <label class="fr-label" for="auth-code">Code a 6 chiffres</label>
+                      <label class="fr-label" for="auth-code">{m['auth.modal.code.label']()}</label>
                       <input
                         id="auth-code"
                         class="fr-input"
@@ -147,7 +146,7 @@
                     {/if}
 
                     <button type="submit" class="fr-btn w-full! mb-3!" disabled={loading}>
-                      {loading ? 'Verification...' : 'Valider'}
+                      {loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
                     </button>
 
                     <button
@@ -155,7 +154,7 @@
                       class="fr-btn fr-btn--tertiary-no-outline w-full!"
                       onclick={backToEmail}
                     >
-                      Renvoyer un code
+                      {m['auth.modal.code.resend']()}
                     </button>
                   </form>
                 {/if}
@@ -168,37 +167,26 @@
                     bind:this={closeButton}
                     class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm"
                     aria-controls="fr-modal-signin"
-                    title="Fermer"
+                    title={m['auth.modal.close']()}
                   >
-                    Fermer
+                    {m['auth.modal.close']()}
                     <span aria-hidden="true" class="ml-1">×</span>
                   </button>
                 </div>
 
-                <h3 class="text-base! font-bold! mb-2!">Comment mes donnees sont-elles utilisees ?</h3>
-                <p class="fr-text--sm mb-6!">
-                  Les conversations et les preferences que vous exprimez sur compar:IA sont
-                  utilisees de maniere anonyme pour constituer des jeux de donnees representatifs
-                  des langues et usages europeens, afin de reduire les biais culturels et proposer
-                  de futurs modeles d'IA plus inclusifs.
-                </p>
+                <h3 class="text-base! font-bold! mb-2!">{m['auth.modal.info.dataTitle']()}</h3>
+                <p class="fr-text--sm mb-6!">{m['auth.modal.info.dataDesc']()}</p>
 
-                <h3 class="text-base! font-bold! mb-2!">Les jeux de donnees compar:IA</h3>
-                <p class="fr-text--sm mb-2!">
-                  Les conversations sont publiees en open data dans des jeux de donnees de
-                  recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans
-                  vos conversations :
-                </p>
+                <h3 class="text-base! font-bold! mb-2!">{m['auth.modal.info.datasetsTitle']()}</h3>
+                <p class="fr-text--sm mb-2!">{@html m['auth.modal.info.datasetsDesc']()}</p>
                 <ul class="fr-text--sm mb-4!">
-                  <li>votre nom, prenom ou celui d'un tiers</li>
-                  <li>des adresses (postale, email)</li>
-                  <li>des numeros de telephone</li>
-                  <li>des informations medicales, financieres ou juridiques personnell</li>
-                  <li>tout autre element permettant de vous identifier</li>
+                  <li>{m['auth.modal.info.neverName']()}</li>
+                  <li>{m['auth.modal.info.neverAddress']()}</li>
+                  <li>{m['auth.modal.info.neverPhone']()}</li>
+                  <li>{m['auth.modal.info.neverPersonal']()}</li>
+                  <li>{m['auth.modal.info.neverOther']()}</li>
                 </ul>
-                <p class="fr-text--sm mb-0!">
-                  Votre email n'est jamais publie ni partage avec des tiers.
-                </p>
+                <p class="fr-text--sm mb-0!">{m['auth.modal.info.emailPrivacy']()}</p>
               </div>
 
             </div>

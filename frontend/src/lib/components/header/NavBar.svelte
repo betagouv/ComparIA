@@ -65,17 +65,17 @@
 
 {#snippet discussions()}
   <div class="px-4 py-4 b-t-[--grey-925-125] b-t-1">
-    <p class="fr-text--xs mb-2! text-[--text-mention-grey] uppercase tracking-wide">Discussions</p>
+    <p class="fr-text--xs mb-2! text-[--text-mention-grey] uppercase tracking-wide">{m['auth.discussions.title']()}</p>
     {#if !auth.user && expanded}
       <p class="fr-text--sm mb-3! text-[--text-label-grey]">
-        Connectez-vous pour accéder à votre historique de discussion
+        {m['auth.discussions.prompt']()}
       </p>
       <button
         class="fr-btn fr-btn--tertiary fr-btn--sm w-full!"
         onclick={() => document.getElementById('fr-signin-trigger')?.click()}
       >
         <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-        Se connecter
+        {m['auth.discussions.signIn']()}
       </button>
     {/if}
   </div>
