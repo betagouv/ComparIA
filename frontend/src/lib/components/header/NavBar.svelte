@@ -66,7 +66,7 @@
 
 {#snippet discussions()}
   <div class="px-4 py-4 b-t-[--grey-925-125] b-t-1">
-    <p class="fr-text--xs mb-2! text-[--text-mention-grey] uppercase tracking-wide">{m['auth.discussions.title']()}</p>
+    <p class="fr-text--sm mb-2! text-[--text-mention-grey]">{m['auth.discussions.title']()}</p>
     {#if !auth.user && expanded}
       <p class="fr-text--sm mb-3! text-[--text-label-grey]">
         {m['auth.discussions.prompt']()}
@@ -85,11 +85,11 @@
 {#snippet footer()}
   <div class="gap-2 flex flex-col">
     {#if auth.user}
-      <div class="pt-3 pb-1 relative">
+      <div class="relative">
         {#if settingsOpen}
           <div class="absolute bottom-full left-0 right-0 mb-1 bg-white shadow-md border border-[--grey-925-125] rounded-sm">
             <button
-              class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! px-3!"
+              class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
               onclick={() => { settingsOpen = false; logout() }}
             >
               <span class="fr-icon-logout-box-r-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
@@ -99,7 +99,7 @@
         {/if}
 
         <button
-          class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
+          class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! -ml-2!"
           onclick={() => (settingsOpen = !settingsOpen)}
           aria-expanded={settingsOpen}
         >
@@ -111,7 +111,7 @@
         </button>
 
         {#if expanded}
-          <p class="fr-text--xs mb-0! mt-1! text-[--text-mention-grey] truncate px-1">{auth.user.email}</p>
+          <p class="fr-text--xs mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
         {/if}
       </div>
     {/if}
