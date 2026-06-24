@@ -67,13 +67,13 @@
 <dialog aria-labelledby="fr-modal-title-signin" id="fr-modal-signin" class="fr-modal">
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-10 fr-col-lg-9">
-        <div class="fr-modal__body">
+      <div class="fr-col-12 fr-col-md-11 fr-col-lg-10">
+        <div class="fr-modal__body rounded-lg! overflow-hidden! shadow-xl!">
           <div class="fr-modal__content p-0!">
             <div class="md:grid grid-cols-2">
 
               <!-- Left column: form -->
-              <div class="px-8 py-10">
+              <div class="px-10 py-10">
                 {#if step === 'email'}
                   <h2 id="fr-modal-title-signin" class="text-primary! text-2xl! font-bold! mb-3!">
                     {m['auth.modal.email.title']()}
@@ -109,7 +109,7 @@
 
                     <button
                       type="submit"
-                      class="fr-btn w-full! mt-6!"
+                      class="fr-btn w-full! mt-6! rounded-lg!"
                       disabled={!consented || loading}
                     >
                       {loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
@@ -145,7 +145,7 @@
                       <p class="fr-message fr-message--error mb-3!">{error}</p>
                     {/if}
 
-                    <button type="submit" class="fr-btn w-full! mb-3!" disabled={loading}>
+                    <button type="submit" class="fr-btn w-full! mb-3! rounded-lg!" disabled={loading}>
                       {loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
                     </button>
 
@@ -161,7 +161,7 @@
               </div>
 
               <!-- Right column: close + info -->
-              <div class="px-8 py-10">
+              <div class="bg-[--background-alt-grey] border-l border-[--border-default-grey] px-10 py-10">
                 <div class="flex justify-end mb-6">
                   <button
                     bind:this={closeButton}
