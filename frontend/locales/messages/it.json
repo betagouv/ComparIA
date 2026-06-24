@@ -1160,6 +1160,16 @@
                 "fyi": "<p>Il fratello maggiore della famiglia Phi3, questo modello supporta un contesto di 8000 token ed è stato addestrato su dataset web sintetici e filtrati.</p>",
                 "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
             },
+            "Phi-3.5-mini": {
+                "desc": "<p>Un modello che offre ottime prestazioni nelle attività di generazione e riassunto del codice, gestendo un contesto ampio di 128.000 token.</p>",
+                "fyi": "<p>Un piccolo modello della famiglia Phi, che sostituisce Phi-3-mini, questo modello supporta un ampio contesto di 128.000 token ed è stato addestrato su dataset web sintetici e filtrati.</p>",
+                "size_desc": "<p>I modelli molto piccoli, con meno di 7 miliardi di parametri, sono i meno complessi e i più efficienti in termini di risorse, offrendo prestazioni sufficienti per attività semplici come la classificazione del testo.</p>"
+            },
+            "Phi-4": {
+                "desc": "<p>Un modello piccolo e multilingue, capace di utilizzare strumenti e di ottenere buoni risultati in compiti complessi come i quelli di logica, matematici e di programmazione, pur rimanendo compatto.</p>",
+                "fyi": "<p>Questo modello utilizza tiktoken per la tokenizzazione, migliorando così le sue capacità in contesti multilingue. È stato addestrato su un totale di 9,8 <strong>trilioni</strong> di token, di cui 400 miliardi provenienti specificamente da dati sintetici di alta qualità, mentre i restanti erano costituiti da dati organici filtrati. L'addestramento si è svolto su 1.920 schede grafiche H100 in 21 giorni. Tecniche innovative come l'autovalutazione, durante la quale il modello critica e riscrive le proprie risposte, e l'inversione delle istruzioni sono state utilizzate per migliorare la sua comprensione delle istruzioni e le sue capacità di ragionamento.</p>",
+                "size_desc": "<p>Con 14 miliardi di parametri, questo modello rientra nella categoria dei modelli di piccole dimensioni. Può essere distribuito localmente su un computer sufficientemente potente o ospitato su un server con una singola scheda grafica, riducendo così i costi dell'infrastruttura. La finestra di contesto, con 16.000 token, potrebbe risultare limitante per l'analisi di documenti molto lunghi.</p>"
+            },
             "Qwen 2.5 Coder 32B": {
                 "desc": "<p>Un modello di medie dimensioni specializzato nella programmazione e nell'utilizzo di strumenti esterni (ricerche sul web, interazione con software, ecc...). </p>",
                 "fyi": "<p>Questo modello è stato addestrato su 5,5 trilioni di token e oltre 92 linguaggi di programmazione, inclusi linguaggi di codifica specializzati come Haskell o Racket.</p>\n<p>Grazie alle prestazioni del suo codice, è in grado di gestire efficacemente le tool call esterne, il che è utile per le applicazioni basate su usi agentici.</p>",
@@ -1206,6 +1216,18 @@
                 "desc": "<p>Un modello di grandi dimensioni e adatto per la programmazione, la matematica e le attività multilingue.</p>",
                 "fyi": "<p>Questa iterazione dei modelli Qwen ha finestre di contesto più lunghe.</p>",
                 "size_desc": "<p>I modelli di grandi dimensioni richiedono risorse considerevoli, ma offrono le migliori prestazioni per attività avanzate come la scrittura creativa, la modellazione dei dialoghi e le applicazioni che richiedono una profonda comprensione del contesto.</p>"
+            },
+            "Qwen2-7B": {
+                "desc": "<p>In grado di supportare un contesto di 130.000 token, questo modello di piccole dimensioni, multilingue e versatile offre ottime prestazioni per attività di traduzione, riassunto, analisi e ragionamento.</p>",
+                "fyi": "<p>Fratello minore della famiglia Qwen2 e prodotto dall'azienda cinese Alibaba, questo modello può supportare fino a 130.000 token per l'elaborazione di testi lunghi.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Qwen2.5-32B": {
+                "desc": "<p>In grado di supportare un contesto di 130k token, questo modello di piccole dimensioni, multilingue e versatile offre ottime prestazioni per attività di traduzione, riassunto, analisi e ragionamento.</p>"
+            },
+            "Qwen2.5-7B": {
+                "fyi": "<p>Un piccolo modello della famiglia Qwen2.5, prodotto dall'azienda cinese Alibaba, in grado di supportare fino a 130.000 token per l'elaborazione di testi lunghi.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...) </p>"
             },
             "Qwen3 Coder 480B A35B": {
                 "desc": "<p>Un modello molto ampio specializzato nella generazione di codice, nell'analisi di interi repository e nella risoluzione di problemi a più fasi. Questa versione è particolarmente efficace nell'utilizzo degli strumenti e può simulare una fase di ragionamento prima di fornire la risposta finale.</p>",
@@ -1254,9 +1276,39 @@
             }
         }
     },
+    "header": {
+        "banner": "🏆 La classifica dei modelli è ora disponibile! Scopri la classifica.",
+        "chatbot": {
+            "newDiscussion": "Nuova chat",
+            "reveal": {
+                "description": "Scopri l'impatto ambientale delle tue conversazioni con ciascun modello",
+                "subtitle": "I modelli sono stati smascherati!",
+                "title": "Rivelazione"
+            }
+        },
+        "help": {
+            "link": {
+                "content": "Migliorare il comparatore"
+            }
+        },
+        "homeTitle": "Home - compar:IA",
+        "logoAlt": "Repubblica Francese",
+        "menu": "Menu",
+        "startDiscussion": "Inizia a chattare",
+        "subtitle": "Il comparatore di IA conversazionale",
+        "votes": {
+            "count": "{count} votes",
+            "legend": "Leggenda",
+            "objective": "Obiettivo: {count}",
+            "tooltip": "Discuti, vota e aiutaci a raggiungere questo obiettivo!<br /><strong>I tuoi voti sono importanti</strong> : alimentano il dataset compar:IA reso liberamente disponibile per perfezionare i futuri modelli per la lingua francese.<br />Questo patrimonio digitale contribuisce ad un maggiore <strong>rispetto della diversità linguistica e culturale dei futuri modelli linguistici.</strong>"
+        }
+    },
     "home": {
         "europe": {
+            "desc": "Lituania, Svezia e Danimarca si uniscono alla Francia nell'adozione dello strumento di comparazione con l'obiettivo di perfezionare i futuri modelli di IA nelle rispettive lingue nazionali.",
             "languages": {
+                "da": "in danese",
+                "fr": "in francese",
                 "lt": "in lituano",
                 "sv": "in svedese"
             },
@@ -1264,7 +1316,8 @@
             "title": "Il comparatore <span {props}>sta diventando europeo!</span>"
         },
         "faq": {
-            "discover": "Scopri le altre domande"
+            "discover": "Scopri le altre domande",
+            "title": "Le domande più frequenti"
         },
         "intro": {
             "desc": "Avvia una conversazione alla cieca con due intelligenze artificiali e valuta le loro risposte",
@@ -1272,24 +1325,29 @@
                 "a11yDesc": "1. Chatta con due IA anonime: parla per tutto il tempo che vuoi. 2. Esprimi la tua opinione: contribuisci a migliorare i modelli di IA. 3. I modelli vengono svelati: scopri di più sui modelli di IA e sulle loro caratteristiche.",
                 "one": {
                     "desc": "Chatta per tutto il tempo che desideri",
-                    "title": "Sto chattando con due intelligenze artificiali anonime."
+                    "title": "Sto chattando con due IA anonime"
                 },
                 "three": {
-                    "desc": "Scopri di più sui modelli di intelligenza artificiale e sulle loro caratteristiche."
+                    "desc": "Scopri di più sui modelli di intelligenza artificiale e sulle loro caratteristiche",
+                    "title": "I modelli sono stati smascherati!"
                 },
+                "title": "Come funziona",
                 "two": {
+                    "desc": "Così facendo, contribuisci al miglioramento dei modelli di IA",
                     "title": "Sto esprimendo la mia opinione"
                 }
             },
             "title": "Non affidarti alle risposte <span {props}>di una singola IA</span>",
             "tos": {
+                "accept": "Accetto i <a {linkProps}>termini e condizioni d'uso</a>",
                 "error": "Per continuare è necessario accettare i termini di utilizzo",
-                "help": "I tuoi dati vengono condivisi a fini di ricerca."
+                "help": "I tuoi dati vengono condivisi a fini di ricerca"
             }
         },
         "origin": {
             "project": {
-                "desc": "Il comparatore è stato progettato e sviluppato nell'ambito di una start-up statale supportata dal Ministero della Cultura e integrato nel programma <a {linkProps}>Beta.gouv.fr</a> della Direzione Interministeriale per gli Affari Digitali (DINUM), che aiuta le amministrazioni pubbliche francesi a creare servizi digitali utili, semplici e facili da usare."
+                "desc": "Il comparatore è stato progettato e sviluppato nell'ambito di una start-up statale supportata dal Ministero della Cultura e integrato nel programma <a {linkProps}>Beta.gouv.fr</a> della Direzione Interministeriale per gli Affari Digitali (DINUM), che aiuta le amministrazioni pubbliche francesi a creare servizi digitali utili, semplici e facili da usare.",
+                "title": "Chi c'è dietro il progetto?"
             },
             "team": {
                 "desc": "Il progetto di comparazione è supportato all'interno del Ministero della Cultura da un team multidisciplinare che riunisce esperti di intelligenza artificiale, sviluppatori, responsabili dell'implementazione e designer, con la missione di rendere l'IA conversazionale più trasparente e accessibile a tutti.",
@@ -1297,6 +1355,7 @@
             }
         },
         "usage": {
+            "desc": "Lo strumento è destinato anche a esperti e formatori di IA per utilizzi più specifici",
             "educate": {
                 "desc": "Utilizza il comparatore come supporto didattico per sensibilizzare il vostro pubblico sull'intelligenza artificiale",
                 "title": "Per formare e sensibilizzare"
@@ -1305,6 +1364,7 @@
                 "desc": "Trova tutte le specifiche del modello e i termini di utilizzo in un unico posto",
                 "title": "Esplora i modelli"
             },
+            "title": "Usi specifici di compar:AI",
             "use": {
                 "desc": "Sviluppatori, ricercatori, editori di modelli... accedete ai dataset di compar:AI per migliorare i modelli",
                 "title": "Riutilizzare i dati"
@@ -1312,16 +1372,290 @@
         },
         "use": {
             "compare": {
+                "alt": "Confrontare",
                 "desc": "Discuti e sviluppa le tue capacità di pensiero critico esprimendo la tua preferenza",
-                "title": "Confronta le risposte di diversi modelli di intelligenza artificiale"
+                "title": "Confronta le risposte di diversi modelli di IA"
             },
             "desc": "compar:IA è uno strumento gratuito che contribuisce a sensibilizzare i cittadini sull'intelligenza artificiale generativa e sulle relative sfide.",
             "measure": {
+                "alt": "Misurare",
+                "desc": "Scopri l'impatto ambientale delle tue conversazioni con ciascun modello",
                 "title": "Misurare l'impronta ecologica delle domande poste all'IA"
             },
             "test": {
                 "alt": "Test",
-                "desc": "Prova diversi modelli, proprietari o meno, in piccole e grandi dimensioni..."
+                "desc": "Prova diversi modelli, proprietari o meno, in piccole e grandi dimensioni...",
+                "title": "Testare le più recenti IA dell'ecosistema, tutto in un unico luogo"
+            },
+            "title": "A cosa serve compar:IA?"
+        },
+        "vote": {
+            "datasetAccess": "Accedere ai dataset",
+            "steps": {
+                "datasets": {
+                    "desc": "Tutte le domande poste e i voti vengono raccolti in dataset e pubblicati liberamente dopo essere stati anonimizzati.",
+                    "title": "Dataset per lingua"
+                },
+                "finetune": {
+                    "desc": "In definitiva, le imprese e gli ambienti accademici possono sfruttare i dataset per addestrare nuovi modelli che siano più rispettosi della diversità linguistica e culturale.",
+                    "title": "Modelli perfezionati per la lingua specifica"
+                },
+                "prefs": {
+                    "desc": "Dopo aver discusso con l'IA, indica la tua preferenza per un modello in base a criteri specifici, come la pertinenza o l'utilità delle risposte."
+                }
+            }
+        }
+    },
+    "models": {
+        "arch": {
+            "title": "Lo sapevi?"
+        },
+        "conditions": {
+            "commercialUse": {
+                "question": "È consentito l'utilizzo commerciale del modello?",
+                "title": "Uso commerciale"
+            },
+            "reuse": {
+                "question": "Posso utilizzare gli output del modello per addestrarne di nuovi?",
+                "subTitle": "Non è possibile riutilizzarli per addestrare altri modelli",
+                "title": "Riutilizzo dei risultati generati"
+            },
+            "title": "Termini di utilizzo",
+            "types": {
+                "allowed": "Consentito",
+                "conditions": "Soggetto a condizioni",
+                "forbidden": "Vietato"
+            }
+        },
+        "conso": {
+            "count": {
+                "L": "> 5000 mWh",
+                "M": "da 150 a 5000 mWh",
+                "S": "<150 mWh"
+            },
+            "filterLegend": "Filtra per consumo energetico medio ogni 1000 token"
+        },
+        "extra": {
+            "experts": {
+                "api-only": "Per gli esperti, consultare il <a {linkProps}>sito web ufficiale del modello</a>"
+            },
+            "impacts": "I calcoli dell'impatto ambientale si basano sui progetti <a {linkProps1}>EcoLogits</a> e <a {linkProps2}>Impact CO<sub>2</sub></a>.",
+            "title": "Per andare oltre"
+        },
+        "licenses": {
+            "type": {
+                "openSource": "Open source",
+                "proprietary": "Proprietario",
+                "semiOpen": "Open weight"
+            }
+        },
+        "list": {
+            "filters": {
+                "archived": {
+                    "label": "Modelli archiviati",
+                    "uncheckedLabel": "Non visibile"
+                },
+                "display": "Mostra filtri",
+                "editor": {
+                    "legend": "Editore"
+                },
+                "reset": "Cancella tutti i filtri",
+                "size": {
+                    "labels": {
+                        "L": "tra 70 e 150 miliardi",
+                        "M": "da 20 a 70 miliardi",
+                        "S": "da 7 a 20 miliardi",
+                        "XL": ">150 miliardi",
+                        "XS": "<7 miliardi"
+                    },
+                    "legend": "Dimensioni (parametri)"
+                }
+            },
+            "intro": "Scopri i diversi modelli di IA conversazionale disponibili, le loro funzionalità e le relative licenze.",
+            "triage": {
+                "options": {
+                    "date-desc": "Data di pubblicazione (dalla più recente alla meno recente)",
+                    "name-asc": "Nome del modello (dalla A alla Z)",
+                    "org-asc": "Editore (dalla A alla Z)",
+                    "params-asc": "Dimensioni (dalla più piccola alla più grande)"
+                }
+            }
+        },
+        "names": {
+            "a": "Modello A"
+        },
+        "openWeight": {
+            "tooltips": {
+                "free": "Una volta modificato, il modello può essere ridistribuito con una licenza diversa da quella del modello originale.",
+                "openSource": "Il corpus, il codice di addestramento e i pesi di questo modello (ovvero i parametri appresi durante l'addestramento) sono completamente scaricabili e modificabili dal pubblico, consentendo loro di eseguire e modificare il modello sul proprio hardware. Un modello \"open source\" è più restrittivo rispetto ad uno \"open weight\", soprattutto a causa della necessità di trasparenza del corpus di addestramento, e pochissimi modelli sono considerati \"open source\".",
+                "params": "I parametri, o pesi, che si contano a miliardi, sono le variabili apprese da un modello durante il suo addestramento e che ne determinano le risposte. Maggiore è il numero di parametri, maggiori sono le risorse necessarie al suo funzionamento.",
+                "ram": "La RAM memorizza i dati elaborati da un LLM in tempo reale. Più grande è il modello, maggiore è la quantità di RAM necessaria per il suo funzionamento."
+            }
+        },
+        "parameters": "{numero} mds dei parametri",
+        "ram": "{min} a {max} GB",
+        "size": {
+            "count": {
+                "L": "da 100 a 400 miliardi",
+                "M": "da 60 a 100 miliardi",
+                "S": "da 15 a 60 miliardi",
+                "XL": ">400 miliardi",
+                "XS": "<15 miliardi"
+            },
+            "estimated": "Dimensione stimata ({size})",
+            "title": "Dimensioni"
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "Davide contro Golia",
+            "description": "Un modello piccolo contro uno grande, entrambi scelti a caso.",
+            "title": "Modalità Davide contro Golia"
+        },
+        "custom": {
+            "altLabel": "Selezione manuale",
+            "description": "Riusciresti a riconoscere i due modelli che hai scelto?",
+            "label": "Selezione manuale",
+            "title": "Modalità di selezione"
+        },
+        "random": {
+            "description": "Due modelli scelti a caso dall'intera lista",
+            "label": "Casuale",
+            "title": "Modalità casuale"
+        },
+        "reasoning": {
+            "altLabel": "Modelli con ragionamento",
+            "description": "Due modelli selezionati a caso tra quelli ottimizzati per compiti complessi",
+            "label": "Ragionamento",
+            "title": "Modalità di ragionamento"
+        },
+        "small-models": {
+            "altLabel": "Modelli frugali",
+            "description": "Due modelli scelti a caso tra i più piccoli",
+            "label": "Frugale",
+            "title": "Modalità frugale"
+        }
+    },
+    "product": {
+        "community": {
+            "countries": {
+                "fr": "Francia"
+            },
+            "tabLabel": "Community",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Da giugno 2024",
+                            "job": "Progettista di prodotto UX/UI"
+                        },
+                        "hadrien": {
+                            "date": "Giugno 2024 - Novembre 2025",
+                            "job": "Sviluppatore full stack"
+                        },
+                        "lucie": {
+                            "date": "Gennaio 2024 - Dicembre 2025",
+                            "job": "Fondatore - Responsabile di prodotto"
+                        },
+                        "mathilde": {
+                            "date": "Da settembre 2024",
+                            "job": "Responsabile dell' Atelier numérique / Product Ops"
+                        },
+                        "nicolas": {
+                            "job": "Sviluppatore full stack"
+                        },
+                        "simonas": {
+                            "date": "Da dicembre 2024",
+                            "job": "Responsabile di prodotto - precedentemente responsabile dell'implementazione"
+                        }
+                    },
+                    "title": "Il team di compar:AI - Francia"
+                }
+            },
+            "title": "I soci"
+        },
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "Evidenziare i pregiudizi nell'IA legati alla sottorappresentazione dei dati in lingue diverse dall'inglese nei modelli e sensibilizzare sulle loro conseguenze.",
+                    "title": "Pregiudizi culturali e linguistici"
+                },
+                "impacts": {
+                    "desc": "Rivelare gli effetti ecologici dell'IA generativa, che sono ancora in gran parte sconosciuti al grande pubblico."
+                },
+                "pluralism": {
+                    "desc": "Garantire ai cittadini l'accesso a una varietà di modelli di intelligenza artificiale, in modo che possano compiere scelte consapevoli e sviluppare una prospettiva critica su queste tecnologie.",
+                    "title": "Diversità dei modelli"
+                },
+                "thinking": {
+                    "title": "Pensiero critico e problematiche sociali"
+                },
+                "title": "L'applicazione sviluppata affronta diverse sfide"
+            },
+            "cta": "Accedi allo strumento di confronto",
+            "europe": {
+                "adventure": "A partire dall'autunno, Lituania, Svezia e Danimarca si uniranno all'avventura!",
+                "catch": "Desideri avere lo strumento di confronto nella tua lingua?",
+                "desc": "Lo strumento di confronto sarà messo a disposizione dei cittadini nelle loro lingue nazionali. L'obiettivo è creare insiemi di dati sulle preferenze per migliorare i futuri modelli di IA in queste lingue europee."
+            },
+            "screenshotAlt": "Screenshot dell'arena compar:ia, con la domanda iniziale, le due risposte modello e i pulsanti di voto.",
+            "tabLabel": "Il comparatore",
+            "title": "Il comparatore consente la creazione di <span {props}>dataset delle preferenze incentrati su <span {props}>utilizzi reali</span>espressi in <span {props}>lingue europee</span>."
+        },
+        "faq": {
+            "tabLabel": "FAQ"
+        },
+        "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "Marzo 2025",
+                            "desc": "Creazione e pubblicazione del primo dataset di compar:IA in francese, che raggruppa le domande e le preferenze degli utenti della piattaforma.",
+                            "title": "50.000 voti sul comparatore!"
+                        },
+                        "2": {
+                            "date": "Maggio 2025",
+                            "desc": "E in primo luogo il riutilizzo del dataset con Bunka.ai, che ha condotto uno <a {linkProps}>studio approfondito</a> sulle interazioni tra gli utenti della piattaforma.",
+                            "title": "Obiettivo di 100.000 voti raggiunto!"
+                        },
+                        "3": {
+                            "date": "Giugno 2025"
+                        }
+                    }
+                },
+                "construction": {
+                    "items": {
+                        "2": {
+                            "title": "Lancio ufficiale durante il Summit della Francofonia a Villers Cotterêts!"
+                        },
+                        "3": {
+                            "date": "Gennaio 2025",
+                            "desc": "Lancio della nuova funzionalità per la scelta della modalità di selezione del modello.",
+                            "title": "compara:AI v2"
+                        },
+                        "4": {
+                            "title": "<a {linkProps}>ComparIA Day al BnF</a> durante l'AI Action Summit"
+                        }
+                    },
+                    "tag": "Costruzione"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Estate 2025",
+                            "desc": "Collaborazione con Danimarca, Svezia e Lituania per offrire il servizio nella loro lingua.",
+                            "title": "Estensione su scala europea"
+                        },
+                        "2": {
+                            "desc": "Creazione di questo nuovo formato di workshop aperto a tutti, per scoprire i meccanismi interni dell'IA generativa e riflettere sul suo impatto ambientale, e pubblicazione del kit di facilitazione associato all'estensione \"AI Duels\".",
+                            "title": "Lancio di <a {linkProps}>“AI Duels”</a>"
+                        },
+                        "3": {
+                            "title": "Pubblicazione della <a {linkProps}>classifica compar:IA</a>"
+                        }
+                    }
+                }
             }
         }
     }
