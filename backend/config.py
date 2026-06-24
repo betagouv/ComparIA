@@ -49,12 +49,16 @@ class Settings(BaseSettings):
     GUARDRAIL_TIMEOUT: float = 2.5
 
     # Auth
+    # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = "anonymous_first"
+    # If non-empty, only emails from these domains can request a login code (e.g. ["beta.gouv.fr"])
     AUTH_DOMAIN_ALLOWLIST: list[str] = []
     AUTH_SESSION_LENGTH_DAYS: int = 30
+    # Bumping this value invalidates existing consent logs and forces re-consent
     AUTH_TERMS_VERSION: str = "1.0"
 
     # SMTP (Brevo relay or any SMTP provider)
+    # If unset, login codes are logged to console instead of being sent by email
     SMTP_HOST: str | None = None
     SMTP_PORT: int = 587
     SMTP_USERNAME: str | None = None

@@ -21,7 +21,7 @@ logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-_EMAIL_RATELIMIT_PER_HOUR = 5
+_EMAIL_RATELIMIT_PER_HOUR = 15
 
 
 class AuthConfig(BaseModel):
@@ -121,6 +121,17 @@ async def logout(request: Request, response: Response) -> None:
     if token:
         await revoke_current_session(token)
     response.delete_cookie("auth_session")
+
+
+@router.get("/me")
+async def get_me(request: Request) -> dict:
+    token = request.cookies.get("auth_session")
+    if not token:
+        return {"user": None}
+    user = await get_user_from_token(token)
+    if not user:
+        return {"user": None}
+    return {"user": {"email": user.email}}
 
 
 @router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT)
