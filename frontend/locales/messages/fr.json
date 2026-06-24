@@ -688,7 +688,11 @@
             "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres"
         },
-        "success": "Vous êtes connecté !"
+        "success": "Vous êtes connecté !",
+        "settings": {
+            "title": "Paramètres",
+            "logout": "Se déconnecter"
+        }
     },
     "chatbot": {
         "announce": {
