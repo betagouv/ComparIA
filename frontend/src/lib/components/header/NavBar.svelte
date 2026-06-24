@@ -2,6 +2,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
+  import { auth } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { VoteGauge } from '.'
@@ -62,14 +63,36 @@
   </div>
 {/snippet}
 
+{#snippet discussions()}
+  <div class="px-4 py-4 b-t-[--grey-925-125] b-t-1">
+    <p class="fr-text--xs mb-2! text-[--text-mention-grey] uppercase tracking-wide">Discussions</p>
+    {#if !auth.user && expanded}
+      <p class="fr-text--sm mb-3! text-[--text-label-grey]">
+        Connectez-vous pour accéder à votre historique de discussion
+      </p>
+      <button
+        class="fr-btn fr-btn--tertiary fr-btn--sm w-full!"
+        onclick={() => document.getElementById('fr-signin-trigger')?.click()}
+      >
+        <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+        Se connecter
+      </button>
+    {/if}
+  </div>
+{/snippet}
+
 {#snippet footer()}
-  <div class="gap-4 flex flex-col">
+  <div class="gap-2 flex flex-col">
     <!-- {@render renderLink({
       href: '/settings',
       label: m['seo.titles.settings'](),
       icon: 'i-ri-settings-4-line',
       class: 'text-sm! text-black!'
     })} -->
+
+    {#if auth.user && expanded}
+      <p class="fr-text--sm mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
+    {/if}
 
     <div class={{ hidden: !expanded }}>
       <!-- <LanguageSelector id="translate" />
@@ -118,7 +141,7 @@
   </div>
 
   <div class="lg:flex hidden grow flex-col">
-    <nav class="mt-4 mb-8">
+    <nav class="mt-4 mb-4">
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
@@ -131,6 +154,8 @@
         {/each}
       </ul>
     </nav>
+
+    {@render discussions()}
 
     <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
       {@render footer()}
