@@ -55,6 +55,46 @@
             "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
         }
     },
+    "auth": {
+        "discussions": {
+            "title": "Discussions",
+            "prompt": "Sign in to access your conversation history",
+            "signIn": "Sign in"
+        },
+        "modal": {
+            "close": "Close",
+            "email": {
+                "title": "Sign in or create an account",
+                "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on compar:IA",
+                "emailLabel": "Email",
+                "consent": "I have read the data usage information and accept the <a href='/modalites' target='_blank'>terms of use</a>",
+                "submit": "Receive login code",
+                "submitting": "Sending..."
+            },
+            "code": {
+                "title": "Enter your code",
+                "subtitle": "A 6-digit code has been sent to {email}.",
+                "label": "6-digit code",
+                "submit": "Verify",
+                "verifying": "Verifying...",
+                "resend": "Resend a code",
+                "error": "Invalid or expired code."
+            },
+            "info": {
+                "dataTitle": "How is my data used?",
+                "dataDesc": "Conversations and preferences you express on compar:IA are used anonymously to build representative datasets of European languages and uses, in order to reduce cultural biases and develop more inclusive AI models.",
+                "datasetsTitle": "The compar:IA datasets",
+                "datasetsDesc": "Conversations are published as open data in research datasets. That is why we ask you to <strong>never include</strong> in your conversations:",
+                "neverName": "your name, surname or that of a third party",
+                "neverAddress": "addresses (postal, email)",
+                "neverPhone": "phone numbers",
+                "neverPersonal": "personal medical, financial or legal information",
+                "neverOther": "any other element that could identify you",
+                "emailPrivacy": "Your email is never published or shared with third parties."
+            }
+        },
+        "success": "You are signed in!"
+    },
     "chatbot": {
         "continuePrompt": "Continue the discussion…",
         "conversation": "Chat",
