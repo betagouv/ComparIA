@@ -3,6 +3,7 @@ import { api } from '$lib/fastapi-client'
 
 export interface AuthUser {
   email: string
+  role: string
 }
 
 export interface AuthConfig {
@@ -14,6 +15,10 @@ export const auth = $state<{ user: AuthUser | null; config: AuthConfig | null }>
   user: null,
   config: null
 })
+
+export function isAdmin(): boolean {
+  return auth.user?.role === 'admin'
+}
 
 export async function initAuth(): Promise<void> {
   if (!browser) return
