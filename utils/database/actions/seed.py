@@ -31,5 +31,6 @@ async def seed_admins() -> None:
                 else:
                     logger.info(f"[seed] {email} is already admin")
             else:
-                logger.warning(f"[seed] {email} not found in auth_user, skipping")
+                session.add(User(email=email, role="admin"))
+                logger.info(f"[seed] created admin user {email}")
         await session.commit()
