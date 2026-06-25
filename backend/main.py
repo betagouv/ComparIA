@@ -1,7 +1,10 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 
+from backend.admin.router import router as admin_router
 from backend.arena.router import router as arena_router
 from backend.auth.middleware import auth_middleware
 from backend.auth.router import router as auth_router
@@ -12,7 +15,16 @@ from backend.sentry import init_sentry
 from backend.utils.countries import get_vote_count
 from utils.storage.redis import get_maintenance_mode
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if settings.COMPARIA_DB_URI and settings.ADMIN_EMAILS:
+        from utils.database.actions.seed import seed_admins
+        await seed_admins()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 logger = configure_logger()
 configure_uvicorn_logging()
@@ -51,6 +63,7 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 app.include_router(models_router)
 app.include_router(arena_router)
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 
 @app.get("/counter")
