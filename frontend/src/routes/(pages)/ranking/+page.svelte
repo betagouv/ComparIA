@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { Tabs } from '$components/dsfr'
+  import { Tabs, Toggle, Tooltip } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsWithDataContext } from '$lib/models'
+  import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
+  import { styleControl } from '$lib/styleControl.svelte'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, RankingTable } from './components'
@@ -21,8 +22,18 @@
 
   const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
+  // Local mirror the DSFR Toggle binds to, pushed to the shared singleton that
+  // every ranking view reads (RankingTable, EnergyGraph, the CSV export).
+  let styleEnabled = $state(styleControl.enabled)
+  $effect(() => {
+    styleControl.enabled = styleEnabled
+  })
+
   function onDownloadData(kind: 'ranking' | 'energy') {
     if (modelsData.length === 0) return
+
+    // Export the view currently on screen (style-controlled or plain).
+    const viewData = applyStyleControl(modelsData)
 
     const csvCols = [
       { key: 'rank' as const, label: 'Rank' },
@@ -45,7 +56,7 @@
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
       cols.map((col) => col.label).join(','),
-      ...modelsData
+      ...viewData
         .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
         .map((m) => {
           return cols
@@ -120,8 +131,9 @@
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
     {#if lastUpdateDate}
-      <Tabs {tabs} noBorders kind="nav">
-        {#snippet tab({ id })}
+      <div class="relative">
+        <Tabs {tabs} noBorders kind="nav">
+          {#snippet tab({ id })}
           {#if id === 'ranking'}
             <p class="mb-12! text-dark-grey text-[14px]!">
               {@html sanitize(
@@ -136,11 +148,29 @@
             <Energy onDownloadData={() => onDownloadData('energy')} />
             <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
-          {:else if id === 'methodo'}
-            <Methodology />
-          {/if}
-        {/snippet}
-      </Tabs>
+            {:else if id === 'methodo'}
+              <Methodology />
+            {/if}
+          {/snippet}
+        </Tabs>
+
+        <!-- Placed after the tabs in the DOM so it paints above the tab list and
+             stays clickable; absolutely positioned over the tab row on md+. -->
+        <div
+          class="z-10 mb-4 flex items-center gap-2 md:absolute md:top-0 md:right-0 md:mb-0"
+        >
+          <Toggle
+            id="style-control"
+            bind:value={styleEnabled}
+            label={m['ranking.styleControl.label']()}
+            hideCheckLabel
+            class="mb-0! whitespace-nowrap pr-13! font-medium text-[14px]!"
+          />
+          <Tooltip id="style-control-help" size="sm">
+            {@html sanitize(m['ranking.styleControl.help']())}
+          </Tooltip>
+        </div>
+      </div>
     {:else}
       <p>{m['ranking.no_data']()}</p>
     {/if}

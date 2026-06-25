@@ -2053,6 +2053,24 @@
                     "title": "Classement par taux de victoire"
                 }
             },
+            "style": {
+                "coef": {
+                    "footnote": "La longueur et les marqueurs markdown sont corrélés : ces coefficients se lisent conjointement, et non comme des effets indépendants pris isolément.",
+                    "hint": "Coefficients de la régression estimés sur l’ensemble des votes. Une valeur positive indique que cet axe de présentation est associé à une probabilité de victoire plus élevée une fois la force du modèle prise en compte. C’est précisément la part que le contrôle du style retire du classement.",
+                    "title": "Effet mesuré de la présentation"
+                },
+                "desc": {
+                    "1": "Un modèle peut grimper dans le classement simplement en répondant plus longuement ou avec une mise en forme plus riche (titres, gras, listes), sans être plus pertinent sur le fond. Le contrôle du style, inspiré du « Style Control » de LMArena, retire cet effet : une régression logistique sépare, dans chaque vote, ce qui revient à la force du modèle de ce qui revient à la présentation.",
+                    "2": "Le score affiché devient alors un Elo « débiaisé du style » : le classement que l’on obtiendrait si les deux réponses comparées étaient mises en forme de la même manière. Le contrôle du style est activé par défaut ; le bouton « Contrôle du style » en haut du tableau permet de revenir au classement Bradley-Terry brut pour comparer."
+                },
+                "features": {
+                    "length": "Longueur de la réponse",
+                    "md_bold": "Texte en gras",
+                    "md_headers": "Titres",
+                    "md_lists": "Listes à puces"
+                },
+                "title": "Contrôle du style : neutraliser l’effet de la présentation"
+            },
             "tabLabel": "Méthodologie",
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
@@ -2089,6 +2107,10 @@
         "ranking": {
             "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions issus de la <strong>comparaison à l'aveugle </strong> des modèles et collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
             "tabLabel": "Classement"
+        },
+        "styleControl": {
+            "help": "Retire l’effet de la mise en forme (longueur de la réponse, titres, gras, listes) du classement, pour que le score reflète le fond plutôt que la présentation. Activé par défaut. Détails dans l’onglet Méthodologie.",
+            "label": "Contrôle du style"
         },
         "table": {
             "data": {
