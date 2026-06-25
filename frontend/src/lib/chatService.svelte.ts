@@ -1,9 +1,6 @@
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
-import type { APILLMData } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
-import type { BotModel } from '$lib/models'
-import { parseModel } from '$lib/models'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
@@ -162,7 +159,7 @@ interface APIConsoData {
 }
 
 interface APIRevealModelData {
-  llm: APILLMData
+  llm_id: string
   conso: APIConsoData
 }
 
@@ -174,7 +171,7 @@ export interface APIRevealData {
 }
 
 export interface RevealModelData extends APIConsoData {
-  model: BotModel
+  id: string
   pos: Bot
 }
 
@@ -239,7 +236,7 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   return {
     selected: data.chosen_llm,
     modelsData: (['a', 'b'] as const).map((pos) => ({
-      model: parseModel(data[pos].llm),
+      id: data[pos].llm_id,
       pos,
       ...data[pos].conso
     })),
