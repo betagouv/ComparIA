@@ -250,6 +250,12 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
         text: m['models.size.title']({ size: model.size_class })
+      },
+      arch: {
+        id: `model-arch-${model.id}`,
+        variant: 'yellow' as const,
+        text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
+        tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       }
     },
     search: [model.human_id, model.name, model.lab.name].join(' '),
