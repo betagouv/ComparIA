@@ -51,10 +51,19 @@
 
       <dl class="fr-card__desc p-0 gap-2 grid grid-cols-3">
         {#each cards as card (card.id)}
-          <InfoCard {...card} badge={undefined} size="xs" titleTag="dt" titleClass="text-grey">
+          <InfoCard
+            {...card}
+            badge={undefined}
+            content={undefined}
+            size="xs"
+            titleTag="dt"
+            titleClass="text-grey"
+          >
             <dd class="p-0 font-bold text-base">
               {#if card.badge}
                 <Badge {...card.badge} tooltip={undefined} size="sm" />
+              {:else}
+                {card.content}
               {/if}
             </dd>
           </InfoCard>

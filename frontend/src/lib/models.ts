@@ -62,15 +62,16 @@ export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
 }
 
 export function getModelCards(model: BotModel, size: ModelCardSize, commons: Commons) {
-  const midProps = propsToAttrs({ class: 'text-base!' })
-  const smallProps = propsToAttrs({ class: 'text-sm!' })
+  const midProps = propsToAttrs({ class: size === 'md' ? 'text-base!' : 'text-sm!' })
+  const smallProps = propsToAttrs({ class: size === 'md' ? 'text-sm!' : 'text-xs!' })
   return {
     size: {
       id: 'size',
       icon: 'i-ri-ruler-line',
       title:
         m[`models.cards.size.title${model.license.kind === 'proprietary' ? '_estimated' : ''}`](),
-      badge: model.badges.size_short,
+      badge: size !== 'sm' ? model.badges.size_short : undefined,
+      tooltip: m['models.cards.size.tooltip'](),
       content:
         size !== 'xs'
           ? m['models.cards.size.params_count']({
@@ -115,6 +116,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       id: 'price',
       icon: 'i-ri-price-tag-3-line',
       title: m['models.cards.price.title'](),
+      tooltip: m['models.cards.price.tooltip'](),
       desc: m['models.cards.price.desc'](),
       contents: [
         {
@@ -136,7 +138,8 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
     modalities: {
       id: 'modalities',
       icon: 'i-ri-shapes-line',
-      title: m['models.cards.modalities.title']()
+      title: m['models.cards.modalities.title'](),
+      tooltip: m['models.cards.modalities.tooltip']()
     } as const,
     license: {
       id: 'license',
@@ -163,15 +166,19 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       id: 'sovereignty',
       icon: 'i-ri-government-line',
       title: m['models.cards.sovereignty.title'](),
-      content: `${model.sovereignty_score}/${SOVEREIGNTY_FIELDS.length}`
+      tooltip: m['models.cards.sovereignty.tooltip'](),
+      content: `${model.sovereignty_score}/${SOVEREIGNTY_FIELDS.length}`,
+      subContent: m['models.cards.sovereignty.sub']()
     } as const,
     rank: {
       id: 'rank',
       icon: 'i-ri-trophy-line',
       title: m[`models.cards.rank.title${size === 'xs' ? '_xs' : ''}`](),
+      tooltip: m['models.cards.rank.tooltip'](),
       content: model.data
         ? m['models.cards.rank.to'](commons.rankingTiers[model.data.rankClass])
-        : m['words.NA']()
+        : m['words.NA'](),
+      subContent: m['models.cards.rank.detail']({ count: commons.modelsCount })
     } as const
   }
 }
@@ -183,6 +190,11 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
   }
   const licenseType = model.license.kind
   const release_date = new Date(model.release_date)
+
+  model.data = {
+    n_match: 1495,
+    elo: 1000
+  }
 
   return {
     ...model,
@@ -216,7 +228,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
         }
       }[licenseType],
       release: {
-        variant: 'yellow' as const,
+        variant: 'brown' as const,
         text: m['models.release']({
           date: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
         })
@@ -265,8 +277,8 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
 
 export function setModelsContext(data: LLMList) {
   const rankedModels = data.models
-    .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
-    .sort((a, b) => a.data!.rank - b.data!.rank)
+    // .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
+    // .sort((a, b) => a.data!.rank - b.data!.rank)
     .map((llm, i) => ({ id: llm.id, rank: i + 1 }))
 
   const modelsCount = rankedModels.length
