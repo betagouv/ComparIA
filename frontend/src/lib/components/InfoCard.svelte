@@ -40,9 +40,21 @@
   const classes = $derived(
     (
       {
-        xs: { base: 'p-2 gap-1', title: 'text-xxs!', content: '', icon: 'xxs' },
-        sm: { base: 'p-3 gap-2', title: 'text-xxs!', content: '', icon: 'xxs' },
-        md: { base: 'p-4 gap-2', title: 'text-sm!', content: 'text-[22px]!', icon: 'xs' }
+        xs: { base: 'p-2 gap-1', title: 'text-xxs!', content: '', sub: 'text-sm!', icon: 'xxs' },
+        sm: {
+          base: 'p-3 gap-3',
+          title: 'text-xxs!',
+          content: 'text-lg!',
+          sub: 'text-xxs!',
+          icon: 'xs'
+        },
+        md: {
+          base: 'p-4 gap-2',
+          title: 'text-sm!',
+          content: 'text-[22px]!',
+          sub: 'text-sm!',
+          icon: 'xs'
+        }
       } as const
     )[size]
   )
@@ -50,11 +62,11 @@
 
 {#snippet innerContent(content: string, subContent?: string)}
   <div>
-    <p class={['mb-0! font-bold', classes.content]}>
+    <p class={['mb-0! font-bold leading-[1.1]!', classes.content]}>
       {@html sanitize(content)}
     </p>
-    {#if subContent}
-      <p class="text-sm! text-grey mb-0!">
+    {#if subContent && size !== 'xs'}
+      <p class={['text-grey mb-0!', classes.sub]}>
         {@html sanitize(subContent)}
       </p>
     {/if}
@@ -62,12 +74,12 @@
 {/snippet}
 
 <article {id} class={['cg-border bg-white flex flex-col', classes.base, props.class]}>
-  <div class="flex">
+  <div class="gap-1 flex">
     <svelte:element
       this={titleTag}
       class={['gap-1 font-normal mb-0! p-0! flex items-center', classes.title, titleClass]}
     >
-      <Icon {icon} size={classes.icon} block class={iconClass} />
+      <Icon {icon} size={classes.icon} block class={size !== 'xs' ? iconClass : undefined} />
       {title}
     </svelte:element>
 
@@ -77,7 +89,7 @@
           <Badge {...badge} size="sm" />
         {/if}
         {#if tooltip}
-          <Tooltip id="tooltip-{id}" size="xs">
+          <Tooltip id="tooltip-{id}" size="xs" class="lh-none! block!">
             {@html sanitize(tooltip)}
           </Tooltip>
         {/if}

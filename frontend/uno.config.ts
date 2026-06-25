@@ -87,6 +87,14 @@ export default defineConfig({
     'i-ri-bowl-line',
     'i-ri-music-2-line',
     'i-ri-book-open-line',
+    // cards
+    'i-ri-stack-line',
+    'i-ri-text-snippet',
+    'i-ri-price-tag-3-line',
+    'i-ri-shapes-line',
+    'i-ri-copyright-line',
+    'i-ri-calendar-line',
+    'i-ri-government-line',
     // modalities
     'i-ri-file-text-line',
     'i-ri-image-upload-line',
