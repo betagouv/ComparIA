@@ -24,66 +24,69 @@
     }
   })
 
-  const equivalencesData: Record<
-    EquivalenceType,
-    { emoji: string; source: string; unit?: string; decimals?: number }
-  > = {
-    paris_nyc_flights: {
-      emoji: '✈️',
-      decimals: 1,
-      source: 'https://impactco2.fr/outils/transport/avion-longcourrier'
-    },
-    baguette_production: {
-      emoji: '🥖',
-      unit: 'kg',
-      source: 'https://impactco2.fr/outils/alimentation/baguette'
-    },
-    one_year_tree_absortion: {
-      emoji: '🌳',
-      source: 'https://www.usda.gov/about-usda/news/blog/power-one-tree-very-air-we-breathe'
-    },
-    package_delivery: {
-      emoji: '📦',
-      source: 'https://impactco2.fr/outils/livraison/livraisondomicile'
-    },
-    mango_import: {
-      emoji: '🥭',
-      unit: 'kg',
-      source: 'https://impactco2.fr/outils/fruitsetlegumes/mangue'
-    },
-    pool_filing: { emoji: '💦', source: 'https://impactco2.fr/outils/caspratiques/piscine' }
-  }
+  // FIXME equivalences legacy?
+  // const equivalencesData: Record<
+  //   EquivalenceType,
+  //   { emoji: string; source: string; unit?: string; decimals?: number }
+  // > = {
+  //   paris_nyc_flights: {
+  //     emoji: '✈️',
+  //     decimals: 1,
+  //     source: 'https://impactco2.fr/outils/transport/avion-longcourrier'
+  //   },
+  //   baguette_production: {
+  //     emoji: '🥖',
+  //     unit: 'kg',
+  //     source: 'https://impactco2.fr/outils/alimentation/baguette'
+  //   },
+  //   one_year_tree_absortion: {
+  //     emoji: '🌳',
+  //     source: 'https://www.usda.gov/about-usda/news/blog/power-one-tree-very-air-we-breathe'
+  //   },
+  //   package_delivery: {
+  //     emoji: '📦',
+  //     source: 'https://impactco2.fr/outils/livraison/livraisondomicile'
+  //   },
+  //   mango_import: {
+  //     emoji: '🥭',
+  //     unit: 'kg',
+  //     source: 'https://impactco2.fr/outils/fruitsetlegumes/mangue'
+  //   },
+  //   pool_filing: { emoji: '💦', source: 'https://impactco2.fr/outils/caspratiques/piscine' }
+  // }
 
-  let containerElem = $state<HTMLDivElement>()
-  let scrollable = $state({ left: false, right: false })
+  // let containerElem = $state<HTMLDivElement>()
+  // let scrollable = $state({ left: false, right: false })
 
-  function checkIfScollable() {
-    scrollable.left = containerElem!.scrollLeft !== 0
-    scrollable.right =
-      Math.round(containerElem!.offsetWidth + containerElem!.scrollLeft) <
-      containerElem!.scrollWidth
-  }
+  // function checkIfScollable() {
+  //   scrollable.left = containerElem!.scrollLeft !== 0
+  //   scrollable.right =
+  //     Math.round(containerElem!.offsetWidth + containerElem!.scrollLeft) <
+  //     containerElem!.scrollWidth
+  // }
 
-  function scrollEquivalence(direction: -1 | 1) {
-    const { offsetWidth, scrollLeft } = containerElem!
-    const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('.eq-card')).reverse()
-    const col = cols.find((col) => {
-      const offsetLeft = col.offsetLeft - direction
-      return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
-    })
+  // function scrollEquivalence(direction: -1 | 1) {
+  //   const { offsetWidth, scrollLeft } = containerElem!
+  //   const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('.eq-card')).reverse()
+  //   const col = cols.find((col) => {
+  //     const offsetLeft = col.offsetLeft - direction
+  //     return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
+  //   })
 
-    if (!col) return
-    containerElem!.scrollTo({
-      left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
-    })
-  }
+  //   if (!col) return
+  //   containerElem!.scrollTo({
+  //     left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
+  //   })
+  // }
 
-  onMount(() => {
-    checkIfScollable()
-  })
+  // onMount(() => {
+  //   checkIfScollable()
+  // })
 </script>
 
-<svelte:window onresize={() => checkIfScollable()} {onscroll} />
+<!-- FIXME equivalences legacy? -->
+<!-- <svelte:window onresize={() => checkIfScollable()} {onscroll} /> -->
+
 <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex h-full flex-col">
   <div>
     <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
@@ -171,7 +174,8 @@
     </div>
   </div>
 
-  <div class="mt-6! md:mt-9! cg-border rounded-sm! bg-very-light-grey">
+  <!-- FIXME equivalences legacy? -->
+  <!-- <div class="mt-6! md:mt-9! cg-border rounded-sm! bg-very-light-grey">
     <div class="p-3 bg-light-grey">
       <h6 class="text-base! mb-2!">
         {m['reveal.equivalent.title']()}
@@ -255,7 +259,7 @@
         onclick={() => scrollEquivalence(1)}
       />
     </div>
-  </div>
+  </div> -->
 
   <div class="mt-9 text-center">
     <Button
