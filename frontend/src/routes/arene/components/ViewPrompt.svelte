@@ -126,7 +126,7 @@
           bind:mode={mode.value}
           bind:modelsSelection={modelsSelection.value}
           {models}
-          {disabled}
+          disabled={loading}
         />
         <Toggle
           id="web-search"
