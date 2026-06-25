@@ -8,6 +8,7 @@ Functions:
 
 import logging
 from typing import TypedDict
+from uuid import UUID
 
 from backend.llms.data import get_llms_data
 from backend.llms.models import APILLMDataBase
@@ -18,7 +19,7 @@ logger = logging.getLogger("languia")
 
 
 class RevealModelData(TypedDict):
-    llm: APILLMDataBase
+    llm_id: UUID
     conso: Consumption
 
 
@@ -108,8 +109,8 @@ async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # Encode summary as base64 for safe storage/transmission (share feature)
     jsonstring = json.dumps(
         {
-            "a": comparison.llm_id_a,  # Model A identifier
-            "b": comparison.llm_id_b,  # Model B identifier
+            "a": str(comparison.llm_id_a),  # Model A identifier
+            "b": str(comparison.llm_id_b),  # Model B identifier
             "ta": conso["a"]["tokens"],  # Model A token count
             "tb": conso["b"]["tokens"],  # Model B token count
             # Add user's choice to summary (for verification/tracking)
@@ -122,6 +123,6 @@ async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     return {
         "b64": b64,
         "chosen_llm": chosen_llm,
-        "a": {"llm": llms[comparison.llm_id_a], "conso": conso["a"]},
-        "b": {"llm": llms[comparison.llm_id_b], "conso": conso["b"]},
+        "a": {"llm_id": comparison.llm_id_a, "conso": conso["a"]},
+        "b": {"llm_id": comparison.llm_id_b, "conso": conso["b"]},
     }
