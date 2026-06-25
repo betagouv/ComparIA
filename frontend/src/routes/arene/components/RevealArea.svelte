@@ -24,7 +24,7 @@
 </script>
 
 <div id="reveal-area" class="fr-container--fluid mt-8! md:mt-10!" {@attach scrollTo}>
-  <div class="px-4 md:px-8 xl:px-16">
+  <div class="px-4 md:px-6">
     <SideSwitcher>
       <div class="gap-4 sm:gap-6 md:w-full flex">
         {#each modelsData as data (data.pos)}
