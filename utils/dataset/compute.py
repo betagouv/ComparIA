@@ -14,22 +14,23 @@ Usage:
 Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
-import json
 import logging
 from datetime import datetime
-from functools import lru_cache
 from pathlib import Path
+from uuid import UUID
 
+from async_lru import alru_cache
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import and_, col
+from sqlmodel import and_, col, select
 
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
-from backend.llms.models import LLMData
+from backend.llms.models import APILLMDataBase
 from utils.database.models import Comparison
+from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
+from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
-from utils.utils import LLMS_GENERATED_DATA_FILE, read_json
 
 from .export import StreamingDatasetExporter, commit_and_push
 from .models import (
@@ -41,24 +42,23 @@ from .models import (
 logger = logging.getLogger("comparia.dataset")
 
 
-@lru_cache
-def get_raw_llms_data() -> dict[str, LLMData]:
+@alru_cache
+async def get_llms_data() -> dict[UUID, APILLMDataBase]:
     """
-    Load the generated LLMs JSON data.
+    Query LLM data from db.
     Used to enrich datasets with metadata (params count, energy consumption).
     """
+
     try:
-        llms_data = read_json(LLMS_GENERATED_DATA_FILE)
-        return {
-            k: LLMData.model_validate(v)
-            for k, v in llms_data["models"].items()
-            if v.get("status") in ("enabled", "archived")
-        }
-    except FileNotFoundError:
-        logger.error(f"LLMs JSON file not found at: {LLMS_GENERATED_DATA_FILE}")
-        raise
-    except json.JSONDecodeError:
-        logger.error(f"Error decoding JSON from: {LLMS_GENERATED_DATA_FILE}")
+        async with get_session() as session:
+            llms = (
+                await session.exec(
+                    select(LLMData).where(LLMData.status.in_(["enabled", "archived"]))
+                )
+            ).all()
+        return {llm.id: APILLMDataBase.model_validate(llm) for llm in llms}
+    except Exception as e:
+        logger.error(f"Error loading LLMs data: {e}")
         raise
 
 
@@ -133,7 +133,7 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     }
 
 
-def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
+async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     """
     Flatten a Comparison into one row per turn.
 
@@ -145,7 +145,7 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     pipeline is pinned by tests/dataset/test_comparison_to_turns.py.
     """
     comp = db_comparison
-    llms = get_raw_llms_data()
+    llms = await get_llms_data()
     llm_a = llms.get(comp.llm_id_a)  # .get() tolerates empty/unknown llm_id
     llm_b = llms.get(comp.llm_id_b)
 
@@ -239,8 +239,8 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             **row,
             "turn": idx,
             "comparison_id": comparison_id,
-            "model_a": comp.llm_id_a,
-            "model_b": comp.llm_id_b,
+            "model_a": str(comp.llm_id_a),
+            "model_b": str(comp.llm_id_b),
             "timestamp": comp.created_at,
             "full_conversation_a": full_conversation_a,
             "full_conversation_b": full_conversation_b,
@@ -346,7 +346,7 @@ async def stream_to_exporters(
 
     async for db_comp in get_db_comparisons_stream():
         try:
-            turns = comparison_to_turns(db_comp)
+            turns = await comparison_to_turns(db_comp)
         except Exception:
             logger.exception(f"Failed to parse Comparison '{db_comp.id}', skipping...")
             failed_comparison_ids.append(str(db_comp.id))
