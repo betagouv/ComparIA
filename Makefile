@@ -67,7 +67,7 @@ db-schema-dump: ## Dump current database schema (requires COMPARIA_DB_URI)
 
 db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_DB_URI)
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
-	$(UV) run python -m utils.database.cli db seed-admins
+	./comparia-cli db seed-admins
 
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
