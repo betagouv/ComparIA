@@ -146,7 +146,7 @@ async def get_me(request: Request) -> dict:
     user = await get_user_from_token(token)
     if not user:
         return {"user": None}
-    return {"user": {"email": user.email}}
+    return {"user": {"email": user.email, "role": user.role}}
 
 
 =======

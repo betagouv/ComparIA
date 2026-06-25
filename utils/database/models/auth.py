@@ -13,6 +13,7 @@ class User(SQLModel, table=True):
 
     id: ModelId
     email: str = Field(unique=True)
+    role: str = Field(default="user")
     created_at: AutoDatetime
     last_seen_at: AutoDatetime
     deleted_at: OptionalDatetime = None
