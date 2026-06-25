@@ -239,7 +239,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       } as const,
       knowledge: model.knowledge_cutoff
         ? ({
-            variant: 'yellow' as const,
+            variant: 'brown' as const,
             text: m['models.knowledge.badge']({
               date: new Date(model.knowledge_cutoff).toLocaleString(locale, {
                 year: 'numeric',

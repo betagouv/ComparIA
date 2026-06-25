@@ -32,9 +32,9 @@
   ]}
 >
   <div class="fr-card__body">
-    <div class="fr-card__content px-5! md:px-4! md:pt-4!">
+    <div class="fr-card__content px-3! pt-3!">
       <h6
-        class="fr-card__title mb-3! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
+        class="fr-card__title mb-4! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
       >
         <AILogo logo={model.lab.logo} alt={model.lab.name} />
         <div>
@@ -49,7 +49,7 @@
         </div>
       </h6>
 
-      <dl class="fr-card__desc p-0 gap-2 grid grid-cols-3">
+      <dl class="fr-card__desc p-0 gap-2 mt-0! grid grid-cols-3">
         {#each cards as card (card.id)}
           <InfoCard
             {...card}
@@ -70,7 +70,7 @@
         {/each}
       </dl>
 
-      <div class="fr-card__start order-2!">
+      <div class="fr-card__start m-0! order-2!">
         <ul class="fr-badges-group">
           {#if model.status === 'archived' || model.new}
             <li
