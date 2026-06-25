@@ -288,7 +288,7 @@
                                 <div class="w-9/10">
                                   <div
                                     class="ps-2 flex h-full items-center justify-start"
-                                    style="background-color: {row.color}; width: {row.width}%; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+                                    style="background-color: var({row.color}); width: {row.width}%; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
                                     class:opacity-30={!active}
                                   >
                                     {row.letter}

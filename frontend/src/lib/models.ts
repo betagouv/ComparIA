@@ -11,12 +11,12 @@ export const CONSO_SIZES = ['S', 'M', 'L'] as const
 export type ConsoSizes = (typeof CONSO_SIZES)[number]
 
 export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
-  A: '#00963a',
-  B: '#4fb648',
-  C: '#bdd732',
-  D: '#ffec00',
-  E: '#f9a01b',
-  F: '#e30613'
+  A: '--green-emeraude-850-200',
+  B: '--green-menthe-850-200',
+  C: '--yellow-moutarde-850-200',
+  D: '--yellow-tournesol-main-731  ',
+  E: '--orange-terre-battue-main-645',
+  F: '--red-marianne-main-472'
 }
 export const MODALITIES = (
   [
