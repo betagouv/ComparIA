@@ -67,7 +67,7 @@
 <dialog aria-labelledby="fr-modal-title-signin" id="fr-modal-signin" class="fr-modal">
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-11 fr-col-lg-10">
+      <div class="fr-col-12">
         <div class="fr-modal__body rounded-lg! overflow-hidden! shadow-xl!">
           <div class="fr-modal__content p-0!">
             <div class="md:grid grid-cols-2">
