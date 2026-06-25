@@ -1584,6 +1584,7 @@
             },
             "modalities": {
                 "title": "Multimodalités",
+                "tooltip": "FIXME",
                 "types": {
                     "audio": "Audio",
                     "image": "Image",
@@ -1596,7 +1597,8 @@
                 "price_count": "{count}<span {midProps}>/M</span>",
                 "price_in": "Prix d’entrée",
                 "price_out": "Prix de sortie",
-                "title": "Prix"
+                "title": "Prix",
+                "tooltip": "FIXME"
             },
             "size": {
                 "active_params_count": "Dont {count}mds actifs",
@@ -1604,13 +1606,15 @@
                 "estimated": "Estimation",
                 "params_count": "{count}<span {midProps}>mds</span> <span {smallProps}>paramètres</span>",
                 "title": "Taille",
-                "title_estimated": "Taille estimée"
+                "title_estimated": "Taille estimée",
+                "tooltip": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il a besoin de ressources pour fonctionner."
             },
             "license": {
                 "title": "Licence"
             },
             "sovereignty": {
                 "title": "Souveraineté",
+                "sub": "Critères atteints",
                 "tooltip": "FIXME"
             },
             "rank": {
