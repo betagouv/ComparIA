@@ -157,9 +157,9 @@
         {:else if card.id === 'energy'}
           <div
             class="ps-2 w-80% text-white font-bold flex h-full items-center justify-start"
-            style="background-color: {ENERGY_CLASS_COLORS[
+            style="background-color: var({ENERGY_CLASS_COLORS[
               model.energy_class
-            ]}; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+            ]}); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
           >
             {model.energy_class}
           </div>
