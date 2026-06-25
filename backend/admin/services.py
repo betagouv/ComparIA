@@ -1,0 +1,86 @@
+import uuid
+from dataclasses import dataclass
+from datetime import datetime
+
+from sqlmodel import col, func, select
+
+from utils.database.models.auth import LoginCode, User
+from utils.database.session import get_session
+
+
+@dataclass
+class UserRow:
+    id: uuid.UUID
+    email: str
+    role: str
+    created_at: datetime
+    last_seen_at: datetime
+    source: str
+
+
+async def list_users(
+    search: str | None = None,
+    page: int = 1,
+    page_size: int = 50,
+) -> tuple[list[UserRow], int]:
+    async with get_session() as session:
+        base = select(User).where(User.deleted_at.is_(None))
+        if search:
+            base = base.where(col(User.email).ilike(f"%{search}%"))
+
+        count_result = await session.exec(
+            select(func.count()).select_from(base.subquery())
+        )
+        total = count_result.one()
+
+        result = await session.exec(
+            base.order_by(col(User.created_at).desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+        users = result.all()
+
+        rows = []
+        for user in users:
+            used_code = await session.exec(
+                select(LoginCode).where(
+                    LoginCode.user_id == user.id,
+                    LoginCode.used_at.is_not(None),
+                )
+            )
+            source = "email_code" if used_code.first() else "unknown"
+            rows.append(
+                UserRow(
+                    id=user.id,
+                    email=user.email,
+                    role=user.role,
+                    created_at=user.created_at,
+                    last_seen_at=user.last_seen_at,
+                    source=source,
+                )
+            )
+
+        return rows, total
+
+
+async def set_user_role(user_id: uuid.UUID, role: str) -> User | None:
+    async with get_session() as session:
+        user = await session.get(User, user_id)
+        if not user or user.deleted_at is not None:
+            return None
+        user.role = role
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+        return user
+
+
+async def delete_user(user_id: uuid.UUID) -> bool:
+    async with get_session() as session:
+        user = await session.get(User, user_id)
+        if not user or user.deleted_at is not None:
+            return False
+        user.deleted_at = datetime.now()
+        session.add(user)
+        await session.commit()
+        return True
