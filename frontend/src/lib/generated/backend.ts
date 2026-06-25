@@ -8,6 +8,9 @@
 export interface LLMList {
   data_timestamp: number | null;
   models: APILLMData[];
+  style_coefficients: {
+    [k: string]: number;
+  };
 }
 /**
  * LLM data used for LLM list, sent to clients.
@@ -76,10 +79,38 @@ export interface LLMLabPublic {
   [k: string]: unknown;
 }
 /**
- * Ranking/evaluation data from benchmark datasets.
+ * Ranking/evaluation data exposed for a model.
  *
- * Contains Elo ratings and confidence intervals from model comparison datasets
- * (e.g., LMSYS arena, ComparIA own data).
+ * The top-level fields are the style-controlled ranking (Style Control on,
+ * the default). ``uncontrolled`` carries the plain Bradley-Terry ranking the
+ * frontend swaps in when Style Control is toggled off, so the leaderboard can
+ * switch views without a recompute. It is ``None`` for models that are
+ * degenerate (never won or never lost) in the plain fit.
+ */
+export interface DatasetData {
+  elo: number;
+  score_p2_5: number;
+  score_p97_5: number;
+  rank_p2_5: number;
+  rank_p97_5: number;
+  rank: number;
+  n_match: number;
+  mean_win_prob: number;
+  win_rate: number;
+  uncontrolled?: RankingVariant | null;
+  /**
+   * Confidence interval: [lower bound, upper bound] for ranking.
+   */
+  trust_range: number[];
+  [k: string]: unknown;
+}
+/**
+ * A single Bradley-Terry ranking view (one set of Elo scores and ranks).
+ *
+ * The leaderboard ships two of these per model: the style-controlled view
+ * (shown by default) and the plain view used when the user turns Style Control
+ * off. They share the raw vote count but differ in Elo, ranks and win
+ * probabilities once presentation features are regressed out.
  *
  * Attributes:
  *     elo: Estimated Elo rating (median/central estimate)
@@ -90,7 +121,7 @@ export interface LLMLabPublic {
  *     win_rate: Percentage of matches won
  *     trust_range: Computed confidence interval for ranking
  */
-export interface DatasetData {
+export interface RankingVariant {
   elo: number;
   score_p2_5: number;
   score_p97_5: number;
