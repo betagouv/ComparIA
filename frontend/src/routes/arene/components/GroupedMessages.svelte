@@ -24,7 +24,7 @@
   } = $props()
 </script>
 
-<div class="grouped-messages px-4 py-2 md:py-5 md:px-8 xl:px-16 gap-2 md:gap-5 flex flex-col">
+<div class="grouped-messages px-4 py-2 md:py-5 md:px-6 gap-2 md:gap-5 flex flex-col">
   <div class="md:flex">
     {@render children?.()}
 
