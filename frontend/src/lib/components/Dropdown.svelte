@@ -128,6 +128,7 @@
 <style lang="postcss">
   .fr-select {
     --border-plain-grey: var(--blue-france-main-525);
+    --background-contrast-grey: var(--blue-ecume-975-75);
   }
 
   .dropdown-content {
