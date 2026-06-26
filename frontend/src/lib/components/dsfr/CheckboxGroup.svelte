@@ -42,7 +42,7 @@
     {/if}
   </legend>
 
-  <div class="flex flex-wrap">
+  <div class="flex w-full flex-col">
     {#each options as option, i (option.value)}
       <div
         class={['fr-fieldset__element not-last:mb-2! last:mb-0!', { 'grow-0! basis-auto!': row }]}
