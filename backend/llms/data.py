@@ -238,7 +238,7 @@ async def get_llms_data() -> LLMsData:
 class LLMList(BaseModel):
     data_timestamp: float | None
     models: list[APILLMData]
-    style_coefficients: dict[UUID, float]
+    style_coefficients: dict[UUID, float] | None
 
 
 # FIXME use cache?
@@ -250,7 +250,7 @@ async def get_llms_list() -> LLMList:
         {
             "models": llms.all.values(),
             "data_timestamp": ranking.timestamp if ranking else None,
-            "style_coefficients": ranking.style_coefficients,
+            "style_coefficients": ranking.style_coefficients if ranking else None,
         },
         context={"ranking": ranking},
     )
