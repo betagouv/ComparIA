@@ -10,7 +10,7 @@ export interface LLMList {
   models: APILLMData[];
   style_coefficients: {
     [k: string]: number;
-  };
+  } | null;
 }
 /**
  * LLM data used for LLM list, sent to clients.
