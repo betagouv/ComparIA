@@ -35,3 +35,9 @@
     {/each}
   </select>
 </div>
+
+<style lang="postcss">
+  .fr-select {
+    --border-plain-grey: var(--blue-france-main-525);
+  }
+</style>
