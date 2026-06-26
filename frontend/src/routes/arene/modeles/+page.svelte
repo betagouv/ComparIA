@@ -1,13 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import {
-    Accordion,
-    AccordionGroup,
-    Button,
-    CheckboxGroup,
-    Search,
-    Toggle
-  } from '$components/dsfr'
+  import Dropdown from '$components/Dropdown.svelte'
+  import { Button, CheckboxGroup, Search, Select, Toggle } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
@@ -110,122 +104,90 @@
 
 <PageLayout
   seoTitle={m['seo.titles.modeles']()}
-  title={m['models.list.title']()}
-  subtitle={m['models.list.intro']()}
-  class="py-0!"
+  title={m['seo.titles.modeles']()}
+  titleAsBubble
+  class="py-0! px-0!"
 >
-  <aside
-    class="fr-sidemenu mb-5 md:mb-0 md:basis-1/3"
-    role="navigation"
-    aria-labelledby="sidemenu-title"
-  >
-    <div class="fr-sidemenu__inner md:pt-5! h-full">
-      <button
-        id="results-count"
-        aria-expanded="false"
-        aria-controls="fr-modal-filters-section"
-        type="button"
-        class="fr-sidemenu__btn"
-      >
-        {m['models.list.filters.display']()}
-        {#if filterCount}
-          <span class="fr-badge fr-badge--sm bg-primary! text-white! ms-2 rounded-full!">
-            {filterCount}
-          </span>
-        {/if}
-      </button>
-      <div class="fr-collapse" id="fr-modal-filters-section">
-        <p class="fr-h5 mb-5! md:block hidden">
-          {filteredModels.length}
-          {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
-        </p>
-        <form class="mt-8 md:mt-0">
-          <Search
-            id="model-list-search"
-            bind:value={search}
-            label={m['actions.searchModel']()}
-            class="md:flex! mb-7 hidden!"
-          />
+  <aside class="bg-light-grey py-3 md:py-4 px-4 md:px-6">
+    <form class="gap-3 flex flex-col">
+      <div class="gap-3 xl:gap-x-12 xl:flex-row flex flex-col flex-wrap">
+        <Search
+          id="model-list-search"
+          bind:value={search}
+          label={m['actions.searchModel']()}
+          class="md:w-fit"
+        />
 
-          <Toggle
-            id="archived"
-            bind:value={showArchived}
-            label={m['models.list.filters.archived.label']()}
-            help={m['models.list.filters.archived.help']()}
-            checkedLabel={m['models.list.filters.archived.checkedLabel']()}
-            uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
-            groupClass="mx-4 md:mx-0"
-          />
+        <div class="gap-3 md:flex-row md:gap-5 flex flex-col">
+          <Dropdown id="dropdown-editors" label={editorFilter.legend}>
+            <CheckboxGroup
+              {...editorFilter}
+              bind:value={editors}
+              legendClass="sr-only"
+              labelClass="flex-nowrap!"
+              class="mb-0! w-max"
+            >
+              {#snippet labelSlot({ option })}
+                <div class="me-2">{option.value}</div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+              {/snippet}
+            </CheckboxGroup>
+          </Dropdown>
 
-          <AccordionGroup class="mb-6 mt-6">
-            <Accordion id="field-editors" label={editorFilter.legend}>
-              <div class="p-4">
-                <CheckboxGroup
-                  {...editorFilter}
-                  bind:value={editors}
-                  legendClass="sr-only"
-                  labelClass="flex-nowrap!"
-                  class="mb-0!"
-                >
-                  {#snippet labelSlot({ option })}
-                    <div class="me-2">{option.value}</div>
-                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-                  {/snippet}
-                </CheckboxGroup>
-              </div>
-            </Accordion>
+          <Dropdown id="dropdown-size" label={sizeFilter.legend}>
+            <CheckboxGroup
+              {...sizeFilter}
+              bind:value={sizes}
+              legendClass="sr-only"
+              labelClass="flex-nowrap!"
+              class="mb-0! w-max"
+            >
+              {#snippet labelSlot({ option })}
+                <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+              {/snippet}
+            </CheckboxGroup>
+          </Dropdown>
 
-            <Accordion id="field-size" label={sizeFilter.legend}>
-              <div class="p-4">
-                <CheckboxGroup
-                  {...sizeFilter}
-                  bind:value={sizes}
-                  legendClass="sr-only"
-                  labelClass="flex-nowrap!"
-                  class="mb-0!"
-                >
-                  {#snippet labelSlot({ option })}
-                    <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
-                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-                  {/snippet}
-                </CheckboxGroup>
-              </div>
-            </Accordion>
-
-            <Accordion id="field-license" label={licenseFilter.legend}>
-              <div class="p-4">
-                <CheckboxGroup
-                  {...licenseFilter}
-                  bind:value={licenses}
-                  legendClass="sr-only"
-                  labelClass="flex-nowrap!"
-                  class="mb-0!"
-                >
-                  {#snippet labelSlot({ option })}
-                    <div class="me-2">{option.label}</div>
-                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-                  {/snippet}
-                </CheckboxGroup>
-              </div>
-            </Accordion>
-          </AccordionGroup>
-
-          <div class="mb-8">
-            <Button
-              text={m['models.list.filters.reset']()}
-              icon="delete-line"
-              variant="tertiary-no-outline"
-              disabled={filterCount === 0}
-              onclick={resetFilters}
-            />
-          </div>
-        </form>
+          <Dropdown id="dropdown-license" label={licenseFilter.legend}>
+            <CheckboxGroup
+              {...licenseFilter}
+              bind:value={licenses}
+              legendClass="sr-only"
+              labelClass="flex-nowrap!"
+              class="mb-0! w-max"
+            >
+              {#snippet labelSlot({ option })}
+                <div class="me-2">{option.label}</div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+              {/snippet}
+            </CheckboxGroup>
+          </Dropdown>
+        </div>
+        <Button
+          text={m['models.list.filters.reset']()}
+          icon="delete-line"
+          disabled={filterCount === 0}
+          onclick={resetFilters}
+        />
       </div>
-    </div>
+
+      <Toggle
+        id="archived"
+        bind:value={showArchived}
+        label={m['models.list.filters.archived.label']()}
+        // help={m['models.list.filters.archived.help']()}
+        checkedLabel={m['models.list.filters.archived.checkedLabel']()}
+        uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+        variant="primary"
+        groupClass="max-w-max"
+        class="me-5 text-xs!"
+      />
+    </form>
   </aside>
 
-  <div class="md:pt-9! pb-6 basis-full">
-    <p class="fr-h6 mb-4! md:hidden">
+  <div class="py-4 md:py-6 px-4 md:px-6">
+    <p class="fr-h5 mb-4!">
       {filteredModels.length}
       {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
     </p>
@@ -237,19 +199,13 @@
       class="md:hidden! mb-4"
     />
 
-    <div class="fr-select-group">
-      <label class="fr-label" for="model-order">{m['models.list.triage.label']()}</label>
-      <select
-        id="model-order"
-        bind:value={sortingMethod}
-        name="model-order"
-        class="fr-select w-auto! max-w-full"
-      >
-        {#each sortingOptions as option (option.value)}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
-    </div>
+    <Select
+      bind:selected={sortingMethod}
+      id="model-order"
+      options={sortingOptions}
+      label={m['models.list.triage.label']()}
+      class="w-auto! max-w-full"
+    />
 
     <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
       {#each filteredModels as model (model.id)}
