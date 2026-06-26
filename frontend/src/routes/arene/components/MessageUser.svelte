@@ -30,7 +30,7 @@
       </h3>
       <div {id} class="fr-collapse m-0! p-0!">
         <ul class="mt-2! text-sm m-0! p-0! xl:grid-cols-2 md:max-h-[150px] grid max-h-[100px]">
-          {#each message.web_search_results as search (search.url)}
+          {#each message.web_search_results as search, i (i)}
             <li class="gap-3 flex items-center">
               <img aria-hidden="true" alt="" src={search.favicon} class="h-[14px] w-[14px]" />
               <span>

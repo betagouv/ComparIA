@@ -58,12 +58,14 @@ RoundInt = Annotated[int | float, AfterValidator(lambda n: round(n))]
 
 
 # TODO could be moved to 'utils/ranking'
-class DatasetData(BaseModel):
+class RankingVariant(BaseModel):
     """
-    Ranking/evaluation data from benchmark datasets.
+    A single Bradley-Terry ranking view (one set of Elo scores and ranks).
 
-    Contains Elo ratings and confidence intervals from model comparison datasets
-    (e.g., LMSYS arena, ComparIA own data).
+    The leaderboard ships two of these per model: the style-controlled view
+    (shown by default) and the plain view used when the user turns Style Control
+    off. They share the raw vote count but differ in Elo, ranks and win
+    probabilities once presentation features are regressed out.
 
     Attributes:
         elo: Estimated Elo rating (median/central estimate)
@@ -93,6 +95,21 @@ class DatasetData(BaseModel):
             self.rank - self.rank_p2_5,
             self.rank_p97_5 - self.rank,
         ]
+
+
+# TODO could be moved to 'utils/ranking'
+class DatasetData(RankingVariant):
+    """
+    Ranking/evaluation data exposed for a model.
+
+    The top-level fields are the style-controlled ranking (Style Control on,
+    the default). ``uncontrolled`` carries the plain Bradley-Terry ranking the
+    frontend swaps in when Style Control is toggled off, so the leaderboard can
+    switch views without a recompute. It is ``None`` for models that are
+    degenerate (never won or never lost) in the plain fit.
+    """
+
+    uncontrolled: RankingVariant | None = None
 
 
 # TODO could be moved to 'utils/ranking'

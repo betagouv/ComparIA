@@ -11,10 +11,17 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS
-from backend.llms.models import DatasetData, PreferencesData
+from backend.llms.models import DatasetData, PreferencesData, RankingVariant
 from utils.ranking.bradley_terry import bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_votes
+from utils.ranking.style_control import (
+    STYLE_FEATURES,
+    bootstrap_style_controlled,
+    style_vector,
+)
 from utils.utils import configure_logger
 
 logger = configure_logger(logging.getLogger("ranking.compute"))
@@ -25,17 +32,53 @@ class RankingResult:
     timestamp: float
     rankings: dict[str, DatasetData] = field(default_factory=dict)
     preferences: dict[str, PreferencesData] = field(default_factory=dict)
+    # Style coefficients from the style-controlled fit (one per STYLE_FEATURES
+    # entry); exposed for transparency about how much presentation drives votes.
+    style_coefficients: dict[str, float] = field(default_factory=dict)
 
 
-def _votes_to_battles(votes: list[dict]) -> list[tuple[str, str, str]]:
-    """Convert vote records to battle tuples, filtering ties."""
-    battles = []
+def _votes_to_battles(
+    votes: list[dict],
+) -> tuple[list[tuple[str, str, str]], np.ndarray, np.ndarray]:
+    """
+    Convert vote records to decisive battle tuples plus aligned style vectors.
+
+    Ties (both_good / both_bad) carry no winner and are dropped from the
+    Bradley-Terry fit. Decisive votes whose answers have no token count are also
+    dropped: a zero-length style vector would read as an extreme "minimal style"
+    signal rather than as missing data. Returns ``(battles, style_a, style_b)``
+    where the two arrays are (n_battles, n_features) raw style measurements
+    row-aligned with ``battles`` for the style-controlled solver.
+    """
+    battles: list[tuple[str, str, str]] = []
+    style_a: list[np.ndarray] = []
+    style_b: list[np.ndarray] = []
+    dropped_no_length = 0
     for v in votes:
-        if v["choice"] in ("a_better", "b_better"):
-            winner = v["llm_id_a"] if v["choice"] == "a_better" else v["llm_id_b"]
-            battles.append((v["llm_id_a"], v["llm_id_b"], winner))
+        if v["choice"] not in ("a_better", "b_better"):
+            continue
+        tokens_a, tokens_b = v.get("tokens_a"), v.get("tokens_b")
+        if not tokens_a or not tokens_b:
+            dropped_no_length += 1
+            continue
+        winner = v["llm_id_a"] if v["choice"] == "a_better" else v["llm_id_b"]
+        battles.append((v["llm_id_a"], v["llm_id_b"], winner))
+        style_a.append(style_vector(v.get("content_a"), tokens_a))
+        style_b.append(style_vector(v.get("content_b"), tokens_b))
 
-    return battles
+    if dropped_no_length:
+        logger.warning(
+            "[Ranking] Dropped %d decisive vote(s) with no answer token count "
+            "from the style-controlled fit.",
+            dropped_no_length,
+        )
+
+    n_feat = len(STYLE_FEATURES)
+    return (
+        battles,
+        np.array(style_a) if style_a else np.empty((0, n_feat)),
+        np.array(style_b) if style_b else np.empty((0, n_feat)),
+    )
 
 
 def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
@@ -74,32 +117,27 @@ def _aggregate_preferences(votes: list[dict]) -> dict[str, PreferencesData]:
     return result
 
 
-def _compute_ranking(votes: list[dict]) -> RankingResult:
-    """Compute ranking and preferences for a single group of votes/reactions."""
-    all_battles = _votes_to_battles(votes)
+def _variant_table(
+    ci: dict[str, tuple[float, float, float]],
+    match_counts: dict[str, int],
+    win_counts: dict[str, int],
+) -> dict[str, dict]:
+    """
+    Turn a ``{model: (elo, lower, upper)}`` CI map into per-model ranking fields.
 
-    if not all_battles:
-        return RankingResult(timestamp=time.time())
-
-    # (point_estimate, lower_2.5, upper_97.5) per model
-    ci = bootstrap_confidence_intervals(all_battles)
-
-    # Count matches and wins per model
-    match_counts: dict[str, int] = defaultdict(int)
-    win_counts: dict[str, int] = defaultdict(int)
-    for a, b, winner in all_battles:
-        match_counts[a] += 1
-        match_counts[b] += 1
-        win_counts[winner] += 1
-
-    # Drop degenerate models (never won or never lost in the full data)
+    Shared by the style-controlled and plain Bradley-Terry views so both are
+    built identically (rank, CI-overlap rank bounds, mean win probability, win
+    rate); only the input CI differs. Degenerate models (any NaN bound) are
+    dropped here. Returns a ``{model: fields}`` dict ready to splat into a
+    ``RankingVariant`` / ``DatasetData``.
+    """
     ci = {m: v for m, v in ci.items() if not any(math.isnan(x) for x in v)}
 
     # Sort by point-estimate Elo descending
     sorted_models = sorted(ci, key=lambda m: -ci[m][0])
     n_total = len(sorted_models)
 
-    rankings: dict[str, DatasetData] = {}
+    table: dict[str, dict] = {}
     for rank, model in enumerate(sorted_models, 1):
         elo_point, elo_lower, elo_upper = ci[model]
         n_match = match_counts.get(model, 0)
@@ -128,7 +166,7 @@ def _compute_ranking(votes: list[dict]) -> RankingResult:
             win_probs.append(strength_i / (strength_i + strength_j))
         mean_win_prob = sum(win_probs) / len(win_probs) if win_probs else 0.5
 
-        rankings[model] = DatasetData(
+        table[model] = dict(
             elo=round(elo_point),
             score_p2_5=round(elo_lower),
             score_p97_5=round(elo_upper),
@@ -140,12 +178,57 @@ def _compute_ranking(votes: list[dict]) -> RankingResult:
             win_rate=round(wins / n_match, 4) if n_match > 0 else 0.0,
         )
 
+    return table
+
+
+def _compute_ranking(votes: list[dict]) -> RankingResult:
+    """Compute ranking and preferences for a single group of votes/reactions."""
+    all_battles, style_a, style_b = _votes_to_battles(votes)
+
+    if not all_battles:
+        return RankingResult(timestamp=time.time())
+
+    # Two rankings from the same battles so the frontend "Contrôle du style"
+    # toggle can switch views without a recompute:
+    #   - style-controlled (default): answer length and markdown formatting
+    #     regressed out, so the Elo reflects substance over presentation;
+    #   - uncontrolled: the plain MM Bradley-Terry fit (presentation included).
+    # Both are (point_estimate, lower_2.5, upper_97.5) per model.
+    ci_controlled, style_coefficients = bootstrap_style_controlled(
+        all_battles, style_a, style_b
+    )
+    ci_plain = bootstrap_confidence_intervals(all_battles)
+    logger.info(
+        "[Ranking] Style coefficients: "
+        + ", ".join(f"{k}={v:+.3f}" for k, v in style_coefficients.items())
+    )
+
+    # Count matches and wins per model (shared by both views)
+    match_counts: dict[str, int] = defaultdict(int)
+    win_counts: dict[str, int] = defaultdict(int)
+    for a, b, winner in all_battles:
+        match_counts[a] += 1
+        match_counts[b] += 1
+        win_counts[winner] += 1
+
+    controlled = _variant_table(ci_controlled, match_counts, win_counts)
+    plain = _variant_table(ci_plain, match_counts, win_counts)
+
+    rankings: dict[str, DatasetData] = {}
+    for model, fields in controlled.items():
+        uncontrolled = plain.get(model)
+        rankings[model] = DatasetData(
+            **fields,
+            uncontrolled=RankingVariant(**uncontrolled) if uncontrolled else None,
+        )
+
     preferences = _aggregate_preferences(votes)
 
     return RankingResult(
         timestamp=time.time(),
         rankings=rankings,
         preferences=preferences,
+        style_coefficients=style_coefficients,
     )
 
 

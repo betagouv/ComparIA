@@ -4,7 +4,7 @@
   import { ARCHS } from '$lib/generated/models'
   import { m } from '$lib/i18n/messages'
   import type { Archs, ConsoSizes, Sizes } from '$lib/models'
-  import { CONSO_SIZES, getModelsWithDataContext, SIZES } from '$lib/models'
+  import { applyStyleControl, CONSO_SIZES, getModelsWithDataContext, SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
@@ -12,7 +12,8 @@
 
   type ModelGraphData = (typeof models)[number]
 
-  const { models: data } = getModelsWithDataContext()
+  const { models: baseModels } = getModelsWithDataContext()
+  const data = $derived(applyStyleControl(baseModels))
 
   const dotSizes = { XS: 5, S: 7, M: 9, L: 11, XL: 13 } as const
 

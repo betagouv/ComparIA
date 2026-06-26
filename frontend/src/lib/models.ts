@@ -1,6 +1,7 @@
 import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from '$lib/generated/models'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
+import { styleControl } from './styleControl.svelte'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
 export const CONSO_SIZES = ['S', 'M', 'L'] as const
@@ -14,7 +15,7 @@ export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
 
-interface DatasetData {
+interface RankingVariant {
   elo: number
   score_p2_5: number
   score_p97_5: number
@@ -25,6 +26,12 @@ interface DatasetData {
   mean_win_prob: number
   win_rate: number
   trust_range: [number, number]
+}
+
+interface DatasetData extends RankingVariant {
+  // Plain Bradley-Terry view, shown when Style Control is toggled off. Null for
+  // models that are degenerate (never won/lost) in the plain fit.
+  uncontrolled: RankingVariant | null
 }
 
 interface PreferencesData {
@@ -66,8 +73,16 @@ export interface APIBotModel {
   data: DatasetData | null
   prefs: PreferencesData | null
 }
-export type APIData = { data_timestamp: number; models: APIBotModel[] }
-export type Data = { lastUpdateDate: string | null; models: BotModel[] }
+export type APIData = {
+  data_timestamp: number
+  models: APIBotModel[]
+  style_coefficients?: Record<string, number>
+}
+export type Data = {
+  lastUpdateDate: string | null
+  models: BotModel[]
+  styleCoefficients: Record<string, number>
+}
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
@@ -157,12 +172,17 @@ export function setModelsContext(data: APIData) {
     lastUpdateDate: data.data_timestamp
       ? new Date(data.data_timestamp * 1000).toLocaleDateString()
       : null,
+    styleCoefficients: data.style_coefficients ?? {},
     models: data.models.map((model) => parseModel(model))
   })
 }
 
 export function getModelsContext() {
   return getContext<Data>('data')
+}
+
+export function getStyleCoefficients(): Record<string, number> {
+  return getContext<Data>('data').styleCoefficients ?? {}
 }
 
 export function getModelsWithDataContext() {
@@ -186,4 +206,23 @@ export function getModelsWithDataContext() {
         }
       }))
   }
+}
+
+/**
+ * Pick the ranking view that matches the current Style Control toggle and
+ * re-rank accordingly. Reads `styleControl.enabled` so callers that wrap it in a
+ * `$derived` update live when the toggle flips. With the toggle on (default) the
+ * style-controlled scores are kept; off swaps in each model's `uncontrolled`
+ * (plain Bradley-Terry) view. Either way models are re-sorted by the active Elo
+ * and ranks renumbered 1..N over the displayed set.
+ */
+export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[] {
+  const enabled = styleControl.enabled
+  return models
+    .map((m) => {
+      const active = enabled || !m.data.uncontrolled ? m.data : m.data.uncontrolled
+      return { ...m, data: { ...active, uncontrolled: m.data.uncontrolled } }
+    })
+    .sort((a, b) => a.data.rank - b.data.rank)
+    .map((m, i) => ({ ...m, data: { ...m.data, rank: i + 1 } }))
 }

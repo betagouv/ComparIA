@@ -132,7 +132,7 @@
       max-height: calc(100vh - 6rem);
 
       @media (min-width: 48em) and (min-height: 48em) {
-        max-height: calc(100vh - var(--footer-size) - 2rem);
+        max-height: calc(100vh - var(--footer-size) - 4rem);
       }
 
       &.generating {
