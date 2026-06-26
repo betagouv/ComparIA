@@ -29,10 +29,11 @@
     ]
   })
   const conso = $derived.by(() => {
-    const co2 = data.scaled_co2_t
+    // FIXME equivalences legacy?
+    // const co2 = data.scaled_co2_t
     return {
-      energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
-      co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
+      energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0)
+      // co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
     }
   })
 
