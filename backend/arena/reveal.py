@@ -11,7 +11,6 @@ from typing import TypedDict
 from uuid import UUID
 
 from backend.llms.data import get_llms_data
-from backend.llms.models import APILLMDataBase
 from backend.llms.utils import Consumption, get_llm_consumption
 from utils.database.models import BotPos, ComparisonRead
 
