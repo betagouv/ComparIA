@@ -49,9 +49,9 @@
         },
         "title": "Hvordan kan jeg hjælpe dig i dag?",
         "webSearch": {
-            "label": "Websøgning",
-            "enabled": "Websøgning aktiveret",
             "disabled": "Websøgning deaktiveret",
+            "enabled": "Websøgning aktiveret",
+            "label": "Websøgning",
             "tooltip": "Aktivér websøgning for at lade modellerne bruge onlinekilder og citere mere opdateret information.<br><strong>Uden websøgning</strong> svarer modellerne baseret på det, de lærte under træning (deres træningsdata). De kan ikke verificere information online, så meget nye eller meget specifikke fakta kan være ufuldstændige."
         }
     },
@@ -112,8 +112,8 @@
             "desc": "Platformens spørgsmål og præferencer er tilgængelige på dansk, engelsk, fransk og forventes udvidet i fremtiden til blandt andet at inkludere svensk. Spørgsmålene afspejler organisk brug – ikke kunstige spørgsmål. Disse datasæt er offentligt tilgængelige på <a {linkProps}>data.gouv.fr</a> og Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Samtaler, svar, reaktioner og præferencer samlet i ét datasæt"
+                    "desc": "Samtaler, svar, reaktioner og præferencer samlet i ét datasæt",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Vis os, hvordan du bruger datasættene",
@@ -918,6 +918,11 @@
                 "fyi": "<p>Udviklet af Google DeepMind og udgivet under Apache 2.0-licensen (i modsætning til tidligere versioner under den proprietære Gemma-licens) bygger denne model på en tæt arkitektur med 60 lag, der kombinerer lokal sliding window attention (1.024 tokens) og global opmærksomhed over hele konteksten.</p>\n<p>Den integrerer en visuel enkoder på cirka 550 millioner parametre, der kan behandle billeder i variabel opløsning og videoer op til 60 sekunder. Den understøtter mere end 140 sprog og råder over native funktionskald, hvilket gør den anvendelig i agentiske sammenhænge.</p>\n<p>Dens præstationer er bemærkelsesværdige for sin størrelse: på Arena AI-ranglisten indtager den en 3. plads globalt blandt åbne modeller og konkurrerer med modeller 20 gange større som Kimi K2.5 (744 milliarder parametre) eller GLM-5 (1.000 milliarder parametre). Ifølge udvikleren opnår den 89,2 % på AIME 2026 (matematisk ræsonnering), 85,2 % på MMLU Pro, 84,3 % på GPQA Diamond (videnskabelig ræsonnering) og 80,0 % på LiveCodeBench v6, med en Codeforces-score på 2.150.</p>",
                 "size_desc": "<p>Med 31 milliarder parametre alle aktiveret ved hvert genereret token placerer denne model sig i kategorien af mellemstore modeller. Den kan afvikles på en server udstyret med ét enkelt kraftfuldt grafikkort, hvilket bidrager til at begrænse infrastrukturomkostningerne.</p>\n<p>Dens kontekstvindue når op på 256.000 tokens, hvilket er velegnet til analyse af lange dokumenter.</p>\n<p>Ræsonneringsmodeller af denne type arbejder længere for at producere et svar, hvilket øger energiforbruget.</p>"
             },
+            "Granite 4.1 8B": {
+                "desc": "<p>Lille flersproget model designet til virksomhedsbrug, der tilbyder gode evner inden for brug af eksterne værktøjer, retrieval augmented generation (RAG) og kodegenerering.</p>",
+                "fyi": "<p>Udviklet af IBM er Granite 4.1 8B en del af en familie, der også omfatter versioner på 3 og 30 milliarder parametre. I modsætning til Granite 4.0-generationen, som byggede på en hybridarkitektur, der kombinerede Mamba-2-lag og transformer-lag, vender 4.1-serien tilbage til en klassisk tæt (decoder-only) arkitektur, der er ensartet på tværs af alle størrelser.</p>\n<p>Modellen blev trænet på omkring 15 billioner tokens efter en flertrinstilgang, der gradvist retter træningen mod tekniske, videnskabelige og matematiske data af højere kvalitet. Eftertræningen kombinerede superviseret finjustering (SFT) efterfulgt af flere faser med forstærkningslæring rettet mod forskellige evner. Modellen understøtter brug af værktøjer i et OpenAI-kompatibelt format, kodefuldførelse via fill-in-the-middle og fungerer på et dusin sprog.</p>\n<p>Ifølge udvikleren matcher eller overgår 8B-versionen Granite 4.0 32B mixture of experts (MoE)-modellen på mange tests. Modellen udmærker sig ved sin pålidelighed i at følge instruktioner og sin lave tilbøjelighed til at hallucinere, egenskaber der er nyttige til udtræk af strukturerede data i professionelle sammenhænge.</p>",
+                "size_desc": "<p>Med 8 milliarder parametre tilhører denne model de små modeller. Den kan bruges lokalt på en kraftfuld computer, hvilket sikrer datafortrolighed, eller hostes på en server med et enkelt grafikkort, hvilket begrænser infrastrukturomkostningerne.</p>\n<p>Dens kontekstvindue strækker sig op til 512.000 tokens, hvilket gør det muligt at behandle meget lange dokumenter.</p>"
+            },
             "Grok 3 Mini": {
                 "desc": "<p>Lettere version af Grok 3-modellen, som gør det muligt at reducere omkostninger, samtidig med at den bevarer gode præstationer til mange opgaver. Den kan simulere en ræsonneringsfase, før den leverer et endeligt svar.</p>",
                 "fyi": "<p>Grok 3 Mini er en destilleret version af Grok 3: den nærmer sig den med hensyn til kapaciteter, samtidig med at den er hurtigere og billigere.\nModellen tilbyder to tilstande: en refleksionstilstand med trin-for-trin-ræsonnering til komplekse problemer og en hurtig tilstand til øjeblikkelige svar.\nDens kontekstvindue når op på 131.000 tokens, hvilket gør den velegnet til analyse af lange dokumenter.</p>",
@@ -1282,11 +1287,6 @@
                 "desc": "<p>Mellemstor ræsonneringsmodel, specialiseret og meget ydeevnedygtig inden for matematik, kodegenerering og løsning af logiske problemer.</p>",
                 "fyi": "<p>Denne model er blevet trænet med en forstærkningslæringsmetode (RL) for at optimere håndteringen af matematikproblemer og programmeringsopgaver. Den bruger flere nyere teknikker til at forbedre kvaliteten af svarene. For eksempel gør RoPE-metoden (Rotary Position Embedding) det muligt for den at forstå rækkefølgen af ord i en tekst bedre. Aktiveringsfunktionen SwiGLU er en mere effektiv måde at håndtere beregninger inden i det neurale netværk på, som hjælper modellen med at producere mere pålidelige svar. QKV-justeringsmetoden (Query Key Value-bias) forbedrer den måde, modellen identificerer og udvælger vigtige oplysninger på. Endelig kan den takket være YaRN-metoden (Yet another RoPE extensioN method) behandle meget lange tekster på op til 130.000 tokens, hvilket gør det muligt for den at arbejde med komplekse eller meget detaljerede dokumenter.</p>",
                 "size_desc": "<p>Med 32 milliarder parametre tilhører denne model kategorien af mellemstore modeller. Den kan køre på en server udstyret med et enkelt kraftfuldt grafikkort, hvilket begrænser infrastrukturomkostningerne. Ræsonneringsmodeller af denne type kører dog længere tid for at producere et svar, da en ræsonneringsfase går forud for genereringen af det endelige resultat, hvilket øger energiforbruget.</p>"
-            },
-            "Granite 4.1 8B": {
-                "desc": "<p>Lille flersproget model designet til virksomhedsbrug, der tilbyder gode evner inden for brug af eksterne værktøjer, retrieval augmented generation (RAG) og kodegenerering.</p>",
-                "fyi": "<p>Udviklet af IBM er Granite 4.1 8B en del af en familie, der også omfatter versioner på 3 og 30 milliarder parametre. I modsætning til Granite 4.0-generationen, som byggede på en hybridarkitektur, der kombinerede Mamba-2-lag og transformer-lag, vender 4.1-serien tilbage til en klassisk tæt (decoder-only) arkitektur, der er ensartet på tværs af alle størrelser.</p>\n<p>Modellen blev trænet på omkring 15 billioner tokens efter en flertrinstilgang, der gradvist retter træningen mod tekniske, videnskabelige og matematiske data af højere kvalitet. Eftertræningen kombinerede superviseret finjustering (SFT) efterfulgt af flere faser med forstærkningslæring rettet mod forskellige evner. Modellen understøtter brug af værktøjer i et OpenAI-kompatibelt format, kodefuldførelse via fill-in-the-middle og fungerer på et dusin sprog.</p>\n<p>Ifølge udvikleren matcher eller overgår 8B-versionen Granite 4.0 32B mixture of experts (MoE)-modellen på mange tests. Modellen udmærker sig ved sin pålidelighed i at følge instruktioner og sin lave tilbøjelighed til at hallucinere, egenskaber der er nyttige til udtræk af strukturerede data i professionelle sammenhænge.</p>",
-                "size_desc": "<p>Med 8 milliarder parametre tilhører denne model de små modeller. Den kan bruges lokalt på en kraftfuld computer, hvilket sikrer datafortrolighed, eller hostes på en server med et enkelt grafikkort, hvilket begrænser infrastrukturomkostningerne.</p>\n<p>Dens kontekstvindue strækker sig op til 512.000 tokens, hvilket gør det muligt at behandle meget lange dokumenter.</p>"
             }
         }
     },

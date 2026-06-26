@@ -47,9 +47,9 @@
         },
         "title": "Hur kan jag hjälpa dig idag?",
         "webSearch": {
-            "label": "Webbsökning",
-            "enabled": "Webbsökning aktiverad",
             "disabled": "Webbsökning inaktiverad",
+            "enabled": "Webbsökning aktiverad",
+            "label": "Webbsökning",
             "tooltip": "Aktivera webbsökning för att låta modellerna använda onlinekällor och citera mer aktuell information.<br><strong>Utan webbsökning</strong> svarar modellerna baserat på vad de lärde sig under träning (deras träningsdata). De kan inte verifiera information online, så mycket nya eller specifika fakta kan vara ofullständiga."
         }
     },
@@ -110,8 +110,8 @@
             "desc": "Frågorna som ställs på plattformen är mestadels på franska och återspeglar verklig användning utan restriktioner. Dessa datamängder finns tillgängliga på <a {linkProps}>data.gouv</a> och Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Konversationer, svar, reaktioner och preferenser samlade i en datauppsättning"
+                    "desc": "Konversationer, svar, reaktioner och preferenser samlade i en datauppsättning",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Visa hur du använder datan",

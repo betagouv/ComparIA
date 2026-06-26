@@ -47,9 +47,9 @@
         },
         "title": "How can I help you today?",
         "webSearch": {
-            "label": "Web search",
-            "enabled": "Web search enabled",
             "disabled": "Web search disabled",
+            "enabled": "Web search enabled",
+            "label": "Web search",
             "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
         }
     },
@@ -110,8 +110,8 @@
             "desc": "The platform’s questions and preferences are primarily in French, Danish, Swedish and Lithuanian, capturing organic, real-world usage - not artificial prompts. These datasets are publicly available on <a {linkProps}>data.gouv.fr</a> and Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Conversations, answers, reactions and preferences gathered in a single dataset"
+                    "desc": "Conversations, answers, reactions and preferences gathered in a single dataset",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Show us how you’re using the data",
@@ -891,6 +891,11 @@
                 "fyi": "Developed by <p> DeepMind and released under the Apache 2.0 license (unlike previous versions under the proprietary Gemma license), this model is based on a dense architecture of 60 layers combining local attention with a sliding window (1024 tokens) and global attention across the entire context.</p>\n<p> It incorporates a visual encoder with approximately 550 million parameters capable of processing variable-resolution images and videos up to 60 seconds. It supports over 140 languages and has native function calls, making it usable in agentic contexts. </p>\n<p> Its performance is remarkable for its size: in the Arena AI rankings, it is ranked 3rd worldwide among open models, competing with models 20 times larger such as Kimi K2.5 (744 billion parameters) or GLM-5 (1 trillion parameters). According to the publisher, it achieves 89.2% on AIME 2026 (mathematical reasoning), 85.2% on MMLU Pro, 84.3% on GPQA Diamond (scientific reasoning), and 80.0% on LiveCodeBench v6, with a Codeforces score of 2150. </p>",
                 "size_desc": "<p> With 31 billion parameters all activated with each token generated, this model falls into the medium-sized category. It can be hosted on a server equipped with a single powerful graphics card, which helps to limit infrastructure costs. </p>\n<p> Its context window reaches 256,000 tokens, which is suitable for analyzing long documents. </p>\n<p> Reasoning models of this type operate for longer to produce a response, which increases energy consumption. </p>"
             },
+            "Granite 4.1 8B": {
+                "desc": "<p> Small multilingual model designed for enterprise use cases, offering solid capabilities in the use of external tools, retrieval augmented generation (RAG), and code generation. </p>",
+                "fyi": "<p> Developed by IBM, Granite 4.1 8B is part of a family that also includes 3 and 30 billion parameter versions. Unlike the Granite 4.0 generation, which relied on a hybrid architecture combining Mamba-2 layers and transformer layers, the 4.1 series returns to a classic dense (decoder-only) architecture, consistent across all sizes. </p>\n <p> The model was trained on roughly 15 trillion tokens, following a multi-stage approach that progressively steers training toward higher-quality technical, scientific, and mathematical data. Post-training combined supervised fine-tuning (SFT) followed by several reinforcement learning phases targeting distinct capabilities. The model supports tool use in an OpenAI-compatible format, fill-in-the-middle code completion, and works in a dozen languages. </p>\n <p> According to the developer, the 8B version matches or surpasses the Granite 4.0 32B mixture of experts (MoE) model on many tests. The model stands out for its reliability in following instructions and its low tendency to hallucinate, qualities that are useful for extracting structured data in professional settings. </p>",
+                "size_desc": "<p> With 8 billion parameters, this model is among the small models. It can be used locally on a powerful computer, ensuring data privacy, or hosted on a server equipped with a single graphics card, which limits infrastructure costs. </p>\n <p> Its context window extends up to 512,000 tokens, allowing it to process very long documents. </p>"
+            },
             "Grok 3 Mini": {
                 "desc": "<p> A lighter version of the Grok 3 model, reducing costs while maintaining good performance for many tasks. It can go through a reasoning phase before providing a final answer. </p>",
                 "fyi": "<p> Grok 3 Mini is a distilled version of Grok 3: it is close to it in terms of capabilities, while being faster and less expensive.\n The model offers two modes: a thinking mode with step-by-step reasoning for complex problems, and a quick mode for immediate answers.\n Its context window reaches 131,000 tokens, making it suitable for analyzing long documents. </p>",
@@ -1245,11 +1250,6 @@
                 "desc": "<p> Medium-sized reasoning model specialized and highly efficient in mathematics, code generation, and logical problem solving. </p>",
                 "fyi": "<p> This model was trained with a reinforcement learning (RL) method to optimize its handling of math problems and programming tasks. It uses several recent techniques to improve the quality of answers. For example, the RoPE (Rotary Position Embedding) method allows it to better understand the word order in a text. The SwiGLU activation function is a more efficient way of handling computations within the neural network, which helps the model produce more reliable answers. The QKV (Query Key Value-bias) adjustment method improves how the model identifies and selects important information. Finally, thanks to the YaRN (Yet another RoPE extensioN method), it can process very long texts of up to 130,000 tokens, allowing it to work on complex or very detailed documents. </p>",
                 "size_desc": "<p> With 32 billion parameters, this model falls into the mid-size category. It can run on a server with a single powerful graphics card, which limits infrastructure costs. However, reasoning models of this type take longer to produce an answer because a reasoning phase precedes the generation of the final result, which increases energy consumption. </p>"
-            },
-            "Granite 4.1 8B": {
-                "desc": "<p> Small multilingual model designed for enterprise use cases, offering solid capabilities in the use of external tools, retrieval augmented generation (RAG), and code generation. </p>",
-                "fyi": "<p> Developed by IBM, Granite 4.1 8B is part of a family that also includes 3 and 30 billion parameter versions. Unlike the Granite 4.0 generation, which relied on a hybrid architecture combining Mamba-2 layers and transformer layers, the 4.1 series returns to a classic dense (decoder-only) architecture, consistent across all sizes. </p>\n <p> The model was trained on roughly 15 trillion tokens, following a multi-stage approach that progressively steers training toward higher-quality technical, scientific, and mathematical data. Post-training combined supervised fine-tuning (SFT) followed by several reinforcement learning phases targeting distinct capabilities. The model supports tool use in an OpenAI-compatible format, fill-in-the-middle code completion, and works in a dozen languages. </p>\n <p> According to the developer, the 8B version matches or surpasses the Granite 4.0 32B mixture of experts (MoE) model on many tests. The model stands out for its reliability in following instructions and its low tendency to hallucinate, qualities that are useful for extracting structured data in professional settings. </p>",
-                "size_desc": "<p> With 8 billion parameters, this model is among the small models. It can be used locally on a powerful computer, ensuring data privacy, or hosted on a server equipped with a single graphics card, which limits infrastructure costs. </p>\n <p> Its context window extends up to 512,000 tokens, allowing it to process very long documents. </p>"
             }
         }
     },

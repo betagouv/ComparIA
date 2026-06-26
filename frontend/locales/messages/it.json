@@ -103,8 +103,8 @@
             "desc": "Le domande e le preferenze espresse sulla piattaforma sono perlopiù in italiano, francese, danese, svedese e lituano e riflettono un utilizzo reale e non artificiale. Questa raccolta di dati sono disponibili su <a {linkProps}>data.gouv</a> e Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Conversazioni, risposte, reazioni e preferenze raccolte in un unico dataset"
+                    "desc": "Conversazioni, risposte, reazioni e preferenze raccolte in un unico dataset",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Condividi con noi come utilizzi i dati",
@@ -737,6 +737,9 @@
                 "fyi": "<p>Zhipu AI (di seguito Z.ai) ha rilasciato GLM 5.1 nell'aprile 2026, un aggiornamento di GLM 5 basato sulla stessa architettura Mixture of Experts (MoE): 744 miliardi di parametri totali, 40 miliardi di token attivati tramite 256 moduli esperti con routing top-8 e un esperto condiviso. Il modello incorpora il meccanismo Multi-head Latent Attention (MLA) e DeepSeek Sparse Attention (DSA), che riducono i costi di inferenza preservando al contempo la capacità di elaborare contesti lunghi. L'addestramento è stato eseguito su chip Huawei Ascend 910B con il framework MindSpore. </p>\n<p>Il principale progresso di questa versione riguarda le capacità agentive estese: il modello può lavorare autonomamente su un singolo compito per più di 8 ore, concatenando fino a 1.700 passaggi con un ciclo continuo di sperimentazione, analisi e ottimizzazione. Può generare fino a 128.000 token in una singola risposta.</p>\n<p>Secondo l'editore, GLM 5.1 ottiene un punteggio del 58,4% su SWE-Bench Pro, posizionandosi al primo posto a livello mondiale, davanti a GPT-5.4 (57,7%) e Claude Opus 4.6 (57,3%). In altri benchmark, raggiunge il 95,3% su AIME 2026, l'86,2% su GPQA-Diamond, il 68,7% su CyberGym e il 68,0% su BrowseComp. Valutazioni indipendenti stimano le prestazioni di codifica globali a circa il 94,6% di quelle di Claude Opus 4.6.</p>",
                 "size_desc": "<p>Con 744 miliardi di parametri, questo modello rientra tra i modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE) con 256 esperti, di cui 8 attivati tramite token, utilizza solo 40 miliardi di parametri per inferenza, riducendo la sua impronta ecologica rispetto a un modello denso di pari dimensioni, pur richiedendo un server con diverse schede grafiche potenti per l'hosting. La sua finestra di contesto raggiunge circa 200.000 token, consentendogli di elaborare documenti molto lunghi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
             },
+            "GLM 5.2": {
+                "size_desc": "<p>Con 744 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), attiva solo circa 40 miliardi di parametri per token generato, risultando più efficiente rispetto ai modelli densi di dimensioni simili. Tuttavia, per l'hosting è necessario un server con diverse schede grafiche molto potenti.</p>\n<p>La sua finestra di contesto può contenere fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Nonostante ciò , l'architettura Mixture of Experts (MoE) consente l'attivazione solo di una frazione dei parametri, riducendo così l'impronta rispetto a un modello denso delle stesse dimensioni.</p>"
+            },
             "GPT 4.1 Nano": {
                 "desc": "<p>Una versione più piccola e leggera del modello GPT 4.1, progettata per contenere i costi pur rimanendo competitiva per la maggior parte delle attività. Il modello accetta richieste molto lunghe, il che lo rende adatto ad applicazioni come l'analisi di corpus di documenti.</p>",
                 "fyi": "<p>Questa è una versione semplificata di un modello più ampio, con trasferimento parziale della conoscenza. Può gestire testo, immagini e audio. La sua finestra di contesto può contenere fino a 1 milione di token, il che la rende particolarmente adatta all'analisi di corpus di testo o repository di codice molto lunghi.</p>",
@@ -906,6 +909,11 @@
                 "fyi": "<p>Sviluppato da Google DeepMind e rilasciato con licenza Apache 2.0 (a differenza delle versioni precedenti rilasciate con licenza proprietaria Gemma), questo modello si basa su un'architettura densa di 60 strati che combina l'attenzione locale con una finestra scorrevole (1024 token ) e l'attenzione globale sull'intero contesto.</p> \n<p>Incorpora un codificatore visivo con circa 550 milioni di parametri in grado di elaborare immagini e video a risoluzione variabile fino a 60 secondi. Supporta oltre 140 lingue e dispone di function call native, il che lo rende utilizzabile in contesti agentici.</p>\n<p>Le sue prestazioni sono notevoli per le sue dimensioni: nella classifica Arena AI, si posiziona al 3° posto a livello mondiale tra i modelli open source, in competizione con modelli 20 volte più grandi come Kimi K2.5 (744 miliardi di parametri) o GLM-5 (1 trilione di parametri). Secondo l'editore, raggiunge l'89,2% su AIME 2026 (ragionamento matematico), l'85,2% su MMLU Pro, l'84,3% su GPQA Diamond (ragionamento scientifico) e l'80,0% su LiveCodeBench v6, con un punteggio Codeforces di 2150.</p>",
                 "size_desc": "<p>Con 31 miliardi di parametri attivati per ogni token generato, questo modello rientra nella categoria di medie dimensioni. Può essere ospitato su un server dotato di una singola scheda grafica potente, il che contribuisce a limitare i costi dell'infrastruttura.</p>\n<p>La sua finestra di contesto raggiunge i 256.000 token, il che la rende adatta all'analisi di documenti lunghi.</p>\n<p>I modelli di ragionamento di questo tipo impiegano più tempo a produrre una risposta, il che aumenta il consumo energetico.</p>"
             },
+            "Granite 4.1 8B": {
+                "desc": "<p>Un modello piccolo e multilingue progettato per l'uso aziendale, che offre buone funzionalità nell'utilizzo di strumenti esterni, generazione aumentata per il recupero (RAG) e generazione di codice. </p>",
+                "fyi": "<p>Sviluppato da IBM, Granite 4.1 8B fa parte di una famiglia che comprende anche versioni con 3 e 30 miliardi di parametri. Diversamente della generazione Granite 4.0, che si basava su un'architettura ibrida che combinava dei livelli Mamba-2 e livelli transformer, la serie 4.1 ritorna a una classica architettura densa (decoder-only), coerente per tutte le dimensioni.</p> \n<p>Il modello è stato addestrato su circa 15 trilioni di token, utilizzando un approccio a più fasi che ha progressivamente orientato l'addestramento verso dati tecnici, scientifici e matematici di qualità superiore. La fase post-addestramento ha combinato il fine-tuning supervisionato (SFT, supervised fine-tuning ) con diverse fasi di apprendimento per rinforzo mirate a specifiche capacità. Il modello supporta l'utilizzo di strumenti in un formato compatibile come quello di OpenAI, il completamento del codice con inserimento di testo(fill-in-the-middle) e funziona in una dozzina di linguaggi di programmazione.</p>\n<p>Secondo l'editore, la versione 8B eguaglia o supera il modello Granite 4.0 32B Mixture of Experts (MoE) in numerosi test. Il modello si distingue per la sua affidabilità nel seguire le istruzioni e per la sua bassa tendenza all'allucinazione, qualità utili per estrarre dati strutturati in un contesto professionale.</p>",
+                "size_desc": "<p>Con 8 miliardi di parametri, questo modello è tra i più compatti. Può essere utilizzato localmente su un computer potente, garantendo la riservatezza dei dati, oppure ospitato su un server dotato di una singola scheda grafica, limitando così i costi dell'infrastruttura.</p>\n<p>La sua finestra di contesto può contenere fino a 512.000 token, consentendo l'elaborazione di documenti molto lunghi.</p>"
+            },
             "Grok 3 Mini": {
                 "desc": "<p>Versione più leggera del modello Grok 3, che consente di ridurre i costi pur mantenendo buone prestazioni per molte attività. Può simulare una fase di ragionamento prima di fornire una risposta finale.</p>",
                 "fyi": "<p>Grok 3 Mini è una versione ridotta di Grok 3: si avvicina alle sue funzionalità, pur essendo più veloce e meno costoso.\nIl modello offre due modalità: una modalità riflessiva con ragionamento passo dopo passo per problemi complessi e una modalità rapida per risposte immediate.\nLa sua finestra di contesto può contenere fino a 131.000 token, il che la rende adatta all'analisi di documenti lunghi.</p>",
@@ -1017,8 +1025,945 @@
             },
             "Llama 4 Scout": {
                 "desc": "<p>Modello di grandi dimensioni con una finestra di contesto molto ampia, adatto ad esempio per riassumere una serie di documenti.</p>",
-                "fyi": "<p>Questo modello è stato co-distillato con Behemoth, il che significa che ha appreso insieme al modello gigante, non successivamente come in una distillazione classica. È stato addestrato su 30 trilioni di token, combinando testo in 200 lingue e immagini per ottenere capacità multimodali native. L'architettura si basa su un sistema Mixture of Experts (MoE), con 17 miliardi di parametri attivi, 16 esperti e 109 miliardi di parametri totali. Per bilanciare prestazioni multimodali, ragionamento e qualità conversazionale, il team Meta ha sviluppato una strategia di post-addestramento progressiva, che combina il filtraggio adattivo dei dati (per conservare solo i dati più complessi e interessanti), il fine-tuning mirato e l'apprendimento per rinforzo online: il modello ha quindi imparato tentando di eseguire autonomamente attività online (online reinforcement learning). Grazie all'architettura iRoPE ( una versione ottimizzata della codifica posizionale), può gestire finestre di contesto molto lunghe, fino a 10 milioni di token, ed elaborare fino a 8 immagini simultaneamente.</p>\n<p>Il modello è stato accolto positivamente al momento del lancio, in particolare per la sua impressionante finestra di contesto, una novità assoluta nel settore, nonché per la suo rapporto qualità-prezzo nelle attività come la sintesi, i tool calling e la generazione potenziata da recupero (RAG). Ciò lo rende una scelta adatta per le pipeline automatizzate.</p>"
+                "fyi": "<p>Questo modello è stato co-distillato con Behemoth, il che significa che ha appreso insieme al modello gigante, non successivamente come in una distillazione classica. È stato addestrato su 30 trilioni di token, combinando testo in 200 lingue e immagini per ottenere capacità multimodali native. L'architettura si basa su un sistema Mixture of Experts (MoE), con 17 miliardi di parametri attivi, 16 esperti e 109 miliardi di parametri totali. Per bilanciare prestazioni multimodali, ragionamento e qualità conversazionale, il team Meta ha sviluppato una strategia di post-addestramento progressiva, che combina il filtraggio adattivo dei dati (per conservare solo i dati più complessi e interessanti), il fine-tuning mirato e l'apprendimento per rinforzo online: il modello ha quindi imparato tentando di eseguire autonomamente attività online (online reinforcement learning). Grazie all'architettura iRoPE ( una versione ottimizzata della codifica posizionale), può gestire finestre di contesto molto lunghe, fino a 10 milioni di token, ed elaborare fino a 8 immagini simultaneamente.</p>\n<p>Il modello è stato accolto positivamente al momento del lancio, in particolare per la sua impressionante finestra di contesto, una novità assoluta nel settore, nonché per la suo rapporto qualità-prezzo nelle attività come la sintesi, i tool calling e la generazione potenziata da recupero (RAG). Ciò lo rende una scelta adatta per le pipeline automatizzate.</p>",
+                "size_desc": "<p>Con 109 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Ciononostante, grazie a un'architettura Mixture of Experts (MoE), può essere ospitato su un server dotato di una singola scheda grafica molto potente. La sua finestra di contesto può contenere fino a 10 milioni di token, consentendo l'elaborazione di corpus di documenti estremamente lunghi.</p>"
+            },
+            "Magistral Medium": {
+                "desc": "<p>Un modello di ragionamento di medie dimensioni, multimodale e multilingue. Adatto per attività di programmazione o altre attività che richiedono analisi approfondite, comprensione di sistemi logici complessi o pianificazione, ad esempio per casi d'uso agentici o per la scrittura di contenuti lunghi e complessi.</p>",
+                "fyi": "<p>Questo modello fa parte della prima generazione di modelli di ragionamento AI di Mistral (estate 2025). A differenza della maggior parte degli altri modelli di ragionamento, questo modello è in grado di ragionare in più lingue, tra cui inglese, francese, spagnolo, tedesco, italiano, arabo, russo e cinese semplificato. È stato addestrato utilizzando l'apprendimento per rinforzo su Mistral Medium 3 e non è stato distillato da modelli di ragionamento preesistenti. Questo modello eredita le capacità multimodali di Mistral Medium 3, anche se l'apprendimento per rinforzo è stato eseguito solo sul testo.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Le prove suggeriscono che si tratti di un modello di grandi dimensioni, che richiede diverse schede grafiche potenti per essere eseguito. I modelli di ragionamento richiedono una maggiore potenza di calcolo per produrre una risposta, il che ne aumenta il consumo energetico. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta.</p>\n<p>Dispone di una finestra di contesto che può contenere fino a 40.000 token, utile per analizzare documenti brevi ma insufficiente per analizzare grandi corpus di documenti.</p>"
+            },
+            "Magistral Small": {
+                "desc": "<p>Un modello di ragionamento di medie dimensioni, multimodale e multilingue. Adatto a compiti che richiedono analisi approfondite, comprensione di sistemi logici o pianificazione, ad esempio per casi d'uso agentici o per la scrittura di contenuti lunghi e complessi.</p>",
+                "fyi": "<p>Questo modello fa parte della prima generazione di modelli di ragionamento AI di Mistral (estate 2025). A differenza della maggior parte degli altri modelli di ragionamento, questo modello è in grado di ragionare in più lingue, tra cui inglese, francese, spagnolo, tedesco, italiano, arabo, russo e cinese semplificato. </p>\n<p>L'addestramento è stato condotto in due fasi. La prima, una fase di ragionamento <em>cold-start</em> tramite distillazione (utilizzando Mistral Medium 3 e OpenThoughts/OpenR1) ha permesso al modello di acquisire competenze di ragionamento di base da dati di istruzione generale (10%). La seconda fase è stata una fase di apprendimento per rinforzo (RL, <em>renforcement learning</em>) ad alta entropia, in cui il modello è stato incoraggiato a esplorare soluzioni diverse e variegate piuttosto che convergere su un'unica risposta e a generare completamenti lunghi (fino a 32.000 token), sviluppando così delle capacità di ragionamento che superano quelle del modello di insegnamento.</p>",
+                "size_desc": "<p>Con 24 miliardi di parametri, questo modello è classificato come di medie dimensioni. Richiede solo una scheda grafica potente per funzionare. I modelli di ragionamento impiegano anche più tempo a produrre una risposta, il che ne aumenta il consumo energetico.</p>\n<p>Dispone di una finestra di contesto che può contenere fino a 40.000 token, utile per analizzare documenti brevi ma insufficiente per analizzare grandi corpus di documenti.</p>"
+            },
+            "MiniMax M2": {
+                "desc": "<p>Un modello specializzato nella programmazione con un rapporto qualità/velocità/prezzo estremamente competitivo. È stato progettato da MiniMax, un'azienda con sede a Shanghai, in Cina.</p>",
+                "fyi": "<p>Un modello specificamente progettato per attività basate su compiti agentici (inclusa la programmazione), con addestramento per aderire a rigorosi protocolli di controllo degli agenti (pianificazione, tool call, verifica).</p>",
+                "size_desc": "<p>Un modello Mixture of Experts (MoE) con 230 miliardi di parametri (di cui 10 miliardi attivi per ogni generazione di token). La finestra di contesto supporta 200.000 token, consentendo l'elaborazione di interi codebase e documenti lunghi.</p>"
+            },
+            "MiniMax M2.5": {
+                "desc": "<p>Un modello molto ampio e semi-aperto, specializzato in attività agentiche e di codifica, con una modalità di ragionamento integrata. È stato progettato da MiniMax, un'azienda con sede a Shanghai, in Cina.</p>",
+                "fyi": "<p>Questo modello utilizza un'architettura MoE con 256 esperti, di cui 8 attivati tramite token. Il suo addestramento si basa su Forge, un framework di apprendimento per rinforzo agentico sviluppato da MiniMax, che disaccoppia l'addestramento dall'inferenza e consente di ottimizzare il modello su oltre 200.000 ambienti reali (repository di codice, browser web, applicazioni desktop). L'algoritmo CISPO (Clipped Importance Sampling Policy Optimization) garantisce la stabilità dell'addestramento MoE su larga scala. Un meccanismo di fusione ad albero dei campioni accelera l'addestramento di circa 40 volte.</p>\n<p>Il modello ottiene un punteggio dell'80,2% su SWE-Bench Verified (risoluzione automatica dei problemi del software) e del 51,3% su Multi-SWE-Bench. Integra inoltre competenze di Office (Word, PowerPoint, Excel). La sua caratteristica unica è che scrive le specifiche prima di iniziare a programmare, scomponendo le attività complesse in sotto-passaggi.</p>",
+                "size_desc": "<p>Con 229 miliardi di parametri, MiniMax M2.5 è un modello molto grande. L'architettura Mixture of Experts (MoE) consente l'attivazione di soli 10 miliardi di parametri per token generato, riducendo significativamente l'impronta carbonica rispetto a un modello denso delle stesse dimensioni. La finestra di contesto raggiunge circa 200.000 token. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "MiniMax M2.7": {
+                "desc": "<p>Un modello molto ampio e semi-aperto, specializzato in codice e compiti age agentici, progettato da MiniMax, un'azienda con sede a Shanghai. L'editore lo presenta come un modello \"auto-evolutivo\": ottimizza autonomamente i propri metodi di risoluzione dei compiti, con un miglioramento significativo delle prestazioni. Secondo l'editore, è in grado di competere con i migliori modelli proprietari per l'ingegneria del software, pur essendo rilasciato in open weights. </p>",
+                "fyi": "<p>Annunciato il 18 marzo 2026 e successivamente pubblicato in open weights il 12 aprile 2026, M2.7 ottimizza autonomamente i propri scaffold di programmazione su oltre cento cicli, con un incremento di prestazioni di circa il 30% dichiarato da MiniMax. L'architettura si basa su 256 expert advisor, 8 dei quali attivati per token, nella continuità della generazione M2.5.</p>\n<p>Secondo l'editore, il modello ottiene un punteggio del 56,22% su SWE-Pro, al livello GPT 5.3 Codex, e del 76,5% su SWE Multilingual. Il suo punteggio ELO di 1495 su GDPval-AA è, a quanto pare, il più alto tra i modelli open-weight. Il modello enfatizza la collaborazione multi-agente con identità di ruolo stabile, ricerca dinamica di strumenti e orchestrazione di competenze complesse, in particolare per attività che coinvolgono analisi metriche, di verifica delle cause principali e delle decisioni di tipo SRE (Site Reliability Engineering). La licenza consente l'uso gratuito non commerciale, ma richiede un'autorizzazione scritta preventiva per qualsiasi utilizzo commerciale.</p>",
+                "size_desc": "<p>Con 230 miliardi di parametri, MiniMax M2.7 rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), attiva solo 10 miliardi di parametri per token generato, riducendo significativamente la sia impronta carbonica rispetto a un modello denso delle stesse dimensioni. La sua finestra di contesto raggiunge circa 200.000 token, il che lo rende adatto all'analisi di documenti lunghi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "MiniMax M3": {
+                "desc": "<p>Un modello molto ampio, multimodale open-weight, progettato per compiti complessi: generazione di codice e orchestrazione di agenti su orizzonti temporali lunghi. Gestisce nativamente testo, immagini e video. Integra funzionalità di ragionamento avanzate che possono essere attivate su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore.</p>",
+                "fyi": "<p>Sviluppato dall'azienda cinese MiniMax, M3 introduce un meccanismo di attenzione sparsa chiamato MiniMax Sparse Attention (MSA), che sostituisce l'attenzione completa con la selezione di blocchi chiave-valore per ridurre il costo computazionale per token su contesti lunghi. Secondo lo sviluppatore, questo meccanismo riduce il costo computazionale per token di un fattore 20 rispetto alla generazione precedente con 1 milione di token di contesto, con un guadagno di velocità di oltre 9 volte durante la fase precompilazione e di oltre 15 volte superiore durante la decodifica.</p>\n<p>Il modello è stato addestrato nativamente in modalità multimodale (testo, immagine e video) fin dall'inizio. Offre tre modalità di ragionamento controllate da un parametro dedicato: sempre attiva, adattiva (il modello decide autonomamente se eseguire o meno il ragionamento) o disattivata per ridurre al minimo la latenza.</p>\n<p>Secondo l'editore, M3 punta a prestazioni di alto livello in attività di programmazione e attività agentiche a lungo termine. Ottiene un punteggio del 59,0% su SWE-Bench Pro, del 66,0% su Terminal-Bench 2.1, del 74,2% su MCP Atlas e del 28,8% su KernelBench Hard. Questi punteggi, riportati dall'editore, non erano ancora stati verificati in modo indipendente al momento del rilascio. La licenza consente il riutilizzo e la ridistribuzione dei pesi; l'uso commerciale è consentito con l'attribuzione \"Built with MiniMax\" e la notifica da parte dell'editore, ma le organizzazioni con un fatturato annuo superiore a 20 milioni di dollari devono ottenere un'autorizzazione scritta preventiva.</p>",
+                "size_desc": "<p>Con 428 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Si basa su un'architettura Mixture of Experts (MoE) che attiva solo 23 miliardi di parametri per ogni token generato. Richiede un server con diverse schede grafiche molto potenti per l'hosting. La sua finestra di contesto può contenere fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi.</p>\n<p>L'architettura MoE attiva solo un sottoinsieme di parametri per ogni token, limitando così il suo consumo energetico. Tuttavia, i modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Ministral": {
+                "desc": "<p>Un modello piccolo e multilingue progettato per funzionare su un laptop senza connessione a un server, che offre al contempo delle buone capacità nella sintesi del testo, nelle risposte a domande semplici e nell'utilizzo degli strumenti.</p>",
+                "fyi": "<p>Questo modello utilizza l'attenzione sulle query raggruppate (GQA, grouped query attention) per limitare il testo analizzato in ogni fase di generazione, con conseguente aumento della velocità e dell'efficienza della memoria: i tempi di elaborazione sono ridotti senza compromettere la qualità. Il meccanismo di attenzione è migliorato applicando finestre di dimensioni variabili, consentendo la gestione di contesti di grandi dimensioni (fino a 128.000 token) pur mantenendo un design leggero. Il tokenizer di grandi dimensioni (V3-Tekken) offre una migliore compressione di lingue e codice, migliorando le prestazioni nelle attività multilingue.</p>",
+                "size_desc": "<p>Con i suoi 8 miliardi di parametri, questo modello appartiene alla categoria dei modelli di piccole dimensioni (tra 7 e 20 miliardi di parametri). Può essere implementato localmente su un computer sufficientemente potente, garantendo la riservatezza dei dati, oppure ospitato su un server con una singola scheda grafica per limitare i costi dell'infrastruttura.</p>"
+            },
+            "Mistral 3 Large": {
+                "desc": "<p>Un modello molto ampio, semi-aperto e multimodale che offre ottime prestazioni in contesti e codici multilingue.</p>",
+                "fyi": "<p>Questo modello è stato addestrato su 3.000 GPU Nvidia H200. Compete direttamente con i modelli cinesi semi-aperti. Al momento del lancio, è competitivo con DeepSeek V3.1, Kimi K2, GLM 4.6 e altri benchmark in termini di codice e casi d'uso generali.</p>",
+                "size_desc": "<p>Con 675 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), è più efficiente dei modelli densi di dimensioni simili, ma richiede comunque un server con diverse schede grafiche molto potenti per essere eseguito. Questo modello attiva 41 miliardi di parametri per ogni generazione di token. La sua finestra di contesto può contenere fino a 256.000 token, consentendo l'elaborazione di documenti molto lunghi.</p>"
+            },
+            "Mistral Large 2": {
+                "desc": "<p>Modello di grandi dimensioni progettato per gestire domande e compiti complessi: ad esempio, generazione di codice, utilizzo di strumenti, analisi di documenti lunghi o comprensione precisa del linguaggio.</p>",
+                "fyi": "<p>Questo modello è stato addestrato con un'elevata percentuale di dati di codice (più di 80 linguaggi di programmazione) e matematica, il che ne migliora la capacità di risolvere problemi complessi e di utilizzare strumenti esterni.</p>",
+                "size_desc": "<p>Con 123 miliardi di parametri, questo modello appartiene alla categoria dei modelli di grandi dimensioni. Richiede un server dotato di almeno una scheda grafica potente, il che implica un costo operativo significativo. Ha una finestra di contesto fino a 128.000 token, utile per analizzare documenti lunghi.</p>"
+            },
+            "Mistral Medium 3.1": {
+                "desc": "<p>Un modello di medie dimensioni, multilingue, multimodale ed economico rispetto ad altri modelli con prestazioni simili. È diventato particolarmente interessante dopo un aggiornamento nell'agosto 2025 che ha introdotto miglioramenti significativi alle prestazioni generali, un tono \"migliorato\" e migliori funzionalità di ricerca su Internet.</p>",
+                "fyi": "<p>Questo modello è stato progettato per offrire delle prestazioni solide a un costo inferiore rispetto ai modelli proprietari o semi-aperti. Durante l'addestramento è stata prestata particolare attenzione ai dati aziendali reali. Le sue prestazioni sono particolarmente elevate rispetto ad altri modelli di dimensioni simili nella generazione di codice e nell'esecuzione di attività matematiche.</p>\n<p>Questo modello è servito come base per l'addestramento di Magistral Medium, un modello di ragionamento.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Le evidenze suggeriscono che si tratti di un modello di grandi dimensioni, che richiede diverse schede grafiche potenti per essere eseguito. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta.</p> \n<p>Dispone di una finestra di contesto che può contenere fino a 128.000 token, utile per analizzare documenti lunghi.</p>"
+            },
+            "Mistral Nemo": {
+                "desc": "<p>Ottimizzato per tempi di risposta rapidi, questo modello è ideale per applicazioni che richiedono risposte immediate e può supportare un contesto di 128.000 token in oltre 100 lingue. Rilasciato nel luglio 2024.</p>",
+                "fyi": "<p>Rilasciato nel luglio 2024, questo modello di piccole dimensioni è addestrato per compiti di ragionamento, cultura generale e programmazione. Utilizza il tokenizer Tekken, adatto per la compressione di testi fino a 128.000 token in oltre 100 lingue.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Mistral Saba": {
+                "desc": "<p>Un modello di medie dimensioni progettato per una comprensione linguistica e culturale approfondita delle lingue del Medio Oriente e dell'Asia meridionale, tra cui arabo, tamil e malayalam.</p>",
+                "fyi": "<p>L'addestramento si è concentrato principalmente su testi in arabo, tamil e malayalam. Sono stati selezionati corpus regionali per riflettere l'uso autentico, comprese le variazioni di sintassi, registro e dialetto. Per la tokenizzazione (suddivisione del testo in unità di base che il modello può elaborare), è stata impiegata una strategia specializzata adattata a lingue con morfologia complessa, come l'arabo. Le ottimizzazioni miravano a evitare un'eccessiva frammentazione delle parole e a massimizzare la copertura del vocabolario.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Le evidenze suggeriscono che si tratti di un modello di medie dimensioni, che richiede almeno una scheda grafica potente per essere eseguito. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta.</p>\n<p>Il modello offre una finestra di contesto fino a 128.000 token, adatta all'analisi di documenti lunghi.</p>"
+            },
+            "Mistral Small 3": {
+                "desc": "<p>Rilasciato nel gennaio 2025, questo modello è specializzato nel multilinguismo e possiede capacità di ragionamento avanzate.</p>",
+                "fyi": "<p>Rilasciato nel gennaio 2025, questo modello è specializzato nel multilinguismo, ha una modalità di function call e un contesto di 32.000 token.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Mistral Small 3.1 24B": {
+                "desc": "<p>Mistral Small 3.1 24B Instruct è una versione migliorata di Mistral Small 3 (gennaio 2025), dotata di 24 miliardi di parametri e funzionalità multimodali avanzate.</p>",
+                "fyi": "<p>Mistral Small 3.1 24B Instruct è un modello multimodale che offre prestazioni all'avanguardia in attività di ragionamento basate su testo e visione , tra cui analisi di immagini, programmazione, ragionamento matematico e supporto multilingue per decine di lingue.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Mistral Small 3.2": {
+                "desc": "<p>Nonostante il nome, si tratta di un modello di medie dimensioni. È multimodale (in grado di elaborare testo e immagini) e si distingue per la precisione nell'esecuzione delle richieste e per la capacità di utilizzare strumenti avanzati.</p>",
+                "fyi": "<p>La versione 3.2 di questo modello è ottimizzata per generare output strutturati, in particolare in formato JSON, limitando al contempo ripetizioni e comportamenti indesiderati durante le generazioni più lunghe. Multimodale, gestisce sia input di testo che immagini, consentendo un'analisi congiunta.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, questo modello è considerato di medie dimensioni. Può essere ospitato su un server con una singola scheda grafica potente, limitando così i costi dell'infrastruttura. Ha una finestra di contesto fino a 128.000 token, utile per analizzare documenti lunghi.</p>"
+            },
+            "Mistral Small 3.2 24B": {
+                "desc": "<p>Mistral Small 3.2 24B Instruct è una versione migliorata di Mistral Small 3.1 (marzo 2025), dotata di 24 miliardi di parametri e funzionalità multimodali avanzate.</p>",
+                "fyi": "<p>Mistral Small 3.1 24B Instruct è un modello multimodale che offre prestazioni all'avanguardia in attività di ragionamento basate su testo e visione , tra cui analisi di immagini, programmazione, ragionamento matematico e supporto multilingue per decine di lingue.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Mistral Small 4": {
+                "desc": "<p>Modello multimodale, ampio e semi-aperto, che unifica le capacità d'istruzione, ragionamento e programmazione agentica. Simula una fase di ragionamento prima di generare la risposta, con uno sforzo di ragionamento configurabile.</p>",
+                "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts(MoE) con 119 miliardi di parametri distribuiti su 128 esperti instradati e 1 esperto condiviso, di cui 4 esperti instradati sono attivati tramite token, risultando in circa 6,5 miliardi di parametri attivi (8 miliardi includendo i livelli di input e output). Integra un encoder di visione Pixtral per l'elaborazione nativa delle immagini. L'attenzione utilizza 32 teste con una dimensione di 128, senza fare affidamento sulla condivisione chiave/valore (GQA). L'estensione del contesto si basa su YARN RoPE.</p>\n<p>Mistral Small 4 unifica in un unico modello le funzionalità precedentemente distribuite tra Magistral (ragionamento), Pixtral (visione) e Devstral (programmazione agentica). Il parametro \"reasoning_effort\" consente di modulare la profondità di ragionamento per ogni richiesta: in modalità disabilitata, il modello risponde rapidamente come un classico modello di istruzioni; in modalità avanzata, simula un ragionamento passo dopo passo. Nonostante il nome \"Small\", il passaggio da 24 miliardi di parametri densi ( Mistral Small 3.2) a 119 miliardi in MoE rappresenta un importante cambiamento architetturale. Secondo l'editore, il modello riduce la latenza del 40% e triplica il throughput rispetto alla generazione precedente.</p>",
+                "size_desc": "<p>Con 119 miliardi di parametri in totale, ma solo 6,5 miliardi attivati per token, questo modello rientra nella categoria dei modelli di grandi dimensioni. L'architettura Mixture of Experts (MoE), con 128 esperti instradati e 1 esperto condiviso, consente l'attivazione di una frazione dei parametri per ogni token, riducendo significativamente i costi computazionali rispetto a un modello denso di dimensioni equivalenti. Richiede comunque diverse schede grafiche potenti per funzionare. La sua finestra di contesto raggiunge i 256.000 token. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Secondo lo sviluppatore, tuttavia, questo modello produce risposte più concise rispetto ai suoi concorrenti con prestazioni equivalenti.</p>"
+            },
+            "Mixtral 8x22B": {
+                "desc": "<p>Questo modello multilingue, rilasciato nell'aprile 2024, è stato addestrato specificamente in inglese, francese, tedesco, italiano e spagnolo, nonché su compiti matematici, di programmazione e ragionamento.</p>",
+                "fyi": "<p>L'architettura SMoE (sparse mixture of experts) di questo modello lo rende più veloce e ottimizza il rapporto dimensioni-costo. Solo 39 miliardi di parametri sono attivi su 141 miliardi. La finestra pop-up da 64.000 token consente il recupero di informazioni specifiche da documenti di grandi dimensioni. Rilasciato nell'aprile 2024.</p>",
+                "size_desc": "<p>Questi modelli, con centinaia di miliardi di parametri, sono i più complessi e avanzati in termini di prestazioni e di precisione. Le risorse di calcolo e di memoria necessarie per implementarli sono tali da renderli adatti alle applicazioni più sofisticate e agli ambienti altamente specializzati.</p>"
+            },
+            "Mixtral-8x7B": {
+                "desc": "<p>Questo modello, addestrato su un corpus multilingue, è efficace per una varietà di compiti semplici.</p>",
+                "fyi": "<p>Il fratello minore della famiglia Mixtral, questo modello è in grado di elaborare contesti di 32.000 token e supporta inglese, francese, italiano, tedesco e spagnolo. Grazie all'architettura SMoE (sparse mixture of experts), solo una frazione dei parametri viene attivata per ogni inferenza, riducendo così costi e latenza.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Nemotron 3 Super 120B-A12B": {
+                "desc": "<p>Il modello di grandi dimensioni di Nvidia, del produttore di schede grafiche, si basa su un'architettura ibrida che combina diversi tipi di livelli per elaborare in modo efficiente documenti molto lunghi, limitando al contempo i costi computazionali. Nvidia pubblica i pesi, le preparazioni e una grande parte dei dati di addestramento.</p>",
+                "fyi": "<p>Nemotron 3 Super si distingue per la sua architettura ibrida a 88 strati, che combina strati Mamba-2 (elaborazione di sequenze lineari, meno costosa rispetto l'attenzione classica su contesti lunghi), strati di attenzione Transformer (per un recupero preciso delle informazioni) e strati di Latent Mixture of Experts (Latent MoE). Latent MoE proietta le rappresentazioni dei token in uno spazio compresso prima del routing, consentendo l'accesso a 512 esperti (di cui 22 attivati per token), un numero significativamente maggiore rispetto alle architetture MoE classiche (~128 esperti, da 6 a 8 attivati), senza alcun costo aggiuntivo computazionale. Il modello incorpora anche la Multi-Token Prediction (MTP), che abilita la decodifica speculativa nativa e accelera l'inferenza.</p>\n<p>L'addestramento si è svolto in tre fasi: pre-addestramento su 25 trilioni di token (inclusi 10 trilioni di token unici selezionati), fine-tuning supervisionato (SFT) su circa 7 milioni di esempi che coprono codice, matematica, utilizzo di strumenti ed il controllo delle istruzioni, e infine apprendimento per rinforzo multi-ambiente (GRPO, Group Relative Policy Optimization) con oltre 1,2 milioni di traiettorie in 21 diverse configurazioni. Il modello è stato pre-addestrato nativamente con accuratezza NVFP4 utilizzando il framework Megatron-LM. Una parte significativa dei dati di addestramento è sintetica, generata da modelli di terze parti (GPT-OSS, Qwen3, DeepSeek), il che solleva interrogativi sulla vera origine delle capacità del modello.</p> \n<p>Sul fronte dell'apertura, Nvidia pubblica non solo i pesi del modello con la licenza Nemotron Open (che consente l'uso commerciale), ma anche le preparazioni complete per l'addestramento e una grande porzione dei dati di addestramento su HuggingFace, cosa rara per un modello di queste dimensioni. Alcuni dataset, tuttavia, rimangono ad accesso limitato. Nota: il modello tende a produrre tempi di risposta particolarmente lunghi, il che può, in pratica, ridurre i vantaggi in termini di velocità associati alla sua architettura.</p>",
+                "size_desc": "<p>Con un totale di 120 miliardi di parametri, di cui 12 miliardi attivati per token, questo modello richiede diverse schede grafiche potenti per funzionare. L'architettura Mixture of Experts (MoE) consente di attivare solo una frazione dei parametri, riducendo così l'impronta rispetto a un modello denso delle stesse dimensioni. La finestra di contesto nativa raggiunge 1 milione di token, rendendola adatta all'analisi di documenti molto lunghi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Nemotron Llama 3.1 70B": {
+                "desc": "<p>Modello di grandi dimensioni addestrato con Llama 3.1 70B. Questa versione riaddestrata (fine-tune) tende ad essere più dettagliata e a fornire risposte più strutturate.</p>",
+                "fyi": "<p>Questo modello deriva da un riaddestramento di Llama 3.1 70B, da cui la presenza del suo modello sorgente risiede nel nome! Introduce miglioramenti tramite l'apprendimento per rinforzo con feedback umano (RLHF) e l'algoritmo REINFORCE: il modello esplora diverse risposte, riceve feedback sotto forma di ricompense e quindi adatta progressivamente le sue scelte per soddisfare al meglio le aspettative dell'utente. Questo processo di allineamento viene spesso utilizzato quando si desidera che il modello si adatti alle preferenze umane o ottimizzi le sue risposte in base a criteri specifici.</p>",
+                "size_desc": "<p>Con 70 miliardi di parametri, questo modello appartiene alla categoria dei modelli di grandi dimensioni. Richiede diverse schede grafiche potenti per funzionare, con conseguenti costi operativi significativi.</p>"
+            },
+            "OLMo-2 32B": {
+                "desc": "<p>OLMo 2 32B è un modello completamente open-source (inclusi corpus e codice di addestramento) creato dall'Allen AI Institute (Ai2) e rilasciato a marzo 2025.</p>",
+                "fyi": "<p>OLMo 2 32B è un modello completamente open-source: il corpus e il codice di addestramento sono totalmente accessibili. Questa famiglia di modelli OLMo è stata progettata dall'Allen Institute for AI (Ai2).</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Odin Large": {
+                "desc": "<p>La versione grande dei modelli Odin dell'azienda danese Ordbogen.com.</p>",
+                "fyi": "<p>Questo è il primo modello commercializzato da questa azienda, che comprende due modelli, di cui questo è il più grande.</p>",
+                "size_desc": "<p>Le dimensioni dei modelli utilizzati dal sistema Odin sono sconosciute. L'architettura è probabilmente basata su una \"Mixture of Experts\" (MoE), il che significa che solo un sottoinsieme di parametri viene attivato per ogni richiesta. Ciò consente una maggiore efficienza energetica e prestazioni elevate. Le stime disponibili sulle dimensioni dei modelli si basano su informazioni pubblicamente disponibili e indizi indiretti.</p>"
+            },
+            "Odin Medium": {
+                "desc": "<p>La versione di fascia media dei modelli Odin dell'azienda danese Ordbogen.com.</p>",
+                "fyi": "<p>Questo è il primo modello commercializzato da questa azienda, che comprende due modelli, di cui questo è il più piccolo.</p>",
+                "size_desc": "<p>Le dimensioni dei modelli utilizzati dal sistema Odin sono sconosciute. L'architettura è probabilmente basata su una \"Mixture of Experts\" (MoE), il che significa che solo un sottoinsieme di parametri viene attivato per ogni richiesta. Ciò consente una maggiore efficienza energetica e prestazioni elevate. Le stime disponibili sulle dimensioni dei modelli si basano su informazioni pubblicamente disponibili e indizi indiretti.</p>"
+            },
+            "Olmo 3 32B Think": {
+                "desc": "<p>Un modello di ragionamento il cui codice e i cui dati sono completamente aperti. È stato addestrato da AI2, un istituto di ricerca senza scopo di lucro.</p>",
+                "fyi": "<p>Questo modello è un raro esempio di totale trasparenza. Il codice, i dati (6 trilioni di token), i checkpoint d'addestramento e le procedure di valutazione sono tutti pubblici. Sebbene riprodurre completamente l'addestramento richieda un'infrastruttura complessa e sia probabilmente un evento raro, questa trasparenza consente agli sviluppatori di perfezionare il modello (fine-tune) per compiti specifici, in particolare combinando i dati comportamentali desiderati con il dataset esistente, garantendo così un addestramento più stabile.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, è classificato come un modello di medie dimensioni. Può essere distribuito su un server dotato di una singola scheda grafica (GPU). La sua finestra di contesto raggiunge i 65.000 token, il che lo rende adatto all'analisi di documenti piuttosto lunghi.</p>"
+            },
+            "Phi-3-Mini": {
+                "desc": "<p>Questo modello compatto offre ottime prestazioni per le attività di generazione e riassunto del codice, supportando un contesto limitato di 4000 token.</p>",
+                "fyi": "<p>Il fratello minore della famiglia Phi3, questo modello supporta un contesto di 4000 token ed è stato addestrato su dataset web sintetici e filtrati.</p>",
+                "size_desc": "<p>I modelli molto piccoli, con meno di 7 miliardi di parametri, sono i meno complessi e i più efficienti in termini di risorse, offrendo prestazioni sufficienti per attività semplici come la classificazione del testo.</p>"
+            },
+            "Phi-3-small-8k-Instruct": {
+                "desc": "<p>Ottimizzato per il ragionamento logico, questo modello di piccole dimensioni supporta un contesto di 8000 token, adatto alla generazione di codice e a compiti complessi.</p>",
+                "fyi": "<p>Il fratello maggiore della famiglia Phi3, questo modello supporta un contesto di 8000 token ed è stato addestrato su dataset web sintetici e filtrati.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Phi-3.5-mini": {
+                "desc": "<p>Un modello che offre ottime prestazioni nelle attività di generazione e riassunto del codice, gestendo un contesto ampio di 128.000 token.</p>",
+                "fyi": "<p>Un piccolo modello della famiglia Phi, che sostituisce Phi-3-mini, questo modello supporta un ampio contesto di 128.000 token ed è stato addestrato su dataset web sintetici e filtrati.</p>",
+                "size_desc": "<p>I modelli molto piccoli, con meno di 7 miliardi di parametri, sono i meno complessi e i più efficienti in termini di risorse, offrendo prestazioni sufficienti per attività semplici come la classificazione del testo.</p>"
+            },
+            "Phi-4": {
+                "desc": "<p>Un modello piccolo e multilingue, capace di utilizzare strumenti e di ottenere buoni risultati in compiti complessi come i quelli di logica, matematici e di programmazione, pur rimanendo compatto.</p>",
+                "fyi": "<p>Questo modello utilizza tiktoken per la tokenizzazione, migliorando così le sue capacità in contesti multilingue. È stato addestrato su un totale di 9,8 <strong>trilioni</strong> di token, di cui 400 miliardi provenienti specificamente da dati sintetici di alta qualità, mentre i restanti erano costituiti da dati organici filtrati. L'addestramento si è svolto su 1.920 schede grafiche H100 in 21 giorni. Tecniche innovative come l'autovalutazione, durante la quale il modello critica e riscrive le proprie risposte, e l'inversione delle istruzioni sono state utilizzate per migliorare la sua comprensione delle istruzioni e le sue capacità di ragionamento.</p>",
+                "size_desc": "<p>Con 14 miliardi di parametri, questo modello rientra nella categoria dei modelli di piccole dimensioni. Può essere distribuito localmente su un computer sufficientemente potente o ospitato su un server con una singola scheda grafica, riducendo così i costi dell'infrastruttura. La finestra di contesto, con 16.000 token, potrebbe risultare limitante per l'analisi di documenti molto lunghi.</p>"
+            },
+            "Qwen 2.5 Coder 32B": {
+                "desc": "<p>Un modello di medie dimensioni specializzato nella programmazione e nell'utilizzo di strumenti esterni (ricerche sul web, interazione con software, ecc...). </p>",
+                "fyi": "<p>Questo modello è stato addestrato su 5,5 trilioni di token e oltre 92 linguaggi di programmazione, inclusi linguaggi di codifica specializzati come Haskell o Racket.</p>\n<p>Grazie alle prestazioni del suo codice, è in grado di gestire efficacemente le tool call esterne, il che è utile per le applicazioni basate su usi agentici.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere eseguito su un server dotato di una singola scheda grafica potente, limitando così i costi dell'infrastruttura.</p>\n<p>La sua finestra di contesto di 128.000 token gli consente di elaborare documenti lunghi.</p>"
+            },
+            "Qwen 3 30B A3B": {
+                "desc": "<p>Modello di medie dimensioni e multilingue.</p>",
+                "fyi": "<p>Questo modello Mixture of Experts (MoE) si distingue per una configurazione di 128 esperti in totale, con solo 8 esperti attivati per token, consentendo un'inferenza più rapida ed efficiente. Utilizza un sistema chiamato <em>global-batch</em> per ottimizzare la distribuzione del lavoro tra gli esperti, garantendo che vengano tutti utilizzati in modo equilibrato.</p>\n<p>A differenza di altri modelli come Qwen 2.5-MoE, che riutilizzano gli stessi esperti su più livelli della rete, Qwen 3 30B A2B assegna esperti unici a ciascun livello. In termini pratici, ciò significa che gli esperti del primo livello non vengono mai riutilizzati nei livelli successivi: ogni livello del modello ha il proprio set di esperti specializzati. Questa architettura consente a ciascun esperto di concentrarsi esclusivamente su compiti specifici alla sua posizione nella rete neurale, con maggiore specializzazione e prestazioni ottimizzate in ogni fase dell'elaborazione delle informazioni.</p>",
+                "size_desc": "<p>Con 30 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere eseguito su un server dotato di una singola scheda grafica potente, limitando così i costi dell'infrastruttura. Inoltre, l'architettura Mixture of Experts (MoE) attiva solo un sottoinsieme di parametri con ogni token, riducendo in tal modo il suo consumo energetico.</p>"
+            },
+            "Qwen 3 32B": {
+                "desc": "<p>Modello di medie dimensioni con due modalità di risposta: l'utente può scegliere tra una modalità di ragionamento, per risposte più approfondite, o una modalità rapida, per generare direttamente la risposta finale.</p>",
+                "fyi": "<p>Questo modello è stato addestrato su un volume di dati molto elevato: 36 trilioni di token, in 119 lingue. L'addestramento è stato effettuato in tre fasi. Inizialmente, il modello ha appreso da 30 trilioni di token con un contesto di 4.000 token. Successivamente, sono stati aggiunti 5 trilioni di token per rafforzare la sua conoscenza fattuale. Infine, è stato esposto a un corpus specifico per aiutarlo a gestire meglio testi molto lunghi. Di conseguenza, al termine dell'addestramento, ha una finestra di contesto di 128.000 token, utile per la lettura e l'analisi di documenti lunghi.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere eseguito su un server dotato di una singola scheda grafica potente, limitando così i costi dell'infrastruttura.</p>\n<p>La sua finestra di contesto di 128.000 token gli consente di elaborare documenti lunghi.</p>"
+            },
+            "Qwen 3 8B": {
+                "desc": "<p>Un modello piccolo, denso e multilingue della famiglia Qwen 3, che offre una modalità \"ragionamento\" per compiti complessi (matematica, programmazione) e una modalità \"risposta diretta\" per risposte più rapide.</p>",
+                "fyi": "<p>Qwen 3 8B è stato addestrato sullo stesso corpus dei modelli più grandi della famiglia Qwen: 36 trilioni di token che coprono 119 lingue. Il suo processo di apprendimento si articola in tre fasi: pre-addestramento su 30 trilioni di token con una finestra di 4.000, arricchimento fattuale con 5 trilioni di token e infine una fase specializzata per contesti lunghi.</p>",
+                "size_desc": "<p>Con 12 miliardi di parametri, è uno dei modelli più piccoli. Può essere utilizzato localmente su una computer personale per preservare la riservatezza dei dati, oppure su un server economico per limitare i costi rispetto a un modello più grande.</p>\n<p>La finestra di contesto può contenere fino a 128.000 token, consentendo l'elaborazione di documenti lunghi.</p>"
+            },
+            "Qwen 3 Max": {
+                "desc": "<p>Tra i pochi modelli proprietari di Qwen, questo è il più grande e potente della terza generazione. È stato addestrato con particolare attenzione ai casi d'uso aziendali e basati su agenti.</p>",
+                "fyi": "<p>Questo modello è stato addestrato su 36 trilioni di token, quasi il doppio rispetto a Qwen 2.5, ed è ufficialmente in grado di rispondere in 100 lingue.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello sono sconosciute. Degli indici suggeriscono che si tratti di un modello molto grande, che richiede server dotati di più schede grafiche potenti per funzionare. Le stime disponibili si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta. Dispone di una finestra di contesto fino a 1.000.000 token, adatta all'analisi di documenti lunghi o repository di codice.</p>"
+            },
+            "Qwen 3.5 35B A3B": {
+                "desc": "<p>Un modello multimodale, multilingue e di medie dimensioni con una modalità di ragionamento. Nonostante le sue dimensioni modeste, rivaleggia con modelli molto più grandi grazie a un'architettura ultra-sparse che attiva solo una piccola frazione dei suoi parametri con ogni token.</p>",
+                "size_desc": "<p>Con 35 miliardi di parametri, Qwen 3.5 35B A3B è un modello di medie dimensioni, ma la sua architettura Mixture of Experts (MoE) ultra-sparse gli consente di attivare solo 3 miliardi di parametri per token generato, riducendo significativamente i requisiti di potenza di calcolo. Può essere eseguito localmente su hardware consumer di fascia alta. La finestra di contesto nativa può contenere 262.144 token e può essere estesa fino a circa 1 milione utilizzando tecniche di estrapolazione (YaRN). I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Qwen 3.5 397B": {
+                "desc": "<p>Un modello molto ampio, multimodale e multilingue con una modalità di ragionamento. Grazie a un'architettura ibrida che combina l'attenzione lineare (Gated DeltaNet) e il mix di esperti, attiva solo 17 miliardi di parametri su un totale di 397 miliardi.</p>",
+                "fyi": "<p>Questo modello si basa su un'innovativa architettura ibrida che combina Gated DeltaNet (attenzione lineare) e attenzione classica con un Mixture of Experts ultra-sparsi: 512 esperti in totale, di cui solo 10 instradati e 1 condiviso sono attivati per token. La rete ha 60 strati organizzati in blocchi di 4: 3 strati Gated DeltaNet seguiti da 1 strato di attenzione classica, ciascuno associato a un modulo MoE. Questa progettazione riduce significativamente il costo di inferenza preservando al contempo la capacità del modello di gestire compiti di ragionamento complessi.</p>\n<p>Qwen 3.5 è nativamente multimodale, addestrato utilizzando la fusione anticipata su trilioni di token multimodali (testo e immagini). Supporta 201 lingue e dialetti. La fase di post-addestramento impiega l'apprendimento per rinforzo su larga scala, distribuito su ambienti massivamente paralleli (million-agent environments), con distribuzioni di attività di complessità crescente. L'infrastruttura di addestramento utilizza una pipeline FP8 e un framework di apprendimento per rinforzo asincrono per ottimizzare l'efficienza </p>",
+                "size_desc": "<p>Con 397 miliardi di parametri, Qwen 3.5 è un modello molto grande, che richiede diverse schede grafiche potenti per funzionare. Tuttavia, l'architettura Mixture of Experts (MoE) consente di attivare solo 17 miliardi di parametri per token generato, riducendo l'impronta carbonica rispetto a un modello denso delle stesse dimensioni. La finestra di contesto nativa raggiunge 262.144 token e può essere estesa a circa 1 milione utilizzando tecniche di estrapolazione (YaRN). I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Qwen 3.6 Plus": {
+                "desc": "<p>Il modello di punta della nuova generazione, Qwen 3.6, progettato da Alibaba secondo il principio dell' \"agentic coding\", è in grado di scomporre un progetto di programmazione, scrivere il codice, testarlo e correggere autonomamente gli errori fino a raggiungere un risultato funzionale. Si distingue inoltre per la sua finestra di contesto molto ampia, che gli consente di acquisire interi codebase o corpus di documenti. È uno dei pochi modelli proprietari pubblicati da Qwen, che solitamente rilascia molti modelli open-weight.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello non sono divulgate, ma si basa su un'architettura Mixture of Experts (MoE) combinata con l'attenzione lineare. Questa architettura attiva solo un sottoinsieme di parametri per ogni token, riducendo così la potenza di calcolo richiesta. La sua finestra di contesto si estende fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Qwen1.5-32B": {
+                "desc": "<p>Modello di medie dimensioni con un processo di addestramento fortemente incentrato sull'allineamento con le preferenze dell'utente.</p>",
+                "fyi": "<p>Il modello è stato sottoposto a una fase di allineamento con le preferenze degli utenti attraverso tecniche come DPO (Direct Preference Optimization) e PPO (Proximal Policy Optimization). Oltre a queste tecniche, che all'epoca della progettazione del modello erano altamente innovative, i team di Alibaba hanno anche ottimizzato i dati di addestramento per renderli altamente multilingue, in particolare per le lingue europee, dell'Asia orientale e del Sud-est asiatico. </p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Qwen2-57B-A14B-Instruct": {
+                "desc": "<p>Modello di medie dimensioni con un mix di architettura avanzata, che possiede buone prestazioni in ambito di programmazione, matematica e gestione di più lingue.</p>",
+                "fyi": "<p>Questa iterazione dei modelli Qwen ha finestre di contesto più lunghe.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento </p>"
+            },
+            "Qwen2-72b-instruct": {
+                "desc": "<p>Un modello di grandi dimensioni e adatto per la programmazione, la matematica e le attività multilingue.</p>",
+                "fyi": "<p>Questa iterazione dei modelli Qwen ha finestre di contesto più lunghe.</p>",
+                "size_desc": "<p>I modelli di grandi dimensioni richiedono risorse considerevoli, ma offrono le migliori prestazioni per attività avanzate come la scrittura creativa, la modellazione dei dialoghi e le applicazioni che richiedono una profonda comprensione del contesto.</p>"
+            },
+            "Qwen2-7B": {
+                "desc": "<p>In grado di supportare un contesto di 130.000 token, questo modello di piccole dimensioni, multilingue e versatile offre ottime prestazioni per attività di traduzione, riassunto, analisi e ragionamento.</p>",
+                "fyi": "<p>Fratello minore della famiglia Qwen2 e prodotto dall'azienda cinese Alibaba, questo modello può supportare fino a 130.000 token per l'elaborazione di testi lunghi.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Qwen2.5-32B": {
+                "desc": "<p>In grado di supportare un contesto di 130k token, questo modello di piccole dimensioni, multilingue e versatile offre ottime prestazioni per attività di traduzione, riassunto, analisi e ragionamento.</p>",
+                "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
+            },
+            "Qwen2.5-7B": {
+                "desc": "<p>In grado di supportare un contesto di 130k token, questo modello di piccole dimensioni, multilingue e versatile offre ottime prestazioni per attività di traduzione, riassunto, analisi e ragionamento.</p>",
+                "fyi": "<p>Un piccolo modello della famiglia Qwen2.5, prodotto dall'azienda cinese Alibaba, in grado di supportare fino a 130.000 token per l'elaborazione di testi lunghi.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "Qwen3 Coder 480B A35B": {
+                "desc": "<p>Un modello molto ampio specializzato nella generazione di codice, nell'analisi di interi repository e nella risoluzione di problemi a più fasi. Questa versione è particolarmente efficace nell'utilizzo degli strumenti e può simulare una fase di ragionamento prima di fornire la risposta finale.</p>",
+                "fyi": "<p>Questo modello è stato pre-addestrato su 7,5 trilioni di token (di cui il 70% è codice) e utilizza un processo di post-addestramento avanzato: Code RL (Hard to Solve, Easy to Verify) per rafforzare la corretta esecuzione del codice e Agent RL (long-horizon reinforcement learning) per ottimizzare la risoluzione di attività software multi-round, con un ambiente massivamente parallelo (20.000 simulazioni parallele su Alibaba Cloud).</p>",
+                "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct è un modello molto grande, che richiede più schede grafiche per essere eseguito. Tuttavia, l'architettura Mixture of Experts (MoE) consente di attivare solo una frazione dei parametri (35 B su 480 B), riducendo significativamente l'impatto ambientale e i costi rispetto a un modello denso equivalente.\nLa finestra di contesto supporta nativamente 256.000 token e può essere estesa fino ad 1 milione utilizzando tecniche di estrapolazione (YaRN), risultando ideale per l'analisi di grandi codebase.</p>"
+            },
+            "Qwen3 Coder Next": {
+                "desc": "<p>Un modello progettato specificamente per il codice (in particolare per lo sviluppo locale). Grazie a un'architettura ibrida che combina Gated DeltaNet, Gated Attention e MoE, raggiunge prestazioni paragonabili a modelli molto più grandi, attivando solo 3 miliardi di parametri su un totale di 80 miliardi.</p>",
+                "fyi": "<p>Questo modello è stato addestrato su oltre 800.000 attività di codice verificabili tramite un processo di apprendimento per rinforzo. Eccelle nel ragionamento a lungo termine, nell'utilizzo di strumenti complessi e nel recupero da errori di esecuzione.</p>",
+                "size_desc": "<p>Qwen3-Coder-Next utilizza un'architettura Mix of Experts (MoE) ultra-sparse con 512 esperti, di cui solo 10 sono attivati per token. Questa progettazione consente al modello di funzionare su hardware di fascia alta, ma comunque di tendenza (MacBook 64GB, RTX 5090 o AMD Radeon 7900 XTX) mantenendo una finestra di contesto nativa di 256.000 token.</p>"
+            },
+            "Qwen3.7 Max": {
+                "desc": "<p>Un modello agentico di grandi dimensioni, ottimizzato per la generazione di codice e l'esecuzione autonoma di attività su lunghi orizzonti temporali. È il modello proprietario di punta della serie Qwen 3.7, una rarità all'interno di questa serie prevalentemente open source. Integra funzionalità di ragionamento avanzate che possono essere attivate su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore.</p>",
+                "fyi": "<p>Sviluppato dal team Qwen di Alibaba, questo è il modello agentico di punta della serie Qwen 3.7, considerato particolarmente efficiente nella generazione di codice, nelle attività d'ufficio e nell'esecuzione autonoma di attività su lunghi periodi di tempo. Integra nativamente la predizione multi-token (MTP, Multi-Token Prediction) come acceleratore di inferenza: il modello genera internamente sequenze di token candidati che vengono verificate in un singolo passaggio, riducendo la latenza e aumentando la velocità di elaborazione senza richiedere un modello di bozza separato. Supporta inoltre la memorizzazione esplicita nella cache dei prompt per un riutilizzo efficiente dei contesti ripetuti.</p>\n<p>A differenza della maggior parte dei modelli Qwen, che sono distribuiti in modalità open access, la serie Max è proprietaria: le dimensioni del modello, la sua architettura dettagliata e i dati di addestramento non sono stati divulgati.</p>",
+                "size_desc": "<p>Le dimensioni esatte del modello non sono state divulgate, ma si basa su un'architettura Mixture of Experts (MoE), come il resto della serie Qwen3.7. Questa architettura attiva solo un sottoinsieme di parametri per ogni token, riducendo così la potenza di calcolo richiesta. Ci sono indicazioni che si tratti di un modello molto grande, che richiede server dotati di più schede grafiche molto potenti per funzionare.</p>\n<p>La sua finestra di contesto può gestire fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. L'architettura Mixture of Experts (MoE ) attiva solo un sottoinsieme di parametri per ogni token, limitando così il suo impatto energetico.</p>"
+            },
+            "Trinity Large": {
+                "desc": "<p>Un modello americano semi-aperto creato da Arcee AI, una startup di 30 persone.</p>",
+                "fyi": "<p>Trinity Large è stato progettato e addestrato interamente negli Stati Uniti da Arcee AI, una startup di 30 persone. È stato addestrato su 17 trilioni di token. </p>\n<p>L'intero addestramento è stato eseguito in 33 giorni su 2.048 GPU Nvidia B300, per un costo totale di circa 20 milioni di dollari. L'architettura incorpora innovazioni come l'attenzione \"gated\" e Muon.</p>",
+                "size_desc": "<p>Con 398 miliardi di parametri, Trinity Large è un modello molto grande. Tuttavia, grazie alla sua architettura Mixture of Experts (MoE) altamente ottimizzata, attiva solo 13 miliardi di parametri per token generato, riducendo significativamente il consumo energetico e i costi di inferenza rispetto a un modello denso equivalente. La sua finestra di contesto raggiunge i 512.000 token, il che lo rende particolarmente adatto all'analisi di documenti molto lunghi o codebase di grandi dimensioni.</p>"
+            },
+            "Trinity Large Thinking": {
+                "desc": "<p>Un modello americano molto ampio e semi-aperto, creato da Arcee AI, una startup di circa trenta persone. Incorpora capacità di ragionamento avanzate ed è stato specificamente addestrato per usi agentici e per l'utilizzo di strumenti esterni.</p>",
+                "fyi": "<p>Trinity Large Thinking è stato progettato e addestrato interamente negli Stati Uniti da Arcee AI. Si tratta della variante della famiglia Trinity Large, ottimizzata per il ragionamento agentico e l'utilizzo, che condivide la stessa architettura di mix di esperti con 398 miliardi di parametri e 256 esperti, di cui 4 abilitati per token.</p>\n<p>L'addestramento iniziale ha coinvolto 17 trilioni di token, in collaborazione con Datology per i dati e Prime Intellect per i calcoli. L'infrastruttura di addestramento si è basata su 2.048 schede grafiche Nvidia B300. La fase di post-addestramento si basa sul fine-tuning supervisionato (SFT) con catene di ragionamento estese, seguito da apprendimento per rinforzo orientato agli agenti, che incorpora percorsi di tool call a più fasi.</p>\n<p>Secondo l'editore, il modello si posiziona al secondo posto nel benchmark PinchBench, subito dietro a Opus 4.6. Ottiene il 94,7% su τ²-Telecom (attività agentiche), il 98,2% su LiveCodeBench, il 96,3% su AIME25 e l'83,4% su MMLU-Pro.</p>",
+                "size_desc": "<p>Con 398 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), attiva solo 13 miliardi di parametri per token generato (4 esperti attivi su 256), riducendo così il consumo energetico e i costi di inferenza rispetto a un modello denso equivalente. La sua finestra di contesto può contenere fino a 512.000 token, consentendo l'elaborazione di documenti molto lunghi.</p>\n<p>I modelli di ragionamento di questo tipo impiegano più tempo a produrre una risposta, il che aumenta il consumo energetico.</p>"
+            },
+            "Yi-1.5 9B": {
+                "desc": "<p>Yi 1.5 è un modello dell'azienda cinese 01-ai, specializzato in programmazione, matematica, ragionamento, esecuzione di istruzioni e dotato di una solida comprensione del linguaggio.</p>",
+                "fyi": "<p>Yi 1.5 è un modello dell'azienda cinese 01-ai, specializzato in programmazione, matematica, ragionamento, esecuzione di istruzioni e dotato di una solida comprensione del linguaggio.</p>",
+                "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
+            },
+            "o3-mini": {
+                "desc": "<p>o3-mini è progettato per il ragionamento e la programmazione. Offre un buon equilibrio tra prestazioni, costi e latenza, pur essendo più piccolo rispetto ad altri modelli di OpenAI.</p>",
+                "fyi": "<p>Modello ottimizzato per compiti di ragionamento e programmazione in ambito STEM (scienza, tecnologia, ingegneria e matematica). Eccelle nei settori scientifici, matematici e della programmazione.</p>",
+                "size_desc": "<p>Questi modelli, con centinaia di miliardi di parametri, sono i più complessi e avanzati in termini di prestazioni e precisione. Le risorse di calcolo e di memoria necessarie per implementarli sono tali da renderli adatti alle applicazioni più sofisticate e agli ambienti altamente specializzati.</p>"
+            },
+            "o4 mini": {
+                "desc": "<p>Un modello di ragionamento molto ampio, adatto a compiti e quesiti scientifici e tecnologici complessi.</p>",
+                "fyi": "<p>Questo modello è molto efficiente per l'analisi di immagini e grafici. È stato inoltre addestrato per interagire con altri sistemi tramite function call, risultando quindi adatto a casi d'uso agentici. Essendo un modello di ragionamento molto potente, può essere utilizzato per distribuire i compiti tra diversi modelli più piccoli e/o più specializzati. Ha una finestra di contesto fino a 200.000 token, il che facilita l'analisi di documenti lunghi.</p>",
+                "size_desc": "<p>Nonostante il nome e il fatto che le sue dimensioni esatte siano sconosciute, o4 mini è probabilmente un modello di grandi dimensioni che richiede server dotati di più schede grafiche. I modelli di ragionamento come o4 mini richiedono più tempo per rispondere perché una fase di ragionamento precede la generazione del risultato finale, aumentando così il loro consumo energetico. Tuttavia, l'architettura Mixture of Experts (MoE) ipotizzata attiva solo un sottoinsieme dei parametri per generare ciascun token, limitando in tal modo il suo impatto energetico. Le stime delle dimensioni si basano su indicatori indiretti come i costi di inferenza e la latenza di risposta.</p>"
+            },
+            "qwq 32B": {
+                "desc": "<p>Un modello di ragionamento di medie dimensioni e ad alte prestazioni, specializzato in matematica, generazione di codice e risoluzione di problemi logici. </p>",
+                "fyi": "<p>Questo modello è stato addestrato utilizzando un metodo di apprendimento per rinforzo (RL) per ottimizzare la gestione di problemi matematici e attività di programmazione. Utilizza diverse tecniche recenti per migliorare la qualità delle sue risposte. Ad esempio, il metodo Rotary Position Embedding (RoPE) gli consente di comprendere meglio l'ordine delle parole in un testo. La funzione di attivazione SwiGLU è un modo più efficiente per gestire i calcoli all'interno della rete neurale, aiutando il modello a produrre risposte più affidabili. Il metodo di adattamento Query Key Value-bias (QKV) migliora il modo in cui il modello identifica e seleziona le informazioni importanti. Infine, grazie al metodo Yet Another RoPE Extension (YaRN), può elaborare testi molto lunghi fino a 130.000 token, consentendogli di lavorare con documenti complessi o altamente dettagliati.</p>",
+                "size_desc": "<p>Con 32 miliardi di parametri, questo modello rientra nella categoria di medie dimensioni. Può essere eseguito su un server dotato di una singola scheda grafica potente, limitando così i costi dell'infrastruttura. Tuttavia, i modelli di ragionamento di questo tipo impiegano più tempo a produrre una risposta perché una fase di ragionamento precede la generazione del risultato finale, il che aumenta il consumo energetico.</p>"
             }
+        }
+    },
+    "header": {
+        "banner": "🏆 La classifica dei modelli è ora disponibile! Scopri la classifica.",
+        "chatbot": {
+            "newDiscussion": "Nuova chat",
+            "reveal": {
+                "description": "Scopri l'impatto ambientale delle tue conversazioni con ciascun modello",
+                "subtitle": "I modelli sono stati smascherati!",
+                "title": "Rivelazione"
+            }
+        },
+        "help": {
+            "link": {
+                "content": "Migliorare il comparatore",
+                "title": "Esprimi la tua opinione sullo strumento di confronto - Apri in una nuova finestra"
+            }
+        },
+        "homeTitle": "Home - compar:IA",
+        "logoAlt": "Repubblica Francese",
+        "menu": "Menu",
+        "startDiscussion": "Inizia a chattare",
+        "subtitle": "Il comparatore di IA conversazionale",
+        "votes": {
+            "count": "{count} votes",
+            "legend": "Leggenda",
+            "objective": "Obiettivo: {count}",
+            "tooltip": "Discuti, vota e aiutaci a raggiungere questo obiettivo!<br /><strong>I tuoi voti sono importanti</strong> : alimentano il dataset compar:IA reso liberamente disponibile per perfezionare i futuri modelli per la lingua francese.<br />Questo patrimonio digitale contribuisce ad un maggiore <strong>rispetto della diversità linguistica e culturale dei futuri modelli linguistici.</strong>"
+        }
+    },
+    "home": {
+        "europe": {
+            "desc": "Lituania, Svezia e Danimarca si uniscono alla Francia nell'adozione dello strumento di comparazione con l'obiettivo di perfezionare i futuri modelli di IA nelle rispettive lingue nazionali.",
+            "languages": {
+                "da": "in danese",
+                "fr": "in francese",
+                "lt": "in lituano",
+                "sv": "in svedese"
+            },
+            "question": "Desideri comunque disporre del comparatore nella tua lingua?",
+            "title": "Il comparatore <span {props}>sta diventando europeo!</span>"
+        },
+        "faq": {
+            "discover": "Scopri le altre domande",
+            "title": "Le domande più frequenti"
+        },
+        "intro": {
+            "desc": "Avvia una conversazione alla cieca con due intelligenze artificiali e valuta le loro risposte",
+            "steps": {
+                "a11yDesc": "1. Chatta con due IA anonime: parla per tutto il tempo che vuoi. 2. Esprimi la tua opinione: contribuisci a migliorare i modelli di IA. 3. I modelli vengono svelati: scopri di più sui modelli di IA e sulle loro caratteristiche.",
+                "one": {
+                    "desc": "Chatta per tutto il tempo che desideri",
+                    "title": "Sto chattando con due IA anonime"
+                },
+                "three": {
+                    "desc": "Scopri di più sui modelli di intelligenza artificiale e sulle loro caratteristiche",
+                    "title": "I modelli sono stati smascherati!"
+                },
+                "title": "Come funziona",
+                "two": {
+                    "desc": "Così facendo, contribuisci al miglioramento dei modelli di IA",
+                    "title": "Sto esprimendo la mia opinione"
+                }
+            },
+            "title": "Non affidarti alle risposte <span {props}>di una singola IA</span>",
+            "tos": {
+                "accept": "Accetto i <a {linkProps}>termini e condizioni d'uso</a>",
+                "error": "Per continuare è necessario accettare i termini di utilizzo",
+                "help": "I tuoi dati vengono condivisi a fini di ricerca"
+            }
+        },
+        "origin": {
+            "project": {
+                "desc": "Il comparatore è stato progettato e sviluppato nell'ambito di una start-up statale supportata dal Ministero della Cultura e integrato nel programma <a {linkProps}>Beta.gouv.fr</a> della Direzione Interministeriale per gli Affari Digitali (DINUM), che aiuta le amministrazioni pubbliche francesi a creare servizi digitali utili, semplici e facili da usare.",
+                "title": "Chi c'è dietro il progetto?"
+            },
+            "team": {
+                "desc": "Il progetto di comparazione è supportato all'interno del Ministero della Cultura da un team multidisciplinare che riunisce esperti di intelligenza artificiale, sviluppatori, responsabili dell'implementazione e designer, con la missione di rendere l'IA conversazionale più trasparente e accessibile a tutti.",
+                "title": "Chi siamo?"
+            }
+        },
+        "usage": {
+            "desc": "Lo strumento è destinato anche a esperti e formatori di IA per utilizzi più specifici",
+            "educate": {
+                "desc": "Utilizza il comparatore come supporto didattico per sensibilizzare il vostro pubblico sull'intelligenza artificiale",
+                "title": "Per formare e sensibilizzare"
+            },
+            "explore": {
+                "desc": "Trova tutte le specifiche del modello e i termini di utilizzo in un unico posto",
+                "title": "Esplora i modelli"
+            },
+            "title": "Usi specifici di compar:AI",
+            "use": {
+                "desc": "Sviluppatori, ricercatori, editori di modelli... accedete ai dataset di compar:AI per migliorare i modelli",
+                "title": "Riutilizzare i dati"
+            }
+        },
+        "use": {
+            "compare": {
+                "alt": "Confrontare",
+                "desc": "Discuti e sviluppa le tue capacità di pensiero critico esprimendo la tua preferenza",
+                "title": "Confronta le risposte di diversi modelli di IA"
+            },
+            "desc": "compar:IA è uno strumento gratuito che contribuisce a sensibilizzare i cittadini sull'intelligenza artificiale generativa e sulle relative sfide.",
+            "measure": {
+                "alt": "Misurare",
+                "desc": "Scopri l'impatto ambientale delle tue conversazioni con ciascun modello",
+                "title": "Misurare l'impronta ecologica delle domande poste all'IA"
+            },
+            "test": {
+                "alt": "Test",
+                "desc": "Prova diversi modelli, proprietari o meno, in piccole e grandi dimensioni...",
+                "title": "Testare le più recenti IA dell'ecosistema, tutto in un unico luogo"
+            },
+            "title": "A cosa serve compar:IA?"
+        },
+        "vote": {
+            "datasetAccess": "Accedere ai dataset",
+            "steps": {
+                "datasets": {
+                    "desc": "Tutte le domande poste e i voti vengono raccolti in dataset e pubblicati liberamente dopo essere stati anonimizzati.",
+                    "title": "Dataset per lingua"
+                },
+                "finetune": {
+                    "desc": "In definitiva, le imprese e gli ambienti accademici possono sfruttare i dataset per addestrare nuovi modelli che siano più rispettosi della diversità linguistica e culturale.",
+                    "title": "Modelli perfezionati per la lingua specifica"
+                },
+                "prefs": {
+                    "desc": "Dopo aver discusso con l'IA, indica la tua preferenza per un modello in base a criteri specifici, come la pertinenza o l'utilità delle risposte."
+                }
+            }
+        }
+    },
+    "models": {
+        "arch": {
+            "title": "Lo sapevi?"
+        },
+        "conditions": {
+            "commercialUse": {
+                "question": "È consentito l'utilizzo commerciale del modello?",
+                "title": "Uso commerciale"
+            },
+            "reuse": {
+                "question": "Posso utilizzare gli output del modello per addestrarne di nuovi?",
+                "subTitle": "Non è possibile riutilizzarli per addestrare altri modelli",
+                "title": "Riutilizzo dei risultati generati"
+            },
+            "title": "Termini di utilizzo",
+            "types": {
+                "allowed": "Consentito",
+                "conditions": "Soggetto a condizioni",
+                "forbidden": "Vietato"
+            }
+        },
+        "conso": {
+            "count": {
+                "L": "> 5000 mWh",
+                "M": "da 150 a 5000 mWh",
+                "S": "<150 mWh"
+            },
+            "filterLegend": "Filtra per consumo energetico medio ogni 1000 token"
+        },
+        "extra": {
+            "experts": {
+                "api-only": "Per gli esperti, consultare il <a {linkProps}>sito web ufficiale del modello</a>"
+            },
+            "impacts": "I calcoli dell'impatto ambientale si basano sui progetti <a {linkProps1}>EcoLogits</a> e <a {linkProps2}>Impact CO<sub>2</sub></a>.",
+            "title": "Per andare oltre"
+        },
+        "licenses": {
+            "type": {
+                "openSource": "Open source",
+                "proprietary": "Proprietario",
+                "semiOpen": "Open weight"
+            }
+        },
+        "list": {
+            "filters": {
+                "archived": {
+                    "label": "Modelli archiviati",
+                    "uncheckedLabel": "Non visibile"
+                },
+                "display": "Mostra filtri",
+                "editor": {
+                    "legend": "Editore"
+                },
+                "reset": "Cancella tutti i filtri",
+                "size": {
+                    "labels": {
+                        "L": "tra 70 e 150 miliardi",
+                        "M": "da 20 a 70 miliardi",
+                        "S": "da 7 a 20 miliardi",
+                        "XL": ">150 miliardi",
+                        "XS": "<7 miliardi"
+                    },
+                    "legend": "Dimensioni (parametri)"
+                }
+            },
+            "intro": "Scopri i diversi modelli di IA conversazionale disponibili, le loro funzionalità e le relative licenze.",
+            "triage": {
+                "options": {
+                    "date-desc": "Data di pubblicazione (dalla più recente alla meno recente)",
+                    "name-asc": "Nome del modello (dalla A alla Z)",
+                    "org-asc": "Editore (dalla A alla Z)",
+                    "params-asc": "Dimensioni (dalla più piccola alla più grande)"
+                }
+            }
+        },
+        "names": {
+            "a": "Modello A"
+        },
+        "openWeight": {
+            "tooltips": {
+                "free": "Una volta modificato, il modello può essere ridistribuito con una licenza diversa da quella del modello originale.",
+                "openSource": "Il corpus, il codice di addestramento e i pesi di questo modello (ovvero i parametri appresi durante l'addestramento) sono completamente scaricabili e modificabili dal pubblico, consentendo loro di eseguire e modificare il modello sul proprio hardware. Un modello \"open source\" è più restrittivo rispetto ad uno \"open weight\", soprattutto a causa della necessità di trasparenza del corpus di addestramento, e pochissimi modelli sono considerati \"open source\".",
+                "params": "I parametri, o pesi, che si contano a miliardi, sono le variabili apprese da un modello durante il suo addestramento e che ne determinano le risposte. Maggiore è il numero di parametri, maggiori sono le risorse necessarie al suo funzionamento.",
+                "ram": "La RAM memorizza i dati elaborati da un LLM in tempo reale. Più grande è il modello, maggiore è la quantità di RAM necessaria per il suo funzionamento."
+            }
+        },
+        "parameters": "{numero} mds dei parametri",
+        "ram": "{min} a {max} GB",
+        "size": {
+            "count": {
+                "L": "da 100 a 400 miliardi",
+                "M": "da 60 a 100 miliardi",
+                "S": "da 15 a 60 miliardi",
+                "XL": ">400 miliardi",
+                "XS": "<15 miliardi"
+            },
+            "estimated": "Dimensione stimata ({size})",
+            "title": "Dimensioni"
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "Davide contro Golia",
+            "description": "Un modello piccolo contro uno grande, entrambi scelti a caso.",
+            "title": "Modalità Davide contro Golia"
+        },
+        "custom": {
+            "altLabel": "Selezione manuale",
+            "description": "Riusciresti a riconoscere i due modelli che hai scelto?",
+            "label": "Selezione manuale",
+            "title": "Modalità di selezione"
+        },
+        "random": {
+            "description": "Due modelli scelti a caso dall'intera lista",
+            "label": "Casuale",
+            "title": "Modalità casuale"
+        },
+        "reasoning": {
+            "altLabel": "Modelli con ragionamento",
+            "description": "Due modelli selezionati a caso tra quelli ottimizzati per compiti complessi",
+            "label": "Ragionamento",
+            "title": "Modalità di ragionamento"
+        },
+        "small-models": {
+            "altLabel": "Modelli frugali",
+            "description": "Due modelli scelti a caso tra i più piccoli",
+            "label": "Frugale",
+            "title": "Modalità frugale"
+        }
+    },
+    "product": {
+        "community": {
+            "countries": {
+                "fr": "Francia"
+            },
+            "tabLabel": "Community",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Da giugno 2024",
+                            "job": "Progettista di prodotto UX/UI"
+                        },
+                        "hadrien": {
+                            "date": "Giugno 2024 - Novembre 2025",
+                            "job": "Sviluppatore full stack"
+                        },
+                        "lucie": {
+                            "date": "Gennaio 2024 - Dicembre 2025",
+                            "job": "Fondatore - Responsabile di prodotto"
+                        },
+                        "mathilde": {
+                            "date": "Da settembre 2024",
+                            "job": "Responsabile dell' Atelier numérique / Product Ops"
+                        },
+                        "nicolas": {
+                            "job": "Sviluppatore full stack"
+                        },
+                        "simonas": {
+                            "date": "Da dicembre 2024",
+                            "job": "Responsabile di prodotto - precedentemente responsabile dell'implementazione"
+                        }
+                    },
+                    "title": "Il team di compar:AI - Francia"
+                }
+            },
+            "title": "I soci"
+        },
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "Evidenziare i pregiudizi nell'IA legati alla sottorappresentazione dei dati in lingue diverse dall'inglese nei modelli e sensibilizzare sulle loro conseguenze.",
+                    "title": "Pregiudizi culturali e linguistici"
+                },
+                "impacts": {
+                    "desc": "Rivelare gli effetti ecologici dell'IA generativa, che sono ancora in gran parte sconosciuti al grande pubblico."
+                },
+                "pluralism": {
+                    "desc": "Garantire ai cittadini l'accesso a una varietà di modelli di intelligenza artificiale, in modo che possano compiere scelte consapevoli e sviluppare una prospettiva critica su queste tecnologie.",
+                    "title": "Diversità dei modelli"
+                },
+                "thinking": {
+                    "title": "Pensiero critico e problematiche sociali"
+                },
+                "title": "L'applicazione sviluppata affronta diverse sfide"
+            },
+            "cta": "Accedi allo strumento di confronto",
+            "europe": {
+                "adventure": "A partire dall'autunno, Lituania, Svezia e Danimarca si uniranno all'avventura!",
+                "catch": "Desideri avere lo strumento di confronto nella tua lingua?",
+                "desc": "Lo strumento di confronto sarà messo a disposizione dei cittadini nelle loro lingue nazionali. L'obiettivo è creare insiemi di dati sulle preferenze per migliorare i futuri modelli di IA in queste lingue europee."
+            },
+            "screenshotAlt": "Screenshot dell'arena compar:ia, con la domanda iniziale, le due risposte modello e i pulsanti di voto.",
+            "tabLabel": "Il comparatore",
+            "title": "Il comparatore consente la creazione di <span {props}>dataset delle preferenze incentrati su <span {props}>utilizzi reali</span>espressi in <span {props}>lingue europee</span>."
+        },
+        "faq": {
+            "tabLabel": "FAQ"
+        },
+        "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "Marzo 2025",
+                            "desc": "Creazione e pubblicazione del primo dataset di compar:IA in francese, che raggruppa le domande e le preferenze degli utenti della piattaforma.",
+                            "title": "50.000 voti sul comparatore!"
+                        },
+                        "2": {
+                            "date": "Maggio 2025",
+                            "desc": "E in primo luogo il riutilizzo del dataset con Bunka.ai, che ha condotto uno <a {linkProps}>studio approfondito</a> sulle interazioni tra gli utenti della piattaforma.",
+                            "title": "Obiettivo di 100.000 voti raggiunto!"
+                        },
+                        "3": {
+                            "date": "Giugno 2025"
+                        }
+                    }
+                },
+                "construction": {
+                    "items": {
+                        "2": {
+                            "title": "Lancio ufficiale durante il Summit della Francofonia a Villers Cotterêts!"
+                        },
+                        "3": {
+                            "date": "Gennaio 2025",
+                            "desc": "Lancio della nuova funzionalità per la scelta della modalità di selezione del modello.",
+                            "title": "compara:AI v2"
+                        },
+                        "4": {
+                            "title": "<a {linkProps}>ComparIA Day al BnF</a> durante l'AI Action Summit"
+                        }
+                    },
+                    "tag": "Costruzione"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Estate 2025",
+                            "desc": "Collaborazione con Danimarca, Svezia e Lituania per offrire il servizio nella loro lingua.",
+                            "title": "Estensione su scala europea"
+                        },
+                        "2": {
+                            "desc": "Creazione di questo nuovo formato di workshop aperto a tutti, per scoprire i meccanismi interni dell'IA generativa e riflettere sul suo impatto ambientale, e pubblicazione del kit di facilitazione associato all'estensione \"AI Duels\".",
+                            "title": "Lancio di <a {linkProps}>“AI Duels”</a>"
+                        },
+                        "3": {
+                            "desc": "Realizzata in collaborazione con il Centro di competenza sulla regolamentazione digitale (<a {linkProps}>PEReN</a>), la classifica compar:IA si basa su tutti i voti e le reazioni raccolti da quando il servizio è stato reso pubblico nell'ottobre 2024.",
+                            "title": "Pubblicazione della <a {linkProps}>classifica compar:IA</a>"
+                        },
+                        "4": {
+                            "desc": "La Danimarca si unisce all'iniziativa offrendo lo strumento di comparazione nella propria lingua nazionale con un nome di dominio dedicato.",
+                            "title": "Apertura comparar:IA <a {linkProps}>in danese</a>"
+                        },
+                        "5": {
+                            "title": "compar:IA riconosciuta come un <a {linkProps}>bene comune digitale</a>"
+                        },
+                        "6": {
+                            "date": "Novembre 2025",
+                            "desc": "Con oltre 500.000 conversazioni uniche dal lancio di compar:IA.",
+                            "title": "Obiettivo di 200.000 voti raggiunto!"
+                        }
+                    }
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "Gennaio-marzo 2024",
+                            "desc": "Interviste con gli stakeholder dell'ecosistema e ipotesi iniziali per una soluzione al problema: \"Come facilitare l'accesso ai dati in francese per l'addestramento di modelli linguistici?\"."
+                        }
+                    },
+                    "tag": "Indagine"
+                }
+            },
+            "tabLabel": "Date chiave",
+            "title": "I traguardi di compar:IA"
+        },
+        "partners": {
+            "academy": {
+                "catch": "State conducendo un progetto di ricerca e avete suggerimenti o necessitate di chiarimenti sull'approccio e/o sui dataset prodotti?",
+                "desc": "Ci impegniamo a garantire che i dataset generati supportino progetti di ricerca multidisciplinari che combinino discipline umanistiche, scienze sociali e scienza dei dati.",
+                "title": "Partner accademici"
+            },
+            "diffusion": {
+                "catch": "Desideri utilizzare il comparatore per soddisfare un'esigenza aziendale?"
+            },
+            "institution": {
+                "title": "Partner istituzionali"
+            },
+            "services": {
+                "desc": "I calcoli relativi all'impatto ambientale si basano sui prodotti sopra elencati.",
+                "title": "Servizi utilizzati"
+            },
+            "tabLabel": "Partner"
+        },
+        "problem": {
+            "alignment": {
+                "alignment": {
+                    "b": "La fase di allineamento prevede di insegnare al modello a soddisfare meglio i bisogni umani, ovvero renderlo più <strong>pertinente</strong> (il modello risponde \"meglio\" alle domande), <strong>onesto</strong> (capacità di presumere \"di non conoscere la risposta\" quando non ci sono dati sufficienti) ed <strong>innocuo</strong> (evitando di generare contenuti pericolosi o inappropriati).",
+                    "c": "<strong>Senza allineamento, un LLM potrebbe essere tecnicamente competente ma difficile da usare nella pratica, perché non capirebbe veramente cosa ci si aspetta da esso in una conversazione.</strong>",
+                    "title": "L'allineamento, un passaggio cruciale nell'istruzione del modello"
+                },
+                "datasets": {
+                    "a": "L'allineamento utilizza dati molto specifici, creati appositamente per insegnare al modello come comportarsi \"correttamente\".",
+                    "b": "I <strong>dati di preferenza</strong> costituiscono una tipologia particolare di dati di allineamento, insieme ai </strong>dati di dimostrazione</strong> (esempi di conversazioni tra gli umani e assistenti IA, redatti da annotatori esperti secondo precise linee guida di tono e stile), ai <strong>dati di sicurezza</strong> (esempi specifici che insegnano al modello a evitare contenuti pericolosi mostrando come rifiutare richieste problematiche) o ai <strong>dati specialistici</strong> che riguardano ambiti specifici (medicina, diritto , istruzione...).",
+                    "c": "I dati sulle preferenze presentano molteplici risposte possibili alla stessa domanda, classificate in base alla qualità da valutatori umani: gli utenti indicano quale risposta è la migliore secondo determinati criteri, come pertinenza, utilità e pericolosità. Una volta raccolti, questi dataset vengono utilizzati per addestrare modelli, adattandoli alle preferenze espresse dagli utenti."
+                },
+                "diversity": {
+                    "d": "Il risultato è un modello di IA conversazionale più inclusivo, in grado di tenere conto delle diverse culture.",
+                    "title": "Diversificare i dati per ridurre i pregiudizi"
+                },
+                "english": {
+                    "a": "La produzione di dati sulle preferenze è costosa perché <strong>richiede manodopera umana specializzata per ogni singolo esempio</strong>. Piattaforme come https://chat.lmsys.org/ consentono la creazione di questi dataset sulle preferenze ma pochi utenti li utilizzano nella propria lingua madre.",
+                    "title": "Pochi dati sulle preferenze nelle lingue europee"
+                },
+                "title": "Come possiamo ridurre i pregiudizi culturali e linguistici di questi modelli?"
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "Questi pregiudizi possono anche portare a risposte parziali o addirittura errate, che trascurano la diversità di lingue e culture, in particolare quelle europee.",
+                    "title": "Diversità culturale e linguistica trascurata"
+                },
+                "english": {
+                    "desc": "L'IA conversazionale si basa su modelli linguistici di grandi dimensioni (LLM) addestrati principalmente su dati in inglese, il che crea distorsioni linguistiche e culturali nei risultati prodotti.",
+                    "title": "I dati di addestramento sono perlopiù in inglese."
+                },
+                "stereotypes": {
+                    "desc": "I sistemi di IA conversazionale danno l'impressione di parlare tutte le lingue, ma i risultati che generano sono talvolta stereotipati o discriminatori."
+                }
+            },
+            "title": "I modelli di IA conversazionale rispettano la <span {props}>diversità</span> delle lingue europee?"
+        },
+        "title": "Tutto quello che devi sapere sul comparatore"
+    },
+    "ranking": {
+        "energy": {
+            "desc": "Questo grafico rappresenta il punteggio di soddisfazione (punteggio Bradley Terry) per ciascun modello in funzione del consumo energetico medio stimato per 1000 token. Il consumo energetico è stimato utilizzando la metodologia <a {linkProps}>Ecologits</a> e si basa su due parametri: la <strong>dimensione</strong> dei modelli (numero di parametri) e la loro <strong>architettura</strong>. Per i <strong>modelli proprietari</strong>, queste informazioni non sono fornite o sono disponibili solo parzialmente. Pertanto, sono esclusi dal grafico sottostante.",
+            "views": {
+                "graph": {
+                    "desc": "Seleziona un modello per scoprire il suo punteggio Bradley-Terry (BT) e il suo consumo energetico.",
+                    "legends": {
+                        "arch": "Architettura del modello",
+                        "size": "Filtra per dimensione",
+                        "sizeSub": "(miliardi di parametri)"
+                    },
+                    "tabLabel": "Vista grafica",
+                    "title": "Punteggio di soddisfazione Bradley-Terry (BT) rispetto al consumo medio per 1000 token",
+                    "tooltip": {
+                        "active_params": "Parametri attivi (mds)",
+                        "arch": "Architettura",
+                        "consumption": "Consumo medio (mWh)",
+                        "elo": "Score BT"
+                    },
+                    "xLabel": "Consumo medio per 1000 token (mWh)",
+                    "yLabel": "Punteggio Bradley-Terry (BT)"
+                },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Più in alto si trova un modello sul grafico</strong>, maggiore è il suo punteggio di soddisfazione Bradley-Terry. <strong>Più un modello si trova a sinistra sul grafico</strong>, minore è l'energia che consuma rispetto agli altri modelli.",
+                            "2": "<strong>In alto a sinistra</strong> si trovano i modelli più popolari e che consumano meno energia rispetto agli altri modelli.",
+                            "3": "Oltre alle dimensioni, <strong>l'architettura</strong> ha un impatto sul consumo energetico medio dei modelli: ad esempio, a parità di dimensioni, il modello Llama 3 405B (architettura densa, 405 miliardi di parametri) consuma in media 10 volte più energia del modello GLM 4.5 (architettura MOE, 355 miliardi di parametri e 32 miliardi di parametri attivi)."
+                        },
+                        "subTitle": "Esempi di lettura del grafico",
+                        "title": "Come trovare il giusto equilibrio tra prestazioni percepite ed efficienza energetica?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "compar:IA utilizza la metodologia sviluppata da <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI ImpactImpact</strong></a>) per fornire una stima dell'impronta energetica associata all'inferenza di modelli di IA generativa conversazionale. Questa stima consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa richiesta. Tale trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più eco-responsabili.",
+                            "2": "Ecologits applica i principi della valutazione del ciclo di vita (LCA) in conformità con la norma ISO 14044, concentrandosi per il momento sull'impatto dell'inferenza (ovvero l'utilizzo di modelli per rispondere a quesiti) e sulla <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto).",
+                            "3": "Il consumo energetico del modello viene stimato tenendo conto di diversi parametri, come le dimensioni e l'architettura del modello di IA utilizzato, la localizzazione dei server su cui sono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale, espresso in CO2 equivalente, deriva dalla misurazione del consumo energetico del modello.",
+                            "4": "È importante sottolineare che le metodologie per valutare l'impatto ambientale dell'IA sono ancora in fase di sviluppo."
+                        },
+                        "title": "Come viene calcolato l'impatto energetico dei modelli?"
+                    }
+                }
+            }
+        },
+        "methodo": {
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "Il modello <strong>Bradley-Terry</strong> trasforma una serie di confronti locali e potenzialmente incompleti in un sistema di classificazione globale coerente e statisticamente robusto, in cui il tasso di successo empirico rimane limitato alle osservazioni dirette."
+                    },
+                    "title": "I 10 modelli migliori in classifica in base al tasso di successo stimato con il modello Bradley-Terry"
+                },
+                "title": "Impatto della scelta del metodo sulla classificazione dei modelli",
+                "winrate": {
+                    "desc": {
+                        "2": "Questo metodo non è ideale perché richiede dati da tutte le combinazioni di modelli e, non appena il numero di modelli aumenta, diventa rapidamente costoso e complesso da gestire."
+                    },
+                    "title": "I 10 modelli migliori in classifica in base ai tassi di successo \"empirici\"."
+                }
+            },
+            "methods": {
+                "cons": "Problemi principali",
+                "elo": {
+                    "def": "<strong>Definizione</strong> : Sistema di classificazione in cui il guadagno o la perdita di punti dipende dal risultato (vittoria/sconfitta/pareggio)<strong>e</strong> dal livello stimato dell'avversario: se un modello più debole batte un modello più forte , il suo progresso in classifica è maggiore.",
+                    "list": {
+                        "1": "<strong>Modello probabilistico</strong>: possiamo stimare il probabile esito di qualsiasi confronto, anche tra modelli che non sono mai stati confrontati direttamente.",
+                        "2": "<strong>Considerazione della difficoltà della partita</strong>: i punteggi stimati dal modello Bradley Terry tengono conto del livello degli avversari incontrati, consentendo un confronto equo tra i modelli.",
+                        "3": "<strong>Gestione dell'incertezza migliorata</strong>: l'intervallo di confidenza incorpora l'intera rete di confronti. Ciò consente una stima più accurata dell'incertezza, soprattutto per i modelli con pochi scontri diretti ma molti avversari comuni."
+                    },
+                    "title": "Classifica Bradley-Terry (BT)"
+                },
+                "pros": "Benefici",
+                "winrate": {
+                    "list": {
+                        "3": "<strong>Stagnazione</strong>: Nel lungo periodo, molti buoni modelli finiscono per avere un tasso di vittoria intorno al 50% perché si confrontano con modelli del loro stesso livello, rendendo la classifica meno discriminante."
+                    },
+                    "title": "Classifica in base al tasso di vittorie"
+                }
+            },
+            "tabLabel": "Metodologia"
+        },
+        "no_data": "La classifica al momento non è disponibile o è in fase di calcolo.",
+        "preferences": {
+            "desc": "Quando voti, puoi categorizzare la tua preferenza utilizzando diverse categorie positive e negative. Confronta la loro distribuzione da un modello all'altro.",
+            "modal": {
+                "cta": "Che cos'è una preferenza?",
+                "title": "Preferenze positive e negative"
+            },
+            "table": {
+                "cols": {
+                    "clear_formatting": "Formattazione<br> chiara",
+                    "complete": "Completare",
+                    "creative": "Creativo",
+                    "incorrect": "Non corretto",
+                    "name": "Modello",
+                    "positive_prefs_ratio": "Distribuzione delle preferenze",
+                    "superficial": "Superficiale",
+                    "total_positive_prefs": "Preferenze totali<br> Positive",
+                    "useful": "Utile"
+                },
+                "percentLabel": "Preferenze espresse in percentuale",
+                "tooltips": {
+                    "positive_prefs_ratio": "Durante la votazione, i badge permettevano di specificare le motivazioni della propria preferenza. Questa colonna mostra la distribuzione in percentuale di questi badge (positivi o negativi) rispetto al totale dei voti."
+                }
+            }
+        },
+        "ranking": {
+            "desc": "Grazie per il tuo contributo!<br> La classifica di <strong>compar:IA</strong> si basa su tutti i voti e le reazioni del <strong>confronto cieco</strong> dei modelli, raccolti dall'apertura del servizio al pubblico nell'ottobre 2024.<br> Sviluppata in collaborazione con il Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), la classifica dei modelli si basa sul <strong>punteggio di soddisfazione</strong> calcolato utilizzando il modello statistico <strong>Bradley Terry</strong>, un metodo ampiamente utilizzato per convertire i voti binari in una classifica probabilistica.<br> La classifica di compar:IA non intende essere una raccomandazione ufficiale né valutare le prestazioni tecniche dei modelli. Riflette le <strong>preferenze soggettive</strong> degli utenti della piattaforma e non l'accuratezza o la veridicità fattuale delle risposte.",
+            "tabLabel": "Classifica"
+        },
+        "table": {
+            "data": {
+                "billions": "{count} Mds",
+                "cols": {
+                    "consumption": "Consumo medio<br>(1000 token)",
+                    "elo": "Punteggio di<br> soddisfazione BT",
+                    "n_match": "Voti totali",
+                    "name": "Modello",
+                    "rank": "Classifica",
+                    "release": "Data di rilascio",
+                    "size": "Dimensioni<br>(parametri)"
+                },
+                "estimation": "(stima)",
+                "tooltips": {
+                    "arch": "L'architettura di un modello LLM si riferisce ai principi di progettazione che definiscono come i componenti di una rete neurale sono disposti e interagiscono per trasformare i dati di input in output predittivi, inclusi la modalità di attivazione dei parametri (densa o sparsa), la specializzazione dei componenti e i meccanismi di elaborazione delle informazioni (trasformatori, reti convoluzionali, architetture ibride).",
+                    "consumption": "Misurato in milliwattora, il consumo energetico rappresenta l'elettricità utilizzata dal modello per elaborare una richiesta e generare la risposta corrispondente. Il consumo energetico del modello dipende dalle sue dimensioni e dalla sua architettura. Abbiamo scelto di visualizzare in grigio, con la dicitura \"non analizzato\" (N/A), i modelli proprietari per i quali non disponiamo di informazioni trasparenti su dimensioni e architettura.",
+                    "elo": "Il punteggio statistico, stimato secondo il modello di Bradley-Terry, riflette la probabilità che un modello sia preferito rispetto a un altro. Questo punteggio viene calcolato a partire da tutti i voti e le reazioni degli utenti. Per ulteriori informazioni, consultare la sezione \"Metodologia\".",
+                    "rank": "Classifica assegnata in base al punteggio di soddisfazione Bradley-Terry",
+                    "size": "Il modello è composto da miliardi di parametri, suddivisi in cinque classi. Per i modelli proprietari, le dimensioni non vengono divulgate.",
+                    "trust_range": "Intervallo che indica l'affidabilità della stima della classifica: più l'intervallo è ristretto, più affidabile è la stima della classifica. C'è una probabilità del 95% che la vera classifica del modello si trovi all'interno di questo intervallo."
+                }
+            },
+            "lastUpdate": "Aggiornato il {date}",
+            "totalVotes": "Voti totali:"
+        },
+        "title": "Dai voti alla classifica dei modelli"
+    },
+    "reveal": {
+        "equivalent": {
+            "co2": {
+                "tooltip": "La CO<sub>2</sub> emessa è equivalente alle emissioni di anidride carbonica prodotte dall'energia utilizzata per far funzionare il modello. Riflette l'impatto ambientale legato al consumo energetico. Il calcolo dell'equivalenza Wattheures/CO<sub>2</sub> varia a seconda del mix energetico di ciascun paese. Tuttavia, i server utilizzati per l'inferenza del modello non sono tutti situati in Francia. Pertanto, il calcolo dell'equivalenza si basa sulla media globale del tasso di emissione d CO<sub>2</sub> per energia consumata.",
+                "unit": "tonnellate"
+            },
+            "desc": "Se tutti i francesi che utilizzano l'IA generativa (48%) avessero avuto questa discussione, ciò rappresenterebbe:",
+            "scales": {
+                "baguette_production": {
+                    "unit": "Baguette prodotte"
+                },
+                "mango_import": {
+                    "tooltip": "Dati calcolati in base all'impronta di carbonio dalla produzione alla consegna dei manghi importati per via aerea. (fonte <a {linkProps}>ADEME</a>)"
+                },
+                "one_year_tree_absortion": {
+                    "tooltip": "Stima basata su una media: un albero maturo assorbe circa ~22 kg CO₂/anno (≈48 lb). Questo risultato è un ordine di grandezza; varia a seconda della specie, dell'età, del clima e del tipo di terreno. (Source <a {linkProps}>USDA</a>)",
+                    "unit": "Alberi in grado di assorbire CO2 per 1 anno"
+                },
+                "package_delivery": {
+                    "tooltip": "Dati calcolati in base all'impronta di carbonio delle consegne a domicilio di pacchi da 1 kg. (fonte <a {linkProps}>ADEME</a>)"
+                },
+                "paris_nyc_flights": {
+                    "tooltip": "Dati calcolati in base all'impronta di carbonio di un viaggio di andata e ritorno tra Parigi e New York su un volo a lungo raggio. (fonte <a {linkProps}>ADEME</a>)",
+                    "unit": "Viaggio di andata e ritorno Parigi - NYC in aereo"
+                },
+                "pool_filing": {
+                    "unit": "Riempimento della piscina"
+                }
+            },
+            "title": "Equivalenti in tonnellate di CO2",
+            "title_tooltip": "Le equivalenze sono proiezioni per illustrare l'effetto di massa; abbiamo moltiplicato l'impatto della tua discussione con questo modello per tutti gli utenti di IA in Francia: il 48% dei francesi dichiara ora di utilizzare l'IA generativa; mai prima d'ora una tecnologia digitale è stata adottata così rapidamente. (fonte: CREDOC Digital Barometer)"
+        },
+        "feedback": {
+            "moreOnVotes": "Scopri di più sul voto",
+            "shareResult": "Condividi il tuo risultato"
+        },
+        "impacts": {
+            "energy": {
+                "label": "energia consumata.",
+                "tooltip": "Misurata in milliwattora, l'energia consumata rappresenta l'elettricità utilizzata dal modello per elaborare una richiesta e generare la risposta corrispondente. Più un modello è grande (in miliardi di parametri), maggiore è l'energia necessaria per produrre un token."
+            },
+            "size": {
+                "count": "miliardi di parametri.",
+                "label": "dimensione del modello",
+                "quantized": "(quantificato)"
+            },
+            "title": "Stima dell'impatto energetico della discussione",
+            "tokens": {
+                "label": "dimensione del testo",
+                "tokens": "token",
+                "tooltip": "L'IA analizza e genera frasi a partire da parole o parti di parole di circa quattro lettere; questa unità di testo è chiamata token. Più lungo è il testo, maggiore è il numero di token."
+            }
+        },
+        "thanks": {
+            "cta": "Accedi alle classifiche",
+            "desc": "Scopri come le tue preferenze si confrontano con la classifica generale dei modelli su compar:IA.",
+            "graphAlt": "Panoramica del grafico che rappresenta il punteggio e il consumo di energia elettrica dei modelli",
+            "rankingAlt": "Panoramica della classifica in formato tabellare",
+            "title": "Grazie per il tuo contributo!"
+        }
+    },
+    "seo": {
+        "desc": "compar:IA è uno strumento che consente il confronto alla cieca di diversi modelli di IA conversazionale per sensibilizzare sulle problematiche dell'IA generativa (pregiudizi, impatto ambientale) e per creare dataset sulle preferenze in francese.",
+        "titles": {
+            "accessibilite": "Dichiarazione di accessibilità",
+            "arene": "Chat",
+            "comparator": "Il comparatore",
+            "datasets": "Dataset",
+            "donnees-personnelles": "Politica sulla riservatezza",
+            "mentions-legales": "Avviso legale",
+            "modalites": "Termini d'uso",
+            "modeles": "Elenco dei modelli",
+            "news": "Notizie e risorse",
+            "partners": "Partner",
+            "problem": "Il problema iniziale",
+            "product": "Chi siamo"
         }
     }
 }
