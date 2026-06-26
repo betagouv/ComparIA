@@ -13,38 +13,36 @@ Functions:
 - get_llm_consumption: Calculates environmental impact
 """
 
-from enum import Enum
 from typing import TYPE_CHECKING, TypedDict, Union
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
-from backend.config import CONSUMPTION_SCALE_FACTOR
-
 if TYPE_CHECKING:
     from backend.llms.models import LLMData
     from utils.models.llms import LLMDataRaw
 
+# FIXME equivalences legacy?
+# from backend.config import CONSUMPTION_SCALE_FACTOR
+# # Equivalence types for scaled impact comparisons
+# class EquivalenceType(Enum):
+#     PARIS_NYC_FLIGHTS = "paris_nyc_flights"
+#     BAGUETTE_PRODUCTION = "baguette_production"
+#     ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
+#     PACKAGE_DELIVERY = "package_delivery"
+#     MANGO_IMPORT = "mango_import"
+#     POOL_FILING = "pool_filing"
 
-# Equivalence types for scaled impact comparisons
-class EquivalenceType(Enum):
-    PARIS_NYC_FLIGHTS = "paris_nyc_flights"
-    BAGUETTE_PRODUCTION = "baguette_production"
-    ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
-    PACKAGE_DELIVERY = "package_delivery"
-    MANGO_IMPORT = "mango_import"
-    POOL_FILING = "pool_filing"
 
-
-CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
-    EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
-    EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
-    EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
-    EquivalenceType.PACKAGE_DELIVERY: 0.576,
-    EquivalenceType.MANGO_IMPORT: 11.655508000000001,
-    EquivalenceType.POOL_FILING: 7.54,
-}
+# CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
+#     EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
+#     EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
+#     EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
+#     EquivalenceType.PACKAGE_DELIVERY: 0.576,
+#     EquivalenceType.MANGO_IMPORT: 11.655508000000001,
+#     EquivalenceType.POOL_FILING: 7.54,
+# }
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
@@ -177,9 +175,10 @@ def get_llm_impact(
     )
 
 
-class Equivalence(TypedDict):
-    type: EquivalenceType
-    value: float
+# FIXME equivalences legacy?
+# class Equivalence(TypedDict):
+# type: EquivalenceType
+#     value: float
 
 
 class Consumption(TypedDict):
@@ -187,14 +186,15 @@ class Consumption(TypedDict):
     tokens: int
     # Environmental metrics (CO2)
     co2_kg: int | float
-    # Scaled CO2
-    scaled_co2_kg: int | float
-    scaled_co2_t: int | float
     # Energy metrics
     energy_mwh: int | float
     energy_kwh: int | float
-    # Scaled equivalence values
-    equivalences: list[Equivalence]
+    # FIXME equivalences legacy?
+    # # Scaled CO2
+    # scaled_co2_kg: int | float
+    # scaled_co2_t: int | float
+    # # Scaled equivalence values
+    # equivalences: list[Equivalence]
 
 
 def get_llm_consumption(
@@ -218,22 +218,24 @@ def get_llm_consumption(
     # Get raw kWh and CO2 kg values for equivalence calculations
     kwh = convert_range_to_value(impact.energy.value)
     co2_kg = convert_range_to_value(impact.gwp.value)
+    # FIXME equivalences legacy?
     # co2 scaled to population using generative AI
-    scaled_co2_kg = co2_kg * CONSUMPTION_SCALE_FACTOR
+    # scaled_co2_kg = co2_kg * CONSUMPTION_SCALE_FACTOR
 
     return {
         "tokens": tokens,
         "co2_kg": co2_kg,
-        "scaled_co2_kg": scaled_co2_kg,
-        "scaled_co2_t": scaled_co2_kg / 1000,
         "energy_mwh": kwh * 1000 * 1000,
         "energy_kwh": kwh,
+        # FIXME equivalences legacy?
+        # "scaled_co2_kg": scaled_co2_kg,
+        # "scaled_co2_t": scaled_co2_kg / 1000,
         # Compute all equivalences
-        "equivalences": [
-            {
-                "type": eq_type,
-                "value": scaled_co2_kg / CO2_KG_EQUIVALENCE[eq_type],
-            }
-            for eq_type in list(EquivalenceType)
-        ],
+        # "equivalences": [
+        #     {
+        #         "type": eq_type,
+        #         "value": scaled_co2_kg / CO2_KG_EQUIVALENCE[eq_type],
+        #     }
+        #     for eq_type in list(EquivalenceType)
+        # ],
     }
