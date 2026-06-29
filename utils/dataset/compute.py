@@ -182,7 +182,11 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             if turn.user_msg.web_search_results
             else raw_content
         )
-        user_entry = {"role": turn.user_msg.role, "content": content, "user_content": raw_content}
+        user_entry = {
+            "role": turn.user_msg.role,
+            "content": content,
+            "user_content": raw_content,
+        }
         response_a = [user_entry] + ([_llm_response_entry(msg_a)] if msg_a else [])
         response_b = [user_entry] + ([_llm_response_entry(msg_b)] if msg_b else [])
         full_conversation_a.extend(response_a)

@@ -94,7 +94,13 @@ async def run_guardrail(
         increment_blocked_prompts(get_ip(request))
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=[{"loc": ["body", field], "msg": verdict.block_message, "type": "value_error"}],
+            detail=[
+                {
+                    "loc": ["body", field],
+                    "msg": verdict.block_message,
+                    "type": "value_error",
+                }
+            ],
         )
     return verdict
 
