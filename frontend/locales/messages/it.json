@@ -47,10 +47,16 @@
             "generateAnother": "Genera un altro messaggio",
             "title": "Suggerimenti rapidi"
         },
-        "title": "Come posso esserti d'aiuto oggi?"
+        "title": "Come posso esserti d'aiuto oggi?",
+        "webSearch": {
+            "disabled": "Ricerca web disabilitata",
+            "enabled": "Ricerca web abilitata",
+            "label": "Ricerca web",
+            "tooltip": "Abilitare la ricerca web permette ai modelli di utilizzare fonti online e citare informazioni più recenti.<br> <strong>> Senza la ricerca web</strong>, i modelli rispondono in base a quanto appreso durante la formazione (i dati di formazione). Non potendo verificare le informazioni online, le informazioni più recenti o specifiche potrebbero risultare incomplete."
+        }
     },
     "chatbot": {
-        "continuePrompt": "Continua la conversazione con i modelli",
+        "continuePrompt": "Continua la conversazione…",
         "conversation": "Conversazione",
         "errors": {
             "other": {
@@ -69,7 +75,10 @@
             "finished": "Ragionamento completato",
             "inProgress": "Ragionamento in corso…"
         },
-        "revealButton": "Rivela i modelli"
+        "revealButton": "Termina e rivela i modelli",
+        "webSearch": {
+            "label": "Risultati di ricerca web correlati."
+        }
     },
     "closeModal": "Chiudi la finestra popup",
     "components": {
@@ -485,7 +494,8 @@
         "archs": {
             "dense": {
                 "desc": "L'architettura densa si riferisce a un tipo di rete neurale in cui ogni neurone di uno strato è connesso a tutti i neuroni dello strato successivo. Ciò consente a tutti i parametri dello strato di contribuire al calcolo dell'output.",
-                "name": "Denso"
+                "name": "Denso",
+                "title": "Architettura Densa"
             },
             "matformer": {
                 "desc": "Immagina le bambole russe (matrioske → matryoshka transformer → Matformer): ogni blocco contiene diversi sotto-modelli annidati di dimensioni crescenti, che condividono gli stessi parametri. Ciò consente, per ogni richiesta, la selezione di un modello con capacità adeguate, a seconda della memoria disponibile o della latenza, senza la necessità di riaddestrare modelli diversi.",
@@ -738,6 +748,8 @@
                 "size_desc": "<p>Con 744 miliardi di parametri, questo modello rientra tra i modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE) con 256 esperti, di cui 8 attivati tramite token, utilizza solo 40 miliardi di parametri per inferenza, riducendo la sua impronta ecologica rispetto a un modello denso di pari dimensioni, pur richiedendo un server con diverse schede grafiche potenti per l'hosting. La sua finestra di contesto raggiunge circa 200.000 token, consentendogli di elaborare documenti molto lunghi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
             },
             "GLM 5.2": {
+                "desc": "<p>Un modello di grandi dimensioni progettato per compiti complessi: generazione di codice, orchestrazione degli agenti e analisi di documenti lunghi. È particolarmente ottimizzato per attività di programmazione a lungo termine (long-horizon), come il completamento di interi progetti software in un'unica sessione. Incorpora funzionalità di ragionamento avanzate che possono essere attivate su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore.</p>",
+                "fyi": "<p>Sviluppato da Z.ai (precedentemente Zhipu AI), GLM 5.2 estende la linea GLM concentrandosi su casi d'uso di programmazione e attività agentiche di lunga durata. La sua architettura combina un Mixture of Experts (MoE) di 256 esperti, inclusi 8 esperti attivati per token, e un meccanismo di attenzione sparsa (sparse attention) che rende utilizzabile la sua finestra di contesto da un milione di token. Offre due livelli di sforzo di ragionamento (High e Max), lo sviluppatore che raccomanda la modalità Massima per le attività di programmazione.</p>\n<p>I pesi del modello sono pubblicati in accesso aperto con licenza MIT, che consente l'uso, la modifica e l'impiego commerciale senza restrizioni.</p>",
                 "size_desc": "<p>Con 744 miliardi di parametri, questo modello rientra nella categoria dei modelli di grandi dimensioni. Grazie a un'architettura Mixture of Experts (MoE), attiva solo circa 40 miliardi di parametri per token generato, risultando più efficiente rispetto ai modelli densi di dimensioni simili. Tuttavia, per l'hosting è necessario un server con diverse schede grafiche molto potenti.</p>\n<p>La sua finestra di contesto può contenere fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Nonostante ciò , l'architettura Mixture of Experts (MoE) consente l'attivazione solo di una frazione dei parametri, riducendo così l'impronta rispetto a un modello denso delle stesse dimensioni.</p>"
             },
             "GPT 4.1 Nano": {
@@ -862,6 +874,7 @@
             },
             "Gemini 3.5 Flash": {
                 "desc": "<p>Modello multimodale di Google per attività agentiche a più fasi e generazione di codice, con input di testo, immagini, video, audio e PDF. Incorpora funzionalità di ragionamento avanzate che possono essere attivate su richiesta, con un livello di ragionamento configurabile dall'utente o dallo sviluppatore. </p>",
+                "fyi": "<p>Presentata al Google I/O 2026, Gemini 3.5 Flash è posizionata da Google come modello \"predefinito\" nella gamma Flash, in grado di competere con modelli più grandi in termini di dimensioni del codice e attività agentiche. L'azienda annuncia una velocità di generazione circa quattro volte superiore rispetto ad altri modelli di frontiera.</p>\n<p>Il modello è nativamente multimodale e accetta come input testo, immagini, video, audio e file PDF. Supporta le function call e concatenamenti di passaggi, il che lo rende utilizzabile in contesti agentici a lunga esecuzione, in particolare tramite la piattaforma Antigravity di Google.</p>\n<p>Secondo l'editore, Gemini 3.5 Flash supera Gemini 3.1 Pro in diversi test di codice e di agenti: 76,2% su Terminal-Bench 2.1, 83,6% su MCP Atlas per l'utilizzo di strumenti su larga scala, 1656 punti Elo su GDPval-AA e 84,2% su CharXiv Reasoning per il ragionamento multimodale. Non sono stati forniti dettagli sull'architettura interna, sul corpus di addestramento o sull'infrastruttura di addestramento.</p>",
                 "size_desc": "<p>Le dimensioni esatte del modello non sono divulgate, ma si basa su un'architettura Mixture of Experts (MoE). Questa architettura attiva solo un sottoinsieme di parametri per ogni token, riducendo così la potenza di calcolo necessaria.</p>\n<p>La sua finestra di contesto può contenere fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi.</p>\n<p>I modelli di ragionamento di questo tipo impiegano più tempo a produrre una risposta, il che aumenta il consumo energetico. Il livello di ragionamento predefinito è impostato su medio per limitare la latenza e i costi, e può essere abbassato a minimo o basso, oppure alzato ad alto a seconda delle necessità.</p>"
             },
             "Gemma 2 27B": {
@@ -941,6 +954,7 @@
             },
             "Hermes 3 405B": {
                 "desc": "<p>Modello di grandi dimensioni, riaddestrato sulla base di Llama 3.1 405B adattato per soddisfare al meglio le esigenze degli utenti e facilitare l'utilizzo di strumenti esterni.</p>",
+                "fyi": "<p>Questo modello è il risultato del riaddestramento di tutti i parametri di Llama 3.1 405B per rendere il suo comportamento meno restrittivo e maggiormente in grado di tenere conto delle sfumature dei prompt di sistema - l'utente ha un maggiore controllo sulla \"personalità\" e sul comportamento del modello. Delle funzioni specifiche di ragionamento come <strong><code>&lt;SCRATCHPAD&gt;</code></strong>, <strong><code>&lt;REASONING&gt;</code></strong>, <strong><code>&lt;THINKING&gt;</code></strong> sono state aggiunte per simulare un ragionamento sui compiti complessi. L'addestramento ha utilizzato uno strumento chiamato AdamW (velocità di apprendimento di 3,5×10⁻⁶), che aiuta il modello ad apprendere in modo efficiente regolando progressivamente i suoi parametri. È stato poi perfezionato utilizzando un metodo chiamato DPO (Direct Preference Optimization), che migliora le sue risposte in base a preferenze specifiche. Per rendere questo addestramento più leggero e veloce, sono stati utilizzati adattatori LoRA; si tratta di moduli più piccoli che modificano solo una parte del modello, evitando così la necessità di rielaborare tutti i parametri simultaneamente.</p>",
                 "size_desc": "<p>Con 405 miliardi di parametri, questo modello è tra i più grandi. Richiede un server dotato di diverse schede grafiche potenti, con conseguenti costi operativi significativi.</p>"
             },
             "Hermes 4 70B": {
@@ -1200,6 +1214,7 @@
             },
             "Qwen 3.5 35B A3B": {
                 "desc": "<p>Un modello multimodale, multilingue e di medie dimensioni con una modalità di ragionamento. Nonostante le sue dimensioni modeste, rivaleggia con modelli molto più grandi grazie a un'architettura ultra-sparse che attiva solo una piccola frazione dei suoi parametri con ogni token.</p>",
+                "fyi": "<p>Questo modello si basa sull'architettura ibrida di Qwen 3.5, che combina Gated DeltaNet (attenzione lineare in O(n)) e attenzione classica con Mixture of Experts ultra-sparso: 256 esperti in totale, di cui 8 instradati e 1 condiviso, attivati per ogni token. La rete ha 40 strati organizzati in blocchi di 4: 3 strati Gated DeltaNet seguiti da 1 strato di attenzione classica, ciascuno associato a un modulo MoE.</p>\n<p>Nativamente multimodale, è addestrato in fase di fusione precoce (early fusion) su token multimodali (testo, immagini e video) e supporta 201 lingue e dialetti. Secondo lo sviluppatore, supera la generazione precedente Qwen3-235B-A22B nei principali test di benchmark, risultando inoltre più di 7 volte più efficiente in termini di parametri abilitati.</p>",
                 "size_desc": "<p>Con 35 miliardi di parametri, Qwen 3.5 35B A3B è un modello di medie dimensioni, ma la sua architettura Mixture of Experts (MoE) ultra-sparse gli consente di attivare solo 3 miliardi di parametri per token generato, riducendo significativamente i requisiti di potenza di calcolo. Può essere eseguito localmente su hardware consumer di fascia alta. La finestra di contesto nativa può contenere 262.144 token e può essere estesa fino a circa 1 milione utilizzando tecniche di estrapolazione (YaRN). I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
             },
             "Qwen 3.5 397B": {
@@ -1209,6 +1224,7 @@
             },
             "Qwen 3.6 Plus": {
                 "desc": "<p>Il modello di punta della nuova generazione, Qwen 3.6, progettato da Alibaba secondo il principio dell' \"agentic coding\", è in grado di scomporre un progetto di programmazione, scrivere il codice, testarlo e correggere autonomamente gli errori fino a raggiungere un risultato funzionale. Si distingue inoltre per la sua finestra di contesto molto ampia, che gli consente di acquisire interi codebase o corpus di documenti. È uno dei pochi modelli proprietari pubblicati da Qwen, che solitamente rilascia molti modelli open-weight.</p>",
+                "fyi": "<p>Annunciato ufficialmente da Alibaba il 2 aprile 2026, Qwen 3.6 Plus è stato reso disponibile in anteprima su OpenRouter alla fine di marzo 2026. L'editore lo presenta come compatibile con diversi assistenti di codice di terze parti, tra cui Claude Code e Cline, per consentire flussi di lavoro automatizzati in cui il modello traduce requisiti complessi in codice funzionale.</p>\n<p>L'architettura ibrida combina l'attenzione lineare ad un routing di Sparse Mixture of Experts, proseguendo la serie Qwen 3.5. I pesi di Qwen 3.6 Plus non sono pubblicati e l'accesso è possibile solo tramite API, a differenza della maggior parte dei modelli Qwen, che sono pubblicati con open wights. Secondo l'editore, il modello è ottimizzato per la stabilità e la precisione richieste negli ambienti professionali, in particolare per il tracciamento delle istruzioni, il riconoscimento di testi complessi e la percezione visiva a grana fine. Al momento dell'annuncio non erano disponibili punteggi di benchmark pubblici indipendenti.</p>",
                 "size_desc": "<p>Le dimensioni esatte del modello non sono divulgate, ma si basa su un'architettura Mixture of Experts (MoE) combinata con l'attenzione lineare. Questa architettura attiva solo un sottoinsieme di parametri per ogni token, riducendo così la potenza di calcolo richiesta. La sua finestra di contesto si estende fino a 1 milione di token, consentendo l'elaborazione di corpus di documenti molto ampi. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico.</p>"
             },
             "Qwen1.5-32B": {
@@ -1233,6 +1249,7 @@
             },
             "Qwen2.5-32B": {
                 "desc": "<p>In grado di supportare un contesto di 130k token, questo modello di piccole dimensioni, multilingue e versatile offre ottime prestazioni per attività di traduzione, riassunto, analisi e ragionamento.</p>",
+                "fyi": "<p>Un modello intermedio della famiglia Qwen2.5, prodotto dall'azienda cinese Alibaba, questo modello può supportare fino a 130.000 token per l'elaborazione di testi lunghi.</p>",
                 "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
             },
             "Qwen2.5-7B": {
@@ -1308,6 +1325,7 @@
         "menu": "Menu",
         "startDiscussion": "Inizia a chattare",
         "subtitle": "Il comparatore di IA conversazionale",
+        "title": "comapr:IA",
         "votes": {
             "count": "{count} votes",
             "legend": "Leggenda",
@@ -1403,6 +1421,7 @@
         },
         "vote": {
             "datasetAccess": "Accedere ai dataset",
+            "desc": "Lo strumento è destinato anche a esperti e formatori di IA per utilizzi più specifici",
             "steps": {
                 "datasets": {
                     "desc": "Tutte le domande poste e i voti vengono raccolti in dataset e pubblicati liberamente dopo essere stati anonimizzati.",
@@ -1413,9 +1432,11 @@
                     "title": "Modelli perfezionati per la lingua specifica"
                 },
                 "prefs": {
-                    "desc": "Dopo aver discusso con l'IA, indica la tua preferenza per un modello in base a criteri specifici, come la pertinenza o l'utilità delle risposte."
+                    "desc": "Dopo aver discusso con l'IA, indica la tua preferenza per un modello in base a criteri specifici, come la pertinenza o l'utilità delle risposte.",
+                    "title": "Le tue preferenze"
                 }
-            }
+            },
+            "title": "Perché il tuo voto è importante?"
         }
     },
     "models": {
@@ -1449,7 +1470,8 @@
         },
         "extra": {
             "experts": {
-                "api-only": "Per gli esperti, consultare il <a {linkProps}>sito web ufficiale del modello</a>"
+                "api-only": "Per gli esperti, consultare il <a {linkProps}>sito web ufficiale del modello</a>",
+                "open-weights": "Per gli esperti, consultare la <a {linkProps}>pagina del modello su Hugging Face</a>"
             },
             "impacts": "I calcoli dell'impatto ambientale si basano sui progetti <a {linkProps1}>EcoLogits</a> e <a {linkProps2}>Impact CO<sub>2</sub></a>.",
             "title": "Per andare oltre"
@@ -1464,12 +1486,17 @@
         "list": {
             "filters": {
                 "archived": {
+                    "checkedLabel": "Visibile",
+                    "help": "Per impostazione predefinita, sono visibili solo i modelli attivi nel comparatore.",
                     "label": "Modelli archiviati",
                     "uncheckedLabel": "Non visibile"
                 },
                 "display": "Mostra filtri",
                 "editor": {
                     "legend": "Editore"
+                },
+                "license": {
+                    "legend": "Licenza d'uso"
                 },
                 "reset": "Cancella tutti i filtri",
                 "size": {
@@ -1484,7 +1511,12 @@
                 }
             },
             "intro": "Scopri i diversi modelli di IA conversazionale disponibili, le loro funzionalità e le relative licenze.",
+            "model": "modello",
+            "models": "modelli",
+            "noresults": "Nessun modello corrisponde ai criteri di ricerca.",
+            "title": "Scopri i modelli",
             "triage": {
+                "label": "Ordina per",
                 "options": {
                     "date-desc": "Data di pubblicazione (dalla più recente alla meno recente)",
                     "name-asc": "Nome del modello (dalla A alla Z)",
@@ -1494,18 +1526,22 @@
             }
         },
         "names": {
-            "a": "Modello A"
+            "a": "Modello A",
+            "b": "Modello B"
         },
         "openWeight": {
             "tooltips": {
+                "copyleft": "Una volta modificato, il modello deve essere ridistribuito con la stessa licenza del modello originale.",
                 "free": "Una volta modificato, il modello può essere ridistribuito con una licenza diversa da quella del modello originale.",
                 "openSource": "Il corpus, il codice di addestramento e i pesi di questo modello (ovvero i parametri appresi durante l'addestramento) sono completamente scaricabili e modificabili dal pubblico, consentendo loro di eseguire e modificare il modello sul proprio hardware. Un modello \"open source\" è più restrittivo rispetto ad uno \"open weight\", soprattutto a causa della necessità di trasparenza del corpus di addestramento, e pochissimi modelli sono considerati \"open source\".",
+                "openWeight": "Un modello viene definito \"open weights\" quando i pesi, ovvero i parametri appresi durante l'addestramento, sono scaricabili pubblicamente, consentendo agli utenti di eseguire il modello sul proprio hardware. La definizione di \"open source\" è più restrittiva (principalmente per quanto riguarda la trasparenza del corpus di addestramento) e pochi modelli sono considerati \"open source\".",
                 "params": "I parametri, o pesi, che si contano a miliardi, sono le variabili apprese da un modello durante il suo addestramento e che ne determinano le risposte. Maggiore è il numero di parametri, maggiori sono le risorse necessarie al suo funzionamento.",
                 "ram": "La RAM memorizza i dati elaborati da un LLM in tempo reale. Più grande è il modello, maggiore è la quantità di RAM necessaria per il suo funzionamento."
             }
         },
         "parameters": "{numero} mds dei parametri",
         "ram": "{min} a {max} GB",
+        "release": "Uscita {data}",
         "size": {
             "count": {
                 "L": "da 100 a 400 miliardi",
@@ -1521,7 +1557,8 @@
     "modes": {
         "big-vs-small": {
             "altLabel": "Davide contro Golia",
-            "description": "Un modello piccolo contro uno grande, entrambi scelti a caso.",
+            "description": "Un modello piccolo contro uno grande, entrambi scelti a caso",
+            "label": "Davide contro Golia",
             "title": "Modalità Davide contro Golia"
         },
         "custom": {
@@ -1531,6 +1568,7 @@
             "title": "Modalità di selezione"
         },
         "random": {
+            "altLabel": "Modelli casuali",
             "description": "Due modelli scelti a caso dall'intera lista",
             "label": "Casuale",
             "title": "Modalità casuale"
@@ -1551,6 +1589,7 @@
     "product": {
         "community": {
             "countries": {
+                "da": "Danimarca",
                 "fr": "Francia"
             },
             "tabLabel": "Community",
@@ -1560,6 +1599,10 @@
                         "aurelien": {
                             "date": "Da giugno 2024",
                             "job": "Progettista di prodotto UX/UI"
+                        },
+                        "elie": {
+                            "date": "Da novembre 2025",
+                            "job": "Sviluppatore Full stack"
                         },
                         "hadrien": {
                             "date": "Giugno 2024 - Novembre 2025",
@@ -1574,7 +1617,8 @@
                             "job": "Responsabile dell' Atelier numérique / Product Ops"
                         },
                         "nicolas": {
-                            "job": "Sviluppatore full stack"
+                            "date": "Da giugno 2025",
+                            "job": "Sviluppatore Full stack"
                         },
                         "simonas": {
                             "date": "Da dicembre 2024",
@@ -1593,13 +1637,15 @@
                     "title": "Pregiudizi culturali e linguistici"
                 },
                 "impacts": {
-                    "desc": "Rivelare gli effetti ecologici dell'IA generativa, che sono ancora in gran parte sconosciuti al grande pubblico."
+                    "desc": "Rivelare gli effetti ecologici dell'IA generativa, che sono ancora in gran parte sconosciuti al grande pubblico.",
+                    "title": "Impatto ambientale"
                 },
                 "pluralism": {
                     "desc": "Garantire ai cittadini l'accesso a una varietà di modelli di intelligenza artificiale, in modo che possano compiere scelte consapevoli e sviluppare una prospettiva critica su queste tecnologie.",
                     "title": "Diversità dei modelli"
                 },
                 "thinking": {
+                    "desc": "Incoraggiare la riflessione critica sul ruolo dell'IA generativa nelle pratiche personali e professionali (istruzione, lavoro).",
                     "title": "Pensiero critico e problematiche sociali"
                 },
                 "title": "L'applicazione sviluppata affronta diverse sfide"
@@ -1608,7 +1654,8 @@
             "europe": {
                 "adventure": "A partire dall'autunno, Lituania, Svezia e Danimarca si uniranno all'avventura!",
                 "catch": "Desideri avere lo strumento di confronto nella tua lingua?",
-                "desc": "Lo strumento di confronto sarà messo a disposizione dei cittadini nelle loro lingue nazionali. L'obiettivo è creare insiemi di dati sulle preferenze per migliorare i futuri modelli di IA in queste lingue europee."
+                "desc": "Lo strumento di confronto sarà messo a disposizione dei cittadini nelle loro lingue nazionali. L'obiettivo è creare insiemi di dati sulle preferenze per migliorare i futuri modelli di IA in queste lingue europee.",
+                "title": "Il comparatore <span {props}>sta diventando europeo</span>!"
             },
             "screenshotAlt": "Screenshot dell'arena compar:ia, con la domanda iniziale, le due risposte modello e i pulsanti di voto.",
             "tabLabel": "Il comparatore",
@@ -1632,13 +1679,22 @@
                             "title": "Obiettivo di 100.000 voti raggiunto!"
                         },
                         "3": {
-                            "date": "Giugno 2025"
+                            "date": "Giugno 2025",
+                            "desc": "Questi tre dataset, conversazioni, reazioni e voti, sono disponibili su <a {hgLinkProps}>HuggingFace</a> e <a {dataLinkProps}>Data.gouv.fr</a>.",
+                            "title": "Pubblicazione dei tre dataset compar:IA"
                         }
-                    }
+                    },
+                    "tag": "Accelerazione"
                 },
                 "construction": {
                     "items": {
+                        "1": {
+                            "date": "Giugno-settembre 2024",
+                            "desc": "Sviluppo delle prime funzionalità del comparatore e integrazione del feedback dei primi beta tester."
+                        },
                         "2": {
+                            "date": "Ottobre 2024",
+                            "desc": "Presentazione ufficiale e prime implementazioni dello strumento.",
                             "title": "Lancio ufficiale durante il Summit della Francofonia a Villers Cotterêts!"
                         },
                         "3": {
@@ -1647,6 +1703,8 @@
                             "title": "compara:AI v2"
                         },
                         "4": {
+                            "date": "Febbraio 2025",
+                            "desc": "Oltre 300 persone hanno partecipato a conferenze e workshop dedicati alle sfide etiche, culturali e ambientali dei sistemi di IA conversazionale.",
                             "title": "<a {linkProps}>ComparIA Day al BnF</a> durante l'AI Action Summit"
                         }
                     },
@@ -1660,6 +1718,7 @@
                             "title": "Estensione su scala europea"
                         },
                         "2": {
+                            "date": "Settembre 2025",
                             "desc": "Creazione di questo nuovo formato di workshop aperto a tutti, per scoprire i meccanismi interni dell'IA generativa e riflettere sul suo impatto ambientale, e pubblicazione del kit di facilitazione associato all'estensione \"AI Duels\".",
                             "title": "Lancio di <a {linkProps}>“AI Duels”</a>"
                         },
@@ -1672,6 +1731,7 @@
                             "title": "Apertura comparar:IA <a {linkProps}>in danese</a>"
                         },
                         "5": {
+                            "desc": "Il servizio è riconosciuto come bene pubblico digitale dalla Digital Public Goods Alliance.",
                             "title": "compar:IA riconosciuta come un <a {linkProps}>bene comune digitale</a>"
                         },
                         "6": {
@@ -1679,13 +1739,15 @@
                             "desc": "Con oltre 500.000 conversazioni uniche dal lancio di compar:IA.",
                             "title": "Obiettivo di 200.000 voti raggiunto!"
                         }
-                    }
+                    },
+                    "tag": "Internazionalizzazione"
                 },
                 "investigation": {
                     "items": {
                         "1": {
                             "date": "Gennaio-marzo 2024",
-                            "desc": "Interviste con gli stakeholder dell'ecosistema e ipotesi iniziali per una soluzione al problema: \"Come facilitare l'accesso ai dati in francese per l'addestramento di modelli linguistici?\"."
+                            "desc": "Interviste con gli stakeholder dell'ecosistema e ipotesi iniziali per una soluzione al problema: \"Come facilitare l'accesso ai dati in francese per l'addestramento di modelli linguistici?\".",
+                            "title": "Fase di indagine"
                         }
                     },
                     "tag": "Indagine"
@@ -1701,7 +1763,10 @@
                 "title": "Partner accademici"
             },
             "diffusion": {
-                "catch": "Desideri utilizzare il comparatore per soddisfare un'esigenza aziendale?"
+                "catch": "Desideri utilizzare il comparatore per soddisfare un'esigenza aziendale?",
+                "cta": "Raccontaci di più",
+                "desc": "Stiamo creando una rete di partner che integrano lo strumento di comparazione nei loro servizi e nelle loro offerte formative.",
+                "title": "Partner di diffusione"
             },
             "institution": {
                 "title": "Partner istituzionali"
@@ -1715,6 +1780,7 @@
         "problem": {
             "alignment": {
                 "alignment": {
+                    "a": "L'allineamento avviene dopo la fase di pre-addestramento di un modello linguistico, come una fase di \"lavorazione\" o \"rifinitura\". Durante il pre-addestramento, il modello impara a prevedere la parola successiva e diventa capace di generare un testo coerente.",
                     "b": "La fase di allineamento prevede di insegnare al modello a soddisfare meglio i bisogni umani, ovvero renderlo più <strong>pertinente</strong> (il modello risponde \"meglio\" alle domande), <strong>onesto</strong> (capacità di presumere \"di non conoscere la risposta\" quando non ci sono dati sufficienti) ed <strong>innocuo</strong> (evitando di generare contenuti pericolosi o inappropriati).",
                     "c": "<strong>Senza allineamento, un LLM potrebbe essere tecnicamente competente ma difficile da usare nella pratica, perché non capirebbe veramente cosa ci si aspetta da esso in una conversazione.</strong>",
                     "title": "L'allineamento, un passaggio cruciale nell'istruzione del modello"
@@ -1722,14 +1788,19 @@
                 "datasets": {
                     "a": "L'allineamento utilizza dati molto specifici, creati appositamente per insegnare al modello come comportarsi \"correttamente\".",
                     "b": "I <strong>dati di preferenza</strong> costituiscono una tipologia particolare di dati di allineamento, insieme ai </strong>dati di dimostrazione</strong> (esempi di conversazioni tra gli umani e assistenti IA, redatti da annotatori esperti secondo precise linee guida di tono e stile), ai <strong>dati di sicurezza</strong> (esempi specifici che insegnano al modello a evitare contenuti pericolosi mostrando come rifiutare richieste problematiche) o ai <strong>dati specialistici</strong> che riguardano ambiti specifici (medicina, diritto , istruzione...).",
-                    "c": "I dati sulle preferenze presentano molteplici risposte possibili alla stessa domanda, classificate in base alla qualità da valutatori umani: gli utenti indicano quale risposta è la migliore secondo determinati criteri, come pertinenza, utilità e pericolosità. Una volta raccolti, questi dataset vengono utilizzati per addestrare modelli, adattandoli alle preferenze espresse dagli utenti."
+                    "c": "I dati sulle preferenze presentano molteplici risposte possibili alla stessa domanda, classificate in base alla qualità da valutatori umani: gli utenti indicano quale risposta è la migliore secondo determinati criteri, come pertinenza, utilità e pericolosità. Una volta raccolti, questi dataset vengono utilizzati per addestrare modelli, adattandoli alle preferenze espresse dagli utenti.",
+                    "title": "Dataset specifici"
                 },
+                "desc": "Allineamento: una tecnica di riduzione dei pregiudizi basata sulla raccolta delle preferenze degli utenti",
                 "diversity": {
+                    "b": "Da un lato, questo <strong>riduce i pregiudizi culturali</strong> impedendo che un'unica prospettiva, spesso anglosassone, domini le risposte dell'IA. Il modello impara quindi a riconoscere che esistono diversi modi validi di affrontare la stessa domanda a seconda del contesto culturale.",
+                    "c": "D'altro canto, questa esposizione alla diversità di lingue e culture favorisce l'adattamento delle risposte a contesti specifici: un utente francese riceverà consigli adattati al sistema francese, mentre un utente danese otterrà informazioni corrispondenti al proprio contesto nazionale.",
                     "d": "Il risultato è un modello di IA conversazionale più inclusivo, in grado di tenere conto delle diverse culture.",
                     "title": "Diversificare i dati per ridurre i pregiudizi"
                 },
                 "english": {
                     "a": "La produzione di dati sulle preferenze è costosa perché <strong>richiede manodopera umana specializzata per ogni singolo esempio</strong>. Piattaforme come https://chat.lmsys.org/ consentono la creazione di questi dataset sulle preferenze ma pochi utenti li utilizzano nella propria lingua madre.",
+                    "c": "comparIA è un esempio di dispositivo che consente la raccolta di conversazioni in più lingue, comprese le referenze culturali specifiche di ogni regione o paese: attività quotidiane, tradizioni culinarie locali, sistemi educativi, riferimenti storici o letterari, ecc.",
                     "title": "Pochi dati sulle preferenze nelle lingue europee"
                 },
                 "title": "Come possiamo ridurre i pregiudizi culturali e linguistici di questi modelli?"
@@ -1741,12 +1812,13 @@
                 },
                 "english": {
                     "desc": "L'IA conversazionale si basa su modelli linguistici di grandi dimensioni (LLM) addestrati principalmente su dati in inglese, il che crea distorsioni linguistiche e culturali nei risultati prodotti.",
-                    "title": "I dati di addestramento sono perlopiù in inglese."
+                    "title": "I dati di addestramento sono perlopiù in inglese"
                 },
                 "stereotypes": {
                     "desc": "I sistemi di IA conversazionale danno l'impressione di parlare tutte le lingue, ma i risultati che generano sono talvolta stereotipati o discriminatori."
                 }
             },
+            "tabLabel": "Il problema iniziale",
             "title": "I modelli di IA conversazionale rispettano la <span {props}>diversità</span> delle lingue europee?"
         },
         "title": "Tutto quello che devi sapere sul comparatore"
@@ -1754,9 +1826,11 @@
     "ranking": {
         "energy": {
             "desc": "Questo grafico rappresenta il punteggio di soddisfazione (punteggio Bradley Terry) per ciascun modello in funzione del consumo energetico medio stimato per 1000 token. Il consumo energetico è stimato utilizzando la metodologia <a {linkProps}>Ecologits</a> e si basa su due parametri: la <strong>dimensione</strong> dei modelli (numero di parametri) e la loro <strong>architettura</strong>. Per i <strong>modelli proprietari</strong>, queste informazioni non sono fornite o sono disponibili solo parzialmente. Pertanto, sono esclusi dal grafico sottostante.",
+            "tabLabel": "Focus sull'energia",
+            "title": "I modelli più diffusi sono efficienti dal punto di vista energetico?",
             "views": {
                 "graph": {
-                    "desc": "Seleziona un modello per scoprire il suo punteggio Bradley-Terry (BT) e il suo consumo energetico.",
+                    "desc": "Seleziona un modello per scoprire il suo punteggio Bradley-Terry (BT) e il suo consumo energetico",
                     "legends": {
                         "arch": "Architettura del modello",
                         "size": "Filtra per dimensione",
@@ -1768,7 +1842,8 @@
                         "active_params": "Parametri attivi (mds)",
                         "arch": "Architettura",
                         "consumption": "Consumo medio (mWh)",
-                        "elo": "Score BT"
+                        "elo": "Score BT",
+                        "params": "Parametri (mds)"
                     },
                     "xLabel": "Consumo medio per 1000 token (mWh)",
                     "yLabel": "Punteggio Bradley-Terry (BT)"
@@ -1783,6 +1858,13 @@
                         "subTitle": "Esempi di lettura del grafico",
                         "title": "Come trovare il giusto equilibrio tra prestazioni percepite ed efficienza energetica?"
                     },
+                    "2": {
+                        "descs": {
+                            "1": "La stima del consumo energetico per l'inferenza dei modelli si basa sulla metodologia Ecologits, che tiene conto delle dimensioni e dell'architettura dei modelli. Tuttavia, queste informazioni non vengono rese pubbliche dagli sviluppatori dei modelli cosiddetti \"proprietari\".",
+                            "2": "Abbiamo pertanto deciso di non integrare modelli proprietari nel grafico finché le informazioni che contribuiscono al calcolo del consumo energetico non saranno trasparenti."
+                        },
+                        "title": "Perché i modelli proprietari non vengono visualizzati nel grafico?"
+                    },
                     "3": {
                         "descs": {
                             "1": "compar:IA utilizza la metodologia sviluppata da <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI ImpactImpact</strong></a>) per fornire una stima dell'impronta energetica associata all'inferenza di modelli di IA generativa conversazionale. Questa stima consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa richiesta. Tale trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più eco-responsabili.",
@@ -1792,10 +1874,17 @@
                         },
                         "title": "Come viene calcolato l'impatto energetico dei modelli?"
                     }
+                },
+                "table": {
+                    "title": "Dati del grafico in formato tabellare"
                 }
             }
         },
         "methodo": {
+            "desc": {
+                "1": "Dal 2024, migliaia di utenti hanno utilizzato compar:AI per confrontare le risposte di diversi modelli, generando centinaia di migliaia di voti. Contare semplicemente il numero di vittorie non è sufficiente per stabilire una classifica. Un sistema equo deve essere statisticamente robusto, aggiornarsi dopo ogni confronto e riflettere fedelmente il valore delle prestazioni ottenute.",
+                "2": "È con questo obiettivo che è stata creata una <strong>classifica basata sul modello Bradley-Terry</strong>, sviluppata in collaborazione con i <strong>team del Centro di competenza sulla regolamentazione digitale (<a {perenLinkProps}>PEReN</a>)</strong>, utilizzando tutti i voti e le reazioni raccolti sulla piattaforma. Per maggiori informazioni, consultare la nostra <a {notebookLinkProps}>guida metodologica</a>."
+            },
             "impacts": {
                 "elo": {
                     "desc": {
@@ -1806,6 +1895,7 @@
                 "title": "Impatto della scelta del metodo sulla classificazione dei modelli",
                 "winrate": {
                     "desc": {
+                        "1": "Basandosi esclusivamente sulla <strong>percentuale media di vittorie</strong>, è possibile ottenere una classifica generale, ma questo calcolo presuppone che ogni modello abbia giocato contro tutti gli altri.",
                         "2": "Questo metodo non è ideale perché richiede dati da tutte le combinazioni di modelli e, non appena il numero di modelli aumenta, diventa rapidamente costoso e complesso da gestire."
                     },
                     "title": "I 10 modelli migliori in classifica in base ai tassi di successo \"empirici\"."
@@ -1823,14 +1913,35 @@
                     "title": "Classifica Bradley-Terry (BT)"
                 },
                 "pros": "Benefici",
+                "title": "Due modi per classificare i modelli",
                 "winrate": {
+                    "def": "<strong>Definizione</strong>:Un sistema di classificazione empirico per i modelli basato sulla percentuale di partite vinte da un modello rispetto a tutti gli altri modelli.",
                     "list": {
+                        "2": "<strong>Nessuna considerazione della difficoltà della partita</strong> : battere un modello \"principiante\" o un modello \"esperto\" ha lo stesso valore. Le percentuali di vittoria sono inique perché non tengono conto della difficoltà della partita.",
                         "3": "<strong>Stagnazione</strong>: Nel lungo periodo, molti buoni modelli finiscono per avere un tasso di vittoria intorno al 50% perché si confrontano con modelli del loro stesso livello, rendendo la classifica meno discriminante."
                     },
                     "title": "Classifica in base al tasso di vittorie"
                 }
             },
-            "tabLabel": "Metodologia"
+            "style": {
+                "coef": {
+                    "footnote": "La lunghezza e gli indicatori markdown sono correlati: questi coefficienti vanno letti insieme e non come effetti indipendenti presi isolatamente.",
+                    "title": "Effetto misurato della presentazione"
+                },
+                "desc": {
+                    "1": "Un modello può scalare le classifiche semplicemente fornendo una risposta più lunga o utilizzando una formattazione più ricca (titoli, testo in grassetto, elenchi), senza necessariamente essere più rilevante in termini di contenuto. Il controllo dello stile, ispirato a \"Style Control\" di LMArena, elimina questo effetto: una regressione logistica separa, in ogni voto, ciò che è dovuto alla forza del modello da ciò che è dovuto alla sua presentazione.",
+                    "2": "Il punteggio visualizzato diventa quindi un punteggio Elo \"non influenzato dallo stile\": la classifica che si otterrebbe se le due risposte confrontate fossero formattate allo stesso modo. Il controllo dello stile è abilitato per impostazione predefinita; il pulsante \"Controllo stile\" nella parte superiore della tabella consente di tornare al punteggio Bradley-Terry grezzo per il confronto."
+                },
+                "features": {
+                    "length": "Lunghezza della risposta",
+                    "md_bold": "Testo in grassetto",
+                    "md_headers": "Titoli",
+                    "md_lists": "Elenchi puntati"
+                },
+                "title": "Controllo dello stile: neutralizzare l'effetto della presentazione"
+            },
+            "tabLabel": "Metodologia",
+            "title": "Come scegliere il metodo per classificare i modelli?"
         },
         "no_data": "La classifica al momento non è disponibile o è in fase di calcolo.",
         "preferences": {
@@ -1845,9 +1956,12 @@
                     "complete": "Completare",
                     "creative": "Creativo",
                     "incorrect": "Non corretto",
+                    "instructions_not_followed": "Istruzioni<br> non seguite",
+                    "n_match": "Partite totali",
                     "name": "Modello",
                     "positive_prefs_ratio": "Distribuzione delle preferenze",
                     "superficial": "Superficiale",
+                    "total_negative_prefs": "Preferenze totali<br> Negative",
                     "total_positive_prefs": "Preferenze totali<br> Positive",
                     "useful": "Utile"
                 },
@@ -1855,23 +1969,32 @@
                 "tooltips": {
                     "positive_prefs_ratio": "Durante la votazione, i badge permettevano di specificare le motivazioni della propria preferenza. Questa colonna mostra la distribuzione in percentuale di questi badge (positivi o negativi) rispetto al totale dei voti."
                 }
-            }
+            },
+            "title": "Come vengono distribuite le preferenze degli utenti?"
         },
         "ranking": {
             "desc": "Grazie per il tuo contributo!<br> La classifica di <strong>compar:IA</strong> si basa su tutti i voti e le reazioni del <strong>confronto cieco</strong> dei modelli, raccolti dall'apertura del servizio al pubblico nell'ottobre 2024.<br> Sviluppata in collaborazione con il Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), la classifica dei modelli si basa sul <strong>punteggio di soddisfazione</strong> calcolato utilizzando il modello statistico <strong>Bradley Terry</strong>, un metodo ampiamente utilizzato per convertire i voti binari in una classifica probabilistica.<br> La classifica di compar:IA non intende essere una raccomandazione ufficiale né valutare le prestazioni tecniche dei modelli. Riflette le <strong>preferenze soggettive</strong> degli utenti della piattaforma e non l'accuratezza o la veridicità fattuale delle risposte.",
             "tabLabel": "Classifica"
         },
+        "styleControl": {
+            "help": "Rimuove l'effetto della formattazione (lunghezza della risposta, titoli, grassetto, elenchi) dalla valutazione, in modo che il punteggio rifletta il contenuto piuttosto che la presentazione. Attivato per impostazione predefinita. Dettagli nella scheda Metodologia.",
+            "label": "Controllo dello stile"
+        },
         "table": {
             "data": {
                 "billions": "{count} Mds",
                 "cols": {
+                    "arch": "Architettura",
                     "consumption": "Consumo medio<br>(1000 token)",
                     "elo": "Punteggio di<br> soddisfazione BT",
+                    "license": "Licenza",
                     "n_match": "Voti totali",
                     "name": "Modello",
+                    "organisation": "Organizzazione",
                     "rank": "Classifica",
                     "release": "Data di rilascio",
-                    "size": "Dimensioni<br>(parametri)"
+                    "size": "Dimensioni<br>(parametri)",
+                    "trust_range": "Fiducia (±)"
                 },
                 "estimation": "(stima)",
                 "tooltips": {
@@ -1884,6 +2007,7 @@
                 }
             },
             "lastUpdate": "Aggiornato il {date}",
+            "totalModels": "Modelli totali:",
             "totalVotes": "Voti totali:"
         },
         "title": "Dai voti alla classifica dei modelli"
@@ -1891,29 +2015,34 @@
     "reveal": {
         "equivalent": {
             "co2": {
+                "label": "CO<sub>2</sub> emesso",
                 "tooltip": "La CO<sub>2</sub> emessa è equivalente alle emissioni di anidride carbonica prodotte dall'energia utilizzata per far funzionare il modello. Riflette l'impatto ambientale legato al consumo energetico. Il calcolo dell'equivalenza Wattheures/CO<sub>2</sub> varia a seconda del mix energetico di ciascun paese. Tuttavia, i server utilizzati per l'inferenza del modello non sono tutti situati in Francia. Pertanto, il calcolo dell'equivalenza si basa sulla media globale del tasso di emissione d CO<sub>2</sub> per energia consumata.",
                 "unit": "tonnellate"
             },
             "desc": "Se tutti i francesi che utilizzano l'IA generativa (48%) avessero avuto questa discussione, ciò rappresenterebbe:",
             "scales": {
                 "baguette_production": {
+                    "tooltip": "Dati calcolati in base all'impronta di carbonio della produzione tradizionale di baguette. (fonte <a {linkProps}>ADEME</a>)",
                     "unit": "Baguette prodotte"
                 },
                 "mango_import": {
-                    "tooltip": "Dati calcolati in base all'impronta di carbonio dalla produzione alla consegna dei manghi importati per via aerea. (fonte <a {linkProps}>ADEME</a>)"
+                    "tooltip": "Dati calcolati in base all'impronta di carbonio dalla produzione alla consegna dei manghi importati per via aerea. (fonte <a {linkProps}>ADEME</a>)",
+                    "unit": "Manghi importati"
                 },
                 "one_year_tree_absortion": {
                     "tooltip": "Stima basata su una media: un albero maturo assorbe circa ~22 kg CO₂/anno (≈48 lb). Questo risultato è un ordine di grandezza; varia a seconda della specie, dell'età, del clima e del tipo di terreno. (Source <a {linkProps}>USDA</a>)",
                     "unit": "Alberi in grado di assorbire CO2 per 1 anno"
                 },
                 "package_delivery": {
-                    "tooltip": "Dati calcolati in base all'impronta di carbonio delle consegne a domicilio di pacchi da 1 kg. (fonte <a {linkProps}>ADEME</a>)"
+                    "tooltip": "Dati calcolati in base all'impronta di carbonio delle consegne a domicilio di pacchi da 1 kg. (fonte <a {linkProps}>ADEME</a>)",
+                    "unit": "Consegne di pacchi"
                 },
                 "paris_nyc_flights": {
                     "tooltip": "Dati calcolati in base all'impronta di carbonio di un viaggio di andata e ritorno tra Parigi e New York su un volo a lungo raggio. (fonte <a {linkProps}>ADEME</a>)",
                     "unit": "Viaggio di andata e ritorno Parigi - NYC in aereo"
                 },
                 "pool_filing": {
+                    "tooltip": "Dati calcolati in base all'impatto ambientale del riempimento di una piscina privata di 8 x 4 metri (fonte <a {linkProps}>ADEME</a>)",
                     "unit": "Riempimento della piscina"
                 }
             },
@@ -1921,6 +2050,8 @@
             "title_tooltip": "Le equivalenze sono proiezioni per illustrare l'effetto di massa; abbiamo moltiplicato l'impatto della tua discussione con questo modello per tutti gli utenti di IA in Francia: il 48% dei francesi dichiara ora di utilizzare l'IA generativa; mai prima d'ora una tecnologia digitale è stata adottata così rapidamente. (fonte: CREDOC Digital Barometer)"
         },
         "feedback": {
+            "description": "Aiuta a promuovere compar:IA condividendo i modelli di IA con cui hai interagito! Tramite questo link saranno visibili solo i nomi e l'impatto energetico della discussione, senza accesso ai messaggi scambiati.",
+            "example": "Esempio di condivisione dei risultati",
             "moreOnVotes": "Scopri di più sul voto",
             "shareResult": "Condividi il tuo risultato"
         },
@@ -1931,6 +2062,7 @@
             },
             "size": {
                 "count": "miliardi di parametri.",
+                "estimated": "(est.)",
                 "label": "dimensione del modello",
                 "quantized": "(quantificato)"
             },
@@ -1939,7 +2071,8 @@
                 "label": "dimensione del testo",
                 "tokens": "token",
                 "tooltip": "L'IA analizza e genera frasi a partire da parole o parti di parole di circa quattro lettere; questa unità di testo è chiamata token. Più lungo è il testo, maggiore è il numero di token."
-            }
+            },
+            "tooltip": "Stima basata sulle dimensioni del modello, sull'architettura e sulla lunghezza della risposta generata."
         },
         "thanks": {
             "cta": "Accedi alle classifiche",
@@ -1951,19 +2084,86 @@
     },
     "seo": {
         "desc": "compar:IA è uno strumento che consente il confronto alla cieca di diversi modelli di IA conversazionale per sensibilizzare sulle problematiche dell'IA generativa (pregiudizi, impatto ambientale) e per creare dataset sulle preferenze in francese.",
+        "title": "compar:AI, il comparatore di intelligenza artificiale conversazionale",
         "titles": {
             "accessibilite": "Dichiarazione di accessibilità",
             "arene": "Chat",
+            "community": "Community",
             "comparator": "Il comparatore",
             "datasets": "Dataset",
             "donnees-personnelles": "Politica sulla riservatezza",
+            "duel": "Workshop AI Duel",
+            "faq": "FAQ",
+            "history": "Date chiave",
+            "home": "Home",
             "mentions-legales": "Avviso legale",
             "modalites": "Termini d'uso",
             "modeles": "Elenco dei modelli",
             "news": "Notizie e risorse",
             "partners": "Partner",
             "problem": "Il problema iniziale",
-            "product": "Chi siamo"
+            "product": "Chi siamo",
+            "ranking": "Classifica",
+            "share": "I miei risultati"
         }
+    },
+    "vote": {
+        "choices": {
+            "negative": {
+                "comment": "Per favore, specifica cosa non ti è piaciuto…",
+                "incorrect": "Non corretto",
+                "question": "Perché questa risposta non è adeguata?",
+                "superficial": "Superficiale"
+            },
+            "positive": {
+                "clear_formatting": "Formattazione chiara",
+                "comment": "Per favore, specifica cosa ti è piaciuto…",
+                "complete": "Completo",
+                "creative": "Creativo",
+                "question": "Cosa hai apprezzato della risposta?",
+                "useful": "Utile"
+            }
+        },
+        "importantDesc": "La tua preferenza arricchisce i dataset di compar:IA, che mirano a perfezionare i futuri modelli di IA per le lingue francese, svedese, lituana e danese.",
+        "title": "Quale modello di IA preferisci?",
+        "turn": {
+            "choices": {
+                "a_better": "A è meglio",
+                "b_better": "B è meglio",
+                "both_bad": "Entrambi non vanno bene",
+                "both_good": "Entrambi sono buoni",
+                "idk": "Approva la votazione"
+            },
+            "important": "Il tuo voto è importante: contribuisce a un migliore allineamento con le <a {linkProps}>preferenze francofone</a>."
+        },
+        "yours": "Il tuo voto"
+    },
+    "welcome": {
+        "errors": "L'IA può commettere errori: vi invitiamo a verificare le informazioni fornite.",
+        "go": "Partiamo",
+        "privacy": "Non condividere informazioni personali come nome, cognome o indirizzo.",
+        "title": "Benvenuti su compar:IA!",
+        "tos": {
+            "desc": "Le conversazioni e le preferenze che esprimi su compar:AI vengono utilizzate in forma anonima per creare dataset rappresentativi delle lingue e degli usi europei, al fine di ridurre i pregiudizi culturali e proporre in futuro modelli di intelligenza artificiale più inclusivi.",
+            "moreInfos": "Scopri di più sul progetto."
+        },
+        "use": "Non utilizzare l'arena per scopi illegali o dannosi."
+    },
+    "words": {
+        "NA": "N/A",
+        "activated": "Attivato",
+        "archived": "Archiviato",
+        "back": "Indietro",
+        "close": "Chiudere",
+        "deactivated": "Disattivato",
+        "loading": "Caricamento",
+        "new": "Nuovo",
+        "random": "Casuale",
+        "regenerate": "Rigenerare",
+        "reset": "Reset",
+        "restart": "Ricominciare",
+        "retry": "Ricominciare",
+        "send": "Inviare",
+        "tooltip": "Strumento di suggerimento"
     }
 }
