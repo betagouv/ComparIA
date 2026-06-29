@@ -172,7 +172,7 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto). Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello. </p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
+                    "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto).</p><p>Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello.</p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
                     "title": "Come vengono calcolati gli indicatori ecologici?"
                 },
                 "2": {
@@ -244,6 +244,7 @@
                     "title": "Perché alcuni modelli perdono rapidamente il filo della conversazione?"
                 },
                 "5": {
+                    "desc": "<p>Il modo in cui vengono formulate le domande, o \"prompt\", influenza la coerenza della conversazione. Per ottenere i migliori risultati da un modello linguistico, è essenziale padroneggiare l'arte del <em>prompting</em>, ovvero la formulazione di domande o istruzioni. <strong>La chiarezza è fondamentale </strong>:</p><ul><li>Utilizza un linguaggio semplice e diretto, evitando domande eccessivamente lunghe o complesse. Suddividi le domande in più domande più semplici per risposte più precise.</li><li><strong>Specifica eventuali vincoli di formato necessari</strong>: se hai bisogno di una risposta in un determinato formato (elenco, tabella, riassunto, ecc ), specificalo nel prompt. Puoi anche specificare i passaggi da seguire e i criteri di qualità desiderati.</li><li><strong>Specifica il ruolo del modello</strong>: ad esempio, inizia con \"Agisci come un esperto in...\" o \"Immagina di essere un insegnante...\" per guidare il tono e la prospettiva della risposta.</li><li><strong>Contestualizza le tue domande</strong>: se necessario, fornisci esempi pertinenti per guidare il modello. </li><li><strong>Incoraggia il ragionamento</strong>: usa suggerimenti che inducono un ragionamento a catena (<em>Chain-of-Thought Prompting</em>) per chiedere al modello di elaborare il proprio ragionamento, ovvero ciò che risposte più solide.</li></ul><p>I modelli conversazionali sono sensibili alle variazioni di formulazione: un linguaggio semplice, domande brevi e la riformulazione quando è necessaria, possono aiutare a guidare il modello verso risposte pertinenti. Fai una prova e perfeziona i tuoi suggerimenti per trovare la formulazione più efficace!</p>",
                     "title": "Quali sono le migliori pratiche per fornire suggerimenti?"
                 },
                 "6": {
@@ -1787,12 +1788,13 @@
                 },
                 "datasets": {
                     "a": "L'allineamento utilizza dati molto specifici, creati appositamente per insegnare al modello come comportarsi \"correttamente\".",
-                    "b": "I <strong>dati di preferenza</strong> costituiscono una tipologia particolare di dati di allineamento, insieme ai </strong>dati di dimostrazione</strong> (esempi di conversazioni tra gli umani e assistenti IA, redatti da annotatori esperti secondo precise linee guida di tono e stile), ai <strong>dati di sicurezza</strong> (esempi specifici che insegnano al modello a evitare contenuti pericolosi mostrando come rifiutare richieste problematiche) o ai <strong>dati specialistici</strong> che riguardano ambiti specifici (medicina, diritto , istruzione...).",
+                    "b": "I <strong>dati di preferenza</strong> costituiscono una tipologia particolare di dati di allineamento, insieme ai <strong>dati di dimostrazione</strong> (esempi di conversazioni tra gli umani e assistenti IA, redatti da annotatori esperti secondo precise linee guida di tono e stile), ai <strong>dati di sicurezza</strong> (esempi specifici che insegnano al modello a evitare contenuti pericolosi mostrando come rifiutare richieste problematiche) o ai <strong>dati specialistici</strong> che riguardano ambiti specifici (medicina, diritto , istruzione...).",
                     "c": "I dati sulle preferenze presentano molteplici risposte possibili alla stessa domanda, classificate in base alla qualità da valutatori umani: gli utenti indicano quale risposta è la migliore secondo determinati criteri, come pertinenza, utilità e pericolosità. Una volta raccolti, questi dataset vengono utilizzati per addestrare modelli, adattandoli alle preferenze espresse dagli utenti.",
                     "title": "Dataset specifici"
                 },
                 "desc": "Allineamento: una tecnica di riduzione dei pregiudizi basata sulla raccolta delle preferenze degli utenti",
                 "diversity": {
+                    "a": "Per riflettere la diversità di culture e lingue nei risultati generati dai modelli, <strong>i dataset di allineamento devono includere una varietà di lingue</strong> dei contesti di esempi tratti da attività comuni degli utenti. La diversificazione dei dati di allineamento migliora in definitiva le prestazioni del modello in due modi:",
                     "b": "Da un lato, questo <strong>riduce i pregiudizi culturali</strong> impedendo che un'unica prospettiva, spesso anglosassone, domini le risposte dell'IA. Il modello impara quindi a riconoscere che esistono diversi modi validi di affrontare la stessa domanda a seconda del contesto culturale.",
                     "c": "D'altro canto, questa esposizione alla diversità di lingue e culture favorisce l'adattamento delle risposte a contesti specifici: un utente francese riceverà consigli adattati al sistema francese, mentre un utente danese otterrà informazioni corrispondenti al proprio contesto nazionale.",
                     "d": "Il risultato è un modello di IA conversazionale più inclusivo, in grado di tenere conto delle diverse culture.",
@@ -1800,6 +1802,7 @@
                 },
                 "english": {
                     "a": "La produzione di dati sulle preferenze è costosa perché <strong>richiede manodopera umana specializzata per ogni singolo esempio</strong>. Piattaforme come https://chat.lmsys.org/ consentono la creazione di questi dataset sulle preferenze ma pochi utenti li utilizzano nella propria lingua madre.",
+                    "b": "I set di dati sulle preferenze linguistiche sono rari, se non inesistenti, nelle lingue europee. Ad esempio, la percentuale di domande poste in francese nel dataset LMSYS è inferiore all'1%.",
                     "c": "comparIA è un esempio di dispositivo che consente la raccolta di conversazioni in più lingue, comprese le referenze culturali specifiche di ogni regione o paese: attività quotidiane, tradizioni culinarie locali, sistemi educativi, riferimenti storici o letterari, ecc.",
                     "title": "Pochi dati sulle preferenze nelle lingue europee"
                 },
@@ -1815,7 +1818,8 @@
                     "title": "I dati di addestramento sono perlopiù in inglese"
                 },
                 "stereotypes": {
-                    "desc": "I sistemi di IA conversazionale danno l'impressione di parlare tutte le lingue, ma i risultati che generano sono talvolta stereotipati o discriminatori."
+                    "desc": "I sistemi di IA conversazionale danno l'impressione di parlare tutte le lingue, ma i risultati che generano sono talvolta stereotipati o discriminatori.",
+                    "title": "Risposte stereotipate"
                 }
             },
             "tabLabel": "Il problema iniziale",
@@ -2104,6 +2108,7 @@
             "problem": "Il problema iniziale",
             "product": "Chi siamo",
             "ranking": "Classifica",
+            "rgesn": "Dichiarazione di ecodesign",
             "share": "I miei risultati"
         }
     },
@@ -2112,6 +2117,7 @@
             "negative": {
                 "comment": "Per favore, specifica cosa non ti è piaciuto…",
                 "incorrect": "Non corretto",
+                "instructions_not_followed": "Istruzioni non seguite",
                 "question": "Perché questa risposta non è adeguata?",
                 "superficial": "Superficiale"
             },
@@ -2163,7 +2169,9 @@
         "reset": "Reset",
         "restart": "Ricominciare",
         "retry": "Ricominciare",
+        "search": "Ricercare",
         "send": "Inviare",
-        "tooltip": "Strumento di suggerimento"
+        "tooltip": "Strumento di suggerimento",
+        "validate": "Convalidare"
     }
 }
