@@ -23,8 +23,9 @@ from backend.errors import ContextTooLongError
 if TYPE_CHECKING:
     from fastapi import Request
 
+    from backend.arena.conversation import AnyMessageRead
     from backend.llms.models import Endpoint, LLMDataEnabled
-    from utils.database.models import AnyMessageRead, LLMMessageCreate
+    from utils.database.models import LLMMessageCreate
 
 logger = logging.getLogger("languia")
 

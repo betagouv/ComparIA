@@ -1,18 +1,17 @@
 import asyncio
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 
-from alembic import context
+from backend.config import settings
 
 # Import all table models to populate SQLModel.metadata
 from utils.database.models import Comparison, Turn  # noqa: F401
-from utils.database.models.messages import LLMMessage, SystemMessage, UserMessage  # noqa: F401
-
-from backend.config import settings
+from utils.database.models.messages import LLMMessage, UserMessage  # noqa: F401
 
 config = context.config
 
