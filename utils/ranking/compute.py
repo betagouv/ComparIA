@@ -35,7 +35,7 @@ class RankingResult:
     preferences: dict[UUID, PreferencesData] = field(default_factory=dict)
     # Style coefficients from the style-controlled fit (one per STYLE_FEATURES
     # entry); exposed for transparency about how much presentation drives votes.
-    style_coefficients: dict[UUID, float] = field(default_factory=dict)
+    style_coefficients: dict[str, float] = field(default_factory=dict)
 
 
 def _votes_to_battles(

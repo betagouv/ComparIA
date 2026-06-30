@@ -238,7 +238,7 @@ async def get_llms_data() -> LLMsData:
 class LLMList(BaseModel):
     data_timestamp: float | None
     models: list[APILLMData]
-    style_coefficients: dict[UUID, float] | None
+    style_coefficients: dict[str, float] | None
 
 
 # FIXME use cache?
