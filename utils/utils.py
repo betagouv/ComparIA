@@ -17,8 +17,10 @@ DATA_DIR = ROOT_DIR / "data"
 # LLMs data
 DEFAULT_LLM_DATA_PATH = DATA_DIR / "llms-data.json"
 # Frontend
+MAIN_LOCALE = "fr"
 FRONTEND_DIR = ROOT_DIR / "frontend"
-FRONTEND_MAIN_I18N_FILE = FRONTEND_DIR / "locales" / "messages" / "fr.json"
+FRONTEND_I18N_DIR = FRONTEND_DIR / "locales" / "messages"
+FRONTEND_MAIN_I18N_FILE = FRONTEND_I18N_DIR / f"{MAIN_LOCALE}.json"
 FRONTEND_GENERATED_DIR = FRONTEND_DIR / "src" / "lib" / "generated"
 
 # Legacy LLM files (be carefull to not remove those file, needed in migrations)
