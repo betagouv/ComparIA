@@ -4,7 +4,7 @@ import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
-import type { Handle } from '@sveltejs/kit'
+import { redirect, type Handle } from '@sveltejs/kit'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
@@ -92,7 +92,21 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
 	return response
 }
 
-// Compose handles: metrics first, then paraglide
+const authWallHandle: Handle = ({ event, resolve }) => {
+	if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
+
+	const path = event.url.pathname
+	if (path.startsWith('/connexion') || path.startsWith('/_app')) return resolve(event)
+
+	const cookie = event.cookies.get('auth_session')
+	if (!cookie) {
+		redirect(302, `/connexion?redirect=${encodeURIComponent(path)}`)
+	}
+
+	return resolve(event)
+}
+
+// Compose handles: auth wall first, then metrics, then paraglide
 export const handle: Handle = async ({ event, resolve }) => {
-	return metricsHandle({ event, resolve: (e) => paraglideHandle({ event: e, resolve }) })
+	return authWallHandle({ event, resolve: (e) => metricsHandle({ event: e, resolve: (e2) => paraglideHandle({ event: e2, resolve }) }) })
 }
