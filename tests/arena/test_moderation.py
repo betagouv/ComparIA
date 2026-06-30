@@ -30,15 +30,22 @@ def test_needs_caution_suppresses_block():
 
 
 def test_egregious_categories_block():
-    assert classify(
-        "User Safety: unsafe\nSafety Categories: Guns and Illegal Weapons, Criminal Planning/Confessions"
-    ) is _GENERIC
-    assert classify(
-        "User Safety: unsafe\nSafety Categories: Hate/Identity Hate, Violence"
-    ) is _GENERIC
-    assert classify(
-        "User Safety: unsafe\nSafety Categories: Controlled/Regulated Substances"
-    ) is _GENERIC
+    assert (
+        classify(
+            "User Safety: unsafe\nSafety Categories: Guns and Illegal Weapons, Criminal Planning/Confessions"
+        )
+        is _GENERIC
+    )
+    assert (
+        classify("User Safety: unsafe\nSafety Categories: Hate/Identity Hate, Violence")
+        is _GENERIC
+    )
+    assert (
+        classify(
+            "User Safety: unsafe\nSafety Categories: Controlled/Regulated Substances"
+        )
+        is _GENERIC
+    )
     assert classify("User Safety: unsafe\nSafety Categories: Sexual") is _GENERIC
 
 
@@ -56,9 +63,12 @@ def test_self_harm_redirects_even_with_needs_caution():
 
 
 def test_csam_blocks_even_with_needs_caution():
-    assert classify(
-        "User Safety: unsafe\nSafety Categories: Sexual (minor), Needs Caution"
-    ) is _GENERIC
+    assert (
+        classify(
+            "User Safety: unsafe\nSafety Categories: Sexual (minor), Needs Caution"
+        )
+        is _GENERIC
+    )
 
 
 def test_pii_alone_is_not_blocked():
