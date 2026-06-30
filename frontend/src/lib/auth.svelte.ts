@@ -1,4 +1,5 @@
 import { browser } from '$app/environment'
+import { goto } from '$app/navigation'
 import { api } from '$lib/fastapi-client'
 
 export interface AuthUser {
@@ -52,5 +53,8 @@ export async function logout(): Promise<void> {
     await api.request<void>('/auth/logout', { method: 'POST', credentials: 'include' })
   } finally {
     auth.user = null
+    if (auth.config?.access_policy === 'sign_in_required') {
+      goto('/connexion')
+    }
   }
 }
