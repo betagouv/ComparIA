@@ -24,14 +24,11 @@ FRONTEND_MAIN_I18N_FILE = FRONTEND_I18N_DIR / f"{MAIN_LOCALE}.json"
 FRONTEND_GENERATED_DIR = FRONTEND_DIR / "src" / "lib" / "generated"
 
 # Legacy LLM files (be carefull to not remove those file, needed in migrations)
-LLMS_RAW_DATA_FILE = (
-    UTILS_DIR / "models" / "models.json"
-)  # FIXME to move to alembic folder at some point
-LLMS_LICENSES_FILE = (
-    UTILS_DIR / "models" / "licenses.json"
-)  # FIXME to move to alembic folder at some point
+LEGACY_DATA_DIR = DATA_DIR / "legacy"
+LLMS_RAW_DATA_FILE = LEGACY_DATA_DIR / "models.json"
+LLMS_LICENSES_FILE = LEGACY_DATA_DIR / "licenses.json"
 LLMS_GENERATED_DATA_FILE = (
-    UTILS_DIR / "models" / "generated-models.json"
+    LEGACY_DATA_DIR / "generated-models.json"
 )  # FIXME to rm at some point
 
 logger = configure_logger(logging.getLogger("utils"))
