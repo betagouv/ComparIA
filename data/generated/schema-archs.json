@@ -2,7 +2,7 @@
   "$defs": {
     "Arch": {
       "additionalProperties": false,
-      "description": "LLM architecture definition.\n\nDefines neural network architecture and properties.\nUsed to validate `utils/models/archs.json`.",
+      "description": "LLM architecture definition.\n\nDefines LLMs architecture and properties.\nUsed to validate `utils/models/archs.json`.",
       "properties": {
         "id": {
           "description": "Architecture identifier (e.g. 'dense', 'moe')",
