@@ -80,7 +80,13 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
             )
 
     code = await request_login_code(body.email)
-    await send_login_code(body.email, code)
+    try:
+        await send_login_code(body.email, code)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Failed to send login code, please try again later.",
+        )
 
 
 @router.post("/email/verify")
