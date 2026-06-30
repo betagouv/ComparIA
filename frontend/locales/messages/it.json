@@ -77,7 +77,7 @@
         },
         "revealButton": "Termina e rivela i modelli",
         "webSearch": {
-            "label": "Risultati di ricerca web correlati."
+            "label": "Risultati di ricerca web associati."
         }
     },
     "closeModal": "Chiudi la finestra popup",
@@ -167,17 +167,17 @@
                     "title": "Cosa rende compar:IA unico rispetto ad altre iniziative simili?"
                 }
             },
-            "title": "Set di dati"
+            "title": "Dataset"
         },
         "ecology": {
             "questions": {
                 "1": {
                     "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto).</p><p>Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello.</p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
-                    "title": "Come vengono calcolati gli indicatori ecologici?"
+                    "title": "Come vengono calcolati gli indicatori di impatto ambientale?"
                 },
                 "2": {
                     "desc": "<p>La posizione dei data center influisce sull'impronta di carbonio dell'IA. Se un modello viene addestrato o utilizzato in un paese fortemente dipendente dai combustibili fossili, il suo impatto ambientale sarà maggiore rispetto a un modello ospitato in un paese che utilizza principalmente energie rinnovabili.</p><p>Il metodo di analisi dell'impatto ambientale dell'IA sviluppato da <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (di GenAI Impact)</a>, incorpora dati sul mix energetico dei diversi paesi in cui si trovano i server. Ciò consente una stima più accurata e dettagliata dell'effettiva impronta carbonio dell'inferenza su diversi modelli di IA generativa.</p>",
-                    "title": "Gli indicatori ambientali tengono conto del mix energetico dei diversi paesi?"
+                    "title": "Gli indicatori di impatto ambientale tengono conto del mix energetico dei diversi paesi?"
                 },
                 "3": {
                     "desc": "<p>Gli attuali indicatori di impatto ambientale si concentrano principalmente sull'impatto dell' <strong>inferenza</strong>, ovvero sull'utilizzo di modelli di intelligenza artificiale per rispondere alle richieste. Questo approccio può dare l'illusione che l'inferenza sia meno dispendiosa in termini di energia rispetto all'addestramento del modello. Tuttavia, <strong>la realtà è più complessa.</strong> Si consideri l'analogia dell'auto:</p><ul><li>Costruire una macchina (addestramento) è un processo unico e ad alta intensità di risorse.</li> <li>Ogni viaggio in auto ( inferenza) consuma meno energia, ma questi viaggi si ripetono quotidianamente e il loro numero è potenzialmente immenso.</li></ul><p>Allo stesso modo, <strong>l'impatto cumulativo dell'inferenza, su milioni di utenti che effettuano richieste ogni giorno, può superare l'impatto dell'addestramento iniziale.</strong> Per questo motivo è fondamentale che gli strumenti di valutazione dell'impronta di carbonio dell'IA considerino <strong>l'intero ciclo di vita</strong> dei modelli, dall'addestramento all'utilizzo in produzione</p>",
@@ -203,7 +203,7 @@
             "questions": {
                 "1": {
                     "desc": "<p>Scegliamo i modelli in base alla loro popolarità, diversità e rilevanza per gli utenti. Prestiamo particolare attenzione a rendere accessibili i modelli chiamati <em>open weights</em> e quelli di diverse dimensioni.</p>",
-                    "title": "Come si scelgono i modelli da includere nello strumento di confronto?"
+                    "title": "Come si scelgono i modelli da includere nel comparatore?"
                 },
                 "2": {
                     "desc": "<p>L'inferenza, ovvero la capacità di interrogare i modelli, è gestita dal progetto. Per la maggior parte dei modelli, utilizziamo le API Open Router e Hugging Face e applichiamo una tariffazione basata su token e sull'utilizzo.</p>",
@@ -233,7 +233,7 @@
                 },
                 "2": {
                     "desc": "<p>Hai mai posto la domanda \"Spiegami la mozione di censura attualmente in discussione all'Assemblea nazionale francese e cita le tue fonti\" e sei rimasto deluso dalle risposte? È normale...</p><p><strong>I modelli di IA conversazionale grezzi\" non possono rispondere a domande sulle ultime notizie.</strong> Sono addestrati su set di dati statici e non possono interagire con il web o aprire link. Non hanno la capacità di aggiornarsi in tempo reale con gli eventi che accadono in tutto il mondo. Le informazioni a cui il modello ha accesso sono limitate alla data del suo ultimo addestramento.</p><p>Di conseguenza, se si pone una domanda su un fatto di attualità recente, il modello si baserà su informazioni potenzialmente obsolete, con il rischio di fornire risposte inesatte.</p><p>Nel caso di Perplexity, Copilot o ChatGPT, i cosiddetti modelli di IA conversazionale \"grezzi\" sono combinati con altri componenti tecnologici che consentono loro di connettersi a Internet per accedere a informazioni in tempo reale. Quest'ultimi si vengono chiamati \"agenti conversazionali\".</p>",
-                    "title": "Se pongo una domanda sulle ultime notizie, il modello è in grado di rispondere?"
+                    "title": "Se pongo una domanda riguardante le ultime notizie, il modello è in grado di rispondere?"
                 },
                 "3": {
                     "desc": "<p>Se si include un URL in una richiesta, il modello conversazionale non può accedervi direttamente. I modelli linguistici elaborano il testo della richiesta, ma non sono in grado di interagire con il web o aprire link. Sono addestrati su dataset testuali fissi e le loro risposte si basano su questi dati di addestramento. Quando viene posta una domanda, i modelli utilizzano questo addestramento per generare una risposta, ma non possono accedere a nuove informazioni online.</p><p>Per analogia, si immagini uno studente sostiene un esame senza accesso a Internet. Può utilizzare le conoscenze acquisite per rispondere alle domande ma non può consultare siti web per ulteriori informazioni.</p>",
@@ -249,7 +249,7 @@
                 },
                 "6": {
                     "desc": "<p>L'intelligenza artificiale conversazionale risponde direttamente formulando frasi basate su un ampio set di dati su cui è stato addestrato il modello, mentre un motore di ricerca suggerisce link e risorse che l'utente può esplorare in autonomia.</p>",
-                    "title": "Qual è la differenza tra porre una domanda a un modello di intelligenza artificiale conversazionale e fare una ricerca su Google?"
+                    "title": "Qual è la differenza tra porre una domanda a un modello di IA conversazionale e fare una ricerca su Google?"
                 }
             },
             "title": "Utilizzo"
@@ -271,7 +271,7 @@
             "sources": "Codice sorgente",
             "tos": "Termini di utilizzo"
         },
-        "writeUs": "Se riscontri un problema o hai commenti sullo strumento di confronto, non esitare a scriverci <a {formLinkProps}>tramite questo modulo</a>. Leggiamo tutti i vostri messaggi.<br />Grazie!"
+        "writeUs": "Se riscontri un problema o hai commenti sulla Chatbot arena, non esitare a scriverci <a {formLinkProps}>tramite questo modulo</a>. Leggiamo tutti i vostri messaggi.<br />Grazie!"
     },
     "general": {
         "a11y": {
@@ -301,9 +301,9 @@
             "directorDesc": "Il signor Romain Delassus, responsabile del dipartimento digitale presso il Ministero della Cultura",
             "directorTitle": "Direttore della pubblicazione",
             "editorDesc": "Questo sito web è pubblicato dal Ministero Francese della Cultura, 182, rue Saint-Honoré 75001 Parigi",
-            "editorTitle": "Redattore",
+            "editorTitle": "Editore",
             "hostingDesc": "Questo sito è ospitato da OVH SAS (<a {linkProps}>https://www.ovh.com</a>) la cui sede legale si trova in 2 rue Kellermann - 59100 Roubaix - Francia.",
-            "hostingTitle": "Hosting di siti web",
+            "hostingTitle": "Hosting del sito",
             "reportA11y": "Se riscontri un problema di accessibilità che ti impedisce di accedere a contenuti o funzionalità del sito, ti invitiamo a comunicarcelo.",
             "reportA11yDesc": "Per saperne di più sulla politica statale in materia di accessibilità digitale: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numeriche</a>",
             "reportDesc": "Se non ricevi una risposta tempestiva da parte nostra, hai il diritto di inviare i tuoi reclami o una procedura di ricorso al Difensore dei diritti.",
@@ -327,7 +327,7 @@
             "dataAccessTitle": "Contribuisco ad arricchire i vostri dati, posso accedervi?",
             "dataExtraCountry": "Paese destinatario: Francia",
             "dataExtraHost": "Subappaltatore: OVH",
-            "dataExtraTitle": "Chi ci aiuta a elaborare i dati?",
+            "dataExtraTitle": "Chi ci aiuta ad elaborare i dati?",
             "dataExtraWarranty": "Garanzie: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
             "dataExtraWhat": "Processo eseguito: Hosting",
             "dataRespDesc": "Il dipartimento digitale del Ministero Francese della Cultura è responsabile del trattamento dei vostri dati personali.",
@@ -346,14 +346,14 @@
             "tallyData": "Quando compili uno di questi moduli, i dati che inserisci vengono trasmessi e ospitati da Tally (Tally BV, Belgio). Tally si impegna a non utilizzare i tuoi dati per scopi commerciali e a rispettare il GDPR. Per ulteriori informazioni, consulta l'Informativa sulla privacy di Tally <a {tallyPrivacyLinkProps}>Privacy Policy</a>.",
             "tallyDesc": "Questo sito utilizza <a {tallyLinkProps}>Tally</a>, un servizio online per la creazione di moduli, per due funzionalità:",
             "tallyFeedback": "Il modulo \"La tua opinione\" ci permette di raccogliere il tuo feedback sul servizio",
-            "tallyNewsletter": "Il modulo di iscrizione alla newsletter (newsletter) compar:IA",
+            "tallyNewsletter": "Il modulo di iscrizione alla newsletter compar:IA",
             "tallyTitle": "Moduli Tally",
             "title": "Politica sulla riservatezza"
         },
         "rgesn": {
             "1": {
                 "1": "Il sito web compar:IA offre un accesso facile e gratuito a un'ampia varietà di modelli di intelligenza artificiale conversazionale, sensibilizzando così il pubblico sulle diverse sfide dell'IA generativa: diversità, pregiudizi e impatto ambientale. Inoltre, gli insiemi di dati relativi a domande e preferenze raccolti sono condivisi come open source con licenza MIT/Etalab 2.0.",
-                "2": "Gli utenti target del servizio Compar:IA sono stati identificati attraverso interviste agli utenti e una fase preliminare di analisi dei bisogni.",
+                "2": "Gli utenti target del servizio Compar:IA sono stati identificati attraverso interviste fatte agli utenti ed attraverso una fase preliminare di analisi dei bisogni.",
                 "3": "Pertanto, tutti i cittadini sono interessati in quanto potenziali utenti, ma in particolare insegnanti, alunni, studenti, mediatori digitali, formatori di intelligenza artificiale, nonché ricercatori (informatica, intelligenza artificiale, scienze umane e sociali) e aziende interessate ad analizzare o utilizzare gli insiemi di dati condivisi in open source. Di conseguenza, il servizio digitale soddisfa le loro esigenze attraverso le seguenti caratteristiche: testare e confrontare modelli gratuitamente e utilizzare dati open source condivisi.",
                 "4": "Il servizio compar:IA si inserisce in un approccio di ecodesign volto a ridurre l'impatto ambientale. A tal fine, la presente dichiarazione è stata redatta nell'ambito dell'attuazione del Quadro generale di ecodesign per i servizi digitali (RGESN, versione 2024). Il RGESN, elaborato da Arcep e Arcom in collaborazione con ADEME, DINUM, CNIL e Inria, è disponibile sul <a {linkProps}>sito web di Arcep</a>.",
                 "title": "Scopo di questo servizio"
@@ -774,7 +774,7 @@
                 "size_desc": "<p>Il modello Nano è il più compatto della famiglia GPT-5 (presumibilmente di piccole dimensioni). Viene selezionato dal sistema di routing per le richieste che richiedono latenza estremamente bassa e risposte istantanee. La sua architettura è probabilmente basata su una \"Mixture of Experts\" (MoE), che consente una migliore efficienza energetica e prestazioni elevate, anche per le query che richiedono una risposta rapida.</p>"
             },
             "GPT 5.1": {
-                "desc": "<p>Seconda iterazione di GPT 5, con uno stile ritenuto (dall'editore) più naturale e risultati migliori nei compiti agentici e di programmazione. Il modello ha la caratteristica unica di adattare il tempo di ragionamento in base alla difficoltà.</p>",
+                "desc": "<p>Seconda iterazione di GPT 5, con uno stile ritenuto (dall'editore) più naturale e risultati migliori nei compiti agentici e di programmazione . Il modello ha la caratteristica unica di adattare il tempo di ragionamento in base alla difficoltà.</p>",
                 "fyi": "<p>L'arrivo di questa nuova iterazione introduce il routing automatico tra due modalità. Per le richieste semplici, il modello sceglie una risposta rapida. Per le attività più complesse, passa a una modalità che richiede un ragionamento prima di rispondere. Questa logica evita di sprecare tempo con richieste semplici, mantenendo al contempo la necessaria profondità quando necessario.</p>\n<p>La prima versione della famiglia GPT 5 ha suscitato molte reazioni negative riguardo al suo stile di scrittura. Molti utenti hanno trovato il modello meno cordiale rispetto a GPT 4o. Questa iterazione mira a tornare a uno stile più cordiale.</p>\n<p>Questa nuova versione segna anche un progresso nella programmazione e nella matematica, come confermato da benchmark quali SWE Bench per la programmazione e AIME per le competenze matematiche.</p>",
                 "size_desc": "<p>Le dimensioni del modello alla base del sistema GPT-5.1 non sono note. L'architettura è probabilmente basata su una \"Mixture of Experts\" (MoE), il che significa che solo un insieme di parametri viene attivato per ogni richiesta. Ciò consente una maggiore efficienza energetica e prestazioni elevate. Le stime disponibili sulle dimensioni del modello si basano su informazioni pubblicamente disponibili e indicatori indiretti come i costi di inferenza e la latenza di risposta.</p>"
             },
