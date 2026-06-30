@@ -15,6 +15,7 @@ from utils.utils import (
 logger = logging.getLogger("comparia.internal")
 
 ARCHS_FILE = DATA_DIR / "archs.json"
+ARCHS_SCHEMA_FILE = DATA_DIR / "generated" / "schema-archs.json"
 
 descs = {
     "id": "Architecture identifier (e.g. 'dense', 'moe')",
@@ -70,3 +71,7 @@ def generate_archs_i18n() -> None:
         {a.pop("id"): a for a in archs.model_dump()}
     )
     write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
+
+
+def generate_archs_json_schema() -> None:
+    write_json(ARCHS_SCHEMA_FILE, Archs.model_json_schema())
