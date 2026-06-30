@@ -110,7 +110,7 @@
   //         return csvCols
   //           .map((col) => {
   //             if (col.key === 'id') {
-  //               return m[col.key]
+  //               return m.human_id
   //             } else if (col.key === 'total_positive_prefs') {
   //               return APIPositivePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
   //             } else if (col.key === 'total_negative_prefs') {

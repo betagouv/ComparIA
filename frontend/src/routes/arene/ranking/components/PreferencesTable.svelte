@@ -26,7 +26,7 @@
     onDownloadData: () => void
   } = $props()
 
-  const { lastUpdateDate, models: data } = getModelsWithDataContext()
+  const { lastUpdateDate, models: data, commons } = getModelsWithDataContext()
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 
@@ -71,9 +71,10 @@
   const rows = $derived.by(() => {
     return data.map((model) => ({
       id: model.id,
-      simple_name: model.simple_name,
-      icon_path: model.icon_path,
-      organisation: model.organisation,
+      human_id: model.human_id,
+      simple_name: model.name,
+      logo: model.lab.logo,
+      organisation: model.lab.name,
       ...model.prefs,
       total_positive_prefs: APIPositivePrefs.reduce((acc, v) => acc + model.prefs[v], 0),
       total_negative_prefs: APINegativePrefs.reduce((acc, v) => acc + model.prefs[v], 0),
@@ -136,7 +137,7 @@
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
       <AILogo
-        iconPath={model.icon_path}
+        logo={model.logo}
         alt={model.organisation}
         class="me-1 inline-block align-middle align-middle"
       />
@@ -145,7 +146,7 @@
         data-fr-opened="false"
         aria-controls="{id}-modal-model"
         class="text-black!"
-        onclick={() => (selectedModel = model.id)}>{model.id}</a
+        onclick={() => (selectedModel = model.id)}>{model.human_id}</a
       >
     {:else if col.id === 'total_positive_prefs' || col.id === 'total_negative_prefs'}
       <strong>{model[col.id]}</strong>
@@ -170,4 +171,4 @@
   {/snippet}
 </Table>
 
-<ModelInfoModal model={selectedModelData} modalId="{id}-modal-model" />
+<ModelInfoModal {commons} model={selectedModelData} modalId="{id}-modal-model" />
