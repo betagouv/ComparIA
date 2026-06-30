@@ -1,9 +1,11 @@
 import re
+from typing import get_args
 
 from pydantic2ts import generate_typescript_defs
 
 from backend.llms.models import ENERGY_CLASSES, SIZE_CLASSES
 from internal.archs import get_archs
+from utils.database.models.llms.constants import LLMArchKind
 from utils.utils import FRONTEND_DIR, FRONTEND_GENERATED_DIR
 
 JSON2TS_PATH = FRONTEND_DIR / "node_modules/.bin/json2ts"
@@ -25,6 +27,12 @@ def to_pascal_case(s: str) -> str:
 
 def generate_frontend_constants() -> None:
     archs = [arch.id for arch in get_archs().root]
+
+    backend_archs = [kind for kind in get_args(LLMArchKind) if "maybe-" not in kind]
+    if extra_archs := set(backend_archs).symmetric_difference(archs):
+        raise ValueError(
+            f"Backend and json archs are not the same, extra archs: {extra_archs}"
+        )
 
     constants = {
         "SIZE_CLASSES": list(SIZE_CLASSES),
