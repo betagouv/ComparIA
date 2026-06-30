@@ -1,25 +1,19 @@
 import glob
-import json
-from pathlib import Path
 from typing import Any
 
-CURRENT_DIR = Path(__file__).parent
-LOCALES_DIR = CURRENT_DIR / "messages"
-FRONTEND_MAIN_I18N_FILE = LOCALES_DIR / "fr.json"
+from utils.utils import (
+    FRONTEND_I18N_DIR,
+    FRONTEND_MAIN_I18N_FILE,
+    MAIN_LOCALE,
+    read_json,
+    write_json,
+)
 
 LOCALE_FILES = {
     path.split("/")[-1].replace(".json", ""): path
-    for path in glob.glob(str(LOCALES_DIR) + "/*.json")
+    for path in glob.glob(str(FRONTEND_I18N_DIR) + "/*.json")
 }
 ALL_LOCALES = set(LOCALE_FILES.keys())
-
-
-def read_json(path: Path) -> Any:
-    return json.loads(path.read_text())
-
-
-def write_json(path: Path, data, indent: int = 4) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=indent) + "\n")
 
 
 def sort_dict(data: dict[str, Any], deep: bool = True) -> dict[str, Any]:
@@ -70,7 +64,7 @@ def filter_data(data: dict[str, Any], stale_keys: set[str]) -> dict[str, Any]:
 
 def remove_stale_keys(ref_keys: set[str], locales: set[str]):
     for locale in locales:
-        LOCALE_FILE = LOCALES_DIR / f"{locale}.json"
+        LOCALE_FILE = FRONTEND_I18N_DIR / f"{locale}.json"
         data = read_json(LOCALE_FILE)
         keys = get_flatten_keys(data)
         stale_keys = set(sorted(keys - ref_keys))
@@ -81,15 +75,18 @@ def remove_stale_keys(ref_keys: set[str], locales: set[str]):
                 print(f"- {key}")
 
         filtered_data = filter_data(data, stale_keys)
-        write_json(LOCALE_FILE, filtered_data)
+        write_json(LOCALE_FILE, filtered_data, indent=4)
 
 
-if __name__ == "__main__":
+def clean_locales():
+    """
+    Remove stale keys in all locales files.
+    """
     locales = ALL_LOCALES
-    locales.discard("fr")
+    locales.discard(MAIN_LOCALE)
 
-    # Remove fr.json no longer present keys in other locales files
-    fr_data = read_json(FRONTEND_MAIN_I18N_FILE)
-    remove_stale_keys(get_flatten_keys(fr_data), locales)
-    # Also sort fr.json
-    write_json(FRONTEND_MAIN_I18N_FILE, sort_dict(fr_data))
+    # Remove {MAIN_LOCALE}.json no longer present keys in other locales files
+    main_data = read_json(FRONTEND_MAIN_I18N_FILE)
+    remove_stale_keys(get_flatten_keys(main_data), locales)
+    # Also sort {MAIN_LOCALE}.json
+    write_json(FRONTEND_MAIN_I18N_FILE, sort_dict(main_data), indent=4)
