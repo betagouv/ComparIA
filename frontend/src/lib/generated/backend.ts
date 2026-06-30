@@ -30,7 +30,7 @@ export interface APILLMData {
   rate_limited: boolean;
   release_date: string;
   knowledge_cutoff: string | null;
-  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-dense" | "na";
+  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na";
   params: number;
   active_params: number | null;
   context_tokens: number | null;
