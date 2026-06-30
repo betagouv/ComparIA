@@ -76,6 +76,20 @@ export class ValidationError extends Error {
   }
 }
 
+export class UnauthorizedError extends Error {
+  constructor() {
+    super('Unauthorized')
+    this.name = 'UnauthorizedError'
+  }
+}
+
+type UnauthorizedHandler = () => void
+let unauthorizedHandler: UnauthorizedHandler | null = null
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
+  unauthorizedHandler = handler
+}
+
 /**
  * FastAPI client class
  */
@@ -160,6 +174,11 @@ export class FastAPIClient {
         ...options,
         headers
       })
+
+      if (response.status === 401) {
+        unauthorizedHandler?.()
+        throw new UnauthorizedError()
+      }
 
       if (!response.ok) {
         throw await this.parseErrorResponse(response, path, options.method)

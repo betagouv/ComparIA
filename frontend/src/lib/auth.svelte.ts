@@ -9,6 +9,8 @@ export interface AuthUser {
 export interface AuthConfig {
   access_policy: 'anonymous_first' | 'sign_in_required'
   methods: 'email_code'[]
+  smtp_configured: boolean
+  domain_allowlist: string[]
 }
 
 export const auth = $state<{ user: AuthUser | null; config: AuthConfig | null }>({
@@ -34,6 +36,14 @@ export async function initAuth(): Promise<void> {
     auth.user = data.user
   } catch {
     auth.user = null
+  }
+}
+
+export function openSignInModal(): void {
+  const el = document.getElementById('fr-modal-signin')
+  if (el) {
+    // @ts-expect-error - DSFR is globally available
+    window.dsfr(el).modal.disclose()
   }
 }
 
