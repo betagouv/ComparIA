@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     GUARDRAIL_TIMEOUT: float = 2.5
 
     # Auth
+<<<<<<< HEAD
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = "anonymous_first"
     # If non-empty, only emails from these domains can request a login code (e.g. ["beta.gouv.fr"])
@@ -64,6 +65,16 @@ class Settings(BaseSettings):
     SMTP_USERNAME: str | None = None
     SMTP_PASSWORD: str | None = None
     SMTP_STARTTLS: bool = True
+=======
+    AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = "anonymous_first"
+    AUTH_DOMAIN_ALLOWLIST: list[str] = []
+    AUTH_SESSION_LENGTH_DAYS: int = 30
+    AUTH_TERMS_VERSION: str = "1.0"
+
+    # Brevo email
+    BREVO_API_KEY: str | None = None
+    BREVO_LOGIN_CODE_TEMPLATE_ID: int | None = None
+>>>>>>> 4d56b96b (feat(auth): email passwordless auth router and services)
     EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
     EMAIL_FROM_NAME: str = "ComparIA"
 
