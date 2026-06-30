@@ -3,7 +3,7 @@ from typing import Annotated
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from .utils import AutoDatetime, ModelId, OptionalDatetime, RequiredDatetime
+from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime
 
 UserId = Annotated[uuid.UUID, Field(foreign_key="auth_user.id")]
 
@@ -29,7 +29,7 @@ class LoginCode(SQLModel, table=True):
     user_id: UserId
     code_hash: str
     created_at: AutoDatetime
-    expires_at: RequiredDatetime
+    expires_at: Datetime
     used_at: OptionalDatetime = None
 
     user: User | None = Relationship(back_populates="login_codes")
@@ -42,7 +42,7 @@ class AuthSession(SQLModel, table=True):
     user_id: UserId
     token_hash: str = Field(index=True)
     created_at: AutoDatetime
-    expires_at: RequiredDatetime
+    expires_at: Datetime
     revoked_at: OptionalDatetime = None
     user_agent: str | None = None
     ip: str
