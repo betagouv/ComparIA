@@ -27,6 +27,8 @@ _EMAIL_RATELIMIT_PER_HOUR = 15
 class AuthConfig(BaseModel):
     access_policy: Literal["anonymous_first", "sign_in_required"]
     methods: list[Literal["email_code"]]
+    smtp_configured: bool
+    domain_allowlist: list[str]
 
 
 class EmailRequestBody(BaseModel):
@@ -44,6 +46,8 @@ async def get_config() -> AuthConfig:
     return AuthConfig(
         access_policy=settings.AUTH_ACCESS_POLICY,
         methods=["email_code"],
+        smtp_configured=bool(settings.SMTP_HOST),
+        domain_allowlist=settings.AUTH_DOMAIN_ALLOWLIST,
     )
 
 
