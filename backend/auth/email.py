@@ -1,53 +1,36 @@
-import asyncio
 import logging
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+
+import brevo
+from brevo.transactional_emails.types.send_transac_email_request_sender import (
+    SendTransacEmailRequestSender,
+)
+from brevo.transactional_emails.types.send_transac_email_request_to_item import (
+    SendTransacEmailRequestToItem,
+)
 
 from backend.config import settings
 
 logger = logging.getLogger("languia")
 
-_HTML_TEMPLATE = """\
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="font-family: arial, helvetica, sans-serif; color: #3b3f44; font-size: 16px; line-height: 1.5; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <p>Bonjour,</p>
-  <p>Voici votre code de connexion à ComparIA&nbsp;:</p>
-  <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; padding: 20px 0;">{code}</p>
-  <p>Ce code est valable 10&nbsp;minutes. Si vous n'avez pas demandé à vous connecter, ignorez cet email.</p>
-  <p>L'équipe ComparIA</p>
-</body>
-</html>
-"""
-
 
 async def send_login_code(to_email: str, code: str) -> None:
-    if not settings.SMTP_HOST:
+    if not settings.BREVO_API_KEY or not settings.BREVO_LOGIN_CODE_TEMPLATE_ID:
         logger.info(f"[AUTH] Login code for {to_email}: {code}")
         return
-    logger.info(f"[AUTH] Sending login code via SMTP from={settings.EMAIL_FROM} to={to_email} host={settings.SMTP_HOST}")
+
+    logger.info(f"[AUTH] Sending login code via Brevo from={settings.EMAIL_FROM} to={to_email}")
     try:
-        await asyncio.to_thread(_send_smtp, to_email, code)
-        logger.info(f"[AUTH] Login code sent via SMTP to {to_email}")
+        client = brevo.AsyncBrevo(api_key=settings.BREVO_API_KEY)
+        await client.transactional_emails.send_transac_email(
+            to=[SendTransacEmailRequestToItem(email=to_email)],
+            sender=SendTransacEmailRequestSender(
+                email=settings.EMAIL_FROM,
+                name=settings.EMAIL_FROM_NAME,
+            ),
+            template_id=settings.BREVO_LOGIN_CODE_TEMPLATE_ID,
+            params={"code": code},
+        )
+        logger.info(f"[AUTH] Login code sent via Brevo to {to_email}")
     except Exception as e:
-        logger.error(f"[AUTH] SMTP failed for {to_email}: {e}")
+        logger.error(f"[AUTH] Brevo failed for {to_email}: {e}")
         raise
-
-
-def _send_smtp(to_email: str, code: str) -> None:
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Votre code de connexion ComparIA"
-    msg["From"] = f"{settings.EMAIL_FROM_NAME} <{settings.EMAIL_FROM}>"
-    msg["To"] = to_email
-    msg.attach(MIMEText(_HTML_TEMPLATE.format(code=code), "html", "utf-8"))
-
-    with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as smtp:
-        smtp.ehlo()
-        if settings.SMTP_STARTTLS:
-            smtp.starttls()
-            smtp.ehlo()
-        if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
-            smtp.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-        smtp.sendmail(settings.EMAIL_FROM, to_email, msg.as_string())
