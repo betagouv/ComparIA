@@ -54,7 +54,7 @@ export async function logout(): Promise<void> {
   } finally {
     auth.user = null
     if (auth.config?.access_policy === 'sign_in_required') {
-      goto('/connexion')
+      goto('/login')
     }
   }
 }
