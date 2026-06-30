@@ -1,7 +1,7 @@
 """add LLMData, LLMEndpoint, LLMLab, LLMLicence
 
 Revision ID: 4e31217520dd
-Revises: b7c4d1e8f9a2
+Revises: 83c86b798214
 Create Date: 2026-06-15 11:00:43.707153
 
 """
@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "4e31217520dd"
-down_revision: Union[str, Sequence[str], None] = "b7c4d1e8f9a2"
+down_revision: Union[str, Sequence[str], None] = "83c86b798214"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
