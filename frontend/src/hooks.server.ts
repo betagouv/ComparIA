@@ -96,11 +96,11 @@ const authWallHandle: Handle = ({ event, resolve }) => {
 	if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
 
 	const path = event.url.pathname
-	if (path.startsWith('/connexion') || path.startsWith('/_app')) return resolve(event)
+	if (path.startsWith('/login') || path.startsWith('/_app')) return resolve(event)
 
 	const cookie = event.cookies.get('auth_session')
 	if (!cookie) {
-		redirect(302, `/connexion?redirect=${encodeURIComponent(path)}`)
+		redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
 	}
 
 	return resolve(event)
