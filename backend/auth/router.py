@@ -21,11 +21,7 @@ logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-<<<<<<< HEAD
 _EMAIL_RATELIMIT_PER_HOUR = 15
-=======
-_EMAIL_RATELIMIT_PER_HOUR = 5
->>>>>>> 4d56b96b (feat(auth): email passwordless auth router and services)
 
 
 class AuthConfig(BaseModel):
@@ -84,7 +80,6 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
             )
 
     code = await request_login_code(body.email)
-<<<<<<< HEAD
     try:
         await send_login_code(body.email, code)
     except Exception:
@@ -92,9 +87,6 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Failed to send login code, please try again later.",
         )
-=======
-    await send_login_code(body.email, code)
->>>>>>> 4d56b96b (feat(auth): email passwordless auth router and services)
 
 
 @router.post("/email/verify")
@@ -137,7 +129,6 @@ async def logout(request: Request, response: Response) -> None:
     response.delete_cookie("auth_session")
 
 
-<<<<<<< HEAD
 @router.get("/me")
 async def get_me(request: Request) -> dict:
     token = request.cookies.get("auth_session")
@@ -149,8 +140,6 @@ async def get_me(request: Request) -> dict:
     return {"user": {"email": user.email, "role": user.role}}
 
 
-=======
->>>>>>> 4d56b96b (feat(auth): email passwordless auth router and services)
 @router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT)
 async def logout_all(request: Request, response: Response) -> None:
     token = request.cookies.get("auth_session")
