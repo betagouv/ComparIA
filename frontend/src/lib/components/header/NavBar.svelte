@@ -73,7 +73,8 @@
       </p>
       <button
         class="fr-btn fr-btn--secondary fr-btn--sm w-full! rounded-lg! justify-center!"
-        onclick={() => document.getElementById('fr-signin-trigger')?.click()}
+        aria-controls="fr-modal-signin"
+        data-fr-opened="false"
       >
         <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
         {m['auth.discussions.signIn']()}
