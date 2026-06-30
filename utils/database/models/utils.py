@@ -10,6 +10,7 @@ AutoDatetime = Annotated[
     datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
 ]
 OptionalDatetime = Annotated[datetime | None, Field(sa_type=TIMESTAMP)]
+
 Datetime = Annotated[datetime, Field(sa_type=TIMESTAMP)]
 
 
