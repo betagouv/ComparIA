@@ -19,6 +19,7 @@
   const navItems = [
     { label: 'Utilisateurs', href: '/admin' },
     { label: 'Configuration auth', href: '/admin/configuration/auth' },
+
   ]
 
   const currentPath = $derived(page.url.pathname)
