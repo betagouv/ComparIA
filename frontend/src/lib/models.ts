@@ -1,4 +1,4 @@
-import type { APILLMData, LLMList } from '$lib/generated/backend'
+import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { propsToAttrs } from '$lib/utils/commons'
@@ -52,8 +52,8 @@ export type Data = {
 }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & {
-  data: Required<BotModel['data']>
-  prefs: Required<BotModel['prefs']>
+  data: DatasetData
+  prefs: PreferencesData
 }
 export type ModelCardSize = 'xs' | 'sm' | 'md'
 
@@ -191,11 +191,6 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
   const licenseType = model.license.kind
   const release_date = new Date(model.release_date)
 
-  model.data = {
-    n_match: 1495,
-    elo: 1000
-  }
-
   return {
     ...model,
     id: model.id!,
@@ -277,8 +272,8 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
 
 export function setModelsContext(data: LLMList) {
   const rankedModels = data.models
-    // .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
-    // .sort((a, b) => a.data!.rank - b.data!.rank)
+    .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
+    .sort((a, b) => a.data!.rank - b.data!.rank)
     .map((llm, i) => ({ id: llm.id, rank: i + 1 }))
 
   const modelsCount = rankedModels.length
