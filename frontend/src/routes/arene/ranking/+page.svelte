@@ -71,12 +71,15 @@
                 col.key === 'score_p97_5'
               )
                 return m.data[col.key]
-              if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
+              if (col.key === 'params') return m.license.kind === 'proprietary' ? 'N/A' : m.params
               if (col.key === 'trust_range')
                 return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
               if (col.key === 'consumption') {
-                return m.license === 'proprietary' ? 'N/A' : m.consumption
+                return m.license.kind === 'proprietary' ? 'N/A' : m.consumption
               }
+              if (col.key === 'organisation') return m.lab.name
+              if (col.key === 'distribution') return m.license.kind
+              if (col.key === 'id') return m.human_id
               return m[col.key]
             })
             .join(',')
