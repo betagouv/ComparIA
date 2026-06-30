@@ -52,7 +52,7 @@ def get_archs() -> Archs:
 
         for err in exc.errors():
             idx, key = err["loc"]
-            name = f"arch '{raw_archs[idx].get("id", idx)}'"
+            name = f"arch '{idx}'"
             if name not in errors:
                 errors[name] = []
             errors[name].append({"key": key, **err})
