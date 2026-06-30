@@ -27,7 +27,7 @@
 
     setUnauthorizedHandler(() => {
       if (auth.config?.access_policy === 'sign_in_required') {
-        goto('/connexion?redirect=' + encodeURIComponent(location.pathname))
+        goto('/login?redirect=' + encodeURIComponent(location.pathname))
       } else {
         openSignInModal()
       }
