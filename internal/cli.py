@@ -5,6 +5,7 @@ from cyclopts import App
 from utils.logger import configure_logger
 
 from .archs import generate_archs_i18n, generate_archs_json_schema
+from .i18n import clean_locales
 from .typescript.generate_frontend_types import (
     generate_frontend_constants,
     generate_frontend_types,
@@ -24,6 +25,7 @@ def i18n():
     """
     Generate related i18n files.
     """
+    clean_locales()
     generate_archs_i18n()
 
 

@@ -188,7 +188,7 @@ clean: ## Clean generated files
 ###################################
 i18n-clean-locales: ## Remove locales keys not present in fr
 	@echo "Cleaning frontend locales keys..."
-	cd frontend/locales && python maintenance.py
+	./comparia-cli internal i18n
 
 i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
 	@echo "Generating frontend prompt suggestions..."
