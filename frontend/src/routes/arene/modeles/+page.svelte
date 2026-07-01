@@ -14,30 +14,39 @@
   const editorFilter = {
     id: 'editor',
     legend: m['models.list.filters.editor.legend'](),
-    options: [...new Set(models.map((llm) => llm.lab.name))]
-      .sort()
-      .map((org) => ({ value: org, count: models.filter((llm) => llm.lab.name === org).length }))
+    options: [
+      { value: 'all', label: m['models.list.filters.editor.all'](), count: models.length },
+      ...[...new Set(models.map((llm) => llm.lab.name))]
+        .sort()
+        .map((org) => ({ value: org, count: models.filter((llm) => llm.lab.name === org).length }))
+    ]
   }
 
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
-    options: SIZE_CLASSES.map((value) => ({
-      value,
-      label: m[`models.list.filters.size.labels.${value}`](),
-      count: models.filter((llm) => llm.size_class === value).length
-    }))
+    options: [
+      { value: 'all', label: m['models.list.filters.size.all'](), count: models.length },
+      ...SIZE_CLASSES.map((value) => ({
+        value,
+        label: m[`models.list.filters.size.labels.${value}`](),
+        count: models.filter((llm) => llm.size_class === value).length
+      }))
+    ]
   }
 
   const licenseFilter = {
     id: 'license',
     legend: m['models.list.filters.license.legend'](),
-    options: [...new Set(models.map((llm) => llm.license.name))].map((license) => ({
-      label:
-        license === 'proprietary' ? m['models.licenses.type.proprietary']() : (license as string),
-      value: license as string,
-      count: models.filter((llm) => llm.license.name === license).length
-    }))
+    options: [
+      { value: 'all', label: m['models.list.filters.license.all'](), count: models.length },
+      ...[...new Set(models.map((llm) => llm.license.name))].map((license) => ({
+        label:
+          license === 'proprietary' ? m['models.licenses.type.proprietary']() : (license as string),
+        value: license as string,
+        count: models.filter((llm) => llm.license.name === license).length
+      }))
+    ]
   }
 
   const sortingOptions = (['name-asc', 'date-desc', 'params-asc', 'org-asc'] as const).map(
@@ -124,12 +133,13 @@
               {...editorFilter}
               bind:value={editors}
               legendClass="sr-only"
-              labelClass="flex-nowrap!"
-              class="mb-0! w-max"
+              class="mb-0! md:w-max"
             >
               {#snippet labelSlot({ option })}
-                <div class="me-2">{option.value}</div>
-                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+                <div class="me-4">{'label' in option ? option.label : option.value}</div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">
+                  {option.value === 'all' ? models.length : option.count}
+                </div>
               {/snippet}
             </CheckboxGroup>
           </Dropdown>
@@ -139,11 +149,13 @@
               {...sizeFilter}
               bind:value={sizes}
               legendClass="sr-only"
-              labelClass="flex-nowrap!"
-              class="mb-0! w-max"
+              class="mb-0! md:w-max"
             >
               {#snippet labelSlot({ option })}
-                <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
+                <div class="me-4">
+                  {#if option.value !== 'all'}<strong>{option.value} :</strong>{/if}
+                  {option.label}
+                </div>
                 <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
               {/snippet}
             </CheckboxGroup>
@@ -154,11 +166,10 @@
               {...licenseFilter}
               bind:value={licenses}
               legendClass="sr-only"
-              labelClass="flex-nowrap!"
-              class="mb-0! w-max"
+              class="mb-0! md:w-max"
             >
               {#snippet labelSlot({ option })}
-                <div class="me-2">{option.label}</div>
+                <div class="me-4">{option.label}</div>
                 <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
               {/snippet}
             </CheckboxGroup>

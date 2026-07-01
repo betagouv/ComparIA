@@ -1732,13 +1732,16 @@
                 },
                 "display": "Afficher les filtres",
                 "editor": {
+                    "all": "Tous les éditeurs",
                     "legend": "Éditeur"
                 },
                 "license": {
+                    "all": "Toutes les licences",
                     "legend": "Licence d'utilisation"
                 },
                 "reset": "Effacer tous les filtres",
                 "size": {
+                    "all": "Toutes les tailles",
                     "labels": {
                         "L": "de 70 à 150 milliards",
                         "M": "de 20 à 70 milliards",
