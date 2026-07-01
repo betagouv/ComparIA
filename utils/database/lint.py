@@ -10,7 +10,6 @@ from .actions import (
     archive_blacklisted_grok,
     archive_corrupted,
     archive_spam,
-    archive_unknown_llms,
     llm_analyze,
 )
 from .models import Comparison
@@ -137,7 +136,6 @@ async def lint(
 
     await archive_spam(commit=fix)
     await archive_corrupted(commit=fix)
-    await archive_unknown_llms(commit=fix and hard)
     await archive_blacklisted_grok(commit=fix)
 
     if fix:
