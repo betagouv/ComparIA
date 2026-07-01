@@ -18,7 +18,6 @@ from .actions import (
     migrate_turns,
     migrate_user_messages,
     migrate_votes,
-    rename_llm,
 )
 from .lint import lint, log_archived
 
@@ -42,7 +41,6 @@ cli_migrate.command(migrate_reasoning_content, name="reasoning_content")
 cli_db = App(name="db", help="Database related utilities.")
 cli_db.command(lint)
 cli_db.command(log_archived)
-cli_db.command(rename_llm)
 cli_db.command(llm_analyze)
 cli_db.command(backfill_pii_spam)
 cli_db.command(cli_archive)
