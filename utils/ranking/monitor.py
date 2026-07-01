@@ -1,76 +1,61 @@
 import logging
-from typing import Any
+from datetime import datetime
+from uuid import UUID
 
-from sqlmodel import col, select, union
+from sqlmodel import select
 
-from utils.database.models import Comparison
+from utils.database.models.llms import LLMData
 from utils.database.session import get_session
 from utils.logger import configure_logger
-from utils.utils import LLMS_RAW_DATA_FILE, ROOT_DIR
 
 from .compute import RankingResult
 
 logger = configure_logger(logging.getLogger("ranking.monitoring"))
 
 
-async def get_comparisons_llm_ids() -> set[str]:
-    """Get distinct LLM IDs from the comparison table."""
+async def get_llms_data() -> list[LLMData]:
+    """Load raw LLMs data from database."""
     try:
         async with get_session() as session:
-            results = await session.exec(
-                union(
-                    select(col(Comparison.llm_id_a).label("llm_id")).distinct(),
-                    select(col(Comparison.llm_id_b).label("llm_id")).distinct(),
-                )
-            )
-            return set([result[0] for result in results.all()])
+            return (await session.exec(select(LLMData))).all()
     except Exception as e:
-        logger.error(f"Failed to fetch distinct LLM IDs: {e}")
+        logger.error(f"Failed to query LLMs data: {e}")
         raise e
 
 
-async def monitor(llms: dict[str, Any], data: RankingResult):
+async def monitor(data: RankingResult):
     """
-    Warn about missing llms definitions, ranking or preferences data
+    Warn about available or missing ranking or preference data
     """
 
-    llm_ids = set(llms.keys())
-    db_llm_ids = await get_comparisons_llm_ids()
-    new_llm_ids = set([id_ for id_ in llm_ids if llms[id_]["new"]])
-    archived_llm_ids = set(
-        [id_ for id_ in llm_ids if llms[id_]["status"] == "archived"]
-    )
-    in_db_but_not_in_list = db_llm_ids.difference(llm_ids)
+    today = datetime.now()
+    llms = await get_llms_data()
+    llms_ids = set([llm.id for llm in llms])
+    new_llm_ids = set([llm.id for llm in llms if (today - llm.created_at).days <= 30])
+    archived_llm_ids = set([llm.id for llm in llms if llm.status == "archived"])
+    disabled_llm_ids = set([llm.id for llm in llms if llm.status == "disabled"])
+    enabled_llm_ids = llms_ids - archived_llm_ids - disabled_llm_ids
 
-    if in_db_but_not_in_list:
-        logger.error(
-            f"There is LLMs names in DB but not in '{LLMS_RAW_DATA_FILE.relative_to(ROOT_DIR)}': {in_db_but_not_in_list}"
-        )
+    ids_to_human_id_map = {llm.id: llm.human_id for llm in llms}
 
-    for kind in ("rankings", "preferences"):
+    def list_llms(ids: set[UUID]) -> str:
+        return f"\n{"\n".join(f" - {id}: '{ids_to_human_id_map[id]}'" for id in ids)}"
+
+    for kind in ("rankings",):  # "preferences"
         data_llm_ids = set(getattr(data, kind).keys())
 
-        if no_llm_for_data_ids := data_llm_ids.difference(llm_ids):
-            # There is data for an LLM but its id cannot be found in LLM definitions
-            # Can happen if we changed its id
-            logger.error(
-                f"There is '{kind}' data for LLMs that are not defined in '{LLMS_RAW_DATA_FILE.relative_to(ROOT_DIR)}': {no_llm_for_data_ids}"
-            )
-        if no_data_ids := archived_llm_ids.difference(data_llm_ids):
-            # Can't find data for an archived LLM, maybe we could drop it from our list since we have no data at all
+        if ids := archived_llm_ids.difference(data_llm_ids):
+            # Can't find data for an archived LLM
             logger.warning(
-                f"There is no '{kind}' data for archived LLMs: {no_data_ids}"
+                f"There is no '{kind}' data for 'archived' LLMs. Consider deleting or disabling it instead to avoid displaying it in LLM list:{list_llms(ids)}"
             )
-        if no_data_ids := (llm_ids - new_llm_ids - archived_llm_ids).difference(
-            data_llm_ids
-        ):
-            # Can't find data for an LLM that is not new or archived, is it too soon? Is there a problem with its endpoint?
+        if ids := disabled_llm_ids.difference(data_llm_ids):
+            # There is data for a disabled LLM that is therefore not displayed
             logger.warning(
-                f"There is no '{kind}' data for LLMs (excepting new and archived ones): {no_data_ids}"
+                f"There is '{kind}' data for 'disabled' LLMs. Consider archiving it instead to display it in LLM list and ranking:{list_llms(ids)}"
             )
-
-        # Try to find if there's some LLMs that do not ends up in dataset data
-        if in_db_but_no_data_ids := in_db_but_not_in_list.difference(data_llm_ids):
-            logger.error(
-                f"LLMs are in db but not in '{kind}' data: {in_db_but_no_data_ids}"
+        if ids := (enabled_llm_ids - new_llm_ids).difference(data_llm_ids):
+            # Can't find data for an LLM that is enabled and available since a month.
+            logger.warning(
+                f"There is no '{kind}' data for 'enabled' LLMs (excepting new ones). Maybe there is a problem with its endpoint?{list_llms(ids)}"
             )
