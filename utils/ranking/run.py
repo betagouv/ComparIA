@@ -13,12 +13,7 @@ from fastapi.encoders import jsonable_encoder
 
 from backend.config import settings
 from utils.storage.redis import REDIS_RANKING_KEY, get_redis_client
-from utils.utils import (
-    LLMS_GENERATED_DATA_FILE,
-    configure_logger,
-    read_json,
-    write_json,
-)
+from utils.utils import configure_logger, write_json
 
 from .compute import RankingResult, compute_ranking
 from .monitor import monitor
@@ -66,8 +61,7 @@ async def main(*, mode: Literal["all", "redis", "json"] = "redis") -> None:
     if mode in ("all", "redis"):
         store_to_redis(jsonable_encoder(ranking))
 
-    llms = read_json(LLMS_GENERATED_DATA_FILE)["models"]
-    await monitor(llms, ranking)
+    await monitor(ranking)
 
 
 if __name__ == "__main__":
