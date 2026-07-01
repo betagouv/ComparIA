@@ -7,6 +7,7 @@
     id,
     value = $bindable(),
     label,
+    variant = 'normal',
     placeholder = label,
     class: classes,
     ...props
@@ -14,6 +15,7 @@
     id: string
     value: string
     label: string
+    variant?: 'light' | 'normal'
   } & HTMLInputAttributes = $props()
 </script>
 
@@ -22,7 +24,7 @@
   <input
     bind:value
     {...props}
-    class="fr-input placeholder:overflow-visible"
+    class={['fr-input placeholder:overflow-visible', { 'bg-white!': variant === 'light' }]}
     {placeholder}
     {id}
     type="search"

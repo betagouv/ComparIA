@@ -5,6 +5,7 @@
   let {
     id,
     label = 'Options',
+    variant = 'normal',
     closeOnSelect = false,
     role = null,
     children,
@@ -13,6 +14,8 @@
     id: string
     label?: string
     closeOnSelect?: boolean
+    variant?: 'light' | 'normal'
+
     role?: 'menu' | null
     children?: Snippet
   } & SvelteHTMLElements['div'] = $props()
@@ -103,7 +106,7 @@
     aria-haspopup="true"
     aria-expanded={open}
     aria-controls={id}
-    class="fr-select"
+    class={['fr-select', { 'not-hover:bg-white': variant === 'light' }]}
     onclick={toggle}
   >
     {label}
