@@ -124,11 +124,12 @@
           id="model-list-search"
           bind:value={search}
           label={m['actions.searchModel']()}
+          variant="light"
           class="md:w-fit"
         />
 
         <div class="gap-3 md:flex-row md:gap-5 flex flex-col">
-          <Dropdown id="dropdown-editors" label={editorFilter.legend}>
+          <Dropdown id="dropdown-editors" label={editorFilter.legend} variant="light">
             <CheckboxGroup
               {...editorFilter}
               bind:value={editors}
@@ -144,7 +145,7 @@
             </CheckboxGroup>
           </Dropdown>
 
-          <Dropdown id="dropdown-size" label={sizeFilter.legend}>
+          <Dropdown id="dropdown-size" label={sizeFilter.legend} variant="light">
             <CheckboxGroup
               {...sizeFilter}
               bind:value={sizes}
@@ -161,7 +162,7 @@
             </CheckboxGroup>
           </Dropdown>
 
-          <Dropdown id="dropdown-license" label={licenseFilter.legend}>
+          <Dropdown id="dropdown-license" label={licenseFilter.legend} variant="light">
             <CheckboxGroup
               {...licenseFilter}
               bind:value={licenses}
@@ -191,8 +192,9 @@
         checkedLabel={m['models.list.filters.archived.checkedLabel']()}
         uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
         variant="primary"
-        groupClass="max-w-max"
-        class="me-5 text-xs!"
+        class="text-xs! lh-loose"
+        labelPos="right"
+        checkLabelClass="text-xxs! mt-1"
       />
     </form>
   </aside>
