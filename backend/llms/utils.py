@@ -13,7 +13,7 @@ Functions:
 - get_llm_consumption: Calculates environmental impact
 """
 
-from typing import TYPE_CHECKING, TypedDict, Union
+from typing import TYPE_CHECKING, TypedDict
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
