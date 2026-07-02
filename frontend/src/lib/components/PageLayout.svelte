@@ -8,6 +8,7 @@
     title,
     subtitle,
     bubble,
+    titleAsBubble = false,
     stickyHeader = false,
     headerClass,
     header,
@@ -18,6 +19,7 @@
     title: string
     subtitle?: string
     bubble?: string
+    titleAsBubble?: boolean
     stickyHeader?: boolean
     headerClass?: ClassValue
     header?: Snippet
@@ -34,6 +36,8 @@
     // Recomputed on header class change
     if (headerClass || !headerClass) onResize()
   })
+
+  const bubbleClasses = 'bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-nowrap'
 </script>
 
 <svelte:window onresize={onResize} />
@@ -51,13 +55,13 @@
 >
   <div class="gap-3 md:flex-row flex flex-col items-center">
     {#if bubble}
-      <div class="bg-primary px-4 py-2 font-bold text-white rounded-[3.75rem] text-nowrap">
+      <div class={bubbleClasses}>
         {bubble}
       </div>
     {/if}
 
     <div class="md:text-left flex flex-col text-center">
-      <h1 class="text-base mb-0">{title}</h1>
+      <h1 class={['text-base mb-0', { [bubbleClasses]: titleAsBubble }]}>{title}</h1>
       {#if subtitle}
         <p class="m-0! text-sm! leading-normal! text-grey">{subtitle}</p>
       {/if}

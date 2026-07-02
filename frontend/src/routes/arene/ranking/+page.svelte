@@ -46,7 +46,7 @@
       { key: 'rank_p97_5' as const, label: 'Rank p97.5' },
       { key: 'n_match' as const, label: 'Total votes' },
       { key: 'consumption' as const, label: 'Consumption mWh (1000 tokens)', energy: true },
-      { key: 'friendly_size' as const, label: 'Size', energy: true },
+      { key: 'size_class' as const, label: 'Size', energy: true },
       { key: 'params' as const, label: 'Parameters (B)', energy: true },
       { key: 'arch' as const, label: 'Architecture', energy: true },
       { key: 'release_date' as const, label: 'Release' },
@@ -71,12 +71,15 @@
                 col.key === 'score_p97_5'
               )
                 return m.data[col.key]
-              if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
+              if (col.key === 'params') return m.license.kind === 'proprietary' ? 'N/A' : m.params
               if (col.key === 'trust_range')
                 return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
               if (col.key === 'consumption') {
-                return m.license === 'proprietary' ? 'N/A' : m.consumption
+                return m.license.kind === 'proprietary' ? 'N/A' : m.consumption
               }
+              if (col.key === 'organisation') return m.lab.name
+              if (col.key === 'distribution') return m.license.kind
+              if (col.key === 'id') return m.human_id
               return m[col.key]
             })
             .join(',')
@@ -107,7 +110,7 @@
   //         return csvCols
   //           .map((col) => {
   //             if (col.key === 'id') {
-  //               return m[col.key]
+  //               return m.human_id
   //             } else if (col.key === 'total_positive_prefs') {
   //               return APIPositivePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
   //             } else if (col.key === 'total_negative_prefs') {

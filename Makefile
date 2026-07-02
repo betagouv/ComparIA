@@ -188,7 +188,7 @@ clean: ## Clean generated files
 ###################################
 i18n-clean-locales: ## Remove locales keys not present in fr
 	@echo "Cleaning frontend locales keys..."
-	cd frontend/locales && python maintenance.py
+	./comparia-cli internal i18n
 
 i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
 	@echo "Generating frontend prompt suggestions..."
@@ -197,21 +197,6 @@ i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
 i18n-build-news: ## generate news files
 	@echo "Generating news files..."
 	$(UV) run python -m utils.news.build_news
-
-###################################
-# Models utilities
-###################################
-models-build: ## Build/generate model files from JSON sources
-	@echo "Generating models..."
-	$(UV) run python -m utils.models.build_models
-
-models-maintenance: ## Run the models maintenance script
-	@echo "Models maintenance..."
-	$(UV) run python -m utils.models.maintenance
-
-models-doc: ## Build/generate llm doc and JSON schemas
-	@echo "Generating LLM specs documentation and JSON schemas..."
-	$(UV) run python -m utils.models.schemas.build_doc
 
 ###################################
 # Dataset utilities

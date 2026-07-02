@@ -1,15 +1,21 @@
 import logging
-from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel, ValidationError
 
-from utils.logger import configure_logger, log_pydantic_parsed_errors
-from utils.utils import read_json
+from utils.logger import log_pydantic_parsed_errors
+from utils.utils import (
+    DATA_DIR,
+    FRONTEND_MAIN_I18N_FILE,
+    read_json,
+    sort_dict,
+    write_json,
+)
 
-logger = configure_logger(logging.getLogger("llms:archs"))
+logger = logging.getLogger("comparia.internal")
 
-ARCHS_FILE = Path(__file__).parent / "archs.json"
+ARCHS_FILE = DATA_DIR / "archs.json"
+ARCHS_SCHEMA_FILE = DATA_DIR / "generated" / "schema-archs.json"
 
 descs = {
     "id": "Architecture identifier (e.g. 'dense', 'moe')",
@@ -24,7 +30,7 @@ class Arch(BaseModel):
     """
     LLM architecture definition.
 
-    Defines neural network architecture and properties.
+    Defines LLMs architecture and properties.
     Used to validate `utils/models/archs.json`.
     """
 
@@ -39,19 +45,15 @@ class Arch(BaseModel):
 Archs = RootModel[list[Arch]]
 
 
-def get_archs() -> list[Any]:
-    raw_archs = read_json(ARCHS_FILE)
-
+def get_archs() -> Archs:
     try:
-        archs = Archs(raw_archs).model_dump()
-        logger.info("No errors in 'archs.json'!")
-        return archs
+        return read_json(ARCHS_FILE, Archs)
     except ValidationError as exc:
         errors: dict[str, list[dict[str, Any]]] = {}
 
         for err in exc.errors():
             idx, key = err["loc"]
-            name = f"arch '{raw_archs[idx].get("id", idx)}'"
+            name = f"arch '{idx}'"
             if name not in errors:
                 errors[name] = []
             errors[name].append({"key": key, **err})
@@ -59,3 +61,17 @@ def get_archs() -> list[Any]:
         log_pydantic_parsed_errors(logger, errors)
 
         raise Exception("Errors in 'archs.json', exiting...")
+
+
+def generate_archs_i18n() -> None:
+    archs = get_archs()
+
+    frontend_i18n = read_json(FRONTEND_MAIN_I18N_FILE)
+    frontend_i18n["generated"]["archs"] = sort_dict(
+        {a.pop("id"): a for a in archs.model_dump()}
+    )
+    write_json(FRONTEND_MAIN_I18N_FILE, frontend_i18n, indent=4)
+
+
+def generate_archs_json_schema() -> None:
+    write_json(ARCHS_SCHEMA_FILE, Archs.model_json_schema())

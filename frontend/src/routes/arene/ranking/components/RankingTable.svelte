@@ -2,10 +2,11 @@
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import type { Archs } from '$lib/generated/constants'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { applyStyleControl, getModelsWithDataContext, type Archs } from '$lib/models'
+  import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -45,7 +46,7 @@
 
   const votesData = getVotesContext()
   const totalVotes = $derived(NumberFormater.format(votesData.count))
-  const { lastUpdateDate, models: baseModels } = getModelsWithDataContext()
+  const { lastUpdateDate, commons, models: baseModels } = getModelsWithDataContext()
   const data = $derived(applyStyleControl(baseModels))
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
@@ -86,8 +87,8 @@
 
   const rows = $derived.by(() => {
     const models = data
-      .filter((m) => {
-        if (filterProprietary) return m.license !== 'proprietary'
+      .filter((llm) => {
+        if (filterProprietary) return llm.license.kind !== 'proprietary'
         return true
       })
       .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
@@ -95,16 +96,14 @@
     if (models.length === 0) return []
 
     const highestElo = models[0].data.elo!
-    const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
-    const highestConso = models.reduce((a, m) => (m.consumption > a ? m.consumption : a), 0)
+    const lowestElo = models.reduce((a, llm) => (llm.data.elo < a ? llm.data.elo : a), highestElo)
+    const highestConso = models.reduce((a, llm) => (llm.consumption > a ? llm.consumption : a), 0)
 
     return models.map((model) => {
-      const [month, year] = model.release_date.split('/')
-
       return {
         ...model,
-        arch: (model.license === 'proprietary' ? 'na' : model.arch) as Archs,
-        release_date: new Date([month, '01', year].join('/')),
+        arch: (model.license.kind === 'proprietary' ? 'na' : model.arch) as Archs,
+        release_date: model.release_date,
         eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
         consoRangeWidth: Math.ceil((model.consumption / highestConso) * 100)
       }
@@ -126,8 +125,8 @@
           case 'n_match':
             return sortIfDefined(a.data, b.data, orderingCol)
           case 'consumption': {
-            const aProprietary = a.license === 'proprietary'
-            const bProprietary = b.license === 'proprietary'
+            const aProprietary = a.license.kind === 'proprietary'
+            const bProprietary = b.license.kind === 'proprietary'
             if (aProprietary && bProprietary) return a.id.localeCompare(b.id)
             if (aProprietary) return orderingMethod === 'ascending' ? -1 : 1
             if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
@@ -143,10 +142,12 @@
             return b.params - a.params
           case 'release':
             return Number(b.release_date) - Number(a.release_date)
-          case 'arch':
           case 'organisation':
+            return a.lab.name.localeCompare(b.lab.name)
+          case 'arch':
+            return a.arch.localeCompare(b.arch)
           case 'license':
-            return a[orderingCol].localeCompare(b[orderingCol])
+            return a.license.kind.localeCompare(b.license.kind)
           default:
             return a.data.rank - b.data.rank
         }
@@ -182,7 +183,7 @@
 
     <div class="fr-table__detail mb-0! gap-3 md:flex-row md:gap-5 flex flex-col">
       <p class="mb-0! text-[14px]!">
-        {m['ranking.table.lastUpdate']({ date: lastUpdateDate })}
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate! })}
       </p>
 
       <Link
@@ -205,22 +206,18 @@
       <div
         class="sm:max-w-none sm:overflow-visible max-w-[205px] overflow-hidden overflow-ellipsis"
       >
-        <AILogo
-          iconPath={model.icon_path}
-          alt={model.organisation}
-          class="me-1 inline-block align-middle"
-        />
+        <AILogo logo={model.lab.logo} alt={model.lab.name} class="me-1 inline-block align-middle" />
         <a
-          href="#{model.id}"
+          href="#{model.human_id}"
           data-fr-opened="false"
           aria-controls="{id}-modal-model"
           class="text-black!"
-          onclick={() => (selectedModel = model.id)}>{model.id}</a
+          onclick={() => (selectedModel = model.id)}>{model.human_id}</a
         >
       </div>
     {:else if col.id === 'size'}
-      <strong>{model.friendly_size}</strong> -
-      {#if model.distribution === 'api-only'}
+      <strong>{model.size_class}</strong> -
+      {#if model.license.kind === 'proprietary'}
         <span class="text-xs">{m['ranking.table.data.estimation']()}</span>
       {:else}
         {m['ranking.table.data.billions']({ count: model.params })}
@@ -248,7 +245,7 @@
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption'}
-      {#if model.license === 'proprietary'}
+      {#if model.license.kind === 'proprietary'}
         <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
       {:else}
         {model.consumption} mWh
@@ -263,9 +260,9 @@
     {:else if col.id === 'n_match'}
       {model.data.n_match}
     {:else if col.id === 'organisation'}
-      {model.organisation}
+      {model.lab.name}
     {/if}
   {/snippet}
 </Table>
 
-<ModelInfoModal model={selectedModelData} modalId="{id}-modal-model" />
+<ModelInfoModal {commons} model={selectedModelData} modalId="{id}-modal-model" />

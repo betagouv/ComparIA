@@ -24,41 +24,10 @@ if TYPE_CHECKING:
     from fastapi import Request
 
     from backend.arena.conversation import AnyMessageRead
-    from backend.llms.models import Endpoint, LLMDataEnabled
+    from backend.llms.models import LLMDataEnabled
     from utils.database.models import LLMMessageCreate
 
 logger = logging.getLogger("languia")
-
-
-def get_api_key(endpoint: "Endpoint") -> str | None:
-    """
-    Get the appropriate API key for an endpoint.
-
-    Different providers require different API keys:
-    - Albert (French LLM): ALBERT_KEY
-    - HuggingFace Inference: HF_INFERENCE_KEY
-    - OpenRouter/Vertex: handled by LiteLLM from env variables
-
-    Args:
-        endpoint: Endpoint configuration dict with api_base
-
-    Returns:
-        str: API key, or None if using standard provider (OpenRouter/Vertex)
-    """
-    # Albert is French government LLM
-    # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
-
-    # "api_type": "huggingface/cohere" doesn't work, using the openai api type and api_base="https://router.huggingface.co/cohere/compatibility/v1/"
-    if endpoint.api_base and "albert.api.etalab.gouv.fr" in endpoint.api_base:
-        return settings.ALBERT_KEY
-    # HuggingFace Inference API
-    if endpoint.api_base and "huggingface.co" in endpoint.api_base:
-        return settings.HF_INFERENCE_KEY
-    # Ordbogen.ai (Danish LLM)
-    if endpoint.api_base and "ordbogen.ai" in endpoint.api_base:
-        return settings.ORDBOGEN_API_KEY
-    # OpenRouter is handled by LiteLLM reading OPENROUTER_API_KEY env variable directly
-    return None
 
 
 def litellm_stream_iter(
@@ -90,14 +59,10 @@ def litellm_stream_iter(
     Yields:
         updated LLMMessageCreate
     """
-    endpoint = llm.endpoint
-    # Build LiteLLM model identifier (e.g., "openai/gpt-4", "google/gemini-pro")
-    litellm_model_name = f"{endpoint.api_type}/{endpoint.api_model_id}"
-    # Retrieve API key from environment or config
-    api_key = get_api_key(endpoint)
+    endpoint = llm.litellm_endpoint
 
     logger.info(
-        f"using endpoint {litellm_model_name} for {llm.id}: {endpoint.model_dump(mode="json")}",
+        f"using endpoint {endpoint.model} for {llm.id}: {endpoint.model_dump(mode="json", exclude={"api_key"})}",
         extra={"request": request},
     )
 
@@ -118,17 +83,15 @@ def litellm_stream_iter(
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
 
-    is_ordbogen = endpoint.api_base and "ordbogen.ai" in endpoint.api_base
+    is_ordbogen = endpoint.base_url and "ordbogen.ai" in endpoint.base_url
 
     # Build parameters for LiteLLM API call
     kwargs = {
         "timeout": ORDBOGEN_GLOBAL_TIMEOUT if is_ordbogen else GLOBAL_TIMEOUT,
         "stream_timeout": ORDBOGEN_STREAM_TIMEOUT if is_ordbogen else STREAM_TIMEOUT,
-        "api_version": endpoint.api_version,
-        "base_url": endpoint.api_base,
-        "api_key": api_key,
+        # litellm endpoint formated args
+        **endpoint.model_dump(),
         # max_retries can be added if needed
-        "model": litellm_model_name,
         # Only pass supported message args 'role' and 'content'
         "messages": [
             msg.model_dump(
@@ -149,7 +112,7 @@ def litellm_stream_iter(
         )
 
     # Request token usage reporting (except for Aya which doesn't support it)
-    if "c4ai-aya-expanse-32b" not in litellm_model_name:
+    if "c4ai-aya-expanse-32b" not in endpoint.model:
         kwargs["stream_options"] = {"include_usage": True}
 
     # Enable extended reasoning (e.g., o1 models)
@@ -168,7 +131,7 @@ def litellm_stream_iter(
         response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
     except litellm.ContextWindowExceededError as e:
         logger.error(
-            f"context_window_exceeded: {litellm_model_name}: {e}",
+            f"context_window_exceeded: {endpoint.model}: {e}",
             extra={"request": request},
         )
         raise ContextTooLongError from e
@@ -185,14 +148,14 @@ def litellm_stream_iter(
         if not msg.generation_id and chunk.id:
             msg.generation_id = chunk.id
             logger.debug(
-                f"Response stream started for '{litellm_model_name}' with generation_id='{chunk.id}'",
+                f"Response stream started for '{endpoint.model}' with generation_id='{chunk.id}'",
                 extra={"request": request},
             )
         # Extract token count from streaming completion (if available)
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             msg.tokens = chunk.usage.completion_tokens
             logger.debug(
-                f"reported output tokens for api {endpoint.api_base} and model {litellm_model_name}: {msg.tokens}",
+                f"reported output tokens for api {endpoint.base_url} and model {endpoint.model}: {msg.tokens}",
                 extra={"request": request},
             )
         # Process content chunks
@@ -228,7 +191,7 @@ def litellm_stream_iter(
     msg.updated_at = datetime.now()
 
     logger.debug(
-        f"Response stream ended for '{litellm_model_name}' with generation_id='{chunk.id}'",
+        f"Response stream ended for '{endpoint.model}' with generation_id='{chunk.id}'",
         extra={"request": request},
     )
 

@@ -8,9 +8,9 @@ Functions:
 
 import logging
 from typing import TypedDict
+from uuid import UUID
 
 from backend.llms.data import get_llms_data
-from backend.llms.models import LLMData
 from backend.llms.utils import Consumption, get_llm_consumption
 from utils.database.models import BotPos, ComparisonRead
 
@@ -18,7 +18,7 @@ logger = logging.getLogger("languia")
 
 
 class RevealModelData(TypedDict):
-    llm: LLMData
+    llm_id: UUID
     conso: Consumption
 
 
@@ -54,7 +54,7 @@ def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
     return None
 
 
-def get_reveal_data(comparison: ComparisonRead) -> RevealData:
+async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     """
     Build reveal screen data with LLM comparison and environmental impact metrics.
 
@@ -88,7 +88,7 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # request_latency = conv.finish_tstamp - conv.start_tstamp
 
     chosen_llm = get_chosen_llm(comparison)
-    llms = get_llms_data().enabled
+    llms = (await get_llms_data()).enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {
@@ -108,8 +108,8 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # Encode summary as base64 for safe storage/transmission (share feature)
     jsonstring = json.dumps(
         {
-            "a": comparison.llm_id_a,  # Model A identifier
-            "b": comparison.llm_id_b,  # Model B identifier
+            "a": str(comparison.llm_id_a),  # Model A identifier
+            "b": str(comparison.llm_id_b),  # Model B identifier
             "ta": conso["a"]["tokens"],  # Model A token count
             "tb": conso["b"]["tokens"],  # Model B token count
             # Add user's choice to summary (for verification/tracking)
@@ -122,6 +122,6 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     return {
         "b64": b64,
         "chosen_llm": chosen_llm,
-        "a": {"llm": llms[comparison.llm_id_a], "conso": conso["a"]},
-        "b": {"llm": llms[comparison.llm_id_b], "conso": conso["b"]},
+        "a": {"llm_id": comparison.llm_id_a, "conso": conso["a"]},
+        "b": {"llm_id": comparison.llm_id_b, "conso": conso["b"]},
     }

@@ -1,49 +1,52 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import {
-    Accordion,
-    AccordionGroup,
-    Button,
-    CheckboxGroup,
-    Search,
-    Toggle
-  } from '$components/dsfr'
+  import Dropdown from '$components/Dropdown.svelte'
+  import { Button, CheckboxGroup, Search, Select, Toggle } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
+  import { SIZE_CLASSES, type SizeClasses } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import type { License, Organisation, Sizes } from '$lib/models'
-  import { getModelsContext, SIZES } from '$lib/models'
+  import { getModelsContext } from '$lib/models'
 
-  const models = getModelsContext().models
+  const { models, commons } = getModelsContext()
 
   const editorFilter = {
     id: 'editor',
     legend: m['models.list.filters.editor.legend'](),
-    options: [...new Set(models.map((m) => m.organisation))]
-      .sort()
-      .map((org) => ({ value: org, count: models.filter((m) => m.organisation === org).length }))
+    options: [
+      { value: 'all', label: m['models.list.filters.editor.all'](), count: models.length },
+      ...[...new Set(models.map((llm) => llm.lab.name))]
+        .sort()
+        .map((org) => ({ value: org, count: models.filter((llm) => llm.lab.name === org).length }))
+    ]
   }
 
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
-    options: SIZES.map((value) => ({
-      value,
-      label: m[`models.list.filters.size.labels.${value}`](),
-      count: models.filter((m) => m.friendly_size === value).length
-    }))
+    options: [
+      { value: 'all', label: m['models.list.filters.size.all'](), count: models.length },
+      ...SIZE_CLASSES.map((value) => ({
+        value,
+        label: m[`models.list.filters.size.labels.${value}`](),
+        count: models.filter((llm) => llm.size_class === value).length
+      }))
+    ]
   }
 
   const licenseFilter = {
     id: 'license',
     legend: m['models.list.filters.license.legend'](),
-    options: [...new Set(models.map((m) => m.license))].map((license) => ({
-      label:
-        license === 'proprietary' ? m['models.licenses.type.proprietary']() : (license as string),
-      value: license as string,
-      count: models.filter((m) => m.license === license).length
-    }))
+    options: [
+      { value: 'all', label: m['models.list.filters.license.all'](), count: models.length },
+      ...[...new Set(models.map((llm) => llm.license.name))].map((license) => ({
+        label:
+          license === 'proprietary' ? m['models.licenses.type.proprietary']() : (license as string),
+        value: license as string,
+        count: models.filter((llm) => llm.license.name === license).length
+      }))
+    ]
   }
 
   const sortingOptions = (['name-asc', 'date-desc', 'params-asc', 'org-asc'] as const).map(
@@ -53,9 +56,9 @@
     })
   )
 
-  let editors = $state<Organisation[]>([])
-  let sizes = $state<Sizes[]>([])
-  let licenses = $state<License[]>([])
+  let editors = $state<string[]>([])
+  let sizes = $state<SizeClasses[]>([])
+  let licenses = $state<string[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let showArchived = $state(false)
   let search = $state('')
@@ -65,18 +68,18 @@
     return models
       .filter((model) => {
         const searchMatch = !_search || model.search.includes(_search)
-        const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
-        const orgMatch = editors.length === 0 || editors.includes(model.organisation)
-        const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
+        const sizeMatch = sizes.length === 0 || sizes.includes(model.size_class)
+        const orgMatch = editors.length === 0 || editors.includes(model.lab.name)
+        const licenseMatch = licenses.length === 0 || licenses.includes(model.license.name)
         const archivedMatch = model.status === 'enabled' || showArchived
         return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
           case 'date-desc':
-            if (a.release_date && b.release_date && a.release_date !== b.release_date) {
+            if (a.release_date !== b.release_date) {
               // @ts-expect-error date works
-              return new Date('01/' + b.release_date) - new Date('01/' + a.release_date)
+              return new Date(b.release_date) - new Date(a.release_date)
             } else if (a.release_date) {
               return -1
             } else if (b.release_date) {
@@ -89,9 +92,9 @@
             }
           // falls through
           case 'org-asc':
-            return a.organisation.localeCompare(b.organisation)
+            return a.lab.name.localeCompare(b.lab.name)
           default:
-            return a.simple_name.localeCompare(b.simple_name)
+            return a.name.localeCompare(b.name)
         }
       })
   })
@@ -110,122 +113,94 @@
 
 <PageLayout
   seoTitle={m['seo.titles.modeles']()}
-  title={m['models.list.title']()}
-  subtitle={m['models.list.intro']()}
-  class="md:flex py-0!"
+  title={m['seo.titles.modeles']()}
+  titleAsBubble
+  class="py-0! px-0!"
 >
-  <aside
-    class="fr-sidemenu mb-5 md:mb-0 md:basis-1/3"
-    role="navigation"
-    aria-labelledby="sidemenu-title"
-  >
-    <div class="fr-sidemenu__inner md:pt-5! h-full">
-      <button
-        id="results-count"
-        aria-expanded="false"
-        aria-controls="fr-modal-filters-section"
-        type="button"
-        class="fr-sidemenu__btn"
-      >
-        {m['models.list.filters.display']()}
-        {#if filterCount}
-          <span class="fr-badge fr-badge--sm bg-primary! text-white! ms-2 rounded-full!">
-            {filterCount}
-          </span>
-        {/if}
-      </button>
-      <div class="fr-collapse" id="fr-modal-filters-section">
-        <p class="fr-h5 mb-5! md:block hidden">
-          {filteredModels.length}
-          {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
-        </p>
-        <form class="mt-8 md:mt-0">
-          <Search
-            id="model-list-search"
-            bind:value={search}
-            label={m['actions.searchModel']()}
-            class="md:flex! mb-7 hidden!"
-          />
+  <aside class="bg-light-grey py-3 md:py-4 px-4 md:px-6">
+    <form class="gap-3 flex flex-col">
+      <div class="gap-3 xl:gap-x-12 xl:flex-row flex flex-col flex-wrap">
+        <Search
+          id="model-list-search"
+          bind:value={search}
+          label={m['actions.searchModel']()}
+          variant="light"
+          class="md:w-fit"
+        />
 
-          <Toggle
-            id="archived"
-            bind:value={showArchived}
-            label={m['models.list.filters.archived.label']()}
-            help={m['models.list.filters.archived.help']()}
-            checkedLabel={m['models.list.filters.archived.checkedLabel']()}
-            uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
-            groupClass="mx-4 md:mx-0"
-          />
+        <div class="gap-3 md:flex-row md:gap-5 flex flex-col">
+          <Dropdown id="dropdown-editors" label={editorFilter.legend} variant="light">
+            <CheckboxGroup
+              {...editorFilter}
+              bind:value={editors}
+              legendClass="sr-only"
+              class="mb-0! md:w-max"
+            >
+              {#snippet labelSlot({ option })}
+                <div class="me-4">{'label' in option ? option.label : option.value}</div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">
+                  {option.value === 'all' ? models.length : option.count}
+                </div>
+              {/snippet}
+            </CheckboxGroup>
+          </Dropdown>
 
-          <AccordionGroup class="mb-6 mt-6">
-            <Accordion id="field-editors" label={editorFilter.legend}>
-              <div class="p-4">
-                <CheckboxGroup
-                  {...editorFilter}
-                  bind:value={editors}
-                  legendClass="sr-only"
-                  labelClass="flex-nowrap!"
-                  class="mb-0!"
-                >
-                  {#snippet labelSlot({ option })}
-                    <div class="me-2">{option.value}</div>
-                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-                  {/snippet}
-                </CheckboxGroup>
-              </div>
-            </Accordion>
+          <Dropdown id="dropdown-size" label={sizeFilter.legend} variant="light">
+            <CheckboxGroup
+              {...sizeFilter}
+              bind:value={sizes}
+              legendClass="sr-only"
+              class="mb-0! md:w-max"
+            >
+              {#snippet labelSlot({ option })}
+                <div class="me-4">
+                  {#if option.value !== 'all'}<strong>{option.value} :</strong>{/if}
+                  {option.label}
+                </div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+              {/snippet}
+            </CheckboxGroup>
+          </Dropdown>
 
-            <Accordion id="field-size" label={sizeFilter.legend}>
-              <div class="p-4">
-                <CheckboxGroup
-                  {...sizeFilter}
-                  bind:value={sizes}
-                  legendClass="sr-only"
-                  labelClass="flex-nowrap!"
-                  class="mb-0!"
-                >
-                  {#snippet labelSlot({ option })}
-                    <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
-                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-                  {/snippet}
-                </CheckboxGroup>
-              </div>
-            </Accordion>
-
-            <Accordion id="field-license" label={licenseFilter.legend}>
-              <div class="p-4">
-                <CheckboxGroup
-                  {...licenseFilter}
-                  bind:value={licenses}
-                  legendClass="sr-only"
-                  labelClass="flex-nowrap!"
-                  class="mb-0!"
-                >
-                  {#snippet labelSlot({ option })}
-                    <div class="me-2">{option.label}</div>
-                    <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-                  {/snippet}
-                </CheckboxGroup>
-              </div>
-            </Accordion>
-          </AccordionGroup>
-
-          <div class="mb-8">
-            <Button
-              text={m['models.list.filters.reset']()}
-              icon="delete-line"
-              variant="tertiary-no-outline"
-              disabled={filterCount === 0}
-              onclick={resetFilters}
-            />
-          </div>
-        </form>
+          <Dropdown id="dropdown-license" label={licenseFilter.legend} variant="light">
+            <CheckboxGroup
+              {...licenseFilter}
+              bind:value={licenses}
+              legendClass="sr-only"
+              class="mb-0! md:w-max"
+            >
+              {#snippet labelSlot({ option })}
+                <div class="me-4">{option.label}</div>
+                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+              {/snippet}
+            </CheckboxGroup>
+          </Dropdown>
+        </div>
+        <Button
+          text={m['models.list.filters.reset']()}
+          icon="delete-line"
+          disabled={filterCount === 0}
+          onclick={resetFilters}
+        />
       </div>
-    </div>
+
+      <Toggle
+        id="archived"
+        bind:value={showArchived}
+        label={m['models.list.filters.archived.label']()}
+        // help={m['models.list.filters.archived.help']()}
+        checkedLabel={m['models.list.filters.archived.checkedLabel']()}
+        uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+        variant="primary"
+        class="text-xs! lh-loose"
+        labelPos="right"
+        checkLabelClass="text-xxs! mt-1"
+      />
+    </form>
   </aside>
 
-  <div class="md:pt-9! pb-6 basis-full">
-    <p class="fr-h6 mb-4! md:hidden">
+  <div class="py-4 md:py-6 px-4 md:px-6">
+    <p class="fr-h5 mb-4!">
       {filteredModels.length}
       {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
     </p>
@@ -237,25 +212,20 @@
       class="md:hidden! mb-4"
     />
 
-    <div class="fr-select-group">
-      <label class="fr-label" for="model-order">{m['models.list.triage.label']()}</label>
-      <select
-        id="model-order"
-        bind:value={sortingMethod}
-        name="model-order"
-        class="fr-select w-auto! max-w-full"
-      >
-        {#each sortingOptions as option (option.value)}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
-    </div>
+    <Select
+      bind:selected={sortingMethod}
+      id="model-order"
+      options={sortingOptions}
+      label={m['models.list.triage.label']()}
+      class="w-auto! max-w-full"
+    />
 
     <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
       {#each filteredModels as model (model.id)}
         <ModelCard
           {model}
           modalId="modal-model"
+          {commons}
           onModelSelected={(name) => (selectedModel = name)}
         />
       {/each}
@@ -270,6 +240,7 @@
 <ModelInfoModal
   model={selectedModelData}
   modalId="modal-model"
+  {commons}
   onClose={() => window.history.replaceState(null, '', page.url.pathname)}
 />
 

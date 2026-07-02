@@ -10,7 +10,7 @@ from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
 from .turn import BotPos, Turn, TurnPublic, TurnRead
-from .utils import AutoDatetime, ModelId, OptionalDatetime
+from .utils import BaseDBModel, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
@@ -41,6 +41,8 @@ ArchivedReason = Literal[
 #   - remove corresponding UserMessage + LLMMessage
 # - "corrupted_model_stream": reparse LLMMessage content
 
+LLMDataId = Annotated[uuid.UUID, Field(foreign_key="llm_data.id")]
+
 
 class ErrorDetails(BaseModel):
     message: str
@@ -49,10 +51,7 @@ class ErrorDetails(BaseModel):
     is_timeout: bool = False
 
 
-class ComparisonBase(SQLModel):
-    id: ModelId
-    created_at: AutoDatetime
-    updated_at: AutoDatetime
+class ComparisonBase(BaseDBModel):
     ip: str  # WARNING: PII
     visitor_id: str | None = None
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
@@ -62,11 +61,11 @@ class ComparisonBase(SQLModel):
     )
 
     # a
-    llm_id_a: str
+    llm_id_a: LLMDataId
     system_msg_a: str | None = None
 
     # b
-    llm_id_b: str
+    llm_id_b: LLMDataId
     system_msg_b: str | None = None
 
     error: Annotated[ErrorDetails | None, Field(sa_type=JSONB)] = None

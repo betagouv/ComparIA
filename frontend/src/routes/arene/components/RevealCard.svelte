@@ -1,94 +1,111 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button, Tooltip } from '$components/dsfr'
+  import { Badge, Button, Icon, Tooltip } from '$components/dsfr'
+  import InfoCard from '$components/InfoCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import type { EquivalenceType, RevealModelData } from '$lib/chatService.svelte'
-  import { getI18nContext } from '$lib/global.svelte'
+  import type { RevealModelData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  import { onMount } from 'svelte'
+  import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext, MODALITIES } from '$lib/models'
+  import { sanitize } from '$lib/utils/commons'
   import { MiniCard } from '.'
 
   let { data, selected }: { data: RevealModelData; selected: boolean } = $props()
-
-  const i18nData = getI18nContext()
-  const model = $derived(data.model)
+  const { models, commons } = getModelsContext()
+  const model = $derived(models.find((llm) => llm.id === data.id)!)
   const modelBadges = $derived(
-    (['license', 'size', 'releaseDate'] as const).map((k) => model.badges[k]).filter((b) => !!b)
+    (['license', 'size', 'release'] as const).map((k) => model.badges[k]).filter((b) => !!b)
   )
+  const cards = $derived.by(() => {
+    const cards = getModelCards(model, 'sm', commons)
+    return [
+      cards.size,
+      cards.arch,
+      cards.context,
+      cards.modalities,
+      cards.price,
+      cards.sovereignty,
+      cards.rank,
+      cards.energy
+    ]
+  })
   const conso = $derived.by(() => {
-    const co2 = data.scaled_co2_t
+    // FIXME equivalences legacy?
+    // const co2 = data.scaled_co2_t
     return {
-      energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
-      co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
+      energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0)
+      // co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
     }
   })
 
-  const equivalencesData: Record<
-    EquivalenceType,
-    { emoji: string; source: string; unit?: string; decimals?: number }
-  > = {
-    paris_nyc_flights: {
-      emoji: '✈️',
-      decimals: 1,
-      source: 'https://impactco2.fr/outils/transport/avion-longcourrier'
-    },
-    baguette_production: {
-      emoji: '🥖',
-      unit: 'kg',
-      source: 'https://impactco2.fr/outils/alimentation/baguette'
-    },
-    one_year_tree_absortion: {
-      emoji: '🌳',
-      source: 'https://www.usda.gov/about-usda/news/blog/power-one-tree-very-air-we-breathe'
-    },
-    package_delivery: {
-      emoji: '📦',
-      source: 'https://impactco2.fr/outils/livraison/livraisondomicile'
-    },
-    mango_import: {
-      emoji: '🥭',
-      unit: 'kg',
-      source: 'https://impactco2.fr/outils/fruitsetlegumes/mangue'
-    },
-    pool_filing: { emoji: '💦', source: 'https://impactco2.fr/outils/caspratiques/piscine' }
-  }
+  // FIXME equivalences legacy?
+  // const i18nData = getI18nContext()
+  // const equivalencesData: Record<
+  //   EquivalenceType,
+  //   { emoji: string; source: string; unit?: string; decimals?: number }
+  // > = {
+  //   paris_nyc_flights: {
+  //     emoji: '✈️',
+  //     decimals: 1,
+  //     source: 'https://impactco2.fr/outils/transport/avion-longcourrier'
+  //   },
+  //   baguette_production: {
+  //     emoji: '🥖',
+  //     unit: 'kg',
+  //     source: 'https://impactco2.fr/outils/alimentation/baguette'
+  //   },
+  //   one_year_tree_absortion: {
+  //     emoji: '🌳',
+  //     source: 'https://www.usda.gov/about-usda/news/blog/power-one-tree-very-air-we-breathe'
+  //   },
+  //   package_delivery: {
+  //     emoji: '📦',
+  //     source: 'https://impactco2.fr/outils/livraison/livraisondomicile'
+  //   },
+  //   mango_import: {
+  //     emoji: '🥭',
+  //     unit: 'kg',
+  //     source: 'https://impactco2.fr/outils/fruitsetlegumes/mangue'
+  //   },
+  //   pool_filing: { emoji: '💦', source: 'https://impactco2.fr/outils/caspratiques/piscine' }
+  // }
 
-  let containerElem = $state<HTMLDivElement>()
-  let scrollable = $state({ left: false, right: false })
+  // let containerElem = $state<HTMLDivElement>()
+  // let scrollable = $state({ left: false, right: false })
 
-  function checkIfScollable() {
-    scrollable.left = containerElem!.scrollLeft !== 0
-    scrollable.right =
-      Math.round(containerElem!.offsetWidth + containerElem!.scrollLeft) <
-      containerElem!.scrollWidth
-  }
+  // function checkIfScollable() {
+  //   scrollable.left = containerElem!.scrollLeft !== 0
+  //   scrollable.right =
+  //     Math.round(containerElem!.offsetWidth + containerElem!.scrollLeft) <
+  //     containerElem!.scrollWidth
+  // }
 
-  function scrollEquivalence(direction: -1 | 1) {
-    const { offsetWidth, scrollLeft } = containerElem!
-    const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('.eq-card')).reverse()
-    const col = cols.find((col) => {
-      const offsetLeft = col.offsetLeft - direction
-      return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
-    })
+  // function scrollEquivalence(direction: -1 | 1) {
+  //   const { offsetWidth, scrollLeft } = containerElem!
+  //   const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('.eq-card')).reverse()
+  //   const col = cols.find((col) => {
+  //     const offsetLeft = col.offsetLeft - direction
+  //     return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
+  //   })
 
-    if (!col) return
-    containerElem!.scrollTo({
-      left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
-    })
-  }
+  //   if (!col) return
+  //   containerElem!.scrollTo({
+  //     left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
+  //   })
+  // }
 
-  onMount(() => {
-    checkIfScollable()
-  })
+  // onMount(() => {
+  //   checkIfScollable()
+  // })
 </script>
 
-<svelte:window onresize={() => checkIfScollable()} {onscroll} />
+<!-- FIXME equivalences legacy? -->
+<!-- <svelte:window onresize={() => checkIfScollable()} {onscroll} /> -->
+
 <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex h-full flex-col">
   <div>
     <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
-      <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
-      <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
+      <AILogo logo={model.lab.logo} size="lg" alt={model.lab.name} />
+      <div><span class="font-normal">{model.lab.name}/</span>{model.name}</div>
       {#if selected}
         <div
           class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px] text-nowrap"
@@ -99,79 +116,128 @@
     </h5>
     <ul class="fr-badges-group mb-4!">
       {#each modelBadges as badge, i (i)}
-        <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
+        <li><Badge id="card-badge-{i}" {...badge} size="sm" noTooltip /></li>
       {/each}
     </ul>
-
-    {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
   </div>
 
-  <h6 class="mb-5! text-base! mt-auto!">
-    {m['reveal.impacts.title']()}
-    <Tooltip id="impact-{data.pos}" text={m['reveal.impacts.tooltip']()} />
-  </h6>
-  <div class="flex">
-    <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
-      <div class="md:w-full relative">
-        <MiniCard
-          id="params-{data.pos}"
-          value={model.params}
-          desc={m['reveal.impacts.size.label']()}
-          tooltip={m['models.openWeight.tooltips.params']()}
-          class="-mb-2 bg-white z-1 h-full "
-        >
-          {m['reveal.impacts.size.count']()}
-          {#if model.distribution === 'api-only'}
-            {m['reveal.impacts.size.estimated']()}
-          {/if}
-          {#if model.quantization === 'q8'}
-            {m['reveal.impacts.size.quantized']()}
-          {/if}
-        </MiniCard>
-        <div
-          class="cg-border rounded-sm! p-1 ps-3 pt-2 leading-normal absolute z-0 flex w-full bg-[--beige-gris-galet-950-100] text-[11px]"
-        >
-          <span class="text-[--beige-gris-galet-sun-407-moon-821]">
-            {model.badges.arch.text}
-          </span>
-          <Tooltip
-            id="{model.id}-arch-tooltip"
-            size="xs"
-            text={model.badges.arch.tooltip}
-            class="ms-auto"
-          />
+  <div class="gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 grid">
+    {#each cards as card, i (i)}
+      <InfoCard {...card} id="{model.id}-{card.id}" iconClass="text-info" size="sm">
+        {#if card.id === 'price'}
+          <div class="gap-2 flex w-full flex-wrap justify-between">
+            {#each card.contents as c, i (i)}
+              <div class="">
+                <p class="mb-0! font-bold text-lg! leading-[1.1]!">
+                  ${@html sanitize(c.content)}
+                </p>
+                <p class="text-xxs! text-grey mb-0!">
+                  {c.subContent}
+                </p>
+              </div>
+            {/each}
+          </div>
+        {:else if card.id === 'modalities'}
+          <div class="gap-2 flex flex-wrap justify-between">
+            {#each MODALITIES as mod (mod.id)}
+              {@const active = model.inputs.includes(mod.id)}
+              <div
+                class="text-xxs gap-1 flex flex-col items-center"
+                aria-hidden={active ? 'false' : 'true'}
+              >
+                <Icon
+                  icon={mod.icon}
+                  size="xs"
+                  block
+                  class={active ? 'text-primary' : 'text-[#B3B3B3]'}
+                />
+                <span class={{ 'text-[#B3B3B3]': !active }}>{mod.title}</span>
+              </div>
+            {/each}
+          </div>
+        {:else if card.id === 'energy'}
+          <div
+            class="ps-2 w-80% text-white font-bold flex h-full items-center justify-start"
+            style="background-color: var({ENERGY_CLASS_COLORS[
+              model.energy_class
+            ]}); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+          >
+            {model.energy_class}
+          </div>
+        {/if}
+      </InfoCard>
+    {/each}
+  </div>
+
+  <div class="mt-8 cg-border rounded-sm! bg-light-grey p-3 pb-11">
+    <h6 class="mb-5! text-base! mt-auto!">
+      {m['reveal.impacts.title']()}
+      <Tooltip id="impact-{data.pos}" text={m['reveal.impacts.tooltip']()} />
+    </h6>
+    <div class="flex">
+      <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
+        <div class="md:w-full relative">
+          <MiniCard
+            id="params-{data.pos}"
+            value={model.params}
+            desc={m['reveal.impacts.size.label']()}
+            tooltip={m['models.openWeight.tooltips.params']()}
+            class="-mb-2 bg-white z-1 h-full "
+          >
+            {m['reveal.impacts.size.count']()}
+            {#if model.license.kind === 'proprietary'}
+              {m['reveal.impacts.size.estimated']()}
+            {/if}
+            {#if model.quantization === 'q8'}
+              {m['reveal.impacts.size.quantized']()}
+            {/if}
+          </MiniCard>
+          <div
+            class="cg-border rounded-sm! p-1 ps-3 pt-2 leading-normal absolute z-0 flex w-full bg-[--beige-gris-galet-950-100] text-[11px]"
+          >
+            <span class="text-[--beige-gris-galet-sun-407-moon-821]">
+              {model.badges.arch.text}
+            </span>
+            <Tooltip
+              id="{model.id}-arch-tooltip"
+              size="xs"
+              text={model.badges.arch.tooltip}
+              class="ms-auto"
+            />
+          </div>
         </div>
+
+        <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
+
+        <MiniCard
+          id="tokens-{data.pos}"
+          value={data.tokens}
+          units={m['reveal.impacts.tokens.tokens']()}
+          desc={m['reveal.impacts.tokens.label']()}
+          tooltip={m['reveal.impacts.tokens.tooltip']()}
+          class="md:w-full bg-white"
+        />
       </div>
 
-      <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
+      <div class="md:basis-1/3 flex basis-1/2 items-center">
+        <strong class="m-auto">≈</strong>
 
-      <MiniCard
-        id="tokens-{data.pos}"
-        value={data.tokens}
-        units={m['reveal.impacts.tokens.tokens']()}
-        desc={m['reveal.impacts.tokens.label']()}
-        tooltip={m['reveal.impacts.tokens.tooltip']()}
-        class="md:w-full"
-      />
-    </div>
-
-    <div class="md:basis-1/3 flex basis-1/2 items-center">
-      <strong class="m-auto">≈</strong>
-
-      <MiniCard
-        id="energy-{data.pos}"
-        value={conso.energy}
-        units="mWh"
-        desc={m['reveal.impacts.energy.label']()}
-        icon="i-ri-flashlight-fill"
-        iconClass="text-info"
-        tooltip={m['reveal.impacts.energy.tooltip']()}
-        class="h-fit"
-      />
+        <MiniCard
+          id="energy-{data.pos}"
+          value={conso.energy}
+          units="mWh"
+          desc={m['reveal.impacts.energy.label']()}
+          icon="i-ri-flashlight-fill"
+          iconClass="text-info"
+          tooltip={m['reveal.impacts.energy.tooltip']()}
+          class="bg-white h-fit"
+        />
+      </div>
     </div>
   </div>
 
-  <div class="mt-6! md:mt-9! cg-border rounded-sm! bg-very-light-grey">
+  <!-- FIXME equivalences legacy? -->
+  <!-- <div class="mt-6! md:mt-9! cg-border rounded-sm! bg-very-light-grey">
     <div class="p-3 bg-light-grey">
       <h6 class="text-base! mb-2!">
         {m['reveal.equivalent.title']()}
@@ -255,7 +321,7 @@
         onclick={() => scrollEquivalence(1)}
       />
     </div>
-  </div>
+  </div> -->
 
   <div class="mt-9 text-center">
     <Button
@@ -267,4 +333,4 @@
   </div>
 </div>
 
-<ModelInfoModal {model} modalId="modal-model-reveal-{model.id}" />
+<ModelInfoModal {commons} {model} modalId="modal-model-reveal-{model.id}" />

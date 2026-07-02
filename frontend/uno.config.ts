@@ -64,7 +64,8 @@ export default defineConfig({
     {
       'cg-border': 'border-1 border-[--grey-925-125] border-solid rounded-xl',
       'c-bot-disk-a': 'w-[22px] h-[22px] rounded-full bg-purple',
-      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange'
+      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange',
+      'text-xxs': 'text-[10px] leading-normal'
     }
   ],
   safelist: [
@@ -86,6 +87,19 @@ export default defineConfig({
     'i-ri-bowl-line',
     'i-ri-music-2-line',
     'i-ri-book-open-line',
+    // cards
+    'i-ri-stack-line',
+    'i-ri-text-snippet',
+    'i-ri-price-tag-3-line',
+    'i-ri-shapes-line',
+    'i-ri-copyright-line',
+    'i-ri-calendar-line',
+    'i-ri-government-line',
+    // modalities
+    'i-ri-file-text-line',
+    'i-ri-image-upload-line',
+    'i-ri-volume-up-line',
+    'i-ri-video-line',
     ...ICONS.map((icon) => 'i-ai-' + icon)
   ]
 })

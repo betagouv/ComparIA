@@ -8,9 +8,7 @@ from .actions import (
     archive_blacklisted_grok,
     archive_corrupted,
     archive_spam,
-    archive_unknown_llms,
     backfill_pii_spam,
-    delete_unknown_llms_comparisons,
     llm_analyze,
     migrate_comparisons,
     migrate_llm_messages,
@@ -20,15 +18,12 @@ from .actions import (
     migrate_turns,
     migrate_user_messages,
     migrate_votes,
-    rename_llm,
 )
 from .lint import lint, log_archived
 
 cli_archive = App(name="archive", help="Individual archival utilities.")
 cli_archive.command(archive_spam, name="spam")
 cli_archive.command(archive_corrupted, name="corrupted")
-cli_archive.command(archive_unknown_llms, name="unknown_llms")
-cli_archive.command(delete_unknown_llms_comparisons, name="delete_unknown_llms")
 cli_archive.command(archive_blacklisted_grok, name="blacklisted_grok")
 
 cli_migrate = App(
@@ -46,7 +41,6 @@ cli_migrate.command(migrate_reasoning_content, name="reasoning_content")
 cli_db = App(name="db", help="Database related utilities.")
 cli_db.command(lint)
 cli_db.command(log_archived)
-cli_db.command(rename_llm)
 cli_db.command(llm_analyze)
 cli_db.command(backfill_pii_spam)
 cli_db.command(cli_archive)
