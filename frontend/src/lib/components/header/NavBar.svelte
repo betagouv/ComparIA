@@ -4,7 +4,7 @@
   import { Button, Icon, Link } from '$components/dsfr'
   import { auth, logout } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { HTMLAnchorAttributes } from 'svelte/elements'
+  import type { ClassValue, HTMLAnchorAttributes } from 'svelte/elements'
   import { VoteGauge } from '.'
 
   const navLinks = [
@@ -64,21 +64,24 @@
   </div>
 {/snippet}
 
-{#snippet discussions()}
-  <div class="px-4 py-4 b-t-[--grey-925-125] b-t-1">
-    <p class="fr-text--sm mb-2! text-[--text-mention-grey]">{m['auth.discussions.title']()}</p>
-    {#if !auth.user && expanded}
-      <p class="fr-text--sm mb-3! text-[--text-label-grey]">
+{#snippet discussions(classes?: ClassValue)}
+  <div class={['gap-4 flex flex-col', { hidden: !expanded }, classes]}>
+    <p class="text-sm mb-0! text-grey">
+      {m['auth.discussions.title']()}
+    </p>
+    {#if !auth.user}
+      <p class="text-sm mb-0! text-black">
         {m['auth.discussions.prompt']()}
       </p>
-      <button
-        class="fr-btn fr-btn--secondary fr-btn--sm w-full! rounded-lg! justify-center!"
+      <Button
+        variant="tertiary"
+        text={m['auth.discussions.signIn']()}
+        icon="user-line"
+        size="sm"
         aria-controls="fr-modal-signin"
         data-fr-opened="false"
-      >
-        <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-        {m['auth.discussions.signIn']()}
-      </button>
+        class="block w-full!"
+      />
     {/if}
   </div>
 {/snippet}
@@ -162,7 +165,7 @@
   </div>
 
   <div class="lg:flex hidden grow flex-col">
-    <nav class="mt-4 mb-4">
+    <nav class="py-4">
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
@@ -176,7 +179,7 @@
       </ul>
     </nav>
 
-    {@render discussions()}
+    {@render discussions('mt-3 px-4')}
 
     <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
       {@render footer()}
@@ -216,6 +219,8 @@
           {/each}
         </ul>
       </nav>
+
+      {@render discussions('b-t-[--grey-925-125] b-t-1 py-4 gap-2!')}
 
       <div class="fr-header__menu-links mt-auto"></div>
       <div class="bottom-0 pb-5 pt-2 bg-white sticky">
