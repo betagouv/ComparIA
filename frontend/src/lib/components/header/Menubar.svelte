@@ -8,15 +8,10 @@
   const navLinks = [
     { href: '/', label: m['seo.titles.home']() },
     { href: '/product', label: m['seo.titles.product']() },
-    { href: '/ranking', label: m['seo.titles.ranking']() },
-    { href: '/modeles', label: m['seo.titles.modeles']() },
     { href: '/datasets', label: m['seo.titles.datasets']() },
     { href: '/news', label: m['seo.titles.news']() }
   ].filter((link) => {
-    if (
-      (link.href === '/ranking' || link.href.includes('/news')) &&
-      !['fr', 'en'].includes(locale)
-    ) {
+    if (link.href.includes('/news') && !['fr', 'en'].includes(locale)) {
       return false
     }
     return true

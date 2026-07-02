@@ -5,7 +5,6 @@
 
   type LinkProps = {
     href: string
-    text: string
     button?: boolean
     hideExternalIcon?: boolean
   } & ButtonProps &
