@@ -62,7 +62,6 @@ def litellm_stream_iter(
     endpoint = llm.litellm_endpoint
 
     logger.info(
-        # FIXME display endpoint data without api_key
         f"using endpoint {endpoint.model} for {llm.id}: {endpoint.model_dump(mode="json", exclude={"api_key"})}",
         extra={"request": request},
     )
