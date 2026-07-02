@@ -7,12 +7,8 @@
   import type { ClassValue, HTMLAnchorAttributes } from 'svelte/elements'
   import { LanguageSelector, VoteGauge } from '.'
 
-  const navLinks = [
-    { href: '/arene', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
-    { href: '/arene/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
-    { href: '/arene/modeles', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' }
-    // { href: '/dataviz', label: 'FIXME' },
-  ] as const
+  type NavLink = { href: string; label: string; icon: string }
+  const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   let expanded = $state(true)
 </script>
@@ -64,25 +60,27 @@
 {/snippet}
 
 {#snippet discussions(classes?: ClassValue)}
-  <div class={['gap-4 flex flex-col', { 'lg:hidden': !expanded }, classes]}>
-    <p class="text-sm mb-0! text-grey">
-      {m['auth.discussions.title']()}
-    </p>
-    {#if !auth.user}
-      <p class="text-sm mb-0! text-black">
-        {m['auth.discussions.prompt']()}
+  {#if !isAdmin}
+    <div class={['gap-4 flex flex-col', { 'lg:hidden': !expanded }, classes]}>
+      <p class="text-sm mb-0! text-grey">
+        {m['auth.discussions.title']()}
       </p>
-      <Button
-        variant="tertiary"
-        text={m['auth.discussions.signIn']()}
-        icon="user-line"
-        size="sm"
-        aria-controls="fr-modal-signin"
-        data-fr-opened="false"
-        class="block w-full!"
-      />
-    {/if}
-  </div>
+      {#if !auth.user}
+        <p class="text-sm mb-0! text-black">
+          {m['auth.discussions.prompt']()}
+        </p>
+        <Button
+          variant="tertiary"
+          text={m['auth.discussions.signIn']()}
+          icon="user-line"
+          size="sm"
+          aria-controls="fr-modal-signin"
+          data-fr-opened="false"
+          class="block w-full!"
+        />
+      {/if}
+    </div>
+  {/if}
 {/snippet}
 
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
