@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Badge, Button, Table } from '$components/dsfr'
+  import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import { onMount } from 'svelte'
 
@@ -48,24 +49,14 @@
     { id: 'email', label: 'Email' },
     { id: 'source', label: 'Source' },
     { id: 'created_at', label: 'Added' },
-    { id: 'actions', label: 'Actions' },
+    { id: 'actions', label: 'Actions' }
   ]
 
   const tableRows = $derived(users.map((u) => ({ ...u })))
 </script>
 
-<div class="px-8 py-8">
-  <div class="mb-6 flex items-baseline justify-between">
-    <h1 class="fr-h3 mb-0!">Users</h1>
-    <span class="fr-text--sm text-[--text-mention-grey]">Registered users</span>
-  </div>
-
-  <Table
-    caption="Users"
-    hideCaption
-    {cols}
-    rows={tableRows}
-  >
+<PageLayout seoTitle="Users" title="Users" subtitle="Registered users">
+  <Table caption="Users" hideCaption {cols} rows={tableRows}>
     {#snippet headerRight()}
       <Button text="Invite user" disabled />
     {/snippet}
@@ -88,4 +79,4 @@
       {total} user{total !== 1 ? 's' : ''}.
     </p>
   {/if}
-</div>
+</PageLayout>
