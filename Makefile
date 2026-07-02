@@ -199,21 +199,6 @@ i18n-build-news: ## generate news files
 	$(UV) run python -m utils.news.build_news
 
 ###################################
-# Models utilities
-###################################
-models-build: ## Build/generate model files from JSON sources
-	@echo "Generating models..."
-	$(UV) run python -m utils.models.build_models
-
-models-maintenance: ## Run the models maintenance script
-	@echo "Models maintenance..."
-	$(UV) run python -m utils.models.maintenance
-
-models-doc: ## Build/generate llm doc and JSON schemas
-	@echo "Generating LLM specs documentation and JSON schemas..."
-	$(UV) run python -m utils.models.schemas.build_doc
-
-###################################
 # Dataset utilities
 ###################################
 dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
