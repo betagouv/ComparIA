@@ -2,7 +2,7 @@ import logging
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from backend.arena.captcha import verify_altcha_token
 from backend.auth.email import send_login_code
@@ -32,12 +32,12 @@ class AuthConfig(BaseModel):
 
 
 class EmailRequestBody(BaseModel):
-    email: str
+    email: EmailStr
     altcha_payload: str
 
 
 class EmailVerifyBody(BaseModel):
-    email: str
+    email: EmailStr
     code: str
 
 
