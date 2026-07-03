@@ -20,6 +20,7 @@ from utils.storage.redis import get_maintenance_mode
 async def lifespan(app: FastAPI):
     if settings.COMPARIA_DB_URI and settings.ADMIN_EMAILS:
         from utils.database.actions.seed import seed_admins
+
         await seed_admins()
     yield
 
