@@ -2,7 +2,7 @@ import uuid
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from backend.admin.llms.router import router as admin_llms_router
 from backend.admin.services import delete_user, list_users, set_user_role
@@ -38,7 +38,7 @@ class SetRoleBody(BaseModel):
 
 
 class InviteBody(BaseModel):
-    email: str
+    email: EmailStr
 
 
 @router.get("/users", response_model=UsersPage)
