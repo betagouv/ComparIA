@@ -67,6 +67,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
   const contextTokens = model.context_tokens
   const archI18nKey = isMaybeArch(model.arch) ? 'na' : model.arch
   const archDescription = m[`generated.archs.${archI18nKey}.desc`]()
+  const archLongName = m[`generated.archs.${archI18nKey}.long_name`]()
   return {
     size: {
       id: 'size',
@@ -96,7 +97,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       title: m['models.cards.arch.title'](),
       tooltip: `${m['models.cards.arch.tooltip']()} ${archDescription}`,
       content: m[`generated.archs.${archI18nKey}.name`](),
-      subContent: model.arch === 'moe' ? m['generated.archs.moe.title']() : undefined,
+      subContent: archLongName ? archLongName : undefined,
       desc: isMaybeArch(model.arch) ? archDescription : undefined
     } as const,
     context: {
@@ -267,7 +268,9 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       arch: {
         id: `model-arch-${model.id}`,
         variant: 'yellow' as const,
-        text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
+        text: m['models.cards.arch.withName']({
+          name: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.name`]()
+        }),
         tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       }
     },
