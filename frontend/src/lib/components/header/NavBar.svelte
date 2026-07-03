@@ -4,18 +4,13 @@
   import { Button, Icon, Link } from '$components/dsfr'
   import { auth, logout } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { HTMLAnchorAttributes } from 'svelte/elements'
-  import { VoteGauge } from '.'
+  import type { ClassValue, HTMLAnchorAttributes } from 'svelte/elements'
+  import { LanguageSelector, VoteGauge } from '.'
 
-  const navLinks = [
-    { href: '/arene', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
-    { href: '/arene/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
-    { href: '/arene/modeles', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' }
-    // { href: '/dataviz', label: 'FIXME' },
-  ] as const
+  type NavLink = { href: string; label: string; icon: string }
+  const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   let expanded = $state(true)
-  let settingsOpen = $state(false)
 </script>
 
 {#snippet helpLink()}
@@ -39,9 +34,9 @@
   ...props
 }: { icon: string; label: string } & HTMLAnchorAttributes)}
   <Link {href} {...props} aria-current={page.url.pathname === href}>
-    <span class={['gap-2 flex items-center', { 'w-full justify-center': !expanded }]}>
+    <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
       <Icon {icon} block size={expanded ? 'sm' : 'md'} />
-      <span class={{ 'sr-only': !expanded }}>{label}</span>
+      <span class={{ 'lg:sr-only': !expanded }}>{label}</span>
     </span>
   </Link>
 {/snippet}
@@ -50,7 +45,7 @@
   <div
     class={[
       'fr-enlarge-link gap-2 p-2 rounded-sm flex max-w-fit items-center',
-      { 'sr-only': !expanded }
+      { 'lg:sr-only': !expanded }
     ]}
   >
     <img src="/orgs/comparia.png" aria-hidden="true" alt="" class="h-[35px]" />
@@ -64,62 +59,71 @@
   </div>
 {/snippet}
 
-{#snippet discussions()}
-  <div class="px-4 py-4 b-t-[--grey-925-125] b-t-1">
-    <p class="fr-text--sm mb-2! text-[--text-mention-grey]">{m['auth.discussions.title']()}</p>
-    {#if !auth.user && expanded}
-      <p class="fr-text--sm mb-3! text-[--text-label-grey]">
-        {m['auth.discussions.prompt']()}
+{#snippet discussions(classes?: ClassValue)}
+  {#if !isAdmin}
+    <div class={['gap-4 flex flex-col', { 'lg:hidden': !expanded }, classes]}>
+      <p class="text-sm mb-0! text-grey">
+        {m['auth.discussions.title']()}
       </p>
-      <button
-        class="fr-btn fr-btn--secondary fr-btn--sm w-full! rounded-lg! justify-center!"
-        aria-controls="fr-modal-signin"
-        data-fr-opened="false"
-      >
-        <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-        {m['auth.discussions.signIn']()}
-      </button>
-    {/if}
-  </div>
+      {#if !auth.user}
+        <p class="text-sm mb-0! text-black">
+          {m['auth.discussions.prompt']()}
+        </p>
+        <Button
+          variant="tertiary"
+          text={m['auth.discussions.signIn']()}
+          icon="user-line"
+          size="sm"
+          aria-controls="fr-modal-signin"
+          data-fr-opened="false"
+          class="block w-full!"
+        />
+      {/if}
+    </div>
+  {/if}
 {/snippet}
 
-{#snippet footer()}
+{#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
-    <div class="relative">
-      {#if settingsOpen && auth.user}
-        <div class="absolute bottom-full left-0 right-0 mb-1 bg-white shadow-md border border-[--grey-925-125] rounded-sm">
-          <button
-            class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
-            onclick={() => { settingsOpen = false; logout() }}
-          >
-            <span class="fr-icon-logout-box-r-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-            {m['auth.settings.logout']()}
-          </button>
-        </div>
-      {/if}
+    <div class="flex items-center justify-between">
+      {@render renderLink({
+        href: '/arena/settings',
+        label: m['seo.titles.settings'](),
+        icon: 'i-ri-settings-4-line',
+        button: true,
+        size: 'sm',
+        variant: 'tertiary-no-outline',
+        class: 'text-sm! text-black! -ms-3'
+      })}
 
-      <button
-        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! -ml-2!"
-        onclick={() => (settingsOpen = !settingsOpen)}
-        aria-expanded={settingsOpen}
+      <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
+    </div>
+
+    {#if auth.user}
+      <div
+        class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start -mt-1 md:justify-between flex flex-col"
       >
-        <span class="fr-icon-settings-5-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
-        <span class={{ 'sr-only': !expanded }}>{m['auth.settings.title']()}</span>
-        {#if expanded}
-          <span class={['fr-icon--sm ml-auto', settingsOpen ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line']} aria-hidden="true"></span>
-        {/if}
-      </button>
+        <Button
+          variant="tertiary-no-outline"
+          size="sm"
+          class="text-black! -ms-3"
+          onclick={() => logout()}
+        >
+          <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
+            <Icon icon="i-ri-logout-box-r-line" block size={expanded ? 'sm' : 'md'} />
+            <span class={{ 'lg:sr-only': !expanded }}>{m['auth.settings.logout']()}</span>
+          </span>
+        </Button>
 
-      {#if expanded && auth.user}
-        <p class="fr-text--xs mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
-      {/if}
-    </div>
+        <p class={['text-sm mb-0! text-grey truncate', { 'lg:hidden': !expanded }]}>
+          {auth.user.email}
+        </p>
+      </div>
+    {/if}
 
-    <div class={{ hidden: !expanded }}>
-      <!-- <LanguageSelector id="translate" />
-      {@render helpLink()} -->
-      <VoteGauge id="vote-gauge" />
-    </div>
+    <!-- {@render helpLink()} -->
+
+    <VoteGauge id="vote-gauge" class={{ hidden: !expanded }} />
   </div>
 {/snippet}
 
@@ -130,7 +134,7 @@
     expanded ? 'lg:max-w-[250px]' : 'lg:max-w-[60px]'
   ]}
 >
-  <div class={['p-2 flex items-center ', expanded ? 'justify-between' : 'justify-center']}>
+  <div class={['p-2 flex items-center', expanded ? 'justify-between' : 'justify-center']}>
     {@render logo()}
 
     <Button
@@ -162,7 +166,7 @@
   </div>
 
   <div class="lg:flex hidden grow flex-col">
-    <nav class="mt-4 mb-4">
+    <nav class="py-4">
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
@@ -176,7 +180,7 @@
       </ul>
     </nav>
 
-    {@render discussions()}
+    {@render discussions('mt-3 px-4')}
 
     <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
       {@render footer()}
@@ -217,9 +221,11 @@
         </ul>
       </nav>
 
+      {@render discussions('b-t-[--grey-925-125] b-t-1 py-4 gap-2!')}
+
       <div class="fr-header__menu-links mt-auto"></div>
       <div class="bottom-0 pb-5 pt-2 bg-white sticky">
-        {@render footer()}
+        {@render footer('mobile')}
       </div>
     </div>
   </dialog>

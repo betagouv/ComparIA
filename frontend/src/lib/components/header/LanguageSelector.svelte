@@ -4,9 +4,10 @@
   import { LOCALES, type LocaleOption } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
+  import type { SvelteHTMLElements } from 'svelte/elements'
   import { SvelteURL } from 'svelte/reactivity'
 
-  let { id }: { id: string } = $props()
+  let { id, ...props }: { id: string } & SvelteHTMLElements['nav'] = $props()
 
   const currentLocale = getLocale()
 
@@ -22,7 +23,7 @@
   }
 </script>
 
-<nav class="fr-translate fr-nav">
+<nav {...props} class={['fr-translate fr-nav', props.class]}>
   <div class="fr-nav__item">
     <Button
       aria-controls={id}
@@ -30,14 +31,14 @@
       title={m['actions.selectLanguage']()}
       variant="tertiary-no-outline"
       native
-      class="fr-translate__btn before:content-none!"
+      class="fr-translate__btn"
     >
-      <img
+      <!-- <img
         src={`/flags/${currentLocale}.png`}
         aria-hidden="true"
         alt=""
         class="me-2 rounded-md max-w-[30px]"
-      />
+      /> -->
       {LOCALES.find((locale) => locale.code === currentLocale)!.short}
     </Button>
 

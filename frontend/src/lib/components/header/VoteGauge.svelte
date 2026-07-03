@@ -4,8 +4,9 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { sanitize } from '$lib/utils/commons'
+  import type { SvelteHTMLElements } from 'svelte/elements'
 
-  let { id }: { id: string } = $props()
+  let { id, ...props }: { id: string } & SvelteHTMLElements['div'] = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale())
   const votesData = getVotesContext()
@@ -17,7 +18,7 @@
 </script>
 
 {#if votes}
-  <div class="gap-3 text-xs lg:gap-1 flex w-full items-center">
+  <div {...props} class={['gap-3 text-xs lg:gap-1 flex w-full items-center', props.class]}>
     <div
       class="linear-gauge rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
       style:--gauge-ratio={votes?.ratio}
