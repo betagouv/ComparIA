@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated, Literal
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -9,7 +9,6 @@ from backend.admin.services import delete_user, list_users, set_user_role
 from backend.auth.dependencies import require_admin
 from backend.auth.email import send_login_code
 from backend.auth.services import request_login_code
-from utils.database.models.auth import User
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]

@@ -30,7 +30,6 @@ async def send_login_code(to_email: str, code: str) -> None:
     await asyncio.to_thread(_send_smtp, to_email, code)
 
 
-
 def _send_smtp(to_email: str, code: str) -> None:
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "Votre code de connexion ComparIA"

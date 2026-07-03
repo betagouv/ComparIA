@@ -51,7 +51,9 @@ class Settings(BaseSettings):
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
-    AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = "anonymous_first"
+    AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = (
+        "anonymous_first"
+    )
     # If non-empty, only emails from these domains can request a login code (e.g. ["beta.gouv.fr"])
     AUTH_DOMAIN_ALLOWLIST: list[str] = []
     AUTH_SESSION_LENGTH_DAYS: int = 30
