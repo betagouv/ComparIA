@@ -1,9 +1,12 @@
 <script lang="ts">
   import { NavBar } from '$components/header'
+  import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
 
-  let { children } = $props()
+  let { children, data } = $props()
+
+  initComparisonsContext(data.comparisons)
 
   const navLinks = [
     { href: '/arene', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
