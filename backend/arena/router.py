@@ -12,6 +12,7 @@ from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
     create_comparison,
+    get_comparisons,
     read_comparison,
     update_comparison_error,
     update_comparison_llm_id,
@@ -507,3 +508,26 @@ async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealDa
 
     # Return computed reveal data with environmental impact
     return await get_reveal_data(comparison)
+
+
+@router.get("/comparison/list")
+async def get_comparisons(
+    user: OptionalUser,
+    request: Request,
+) -> list[ComparisonPublic]:
+    """
+    Get comparison list.
+
+    Args:
+        user: Authenticated user
+        request: FastAPI request for logging
+
+    Returns:
+        list: list of user's Comparison if logged in.
+    """
+    if not user:
+        return []
+
+    comparisons = await get_comparisons(user.id)
+
+    return comparisons
