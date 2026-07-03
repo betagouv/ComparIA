@@ -10,7 +10,9 @@ from backend.auth.email import send_login_code
 from backend.auth.services import request_login_code
 from utils.database.models.auth import User
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+router = APIRouter(
+    prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
+)
 
 
 class UserOut(BaseModel):
@@ -39,7 +41,6 @@ class InviteBody(BaseModel):
 
 @router.get("/users", response_model=UsersPage)
 async def get_users(
-    _admin: Annotated[User, Depends(require_admin)],
     search: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=1, le=200),
@@ -67,7 +68,6 @@ async def get_users(
 async def patch_user_role(
     user_id: uuid.UUID,
     body: SetRoleBody,
-    _admin: Annotated[User, Depends(require_admin)],
 ) -> UserOut:
     user = await set_user_role(user_id, body.role)
     if not user:
@@ -85,7 +85,6 @@ async def patch_user_role(
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_user(
     user_id: uuid.UUID,
-    _admin: Annotated[User, Depends(require_admin)],
 ) -> None:
     deleted = await delete_user(user_id)
     if not deleted:
@@ -95,7 +94,6 @@ async def remove_user(
 @router.post("/users/invite", status_code=status.HTTP_204_NO_CONTENT)
 async def invite_user(
     body: InviteBody,
-    _admin: Annotated[User, Depends(require_admin)],
 ) -> None:
     code = await request_login_code(body.email)
     await send_login_code(body.email, code)
