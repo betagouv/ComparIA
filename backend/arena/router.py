@@ -35,6 +35,7 @@ from backend.arena.streaming import (
     stream_comparison_messages,
 )
 from backend.arena.web_search import search_web
+from backend.auth.dependencies import OptionalUser
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
@@ -162,7 +163,11 @@ async def get_challenge() -> dict:
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
-async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
+async def add_first_text(
+    args: AddFirstTextBody,
+    user: OptionalUser,
+    request: Request,
+) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
 
@@ -220,6 +225,7 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     comparison = await create_comparison(
         ComparisonCreate(
             ip=get_ip(request),
+            user_id=user.id if user else None,
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
             mode=args.mode,
