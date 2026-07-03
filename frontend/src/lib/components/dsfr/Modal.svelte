@@ -38,7 +38,7 @@
               text={m['words.close']()}
               title={m['closeModal']()}
               aria-controls={id}
-              class="fr-btn--close"
+              class="fr-btn--close z-100"
               onclick={() => onClose?.()}
             />
           </div>
