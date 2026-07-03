@@ -31,9 +31,20 @@
   href,
   icon,
   label,
+  class: linkClass,
   ...props
 }: { icon: string; label: string } & HTMLAnchorAttributes)}
-  <Link {href} {...props} aria-current={page.url.pathname === href}>
+  {@const current = page.url.pathname === href}
+  <Link
+    {href}
+    {...props}
+    aria-current={current ? 'page' : undefined}
+    class={[
+      linkClass,
+      current &&
+        'bg-very-light-primary! text-primary! font-bold! border-primary ps-3! -ms-1 border-s-4'
+    ]}
+  >
     <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
       <Icon {icon} block size={expanded ? 'sm' : 'md'} />
       <span class={{ 'lg:sr-only': !expanded }}>{label}</span>

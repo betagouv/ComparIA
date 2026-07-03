@@ -77,14 +77,14 @@
   <div class="gap-1 flex">
     <svelte:element
       this={titleTag}
-      class={['gap-1 font-normal mb-0! p-0! flex items-center', classes.title, titleClass]}
+      class={['gap-1 font-normal mb-0! p-0! min-w-0 flex items-center', classes.title, titleClass]}
     >
       <Icon {icon} size={classes.icon} block class={size !== 'xs' ? iconClass : undefined} />
       {title}
     </svelte:element>
 
     {#if size !== 'xs'}
-      <div class="ms-auto">
+      <div class="gap-1 ms-auto flex shrink-0 items-center">
         {#if badge}
           <Badge {...badge} size="sm" />
         {/if}
@@ -108,7 +108,7 @@
   </svelte:element>
 
   {#if desc && size === 'md'}
-    <p class="bg-very-light-primary text-xxs p-1 mb-0! mt-3 b-light-primary rounded-sm border">
+    <p class="bg-very-light-primary text-xxs p-1 mb-0! b-light-primary rounded-sm mt-auto! border">
       {desc}
     </p>
   {/if}
