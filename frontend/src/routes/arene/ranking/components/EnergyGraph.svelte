@@ -19,7 +19,7 @@
 
   const models = $derived(
     data
-      .filter((m) => m.license !== 'proprietary')
+      .filter((m) => m.license.kind !== 'proprietary')
       .sort((a, b) => sortIfDefined(a, b, 'params'))
       .map((m) => {
         return {
@@ -27,7 +27,7 @@
           x: m.consumption,
           y: m.data.elo,
           radius: dotSizes[m.size_class],
-          class: m.license === 'proprietary' ? 'na' : m.arch,
+          class: m.license.kind === 'proprietary' ? 'na' : m.arch,
           consoSize:
             m.consumption < 150
               ? ('S' as const)
@@ -75,7 +75,7 @@
   let tooltipPos = $state({ x: 0, y: 0 })
   const hoveredModelData = $derived(filteredModels.find((m) => m.id === hoveredModel))
   const tooltipExtraData = $derived(
-    hoveredModelData?.license === 'proprietary'
+    hoveredModelData?.license.kind === 'proprietary'
       ? (['arch'] as const)
       : (['arch', 'params', 'active_params'] as const)
   )
@@ -260,8 +260,8 @@
           >
             <div class="flex">
               <AILogo
-                iconPath={hoveredModelData.icon_path}
-                alt={hoveredModelData.organisation}
+                logo={hoveredModelData.lab.logo}
+                alt={hoveredModelData.lab.name}
                 class="me-1"
               />
               <strong class="leading-normal text-[14px]">{hoveredModelData.id}</strong>
@@ -292,7 +292,7 @@
                       <strong class="ms-auto">
                         {#if key === 'arch'}
                           {m[
-                            `generated.archs.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as Archs)}.name`
+                            `generated.archs.${hoveredModelData.license.kind === 'proprietary' ? 'na' : (hoveredModelData.arch as Archs)}.name`
                           ]()}
                         {:else}
                           {hoveredModelData[key]}
