@@ -552,7 +552,7 @@
             },
             "na": {
                 "desc": "The publisher has not made information about the model's architecture public.",
-                "name": "Proprietary",
+                "name": "N/A",
                 "title": "Architecture N/A"
             }
         },

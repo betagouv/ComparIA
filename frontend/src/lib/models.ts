@@ -64,12 +64,14 @@ export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
 export function getModelCards(model: BotModel, size: ModelCardSize, commons: Commons) {
   const midProps = propsToAttrs({ class: size === 'md' ? 'text-base!' : 'text-sm!' })
   const smallProps = propsToAttrs({ class: size === 'md' ? 'text-sm!' : 'text-xs!' })
+  const contextTokens = model.context_tokens
+  const archI18nKey = isMaybeArch(model.arch) ? 'na' : model.arch
+  const archDescription = m[`generated.archs.${archI18nKey}.desc`]()
   return {
     size: {
       id: 'size',
       icon: 'i-ri-ruler-line',
-      title:
-        m[`models.cards.size.title${model.license.kind === 'proprietary' ? '_estimated' : ''}`](),
+      title: m['models.cards.size.title'](),
       badge: size !== 'sm' ? model.badges.size_short : undefined,
       tooltip: m['models.cards.size.tooltip'](),
       content:
@@ -86,38 +88,42 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
           : model.active_params
             ? m['models.cards.size.active_params_count']({ count: model.active_params })
             : undefined,
-      desc: m['models.cards.size.desc']()
+      desc: undefined
     } as const,
     arch: {
       id: 'arch',
       icon: 'i-ri-stack-line',
       title: m['models.cards.arch.title'](),
-      tooltip: m['models.cards.arch.tooltip'](),
-      content: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.name`](),
+      tooltip: `${m['models.cards.arch.tooltip']()} ${archDescription}`,
+      content: m[`generated.archs.${archI18nKey}.name`](),
       subContent: model.arch === 'moe' ? m['generated.archs.moe.title']() : undefined,
-      desc: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
+      desc: isMaybeArch(model.arch) ? archDescription : undefined
     } as const,
     context: {
       id: 'context',
       icon: 'i-ri-text-snippet',
       title: m['models.cards.context.title'](),
       tooltip: m['models.cards.context.tooltip'](),
-      content: m['models.cards.context.tokens_count']({
-        count: model.context_tokens ? Math.floor(model.context_tokens / 1000) : 'FIXME',
-        midProps,
-        smallProps
-      }),
-      subContent: m['models.cards.context.chars_count']({
-        count: model.context_tokens ? Math.floor((model.context_tokens * 4) / 1000) : 'FIXME'
-      }),
-      desc: 'FIXME'
+      content: contextTokens
+        ? m['models.cards.context.tokens_count']({
+            count: Math.floor(contextTokens / 1000),
+            midProps,
+            smallProps
+          })
+        : m['words.NA'](),
+      subContent: contextTokens
+        ? m['models.cards.context.chars_count']({
+            count: Math.floor((contextTokens * 4) / 1000)
+          })
+        : undefined,
+      desc: contextTokens ? m['models.cards.context.desc']() : undefined
     } as const,
     price: {
       id: 'price',
       icon: 'i-ri-price-tag-3-line',
       title: m['models.cards.price.title'](),
       tooltip: m['models.cards.price.tooltip'](),
-      desc: m['models.cards.price.desc'](),
+      desc: undefined,
       contents: [
         {
           content: m['models.cards.price.price_count']({
@@ -158,8 +164,8 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       icon: 'i-ri-leaf-line',
       iconClass: 'text-yellow',
       title: m[`models.cards.energy.title_${size}`](),
-      tooltip: m['models.cards.energy.tooltip'](),
-      desc: m['models.cards.energy.desc'](),
+      tooltip: `${m['models.cards.energy.tooltip']()} ${m['models.cards.energy.desc']()}`,
+      desc: undefined,
       content: size === 'xs' ? model.energy_class : undefined
     } as const,
     sovereignty: {
