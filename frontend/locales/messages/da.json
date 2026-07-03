@@ -62,7 +62,6 @@
             "signIn": "Log ind"
         },
         "modal": {
-            "close": "Luk",
             "email": {
                 "title": "Log ind eller opret konto",
                 "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
@@ -72,8 +71,6 @@
                 "submitting": "Sender..."
             },
             "code": {
-                "title": "Indtast din kode",
-                "subtitle": "En 6-cifret kode er sendt til {email}.",
                 "label": "6-cifret kode",
                 "submit": "Bekræft",
                 "verifying": "Verificerer...",
@@ -539,23 +536,19 @@
         "archs": {
             "dense": {
                 "desc": "Den dense arkitektur betegner en type neuralt netværk, hvor hver neuron i et lag er forbundet til alle neuroner i det næste lag. Dette gør det muligt for alle parametrene i laget at bidrage til beregningen af outputtet.",
-                "name": "Dense",
-                "title": "Dense Arkitektur"
+                "name": "Dense"
             },
             "matformer": {
                 "desc": "Forestil dig russiske matryoshka dukker (matryoshkas → matryoshka transformer → Matformer): hver blok indeholder flere indlejrede undermodeller af stigende størrelser, som deler de samme parametre. Dette gør det muligt ved hver forespørgsel at vælge en model med passende kapacitet, afhængigt af den tilgængelige hukommelse eller latens, uden behov for at genoptræne forskellige modeller.",
-                "name": "Matformer",
-                "title": "Arkitektur Matformer"
+                "name": "Matformer"
             },
             "moe": {
                 "desc": "Mixture of Experts (MoE) arkitekturen bruger en routingmekanisme til kun at aktivere visse specialiserede delmængder (\"eksperter\") af det neurale netværk, afhængigt af input. Dette gør det muligt at konstruere meget store modeller, samtidig med at beregningsomkostningerne holdes lave, da kun en del af netværket bruges ved hvert trin.",
-                "name": "MoE",
-                "title": "Arkitektur MoE"
+                "name": "MoE"
             },
             "na": {
                 "desc": "Udgiveren har ikke offentliggjort informationerne om modellens arkitektur.",
-                "name": "Proprietær",
-                "title": "Arkitektur N/A"
+                "name": "Proprietær"
             }
         },
         "licenses": {

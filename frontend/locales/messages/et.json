@@ -493,23 +493,19 @@
         "archs": {
             "dense": {
                 "desc": "Tihe arhitektuur viitab närvivõrgu tüübile, kus iga ühe kihi neuron on ühendatud kõigi järgmise kihi neuronitega. See võimaldab kõigil kihi parameetritel väljundi arvutamisse panustada.",
-                "name": "Tihe",
-                "title": "Tihe arhitektuur"
+                "name": "Tihe"
             },
             "matformer": {
                 "desc": "Kujuta ette Vene puunukke (matrjoškad → matrjoška-transformer → Matformer): iga plokk sisaldab mitut pesastatud kasvava suurusega alam-mudelit, mis jagavad samu parameetreid. See võimaldab iga päringu puhul valida sobiva mahuga mudeli vastavalt saadaolevale mälule või lubatud latentsusele, ilma et erinevaid mudeleid oleks vaja eraldi ümber treenida.",
-                "name": "Matformer",
-                "title": "Matformeri arhitektuur"
+                "name": "Matformer"
             },
             "moe": {
                 "desc": "<i>Mixture of experts</i>i (MoE) arhitektuur kasutab suunamismehhanismi, mis aktiveerib sisendist sõltuvalt närvivõrgus ainult teatud spetsialiseeritud alamhulgad (eksperdid). See võimaldab ehitada väga suuri mudeleid, hoides samal ajal arvutuslikud kulud madalad, kuna igal sammul kasutatakse vaid osa võrgust.",
-                "name": "MoE",
-                "title": "MoE-arhitektuur"
+                "name": "MoE"
             },
             "na": {
                 "desc": "Väljaandja ei ole avalikustanud teavet mudeli arhitektuuri kohta.",
-                "name": "Suletud",
-                "title": "Arhitektuur N/A"
+                "name": "Suletud"
             }
         },
         "licenses": {
