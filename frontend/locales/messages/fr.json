@@ -539,23 +539,23 @@
         "archs": {
             "dense": {
                 "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
-                "name": "Dense",
-                "title": "Architecture Dense"
+                "long_name": "",
+                "name": "Dense"
             },
             "matformer": {
                 "desc": "Imaginez des poupées russes (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs sous-modèles imbriqués de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
-                "name": "Matformer",
-                "title": "Architecture Matformer"
+                "long_name": "",
+                "name": "Matformer"
             },
             "moe": {
                 "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
-                "name": "MoE",
-                "title": "Architecture MoE"
+                "long_name": "Mélange d’experts",
+                "name": "MoE"
             },
             "na": {
                 "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
-                "name": "Propriétaire",
-                "title": "Architecture N/A"
+                "long_name": "Non communiqué",
+                "name": "N/A"
             }
         },
         "licenses": {
@@ -1611,18 +1611,19 @@
         "cards": {
             "arch": {
                 "title": "Architecture",
-                "tooltip": "FIXME"
+                "tooltip": "L’architecture décrit la manière dont le modèle est organisé pour produire ses réponses, par exemple un modèle dense ou un mélange d’experts (MoE).",
+                "withName": "Architecture {name}"
             },
             "context": {
-                "chars_count": "Soit envir. {count}k caractères",
+                "chars_count": "Envir. {count}k caractères",
                 "desc": "Peut analyser environ plusieurs centaines de pages de texte",
                 "title": "Contexte",
                 "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>jetons</span>",
-                "tooltip": "FIXME"
+                "tooltip": "Le contexte correspond à la quantité maximale de texte que le modèle peut prendre en compte en une seule conversation, exprimée en jetons."
             },
             "modalities": {
-                "title": "Multimodalités",
-                "tooltip": "FIXME",
+                "title": "Modalités",
+                "tooltip": "Les multimodalités indiquent les types de contenus que le modèle peut traiter : texte, image, audio ou vidéo.",
                 "types": {
                     "audio": "Audio",
                     "image": "Image",
@@ -1636,7 +1637,7 @@
                 "price_in": "Prix d’entrée",
                 "price_out": "Prix de sortie",
                 "title": "Prix",
-                "tooltip": "FIXME"
+                "tooltip": "Prix indicatif d’utilisation via API pour un million de jetons. L’entrée correspond à la requête envoyée, la sortie à la réponse générée."
             },
             "size": {
                 "active_params_count": "Dont {count}mds actifs",
@@ -1653,12 +1654,12 @@
             "sovereignty": {
                 "title": "Souveraineté",
                 "sub": "Critères atteints",
-                "tooltip": "FIXME"
+                "tooltip": "Score calculé à partir de critères d’ouverture et de maîtrise : licence, poids, données et code d’entraînement publics, usage commercial, réutilisation des sorties et hébergement possible dans l’Union européenne."
             },
             "rank": {
                 "title": "Rang classement",
                 "title_xs": "Classement",
-                "tooltip": "FIXME",
+                "tooltip": "Position du modèle dans le classement compar:IA, établi à partir des votes des utilisatrices et utilisateurs.",
                 "detail": "/{count} modèles",
                 "to": "#{min} à {max}"
             },
@@ -1666,15 +1667,15 @@
                 "title_md": "Classe de consommation énergétique",
                 "title_sm": "Score énergétique",
                 "title_xs": "Score énergie",
-                "tooltip": "FIXME",
-                "desc": "FIXME",
+                "tooltip": "Classe estimée à partir de la consommation d’énergie à l’inférence, selon la méthodologie EcoLogits.",
+                "desc": "Plus la classe est proche de A, plus la consommation estimée à l’inférence est faible.",
                 "class": {
-                    "A": "FIXME",
-                    "B": "Modèle compact, moins énergivore que les très grands modèles ou les modèles denses",
-                    "C": "FIXME",
-                    "D": "FIXME",
-                    "E": "FIXME",
-                    "F": "FIXME"
+                    "A": "Très faible consommation estimée à l’inférence",
+                    "B": "Faible consommation estimée à l’inférence",
+                    "C": "Consommation estimée à l’inférence modérée",
+                    "D": "Consommation estimée à l’inférence intermédiaire",
+                    "E": "Consommation estimée à l’inférence élevée",
+                    "F": "Consommation estimée à l’inférence très élevée"
                 }
             },
             "release": {
@@ -1712,7 +1713,7 @@
         "envImpact": {
             "hardware": {
                 "title": "Matériel nécessaire",
-                "tooltip": "FIXME",
+                "tooltip": "Estimation du type de matériel nécessaire pour exécuter le modèle localement, selon sa taille et ses besoins en mémoire.",
                 "types": {
                     "laptop": {
                         "detail": "Aucune carte graphique nécessaire",
@@ -1751,7 +1752,7 @@
         },
         "knowledge": {
             "badge": "Données jusqu’en {date}",
-            "tooltip": "FIXME"
+            "tooltip": "Date jusqu’à laquelle les informations utilisées pour entraîner le modèle sont supposées être couvertes."
         },
         "licenses": {
             "type": {
@@ -1821,7 +1822,7 @@
                 "public_weights": "Poids du modèle",
                 "reuse": "Réutilisation des sorties"
             },
-            "title": "Ouverture et Souveraineté"
+            "title": "Ouverture et souveraineté"
         },
         "openWeight": {
             "tooltips": {
@@ -1848,7 +1849,7 @@
             "level": "Niveau {count} sur {total}",
             "rankFromTo": "Rang {min} à {max}",
             "title": "Niveau de performance par rapport aux autres modèles",
-            "tooltip": "FIXME"
+            "tooltip": "Le niveau de performance est calculé à partir des votes compar:IA avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
         },
         "ram": "{min} à {max} Go",
         "release": "Sortie {date}",

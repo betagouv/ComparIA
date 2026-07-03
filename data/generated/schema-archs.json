@@ -14,9 +14,9 @@
           "title": "Name",
           "type": "string"
         },
-        "title": {
-          "description": "Human-readable architecture complete title ('Architecture {name}')",
-          "title": "Title",
+        "long_name": {
+          "description": "Human-readable architecture complete name (e.g: 'Mixture of Experts')",
+          "title": "Long Name",
           "type": "string"
         },
         "desc": {
@@ -28,7 +28,7 @@
       "required": [
         "id",
         "name",
-        "title",
+        "long_name",
         "desc"
       ],
       "title": "Arch",
