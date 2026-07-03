@@ -253,21 +253,6 @@ wheels = [
 ]
 
 [[package]]
-name = "brevo-python"
-version = "4.0.10"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httpx" },
-    { name = "pydantic" },
-    { name = "pydantic-core" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/92/79/573272ac0ac158e5498690daf06452fbca1785dcd1f85bdcb7bcda86d090/brevo_python-4.0.10.tar.gz", hash = "sha256:3ba2808937556b02d7afe4aaf6392438e1af3a8db77ef97349e46307bbf27311", size = 428199, upload-time = "2026-04-10T14:10:25.699Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/b7/cf28d6ac954cc98f2f5297f52bc57f3032f6360e0ad77d1fb36518ef4691/brevo_python-4.0.10-py3-none-any.whl", hash = "sha256:4fb38f4143ce2c440b35e574696f2ae667cf6454d592409af7750eb675703de0", size = 877575, upload-time = "2026-04-10T14:10:24.21Z" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -470,6 +455,15 @@ wheels = [
 ]
 
 [[package]]
+name = "dnspython"
+version = "2.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/8b/57666417c0f90f08bcafa776861060426765fdb422eb10212086fb811d26/dnspython-2.8.0.tar.gz", hash = "sha256:181d3c6996452cb1189c4046c61599b84a5a86e099562ffde77d26984ff26d0f", size = 368251, upload-time = "2025-09-07T18:58:00.022Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl", hash = "sha256:01d9bbc4a2d76bf0db7c1f729812ded6d912bd318d3b1cf81d30c0f845dbf3af", size = 331094, upload-time = "2025-09-07T18:57:58.071Z" },
+]
+
+[[package]]
 name = "docstring-parser"
 version = "0.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -521,6 +515,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3f/7b/a8af782f0305bd08f6c61614680f9c4a70e4c30831bba435d5bab603bac4/ecologits-0.10.2.tar.gz", hash = "sha256:cdbd1f67a82d4008c6bb2d3373912f5f58fba4eedb25531972544b950bab5332", size = 1020789, upload-time = "2026-06-04T17:31:08.75Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/06/6b/a6d8354a9816401f52f5a8a08b038cf525b40f2b4efddda41d72eb392eb4/ecologits-0.10.2-py3-none-any.whl", hash = "sha256:d98973a196566f640c8b213f371b44b6d0b11a4b49a9551d3771fee77ac798d7", size = 50769, upload-time = "2026-06-04T17:31:09.999Z" },
+]
+
+[[package]]
+name = "email-validator"
+version = "2.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dnspython" },
+    { name = "idna" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f5/22/900cb125c76b7aaa450ce02fd727f452243f2e91a61af068b40adba60ea9/email_validator-2.3.0.tar.gz", hash = "sha256:9fc05c37f2f6cf439ff414f8fc46d917929974a82244c20eb10231ba60c54426", size = 51238, upload-time = "2025-08-26T13:09:06.831Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl", hash = "sha256:80f13f623413e6b197ae73bb10bf4eb0908faf509ad8362c5edeb0be7fd450b4", size = 35604, upload-time = "2025-08-26T13:09:05.858Z" },
 ]
 
 [[package]]
@@ -1288,7 +1295,7 @@ dependencies = [
     { name = "prometheus-fastapi-instrumentator" },
     { name = "psycopg", extra = ["binary"] },
     { name = "psycopg2-binary" },
-    { name = "pydantic" },
+    { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
     { name = "python-logging-loki" },
     { name = "redis", extra = ["hiredis"] },
@@ -1344,7 +1351,7 @@ requires-dist = [
     { name = "prometheus-fastapi-instrumentator", specifier = ">=7.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.3" },
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
-    { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "pydantic", extras = ["email"], specifier = ">=2.12.5" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
     { name = "python-logging-loki", specifier = ">=0.3.1" },
     { name = "redis", extras = ["hiredis"], specifier = ">=7.1.0" },
@@ -2238,6 +2245,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/69/44/36f1a6e523abc58ae5f928898e4aca2e0ea509b5aa6f6f392a5d882be928/pydantic-2.12.5.tar.gz", hash = "sha256:4d351024c75c0f085a9febbb665ce8c0c6ec5d30e903bdb6394b7ede26aebb49", size = 821591, upload-time = "2025-11-26T15:11:46.471Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl", hash = "sha256:e561593fccf61e8a20fc46dfc2dfe075b8be7d0188df33f221ad1f0139180f9d", size = 463580, upload-time = "2025-11-26T15:11:44.605Z" },
+]
+
+[package.optional-dependencies]
+email = [
+    { name = "email-validator" },
 ]
 
 [[package]]
