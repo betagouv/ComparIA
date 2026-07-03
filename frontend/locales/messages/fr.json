@@ -1615,7 +1615,8 @@
         "cards": {
             "arch": {
                 "title": "Architecture",
-                "tooltip": "L’architecture décrit la manière dont le modèle est organisé pour produire ses réponses, par exemple un modèle dense ou un mélange d’experts (MoE)."
+                "tooltip": "L’architecture décrit la manière dont le modèle est organisé pour produire ses réponses, par exemple un modèle dense ou un mélange d’experts (MoE).",
+                "withName": "Architecture {name}"
             },
             "context": {
                 "chars_count": "Envir. {count}k caractères",
