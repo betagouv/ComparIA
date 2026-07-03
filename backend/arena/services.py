@@ -172,7 +172,7 @@ async def update_turn_vote(
         await session.commit()
 
 
-async def get_comparisons(user_id: uuid.UUID) -> list[ComparisonPublic]:
+async def get_user_comparisons(user_id: uuid.UUID) -> list[ComparisonPublic]:
     async with get_session() as session:
         query = (
             select(Comparison)

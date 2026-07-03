@@ -12,7 +12,7 @@ from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
     create_comparison,
-    get_comparisons,
+    get_user_comparisons,
     read_comparison,
     update_comparison_error,
     update_comparison_llm_id,
@@ -528,6 +528,6 @@ async def get_comparisons(
     if not user:
         return []
 
-    comparisons = await get_comparisons(user.id)
+    comparisons = await get_user_comparisons(user.id)
 
     return comparisons
