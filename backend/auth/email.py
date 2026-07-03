@@ -27,13 +27,8 @@ async def send_login_code(to_email: str, code: str) -> None:
     if not settings.SMTP_HOST:
         logger.info(f"[AUTH] Login code for {to_email}: {code}")
         return
-    logger.info(f"[AUTH] Sending login code via SMTP from={settings.EMAIL_FROM} to={to_email} host={settings.SMTP_HOST}")
-    try:
-        await asyncio.to_thread(_send_smtp, to_email, code)
-        logger.info(f"[AUTH] Login code sent via SMTP to {to_email}")
-    except Exception as e:
-        logger.error(f"[AUTH] SMTP failed for {to_email}: {e}")
-        raise
+    await asyncio.to_thread(_send_smtp, to_email, code)
+
 
 
 def _send_smtp(to_email: str, code: str) -> None:
@@ -43,11 +38,9 @@ def _send_smtp(to_email: str, code: str) -> None:
     msg["To"] = to_email
     msg.attach(MIMEText(_HTML_TEMPLATE.format(code=code), "html", "utf-8"))
 
-    with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as smtp:
-        smtp.ehlo()
+    with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as smtp:
         if settings.SMTP_STARTTLS:
             smtp.starttls()
-            smtp.ehlo()
         if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
             smtp.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
         smtp.sendmail(settings.EMAIL_FROM, to_email, msg.as_string())

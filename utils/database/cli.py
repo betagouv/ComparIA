@@ -18,6 +18,7 @@ from .actions import (
     migrate_turns,
     migrate_user_messages,
     migrate_votes,
+    seed_admins,
 )
 from .lint import lint, log_archived
 
@@ -43,6 +44,7 @@ cli_db.command(lint)
 cli_db.command(log_archived)
 cli_db.command(llm_analyze)
 cli_db.command(backfill_pii_spam)
+cli_db.command(seed_admins, name="seed-admins")
 cli_db.command(cli_archive)
 cli_db.command(cli_migrate)
 

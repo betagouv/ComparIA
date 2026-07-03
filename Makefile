@@ -65,6 +65,10 @@ db-schema-dump: ## Dump current database schema (requires COMPARIA_DB_URI)
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	pg_dump "$$COMPARIA_DB_URI" --schema-only --no-owner --no-privileges
 
+db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db seed-admins
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
