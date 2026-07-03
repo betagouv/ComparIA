@@ -60,7 +60,6 @@
             "signIn": "Sign in"
         },
         "modal": {
-            "close": "Close",
             "email": {
                 "title": "Sign in or create an account",
                 "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on compar:IA",
@@ -70,8 +69,6 @@
                 "submitting": "Sending..."
             },
             "code": {
-                "title": "Enter your code",
-                "subtitle": "A 6-digit code has been sent to {email}.",
                 "label": "6-digit code",
                 "submit": "Verify",
                 "verifying": "Verifying...",
@@ -537,23 +534,19 @@
         "archs": {
             "dense": {
                 "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
-                "name": "Dense",
-                "title": "Dense Architecture"
+                "name": "Dense"
             },
             "matformer": {
                 "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
-                "name": "Matformer",
-                "title": "Matformer Architecture"
+                "name": "Matformer"
             },
             "moe": {
                 "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
-                "name": "MoE",
-                "title": "MoE Architecture"
+                "name": "MoE"
             },
             "na": {
                 "desc": "The publisher has not made information about the model's architecture public.",
-                "name": "N/A",
-                "title": "Architecture N/A"
+                "name": "N/A"
             }
         },
         "licenses": {
