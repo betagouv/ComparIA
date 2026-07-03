@@ -22,7 +22,8 @@
       label: 'Configuration auth',
       href: '/admin/configuration/auth',
       icon: 'i-ri-fingerprint-line'
-    }
+    },
+    { label: 'LLMs', href: '/admin/llms', icon: 'i-ri-ai-agent-line' }
   ]
 </script>
 
