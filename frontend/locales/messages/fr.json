@@ -59,45 +59,45 @@
     },
     "auth": {
         "discussions": {
-            "title": "Discussions",
             "prompt": "Connectez-vous pour accéder à votre historique de discussion",
-            "signIn": "Se connecter"
+            "signIn": "Se connecter",
+            "title": "Discussions"
         },
         "modal": {
-            "email": {
-                "title": "Se connecter ou s'inscrire",
-                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur compar:IA",
-                "emailLabel": "Email",
-                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/modalites' target='_blank'>conditions générales d'utilisation</a>",
-                "submit": "Recevoir le code de connexion",
-                "submitting": "Envoi en cours..."
-            },
             "code": {
+                "error": "Code invalide ou expiré.",
                 "label": "Code reçu par email",
-                "submit": "Valider",
-                "verifying": "Vérification...",
                 "notReceived": "Vous n’avez rien reçu ?",
                 "resend": "Recevoir un nouveau code",
-                "error": "Code invalide ou expiré."
+                "submit": "Valider",
+                "verifying": "Vérification..."
+            },
+            "email": {
+                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/modalites' target='_blank'>conditions générales d'utilisation</a>",
+                "emailLabel": "Email",
+                "submit": "Recevoir le code de connexion",
+                "submitting": "Envoi en cours...",
+                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur compar:IA",
+                "title": "Se connecter ou s'inscrire"
             },
             "info": {
-                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "dataDesc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d'IA plus inclusifs.",
-                "datasetsTitle": "Les jeux de données compar:IA",
                 "datasetsDesc": "Les conversations sont publiées en open data dans des jeux de données de recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans vos conversations :",
-                "neverName": "votre nom, prénom ou celui d'un tiers",
+                "datasetsTitle": "Les jeux de données compar:IA",
+                "dataTitle": "Comment mes données sont-elles utilisées ?",
+                "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers.",
                 "neverAddress": "des adresses (postale, email)",
-                "neverPhone": "des numéros de téléphone",
-                "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
+                "neverName": "votre nom, prénom ou celui d'un tiers",
                 "neverOther": "tout autre élément permettant de vous identifier",
-                "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers."
+                "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
+                "neverPhone": "des numéros de téléphone"
             }
         },
-        "success": "Vous êtes connecté !",
         "settings": {
-            "title": "Paramètres",
-            "logout": "Se déconnecter"
-        }
+            "logout": "Se déconnecter",
+            "title": "Paramètres"
+        },
+        "success": "Vous êtes connecté !"
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter…",
@@ -156,8 +156,8 @@
             "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
             "repos": {
                 "arena": {
-                    "title": "/comparia-fr-arena",
-                    "desc": "Conversations, réponses, réactions et préférences réunies dans un seul jeu de données"
+                    "desc": "Conversations, réponses, réactions et préférences réunies dans un seul jeu de données",
+                    "title": "/comparia-fr-arena"
                 }
             },
             "share": "Partagez-nous vos réutilisations",
@@ -1612,6 +1612,9 @@
         "title": "Site en maintenance"
     },
     "models": {
+        "arch": {
+            "title": "Le saviez-vous ?"
+        },
         "cards": {
             "arch": {
                 "title": "Architecture",
@@ -1624,6 +1627,24 @@
                 "title": "Contexte",
                 "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>jetons</span>",
                 "tooltip": "Le contexte correspond à la quantité maximale de texte que le modèle peut prendre en compte en une seule conversation, exprimée en jetons."
+            },
+            "energy": {
+                "class": {
+                    "A": "Très faible consommation estimée à l’inférence",
+                    "B": "Faible consommation estimée à l’inférence",
+                    "C": "Consommation estimée à l’inférence modérée",
+                    "D": "Consommation estimée à l’inférence intermédiaire",
+                    "E": "Consommation estimée à l’inférence élevée",
+                    "F": "Consommation estimée à l’inférence très élevée"
+                },
+                "desc": "Plus la classe est proche de A, plus la consommation estimée à l’inférence est faible.",
+                "title_md": "Classe de consommation énergétique",
+                "title_sm": "Score énergétique",
+                "title_xs": "Score énergie",
+                "tooltip": "Classe estimée à partir de la consommation d’énergie à l’inférence, selon la méthodologie EcoLogits."
+            },
+            "license": {
+                "title": "Licence"
             },
             "modalities": {
                 "title": "Modalités",
@@ -1643,6 +1664,16 @@
                 "title": "Prix",
                 "tooltip": "Prix indicatif d’utilisation via API pour un million de jetons. L’entrée correspond à la requête envoyée, la sortie à la réponse générée."
             },
+            "rank": {
+                "detail": "/{count} modèles",
+                "title": "Rang classement",
+                "title_xs": "Classement",
+                "to": "#{min} à {max}",
+                "tooltip": "Position du modèle dans le classement compar:IA, établi à partir des votes des utilisatrices et utilisateurs."
+            },
+            "release": {
+                "title": "Sortie"
+            },
             "size": {
                 "active_params_count": "Dont {count}mds actifs",
                 "desc": "Plus un modèle a de paramètres, plus il demande de ressources",
@@ -1652,42 +1683,11 @@
                 "title_estimated": "Taille estimée",
                 "tooltip": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il a besoin de ressources pour fonctionner."
             },
-            "license": {
-                "title": "Licence"
-            },
             "sovereignty": {
-                "title": "Souveraineté",
                 "sub": "Critères atteints",
+                "title": "Souveraineté",
                 "tooltip": "Score calculé à partir de critères d’ouverture et de maîtrise : licence, poids, données et code d’entraînement publics, usage commercial, réutilisation des sorties et hébergement possible dans l’Union européenne."
-            },
-            "rank": {
-                "title": "Rang classement",
-                "title_xs": "Classement",
-                "tooltip": "Position du modèle dans le classement compar:IA, établi à partir des votes des utilisatrices et utilisateurs.",
-                "detail": "/{count} modèles",
-                "to": "#{min} à {max}"
-            },
-            "energy": {
-                "title_md": "Classe de consommation énergétique",
-                "title_sm": "Score énergétique",
-                "title_xs": "Score énergie",
-                "tooltip": "Classe estimée à partir de la consommation d’énergie à l’inférence, selon la méthodologie EcoLogits.",
-                "desc": "Plus la classe est proche de A, plus la consommation estimée à l’inférence est faible.",
-                "class": {
-                    "A": "Très faible consommation estimée à l’inférence",
-                    "B": "Faible consommation estimée à l’inférence",
-                    "C": "Consommation estimée à l’inférence modérée",
-                    "D": "Consommation estimée à l’inférence intermédiaire",
-                    "E": "Consommation estimée à l’inférence élevée",
-                    "F": "Consommation estimée à l’inférence très élevée"
-                }
-            },
-            "release": {
-                "title": "Sortie"
             }
-        },
-        "arch": {
-            "title": "Le saviez-vous ?"
         },
         "conditions": {
             "commercialUse": {
