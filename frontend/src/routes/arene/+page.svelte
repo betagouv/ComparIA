@@ -2,12 +2,10 @@
   import { Link } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
-  import { getComparison, initComparisonsContext } from '$lib/chatService.svelte'
+  import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
 
-  // TODO query user comparisons
-  initComparisonsContext([])
   // Start solving Altcha challenge on page load (runs in background)
   fetchAndSolveSilently()
 
