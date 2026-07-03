@@ -64,7 +64,6 @@
             "signIn": "Se connecter"
         },
         "modal": {
-            "close": "Fermer",
             "email": {
                 "title": "Se connecter ou s'inscrire",
                 "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur compar:IA",
@@ -74,12 +73,11 @@
                 "submitting": "Envoi en cours..."
             },
             "code": {
-                "title": "Entrez votre code",
-                "subtitle": "Un code à 6 chiffres a été envoyé à {email}.",
-                "label": "Code à 6 chiffres",
+                "label": "Code reçu par email",
                 "submit": "Valider",
                 "verifying": "Vérification...",
-                "resend": "Renvoyer un code",
+                "notReceived": "Vous n’avez rien reçu ?",
+                "resend": "Recevoir un nouveau code",
                 "error": "Code invalide ou expiré."
             },
             "info": {
