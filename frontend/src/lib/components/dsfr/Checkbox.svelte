@@ -8,6 +8,7 @@
     label,
     help,
     error,
+    disabled,
     ...props
   }: {
     id: string
@@ -15,12 +16,13 @@
     label: string
     help?: string
     error?: string
+    disabled?: boolean
   } & SvelteHTMLElements['label'] = $props()
 </script>
 
 <div class="fr-checkbox-group fr-checkbox-group--sm" class:fr-checkbox-group--error={!!error}>
-  <input {id} aria-describedby="{id}-error-messages" type="checkbox" bind:checked />
-  <label {...props} class={['fr-label fr-text--sm block!', props.class]} for={id}>
+  <input {id} aria-describedby="{id}-error-messages" type="checkbox" bind:checked {disabled} />
+  <label {...props} class={['fr-label text-sm! mb-4 block!', props.class]} for={id}>
     {@html sanitize(label)}
     {#if help}
       <p class="fr-message">{help}</p>
