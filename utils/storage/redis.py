@@ -28,6 +28,7 @@ REDIS_LLM_RESPONSES_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}llm_cache:{{model_name}}:{{prompt_hash}}"
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
+REDIS_AUTH_EMAIL_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_email_req:{{ip}}"
 REDIS_WEB_SEARCH_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}web_search_cache:{{prompt_hash}}"
 )

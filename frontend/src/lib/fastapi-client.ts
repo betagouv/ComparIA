@@ -165,6 +165,10 @@ export class FastAPIClient {
         throw await this.parseErrorResponse(response, path, options.method)
       }
 
+      if (response.status === 204) {
+        return undefined as T
+      }
+
       return response.json()
     } catch (error) {
       console.error(`Request to ${path} failed: ${(error as Error).message}`)

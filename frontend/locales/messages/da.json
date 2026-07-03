@@ -55,6 +55,50 @@
             "tooltip": "Aktivér websøgning for at lade modellerne bruge onlinekilder og citere mere opdateret information.<br><strong>Uden websøgning</strong> svarer modellerne baseret på det, de lærte under træning (deres træningsdata). De kan ikke verificere information online, så meget nye eller meget specifikke fakta kan være ufuldstændige."
         }
     },
+    "auth": {
+        "discussions": {
+            "title": "Diskussioner",
+            "prompt": "Log ind for at få adgang til din samtalehistorik",
+            "signIn": "Log ind"
+        },
+        "modal": {
+            "close": "Luk",
+            "email": {
+                "title": "Log ind eller opret konto",
+                "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
+                "emailLabel": "E-mail",
+                "consent": "Jeg har læst oplysningerne om databrug og accepterer <a href='/modalites' target='_blank'>brugsbetingelserne</a>",
+                "submit": "Modtag loginkode",
+                "submitting": "Sender..."
+            },
+            "code": {
+                "title": "Indtast din kode",
+                "subtitle": "En 6-cifret kode er sendt til {email}.",
+                "label": "6-cifret kode",
+                "submit": "Bekræft",
+                "verifying": "Verificerer...",
+                "resend": "Send koden igen",
+                "error": "Ugyldig eller udløbet kode."
+            },
+            "info": {
+                "dataTitle": "Hvordan bruges mine data?",
+                "dataDesc": "Samtaler og præferencer, du udtrykker på compar:IA, bruges anonymt til at opbygge repræsentative datasæt af europæiske sprog og brugsmønstre for at reducere kulturelle fordomme og udvikle mere inkluderende AI-modeller.",
+                "datasetsTitle": "compar:IA datasæt",
+                "datasetsDesc": "Samtaler offentliggøres som åbne data i forskningsdatasæt. Derfor beder vi dig om at <strong>aldrig inkludere</strong> følgende i dine samtaler:",
+                "neverName": "dit navn, efternavn eller en tredjeparters",
+                "neverAddress": "adresser (post, e-mail)",
+                "neverPhone": "telefonnumre",
+                "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
+                "neverOther": "ethvert andet element der kan identificere dig",
+                "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter."
+            }
+        },
+        "success": "Du er nu logget ind!",
+        "settings": {
+            "title": "Indstillinger",
+            "logout": "Log ud"
+        }
+    },
     "chatbot": {
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
         "conversation": "Chat",

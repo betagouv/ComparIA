@@ -2,6 +2,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
+  import { auth, logout } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { VoteGauge } from '.'
@@ -14,6 +15,7 @@
   ] as const
 
   let expanded = $state(true)
+  let settingsOpen = $state(false)
 </script>
 
 {#snippet helpLink()}
@@ -62,14 +64,56 @@
   </div>
 {/snippet}
 
+{#snippet discussions()}
+  <div class="px-4 py-4 b-t-[--grey-925-125] b-t-1">
+    <p class="fr-text--sm mb-2! text-[--text-mention-grey]">{m['auth.discussions.title']()}</p>
+    {#if !auth.user && expanded}
+      <p class="fr-text--sm mb-3! text-[--text-label-grey]">
+        {m['auth.discussions.prompt']()}
+      </p>
+      <button
+        class="fr-btn fr-btn--secondary fr-btn--sm w-full! rounded-lg! justify-center!"
+        aria-controls="fr-modal-signin"
+        data-fr-opened="false"
+      >
+        <span class="fr-icon-account-circle-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+        {m['auth.discussions.signIn']()}
+      </button>
+    {/if}
+  </div>
+{/snippet}
+
 {#snippet footer()}
-  <div class="gap-4 flex flex-col">
-    <!-- {@render renderLink({
-      href: '/settings',
-      label: m['seo.titles.settings'](),
-      icon: 'i-ri-settings-4-line',
-      class: 'text-sm! text-black!'
-    })} -->
+  <div class="gap-2 flex flex-col">
+    <div class="relative">
+      {#if settingsOpen && auth.user}
+        <div class="absolute bottom-full left-0 right-0 mb-1 bg-white shadow-md border border-[--grey-925-125] rounded-sm">
+          <button
+            class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start!"
+            onclick={() => { settingsOpen = false; logout() }}
+          >
+            <span class="fr-icon-logout-box-r-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+            {m['auth.settings.logout']()}
+          </button>
+        </div>
+      {/if}
+
+      <button
+        class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm w-full! justify-start! -ml-2!"
+        onclick={() => (settingsOpen = !settingsOpen)}
+        aria-expanded={settingsOpen}
+      >
+        <span class="fr-icon-settings-5-line fr-btn__icon fr-btn__icon--left" aria-hidden="true"></span>
+        <span class={{ 'sr-only': !expanded }}>{m['auth.settings.title']()}</span>
+        {#if expanded}
+          <span class={['fr-icon--sm ml-auto', settingsOpen ? 'fr-icon-arrow-up-s-line' : 'fr-icon-arrow-down-s-line']} aria-hidden="true"></span>
+        {/if}
+      </button>
+
+      {#if expanded && auth.user}
+        <p class="fr-text--xs mb-0! text-[--text-mention-grey] truncate">{auth.user.email}</p>
+      {/if}
+    </div>
 
     <div class={{ hidden: !expanded }}>
       <!-- <LanguageSelector id="translate" />
@@ -118,7 +162,7 @@
   </div>
 
   <div class="lg:flex hidden grow flex-col">
-    <nav class="mt-4 mb-8">
+    <nav class="mt-4 mb-4">
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
@@ -131,6 +175,8 @@
         {/each}
       </ul>
     </nav>
+
+    {@render discussions()}
 
     <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
       {@render footer()}

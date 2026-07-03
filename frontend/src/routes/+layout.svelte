@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import Toaster from '$components/Toaster.svelte'
+  import { initAuth } from '$lib/auth.svelte'
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
@@ -21,6 +22,8 @@
   let { children, data } = $props()
 
   onMount(() => {
+    void initAuth()
+
     // Remove locale param to avoid locale changes override problems
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {

@@ -48,6 +48,25 @@ class Settings(BaseSettings):
     GUARDRAIL_MODEL: str = "openrouter/nvidia/nemotron-3.5-content-safety:free"
     GUARDRAIL_TIMEOUT: float = 2.5
 
+    # Auth
+    # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
+    AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = "anonymous_first"
+    # If non-empty, only emails from these domains can request a login code (e.g. ["beta.gouv.fr"])
+    AUTH_DOMAIN_ALLOWLIST: list[str] = []
+    AUTH_SESSION_LENGTH_DAYS: int = 30
+    # Bumping this value invalidates existing consent logs and forces re-consent
+    AUTH_TERMS_VERSION: str = "1.0"
+
+    # SMTP (Brevo relay or any SMTP provider)
+    # If unset, login codes are logged to console instead of being sent by email
+    SMTP_HOST: str | None = None
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str | None = None
+    SMTP_PASSWORD: str | None = None
+    SMTP_STARTTLS: bool = True
+    EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
+    EMAIL_FROM_NAME: str = "ComparIA"
+
     # Response caching
     CACHE_ENABLED: bool = False
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit

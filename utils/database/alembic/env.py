@@ -6,6 +6,12 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
+from utils.database.models.auth import (  # noqa: F401
+    AuthSession,
+    ConsentLog,
+    LoginCode,
+    User,
+)
 
 from backend.config import settings
 
