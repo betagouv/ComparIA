@@ -202,7 +202,7 @@ export const modeInfos: ModeInfos[] = (
 
 // COMPARISON LOGIC
 
-type ComparisonsCtx = Record<string, Comparison>
+type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
@@ -247,9 +247,7 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
 }
 
 export function initComparisonsContext(data: APIComparison[]) {
-  const comparisons = $state(
-    Object.fromEntries(data.map((c) => [c.id.toString(), parseAPIComparison(c)]))
-  )
+  const comparisons = $state(data.map((c) => parseAPIComparison(c)))
   setComparisonsContext(comparisons)
 }
 
@@ -263,7 +261,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let loading = $state(false)
   let promptError = $state<string>()
 
-  const comparison = $derived(comparisonId_ ? comparisons[comparisonId_] : null)
+  const comparison = $derived(
+    comparisonId_ ? comparisons.find((c) => c.id === comparisonId_) : null
+  )
   const errorMsg = $derived(comparison?.error)
   const turn = $derived(comparison?.turns[comparison.turns.length - 1])
 
@@ -289,7 +289,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         receivedEvent = true
         if (event.type === 'init') {
           const id = event.comparison.id.toString()
-          comparisons[id] = parseAPIComparison(event.comparison)
+          comparisons.unshift(parseAPIComparison(event.comparison))
           comparisonId_ = id as Id
         } else {
           if (!comparison) throw new InternalError('No comparison to update')
