@@ -20,7 +20,7 @@ ARCHS_SCHEMA_FILE = DATA_DIR / "generated" / "schema-archs.json"
 descs = {
     "id": "Architecture identifier (e.g. 'dense', 'moe')",
     "name": "Human-readable architecture name",
-    "title": "Human-readable architecture complete title ('Architecture {name}')",
+    "long_name": "Human-readable architecture complete name (e.g: 'Mixture of Experts')",
     "desc": "Detailed description of the architecture",
 }
 
@@ -38,7 +38,7 @@ class Arch(BaseModel):
 
     id: Annotated[str, Field(description=descs["id"])]
     name: Annotated[str, Field(description=descs["name"])]
-    title: Annotated[str, Field(description=descs["title"])]
+    long_name: Annotated[str, Field(description=descs["long_name"])]
     desc: Annotated[str, Field(description=descs["desc"])]
 
 
