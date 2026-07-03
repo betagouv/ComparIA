@@ -495,23 +495,19 @@
         "archs": {
             "dense": {
                 "desc": "Tett koblet arkitektur refererer til en type nevralt nettverk der hvert nevron i ett lag er koblet til alle nevroner i det neste laget. Dette gjør at alle parametere i laget kan bidra til beregningen av utdata.",
-                "name": "Tett kobling",
-                "title": "Tett koblet arkitektur"
+                "name": "Tett kobling"
             },
             "matformer": {
                 "desc": "Tenk deg **russiske dukker** (matrjosjkaer → matrjosjka-transformator → Matformer): hver blokk inneholder flere **nestede delmodeller** av økende størrelse, som deler de samme parameterne. Dette gjør det mulig å velge en modell med tilpasset kapasitet for hver forespørsel, i henhold til tilgjengelig minne eller latens, uten å måtte trene opp forskjellige modeller på nytt.",
-                "name": "Matformer",
-                "title": "Matformer-arkitektur"
+                "name": "Matformer"
             },
             "moe": {
                 "desc": "En type arkitektur kalt «Mixture of Experts» (MoE) bruker en rutingsmekanisme for å aktivere, avhengig av input, kun visse spesialiserte delmengder («eksperter») av det nevrale nettverket. Dette muliggjør konstruksjon av svært store modeller samtidig som beregningskostnadene holdes lave, fordi bare en del av nettverket brukes i hvert trinn.",
-                "name": "MoE",
-                "title": "MoE-arkitektur"
+                "name": "MoE"
             },
             "na": {
                 "desc": "Utgiveren har ikke offentliggjort informasjon om modellens arkitektur.",
-                "name": "Proprietær",
-                "title": "Arkitektur N/A"
+                "name": "Proprietær"
             }
         },
         "licenses": {
