@@ -1618,6 +1618,9 @@
         "title": "Site en maintenance"
     },
     "models": {
+        "arch": {
+            "title": "Le saviez-vous ?"
+        },
         "cards": {
             "arch": {
                 "title": "Architecture",
