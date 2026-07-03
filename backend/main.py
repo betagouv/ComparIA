@@ -19,6 +19,7 @@ from backend.utils.countries import get_vote_count
 async def lifespan(app: FastAPI):
     if settings.COMPARIA_DB_URI and settings.ADMIN_EMAILS:
         from utils.database.actions.seed import seed_admins
+
         await seed_admins()
     yield
 
