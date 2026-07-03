@@ -65,7 +65,7 @@
         </div>
 
         <div class="md:content-center grid">
-          <div class="cg-border bg-very-light-grey mx-auto w-full max-w-xs">
+          <div class="cg-border bg-very-light-grey max-w-xs mx-auto w-full">
             <img
               src={datasetCard.img}
               class="fr-responsive-img rounded-t-xl"

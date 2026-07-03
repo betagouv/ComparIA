@@ -2,10 +2,10 @@
   // This is the base MarkdownCode component from gradio migrated to svelte 5
   // https://github.com/gradio-app/gradio/tree/main/js/markdown-code
   // TODO could be reworked
+  import 'katex/dist/katex.min.css'
   import { tick } from 'svelte'
   import { standardHtmlAndSvgTags } from './html-tags'
   import './prism.css'
-  import 'katex/dist/katex.min.css'
   import { copy, create_marked, sanitize } from './utils'
 
   let {
@@ -33,10 +33,7 @@
   let el = $state<HTMLElement>()
   const html = $derived(message && message.trim() ? process_message(message) : '')
 
-  const marked = create_marked({
-    header_links,
-    line_breaks,
-  })
+  const marked = create_marked({ header_links, line_breaks })
 
   function escapeTags(content: string, tagsToEscape: string[] | boolean): string {
     if (tagsToEscape === true) {

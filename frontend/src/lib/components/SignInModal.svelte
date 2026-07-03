@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Checkbox, Modal } from '$components/dsfr'
+  import { auth } from '$lib/auth.svelte'
   import { consumeAltchaToken } from '$lib/captcha.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { auth } from '$lib/auth.svelte'
 
   let step = $state<'email' | 'code'>('email')
   let email = $state('')
@@ -69,9 +69,13 @@
   }
 </script>
 
-<Modal id="fr-modal-signin" titleId="fr-modal-title-signin" sizeClass="fr-col-12 fr-col-md-10" contentClass="p-0!">
+<Modal
+  id="fr-modal-signin"
+  titleId="fr-modal-title-signin"
+  sizeClass="fr-col-12 fr-col-md-10"
+  contentClass="p-0!"
+>
   <div class="md:grid grid-cols-2">
-
     <!-- Left column: form -->
     <div class="px-10 py-10">
       {#if step === 'email'}
@@ -109,13 +113,12 @@
 
           <button
             type="submit"
-            class="fr-btn w-full! mt-6! rounded-lg!"
+            class="fr-btn mt-6! rounded-lg! w-full!"
             disabled={!consented || loading}
           >
             {loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
           </button>
         </form>
-
       {:else}
         <h2 id="fr-modal-title-signin" class="text-primary! text-2xl! font-bold! mb-3!">
           {m['auth.modal.code.title']()}
@@ -135,7 +138,9 @@
               maxlength={6}
               autocomplete="one-time-code"
               value={code}
-              oninput={(e) => { code = e.currentTarget.value.replace(/\D/g, '').slice(0, 6) }}
+              oninput={(e) => {
+                code = e.currentTarget.value.replace(/\D/g, '').slice(0, 6)
+              }}
               required
               disabled={loading}
             />
@@ -145,7 +150,7 @@
             <p class="fr-message fr-message--error mb-3!">{error}</p>
           {/if}
 
-          <button type="submit" class="fr-btn w-full! mb-3! rounded-lg!" disabled={loading}>
+          <button type="submit" class="fr-btn mb-3! rounded-lg! w-full!" disabled={loading}>
             {loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
           </button>
 
@@ -161,7 +166,7 @@
     </div>
 
     <!-- Right column: info -->
-    <div class="bg-[--background-alt-grey] border-l border-[--border-default-grey] px-10 py-10">
+    <div class="px-10 py-10 border-l border-[--border-default-grey] bg-[--background-alt-grey]">
       <h3 class="text-base! font-bold! mb-2!">{m['auth.modal.info.dataTitle']()}</h3>
       <p class="fr-text--sm mb-6!">{m['auth.modal.info.dataDesc']()}</p>
 
@@ -176,6 +181,5 @@
       </ul>
       <p class="fr-text--sm mb-0!">{m['auth.modal.info.emailPrivacy']()}</p>
     </div>
-
   </div>
 </Modal>

@@ -33,7 +33,9 @@ export async function initAuth(): Promise<void> {
   }
 
   try {
-    const data = await api.request<{ user: AuthUser | null }>('/auth/me', { credentials: 'include' })
+    const data = await api.request<{ user: AuthUser | null }>('/auth/me', {
+      credentials: 'include'
+    })
     auth.user = data.user
   } catch {
     auth.user = null

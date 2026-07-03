@@ -61,52 +61,56 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
 
 // Metrics middleware
 const metricsHandle: Handle = async ({ event, resolve }) => {
-	// Skip metrics endpoint itself
-	if (event.url.pathname === '/metrics') {
-		return resolve(event)
-	}
+  // Skip metrics endpoint itself
+  if (event.url.pathname === '/metrics') {
+    return resolve(event)
+  }
 
-	const start = Date.now()
-	const response = await resolve(event)
-	const duration = (Date.now() - start) / 1000
+  const start = Date.now()
+  const response = await resolve(event)
+  const duration = (Date.now() - start) / 1000
 
-	const labels = {
-		method: event.request.method,
-		route: event.route?.id || event.url.pathname,
-		status: response.status.toString()
-	}
+  const labels = {
+    method: event.request.method,
+    route: event.route?.id || event.url.pathname,
+    status: response.status.toString()
+  }
 
-	httpRequestCounter.inc(labels)
-	httpRequestDuration.observe(labels, duration)
+  httpRequestCounter.inc(labels)
+  httpRequestDuration.observe(labels, duration)
 
-	// Log request to Custom Logger
-	logger.info('HTTP request', {
-		method: event.request.method,
-		path: event.url.pathname,
-		route: event.route?.id,
-		status: response.status,
-		duration_ms: Math.round((Date.now() - start)),
-		user_agent: event.request.headers.get('user-agent')
-	})
+  // Log request to Custom Logger
+  logger.info('HTTP request', {
+    method: event.request.method,
+    path: event.url.pathname,
+    route: event.route?.id,
+    status: response.status,
+    duration_ms: Math.round(Date.now() - start),
+    user_agent: event.request.headers.get('user-agent')
+  })
 
-	return response
+  return response
 }
 
 const authWallHandle: Handle = ({ event, resolve }) => {
-	if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
+  if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
 
-	const path = event.url.pathname
-	if (path.startsWith('/login') || path.startsWith('/_app')) return resolve(event)
+  const path = event.url.pathname
+  if (path.startsWith('/login') || path.startsWith('/_app')) return resolve(event)
 
-	const cookie = event.cookies.get('auth_session')
-	if (!cookie) {
-		redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
-	}
+  const cookie = event.cookies.get('auth_session')
+  if (!cookie) {
+    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+  }
 
-	return resolve(event)
+  return resolve(event)
 }
 
 // Compose handles: auth wall first, then metrics, then paraglide
 export const handle: Handle = async ({ event, resolve }) => {
-	return authWallHandle({ event, resolve: (e) => metricsHandle({ event: e, resolve: (e2) => paraglideHandle({ event: e2, resolve }) }) })
+  return authWallHandle({
+    event,
+    resolve: (e) =>
+      metricsHandle({ event: e, resolve: (e2) => paraglideHandle({ event: e2, resolve }) })
+  })
 }

@@ -133,7 +133,7 @@
     </p>
 
     {#if styleRows.length > 0}
-      <div class="cg-border rounded-sm! max-w-[640px] bg-white p-6">
+      <div class="cg-border rounded-sm! bg-white p-6 max-w-[640px]">
         <h4 class="mb-1! text-lg!">{m['ranking.methodo.style.coef.title']()}</h4>
         <p class="mb-5! text-dark-grey text-[13px]!">
           {@html sanitize(m['ranking.methodo.style.coef.hint']())}
@@ -142,12 +142,12 @@
         <ul class="m-0! p-0! list-none!">
           {#each styleRows as row (row.key)}
             <li
-              class="not-last:mb-3 not-last:border-b not-last:border-[--border-default-grey] flex items-center justify-between gap-4 pb-3"
+              class="not-last:mb-3 gap-4 pb-3 flex items-center justify-between not-last:border-b not-last:border-[--border-default-grey]"
             >
               <span class="text-[14px]">{row.label}</span>
               <span
                 class={[
-                  'font-mono text-[14px] font-bold',
+                  'font-mono font-bold text-[14px]',
                   row.value >= 0 ? 'text-info' : 'text-[--text-default-success]'
                 ]}
               >

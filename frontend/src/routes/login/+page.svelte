@@ -1,13 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
-  import { env } from '$env/dynamic/public'
   import { Checkbox } from '$components/dsfr'
+  import { env } from '$env/dynamic/public'
+  import { auth } from '$lib/auth.svelte'
   import { consumeAltchaToken } from '$lib/captcha.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { auth } from '$lib/auth.svelte'
   import { onMount } from 'svelte'
 
   let step = $state<'email' | 'code'>('email')
@@ -80,17 +80,18 @@
   <title>Connexion — compar:IA</title>
 </svelte:head>
 
-<div class="min-h-screen bg-[--background-alt-grey] flex flex-col">
-  <header class="px-8 py-5 border-b border-[--border-default-grey] bg-white">
+<div class="flex min-h-screen flex-col bg-[--background-alt-grey]">
+  <header class="px-8 py-5 bg-white border-b border-[--border-default-grey]">
     <span class="fr-text--sm font-medium">compar:IA</span>
   </header>
 
-  <main class="flex-1 flex items-center justify-center px-4 py-16">
-    <div class="w-full max-w-3xl bg-white shadow-sm overflow-hidden fr-grid-row">
-
-      <div class="fr-col-12 fr-col-md-5 bg-[--background-alt-grey] px-10 py-12 flex flex-col justify-center">
+  <main class="px-4 py-16 flex flex-1 items-center justify-center">
+    <div class="max-w-3xl bg-white shadow-sm fr-grid-row w-full overflow-hidden">
+      <div
+        class="fr-col-12 fr-col-md-5 px-10 py-12 flex flex-col justify-center bg-[--background-alt-grey]"
+      >
         <h1 class="fr-h5 mb-4!">{loginTitle}</h1>
-        <p class="fr-text--sm text-[--text-mention-grey] mb-0!">{loginDescription}</p>
+        <p class="fr-text--sm mb-0! text-[--text-mention-grey]">{loginDescription}</p>
       </div>
 
       <div class="fr-col-12 fr-col-md-7 px-10 py-12">
@@ -125,15 +126,10 @@
               <p class="fr-message fr-message--error mt-3!">{error}</p>
             {/if}
 
-            <button
-              type="submit"
-              class="fr-btn w-full! mt-6!"
-              disabled={!consented || loading}
-            >
+            <button type="submit" class="fr-btn mt-6! w-full!" disabled={!consented || loading}>
               {loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
             </button>
           </form>
-
         {:else}
           <h2 class="fr-h6 text-primary! mb-3!">{m['auth.modal.code.title']()}</h2>
           <p class="fr-text--sm mb-6! text-[--text-mention-grey]">
@@ -151,7 +147,9 @@
                 maxlength={6}
                 autocomplete="one-time-code"
                 value={code}
-                oninput={(e) => { code = e.currentTarget.value.replace(/\D/g, '').slice(0, 6) }}
+                oninput={(e) => {
+                  code = e.currentTarget.value.replace(/\D/g, '').slice(0, 6)
+                }}
                 required
                 disabled={loading}
               />
@@ -161,7 +159,7 @@
               <p class="fr-message fr-message--error mb-3!">{error}</p>
             {/if}
 
-            <button type="submit" class="fr-btn w-full! mb-3!" disabled={loading}>
+            <button type="submit" class="fr-btn mb-3! w-full!" disabled={loading}>
               {loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
             </button>
 
@@ -175,7 +173,6 @@
           </form>
         {/if}
       </div>
-
     </div>
   </main>
 </div>
