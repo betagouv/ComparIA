@@ -38,7 +38,7 @@
 
   const sovFields = $derived.by(() => {
     if (!model) return []
-    return [
+    const fields = [
       { id: 'license_type', value: model.badges.license },
       { id: 'license_name', value: model.license.name },
       { id: 'reuse', value: model.license.reuse },
@@ -49,6 +49,10 @@
       { id: 'origin_country', value: model.lab.origin_country },
       { id: 'eu_hostable', value: model.eu_hostable }
     ] as const
+
+    return model.license.kind === 'proprietary'
+      ? fields.filter((field) => field.id !== 'license_name')
+      : fields
   })
 
   const hardwares = [
@@ -123,6 +127,7 @@
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div
           class="fr-modal__body bg-light-grey! lg:max-h-[90vh]! dark:border-grey! rounded-xl dark:border!"
+          style="overscroll-behavior: contain;"
         >
           <div class="fr-modal__header pb-0!">
             <Button
@@ -157,20 +162,20 @@
                     {/each}
                   </ul>
 
-                  <div class="xl:grid-cols-24 gap-4 md:grid-cols-9 sm:grid-cols-2 grid">
+                  <div class="lg:grid-cols-24 gap-4 md:grid-cols-9 sm:grid-cols-2 grid">
                     {#each cards.technical as card, i (i)}
                       <InfoCard
                         {...card}
                         id="technical-{card.id}"
                         iconClass="text-info"
                         class={card.id === 'modalities'
-                          ? 'md:col-span-2 xl:col-span-4'
-                          : 'md:col-span-3 xl:col-span-5'}
+                          ? 'md:col-span-2 lg:col-span-4'
+                          : 'md:col-span-3 lg:col-span-5'}
                       >
                         {#if card.id === 'price'}
-                          <div class="flex w-full">
+                          <div class="gap-2 flex w-full flex-col">
                             {#each card.contents as c, i (i)}
-                              <div class="basis-1/2">
+                              <div>
                                 <p class="mb-0! font-bold text-[22px]!">
                                   ${@html sanitize(c.content)}
                                 </p>
@@ -205,13 +210,11 @@
                 </section>
 
                 <div class="gap-4 xl:grid-cols-5 grid">
-                  <section class="lg:col-span-3">
+                  <section class="xl:col-span-3">
                     <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
 
                     <div class="gap-4 md:flex-row flex flex-col">
-                      <article
-                        class="cg-border bg-white p-4 relative flex basis-1/2 flex-col justify-between"
-                      >
+                      <article class="cg-border bg-white p-4 relative flex basis-1/2 flex-col">
                         {@render iconHeading({
                           icon: 'i-ri-cpu-line',
                           title: m['models.envImpact.hardware.title'](),
@@ -243,52 +246,49 @@
                               {m[`models.envImpact.hardware.types.${hardware.tier}.detail`]()}
                             </p>
 
-                            <div class="mt-7 flex w-full justify-between" aria-hidden="true">
+                            <div
+                              class="mt-7 gap-2 flex w-full items-start justify-between"
+                              aria-hidden="true"
+                            >
                               {#each hardwares as h, i (h.tier)}
                                 {@const active = h.tier === hardware.tier}
-                                <div class="gap-1 flex basis-1/4 flex-col items-center">
+                                <div class="gap-1.5 flex basis-1/4 flex-col items-center">
                                   <Icon
                                     icon={h.icon}
-                                    size="md"
+                                    size="lg"
                                     block
                                     class={active ? 'text-primary' : 'text-[#B3B3B3]'}
                                   />
-                                  <span class="text-xxs text-center" class:text-[#B3B3B3]={!active}>
+                                  <span class="text-xs text-center" class:text-[#B3B3B3]={!active}>
                                     {m[`models.envImpact.hardware.types.${h.tier}.name`]()}
                                   </span>
                                 </div>
                                 {#if i < 3}
                                   <Icon
                                     icon="i-ri-arrow-right-s-line"
-                                    size="md"
-                                    class="text-[#B3B3B3]"
+                                    size="lg"
+                                    class="mt-1 text-[#B3B3B3]"
                                     block
                                   />
                                 {/if}
                               {/each}
                             </div>
                           </div>
-
-                          <p
-                            class="bg-very-light-primary text-xxs p-1 mb-0! b-light-primary rounded-sm border"
-                          >
-                            FIXME
-                          </p>
                         {/if}
                       </article>
                       {#if cards.energy}
                         <InfoCard {...cards.energy} class="basis-1/2 justify-between">
                           <div
-                            class="gap-2 my-6 flex w-full flex-col"
+                            class="gap-1 my-6 flex w-full flex-col"
                             aria-label="{m['models.cards.energy.title_md']()} {model.energy_class}"
                           >
                             {#each energyRows as row (row.letter)}
                               {@const active = row.letter === model.energy_class}
-                              <div class="text-sm font-bold text-white flex h-[23px] items-center">
+                              <div class="text-sm font-bold text-white h-7 flex items-center">
                                 <div class="w-9/10">
                                   <div
-                                    class="ps-2 flex h-full items-center justify-start"
-                                    style="background-color: var({row.color}); width: {row.width}%; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+                                    class="ps-2 h-7 flex items-center justify-start"
+                                    style="background-color: var({row.color}); width: {row.width}%; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);"
                                     class:opacity-30={!active}
                                   >
                                     {row.letter}
@@ -296,7 +296,8 @@
                                 </div>
                                 {#if active}
                                   <div
-                                    class="rounded-sm bg-primary ms-auto flex h-full w-[23px] items-center justify-center leading-none"
+                                    class="rounded-sm h-7 w-7 ms-auto flex items-center justify-center leading-none"
+                                    style="background-color: var({row.color});"
                                   >
                                     <span class="">
                                       {row.letter}
@@ -311,17 +312,19 @@
                     </div>
                   </section>
 
-                  <section class="lg:col-span-2 flex w-full flex-col">
+                  <section class="xl:col-span-2 flex w-full flex-col">
                     <h2 class="text-base! mb-3!">{m['models.opennessSovereignty.title']()}</h2>
 
                     <div class="cg-border bg-white p-4 h-full">
                       <dl class="p-0">
                         {#each sovFields as field (field.id)}
-                          <div class="py-1 flex border-[--grey-925-125] not-last:border-b">
+                          <div
+                            class="min-h-9 py-1.5 gap-3 flex items-center border-[--grey-925-125] not-last:border-b"
+                          >
                             <dt class="p-0 text-grey text-xs">
                               {m[`models.opennessSovereignty.fields.${field.id}`]()}
                             </dt>
-                            <dd class="p-0 text-sm font-bold ms-auto">
+                            <dd class="p-0 text-sm font-bold ms-auto text-right">
                               {#if field.id === 'license_type'}
                                 <Badge {...field.value} size="sm" />
                               {:else if field.id === 'license_name'}
@@ -349,17 +352,17 @@
                 </div>
 
                 <div class="gap-4 xl:grid-cols-5 grid">
-                  <section class="xl:col-span-3">
-                    <h2 class="text-base! mb-3!">{m['models.performance.title']()}</h2>
+                  {#if model.data && cards.rank}
+                    <section class="xl:col-span-3">
+                      <h2 class="text-base! mb-3!">{m['models.performance.title']()}</h2>
 
-                    <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
-                      <Tooltip
-                        id="perf-tooltip"
-                        text={m['models.performance.tooltip']()}
-                        size="xs"
-                        class="top-3 right-4 absolute"
-                      />
-                      {#if model.data && cards.rank}
+                      <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
+                        <Tooltip
+                          id="perf-tooltip"
+                          text={m['models.performance.tooltip']()}
+                          size="xs"
+                          class="top-3 right-4 absolute"
+                        />
                         <dl class="md:gap-15 p-0 gap-5 md:flex-row flex flex-col">
                           <div>
                             {@render iconHeading({
@@ -382,11 +385,13 @@
 
                             <dd class="p-0 mb-0! font-bold text-[20px]!">
                               {model.data.elo}
-                              <span class="text-grey text-xs! font-normal">
-                                {m['models.performance.fields.score.detail']({
-                                  count: 'FIXME'
-                                })}
-                              </span>
+                              {#if model.data.trust_range}
+                                <span class="text-grey text-xs! font-normal">
+                                  {m['models.performance.fields.score.detail']({
+                                    count: `-${model.data.trust_range[1]}/+${model.data.trust_range[0]}`
+                                  })}
+                                </span>
+                              {/if}
                             </dd>
                           </div>
 
@@ -445,9 +450,9 @@
                             {/each}
                           </div>
                         </div>
-                      {/if}
-                    </div>
-                  </section>
+                      </div>
+                    </section>
+                  {/if}
 
                   {#if model.links?.length}
                     <section class="xl:col-span-2">

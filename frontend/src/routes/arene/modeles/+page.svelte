@@ -115,87 +115,96 @@
   seoTitle={m['seo.titles.modeles']()}
   title={m['seo.titles.modeles']()}
   titleAsBubble
+  headerClass="hidden"
   class="py-0! px-0!"
 >
   <aside class="bg-light-grey py-3 md:py-4 px-4 md:px-6">
-    <form class="gap-3 flex flex-col">
-      <div class="gap-3 xl:gap-x-12 xl:flex-row flex flex-col flex-wrap">
+    <form class="gap-3 lg:grid-cols-[280px_1fr] lg:items-start grid">
+      <div>
         <Search
           id="model-list-search"
           bind:value={search}
           label={m['actions.searchModel']()}
           variant="light"
-          class="md:w-fit"
-        />
-
-        <div class="gap-3 md:flex-row md:gap-5 flex flex-col">
-          <Dropdown id="dropdown-editors" label={editorFilter.legend} variant="light">
-            <CheckboxGroup
-              {...editorFilter}
-              bind:value={editors}
-              legendClass="sr-only"
-              class="mb-0! md:w-max"
-            >
-              {#snippet labelSlot({ option })}
-                <div class="me-4">{'label' in option ? option.label : option.value}</div>
-                <div class="text-sm ms-auto text-[--grey-625-425]">
-                  {option.value === 'all' ? models.length : option.count}
-                </div>
-              {/snippet}
-            </CheckboxGroup>
-          </Dropdown>
-
-          <Dropdown id="dropdown-size" label={sizeFilter.legend} variant="light">
-            <CheckboxGroup
-              {...sizeFilter}
-              bind:value={sizes}
-              legendClass="sr-only"
-              class="mb-0! md:w-max"
-            >
-              {#snippet labelSlot({ option })}
-                <div class="me-4">
-                  {#if option.value !== 'all'}<strong>{option.value} :</strong>{/if}
-                  {option.label}
-                </div>
-                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-              {/snippet}
-            </CheckboxGroup>
-          </Dropdown>
-
-          <Dropdown id="dropdown-license" label={licenseFilter.legend} variant="light">
-            <CheckboxGroup
-              {...licenseFilter}
-              bind:value={licenses}
-              legendClass="sr-only"
-              class="mb-0! md:w-max"
-            >
-              {#snippet labelSlot({ option })}
-                <div class="me-4">{option.label}</div>
-                <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
-              {/snippet}
-            </CheckboxGroup>
-          </Dropdown>
-        </div>
-        <Button
-          text={m['models.list.filters.reset']()}
-          icon="delete-line"
-          disabled={filterCount === 0}
-          onclick={resetFilters}
+          class="w-full"
         />
       </div>
 
-      <Toggle
-        id="archived"
-        bind:value={showArchived}
-        label={m['models.list.filters.archived.label']()}
-        // help={m['models.list.filters.archived.help']()}
-        checkedLabel={m['models.list.filters.archived.checkedLabel']()}
-        uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
-        variant="primary"
-        class="text-xs! lh-loose"
-        labelPos="right"
-        checkLabelClass="text-xxs! mt-1"
-      />
+      <div class="gap-3 md:flex-row flex flex-col flex-wrap">
+        <Dropdown id="dropdown-editors" label={editorFilter.legend} variant="light">
+          <CheckboxGroup
+            {...editorFilter}
+            bind:value={editors}
+            legendClass="sr-only"
+            class="mb-0! md:w-max"
+          >
+            {#snippet labelSlot({ option })}
+              <div class="me-4">{'label' in option ? option.label : option.value}</div>
+              <div class="text-sm ms-auto text-[--grey-625-425]">
+                {option.value === 'all' ? models.length : option.count}
+              </div>
+            {/snippet}
+          </CheckboxGroup>
+        </Dropdown>
+
+        <Dropdown id="dropdown-size" label={sizeFilter.legend} variant="light">
+          <CheckboxGroup
+            {...sizeFilter}
+            bind:value={sizes}
+            legendClass="sr-only"
+            class="mb-0! md:w-max"
+          >
+            {#snippet labelSlot({ option })}
+              <div class="me-4">
+                {#if option.value !== 'all'}<strong>{option.value} :</strong>{/if}
+                {option.label}
+              </div>
+              <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+            {/snippet}
+          </CheckboxGroup>
+        </Dropdown>
+
+        <Dropdown id="dropdown-license" label={licenseFilter.legend} variant="light">
+          <CheckboxGroup
+            {...licenseFilter}
+            bind:value={licenses}
+            legendClass="sr-only"
+            class="mb-0! md:w-max"
+          >
+            {#snippet labelSlot({ option })}
+              <div class="me-4">{option.label}</div>
+              <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
+            {/snippet}
+          </CheckboxGroup>
+        </Dropdown>
+      </div>
+
+      <div class="gap-3 md:flex-row md:items-center lg:col-start-2 flex flex-col">
+        <Button
+          icon="delete-line"
+          size="sm"
+          variant="tertiary"
+          iconOnly
+          title={m['models.list.filters.reset']()}
+          aria-label={m['models.list.filters.reset']()}
+          disabled={filterCount === 0}
+          onclick={resetFilters}
+          class="w-fit!"
+        />
+
+        <Toggle
+          id="archived"
+          bind:value={showArchived}
+          label={m['models.list.filters.archived.label']()}
+          // help={m['models.list.filters.archived.help']()}
+          checkedLabel={m['models.list.filters.archived.checkedLabel']()}
+          uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+          variant="primary"
+          class="text-xs! lh-loose"
+          labelPos="right"
+          checkLabelClass="text-xxs! mt-1"
+        />
+      </div>
     </form>
   </aside>
 
@@ -204,13 +213,6 @@
       {filteredModels.length}
       {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
     </p>
-
-    <Search
-      id="model-list-search"
-      bind:value={search}
-      label={m['actions.searchModel']()}
-      class="md:hidden! mb-4"
-    />
 
     <Select
       bind:selected={sortingMethod}
