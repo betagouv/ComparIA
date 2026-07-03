@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
 from linkup import LinkupSearchTextResult
+from sqlmodel import col, select
 
 from backend.llms.data import get_llms_data
 from utils.database.models import (
@@ -11,6 +12,7 @@ from utils.database.models import (
     BotPos,
     Comparison,
     ComparisonCreate,
+    ComparisonPublic,
     ComparisonRead,
     ErrorDetails,
     LLMMessage,
@@ -168,3 +170,17 @@ async def update_turn_vote(
         db_turn.sqlmodel_update(data)
         session.add(db_turn)
         await session.commit()
+
+
+async def get_comparisons(user_id: uuid.UUID) -> list[ComparisonPublic]:
+    async with get_session() as session:
+        query = (
+            select(Comparison)
+            .where(Comparison.user_id == user_id)
+            .order_by(col(Comparison.updated_at).desc())
+        )
+        db_comparisons = (await session.exec(query)).all()
+
+        return [
+            ComparisonPublic.model_validate(comparison) for comparison in db_comparisons
+        ]
