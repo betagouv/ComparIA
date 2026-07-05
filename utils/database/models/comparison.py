@@ -9,8 +9,8 @@ from sqlmodel import Field, Relationship, SQLModel, String
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
-from .turn import BotPos, Turn, TurnPublic, TurnRead
-from .utils import BaseDBModel, OptionalDatetime
+from .turn import Turn, TurnPublic, TurnRead
+from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)

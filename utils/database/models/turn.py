@@ -14,13 +14,11 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
-from .utils import BaseDBModel, OptionalDatetime
+from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 if TYPE_CHECKING:
     from .comparison import Comparison
 
-BotPos = Literal["a", "b"]
-BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 LLMMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="llm_message.id", unique=True)
 ]
