@@ -11,8 +11,6 @@ from .comparison import (
 )
 from .messages import *
 from .turn import (
-    BOT_POS,
-    BotPos,
     Turn,
     TurnCreate,
     TurnPublic,
@@ -20,3 +18,4 @@ from .turn import (
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
+from .utils import BOT_POS, BotPos

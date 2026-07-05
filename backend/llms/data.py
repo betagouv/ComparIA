@@ -261,7 +261,7 @@ async def pick_replacement_model(
 ) -> str | None:
     """Pick a replacement model from the appropriate pool, excluding both current models."""
     models = await get_llms_data()
-    other_pos: BotPos = "b" if pos == "a" else "a"
+    other_pos: "BotPos" = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
     other = getattr(comparison, f"llm_id_{other_pos}")
     excluded = [failing, other]
