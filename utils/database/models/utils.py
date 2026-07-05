@@ -1,9 +1,12 @@
 import uuid
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Literal, get_args
 
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlmodel import Field, SQLModel
+
+BotPos = Literal["a", "b"]
+BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 
 ModelId = Annotated[uuid.UUID, Field(default_factory=uuid.uuid4, primary_key=True)]
 AutoDatetime = Annotated[

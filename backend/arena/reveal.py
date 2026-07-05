@@ -14,7 +14,8 @@ from litellm.litellm_core_utils.token_counter import token_counter
 
 from backend.llms.data import get_llms_data
 from backend.llms.utils import Consumption, get_llm_consumption
-from utils.database.models import BotPos, ComparisonRead, TurnRead
+from utils.database.models import ComparisonRead, TurnRead
+from utils.database.models.utils import BotPos
 
 logger = logging.getLogger("languia")
 
