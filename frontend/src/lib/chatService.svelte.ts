@@ -1,9 +1,18 @@
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
+import type {
+  ComparisonPublic,
+  LLMMessageCreate,
+  TurnPublic,
+  UserMessageRead,
+  LinkupSearchTextResult as WebSearchResults
+} from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
+
+export type { WebSearchResults }
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -28,29 +37,23 @@ export type ModeInfos = {
 
 export type Bot = 'a' | 'b'
 
-export interface WebSearchResults {
-  type: 'text'
-  name: string
-  url: string
-  content: string
-  favicon: string
-}
-
-export interface UserMessage {
-  role: 'user'
-  content: string
-  user_content: string
-  web_search_results: WebSearchResults[] | null
-}
-export interface AssistantMessage {
-  role: 'assistant'
-  duration: number | null
+// Comparison overrides
+export type UserMessage = UserMessageRead
+export interface AssistantMessage extends LLMMessageCreate {
   generation_id: string
   content: string
-  reasoning_content: string | ''
 }
 export type AnyMessage = UserMessage | AssistantMessage
+export interface APIComparisonTurn extends TurnPublic {
+  user_msg: UserMessage
+  llm_msg_a: AssistantMessage | null
+  llm_msg_b: AssistantMessage | null
+}
+export interface APIComparison extends ComparisonPublic {
+  turns: APIComparisonTurn[]
+}
 
+// FIXME get from backend constant
 export const TURN_CHOICES = ['a_better', 'both_good', 'idk', 'both_bad', 'b_better'] as const
 export type TurnChoice = (typeof TURN_CHOICES)[number]
 
@@ -59,47 +62,23 @@ export type ComparisonStatus = ComparisonTurnStatus | 'revealed'
 
 export interface ComparisonTurnSide {
   status: ComparisonTurnStatus
-  llm_msg?: AssistantMessage
+  llm_msg: AssistantMessage | null
   keyword_annotations: APIPositivePref[] | APINegativePref[]
   custom_annotation: string
 }
-
-interface BaseComparisonTurn {
-  id: number
-  user_msg: UserMessage
-  choice?: TurnChoice
-}
-export interface APIComparisonTurn extends BaseComparisonTurn {
-  llm_msg_a?: AssistantMessage
-  keyword_annotations_a: APIPositivePref[] | APINegativePref[]
-  custom_annotation_a: string
-  llm_msg_b?: AssistantMessage
-  keyword_annotations_b: APIPositivePref[] | APINegativePref[]
-  custom_annotation_b: string
-}
-export interface ComparisonTurn extends BaseComparisonTurn {
+export interface ComparisonTurn extends Pick<APIComparisonTurn, 'id' | 'user_msg' | 'choice'> {
   a: ComparisonTurnSide
   b: ComparisonTurnSide
-
   status: ComparisonTurnStatus
 }
-
-interface BaseComparison {
-  id: string
-  mode: Mode
-  custom_models_selection: string[]
-  error?: string // ErrorDetails | None
-  reveal?: APIRevealData
-}
-export interface APIComparison extends BaseComparison {
-  turns: APIComparisonTurn[]
-}
-export interface Comparison extends BaseComparison {
+export interface Comparison extends Omit<APIComparison, 'turns' | 'error'> {
   turns: ComparisonTurn[]
+  error?: string
+  reveal_data?: APIRevealData
 }
 
 // ANNOTATIONS
-
+// FIXME get from backend constant
 export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
 export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
 export const PREFS_EMOJIS: Record<APIReactionPref, string> = {
@@ -119,12 +98,12 @@ export interface VoteAnnotations {
   custom_annotation: string
 }
 export interface APIVoteChoice {
-  turn_id: number
+  turn_id: string
   choice: TurnChoice
 }
 
 export interface APIVoteAnnotate {
-  turn_id: number
+  turn_id: string
   pos: Bot
   keyword_annotations: APIPositivePref[] | APINegativePref[]
   custom_annotation: string
@@ -230,6 +209,7 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
 function parseAPIComparison(comparison: APIComparison): Comparison {
   return {
     ...comparison,
+    error: comparison.error?.message,
     turns: comparison.turns.map(parseAPITurn)
   }
 }
@@ -270,7 +250,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   const status = $derived.by(() => {
     if (errorMsg || promptError) return 'error'
     if (!comparison || !turn) return 'pending'
-    if (comparison.reveal) return 'revealed'
+    if (comparison.reveal_data) return 'revealed'
     return turn.status
   })
 
@@ -415,7 +395,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         method: 'GET'
       })
 
-      comparison.reveal = revealData
+      comparison.reveal_data = revealData
     }
   }
 }
