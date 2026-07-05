@@ -5,6 +5,76 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface ComparisonPublic {
+  id: string;
+  mode: "random" | "big-vs-small" | "small-models" | "custom";
+  custom_models_selection: string[] | null;
+  error: ErrorDetails | null;
+  turns: TurnPublic[];
+}
+export interface ErrorDetails {
+  message: string;
+  pos?: ("a" | "b") | null;
+  is_timeout?: boolean;
+  [k: string]: unknown;
+}
+export interface TurnPublic {
+  id: string;
+  user_msg: UserMessageRead;
+  choice: ("both_good" | "both_bad" | "a_better" | "b_better" | "idk") | null;
+  llm_msg_a: LLMMessageCreate | null;
+  keyword_annotations_a:
+    | ("useful" | "complete" | "creative" | "clear_formatting")[]
+    | ("incorrect" | "superficial" | "instructions_not_followed")[];
+  custom_annotation_a?: string | null;
+  llm_msg_b: LLMMessageCreate | null;
+  keyword_annotations_b:
+    | ("useful" | "complete" | "creative" | "clear_formatting")[]
+    | ("incorrect" | "superficial" | "instructions_not_followed")[];
+  custom_annotation_b?: string | null;
+  [k: string]: unknown;
+}
+export interface UserMessageRead {
+  id?: string;
+  created_at?: string;
+  role?: "user";
+  content: string;
+  web_search_results?: LinkupSearchTextResult[] | null;
+  turn_id?: string | null;
+  user_content: string;
+  [k: string]: unknown;
+}
+/**
+ * A text result from a Linkup search.
+ *
+ * Attributes:
+ *     type: The type of the search result, in this case "text".
+ *     name: The name of the search result.
+ *     url: The URL of the search result.
+ *     content: The text of the search result.
+ *     favicon: The favicon URL of the search result, if available.
+ */
+export interface LinkupSearchTextResult {
+  type: "text";
+  name: string;
+  url: string;
+  content: string;
+  favicon?: string;
+  [k: string]: unknown;
+}
+export interface LLMMessageCreate {
+  id?: string;
+  role?: "assistant";
+  created_at?: string | null;
+  responded_at?: string | null;
+  updated_at?: string | null;
+  content?: string;
+  reasoning_content?: string | null;
+  generation_id?: string | null;
+  tokens?: number | null;
+  is_cached?: boolean;
+  [k: string]: unknown;
+}
 export interface LLMList {
   data_timestamp: number | null;
   models: APILLMData[];
