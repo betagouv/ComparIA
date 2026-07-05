@@ -68,8 +68,8 @@
     {/each}
   </div>
 
-  {#if comparator.status === 'revealed' && comparator.comparison.reveal}
-    <RevealArea data={comparator.comparison.reveal} />
+  {#if comparator.status === 'revealed' && comparator.comparison.reveal_data}
+    <RevealArea data={comparator.comparison.reveal_data} />
     <Footer />
   {:else}
     <div
