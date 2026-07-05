@@ -17,7 +17,7 @@
     id: string
     turnSide: ComparisonTurnSide
     bot: Bot
-    choice?: TurnChoice
+    choice: TurnChoice | null
     disabled?: boolean
     onVoteAnnotate: (data: Omit<APIVoteAnnotate, 'turn_id'>) => void
   }
