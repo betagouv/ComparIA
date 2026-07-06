@@ -55,6 +55,7 @@ class ComparisonBase(BaseDBModel):
     ip: str  # WARNING: PII
     visitor_id: str | None = None
     user_id: Annotated[uuid.UUID | None, Field(foreign_key="auth_user.id")] = None
+    anonymous_user_hash: str | None = None
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (

@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     # Bumping this value invalidates existing consent logs and forces re-consent
     AUTH_TERMS_VERSION: str = "1.0"
 
+    # Anonymous
+    ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
+
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email
     SMTP_HOST: str | None = None
@@ -87,6 +90,10 @@ if not settings.ALTCHA_HMAC_KEY:
 
 # Create directory for JSON backup files
 os.makedirs(settings.LOGDIR, exist_ok=True)
+
+
+# Cookies
+ANONYMOUS_SESSION_COOKIE = "anonymous_session"
 
 # HTTP timeout for API calls to LLM providers
 # Structure: total timeout, read, write, connect (all in seconds)
