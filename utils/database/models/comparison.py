@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, computed_field, model_validator
+from pydantic import BaseModel, ValidationInfo, computed_field, model_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
@@ -117,19 +117,19 @@ class ComparisonPublic(SQLModel):
     llm_id_a: uuid.UUID | None
     llm_id_b: uuid.UUID | None
     revealed: bool
+    reveal_data: RevealData | None = None
 
     @model_validator(mode="after")
-    def hide_llm_ids_if_not_revealed(self) -> Self:
-        if not self.revealed:
+    def inject_reveal_data(self, info: ValidationInfo) -> Self:
+        if self.revealed:
+            if self.reveal_data is None:
+                llms = info.context.get("llms_data")
+                self.reveal_data = get_reveal_data(self, llms)
+        else:
             self.llm_id_a = None
             self.llm_id_b = None
 
         return self
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def reveal_data(self) -> RevealData | None:
-        return get_reveal_data(self) if self.revealed else None
 
 
 class ComparisonArchiveUpdate(SQLModel):
