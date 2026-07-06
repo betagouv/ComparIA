@@ -29,8 +29,6 @@
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, altcha_payload })
       })
       step = 'code'
@@ -48,8 +46,6 @@
     try {
       await api.request<{ email: string }>('/auth/email/verify', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code })
       })
       await initAuth()

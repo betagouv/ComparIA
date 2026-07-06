@@ -6,10 +6,7 @@ export const ssr = false // auth error on server side
 
 export const load: PageLoad = async () => {
   // FIXME types
-  const llms = await api.request<APILLMData[]>('/admin/llms/list', {
-    credentials: 'include',
-    method: 'GET'
-  })
+  const llms = await api.request<APILLMData[]>('/admin/llms/list')
 
   return {
     llms
