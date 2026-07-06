@@ -11,6 +11,10 @@ export interface ComparisonPublic {
   custom_models_selection: string[] | null;
   error: ErrorDetails | null;
   turns: TurnPublic[];
+  llm_id_a: string | null;
+  llm_id_b: string | null;
+  revealed: boolean;
+  reveal_data: RevealData | null;
 }
 export interface ErrorDetails {
   message: string;
@@ -73,6 +77,25 @@ export interface LLMMessageCreate {
   generation_id?: string | null;
   tokens?: number | null;
   is_cached?: boolean;
+  [k: string]: unknown;
+}
+export interface RevealData {
+  b64: string;
+  chosen_llm: ("a" | "b") | null;
+  a: RevealModelData;
+  b: RevealModelData;
+  [k: string]: unknown;
+}
+export interface RevealModelData {
+  llm_id: string;
+  conso: Consumption;
+  [k: string]: unknown;
+}
+export interface Consumption {
+  tokens: number;
+  co2_kg: number;
+  energy_mwh: number;
+  energy_kwh: number;
   [k: string]: unknown;
 }
 export interface LLMList {
