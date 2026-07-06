@@ -61,9 +61,24 @@ async def create_comparison(comparison: ComparisonCreate) -> ComparisonRead:
     return ComparisonRead.model_validate(db_comparison)
 
 
-async def read_comparison(id: uuid.UUID) -> ComparisonRead:
+async def read_comparison(
+    comparison_id: uuid.UUID,
+    user_id: uuid.UUID | None,
+    anonymous_user_hash: str,
+) -> ComparisonRead:
     async with get_session() as session:
-        db_comparison = await _get_item(Comparison, id, session)
+        query = select(Comparison).where(Comparison.id == comparison_id)
+        if user_id:
+            query = query.where(Comparison.user_id == user_id)
+        else:
+            query = query.where(Comparison.anonymous_user_hash == anonymous_user_hash)
+
+        db_comparison = (await session.exec(query)).one()
+        if not db_comparison:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Comparison not found",
+            )
 
     return ComparisonRead.model_validate(db_comparison)
 
@@ -140,7 +155,9 @@ async def add_comparison_turn(
         session.add(db_turn)
         await session.commit()
 
-    comparison = await read_comparison(comparison_id)
+    comparison = ComparisonRead.model_validate(
+        await _get_item(Comparison, comparison_id, session)
+    )
 
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
