@@ -1,11 +1,12 @@
 import uuid
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, computed_field, model_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from backend.arena.reveal import RevealData, get_reveal_data
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
@@ -62,7 +63,7 @@ class ComparisonBase(BaseDBModel):
         None
     )
     revealed: bool = False
-    revealed_at: OptionalDatetime
+    revealed_at: OptionalDatetime = None
 
     # a
     llm_id_a: LLMDataId
@@ -113,6 +114,22 @@ class ComparisonPublic(SQLModel):
     custom_models_selection: CustomModelsSelection
     error: ErrorDetails | None
     turns: list[TurnPublic]
+    llm_id_a: uuid.UUID | None
+    llm_id_b: uuid.UUID | None
+    revealed: bool
+
+    @model_validator(mode="after")
+    def hide_llm_ids_if_not_revealed(self) -> Self:
+        if not self.revealed:
+            self.llm_id_a = None
+            self.llm_id_b = None
+
+        return self
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def reveal_data(self) -> RevealData | None:
+        return get_reveal_data(self) if self.revealed else None
 
 
 class ComparisonArchiveUpdate(SQLModel):

@@ -14,6 +14,7 @@ from backend.arena.services import (
     create_comparison,
     get_user_comparisons,
     read_comparison,
+    set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
     update_turn,
@@ -493,13 +494,21 @@ async def reveal(
         HTTPException: If Comparison not found or no vote.
     """
     logger.info(f"[REVEAL] comparison '{comparison.id}'", extra={"request": request})
-    last_turn = comparison.turns[-1]
 
+    if comparison.revealed:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Comparison has already been revealed.",
+        )
+
+    last_turn = comparison.turns[-1]
     if last_turn.choice is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Have to make a choice before reveal.",
         )
+
+    await set_comparison_revealed(comparison.id)
 
     # Return computed reveal data with environmental impact
     return await get_reveal_data(comparison)
