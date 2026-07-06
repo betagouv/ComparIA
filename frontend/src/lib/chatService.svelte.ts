@@ -149,6 +149,8 @@ interface APIEquivalence {
 
 interface APIConsoData {
   tokens: number
+  input_tokens?: number
+  total_tokens?: number
   co2_kg: number
   scaled_co2_kg: number
   scaled_co2_t: number

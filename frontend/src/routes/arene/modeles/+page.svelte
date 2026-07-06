@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
   import Dropdown from '$components/Dropdown.svelte'
-  import { Button, CheckboxGroup, Search, Select, Toggle } from '$components/dsfr'
+  import { Button, CheckboxGroup, Search, Select } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
@@ -49,6 +49,23 @@
     ]
   }
 
+  const archivedFilter = {
+    id: 'archived',
+    legend: m['models.list.filters.archived.legend'](),
+    options: [
+      {
+        value: 'no',
+        label: m['words.no'](),
+        count: models.filter((llm) => llm.status === 'enabled').length
+      },
+      {
+        value: 'yes',
+        label: m['words.yes'](),
+        count: models.filter((llm) => llm.status === 'archived').length
+      }
+    ]
+  }
+
   const sortingOptions = (['name-asc', 'date-desc', 'params-asc', 'org-asc'] as const).map(
     (value) => ({
       value,
@@ -59,8 +76,8 @@
   let editors = $state<string[]>([])
   let sizes = $state<SizeClasses[]>([])
   let licenses = $state<string[]>([])
+  let archived = $state<string[]>(['no'])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
-  let showArchived = $state(false)
   let search = $state('')
 
   const filteredModels = $derived.by(() => {
@@ -71,7 +88,10 @@
         const sizeMatch = sizes.length === 0 || sizes.includes(model.size_class)
         const orgMatch = editors.length === 0 || editors.includes(model.lab.name)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license.name)
-        const archivedMatch = model.status === 'enabled' || showArchived
+        const archivedMatch =
+          archived.length === 0 ||
+          (archived.includes('no') && model.status === 'enabled') ||
+          (archived.includes('yes') && model.status === 'archived')
         return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
       })
       .sort((a, b) => {
@@ -100,11 +120,21 @@
   })
 
   const allFilter = $derived([editors, sizes, licenses])
-  const filterCount = $derived(allFilter.reduce((acc, f) => acc + (f.length ? 1 : 0), 0))
+  const archivedIsDefault = $derived(archived.length === 1 && archived[0] === 'no')
+  const filterCount = $derived(
+    allFilter.reduce((acc, f) => acc + (f.length ? 1 : 0), 0) + (archivedIsDefault ? 0 : 1)
+  )
 
   function resetFilters(e: MouseEvent) {
     e.preventDefault()
-    allFilter.forEach((arr) => (arr.length = 0))
+    editors.length = 0
+    sizes.length = 0
+    licenses.length = 0
+    archived.splice(0, archived.length, 'no')
+  }
+
+  function getArchivedCount(value: string) {
+    return archivedFilter.options.find((option) => option.value === value)?.count ?? 0
   }
 
   let selectedModel = $state<string>(page.url.hash.replace('#', ''))
@@ -177,34 +207,39 @@
             {/snippet}
           </CheckboxGroup>
         </Dropdown>
+
+        <Dropdown id="dropdown-archived" label={archivedFilter.legend} variant="light">
+          <CheckboxGroup
+            {...archivedFilter}
+            bind:value={archived}
+            legendClass="sr-only"
+            normalizeAllSelection={false}
+            class="mb-0! md:w-max"
+          >
+            {#snippet labelSlot({ option })}
+              <div class="me-4">{option.label}</div>
+              <div class="text-sm ms-auto text-[--grey-625-425]">
+                {getArchivedCount(option.value)}
+              </div>
+            {/snippet}
+          </CheckboxGroup>
+        </Dropdown>
       </div>
 
-      <div class="gap-3 md:flex-row md:items-center lg:col-start-2 flex flex-col">
-        <Button
-          icon="delete-line"
-          size="sm"
-          variant="tertiary"
-          iconOnly
-          title={m['models.list.filters.reset']()}
-          aria-label={m['models.list.filters.reset']()}
-          disabled={filterCount === 0}
-          onclick={resetFilters}
-          class="w-fit!"
-        />
-
-        <Toggle
-          id="archived"
-          bind:value={showArchived}
-          label={m['models.list.filters.archived.label']()}
-          // help={m['models.list.filters.archived.help']()}
-          checkedLabel={m['models.list.filters.archived.checkedLabel']()}
-          uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
-          variant="primary"
-          class="text-xs! lh-loose"
-          labelPos="right"
-          checkLabelClass="text-xxs! mt-1"
-        />
-      </div>
+      {#if filterCount > 0}
+        <div class="gap-3 md:flex-row md:items-center lg:shrink-0 flex flex-col">
+          <Button
+            icon="delete-line"
+            size="sm"
+            variant="tertiary"
+            iconOnly
+            title={m['models.list.filters.reset']()}
+            aria-label={m['models.list.filters.reset']()}
+            onclick={resetFilters}
+            class="w-fit!"
+          />
+        </div>
+      {/if}
     </form>
   </aside>
 
