@@ -95,8 +95,6 @@
   ] as const
 </script>
 
-<button class="hidden" data-fr-opened={!!model} aria-controls={modalId}>Hidden</button>
-
 {#snippet iconHeading({
   icon,
   title,
