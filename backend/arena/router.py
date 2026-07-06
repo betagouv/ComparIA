@@ -242,7 +242,9 @@ async def add_first_text(
         yield format_sse_event(
             {
                 "type": "init",
-                "comparison": ComparisonPublic.model_validate(comparison),
+                "comparison": ComparisonPublic.model_validate(
+                    comparison, context={"llms_data": llms_data.all}
+                ),
             }
         )
 
@@ -509,9 +511,10 @@ async def reveal(
         )
 
     await set_comparison_revealed(comparison.id)
+    llms_data = (await get_llms_data()).all
 
     # Return computed reveal data with environmental impact
-    return await get_reveal_data(comparison)
+    return get_reveal_data(comparison, llms_data)
 
 
 @router.get("/comparison/list")

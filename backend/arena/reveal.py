@@ -16,6 +16,7 @@ from backend.llms.utils import Consumption, get_llm_consumption
 from utils.database.models.utils import BotPos
 
 if TYPE_CHECKING:
+    from backend.llms.data import LLMsData
     from utils.database.models import ComparisonRead, TurnRead
 
 logger = logging.getLogger("languia")
@@ -90,7 +91,7 @@ def get_chosen_llm(comparison: "ComparisonRead") -> BotPos | None:
     return None
 
 
-async def get_reveal_data(comparison: "ComparisonRead") -> RevealData:
+def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealData:
     """
     Build reveal screen data with LLM comparison and environmental impact metrics.
 
@@ -118,15 +119,12 @@ async def get_reveal_data(comparison: "ComparisonRead") -> RevealData:
     import base64
     import json
 
-    from backend.llms.data import get_llms_data
-
     # TODO: Add request_latency for more accurate impact calculations
     # Currently not tracked; would need start/finish timestamps from Conversation
     # Compute it for each exchange (user prompt/llm response)
     # request_latency = conv.finish_tstamp - conv.start_tstamp
 
     chosen_llm = get_chosen_llm(comparison)
-    llms = (await get_llms_data()).enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {
