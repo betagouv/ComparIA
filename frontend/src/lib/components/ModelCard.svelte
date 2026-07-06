@@ -49,7 +49,7 @@
         </div>
       </h6>
 
-      <dl class="fr-card__desc p-0 gap-2 mt-0! grid grid-cols-3">
+      <dl class="fr-card__desc p-0 gap-2 mt-0! sm:grid-cols-3 grid grid-cols-2">
         {#each cards as card (card.id)}
           <InfoCard
             {...card}
