@@ -7,14 +7,17 @@ Functions:
 """
 
 import logging
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
 from uuid import UUID
 
 from litellm.litellm_core_utils.token_counter import token_counter
 
-from backend.llms.data import get_llms_data
 from backend.llms.utils import Consumption, get_llm_consumption
-from utils.database.models import BotPos, ComparisonRead, TurnRead
+from utils.database.models.utils import BotPos
+
+if TYPE_CHECKING:
+    from backend.llms.data import LLMsData
+    from utils.database.models import ComparisonRead, TurnRead
 
 logger = logging.getLogger("languia")
 
@@ -32,7 +35,7 @@ class RevealData(TypedDict):
 
 
 def count_input_tokens(
-    comparison: ComparisonRead, pos: BotPos, turns: list[TurnRead], model: str
+    comparison: "ComparisonRead", pos: BotPos, turns: list["TurnRead"], model: str
 ) -> int:
     """
     Estimate input tokens sent to the model across the revealed conversation.
@@ -63,7 +66,7 @@ def count_input_tokens(
     return input_tokens
 
 
-def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
+def get_chosen_llm(comparison: "ComparisonRead") -> BotPos | None:
     """
     Compute the better LLM based on turn votes.
 
@@ -88,7 +91,7 @@ def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
     return None
 
 
-async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
+def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealData:
     """
     Build reveal screen data with LLM comparison and environmental impact metrics.
 
@@ -122,7 +125,6 @@ async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # request_latency = conv.finish_tstamp - conv.start_tstamp
 
     chosen_llm = get_chosen_llm(comparison)
-    llms = (await get_llms_data()).enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {

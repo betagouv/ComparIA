@@ -95,7 +95,6 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
  */
 export class FastAPIClient {
   private baseUrl: string
-  private comparisonId: string | null = null
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -106,23 +105,6 @@ export class FastAPIClient {
    */
   private getUrl(path: string): string {
     return `${this.baseUrl}${path}`
-  }
-
-  /**
-   * Get current comparison id (or retrieve from localStorage)
-   */
-  getComparisonId(): string | null {
-    if (this.comparisonId) return this.comparisonId
-
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      const stored = sessionStorage.getItem('arena-comparison-id')
-      if (stored) {
-        this.comparisonId = stored
-        return stored
-      }
-    }
-
-    return null
   }
 
   async parseErrorResponse(
@@ -148,31 +130,18 @@ export class FastAPIClient {
   }
 
   /**
-   * Set comparison id and store in sessionStorage
-   */
-  setComparisonId(id: string): void {
-    this.comparisonId = id
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      sessionStorage.setItem('arena-comparison-id', id)
-    }
-  }
-
-  /**
    * Make a single HTTP request (non-streaming)
    */
   async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const url = this.getUrl(path)
 
     try {
-      // Add comparison id header if available
-      const headers = new Headers(options.headers || {})
-      if (this.comparisonId && !headers.has('X-Comparison-Id')) {
-        headers.set('X-Comparison-Id', this.comparisonId)
-      }
-
       const response = await fetch(url, {
         ...options,
-        headers
+        headers: options.headers ?? {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
       })
 
       if (response.status === 401) {
@@ -204,18 +173,13 @@ export class FastAPIClient {
     console.debug(`Streaming from ${path}`)
 
     try {
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json'
-      }
-      // Add comparison id header if available
-      if (this.comparisonId) {
-        headers['X-Comparison-Id'] = this.comparisonId
-      }
-
       const response = await fetch(url, {
         method: 'POST',
-        headers,
-        body: JSON.stringify(body)
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+        credentials: 'include'
       })
 
       if (!response.ok) {
@@ -245,10 +209,7 @@ export class FastAPIClient {
               const data = JSON.parse(dataStr) as SSEEvent
 
               // Handle special event types
-              if (data.type === 'init') {
-                // Store comparison id from first event
-                this.setComparisonId(data.comparison.id)
-              } else if (data.type === 'error') {
+              if (data.type === 'error') {
                 // FIXME throw? probably not, errors are handle in chat
                 // const errorMsg = 'error' in data ? data.error : 'Unknown error'
                 // console.error(`SSE error: ${errorMsg}`)

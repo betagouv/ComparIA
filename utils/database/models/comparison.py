@@ -1,16 +1,17 @@
 import uuid
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, ValidationInfo, computed_field, model_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from backend.arena.reveal import RevealData, get_reveal_data
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
-from .turn import BotPos, Turn, TurnPublic, TurnRead
-from .utils import BaseDBModel, OptionalDatetime
+from .turn import Turn, TurnPublic, TurnRead
+from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
@@ -55,11 +56,14 @@ class ComparisonBase(BaseDBModel):
     ip: str  # WARNING: PII
     visitor_id: str | None = None
     user_id: Annotated[uuid.UUID | None, Field(foreign_key="auth_user.id")] = None
+    anonymous_user_hash: str | None = None
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
+    revealed: bool = False
+    revealed_at: OptionalDatetime = None
 
     # a
     llm_id_a: LLMDataId
@@ -110,6 +114,26 @@ class ComparisonPublic(SQLModel):
     custom_models_selection: CustomModelsSelection
     error: ErrorDetails | None
     turns: list[TurnPublic]
+    revealed: bool
+    reveal_data: RevealData | None = None
+
+    # Used to build reveal_data, FIXME maybe compute reveal_data outside and pass it in ctx
+    llm_id_a: uuid.UUID | None
+    llm_id_b: uuid.UUID | None
+    system_msg_a: str | None = None
+    system_msg_b: str | None = None
+
+    @model_validator(mode="after")
+    def inject_reveal_data(self, info: ValidationInfo) -> Self:
+        if self.revealed:
+            if self.reveal_data is None:
+                llms = info.context.get("llms_data")
+                self.reveal_data = get_reveal_data(self, llms)
+        else:
+            self.llm_id_a = None
+            self.llm_id_b = None
+
+        return self
 
 
 class ComparisonArchiveUpdate(SQLModel):

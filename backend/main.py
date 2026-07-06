@@ -6,7 +6,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from backend.admin.router import router as admin_router
 from backend.arena.router import router as arena_router
-from backend.auth.middleware import auth_middleware
+from backend.auth.middleware import anonymous_middleware, auth_middleware
 from backend.auth.router import router as auth_router
 from backend.config import settings
 from backend.llms.router import router as models_router
@@ -56,6 +56,7 @@ app.add_middleware(
 )
 
 app.middleware("http")(auth_middleware)
+app.middleware("http")(anonymous_middleware)
 
 # Prometheus metrics instrumentation
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")

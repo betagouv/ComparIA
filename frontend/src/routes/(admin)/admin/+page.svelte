@@ -21,10 +21,7 @@
     loading = true
     try {
       const params = new URLSearchParams({ page: '1', page_size: '50' })
-      const data = await api.request<{ items: UserRow[]; total: number }>(
-        `/admin/users?${params}`,
-        { credentials: 'include' }
-      )
+      const data = await api.request<{ items: UserRow[]; total: number }>(`/admin/users?${params}`)
       users = data.items
       total = data.total
     } finally {

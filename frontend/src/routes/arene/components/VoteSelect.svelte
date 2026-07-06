@@ -79,7 +79,7 @@
         m['vote.turn.important']({
           linkProps: propsToAttrs({
             href: '#',
-            'data-fr-opened': 'true',
+            'data-fr-opened': 'false',
             'aria-controls': 'fr-modal-vote'
           })
         })

@@ -1,9 +1,12 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
+  import AILogo from '$components/AILogo.svelte'
   import { Button, Icon, Link } from '$components/dsfr'
   import { auth, logout } from '$lib/auth.svelte'
+  import { getComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getModelsContext } from '$lib/models'
   import type { ClassValue, HTMLAnchorAttributes } from 'svelte/elements'
   import { LanguageSelector, VoteGauge } from '.'
 
@@ -11,6 +14,9 @@
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   let expanded = $state(true)
+
+  const comparisons = getComparisonsContext()
+  const { models } = getModelsContext()
 </script>
 
 {#snippet helpLink()}
@@ -89,6 +95,41 @@
           data-fr-opened="false"
           class="block w-full!"
         />
+      {:else if comparisons.length}
+        {#snippet logo(logo: string, chosen: boolean)}
+          <span class={['p-1 b-1 b-[#DDD] rounded-full', { 'b-primary bg-[#E8EDFF]': chosen }]}>
+            <AILogo {logo} size="sm" alt="" class="block" />
+          </span>
+        {/snippet}
+        <ul class="flex flex-col">
+          {#each comparisons as comp (comp.id)}
+            <li
+              class="py-1 px-2 -ms-2 rounded-md flex items-center hover:bg-[--blue-ecume-925-125]"
+            >
+              <Link href="/arene/{comp.id}" class="text-sm! text-black! flex! w-full">
+                <span class="max-w-[145px] shrink truncate">{comp.turns[0]?.user_msg.content}</span>
+                <span class="gap-1 ms-auto flex items-center">
+                  {#if comp.reveal_data}
+                    {@const { a, b } = comp.reveal_data}
+                    {@render logo(
+                      models.find((llm) => llm.id === a.llm_id)!.lab.logo,
+                      comp.reveal_data!.chosen_llm === 'a'
+                    )}/{@render logo(
+                      models.find((llm) => llm.id === b.llm_id)!.lab.logo,
+                      comp.reveal_data!.chosen_llm === 'b'
+                    )}
+                  {:else}
+                    <span class="p-1 b-1 b-primary b-dashed rounded-full"
+                      ><span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
+                    </span>/<span class="p-1 b-1 b-primary b-dashed rounded-full"
+                      ><span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
+                    </span>
+                  {/if}
+                </span>
+              </Link>
+            </li>
+          {/each}
+        </ul>
       {/if}
     </div>
   {/if}

@@ -1,21 +1,15 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import { Link } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
-  import { fetchAndSolveSilently } from '$lib/captcha.svelte'
   import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { TOSModal, ViewChat, ViewPrompt } from './components'
+  import { ViewChat } from '../components'
 
-  // Start solving Altcha challenge on page load (runs in background)
-  fetchAndSolveSilently()
-
-  const comparator = getComparison(undefined)
-  const showInitialPrompt = $derived(!comparator.comparisonId)
-
+  const id = $derived(page.params.id)
+  const comparator = $derived(getComparison(id))
   const revealed = $derived(comparator.status === 'revealed')
 </script>
-
-<TOSModal />
 
 <PageLayout
   seoTitle={m['seo.titles.arene']()}
@@ -38,13 +32,5 @@
     </div>
   {/snippet}
 
-  {#if showInitialPrompt}
-    <ViewPrompt
-      loading={comparator.loading}
-      promptError={comparator.promptError}
-      onPrompt={comparator.askFirst}
-    />
-  {:else}
-    <ViewChat comparisonId={comparator.comparisonId!} />
-  {/if}
+  <ViewChat comparisonId={comparator.comparisonId!} />
 </PageLayout>

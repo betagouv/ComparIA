@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Annotated, Literal, get_args
+from typing import TYPE_CHECKING, Annotated
 
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
@@ -14,13 +14,11 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
-from .utils import BaseDBModel, OptionalDatetime
+from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 if TYPE_CHECKING:
     from .comparison import Comparison
 
-BotPos = Literal["a", "b"]
-BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 LLMMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="llm_message.id", unique=True)
 ]

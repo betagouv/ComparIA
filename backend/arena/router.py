@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, AsyncGenerator
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
@@ -12,7 +12,9 @@ from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
     create_comparison,
+    get_user_comparisons,
     read_comparison,
+    set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
     update_turn,
@@ -35,6 +37,7 @@ from backend.arena.streaming import (
     stream_comparison_messages,
 )
 from backend.arena.web_search import search_web
+from backend.auth.dependencies import OptionalUser, RequiredAnomymous
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
@@ -105,37 +108,11 @@ async def run_guardrail(
     return verdict
 
 
-def get_comparison_id(id: UUID = Header(..., alias="X-Comparison-Id")) -> UUID:
-    """
-    Dependency to extract and validate comparison id from headers.
-
-    Args:
-        id: Comparison identifier from X-Comparison-Id header
-
-    Returns:
-        str: Validated comparison id
-
-    Raises:
-        HTTPException: If comparison id is missing or invalid
-    """
-    if not id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing comparison id"
-        )
-    return id
-
-
-def get_comparison_metadata(
-    id: UUID = Depends(get_comparison_id),
-) -> ComparisonMetadata:
+def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
     try:
-        metadata = retreive_comparison_metadata(id)
+        metadata = retreive_comparison_metadata(comparison_id)
     except Exception as e:
-        # FIXME raise different errors depending on problem
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Comparison '{id}' couldn't be found or parsed: {str(e)}",
-        )
+        return None
 
     # For any arena view, raise error if chat responses are not yet finished
     if metadata.is_streaming:
@@ -147,7 +124,24 @@ def get_comparison_metadata(
     return metadata
 
 
-ComparisonMetadataAnno = Annotated[ComparisonMetadata, Depends(get_comparison_metadata)]
+async def get_comparison(
+    comparison_id: UUID, user: OptionalUser, anonymous_user_hash: RequiredAnomymous
+) -> ComparisonRead:
+    """
+    Query specified Comparison.
+
+    Raises:
+        HTTPException: If comparison doesn't exists, is already streamin or
+        user id or anonymous user hash doesn't correspond to the Comparison.
+    """
+    get_comparison_metadata(comparison_id)  # check if is_streaming
+
+    return await read_comparison(
+        comparison_id, user.id if user else None, anonymous_user_hash
+    )
+
+
+ComparisonAnno = Annotated[ComparisonRead, Depends(get_comparison)]
 
 # FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
@@ -162,7 +156,12 @@ async def get_challenge() -> dict:
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
-async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
+async def add_first_text(
+    args: AddFirstTextBody,
+    user: OptionalUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
 
@@ -174,6 +173,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
 
     Args:
         args: Request body with prompt, mode, optional custom model selection, etc.
+        user: User if connected
+        anonymous_user_hash: anonymous user hash from cookie
         request: FastAPI request
 
     Returns:
@@ -220,6 +221,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     comparison = await create_comparison(
         ComparisonCreate(
             ip=get_ip(request),
+            anonymous_user_hash=anonymous_user_hash,
+            user_id=user.id if user else None,
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
             mode=args.mode,
@@ -239,7 +242,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         yield format_sse_event(
             {
                 "type": "init",
-                "comparison": ComparisonPublic.model_validate(comparison),
+                "comparison": ComparisonPublic.model_validate(
+                    comparison, context={"llms_data": llms_data.all}
+                ),
             }
         )
 
@@ -272,12 +277,12 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
 
 
 @router.post(
-    "/add_text",
+    "/add_text/{comparison_id}",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
 async def add_text(
+    comparison_: ComparisonAnno,
     args: AddTextBody,
-    metadata: ComparisonMetadataAnno,
     request: Request,
 ) -> StreamingResponse:
     """
@@ -289,8 +294,8 @@ async def add_text(
     3. Save the completed Turn if everything went well
 
     Args:
+        comparison: linked Comparison
         args: Request body with message content
-        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Returns:
@@ -300,7 +305,7 @@ async def add_text(
         HTTPException: If Comparison not found or rate limiting triggered
     """
     logger.info(
-        f"'/add_text' on comparison '{metadata.id}' called with: {args.model_dump_json()}",
+        f"'/add_text' on comparison '{comparison_.id}' called with: {args.model_dump_json()}",
         extra={"request": request},
     )
 
@@ -312,7 +317,7 @@ async def add_text(
     async def event_stream() -> AsyncGenerator[str]:
         # Add new turn and save it to db (to at least save the user prompt)
         comparison, turn = await add_comparison_turn(
-            metadata.id,
+            comparison_.id,
             args.message,
             guardrail=guardrail.as_record() if guardrail else None,
         )
@@ -338,9 +343,9 @@ async def add_text(
     return create_sse_response(event_stream())
 
 
-@router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/retry/{comparison_id}", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
-    metadata: ComparisonMetadataAnno,
+    comparison: ComparisonAnno,
     request: Request,
 ) -> StreamingResponse:
     """
@@ -350,7 +355,7 @@ async def retry(
     Reroll a failing LLM if possible.
 
     Args:
-        metadata: Comparison metadata stored in redis
+        comparison: linked Comparison
         request: FastAPI request for logging
 
     Returns:
@@ -359,9 +364,8 @@ async def retry(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    logger.info(f"'/retry' on comparison '{metadata.id}'", extra={"request": request})
+    logger.info(f"'/retry' on comparison '{comparison.id}'", extra={"request": request})
 
-    comparison = await read_comparison(metadata.id)
     turn = comparison.turns[-1]
 
     if turn.user_msg is None:
@@ -419,10 +423,10 @@ async def retry(
     return create_sse_response(event_stream(comparison))
 
 
-@router.post("/vote")
+@router.post("/vote/{comparison_id}")
 async def vote(
+    comparison: ComparisonAnno,
     vote: TurnVoteChoice | TurnVoteAnnotate,
-    metadata: ComparisonMetadataAnno,
     request: Request,
 ) -> None:
     """
@@ -431,19 +435,18 @@ async def vote(
     Vote annotations can be updated multiple times and relate to one LLM pos only.
 
     Args:
+        comparison: linked Comparison
         vote: Request body with vote data (choice or annotations)
-        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Raises:
         HTTPException: If Comparison not found or forbidden vote attempts.
     """
     logger.info(
-        f"'/vote' on comparison '{metadata.id}' called with: {vote.model_dump_json()}",
+        f"'/vote' on comparison '{comparison.id}' called with: {vote.model_dump_json()}",
         extra={"request": request},
     )
 
-    comparison = await read_comparison(metadata.id)
     turn = next((turn for turn in comparison.turns if turn.id == vote.turn_id), None)
 
     if not turn:
@@ -474,13 +477,16 @@ async def vote(
     await update_turn_vote(turn.id, vote)
 
 
-@router.get("/reveal")
-async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealData:
+@router.get("/reveal/{comparison_id}")
+async def reveal(
+    comparison: ComparisonAnno,
+    request: Request,
+) -> RevealData:
     """
     Get reveal data for a Comparison.
 
     Args:
-        metadata: Comparison metadata stored in redis
+        comparison: linked Comparison
         request: FastAPI request for logging
 
     Returns:
@@ -489,15 +495,46 @@ async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealDa
     Raises:
         HTTPException: If Comparison not found or no vote.
     """
-    logger.info(f"[REVEAL] comparison '{metadata.id}'", extra={"request": request})
-    comparison = await read_comparison(metadata.id)
-    last_turn = comparison.turns[-1]
+    logger.info(f"[REVEAL] comparison '{comparison.id}'", extra={"request": request})
 
+    if comparison.revealed:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Comparison has already been revealed.",
+        )
+
+    last_turn = comparison.turns[-1]
     if last_turn.choice is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Have to make a choice before reveal.",
         )
 
+    await set_comparison_revealed(comparison.id)
+    llms_data = (await get_llms_data()).all
+
     # Return computed reveal data with environmental impact
-    return await get_reveal_data(comparison)
+    return get_reveal_data(comparison, llms_data)
+
+
+@router.get("/comparison/list")
+async def get_comparisons(
+    user: OptionalUser,
+    request: Request,
+) -> list[ComparisonPublic]:
+    """
+    Get comparison list.
+
+    Args:
+        user: Authenticated user
+        request: FastAPI request for logging
+
+    Returns:
+        list: list of user's Comparison if logged in.
+    """
+    if not user:
+        return []
+
+    comparisons = await get_user_comparisons(user.id)
+
+    return comparisons

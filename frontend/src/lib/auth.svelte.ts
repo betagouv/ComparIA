@@ -33,9 +33,7 @@ export async function initAuth(): Promise<void> {
   }
 
   try {
-    const data = await api.request<{ user: AuthUser | null }>('/auth/me', {
-      credentials: 'include'
-    })
+    const data = await api.request<{ user: AuthUser | null }>('/auth/me')
     auth.user = data.user
   } catch {
     auth.user = null
@@ -52,7 +50,7 @@ export function openSignInModal(): void {
 
 export async function logout(): Promise<void> {
   try {
-    await api.request<void>('/auth/logout', { method: 'POST', credentials: 'include' })
+    await api.request<void>('/auth/logout', { method: 'POST' })
   } finally {
     auth.user = null
     if (auth.config?.access_policy === 'sign_in_required') {

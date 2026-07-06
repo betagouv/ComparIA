@@ -1,9 +1,20 @@
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
+import type {
+  Consumption as APIConsoData,
+  RevealData as APIRevealData,
+  ComparisonPublic,
+  LLMMessageCreate,
+  TurnPublic,
+  UserMessageRead,
+  LinkupSearchTextResult as WebSearchResults
+} from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
+
+export type { APIRevealData, WebSearchResults }
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -28,29 +39,23 @@ export type ModeInfos = {
 
 export type Bot = 'a' | 'b'
 
-export interface WebSearchResults {
-  type: 'text'
-  name: string
-  url: string
-  content: string
-  favicon: string
-}
-
-export interface UserMessage {
-  role: 'user'
-  content: string
-  user_content: string
-  web_search_results: WebSearchResults[] | null
-}
-export interface AssistantMessage {
-  role: 'assistant'
-  duration: number | null
+// Comparison overrides
+export type UserMessage = UserMessageRead
+export interface AssistantMessage extends LLMMessageCreate {
   generation_id: string
   content: string
-  reasoning_content: string | ''
 }
 export type AnyMessage = UserMessage | AssistantMessage
+export interface APIComparisonTurn extends TurnPublic {
+  user_msg: UserMessage
+  llm_msg_a: AssistantMessage | null
+  llm_msg_b: AssistantMessage | null
+}
+export interface APIComparison extends ComparisonPublic {
+  turns: APIComparisonTurn[]
+}
 
+// FIXME get from backend constant
 export const TURN_CHOICES = ['a_better', 'both_good', 'idk', 'both_bad', 'b_better'] as const
 export type TurnChoice = (typeof TURN_CHOICES)[number]
 
@@ -59,47 +64,23 @@ export type ComparisonStatus = ComparisonTurnStatus | 'revealed'
 
 export interface ComparisonTurnSide {
   status: ComparisonTurnStatus
-  llm_msg?: AssistantMessage
+  llm_msg: AssistantMessage | null
   keyword_annotations: APIPositivePref[] | APINegativePref[]
   custom_annotation: string
 }
-
-interface BaseComparisonTurn {
-  id: number
-  user_msg: UserMessage
-  choice?: TurnChoice
-}
-export interface APIComparisonTurn extends BaseComparisonTurn {
-  llm_msg_a?: AssistantMessage
-  keyword_annotations_a: APIPositivePref[] | APINegativePref[]
-  custom_annotation_a: string
-  llm_msg_b?: AssistantMessage
-  keyword_annotations_b: APIPositivePref[] | APINegativePref[]
-  custom_annotation_b: string
-}
-export interface ComparisonTurn extends BaseComparisonTurn {
+export interface ComparisonTurn extends Pick<APIComparisonTurn, 'id' | 'user_msg' | 'choice'> {
   a: ComparisonTurnSide
   b: ComparisonTurnSide
-
   status: ComparisonTurnStatus
 }
-
-interface BaseComparison {
-  id: string
-  mode: Mode
-  custom_models_selection: string[]
-  error?: string // ErrorDetails | None
-  reveal?: APIRevealData
-}
-export interface APIComparison extends BaseComparison {
-  turns: APIComparisonTurn[]
-}
-export interface Comparison extends BaseComparison {
+export interface Comparison extends Omit<APIComparison, 'turns' | 'error'> {
   turns: ComparisonTurn[]
+  error?: string
+  reveal_data: APIRevealData | null
 }
 
 // ANNOTATIONS
-
+// FIXME get from backend constant
 export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
 export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
 export const PREFS_EMOJIS: Record<APIReactionPref, string> = {
@@ -119,12 +100,12 @@ export interface VoteAnnotations {
   custom_annotation: string
 }
 export interface APIVoteChoice {
-  turn_id: number
+  turn_id: string
   choice: TurnChoice
 }
 
 export interface APIVoteAnnotate {
-  turn_id: number
+  turn_id: string
   pos: Bot
   keyword_annotations: APIPositivePref[] | APINegativePref[]
   custom_annotation: string
@@ -133,45 +114,6 @@ export interface APIVoteAnnotate {
 export type AnyAPIVote = APIVoteChoice | APIVoteAnnotate
 
 // REVEAL
-// Equivalence types for scaled impact comparisons
-export type EquivalenceType =
-  | 'paris_nyc_flights'
-  | 'baguette_production'
-  | 'one_year_tree_absortion'
-  | 'package_delivery'
-  | 'mango_import'
-  | 'pool_filing'
-
-interface APIEquivalence {
-  type: EquivalenceType
-  value: number
-}
-
-interface APIConsoData {
-  tokens: number
-  input_tokens?: number
-  total_tokens?: number
-  co2_kg: number
-  scaled_co2_kg: number
-  scaled_co2_t: number
-  energy_mwh: number
-  energy_kwh: number
-  // All meaningful scaled equivalences (frontend can cycle through them)
-  equivalences: APIEquivalence[]
-}
-
-interface APIRevealModelData {
-  llm_id: string
-  conso: APIConsoData
-}
-
-export interface APIRevealData {
-  b64: string
-  chosen_llm: Bot | null
-  a: APIRevealModelData
-  b: APIRevealModelData
-}
-
 export interface RevealModelData extends APIConsoData {
   id: string
   pos: Bot
@@ -202,7 +144,7 @@ export const modeInfos: ModeInfos[] = (
 
 // COMPARISON LOGIC
 
-type ComparisonsCtx = Record<string, Comparison>
+type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
@@ -230,6 +172,7 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
 function parseAPIComparison(comparison: APIComparison): Comparison {
   return {
     ...comparison,
+    error: comparison.error?.message,
     turns: comparison.turns.map(parseAPITurn)
   }
 }
@@ -247,9 +190,7 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
 }
 
 export function initComparisonsContext(data: APIComparison[]) {
-  const comparisons = $state(
-    Object.fromEntries(data.map((c) => [c.id.toString(), parseAPIComparison(c)]))
-  )
+  const comparisons = $state(data.map((c) => parseAPIComparison(c)))
   setComparisonsContext(comparisons)
 }
 
@@ -263,14 +204,16 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let loading = $state(false)
   let promptError = $state<string>()
 
-  const comparison = $derived(comparisonId_ ? comparisons[comparisonId_] : null)
+  const comparison = $derived(
+    comparisonId_ ? comparisons.find((c) => c.id === comparisonId_) : null
+  )
   const errorMsg = $derived(comparison?.error)
   const turn = $derived(comparison?.turns[comparison.turns.length - 1])
 
   const status = $derived.by(() => {
     if (errorMsg || promptError) return 'error'
     if (!comparison || !turn) return 'pending'
-    if (comparison.reveal) return 'revealed'
+    if (comparison.reveal_data) return 'revealed'
     return turn.status
   })
 
@@ -289,7 +232,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         receivedEvent = true
         if (event.type === 'init') {
           const id = event.comparison.id.toString()
-          comparisons[id] = parseAPIComparison(event.comparison)
+          comparisons.unshift(parseAPIComparison(event.comparison))
           comparisonId_ = id as Id
         } else {
           if (!comparison) throw new InternalError('No comparison to update')
@@ -385,19 +328,16 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async ask(text: string) {
       if (!comparison?.turns.every((turn) => !!turn.choice)) return
-      return await ask('/arena/add_text', { message: text })
+      return await ask(`/arena/add_text/${comparisonId_}`, { message: text })
     },
 
     async retry() {
-      return await ask('/arena/retry', {})
+      return await ask(`/arena/retry/${comparisonId_}`, {})
     },
 
     async vote(data: AnyAPIVote) {
-      await api.request<APIRevealData>('/arena/vote', {
+      await api.request<APIRevealData>(`/arena/vote/${comparisonId_}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(data)
       })
       const turn = comparison!.turns.find((t) => t.id === data.turn_id)!
@@ -411,11 +351,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async reveal() {
       if (!comparison) throw new InternalError('No comparison to reveal.')
-      const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
-        method: 'GET'
-      })
+      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`)
 
-      comparison.reveal = revealData
+      comparison.reveal_data = revealData
     }
   }
 }

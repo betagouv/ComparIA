@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
 from linkup import LinkupSearchTextResult
+from sqlmodel import col, select
 
 from backend.llms.data import get_llms_data
 from utils.database.models import (
@@ -11,6 +12,7 @@ from utils.database.models import (
     BotPos,
     Comparison,
     ComparisonCreate,
+    ComparisonPublic,
     ComparisonRead,
     ErrorDetails,
     LLMMessage,
@@ -59,9 +61,24 @@ async def create_comparison(comparison: ComparisonCreate) -> ComparisonRead:
     return ComparisonRead.model_validate(db_comparison)
 
 
-async def read_comparison(id: uuid.UUID) -> ComparisonRead:
+async def read_comparison(
+    comparison_id: uuid.UUID,
+    user_id: uuid.UUID | None,
+    anonymous_user_hash: str,
+) -> ComparisonRead:
     async with get_session() as session:
-        db_comparison = await _get_item(Comparison, id, session)
+        query = select(Comparison).where(Comparison.id == comparison_id)
+        if user_id:
+            query = query.where(Comparison.user_id == user_id)
+        else:
+            query = query.where(Comparison.anonymous_user_hash == anonymous_user_hash)
+
+        db_comparison = (await session.exec(query)).one()
+        if not db_comparison:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Comparison not found",
+            )
 
     return ComparisonRead.model_validate(db_comparison)
 
@@ -113,6 +130,16 @@ async def update_comparison_error(
         await session.commit()
 
 
+async def set_comparison_revealed(comparison_id: uuid.UUID) -> None:
+    async with get_session() as session:
+        db_comparison = await _get_item(Comparison, comparison_id, session)
+        now = datetime.now()
+        db_comparison.updated_at = now
+        db_comparison.revealed_at = now
+        db_comparison.revealed = True
+        await session.commit()
+
+
 async def add_comparison_turn(
     comparison_id: uuid.UUID,
     prompt: str,
@@ -138,7 +165,9 @@ async def add_comparison_turn(
         session.add(db_turn)
         await session.commit()
 
-    comparison = await read_comparison(comparison_id)
+    comparison = ComparisonRead.model_validate(
+        await _get_item(Comparison, comparison_id, session)
+    )
 
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
@@ -168,3 +197,21 @@ async def update_turn_vote(
         db_turn.sqlmodel_update(data)
         session.add(db_turn)
         await session.commit()
+
+
+async def get_user_comparisons(user_id: uuid.UUID) -> list[ComparisonPublic]:
+    async with get_session() as session:
+        query = (
+            select(Comparison)
+            .where(Comparison.user_id == user_id)
+            .order_by(col(Comparison.updated_at).desc())
+        )
+        db_comparisons = (await session.exec(query)).all()
+        llms_data = (await get_llms_data()).all
+
+        return [
+            ComparisonPublic.model_validate(
+                comparison, context={"llms_data": llms_data}
+            )
+            for comparison in db_comparisons
+        ]
