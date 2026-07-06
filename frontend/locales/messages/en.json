@@ -1985,6 +1985,10 @@
         "title": "From votes to a leaderboard"
     },
     "reveal": {
+        "context": {
+            "max": "Max context: {count}k tokens",
+            "used": "{count}<span {midProps}> tokens</span> <span {smallProps}>used</span>"
+        },
         "equivalent": {
             "co2": {
                 "label": "CO<sub>2</sub> emitted",
@@ -2030,6 +2034,7 @@
         "impacts": {
             "energy": {
                 "label": "energy consumed",
+                "short": "{count} mWh consumed",
                 "tooltip": "Measured in milliwatt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
             },
             "size": {

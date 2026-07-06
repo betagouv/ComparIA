@@ -1,13 +1,12 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button, Icon, Tooltip } from '$components/dsfr'
+  import { Badge, Button } from '$components/dsfr'
   import InfoCard from '$components/InfoCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealModelData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext, MODALITIES } from '$lib/models'
-  import { sanitize } from '$lib/utils/commons'
-  import { MiniCard } from '.'
+  import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext } from '$lib/models'
+  import { propsToAttrs } from '$lib/utils/commons'
 
   let { data, selected }: { data: RevealModelData; selected: boolean } = $props()
   const { models, commons } = getModelsContext()
@@ -19,10 +18,21 @@
     const cards = getModelCards(model, 'sm', commons)
     return [
       cards.size,
-      cards.arch,
-      cards.context,
-      cards.modalities,
-      cards.price,
+      {
+        ...cards.context,
+        content:
+          data.total_tokens === undefined
+            ? m['words.NA']()
+            : m['reveal.context.used']({
+                count: data.total_tokens,
+                midProps: propsToAttrs({ class: 'text-sm!' }),
+                smallProps: propsToAttrs({ class: 'text-xs!' })
+              }),
+        subContent: model.context_tokens
+          ? m['reveal.context.max']({ count: Math.floor(model.context_tokens / 1000) })
+          : m['words.NA'](),
+        desc: undefined
+      },
       cards.sovereignty,
       cards.rank,
       cards.energy
@@ -124,116 +134,23 @@
   <div class="gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 grid">
     {#each cards as card, i (i)}
       <InfoCard {...card} id="{model.id}-{card.id}" iconClass="text-info" size="sm">
-        {#if card.id === 'price'}
-          <div class="gap-2 flex w-full flex-wrap justify-between">
-            {#each card.contents as c, i (i)}
-              <div class="">
-                <p class="mb-0! font-bold text-lg! leading-[1.1]!">
-                  ${@html sanitize(c.content)}
-                </p>
-                <p class="text-xxs! text-grey mb-0!">
-                  {c.subContent}
-                </p>
-              </div>
-            {/each}
-          </div>
-        {:else if card.id === 'modalities'}
-          <div class="gap-2 flex flex-wrap justify-between">
-            {#each MODALITIES as mod (mod.id)}
-              {@const active = model.inputs.includes(mod.id)}
-              <div
-                class="text-xxs gap-1 flex flex-col items-center"
-                aria-hidden={active ? 'false' : 'true'}
-              >
-                <Icon
-                  icon={mod.icon}
-                  size="xs"
-                  block
-                  class={active ? 'text-primary' : 'text-[#B3B3B3]'}
-                />
-                <span class={{ 'text-[#B3B3B3]': !active }}>{mod.title}</span>
-              </div>
-            {/each}
-          </div>
-        {:else if card.id === 'energy'}
-          <div
-            class="ps-2 w-80% text-white font-bold flex h-full items-center justify-start"
-            style="background-color: var({ENERGY_CLASS_COLORS[
-              model.energy_class
-            ]}); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
-          >
-            {model.energy_class}
+        {#if card.id === 'energy'}
+          <div class="gap-1 flex flex-col">
+            <div
+              class="ps-2 w-80% text-white font-bold h-8 flex items-center justify-start"
+              style="background-color: var({ENERGY_CLASS_COLORS[
+                model.energy_class
+              ]}); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
+            >
+              {model.energy_class}
+            </div>
+            <p class="text-xxs! text-grey mb-0!">
+              {m['reveal.impacts.energy.short']({ count: conso.energy })}
+            </p>
           </div>
         {/if}
       </InfoCard>
     {/each}
-  </div>
-
-  <div class="mt-8 cg-border rounded-sm! bg-light-grey p-3 pb-11">
-    <h6 class="mb-5! text-base! mt-auto!">
-      {m['reveal.impacts.title']()}
-      <Tooltip id="impact-{data.pos}" text={m['reveal.impacts.tooltip']()} />
-    </h6>
-    <div class="flex">
-      <div class="md:basis-2/3 md:flex-row flex basis-1/2 flex-col">
-        <div class="md:w-full relative">
-          <MiniCard
-            id="params-{data.pos}"
-            value={model.params}
-            desc={m['reveal.impacts.size.label']()}
-            tooltip={m['models.openWeight.tooltips.params']()}
-            class="-mb-2 bg-white z-1 h-full "
-          >
-            {m['reveal.impacts.size.count']()}
-            {#if model.license.kind === 'proprietary'}
-              {m['reveal.impacts.size.estimated']()}
-            {/if}
-            {#if model.quantization === 'q8'}
-              {m['reveal.impacts.size.quantized']()}
-            {/if}
-          </MiniCard>
-          <div
-            class="cg-border rounded-sm! p-1 ps-3 pt-2 leading-normal absolute z-0 flex w-full bg-[--beige-gris-galet-950-100] text-[11px]"
-          >
-            <span class="text-[--beige-gris-galet-sun-407-moon-821]">
-              {model.badges.arch.text}
-            </span>
-            <Tooltip
-              id="{model.id}-arch-tooltip"
-              size="xs"
-              text={model.badges.arch.tooltip}
-              class="ms-auto"
-            />
-          </div>
-        </div>
-
-        <strong class="mb-1 md:mx-1 md:my-auto m-auto text-[20px]">×</strong>
-
-        <MiniCard
-          id="tokens-{data.pos}"
-          value={data.tokens}
-          units={m['reveal.impacts.tokens.tokens']()}
-          desc={m['reveal.impacts.tokens.label']()}
-          tooltip={m['reveal.impacts.tokens.tooltip']()}
-          class="md:w-full bg-white"
-        />
-      </div>
-
-      <div class="md:basis-1/3 flex basis-1/2 items-center">
-        <strong class="m-auto">≈</strong>
-
-        <MiniCard
-          id="energy-{data.pos}"
-          value={conso.energy}
-          units="mWh"
-          desc={m['reveal.impacts.energy.label']()}
-          icon="i-ri-flashlight-fill"
-          iconClass="text-info"
-          tooltip={m['reveal.impacts.energy.tooltip']()}
-          class="bg-white h-fit"
-        />
-      </div>
-    </div>
   </div>
 
   <!-- FIXME equivalences legacy? -->

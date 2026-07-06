@@ -10,9 +10,11 @@ import logging
 from typing import TypedDict
 from uuid import UUID
 
+from litellm.litellm_core_utils.token_counter import token_counter
+
 from backend.llms.data import get_llms_data
 from backend.llms.utils import Consumption, get_llm_consumption
-from utils.database.models import BotPos, ComparisonRead
+from utils.database.models import BotPos, ComparisonRead, TurnRead
 
 logger = logging.getLogger("languia")
 
@@ -27,6 +29,38 @@ class RevealData(TypedDict):
     chosen_llm: BotPos | None
     a: RevealModelData
     b: RevealModelData
+
+
+def count_input_tokens(
+    comparison: ComparisonRead, pos: BotPos, turns: list[TurnRead], model: str
+) -> int:
+    """
+    Estimate input tokens sent to the model across the revealed conversation.
+    Each generation receives the current user message and the previous messages
+    for that model side, so previous turns are counted again when they are resent.
+    """
+    input_tokens = 0
+    history: list[str | None] = []
+
+    if system_msg := getattr(comparison, f"system_msg_{pos}"):
+        history.append(system_msg)
+
+    for turn in turns:
+        current_messages = [*history, turn.user_msg.content]
+        input_tokens += token_counter(
+            text=[message for message in current_messages if message],
+            model=model,
+        )
+
+        history.append(turn.user_msg.content)
+        if llm_msg := getattr(turn, f"llm_msg_{pos}"):
+            history.extend(
+                message
+                for message in [llm_msg.reasoning_content, llm_msg.content]
+                if message
+            )
+
+    return input_tokens
 
 
 def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
@@ -95,10 +129,22 @@ async def get_reveal_data(comparison: ComparisonRead) -> RevealData:
         "a": get_llm_consumption(
             llms[comparison.llm_id_a],
             sum(turn.llm_msg_a.tokens for turn in comparison.turns),
+            count_input_tokens(
+                comparison,
+                "a",
+                comparison.turns,
+                str(comparison.llm_id_a),
+            ),
         ),
         "b": get_llm_consumption(
             llms[comparison.llm_id_b],
             sum(turn.llm_msg_b.tokens for turn in comparison.turns),
+            count_input_tokens(
+                comparison,
+                "b",
+                comparison.turns,
+                str(comparison.llm_id_b),
+            ),
         ),
     }
 
