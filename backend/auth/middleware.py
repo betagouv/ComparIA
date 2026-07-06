@@ -1,10 +1,11 @@
 import logging
+import secrets
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from backend.auth.services import get_user_from_token
-from backend.config import settings
+from backend.config import ANONYMOUS_SESSION_COOKIE, settings
 
 logger = logging.getLogger("languia")
 
@@ -28,3 +29,20 @@ async def auth_middleware(request: Request, call_next):
             return _AUTH_REQUIRED_RESPONSE
 
     return await call_next(request)
+
+
+async def anonymous_middleware(request: Request, call_next):
+    response = await call_next(request)
+
+    token = request.cookies.get(ANONYMOUS_SESSION_COOKIE)
+    if not token:
+        response.set_cookie(
+            ANONYMOUS_SESSION_COOKIE,
+            secrets.token_urlsafe(32),
+            httponly=True,
+            secure=not settings.LANGUIA_DEBUG,
+            samesite="lax",
+            max_age=settings.ANONYMOUS_SESSION_LENGTH_DAYS * 86400,
+        )
+
+    return response
