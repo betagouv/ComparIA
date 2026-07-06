@@ -365,15 +365,15 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async ask(text: string) {
       if (!comparison?.turns.every((turn) => !!turn.choice)) return
-      return await ask('/arena/add_text', { message: text })
+      return await ask(`/arena/add_text/${comparisonId_}`, { message: text })
     },
 
     async retry() {
-      return await ask('/arena/retry', {})
+      return await ask(`/arena/retry/${comparisonId_}`, {})
     },
 
     async vote(data: AnyAPIVote) {
-      await api.request<APIRevealData>('/arena/vote', {
+      await api.request<APIRevealData>(`/arena/vote/${comparisonId_}`, {
         method: 'POST',
         body: JSON.stringify(data)
       })
@@ -388,7 +388,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async reveal() {
       if (!comparison) throw new InternalError('No comparison to reveal.')
-      const revealData = await api.request<APIRevealData>(`/arena/reveal`)
+      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`)
 
       comparison.reveal_data = revealData
     }
