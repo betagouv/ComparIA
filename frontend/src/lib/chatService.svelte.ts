@@ -1,6 +1,8 @@
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
 import type {
+  Consumption as APIConsoData,
+  RevealData as APIRevealData,
   ComparisonPublic,
   LLMMessageCreate,
   TurnPublic,
@@ -12,7 +14,7 @@ import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
 
-export type { WebSearchResults }
+export type { APIRevealData, WebSearchResults }
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -74,7 +76,7 @@ export interface ComparisonTurn extends Pick<APIComparisonTurn, 'id' | 'user_msg
 export interface Comparison extends Omit<APIComparison, 'turns' | 'error'> {
   turns: ComparisonTurn[]
   error?: string
-  reveal_data?: APIRevealData
+  reveal_data: APIRevealData | null
 }
 
 // ANNOTATIONS
@@ -112,45 +114,6 @@ export interface APIVoteAnnotate {
 export type AnyAPIVote = APIVoteChoice | APIVoteAnnotate
 
 // REVEAL
-// Equivalence types for scaled impact comparisons
-export type EquivalenceType =
-  | 'paris_nyc_flights'
-  | 'baguette_production'
-  | 'one_year_tree_absortion'
-  | 'package_delivery'
-  | 'mango_import'
-  | 'pool_filing'
-
-interface APIEquivalence {
-  type: EquivalenceType
-  value: number
-}
-
-interface APIConsoData {
-  tokens: number
-  input_tokens?: number
-  total_tokens?: number
-  co2_kg: number
-  scaled_co2_kg: number
-  scaled_co2_t: number
-  energy_mwh: number
-  energy_kwh: number
-  // All meaningful scaled equivalences (frontend can cycle through them)
-  equivalences: APIEquivalence[]
-}
-
-interface APIRevealModelData {
-  llm_id: string
-  conso: APIConsoData
-}
-
-export interface APIRevealData {
-  b64: string
-  chosen_llm: Bot | null
-  a: APIRevealModelData
-  b: APIRevealModelData
-}
-
 export interface RevealModelData extends APIConsoData {
   id: string
   pos: Bot
