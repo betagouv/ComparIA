@@ -114,10 +114,14 @@ class ComparisonPublic(SQLModel):
     custom_models_selection: CustomModelsSelection
     error: ErrorDetails | None
     turns: list[TurnPublic]
-    llm_id_a: uuid.UUID | None
-    llm_id_b: uuid.UUID | None
     revealed: bool
     reveal_data: RevealData | None = None
+
+    # Used to build reveal_data, FIXME maybe compute reveal_data outside and pass it in ctx
+    llm_id_a: uuid.UUID | None
+    llm_id_b: uuid.UUID | None
+    system_msg_a: str | None = None
+    system_msg_b: str | None = None
 
     @model_validator(mode="after")
     def inject_reveal_data(self, info: ValidationInfo) -> Self:

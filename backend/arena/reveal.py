@@ -35,7 +35,7 @@ class RevealData(TypedDict):
 
 
 def count_input_tokens(
-    comparison: ComparisonRead, pos: BotPos, turns: list["TurnRead"], model: str
+    comparison: "ComparisonRead", pos: BotPos, turns: list["TurnRead"], model: str
 ) -> int:
     """
     Estimate input tokens sent to the model across the revealed conversation.
