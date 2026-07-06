@@ -130,6 +130,16 @@ async def update_comparison_error(
         await session.commit()
 
 
+async def set_comparison_revealed(comparison_id: uuid.UUID) -> None:
+    async with get_session() as session:
+        db_comparison = await _get_item(Comparison, comparison_id, session)
+        now = datetime.now()
+        db_comparison.updated_at = now
+        db_comparison.revealed_at = now
+        db_comparison.revealed = True
+        await session.commit()
+
+
 async def add_comparison_turn(
     comparison_id: uuid.UUID,
     prompt: str,
