@@ -11,10 +11,12 @@ export interface ComparisonPublic {
   custom_models_selection: string[] | null;
   error: ErrorDetails | null;
   turns: TurnPublic[];
+  revealed: boolean;
+  reveal_data?: RevealData | null;
   llm_id_a: string | null;
   llm_id_b: string | null;
-  revealed: boolean;
-  reveal_data: RevealData | null;
+  system_msg_a?: string | null;
+  system_msg_b?: string | null;
 }
 export interface ErrorDetails {
   message: string;
@@ -93,6 +95,8 @@ export interface RevealModelData {
 }
 export interface Consumption {
   tokens: number;
+  input_tokens: number;
+  total_tokens: number;
   co2_kg: number;
   energy_mwh: number;
   energy_kwh: number;
