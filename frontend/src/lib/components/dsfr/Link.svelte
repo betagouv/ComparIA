@@ -34,7 +34,7 @@
           // FIXME a11y mailto
           title: m['a11y.externalLink']({ text })
         }
-      : { target: '_self' }
+      : {}
   )
 
   const btnClasses = $derived([
