@@ -61,6 +61,8 @@ class ComparisonBase(BaseDBModel):
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
+    revealed: bool = False
+    revealed_at: OptionalDatetime
 
     # a
     llm_id_a: LLMDataId
