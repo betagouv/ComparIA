@@ -6,6 +6,7 @@
   import { auth, logout } from '$lib/auth.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getModelsContext } from '$lib/models'
   import type { ClassValue, HTMLAnchorAttributes } from 'svelte/elements'
   import { LanguageSelector, VoteGauge } from '.'
 
@@ -15,6 +16,7 @@
   let expanded = $state(true)
 
   const comparisons = getComparisonsContext()
+  const { models } = getModelsContext()
 </script>
 
 {#snippet helpLink()}
@@ -107,7 +109,22 @@
               <Link href="/arene/{comp.id}" class="text-sm! text-black! flex! w-full">
                 <span class="max-w-[145px] shrink truncate">{comp.turns[0]?.user_msg.content}</span>
                 <span class="gap-1 ms-auto flex items-center">
-                  {@render logo('google-color', false)}/{@render logo('deepseek-color', true)}
+                  {#if comp.reveal_data}
+                    {@const { a, b } = comp.reveal_data}
+                    {@render logo(
+                      models.find((llm) => llm.id === a.llm_id)!.lab.logo,
+                      comp.reveal_data!.chosen_llm === 'a'
+                    )}/{@render logo(
+                      models.find((llm) => llm.id === b.llm_id)!.lab.logo,
+                      comp.reveal_data!.chosen_llm === 'b'
+                    )}
+                  {:else}
+                    <span class="p-1 b-1 b-primary b-dashed rounded-full"
+                      ><span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
+                    </span>/<span class="p-1 b-1 b-primary b-dashed rounded-full"
+                      ><span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
+                    </span>
+                  {/if}
                 </span>
               </Link>
             </li>
