@@ -1,10 +1,10 @@
 import { api } from '$lib/fastapi-client'
+import type { LLMList } from '$lib/generated/backend'
 import type { VotesData } from '$lib/global.svelte'
-import type { APIData } from '$lib/models'
 
 export async function load() {
-  const votes = await api.request<VotesData>('/counter', { method: 'GET' })
-  const data = await api.request<APIData>('/models/', { method: 'GET' })
+  const votes = await api.request<VotesData>('/counter')
+  const data = await api.request<LLMList>('/models/')
 
   return { data, votes }
 }
