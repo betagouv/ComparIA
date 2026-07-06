@@ -120,7 +120,8 @@ def get_llm_impact(
 
     Args:
         llm: APILLMDataBase with 'params' and optional 'active_params' (MoE)
-        token_count: Total output tokens generated
+        tokens: Total output tokens generated
+        input_tokens: Total input tokens sent to the model
         request_latency: Time taken for inference (optional, for more accurate calculations)
 
     Returns:
@@ -183,6 +184,8 @@ def get_llm_impact(
 class Consumption(TypedDict):
     # Token usage
     tokens: int
+    input_tokens: int
+    total_tokens: int
     # Environmental metrics (CO2)
     co2_kg: int | float
     # Energy metrics
@@ -199,6 +202,7 @@ class Consumption(TypedDict):
 def get_llm_consumption(
     llm: "APILLMDataBase",
     tokens: int,
+    input_tokens: int = 0,
     request_latency: float | None = None,
 ) -> Consumption:
     """
@@ -223,6 +227,8 @@ def get_llm_consumption(
 
     return {
         "tokens": tokens,
+        "input_tokens": input_tokens,
+        "total_tokens": input_tokens + tokens,
         "co2_kg": co2_kg,
         "energy_mwh": kwh * 1000 * 1000,
         "energy_kwh": kwh,

@@ -1766,6 +1766,7 @@
                 "archived": {
                     "checkedLabel": "Visibles",
                     "help": "Par défaut, seuls les modèles actifs dans le comparateur sont visibles.",
+                    "legend": "Archivés",
                     "label": "Modèles archivés",
                     "uncheckedLabel": "Non visibles"
                 },
@@ -2335,6 +2336,10 @@
         "title": "Des votes… au classement des modèles"
     },
     "reveal": {
+        "context": {
+            "max": "Contexte max : {count}k jetons",
+            "used": "{count}<span {midProps}> jetons</span> <span {smallProps}>utilisés</span>"
+        },
         "equivalent": {
             "co2": {
                 "label": "CO<sub>2</sub> émis",
@@ -2380,6 +2385,7 @@
         "impacts": {
             "energy": {
                 "label": "énergie conso.",
+                "short": "{count} mWh consommés",
                 "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "size": {
