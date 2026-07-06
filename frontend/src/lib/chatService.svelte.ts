@@ -375,9 +375,6 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     async vote(data: AnyAPIVote) {
       await api.request<APIRevealData>('/arena/vote', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(data)
       })
       const turn = comparison!.turns.find((t) => t.id === data.turn_id)!
@@ -391,9 +388,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async reveal() {
       if (!comparison) throw new InternalError('No comparison to reveal.')
-      const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
-        method: 'GET'
-      })
+      const revealData = await api.request<APIRevealData>(`/arena/reveal`)
 
       comparison.reveal_data = revealData
     }

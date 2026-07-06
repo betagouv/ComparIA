@@ -5,10 +5,7 @@ export const ssr = false // auth error on server side
 
 export const load: LayoutLoad = async () => {
   // FIXME types
-  const comparisons = await api.request<unknown>('/arena/comparison/list', {
-    credentials: 'include',
-    method: 'GET'
-  })
+  const comparisons = await api.request<unknown>('/arena/comparison/list')
 
   return {
     comparisons
