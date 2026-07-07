@@ -11,6 +11,7 @@
     turn,
     disabled,
     error,
+    autoScroll,
     onVote,
     onRetry,
     children
@@ -18,6 +19,7 @@
     turn: ComparisonTurn
     disabled: boolean
     error?: string
+    autoScroll?: boolean
     onVote: (data: AnyAPIVote) => void
     onRetry: () => void
     children: Snippet<[]> | undefined
@@ -33,7 +35,7 @@
   <div
     class="grouped-responses flex flex-col"
     class:generating={turn.status === 'pending' || turn.status === 'generating'}
-    {@attach scrollTo}
+    {@attach autoScroll && scrollTo}
   >
     {#if turn.status === 'pending'}
       <Pending message={m['chatbot.loading']()} class="m-auto" />
