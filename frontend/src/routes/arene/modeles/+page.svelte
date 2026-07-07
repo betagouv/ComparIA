@@ -215,22 +215,22 @@
             {/snippet}
           </CheckboxGroup>
         </Dropdown>
-      </div>
 
-      {#if filterCount > 0}
-        <div class="gap-3 md:flex-row md:items-center lg:shrink-0 flex flex-col">
-          <Button
-            icon="delete-line"
-            size="sm"
-            variant="tertiary"
-            iconOnly
-            title={m['models.list.filters.reset']()}
-            aria-label={m['models.list.filters.reset']()}
-            onclick={resetFilters}
-            class="w-fit!"
-          />
-        </div>
-      {/if}
+        {#if filterCount > 0}
+          <div class="gap-3 md:flex-row md:items-center lg:shrink-0 flex flex-col">
+            <Button
+              icon="delete-line"
+              size="sm"
+              variant="tertiary"
+              iconOnly
+              title={m['models.list.filters.reset']()}
+              aria-label={m['models.list.filters.reset']()}
+              onclick={resetFilters}
+              class="w-fit!"
+            />
+          </div>
+        {/if}
+      </div>
     </form>
   </aside>
 
