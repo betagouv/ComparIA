@@ -63,6 +63,11 @@
         value: 'archived',
         label: m['words.archived'](),
         count: models.filter((llm) => llm.status === 'archived').length
+      },
+      {
+        value: 'new',
+        label: m['words.new'](),
+        count: models.filter((llm) => llm.new).length
       }
     ]
   }
@@ -89,7 +94,10 @@
         const sizeMatch = sizes.length === 0 || sizes.includes(model.size_class)
         const orgMatch = editors.length === 0 || editors.includes(model.lab.name)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license.name)
-        const statusMatch = statuses.length === 0 || statuses.includes(model.status)
+        const statusMatch =
+          statuses.length === 0 ||
+          statuses.includes(model.status) ||
+          (statuses.includes('new') && model.new)
         return searchMatch && sizeMatch && orgMatch && licenseMatch && statusMatch
       })
       .sort((a, b) => {
