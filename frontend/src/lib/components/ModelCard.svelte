@@ -75,7 +75,7 @@
           {#if model.status === 'archived' || model.new}
             <li
               class={[
-                'px-4! py-1! font-bold absolute bottom-[1.75rem] rounded-[3.75rem] text-[14px]',
+                'px-4! py-1! left-4 font-bold absolute bottom-[1.75rem] rounded-[3.75rem] text-[14px]',
                 model.new ? 'bg-primary text-white' : 'text-dark-grey bg-[--grey-900-175]'
               ]}
             >
