@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, Icon, Tooltip } from '$components/dsfr'
-  import Footer from '$components/Footer.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
@@ -70,7 +69,6 @@
 
   {#if comparator.status === 'revealed' && comparator.comparison.reveal_data}
     <RevealArea data={comparator.comparison.reveal_data} />
-    <Footer />
   {:else}
     <div
       bind:this={footer}
