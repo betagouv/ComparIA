@@ -1,22 +1,16 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import AILogo from '$components/AILogo.svelte'
   import { Button, Icon, Link } from '$components/dsfr'
   import { auth, logout } from '$lib/auth.svelte'
-  import { getComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext } from '$lib/models'
-  import type { ClassValue, HTMLAnchorAttributes } from 'svelte/elements'
-  import { LanguageSelector, VoteGauge } from '.'
+  import type { HTMLAnchorAttributes } from 'svelte/elements'
+  import { History, LanguageSelector, VoteGauge } from '.'
 
   type NavLink = { href: string; label: string; icon: string }
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   let expanded = $state(true)
-
-  const comparisons = getComparisonsContext()
-  const { models } = getModelsContext()
 </script>
 
 {#snippet helpLink()}
@@ -76,60 +70,30 @@
   </div>
 {/snippet}
 
-{#snippet discussions(classes?: ClassValue)}
+{#snippet discussions(mode: 'desktop' | 'mobile' = 'desktop')}
   {#if !isAdmin}
-    <div class={['gap-4 flex flex-col', { 'lg:hidden': !expanded }, classes]}>
-      <p class="text-sm mb-0! text-grey">
-        {m['auth.discussions.title']()}
-      </p>
-      {#if !auth.user}
-        <p class="text-sm mb-0! text-black">
-          {m['auth.discussions.prompt']()}
+    <div class={['gap-2 lg:min-h-0 flex flex-col', { 'lg:hidden': !expanded }]}>
+      <div class="px-4">
+        <p class="text-sm! mb-0! text-black font-bold">
+          {m['auth.discussions.title']()}
         </p>
-        <Button
-          variant="tertiary"
-          text={m['auth.discussions.signIn']()}
-          icon="user-line"
-          size="sm"
-          aria-controls="fr-modal-signin"
-          data-fr-opened="false"
-          class="block w-full!"
-        />
-      {:else if comparisons.length}
-        {#snippet logo(logo: string, chosen: boolean)}
-          <span class={['p-1 b-1 b-[#DDD] rounded-full', { 'b-primary bg-[#E8EDFF]': chosen }]}>
-            <AILogo {logo} size="sm" alt="" class="block" />
-          </span>
-        {/snippet}
-        <ul class="flex flex-col">
-          {#each comparisons as comp (comp.id)}
-            <li
-              class="py-1 px-2 -ms-2 rounded-md flex items-center hover:bg-[--blue-ecume-925-125]"
-            >
-              <Link href="/arene/{comp.id}" class="text-sm! text-black! flex! w-full">
-                <span class="max-w-[145px] shrink truncate">{comp.turns[0]?.user_msg.content}</span>
-                <span class="gap-1 ms-auto flex items-center">
-                  {#if comp.reveal_data}
-                    {@const { a, b } = comp.reveal_data}
-                    {@render logo(
-                      models.find((llm) => llm.id === a.llm_id)!.lab.logo,
-                      comp.reveal_data!.chosen_llm === 'a'
-                    )}/{@render logo(
-                      models.find((llm) => llm.id === b.llm_id)!.lab.logo,
-                      comp.reveal_data!.chosen_llm === 'b'
-                    )}
-                  {:else}
-                    <span class="p-1 b-1 b-primary b-dashed rounded-full"
-                      ><span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
-                    </span>/<span class="p-1 b-1 b-primary b-dashed rounded-full"
-                      ><span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
-                    </span>
-                  {/if}
-                </span>
-              </Link>
-            </li>
-          {/each}
-        </ul>
+        {#if !auth.user}
+          <p class="text-sm mb-0! text-black">
+            {m['auth.discussions.prompt']()}
+          </p>
+          <Button
+            variant="tertiary"
+            text={m['auth.discussions.signIn']()}
+            icon="user-line"
+            size="sm"
+            aria-controls="fr-modal-signin"
+            data-fr-opened="false"
+            class="block w-full!"
+          />
+        {/if}
+      </div>
+      {#if auth.user}
+        <History {mode} class="lg:overflow-y-auto" />
       {/if}
     </div>
   {/if}
@@ -175,14 +139,14 @@
 
     <!-- {@render helpLink()} -->
 
-    <VoteGauge id="vote-gauge" class={{ hidden: !expanded }} />
+    <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
   </div>
 {/snippet}
 
 <header
   id="main-header"
   class={[
-    'fr-header shadow-md lg:shadow-none! lg:bg-very-light-primary! lg:b-e-[--grey-925-125] lg:b-e-1 lg:max-w-[250px] relative z-1 flex min-h-full! flex-col filter-none!',
+    'fr-header lg:max-h-screen shadow-md lg:shadow-none! lg:bg-very-light-primary! lg:b-e-[--grey-925-125] lg:b-e-1 lg:max-w-[250px] flex min-h-full! flex-col filter-none!',
     expanded ? 'lg:max-w-[250px]' : 'lg:max-w-[60px]'
   ]}
 >
@@ -217,7 +181,7 @@
     </div>
   </div>
 
-  <div class="lg:flex hidden grow flex-col">
+  <div class="lg:flex min-h-0 hidden flex-auto flex-col">
     <nav class="py-4">
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
@@ -232,7 +196,7 @@
       </ul>
     </nav>
 
-    {@render discussions('mt-3 px-4')}
+    {@render discussions()}
 
     <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
       {@render footer()}
@@ -244,8 +208,8 @@
     id="fr-modal-menu"
     class="fr-modal fr-header__menu lg:hidden!"
   >
-    <div class="fr-container pb-0! flex flex-col">
-      <div class="flex items-center justify-between">
+    <div class="fr-container p-0! gap-4 flex flex-col">
+      <div class="p-2 flex items-center justify-between border-b border-[--grey-925-125]">
         {@render logo()}
         <Button
           variant="tertiary-no-outline"
@@ -255,28 +219,25 @@
           class="fr-btn--close"
         />
       </div>
-      <div class="fr-header__menu-links"></div>
 
-      <nav class="fr-nav" data-fr-js-navigation="true">
+      <nav class="fr-nav border-b border-[--grey-925-125]">
         <ul class="fr-nav__list fr-container">
           {#each navLinks as link (link.href)}
-            <li class="fr-nav__item" data-fr-js-navigation-item="true">
+            <li class="fr-nav__item">
               {@render renderLink({
                 ...link,
-                target: '_self',
                 class: 'fr-nav__link text-black! font-normal!',
                 'data-fr-js-modal-button': 'true',
-                'aria-controls': 'modal-header__menu'
+                'aria-controls': 'fr-modal-menu'
               })}
             </li>
           {/each}
         </ul>
       </nav>
 
-      {@render discussions('b-t-[--grey-925-125] b-t-1 py-4 gap-2!')}
+      {@render discussions('mobile')}
 
-      <div class="fr-header__menu-links mt-auto"></div>
-      <div class="bottom-0 pb-5 pt-2 bg-white sticky">
+      <div class="bottom-0 pb-5 p-4 bg-white sticky mt-auto border-t border-[--grey-925-125]">
         {@render footer('mobile')}
       </div>
     </div>
