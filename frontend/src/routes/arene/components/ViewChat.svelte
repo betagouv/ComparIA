@@ -53,6 +53,7 @@
         error={comparator.error}
         onVote={comparator.vote}
         onRetry={comparator.retry}
+        autoScroll={!comparator.comparison.revealed}
       >
         {#if idx === 0}
           <div
@@ -68,7 +69,9 @@
   </div>
 
   {#if comparator.status === 'revealed' && comparator.comparison.reveal_data}
-    <RevealArea data={comparator.comparison.reveal_data} />
+    {#key comparisonId}
+      <RevealArea data={comparator.comparison.reveal_data} />
+    {/key}
   {:else}
     <div
       bind:this={footer}
@@ -118,7 +121,7 @@
   :global(#chat-area .grouped-messages) {
     :global(.grouped-responses) {
       max-height: calc(100vh - 2rem);
-      scroll-margin-top: 2rem;
+      scroll-margin-top: calc(var(--second-header-size) + 2rem);
       min-height: 400px;
 
       @media (min-width: 48em) and (min-height: 48em) {
