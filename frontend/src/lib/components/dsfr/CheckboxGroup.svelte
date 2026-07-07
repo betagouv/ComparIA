@@ -8,7 +8,6 @@
     options,
     value = $bindable([]),
     row = false,
-    normalizeAllSelection = true,
     legendClass = '',
     labelClass = '',
     legendSlot,
@@ -19,7 +18,6 @@
     options: Option[]
     value: string[]
     row?: boolean
-    normalizeAllSelection?: boolean
     legendClass?: ClassValue
     labelClass?: ClassValue
     legendSlot?: Snippet<[{ legend: string }]>
@@ -29,18 +27,15 @@
   const all = $derived(options.find((opt) => opt.value === 'all'))
   const opts = $derived(options.filter((opt) => opt.value !== 'all'))
 
-  const allSelected = $derived(
-    value.length === options.length || (normalizeAllSelection && value.length === 0)
-  )
+  const allSelected = $derived(value.length === opts.length || value.length === 0)
   const ariaAllSelected = $derived(allSelected ? 'true' : value.length === 0 ? 'false' : 'mixed')
 
   function toggleAll() {
-    if (allSelected) value = []
-    else value = options.map((opt) => opt.value)
+    value = []
   }
 
   $effect(() => {
-    if (normalizeAllSelection && allSelected) value = []
+    if (all && allSelected) toggleAll()
   })
 </script>
 
