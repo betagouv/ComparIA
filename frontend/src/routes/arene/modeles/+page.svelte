@@ -49,19 +49,25 @@
     ]
   }
 
-  const archivedFilter = {
-    id: 'archived',
-    legend: m['models.list.filters.archived.legend'](),
+  const statusesFilter = {
+    id: 'statuses',
+    legend: m['models.list.filters.statuses.legend'](),
     options: [
+      { value: 'all', label: m['models.list.filters.statuses.all'](), count: models.length },
       {
-        value: 'no',
-        label: m['words.no'](),
+        value: 'enabled',
+        label: m['words.available'](),
         count: models.filter((llm) => llm.status === 'enabled').length
       },
       {
-        value: 'yes',
-        label: m['words.yes'](),
+        value: 'archived',
+        label: m['words.archived'](),
         count: models.filter((llm) => llm.status === 'archived').length
+      },
+      {
+        value: 'new',
+        label: m['words.new'](),
+        count: models.filter((llm) => llm.new).length
       }
     ]
   }
@@ -76,7 +82,7 @@
   let editors = $state<string[]>([])
   let sizes = $state<SizeClasses[]>([])
   let licenses = $state<string[]>([])
-  let archived = $state<string[]>(['no'])
+  let statuses = $state<string[]>(['enabled'])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let search = $state('')
 
@@ -88,11 +94,11 @@
         const sizeMatch = sizes.length === 0 || sizes.includes(model.size_class)
         const orgMatch = editors.length === 0 || editors.includes(model.lab.name)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license.name)
-        const archivedMatch =
-          archived.length === 0 ||
-          (archived.includes('no') && model.status === 'enabled') ||
-          (archived.includes('yes') && model.status === 'archived')
-        return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
+        const statusMatch =
+          statuses.length === 0 ||
+          statuses.includes(model.status) ||
+          (statuses.includes('new') && model.new)
+        return searchMatch && sizeMatch && orgMatch && licenseMatch && statusMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
@@ -120,7 +126,7 @@
   })
 
   const allFilter = $derived([editors, sizes, licenses])
-  const archivedIsDefault = $derived(archived.length === 1 && archived[0] === 'no')
+  const archivedIsDefault = $derived(statuses.length === 1 && statuses[0] === 'enabled')
   const filterCount = $derived(
     allFilter.reduce((acc, f) => acc + (f.length ? 1 : 0), 0) + (archivedIsDefault ? 0 : 1)
   )
@@ -130,11 +136,7 @@
     editors.length = 0
     sizes.length = 0
     licenses.length = 0
-    archived.splice(0, archived.length, 'no')
-  }
-
-  function getArchivedCount(value: string) {
-    return archivedFilter.options.find((option) => option.value === value)?.count ?? 0
+    statuses = ['enabled']
   }
 
   let selectedModel = $state<string>(page.url.hash.replace('#', ''))
@@ -208,38 +210,35 @@
           </CheckboxGroup>
         </Dropdown>
 
-        <Dropdown id="dropdown-archived" label={archivedFilter.legend} variant="light">
+        <Dropdown id="dropdown-statuses" label={statusesFilter.legend} variant="light">
           <CheckboxGroup
-            {...archivedFilter}
-            bind:value={archived}
+            {...statusesFilter}
+            bind:value={statuses}
             legendClass="sr-only"
-            normalizeAllSelection={false}
             class="mb-0! md:w-max"
           >
             {#snippet labelSlot({ option })}
               <div class="me-4">{option.label}</div>
-              <div class="text-sm ms-auto text-[--grey-625-425]">
-                {getArchivedCount(option.value)}
-              </div>
+              <div class="text-sm ms-auto text-[--grey-625-425]">{option.count}</div>
             {/snippet}
           </CheckboxGroup>
         </Dropdown>
-      </div>
 
-      {#if filterCount > 0}
-        <div class="gap-3 md:flex-row md:items-center lg:shrink-0 flex flex-col">
-          <Button
-            icon="delete-line"
-            size="sm"
-            variant="tertiary"
-            iconOnly
-            title={m['models.list.filters.reset']()}
-            aria-label={m['models.list.filters.reset']()}
-            onclick={resetFilters}
-            class="w-fit!"
-          />
-        </div>
-      {/if}
+        {#if filterCount > 0}
+          <div class="gap-3 md:flex-row md:items-center lg:shrink-0 flex flex-col">
+            <Button
+              icon="delete-line"
+              size="sm"
+              variant="tertiary"
+              iconOnly
+              title={m['models.list.filters.reset']()}
+              aria-label={m['models.list.filters.reset']()}
+              onclick={resetFilters}
+              class="w-fit!"
+            />
+          </div>
+        {/if}
+      </div>
     </form>
   </aside>
 
