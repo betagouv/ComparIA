@@ -1794,6 +1794,10 @@
                         "XS": "< à 7 milliards"
                     },
                     "legend": "Taille (paramètres)"
+                },
+                "statuses": {
+                    "all": "Tous les status",
+                    "legend": "Status"
                 }
             },
             "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
@@ -2488,6 +2492,7 @@
         "activated": "Activé",
         "allowed": "autorisé",
         "archived": "Archivé",
+        "available": "Disponible",
         "back": "Retour",
         "close": "Fermer",
         "deactivated": "Désactivé",
