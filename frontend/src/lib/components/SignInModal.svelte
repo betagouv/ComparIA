@@ -1,8 +1,11 @@
 <script lang="ts">
   import { Modal } from '$components/dsfr'
+  import { getComparisonsContext, updateComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import SignInForm from './SignInForm.svelte'
+
+  const comparisons = getComparisonsContext()
 
   function closeModal() {
     const el = document.getElementById('fr-modal-signin')
@@ -10,6 +13,11 @@
       // @ts-expect-error - DSFR is globally available
       window.dsfr(el).modal.conceal()
     }
+  }
+
+  async function onSuccess() {
+    closeModal()
+    updateComparisonsContext(comparisons)
   }
 </script>
 
@@ -21,7 +29,7 @@
 >
   <div class="lg:flex -mt-12">
     <!-- Left column: form -->
-    <SignInForm onSuccess={closeModal} class="min-w-[350px] flex-auto" />
+    <SignInForm {onSuccess} class="min-w-[350px] flex-auto" />
 
     <!-- Right column: info -->
     <div class="px-8 py-10 bg-light-grey lg:pt-22 flex-initial">
