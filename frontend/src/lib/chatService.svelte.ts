@@ -76,7 +76,7 @@ export interface ComparisonTurn extends Pick<APIComparisonTurn, 'id' | 'user_msg
 export interface Comparison extends Omit<APIComparison, 'turns' | 'error'> {
   turns: ComparisonTurn[]
   error?: string
-  reveal_data: APIRevealData | null
+  reveal_data?: APIRevealData | null
 }
 
 // ANNOTATIONS
@@ -189,8 +189,13 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export function initComparisonsContext(data: APIComparison[]) {
-  const comparisons = $state(data.map((c) => parseAPIComparison(c)))
+export async function queryComparisons() {
+  const data = await api.request<APIComparison[]>('/arena/comparison/list')
+  return data.map((c) => parseAPIComparison(c))
+}
+
+export function initComparisonsContext(data: ComparisonsCtx) {
+  const comparisons = $state(data)
   setComparisonsContext(comparisons)
 }
 
