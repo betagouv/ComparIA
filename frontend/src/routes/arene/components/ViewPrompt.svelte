@@ -6,7 +6,10 @@
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
-  import { tick } from 'svelte'
+  import { goto } from '$app/navigation'
+  import { page } from '$app/state'
+  import { onMount, tick } from 'svelte'
+  import { SvelteURLSearchParams } from 'svelte/reactivity'
   import { GuidedPromptSuggestions, ModelSelector } from '.'
 
   let {
@@ -35,6 +38,29 @@
   let webSearch = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading)
+
+  onMount(() => {
+    const vsParam = page.url.searchParams.get('vs')
+    if (!vsParam) return
+
+    const humanIdToModel = new Map(models.map((llm) => [llm.human_id, llm.id!]))
+    const validIds = vsParam
+      .split(',')
+      .map((slug) => slug.trim())
+      .map((slug) => humanIdToModel.get(slug))
+      .filter((id): id is string => !!id)
+      .slice(0, 2)
+
+    if (validIds.length > 0) {
+      mode.value = 'custom'
+      modelsSelection.value = validIds
+    }
+
+    const params = new SvelteURLSearchParams(page.url.searchParams)
+    params.delete('vs')
+    const qs = params.toString()
+    goto(qs ? `${page.url.pathname}?${qs}` : page.url.pathname, { replaceState: true })
+  })
 
   function selectPartialText(start?: number, end?: number): void {
     if (promptEl) {
