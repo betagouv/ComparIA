@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tick, type Snippet } from 'svelte'
-  import type { SvelteHTMLElements } from 'svelte/elements'
+  import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
   let {
     id,
@@ -8,6 +8,9 @@
     variant = 'normal',
     closeOnSelect = false,
     role = null,
+    maxHeight = 400,
+    buttonClass = 'fr-select',
+    buttonLabel,
     children,
     ...props
   }: {
@@ -15,8 +18,10 @@
     label?: string
     closeOnSelect?: boolean
     variant?: 'light' | 'normal'
-
     role?: 'menu' | null
+    maxHeight?: number
+    buttonClass?: ClassValue
+    buttonLabel?: Snippet<[string]>
     children?: Snippet
   } & SvelteHTMLElements['div'] = $props()
 
@@ -36,6 +41,7 @@
   async function toggle(): Promise<void> {
     open = !open
     if (open) {
+      await tick()
       await tick()
       getFocusableItems()[0]?.focus()
     }
@@ -95,6 +101,89 @@
       close()
     }
   }
+
+  let contentStyle = $state<Record<string, string>>({})
+  let isBelow = $state(true)
+
+  function calculatePosition() {
+    if (!buttonEl || !contentEl) return
+    let offset = 4
+
+    const { left, top, right, bottom, width: btnWidth } = buttonEl.getBoundingClientRect()
+    const contentHeight = contentEl.scrollHeight
+    const contentWidth = contentEl.scrollWidth
+    const { innerWidth, innerHeight } = window
+
+    // Vertical pos
+    let topPos: number
+    const preferredBelow = innerHeight - bottom >= contentHeight + offset * 2
+    const preferredAbove = top >= contentHeight + offset * 2
+
+    if (preferredBelow || !preferredAbove) {
+      isBelow = true
+      topPos = bottom + offset
+    } else {
+      isBelow = false
+      topPos = top - contentHeight - offset
+    }
+
+    // Clamp top to viewport
+    if (topPos + contentHeight > innerHeight - offset) {
+      topPos = innerHeight - contentHeight - offset
+    }
+    topPos = Math.max(topPos, offset)
+
+    // Horizontal pos
+    let leftPos = left
+    const maxWidth = Math.max(contentWidth, btnWidth)
+    const rightEdge = leftPos + maxWidth
+
+    // Flip to right-aligned
+    if (rightEdge > innerWidth - offset) {
+      leftPos = right - maxWidth
+    }
+
+    // Clamp left to viewport
+    if (leftPos + maxWidth > innerWidth - offset) {
+      leftPos = innerWidth - maxWidth - offset
+    }
+    leftPos = Math.max(leftPos, offset)
+
+    contentStyle = {
+      top: `${topPos}px`,
+      left: `${leftPos}px`,
+      'min-width': `${btnWidth}px`,
+      'max-width': `${innerWidth - offset * 2}px`,
+      'max-height': `${Math.min(maxHeight, innerHeight - offset * 2)}px`
+    }
+  }
+
+  function updatePosition() {
+    if (open) calculatePosition()
+  }
+
+  $effect(() => {
+    if (open) {
+      tick().then(calculatePosition)
+
+      // Update on scroll and resize
+      window.addEventListener('scroll', updatePosition, { passive: true, capture: true })
+      window.addEventListener('resize', updatePosition, { passive: true })
+
+      return () => {
+        window.removeEventListener('scroll', updatePosition, { capture: true })
+        window.removeEventListener('resize', updatePosition)
+      }
+    } else {
+      contentStyle = {}
+    }
+  })
+
+  const style = $derived(
+    Object.entries(contentStyle)
+      .map(([k, v]) => `${k}: ${v};`)
+      .join(' ')
+  )
 </script>
 
 <svelte:window onpointerdown={handleWindowPointerDown} />
@@ -106,35 +195,35 @@
     aria-haspopup="true"
     aria-expanded={open}
     aria-controls={id}
-    class={['fr-select', { 'not-hover:bg-white': variant === 'light' }]}
+    class={[buttonClass, { 'not-hover:bg-white': variant === 'light' }]}
     onclick={toggle}
   >
-    {label}
+    {#if buttonLabel}{@render buttonLabel(label)}{:else}{label}{/if}
   </button>
 
-  {#if open}
-    <div
-      bind:this={contentEl}
-      {id}
-      {role}
-      aria-label={label}
-      onkeydown={handleContentKeydown}
-      onclick={handleContentClick}
-      {...props}
-      class={['dropdown-content left-0 shadow-lg bg-white p-3 absolute z-50', props.class]}
-    >
-      {@render children?.()}
-    </div>
-  {/if}
+  <div
+    bind:this={contentEl}
+    {id}
+    {role}
+    aria-label={label}
+    onkeydown={handleContentKeydown}
+    onclick={handleContentClick}
+    {...props}
+    class={[
+      'dropdown-content ease-in rounded-sm left-0 shadow-lg bg-white fixed z-50 overflow-y-auto transition-opacity transition-transform duration-100',
+      { 'invisible scale-98 opacity-0': !open, 'translate-y-0 scale-100': open },
+      !open ? (isBelow ? '-translate-y-1' : 'translate-y-1') : '',
+      props.class
+    ]}
+    {style}
+  >
+    {@render children?.()}
+  </div>
 </div>
 
 <style lang="postcss">
   .fr-select {
     --border-plain-grey: var(--blue-france-main-525);
     --background-contrast-grey: var(--blue-ecume-975-75);
-  }
-
-  .dropdown-content {
-    top: calc(100% + 0.25rem);
   }
 </style>
