@@ -6,9 +6,10 @@ from pydantic import BaseModel, EmailStr
 
 from backend.admin.llms import admin_llms_router
 from backend.admin.services import delete_user, list_users, set_user_role
-from backend.auth.dependencies import require_admin
-from backend.auth.email import send_login_code
-from backend.auth.services import request_login_code
+from backend.auth.dependencies import RequiredAdmin, require_admin
+from backend.auth.email import send_invite_link
+from backend.auth.services import create_invite
+from backend.config import settings
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -96,6 +97,8 @@ async def remove_user(
 @router.post("/users/invite", status_code=status.HTTP_204_NO_CONTENT)
 async def invite_user(
     body: InviteBody,
+    current_user: RequiredAdmin,
 ) -> None:
-    code = await request_login_code(body.email)
-    await send_login_code(body.email, code)
+    token = await create_invite(body.email, invited_by=current_user.id)
+    link = f"{settings.COMPARIA_APP_URL}/invite/{token}"
+    await send_invite_link(body.email, link)
