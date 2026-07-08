@@ -170,7 +170,7 @@
 
       <div class="gap-3 md:flex-row flex flex-col flex-wrap">
         {#each filterDefs as f (f.id)}
-          <Dropdown id="dropdown-{f.id}" label={f.legend} variant="light">
+          <Dropdown id="dropdown-{f.id}" label={f.legend} variant="light" class="p-3">
             <CheckboxGroup {...f} bind:value={filters[f.id]} legendClass="sr-only" class="mb-0!">
               {#snippet labelSlot({ option })}
                 <div class="flex w-full items-center justify-between">
