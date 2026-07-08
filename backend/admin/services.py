@@ -8,6 +8,14 @@ from utils.database.models.auth import LoginCode, User
 from utils.database.session import get_session
 
 
+class CannotDeleteSelfError(Exception):
+    pass
+
+
+class CannotDeleteLastAdminError(Exception):
+    pass
+
+
 @dataclass
 class UserRow:
     id: uuid.UUID
@@ -75,11 +83,30 @@ async def set_user_role(user_id: uuid.UUID, role: str) -> User | None:
         return user
 
 
-async def delete_user(user_id: uuid.UUID) -> bool:
+async def delete_user(user_id: uuid.UUID, current_user_id: uuid.UUID) -> bool:
     async with get_session() as session:
         user = await session.get(User, user_id)
         if not user or user.deleted_at is not None:
             return False
+
+        if user.id == current_user_id:
+            raise CannotDeleteSelfError()
+
+        if user.role == "admin":
+            other_admins = await session.exec(
+                select(func.count()).select_from(
+                    select(User)
+                    .where(
+                        col(User.role) == "admin",
+                        User.deleted_at.is_(None),
+                        User.id != user.id,
+                    )
+                    .subquery()
+                )
+            )
+            if other_admins.one() == 0:
+                raise CannotDeleteLastAdminError()
+
         user.deleted_at = datetime.now()
         session.add(user)
         await session.commit()
