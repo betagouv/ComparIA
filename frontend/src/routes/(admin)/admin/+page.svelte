@@ -1,8 +1,12 @@
 <script lang="ts">
   import { Badge, Button, Table } from '$components/dsfr'
+  import Icon from '$components/dsfr/Icon.svelte'
+  import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
   import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
+  import { auth } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import { onMount } from 'svelte'
 
   interface UserRow {
@@ -31,6 +35,28 @@
   }
 
   onMount(fetchUsers)
+
+  let userToDelete = $state<UserRow | null>(null)
+
+  function openDeleteModal(row: UserRow) {
+    userToDelete = row
+    const el = document.getElementById('fr-modal-delete-user')
+    if (el) {
+      // @ts-expect-error - DSFR is globally available
+      window.dsfr(el).modal.disclose()
+    }
+  }
+
+  async function confirmDelete() {
+    if (!userToDelete) return
+    try {
+      await api.request(`/admin/users/${userToDelete.id}`, { method: 'DELETE' })
+      useToast(`${userToDelete.email} deleted`, 4000)
+      await fetchUsers()
+    } catch (err) {
+      useToast((err as Error).message, 6000, 'error')
+    }
+  }
 
   function relativeTime(iso: string): string {
     const diff = Date.now() - new Date(iso).getTime()
@@ -67,7 +93,21 @@
       {:else if col.id === 'created_at'}
         <span class="fr-text--sm text-[--text-mention-grey]">{relativeTime(row.created_at)}</span>
       {:else if col.id === 'actions'}
-        <span class="fr-text--sm text-[--text-disabled-grey]">—</span>
+        {#if row.email === auth.user?.email}
+          <span class="fr-text--sm text-[--text-disabled-grey]">—</span>
+        {:else}
+          <Button
+            iconOnly
+            variant="tertiary-no-outline"
+            size="sm"
+            title="Delete user"
+            aria-label={`Delete ${row.email}`}
+            class="text-[--text-default-error]!"
+            onclick={() => openDeleteModal(row)}
+          >
+            <Icon icon="i-ri-delete-bin-line" />
+          </Button>
+        {/if}
       {/if}
     {/snippet}
   </Table>
@@ -80,3 +120,4 @@
 </PageLayout>
 
 <InviteUserModal onSuccess={fetchUsers} />
+<ConfirmDeleteUserModal email={userToDelete?.email ?? null} onConfirm={confirmDelete} />

@@ -5,7 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, EmailStr
 
 from backend.admin.llms import admin_llms_router
-from backend.admin.services import delete_user, list_users, set_user_role
+from backend.admin.services import (
+    CannotDeleteLastAdminError,
+    CannotDeleteSelfError,
+    delete_user,
+    list_users,
+    set_user_role,
+)
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
@@ -88,8 +94,20 @@ async def patch_user_role(
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_user(
     user_id: uuid.UUID,
+    current_user: RequiredAdmin,
 ) -> None:
-    deleted = await delete_user(user_id)
+    try:
+        deleted = await delete_user(user_id, current_user.id)
+    except CannotDeleteSelfError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete your own account",
+        )
+    except CannotDeleteLastAdminError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete the last remaining admin",
+        )
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
