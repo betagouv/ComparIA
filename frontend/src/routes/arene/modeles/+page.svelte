@@ -241,6 +241,7 @@
   model={selectedModelData}
   modalId="modal-model"
   {commons}
+  autoOpen
   onClose={() => window.history.replaceState(null, '', page.url.pathname)}
 />
 
