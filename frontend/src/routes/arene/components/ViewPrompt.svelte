@@ -44,13 +44,15 @@
     if (!vsParam) return
 
     const humanIdToModel = new Map(models.map((llm) => [llm.human_id, llm.id!]))
-    const validIds = [...new Set(
-      vsParam
-        .split(',')
-        .map((slug) => slug.trim())
-        .map((slug) => humanIdToModel.get(slug))
-        .filter((id): id is string => !!id)
-    )].slice(0, 2)
+    const validIds = [
+      ...new Set(
+        vsParam
+          .split(',')
+          .map((slug) => slug.trim())
+          .map((slug) => humanIdToModel.get(slug))
+          .filter((id): id is string => !!id)
+      )
+    ].slice(0, 2)
 
     if (validIds.length > 0) {
       mode.value = 'custom'
