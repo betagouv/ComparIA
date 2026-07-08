@@ -1425,6 +1425,10 @@
             "title": "Hvorfor er din stemme vigtig?"
         }
     },
+    "maintenance": {
+        "desc": "compar:IA er i øjeblikket under vedligeholdelse. Vi er snart tilbage.",
+        "title": "Siden er under vedligeholdelse"
+    },
     "models": {
         "arch": {
             "title": "Vidste du?"

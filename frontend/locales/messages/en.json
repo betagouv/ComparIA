@@ -1383,6 +1383,10 @@
             "title": "Why is your vote important?"
         }
     },
+    "maintenance": {
+        "desc": "compar:IA is currently under maintenance. We'll be back shortly.",
+        "title": "Site under maintenance"
+    },
     "models": {
         "arch": {
             "title": "Did you know?"
