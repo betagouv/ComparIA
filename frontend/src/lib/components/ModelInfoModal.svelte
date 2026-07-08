@@ -13,8 +13,15 @@
     model,
     modalId,
     commons,
+    autoOpen = false,
     onClose
-  }: { model?: BotModel; modalId: string; commons: Commons; onClose?: () => void } = $props()
+  }: {
+    model?: BotModel
+    modalId: string
+    commons: Commons
+    autoOpen?: boolean
+    onClose?: () => void
+  } = $props()
 
   const badges = $derived.by(() => {
     if (!model) return []
@@ -94,6 +101,8 @@
     { c: '5', emoji: '5️⃣' }
   ] as const
 </script>
+
+<button class="hidden" data-fr-opened={autoOpen && !!model} aria-controls={modalId}>Hidden</button>
 
 {#snippet iconHeading({
   icon,
