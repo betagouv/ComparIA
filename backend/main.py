@@ -48,6 +48,12 @@ origins = [
     "http://localhost:8008",
 ]
 
+app.middleware("http")(auth_middleware)
+app.middleware("http")(anonymous_middleware)
+
+# Registered last so it wraps the auth/anonymous middlewares (Starlette builds
+# the stack with the last-registered middleware outermost), otherwise auth_middleware
+# short-circuits CORS preflight/401 responses before CORS headers are added.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -55,9 +61,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.middleware("http")(auth_middleware)
-app.middleware("http")(anonymous_middleware)
 
 # Prometheus metrics instrumentation
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
