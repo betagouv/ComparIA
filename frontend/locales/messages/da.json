@@ -1462,6 +1462,13 @@
             "title": "Hvorfor er din stemme vigtig?"
         }
     },
+    "invite": {
+        "accept": "Accepter og fortsæt",
+        "accepting": "Logger ind...",
+        "backToLogin": "Log ind på en anden måde",
+        "invalid": "Dette invitationslink er ikke længere gyldigt. Det er muligvis udløbet eller allerede brugt.",
+        "title": "Du er blevet inviteret til compar:IA"
+    },
     "maintenance": {
         "desc": "compar:IA er i øjeblikket under vedligeholdelse. Vi er snart tilbage.",
         "title": "Siden er under vedligeholdelse"

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Badge, Button, Table } from '$components/dsfr'
+  import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import { onMount } from 'svelte'
@@ -55,7 +56,7 @@
 <PageLayout seoTitle="Users" title="Users" subtitle="Registered users">
   <Table caption="Users" hideCaption {cols} rows={tableRows}>
     {#snippet headerRight()}
-      <Button text="Invite user" disabled />
+      <Button text="Invite user" aria-controls="fr-modal-invite-user" data-fr-opened="false" />
     {/snippet}
 
     {#snippet cell(row, col)}
@@ -77,3 +78,5 @@
     </p>
   {/if}
 </PageLayout>
+
+<InviteUserModal onSuccess={fetchUsers} />

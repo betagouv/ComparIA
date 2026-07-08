@@ -1420,6 +1420,13 @@
             "title": "Why is your vote important?"
         }
     },
+    "invite": {
+        "accept": "Accept and continue",
+        "accepting": "Signing in...",
+        "backToLogin": "Sign in another way",
+        "invalid": "This invite link is no longer valid. It may have expired or already been used.",
+        "title": "You've been invited to compar:IA"
+    },
     "maintenance": {
         "desc": "compar:IA is currently under maintenance. We'll be back shortly.",
         "title": "Site under maintenance"

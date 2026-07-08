@@ -1617,6 +1617,13 @@
         "desc": "compar:IA est actuellement en maintenance. Nous serons de retour très prochainement.",
         "title": "Site en maintenance"
     },
+    "invite": {
+        "accept": "Accepter et continuer",
+        "accepting": "Connexion en cours...",
+        "backToLogin": "Se connecter autrement",
+        "invalid": "Ce lien d'invitation n'est plus valide. Il a peut-être expiré ou déjà été utilisé.",
+        "title": "Vous avez été invité·e sur compar:IA"
+    },
     "models": {
         "arch": {
             "title": "Le saviez-vous ?"
