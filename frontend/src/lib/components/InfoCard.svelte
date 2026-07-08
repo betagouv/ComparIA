@@ -19,8 +19,6 @@
     contentTag = 'div',
     desc,
     size = 'md',
-    titleContainerClass,
-    subContentClass,
     children,
     ...props
   }: {
@@ -37,24 +35,29 @@
     contentTag?: string
     desc?: string
     size?: ModelCardSize
-    titleContainerClass?: ClassValue
-    subContentClass?: ClassValue
   } & SvelteHTMLElements['div'] = $props()
 
   const classes = $derived(
     (
       {
-        xs: {
+        xxs: {
           base: 'p-2 gap-1',
-          title: 'text-xxs! items-center',
-          content: '',
+          title: 'text-xxs! items-center text-grey',
+          content: 'font-bold text-base',
           sub: 'text-sm!',
           icon: 'xxs'
         },
-        sm: {
+        xs: {
           base: 'p-2 gap-2',
           title: 'text-xxs! text-grey',
           content: 'text-base!',
+          sub: 'text-xxs!',
+          icon: 'xs'
+        },
+        sm: {
+          base: 'p-3 gap-2',
+          title: 'text-xs! text-grey',
+          content: 'text-base! mb-1!',
           sub: 'text-xxs!',
           icon: 'xs'
         },
@@ -62,7 +65,7 @@
           base: 'p-4 gap-2',
           title: 'text-sm! items-center',
           content: 'text-[22px]!',
-          sub: subContentClass || 'text-sm!',
+          sub: 'text-sm!',
           icon: 'xs'
         }
       } as const
@@ -75,7 +78,7 @@
     <p class={['mb-0! font-bold leading-[1.1]!', classes.content]}>
       {@html sanitize(content)}
     </p>
-    {#if subContent && size !== 'xs'}
+    {#if subContent && size !== 'xxs'}
       <p class={['text-grey mb-0!', classes.sub]}>
         {@html sanitize(subContent)}
       </p>
@@ -84,17 +87,16 @@
 {/snippet}
 
 <article {id} class={['cg-border bg-white flex flex-col', classes.base, props.class]}>
-  <div class={['gap-1 flex', titleContainerClass]}>
+  <div class={['gap-1 flex', { 'items-start': size === 'xs' }]}>
     <svelte:element
       this={titleTag}
       class={['gap-1 font-normal mb-0! p-0! min-w-0 flex', classes.title, titleClass]}
     >
-      <Icon {icon} size={classes.icon} block class={size !== 'xs' ? iconClass : undefined} />
-      <!-- <span class={{ 'srs-only': size === 'sm' }}>{title}</span> -->
+      <Icon {icon} size={classes.icon} block class={size !== 'xxs' ? iconClass : undefined} />
       {title}
     </svelte:element>
 
-    {#if size !== 'xs'}
+    {#if size !== 'xxs'}
       <div class="gap-1 ms-auto flex shrink-0 items-center">
         {#if badge}
           <Badge {...badge} size="sm" />
@@ -112,11 +114,11 @@
     {/if}
   </div>
 
-  <svelte:element this={contentTag} class="">
-    {#if content}
-      {@render innerContent(content, subContent)}
-    {:else if badge && size === 'xs'}
+  <svelte:element this={contentTag} class="p-0">
+    {#if badge && size === 'xxs'}
       <Badge {...badge} tooltip={undefined} size="sm" />
+    {:else if content}
+      {@render innerContent(content, subContent)}
     {:else}
       {@render children?.()}
     {/if}
