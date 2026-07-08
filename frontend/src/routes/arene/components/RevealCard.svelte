@@ -31,9 +31,20 @@
       (model.price_out / 1_000_000) * data.tokens) /
       100
   )
+  const higherConso = $derived.by(() => {
+    if (data.consoOther > data.energy_mwh) return undefined
+    const percent = ((data.energy_mwh / data.consoOther) * 100).toFixed()
+    return (
+      '<span class="inline-block align-sub text-error i-ri-triangle-fill"></span>' +
+      m['reveal.impacts.energy.higher']({
+        props: propsToAttrs({ class: 'text-error' }),
+        count: percent
+      })
+    )
+  })
   const consoCards = $derived([
     {
-      id: 'conso-tokens',
+      id: 'conso-tokens' as const,
       icon: 'i-ri-ai-generate-text',
       title: m['reveal.impacts.tokens.title'](),
       tooltip: m['reveal.impacts.tokens.tooltip'](),
@@ -47,7 +58,7 @@
         : m['words.NA']()
     },
     {
-      id: 'conso-cost',
+      id: 'conso-cost' as const,
       icon: 'i-ri-money-euro-circle-line',
       title: m['reveal.impacts.cost.title'](),
       tooltip: m['reveal.impacts.cost.tooltip'](),
@@ -58,7 +69,7 @@
       subContent: m['reveal.impacts.cost.sub']()
     },
     {
-      id: 'conso-energy',
+      id: 'conso-energy' as const,
       icon: 'i-ri-flashlight-fill',
       title: m['reveal.impacts.energy.title'](),
       tooltip: m['reveal.impacts.energy.tooltip'](),
@@ -72,7 +83,8 @@
               count: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
               midProps,
               smallProps
-            })
+            }),
+      subContent: higherConso
     }
   ])
 

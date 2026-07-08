@@ -2447,6 +2447,7 @@
             "energy": {
                 "conso": "{count}<span {midProps}>mWh</span>",
                 "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimé</span>",
+                "higher": "<span {props}>+{count}%</span> comparé au 2nd modèle",
                 "title": "Énergie conso.",
                 "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
