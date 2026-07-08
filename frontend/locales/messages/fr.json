@@ -1563,6 +1563,10 @@
             "title": "Pourquoi votre vote est important ?"
         }
     },
+    "maintenance": {
+        "desc": "compar:IA est actuellement en maintenance. Nous serons de retour très prochainement.",
+        "title": "Site en maintenance"
+    },
     "models": {
         "arch": {
             "title": "Le saviez-vous ?"

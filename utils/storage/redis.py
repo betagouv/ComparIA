@@ -26,6 +26,7 @@ REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
 REDIS_WEB_SEARCH_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}web_search_cache:{{prompt_hash}}"
 )
+REDIS_MAINTENANCE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}maintenance_mode"
 
 
 @lru_cache
@@ -51,3 +52,21 @@ def hash_content(content: str) -> str:
     """Normalize and hash content."""
     normalized = content.strip().lower()
     return hashlib.sha256(normalized.encode()).hexdigest()[:16]
+
+
+def get_maintenance_mode() -> bool:
+    return get_redis_client().get(REDIS_MAINTENANCE_KEY) == "1"
+
+
+def set_maintenance_mode(enabled: bool) -> None:
+    client = get_redis_client()
+    if enabled:
+        client.set(REDIS_MAINTENANCE_KEY, "1")
+    else:
+        client.delete(REDIS_MAINTENANCE_KEY)
+
+
+def maintenance_key_for_instance(instance: str) -> str:
+    """Build the maintenance mode key for an arbitrary instance (fr, da, ...),
+    regardless of the current process' own DEFAULT_COUNTRY_PORTAL."""
+    return f"{instance}:maintenance_mode"

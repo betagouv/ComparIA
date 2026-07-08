@@ -8,6 +8,7 @@ from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
 from backend.utils.countries import get_vote_count
+from utils.storage.redis import get_maintenance_mode
 
 app = FastAPI()
 
@@ -53,3 +54,8 @@ async def get_counter():
         "count": await get_vote_count(),
         "objective": settings.VOTES_OBJECTIVE,
     }
+
+
+@app.get("/maintenance/status")
+async def maintenance_status():
+    return {"enabled": get_maintenance_mode()}
