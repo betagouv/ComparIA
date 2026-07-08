@@ -217,10 +217,10 @@
                 </section>
 
                 <div class="gap-4 xl:grid-cols-5 grid">
-                  <section class="xl:col-span-3">
+                  <section class="xl:col-span-3 flex flex-col">
                     <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
 
-                    <div class="gap-4 md:flex-row flex flex-col">
+                    <div class="gap-4 md:flex-row flex h-full flex-col">
                       <article class="cg-border bg-white p-4 relative flex basis-1/2 flex-col">
                         {@render iconHeading({
                           icon: 'i-ri-cpu-line',
