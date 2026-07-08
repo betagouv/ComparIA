@@ -1,6 +1,6 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button } from '$components/dsfr'
+  import { Badge, Button, Tooltip } from '$components/dsfr'
   import InfoCard from '$components/InfoCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealModelData } from '$lib/chatService.svelte'
@@ -14,40 +14,76 @@
   const modelBadges = $derived(
     (['license', 'size', 'release'] as const).map((k) => model.badges[k]).filter((b) => !!b)
   )
-  const cards = $derived.by(() => {
-    const cards = getModelCards(model, 'sm', commons)
-    return [
-      cards.size,
-      {
-        ...cards.context,
-        content:
-          data.total_tokens === undefined
-            ? m['words.NA']()
-            : m['reveal.context.used']({
-                count: data.total_tokens,
-                midProps: propsToAttrs({ class: 'text-sm!' }),
-                smallProps: propsToAttrs({ class: 'text-xs!' })
-              }),
-        subContent: model.context_tokens
-          ? m['reveal.context.max']({ count: Math.floor(model.context_tokens / 1000) })
-          : m['words.NA'](),
-        desc: undefined
-      },
-      cards.sovereignty,
-      cards.rank,
-      cards.energy
-    ]
-  })
-  const conso = $derived.by(() => {
-    // FIXME equivalences legacy?
-    // const co2 = data.scaled_co2_t
-    return {
-      energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0)
-      // co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
+  const baseCards = $derived(getModelCards(model, 'sm', commons))
+  const cards = $derived([
+    baseCards.size,
+    baseCards.arch,
+    baseCards.sovereignty,
+    baseCards.rank,
+    baseCards.energy
+  ])
+
+  const midProps = propsToAttrs({ class: 'text-xs!' })
+  const smallProps = propsToAttrs({ class: 'text-xxs!' })
+  // in cents
+  const cost = $derived(
+    ((model.price_in / 1_000_000) * data.input_tokens +
+      (model.price_out / 1_000_000) * data.tokens) /
+      100
+  )
+  const consoCards = $derived([
+    {
+      id: 'conso-tokens',
+      icon: 'i-ri-ai-generate-text',
+      title: m['reveal.impacts.tokens.title'](),
+      tooltip: m['reveal.impacts.tokens.tooltip'](),
+      content: m['reveal.impacts.tokens.used']({
+        count: data.total_tokens,
+        midProps,
+        smallProps
+      }),
+      subContent: model.context_tokens
+        ? m['reveal.impacts.tokens.max']({ count: Math.floor(model.context_tokens / 1000) })
+        : m['words.NA']()
+    },
+    {
+      id: 'conso-cost',
+      icon: 'i-ri-money-euro-circle-line',
+      title: m['reveal.impacts.cost.title'](),
+      tooltip: m['reveal.impacts.cost.tooltip'](),
+      content:
+        cost < 1
+          ? m['reveal.impacts.cost.count_low']({ smallProps })
+          : m['reveal.impacts.cost.count']({ count: cost, smallProps }),
+      subContent: m['reveal.impacts.cost.sub']()
+    },
+    {
+      id: 'conso-energy',
+      icon: 'i-ri-flashlight-fill',
+      title: m['reveal.impacts.energy.title'](),
+      tooltip: m['reveal.impacts.energy.tooltip'](),
+      content:
+        model.license.kind !== 'proprietary'
+          ? m['reveal.impacts.energy.conso']({
+              count: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
+              midProps
+            })
+          : m['reveal.impacts.energy.conso_estimated']({
+              count: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
+              midProps,
+              smallProps
+            })
     }
-  })
+  ])
 
   // FIXME equivalences legacy?
+  // const conso = $derived.by(() => {
+  //   const co2 = data.scaled_co2_t
+  //   return {
+  //     energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0)
+  //     co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
+  //   }
+  // })
   // const i18nData = getI18nContext()
   // const equivalencesData: Record<
   //   EquivalenceType,
@@ -131,26 +167,57 @@
     </ul>
   </div>
 
-  <div class="gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 grid">
+  <div class="gap-4 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 grid grid-cols-2">
     {#each cards as card, i (i)}
-      <InfoCard {...card} id="{model.id}-{card.id}" iconClass="text-info" size="sm">
+      <InfoCard
+        {...card}
+        id="{model.id}-{card.id}"
+        iconClass={'iconClass' in card ? card.iconClass : 'text-info'}
+        titleClass="3xl:flex-row lg:flex-col"
+        titleContainerClass="items-start"
+        size="sm"
+      >
         {#if card.id === 'energy'}
-          <div class="gap-1 flex flex-col">
+          <div class="gap-1 mt-1 flex flex-col">
             <div
-              class="ps-2 w-80% text-white font-bold h-8 flex items-center justify-start"
+              class="ps-2 w-80% text-sm text-white font-bold h-5 flex items-center justify-start"
               style="background-color: var({ENERGY_CLASS_COLORS[
                 model.energy_class
               ]}); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);"
             >
               {model.energy_class}
             </div>
-            <p class="text-xxs! text-grey mb-0!">
-              {m['reveal.impacts.energy.short']({ count: conso.energy })}
-            </p>
           </div>
         {/if}
       </InfoCard>
     {/each}
+  </div>
+
+  <div class="mt-8 cg-border rounded-sm! bg-light-grey p-3 pb-5">
+    <h6 class="mb-3! text-base! mt-auto!">
+      {m['reveal.impacts.title']()}
+      <Tooltip id="impact-{data.pos}" text={m['reveal.impacts.tooltip']()} />
+    </h6>
+    <div class="gap-4 flex flex-col">
+      <div class="gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 grid">
+        {#each consoCards as card (card.id)}
+          <InfoCard
+            {...card}
+            id="{model.id}-{card.id}"
+            iconClass="text-info"
+            titleClass="text-grey"
+            subContentClass="text-xxs!"
+            size="md"
+            class="p-3! gap-2"
+          ></InfoCard>
+        {/each}
+      </div>
+
+      <article class="cg-border bg-white p-3 flex flex-col">
+        <p class="text-xs! text-info mb-1!">{m['reveal.impacts.how.title']()}</p>
+        <p class="text-xs! mb-0!">{m['reveal.impacts.how.desc']()}</p>
+      </article>
+    </div>
   </div>
 
   <!-- FIXME equivalences legacy? -->

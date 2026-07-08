@@ -1979,10 +1979,6 @@
         "title": "From votes to a leaderboard"
     },
     "reveal": {
-        "context": {
-            "max": "Max context: {count}k tokens",
-            "used": "{count}<span {midProps}> tokens</span> <span {smallProps}>used</span>"
-        },
         "equivalent": {
             "co2": {
                 "label": "CO <sub>2</sub> emitted",

@@ -62,8 +62,8 @@ export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
 }
 
 export function getModelCards(model: BotModel, size: ModelCardSize, commons: Commons) {
-  const midProps = propsToAttrs({ class: size === 'md' ? 'text-base!' : 'text-sm!' })
-  const smallProps = propsToAttrs({ class: size === 'md' ? 'text-sm!' : 'text-xs!' })
+  const midProps = propsToAttrs({ class: size === 'md' ? 'text-base!' : 'text-xs!' })
+  const smallProps = propsToAttrs({ class: size === 'md' ? 'text-sm!' : 'text-xxs!' })
   const contextTokens = model.context_tokens
   const archI18nKey = isMaybeArch(model.arch) ? 'na' : model.arch
   const archDescription = m[`generated.archs.${archI18nKey}.desc`]()
@@ -77,7 +77,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       tooltip: m['models.cards.size.tooltip'](),
       content:
         size !== 'xs'
-          ? m['models.cards.size.params_count']({
+          ? m[`models.cards.size.params_count${size === 'sm' ? '_short' : ''}`]({
               count: model.params,
               midProps,
               smallProps
@@ -163,8 +163,8 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
     energy: {
       id: 'energy',
       icon: 'i-ri-leaf-line',
-      iconClass: 'text-yellow',
-      title: m[`models.cards.energy.title_${size}`](),
+      iconClass: 'text-green',
+      title: m[`models.cards.energy.title${size !== 'md' ? '_short' : ''}`](),
       tooltip: `${m['models.cards.energy.tooltip']()} ${m['models.cards.energy.desc']()}`,
       desc: undefined,
       content: size === 'xs' ? model.energy_class : undefined
@@ -180,7 +180,8 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
     rank: {
       id: 'rank',
       icon: 'i-ri-trophy-line',
-      title: m[`models.cards.rank.title${size === 'xs' ? '_xs' : ''}`](),
+      iconClass: 'text-yellow',
+      title: m[`models.cards.rank.title${size !== 'md' ? '_short' : ''}`](),
       tooltip: m['models.cards.rank.tooltip'](),
       content: model.data
         ? m['models.cards.rank.to'](commons.rankingTiers[model.data.rankClass])
