@@ -55,7 +55,7 @@ export type BotModelWithData = BotModel & {
   data: DatasetData
   prefs: PreferencesData
 }
-export type ModelCardSize = 'xs' | 'sm' | 'md'
+export type ModelCardSize = 'xxs' | 'xs' | 'sm' | 'md'
 
 export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)

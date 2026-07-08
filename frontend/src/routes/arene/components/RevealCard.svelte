@@ -174,8 +174,7 @@
         id="{model.id}-{card.id}"
         iconClass={'iconClass' in card ? card.iconClass : 'text-info'}
         titleClass="3xl:flex-row lg:flex-col"
-        titleContainerClass="items-start"
-        size="sm"
+        size="xs"
       >
         {#if card.id === 'energy'}
           <div class="gap-1 mt-1 flex flex-col">
@@ -201,15 +200,7 @@
     <div class="gap-4 flex flex-col">
       <div class="gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 grid">
         {#each consoCards as card (card.id)}
-          <InfoCard
-            {...card}
-            id="{model.id}-{card.id}"
-            iconClass="text-info"
-            titleClass="text-grey"
-            subContentClass="text-xxs!"
-            size="md"
-            class="p-3! gap-2"
-          ></InfoCard>
+          <InfoCard {...card} id="{model.id}-{card.id}" iconClass="text-info" size="sm" />
         {/each}
       </div>
 
