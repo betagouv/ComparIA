@@ -57,7 +57,9 @@ export default defineConfig({
       sm: '36em',
       md: '48em',
       lg: '62em',
-      xl: '78em'
+      xl: '78em',
+      '2xl': '88em',
+      '3xl': '115em'
     }
   },
   shortcuts: [

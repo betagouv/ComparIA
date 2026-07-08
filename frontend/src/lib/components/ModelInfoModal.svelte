@@ -287,7 +287,7 @@
                         <InfoCard {...cards.energy} class="basis-1/2 justify-between">
                           <div
                             class="gap-1 my-6 flex w-full flex-col"
-                            aria-label="{m['models.cards.energy.title_md']()} {model.energy_class}"
+                            aria-label="{m['models.cards.energy.title']()} {model.energy_class}"
                           >
                             {#each energyRows as row (row.letter)}
                               {@const active = row.letter === model.energy_class}

@@ -1688,9 +1688,8 @@
                     "F": "Consommation estimée à l’inférence très élevée"
                 },
                 "desc": "Plus la classe est proche de A, plus la consommation estimée à l’inférence est faible.",
-                "title_md": "Classe de consommation énergétique",
-                "title_sm": "Score énergétique",
-                "title_xs": "Score énergie",
+                "title": "Classe de consommation énergétique",
+                "title_short": "Score énergie",
                 "tooltip": "Classe estimée à partir de la consommation d’énergie à l’inférence, selon la méthodologie EcoLogits."
             },
             "license": {
@@ -1717,7 +1716,7 @@
             "rank": {
                 "detail": "/{count} modèles",
                 "title": "Rang classement",
-                "title_xs": "Classement",
+                "title_short": "Classement",
                 "to": "#{min} à {max}",
                 "tooltip": "Position du modèle dans le classement compar:IA, établi à partir des votes des utilisatrices et utilisateurs."
             },
@@ -1729,6 +1728,7 @@
                 "desc": "Plus un modèle a de paramètres, plus il demande de ressources",
                 "estimated": "Estimation",
                 "params_count": "{count}<span {midProps}>mds</span> <span {smallProps}>paramètres</span>",
+                "params_count_short": "{count}<span {midProps}>mds</span> <span {smallProps}>param.</span>",
                 "title": "Taille",
                 "title_estimated": "Taille estimée",
                 "tooltip": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il a besoin de ressources pour fonctionner."
@@ -1820,8 +1820,8 @@
                 "archived": {
                     "checkedLabel": "Visibles",
                     "help": "Par défaut, seuls les modèles actifs dans le comparateur sont visibles.",
-                    "legend": "Archivés",
                     "label": "Modèles archivés",
+                    "legend": "Archivés",
                     "uncheckedLabel": "Non visibles"
                 },
                 "display": "Afficher les filtres",
@@ -2394,10 +2394,6 @@
         "title": "Des votes… au classement des modèles"
     },
     "reveal": {
-        "context": {
-            "max": "Contexte max : {count}k jetons",
-            "used": "{count}<span {midProps}> jetons</span> <span {smallProps}>utilisés</span>"
-        },
         "equivalent": {
             "co2": {
                 "label": "CO<sub>2</sub> émis",
@@ -2441,10 +2437,22 @@
             "shareResult": "Partager votre résultat"
         },
         "impacts": {
+            "cost": {
+                "count": "{count}<span {smallProps}> centimes $</span>",
+                "count_low": "<1<span {smallProps}> centime $</span>",
+                "sub": "Prix global (entrée et sortie)",
+                "title": "Coût",
+                "tooltip": "FIXME"
+            },
             "energy": {
-                "label": "énergie conso.",
-                "short": "{count} mWh consommés",
+                "conso": "{count}<span {midProps}>mWh</span>",
+                "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimé</span>",
+                "title": "Énergie conso.",
                 "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+            },
+            "how": {
+                "desc": "FIXME",
+                "title": "Pourquoi cette consommation ?"
             },
             "size": {
                 "count": "milliards param.",
@@ -2452,11 +2460,12 @@
                 "label": "taille du modèle",
                 "quantized": "(quantisé)"
             },
-            "title": "Impact énergétique estimé de la discussion",
+            "title": "Bilan de la discussion",
             "tokens": {
-                "label": "taille du texte",
-                "tokens": "jetons",
-                "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
+                "max": "Contexte max : {count}k jetons",
+                "title": "Texte généré",
+                "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand.",
+                "used": "{count}<span {midProps}> jetons</span><span {smallProps}> utilisés</span>"
             },
             "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée."
         },
