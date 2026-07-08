@@ -199,6 +199,11 @@ export function initComparisonsContext(data: ComparisonsCtx) {
   setComparisonsContext(comparisons)
 }
 
+export async function updateComparisonsContext(comparisons: ComparisonsCtx) {
+  const data = await queryComparisons()
+  comparisons.push(...data)
+}
+
 const ERROR_MESSAGES = {
   rate_limit_custom_selection: 'arenaHome.errors.rateLimitCustomSelection'
 } as const
