@@ -91,6 +91,7 @@ class ComparisonWithAnalyzeData(ComparisonBase):
 class Comparison(ComparisonWithAnalyzeData, table=True):
     turns: list[Turn] = Relationship(
         back_populates="comparison",
+        cascade_delete=True,
         sa_relationship_kwargs={"lazy": "selectin", "order_by": "Turn.created_at"},
     )
 

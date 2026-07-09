@@ -57,13 +57,24 @@ class TurnBase(SQLModel):
 class Turn(TurnBase, table=True):
     comparison: "Comparison" = Relationship(back_populates="turns")
     user_msg: UserMessage = Relationship(
-        sa_relationship_kwargs={"uselist": False, "lazy": "joined"}
+        cascade_delete=True,
+        sa_relationship_kwargs={"uselist": False, "lazy": "joined"},
     )
     llm_msg_a: LLMMessage | None = Relationship(
-        sa_relationship_kwargs={"foreign_keys": "[Turn.llm_msg_a_id]", "lazy": "joined"}
+        cascade_delete=True,
+        sa_relationship_kwargs={
+            "foreign_keys": "[Turn.llm_msg_a_id]",
+            "lazy": "joined",
+            "single_parent": True,
+        },
     )
     llm_msg_b: LLMMessage | None = Relationship(
-        sa_relationship_kwargs={"foreign_keys": "[Turn.llm_msg_b_id]", "lazy": "joined"}
+        cascade_delete=True,
+        sa_relationship_kwargs={
+            "foreign_keys": "[Turn.llm_msg_b_id]",
+            "lazy": "joined",
+            "single_parent": True,
+        },
     )
 
 
