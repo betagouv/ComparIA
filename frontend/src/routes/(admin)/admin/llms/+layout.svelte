@@ -9,8 +9,11 @@
   let { children }: LayoutProps = $props()
 
   const links = [
-    { id: 'list', icon: 'i-ri-ai-agent-line', label: 'LLMs', href: resolve('/admin/llms/list') }
-  ]
+    { id: 'list', icon: 'i-ri-ai-agent-line', label: 'LLMs' },
+    { id: 'labs', icon: 'i-ri-flask-line', label: 'Labs' },
+    { id: 'licenses', icon: 'i-ri-copyright-line', label: 'Licenses' },
+    { id: 'endpoints', icon: 'i-ri-server-line', label: 'Endpoints' }
+  ].map((link) => ({ ...link, href: resolve(`/admin/llms/${link.id}`) }))
 </script>
 
 <PageLayout
