@@ -156,8 +156,7 @@ async def create_invite(email: str, invited_by: uuid.UUID) -> str:
                 user_id=user.id,
                 invited_by=invited_by,
                 token_hash=_hash(token),
-                expires_at=datetime.now()
-                + timedelta(hours=_INVITE_TOKEN_TTL_HOURS),
+                expires_at=datetime.now() + timedelta(hours=_INVITE_TOKEN_TTL_HOURS),
             )
         )
         await session.commit()
