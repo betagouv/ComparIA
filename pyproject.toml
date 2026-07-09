@@ -74,7 +74,8 @@ exclude= [
     "./utils/ranking_methods",
     "./utils/database/actions/__init__.py",
     "./utils/database/alembic",
-    "./internal/typescript/backend_types.py"
+    "./internal/typescript/backend_types.py",
+    "./internal/typescript/admin_types.py"
 ]
 
 [tool.isort]

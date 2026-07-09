@@ -10,6 +10,7 @@ from utils.utils import FRONTEND_DIR, FRONTEND_GENERATED_DIR
 
 JSON2TS_PATH = FRONTEND_DIR / "node_modules/.bin/json2ts"
 FRONTEND_TYPES = FRONTEND_GENERATED_DIR / "backend.ts"
+FRONTEND_ADMIN_TYPES = FRONTEND_GENERATED_DIR / "admin.ts"
 FRONTEND_CONSTANTS = FRONTEND_GENERATED_DIR / "constants.ts"
 
 
@@ -17,6 +18,11 @@ def generate_frontend_types():
     generate_typescript_defs(
         "internal.typescript.backend_types",
         str(FRONTEND_TYPES),
+        json2ts_cmd=str(JSON2TS_PATH.absolute()),
+    )
+    generate_typescript_defs(
+        "internal.typescript.admin_types",
+        str(FRONTEND_ADMIN_TYPES),
         json2ts_cmd=str(JSON2TS_PATH.absolute()),
     )
 
