@@ -243,7 +243,7 @@ async def add_first_text(
             {
                 "type": "init",
                 "comparison": ComparisonPublic.model_validate(
-                    comparison, context={"llms_data": llms_data.all}
+                    comparison, context={"llms_data": llms_data}
                 ),
             }
         )
@@ -511,7 +511,7 @@ async def reveal(
         )
 
     await set_comparison_revealed(comparison.id)
-    llms_data = (await get_llms_data()).all
+    llms_data = await get_llms_data()
 
     # Return computed reveal data with environmental impact
     return get_reveal_data(comparison, llms_data)
