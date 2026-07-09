@@ -32,3 +32,42 @@ export function toRelativeTime(date: Date, locale: string) {
 export function toShortDate(date: Date, locale: string) {
   return date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
 }
+
+export type TableCol<Id extends string = string> = {
+  id: Id
+  label: string
+  kind?: 'date' | 'number' | 'boolean'
+  orderable?: boolean
+  tooltip?: string
+  colHeaderClass?: ClassValue
+}
+export type OrderingMethod = 'ascending' | 'descending'
+export type SortOptions<Id extends string> = {
+  method: OrderingMethod
+  col: Id
+  search: string
+}
+export function sortRows<
+  Id extends string,
+  Row extends { search: string } & Record<Id, any>,
+  Col extends { id: Id; kind?: 'date' | 'number' | 'boolean' }
+>(rows: Row[], cols: Col[], options: SortOptions<Id>): Row[] {
+  const _search = options.search.toLowerCase()
+
+  return rows
+    .filter((row) => (!_search ? true : row.search.includes(_search)))
+    .sort((x, y) => {
+      const [a, b] = options.method === 'ascending' ? [y, x] : [x, y]
+      const orderKind = cols.find((col) => col.id === options.col)?.kind ?? null
+      switch (orderKind) {
+        case 'number':
+          return sortIfDefined(a, b, options.col)
+        case 'date':
+          return b[options.col] - a[options.col]
+        case 'boolean':
+          return a[options.col] && b[options.col] ? 0 : a[options.col] ? 1 : -1
+        default:
+          return a[options.col].localeCompare(b[options.col])
+      }
+    })
+}
