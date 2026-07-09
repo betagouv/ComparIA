@@ -206,10 +206,6 @@ export async function updateComparisonsContext(comparisons: ComparisonsCtx) {
   comparisons.push(...data)
 }
 
-const ERROR_MESSAGES = {
-  rate_limit_custom_selection: 'arenaHome.errors.rateLimitCustomSelection'
-} as const
-
 export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   const comparisons = getComparisonsContext()
   let comparisonId_ = $state<Id>(comparisonId)
@@ -283,7 +279,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        promptError = err.message in ERROR_MESSAGES ? m[ERROR_MESSAGES[err.message]]() : err.message
+        promptError = err.message
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
       } else {

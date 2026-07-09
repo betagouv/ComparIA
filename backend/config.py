@@ -137,12 +137,10 @@ CustomModelsSelection = tuple[str, ...] | None
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
 BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 
-# Rate limiting specifically for expensive models (openai models, etc.)
+# Rate limiting specifically for expensive models (openai models, etc.).
+# Keyed per anonymous session (the `anonymous_session` cookie hash), not per IP,
+# so users behind a shared NAT (schools, hospitals) each get their own budget.
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
-
-# Rate limiting for custom model selection per IP
-RATELIMIT_CUSTOM_SELECTION_PER_HOUR = 400
-RATELIMIT_CUSTOM_SELECTION_PER_DAY = 400
 
 # Cooldown for IPs that hit the content-safety guardrail too often (abuse /
 # jailbreak probing). Counts only enforced blocks in a rolling window; once an
