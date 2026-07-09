@@ -9,7 +9,7 @@
   let { children }: LayoutProps = $props()
 
   const links = [
-    { id: 'list', icon: 'trophy-line', label: 'LLMs', href: resolve('/admin/llms/list') }
+    { id: 'list', icon: 'i-ri-ai-agent-line', label: 'LLMs', href: resolve('/admin/llms/list') }
   ]
 </script>
 
