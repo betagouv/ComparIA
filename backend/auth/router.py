@@ -7,6 +7,7 @@ from pydantic import BaseModel, EmailStr
 from backend.arena.captcha import verify_altcha_token
 from backend.auth.email import send_login_code
 from backend.auth.services import (
+    _hash,
     accept_invite,
     get_invite_token_info,
     get_user_from_token,
@@ -17,13 +18,16 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
-from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, get_redis_client
+from utils.storage.redis import (
+    REDIS_AUTH_EMAIL_REQ,
+    REDIS_AUTH_EMAIL_REQ_EMAIL,
+    REDIS_AUTH_VERIFY_FAIL,
+    get_redis_client,
+)
 
 logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-_EMAIL_RATELIMIT_PER_HOUR = 15
 
 
 class AuthConfig(BaseModel):
@@ -76,7 +80,17 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
         count = client.incr(key)
         if count == 1:
             client.expire(key, 3600)
-        if count > _EMAIL_RATELIMIT_PER_HOUR:
+        if count > settings.AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many login attempts, try again later.",
+            )
+
+        email_key = REDIS_AUTH_EMAIL_REQ_EMAIL.format(email=_hash(body.email))
+        email_count = client.incr(email_key)
+        if email_count == 1:
+            client.expire(email_key, 3600)
+        if email_count > settings.AUTH_EMAIL_REQUEST_PER_EMAIL_PER_HOUR:
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="Too many login attempts, try again later.",
@@ -103,6 +117,15 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
             detail="Failed to send login code, please try again later.",
         )
 
+    # A fresh code resets the verify attempt counter so a locked-out user can
+    # retry. The per-email request cap above still bounds total guesses.
+    try:
+        get_redis_client().delete(
+            REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=_hash(body.email))
+        )
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
 
 @router.post("/email/verify")
 async def email_verify(
@@ -111,6 +134,20 @@ async def email_verify(
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     visitor_id = get_matomo_tracker_from_cookies(request.cookies)
+    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=_hash(body.email))
+
+    try:
+        client = get_redis_client()
+        fail_count = client.get(fail_key)
+        if fail_count and int(fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many attempts, please request a new code.",
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
     token = await verify_login_code(
         email=body.email,
@@ -120,10 +157,23 @@ async def email_verify(
         visitor_id=visitor_id,
     )
     if not token:
+        try:
+            client = get_redis_client()
+            fail_count = client.incr(fail_key)
+            if fail_count == 1:
+                client.expire(fail_key, 600)
+        except Exception as e:
+            logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired code.",
         )
+
+    try:
+        get_redis_client().delete(fail_key)
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
     response.set_cookie(
         "auth_session",
