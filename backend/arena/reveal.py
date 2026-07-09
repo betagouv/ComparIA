@@ -135,7 +135,7 @@ def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealDat
                 comparison,
                 "a",
                 comparison.turns,
-                str(comparison.llm_id_a),
+                llms.all[comparison.llm_id_a].human_id,
             ),
         ),
         "b": get_llm_consumption(
@@ -145,7 +145,7 @@ def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealDat
                 comparison,
                 "b",
                 comparison.turns,
-                str(comparison.llm_id_b),
+                llms.all[comparison.llm_id_b].human_id,
             ),
         ),
     }
