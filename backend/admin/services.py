@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlmodel import col, func, select
 
-from utils.database.models.auth import LoginCode, User
+from utils.database.models.auth import InviteToken, LoginCode, User
 from utils.database.session import get_session
 
 
@@ -50,13 +50,24 @@ async def list_users(
 
         rows = []
         for user in users:
+            invites_result = await session.exec(
+                select(InviteToken).where(InviteToken.user_id == user.id)
+            )
+            invites = invites_result.all()
             used_code = await session.exec(
                 select(LoginCode).where(
                     LoginCode.user_id == user.id,
                     LoginCode.used_at.is_not(None),
                 )
             )
-            source = "email_code" if used_code.first() else "unknown"
+            if any(invite.used_at for invite in invites):
+                source = "email_invitation"
+            elif used_code.first():
+                source = "email_code"
+            elif invites:
+                source = "pending_invite"
+            else:
+                source = "unknown"
             rows.append(
                 UserRow(
                     id=user.id,
