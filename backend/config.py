@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Literal, get_args
 
 from httpx import Timeout
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
@@ -61,6 +62,11 @@ class Settings(BaseSettings):
     AUTH_TERMS_VERSION: str = "1.0"
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
+
+    @field_validator("COMPARIA_APP_URL")
+    @classmethod
+    def _strip_trailing_slash(cls, value: str) -> str:
+        return value.rstrip("/")
 
     # Anonymous
     ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
