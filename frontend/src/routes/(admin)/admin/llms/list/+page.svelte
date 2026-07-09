@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { Badge, Table } from '$components/dsfr'
-  import Icon from '$components/dsfr/Icon.svelte'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { Badge, Icon, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { sortIfDefined } from '$lib/utils/data'
@@ -79,43 +77,37 @@
   })
 </script>
 
-<PageLayout
-  seoTitle="Configuration — Authentification"
-  title="Configuration — Authentification"
-  subtitle="Etat actuel, modifiable via variables d'environnement."
+<Table
+  bind:search
+  bind:orderingMethod
+  bind:orderingCol
+  caption="LLMs"
+  hideCaption
+  {cols}
+  rows={sortedRows}
 >
-  <Table
-    bind:search
-    bind:orderingMethod
-    bind:orderingCol
-    caption="LLMs"
-    hideCaption
-    {cols}
-    rows={sortedRows}
-  >
-    {#snippet cell(llm, col)}
-      {#if col.id === 'human_id'}
-        {llm[col.id]}
-      {:else if col.id === 'status'}
-        {@const status = llm[col.id]}
-        <Badge
-          size="sm"
-          text={status}
-          variant={status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : ''}
-        />
-      {:else if col.id === 'rate_limited'}
-        {#if llm.rate_limited}
-          <Icon icon="i-ri-check-line" class="text-success" aria-label={m['words.yes']()} />
-        {:else}
-          <span class="sr-only">{m['words.no']()}</span>
-        {/if}
-      {:else if col.id === 'release_date'}
-        {llm.release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })}
-      {:else if col.id === 'created_at' || col.id === 'updated_at'}
-        <span class="fr-text--sm text-[--text-mention-grey]">{relativeTime(llm[col.id])}</span>
+  {#snippet cell(llm, col)}
+    {#if col.id === 'human_id'}
+      {llm[col.id]}
+    {:else if col.id === 'status'}
+      {@const status = llm[col.id]}
+      <Badge
+        size="sm"
+        text={status}
+        variant={status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : ''}
+      />
+    {:else if col.id === 'rate_limited'}
+      {#if llm.rate_limited}
+        <Icon icon="i-ri-check-line" class="text-success" aria-label={m['words.yes']()} />
       {:else}
-        {llm[col.id]}
+        <span class="sr-only">{m['words.no']()}</span>
       {/if}
-    {/snippet}
-  </Table>
-</PageLayout>
+    {:else if col.id === 'release_date'}
+      {llm.release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })}
+    {:else if col.id === 'created_at' || col.id === 'updated_at'}
+      <span class="fr-text--sm text-[--text-mention-grey]">{relativeTime(llm[col.id])}</span>
+    {:else}
+      {llm[col.id]}
+    {/if}
+  {/snippet}
+</Table>
