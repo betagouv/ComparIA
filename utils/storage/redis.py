@@ -58,14 +58,6 @@ def get_maintenance_mode() -> bool:
     return get_redis_client().get(REDIS_MAINTENANCE_KEY) == "1"
 
 
-def set_maintenance_mode(enabled: bool) -> None:
-    client = get_redis_client()
-    if enabled:
-        client.set(REDIS_MAINTENANCE_KEY, "1")
-    else:
-        client.delete(REDIS_MAINTENANCE_KEY)
-
-
 def maintenance_key_for_instance(instance: str) -> str:
     """Build the maintenance mode key for an arbitrary instance (fr, da, ...),
     regardless of the current process' own DEFAULT_COUNTRY_PORTAL."""

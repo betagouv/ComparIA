@@ -1,9 +1,29 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
   import Footer from '$components/Footer.svelte'
   import { Header } from '$components/header'
+  import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import ovoidPictoSrc from '@gouvfr/dsfr/dist/artwork/background/ovoid.svg'
   import errorPictoSrc from '@gouvfr/dsfr/dist/artwork/pictograms/system/technical-error.svg'
+  import { onDestroy, onMount } from 'svelte'
+
+  const CHECK_INTERVAL_MS = 20_000
+
+  onMount(() => {
+    const interval = setInterval(async () => {
+      try {
+        const { enabled } = await api.request<{ enabled: boolean }>('/maintenance/status')
+        if (!enabled) {
+          goto('/')
+        }
+      } catch (error) {
+        console.error(`Maintenance status check failed: ${(error as Error).message}`)
+      }
+    }, CHECK_INTERVAL_MS)
+
+    onDestroy(() => clearInterval(interval))
+  })
 </script>
 
 <Header />
