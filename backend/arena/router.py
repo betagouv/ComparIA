@@ -23,10 +23,8 @@ from backend.arena.services import (
 from backend.arena.session import (
     ComparisonMetadata,
     increment_blocked_prompts,
-    increment_custom_selections,
     increment_input_chars,
     is_block_cooldown,
-    is_custom_selection_ratelimited,
     is_ratelimited,
     retreive_comparison_metadata,
     store_comparison_metadata,
@@ -60,13 +58,13 @@ router = APIRouter(
 # Dependencies
 
 
-def assert_not_rate_limited(request: Request) -> None:
-    """Dependency to check rate limiting based on IP address."""
-    ip = get_ip(request)
-
-    if is_ratelimited(ip):
+def assert_not_rate_limited(
+    anonymous_user_hash: RequiredAnomymous, request: Request
+) -> None:
+    """Rate-limit expensive-model usage per anonymous session (not per IP)."""
+    if is_ratelimited(anonymous_user_hash):
         logger.error(
-            f"Too much text submitted to pricey models for ip {ip}",
+            "Too much text submitted to pricey models for anonymous session",
             extra={"request": request},
         )
         raise HTTPException(
@@ -188,19 +186,6 @@ async def add_first_text(
         extra={"request": request},
     )
 
-    if args.mode == "custom" and args.custom_models_selection:
-        ip = get_ip(request)
-        if is_custom_selection_ratelimited(ip):
-            logger.error(
-                f"Too many custom model selections for ip {ip}",
-                extra={"request": request},
-            )
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="rate_limit_custom_selection",
-            )
-        increment_custom_selections(ip)
-
     guardrail = await run_guardrail(args.prompt_value, "prompt_value", request)
 
     # Select LLMs
@@ -267,7 +252,7 @@ async def add_first_text(
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(args.prompt_value))
+                    increment_input_chars(anonymous_user_hash, len(args.prompt_value))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
@@ -283,6 +268,7 @@ async def add_first_text(
 async def add_text(
     comparison_: ComparisonAnno,
     args: AddTextBody,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> StreamingResponse:
     """
@@ -334,7 +320,7 @@ async def add_text(
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(args.message))
+                    increment_input_chars(anonymous_user_hash, len(args.message))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
@@ -346,6 +332,7 @@ async def add_text(
 @router.post("/retry/{comparison_id}", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
     comparison: ComparisonAnno,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> StreamingResponse:
     """
@@ -414,7 +401,9 @@ async def retry(
             # Increment input chars for pricey llms
             for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
                 if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(turn.user_msg.content))
+                    increment_input_chars(
+                        anonymous_user_hash, len(turn.user_msg.content)
+                    )
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
