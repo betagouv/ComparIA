@@ -2,7 +2,8 @@
   import AILogo from '$components/AILogo.svelte'
   import { Table } from '$components/dsfr'
   import { getLocale } from '$lib/i18n/runtime'
-  import { sortRows, toRelativeTime, type TableCol } from '$lib/utils/data'
+  import type { OrderingMethod, TableCol } from '$lib/utils/data'
+  import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
 
   import type { PageProps } from './$types'
 
@@ -13,10 +14,10 @@
     data.labs.map((lab) => ({
       ...lab,
       llms_count: data.llms.filter((llm) => llm.lab_id === lab.id!).length,
-      updated_at: new Date(lab.updated_at),
-      created_at: new Date(lab.created_at),
+      updated_at: new Date(lab.updated_at!),
+      created_at: new Date(lab.created_at!),
       id: lab.id!,
-      search: [lab.name, lab.id, lab.origin_country].join(' ')
+      search: toSearchString([lab.name, lab.id!, lab.origin_country])
     }))
   )
   type DataKey = keyof (typeof labs)[number]
@@ -30,7 +31,7 @@
   type ColKey = (typeof cols)[number]['id']
 
   let orderingCol = $state<ColKey>('name')
-  let orderingMethod = $state<'ascending' | 'descending'>('descending')
+  let orderingMethod = $state<OrderingMethod>('descending')
   let search = $state('')
 
   $effect(() => {

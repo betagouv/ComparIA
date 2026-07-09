@@ -2,13 +2,8 @@
   import { Badge, Icon, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import {
-    sortRows,
-    toRelativeTime,
-    toSearchString,
-    toShortDate,
-    type TableCol
-  } from '$lib/utils/data'
+  import type { OrderingMethod, TableCol } from '$lib/utils/data'
+  import { sortRows, toRelativeTime, toSearchString, toShortDate } from '$lib/utils/data'
 
   import type { PageProps } from './$types'
 
@@ -41,7 +36,7 @@
   type ColKey = (typeof cols)[number]['id']
 
   let orderingCol = $state<ColKey>('human_id')
-  let orderingMethod = $state<'ascending' | 'descending'>('descending')
+  let orderingMethod = $state<OrderingMethod>('descending')
   let search = $state('')
 
   $effect(() => {
