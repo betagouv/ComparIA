@@ -23,7 +23,7 @@
   }
 </script>
 
-<nav {...props} class={['language-selector fr-translate fr-nav', props.class]}>
+<nav {...props} class={['language-selector fr-translate fr-nav whitespace-nowrap', props.class]}>
   <Dropdown
     id="dropdown-{id}"
     label={LOCALES.find((locale) => locale.code === currentLocale)!.short}
