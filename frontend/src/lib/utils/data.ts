@@ -12,3 +12,23 @@ export function downloadTextFile(data: string, filename: string) {
   a.download = filename + '.csv'
   a.click()
 }
+
+export function toRelativeTime(date: Date, locale: string) {
+  const now = new Date().getTime()
+  const diff = (now - date.getTime()) / 1000
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+
+  if (diff < 60) {
+    return rtf.format(-Math.round(diff), 'second')
+  } else if (diff < 3600) {
+    return rtf.format(-Math.round(diff / 60), 'minute')
+  } else if (diff < 86400) {
+    return rtf.format(-Math.round(diff / 3600), 'hour')
+  } else {
+    return rtf.format(-Math.round(diff / 86400), 'day')
+  }
+}
+
+export function toShortDate(date: Date, locale: string) {
+  return date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
+}
