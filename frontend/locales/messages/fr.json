@@ -1,6 +1,6 @@
 {
     "a11y": {
-        "externalLink": "{text}"
+        "externalLink": "{text} (nouvelle fenêtre)"
     },
     "actions": {
         "accessData": "Accéder aux données",
