@@ -11,7 +11,7 @@
 
   const datasetCard = {
     img: `/datasets/conversations-${locale === 'fr' ? 'fr' : 'en'}.png`,
-    link: 'https://huggingface.co/datasets/comparIA/comparia-fr-arena',
+    link: 'https://huggingface.co/datasets/ministere-culture/comparia-fr-arena',
     title: m['datasets.access.repos.arena.title'](),
     desc: m['datasets.access.repos.arena.desc']()
   }
