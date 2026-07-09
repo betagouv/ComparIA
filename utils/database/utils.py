@@ -29,8 +29,6 @@ async def get_db_comparisons_stream(
                 selectinload(Turn.llm_msg_a),
                 selectinload(Turn.llm_msg_b),
             ),
-            selectinload(Comparison.system_msg_a),
-            selectinload(Comparison.system_msg_b),
         )
         if filters:
             for _filter in filters:
@@ -152,9 +150,7 @@ def parse_full_conversation(
     conversation: list[AnyRawMessage] = []
 
     if system_msg := getattr(comparison, f"system_msg_{side}"):
-        raw_system_msg = cast(
-            RawSystemMessage, system_msg.model_dump(include={"role", "content"})
-        )
+        raw_system_msg = {"role": "system", "content": system_msg}
         conversation.append(raw_system_msg)
 
     for turn in comparison.turns:

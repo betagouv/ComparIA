@@ -16,7 +16,6 @@ from utils.database.models import (
     BotPos,
     ErrorDetails,
     LLMMessageFinal,
-    SystemMessageRead,
     UserMessageRead,
 )
 
@@ -164,8 +163,8 @@ class DatasetTurn(SQLModel):
 
 class DatasetComparison(SQLModel):
     # Excluded, used to compute full conversations
-    system_msg_a: Annotated[SystemMessageRead | None, Field(exclude=True)]
-    system_msg_b: Annotated[SystemMessageRead | None, Field(exclude=True)]
+    system_msg_a: Annotated[str | None, Field(exclude=True)]
+    system_msg_b: Annotated[str | None, Field(exclude=True)]
 
     # Actual data
     comparison_id: Annotated[str, BeforeValidator(str), Field(validation_alias="id")]
@@ -257,7 +256,7 @@ class DatasetComparison(SQLModel):
     def parse_full_conversation(self, side: BotPos) -> list[dict]:
         conversation = []
         if system_msg := getattr(self, f"system_msg_{side}"):
-            conversation.append(system_msg.model_dump(include={"role", "content"}))
+            conversation.append({"role": "system", "content": system_msg})
         for turn in self.turns_:
             conversation += getattr(turn, f"response_{side}")
         return conversation

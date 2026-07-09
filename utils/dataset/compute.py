@@ -151,20 +151,11 @@ def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
 
     # A side's full conversation opens with its system prompt (when present),
     # then alternates user / assistant for every turn.
-    if comp.system_msg_a and comp.system_msg_a.content is None:
-        raise ValueError("System message A has no content")
-    if comp.system_msg_b and comp.system_msg_b.content is None:
-        raise ValueError("System message B has no content")
-
     full_conversation_a: list[dict] = (
-        [{"role": comp.system_msg_a.role, "content": comp.system_msg_a.content}]
-        if comp.system_msg_a
-        else []
+        [{"role": "system", "content": comp.system_msg_a}] if comp.system_msg_a else []
     )
     full_conversation_b: list[dict] = (
-        [{"role": comp.system_msg_b.role, "content": comp.system_msg_b.content}]
-        if comp.system_msg_b
-        else []
+        [{"role": "system", "content": comp.system_msg_b}] if comp.system_msg_b else []
     )
 
     partial_rows: list[dict] = []
