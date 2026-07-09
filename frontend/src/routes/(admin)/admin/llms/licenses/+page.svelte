@@ -2,7 +2,8 @@
   import { Badge, Table } from '$components/dsfr'
   import { getLocale } from '$lib/i18n/runtime'
   import { getLicenceBadge } from '$lib/models'
-  import { type TableCol, sortRows, toRelativeTime } from '$lib/utils/data'
+  import type { OrderingMethod, TableCol } from '$lib/utils/data'
+  import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
 
   import type { PageProps } from './$types'
 
@@ -13,10 +14,10 @@
     data.licenses.map((lic) => ({
       ...lic,
       llms_count: data.llms.filter((llm) => llm.license_id === lic.id!).length,
-      updated_at: new Date(lic.updated_at),
-      created_at: new Date(lic.created_at),
+      updated_at: new Date(lic.updated_at!),
+      created_at: new Date(lic.created_at!),
       id: lic.id!,
-      search: [lic.name, lic.id, lic.kind].join(' ')
+      search: toSearchString([lic.name, lic.id!, lic.kind])
     }))
   )
   type DataKey = keyof (typeof licenses)[number]
@@ -31,7 +32,7 @@
   type ColKey = (typeof cols)[number]['id']
 
   let orderingCol = $state<ColKey>('name')
-  let orderingMethod = $state<'ascending' | 'descending'>('descending')
+  let orderingMethod = $state<OrderingMethod>('descending')
   let search = $state('')
 
   $effect(() => {

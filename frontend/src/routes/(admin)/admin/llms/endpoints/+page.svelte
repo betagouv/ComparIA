@@ -2,8 +2,8 @@
   import { Icon, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { type TableCol, sortRows, toRelativeTime } from '$lib/utils/data'
-
+  import type { OrderingMethod, TableCol } from '$lib/utils/data'
+  import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
   import type { PageProps } from './$types'
 
   let { data }: PageProps = $props()
@@ -14,10 +14,10 @@
       ...endpoint,
       configured: !!endpoint.api_key,
       llms_count: data.llms.filter((llm) => llm.endpoint_id === endpoint.id!).length,
-      updated_at: new Date(endpoint.updated_at),
-      created_at: new Date(endpoint.created_at),
+      updated_at: new Date(endpoint.updated_at!),
+      created_at: new Date(endpoint.created_at!),
       id: endpoint.id!,
-      search: [endpoint.name, endpoint.id, endpoint.api_type].join(' ')
+      search: toSearchString([endpoint.name, endpoint.id!, endpoint.api_type])
     }))
   )
   type DataKey = keyof (typeof endpoints)[number]
@@ -33,7 +33,7 @@
   type ColKey = (typeof cols)[number]['id']
 
   let orderingCol = $state<ColKey>('name')
-  let orderingMethod = $state<'ascending' | 'descending'>('descending')
+  let orderingMethod = $state<OrderingMethod>('descending')
   let search = $state('')
 
   $effect(() => {
