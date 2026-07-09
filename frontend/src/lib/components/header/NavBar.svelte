@@ -1,13 +1,21 @@
+<script module lang="ts">
+  export type NavLink = {
+    label: string
+    icon: string
+    isCurrent?: (href: string) => boolean
+  } & LinkProps
+</script>
+
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
+  import type { LinkProps } from '$components/dsfr/Link.svelte'
   import { auth, logout } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { History, LanguageSelector, VoteGauge } from '.'
 
-  type NavLink = { href: string; label: string; icon: string }
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   let expanded = $state(true)
@@ -31,10 +39,11 @@
   href,
   icon,
   label,
+  isCurrent,
   class: linkClass,
   ...props
-}: { icon: string; label: string } & HTMLAnchorAttributes)}
-  {@const current = page.url.pathname === href}
+}: NavLink & HTMLAnchorAttributes)}
+  {@const current = isCurrent ? isCurrent(href!) : page.url.pathname === href}
   <Link
     {href}
     {...props}

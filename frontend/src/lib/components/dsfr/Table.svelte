@@ -123,7 +123,7 @@
           id="table-search"
           bind:value={search}
           label={searchLabel}
-          class="md:w-auto ms-auto w-full"
+          class="md:w-auto mb-0! ms-auto w-full"
         />
       {/if}
 
