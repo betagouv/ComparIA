@@ -1,10 +1,11 @@
 import { env } from '$env/dynamic/private'
+import { api } from '$lib/fastapi-client'
 import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
-import type { Handle } from '@sveltejs/kit'
+import { redirect, type Handle } from '@sveltejs/kit'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
@@ -59,6 +60,39 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
   })
 }
 
+const MAINTENANCE_PATH = '/maintenance'
+const MAINTENANCE_CHECK_TTL_MS = 20_000
+
+// Cached per Node process so we don't hit the backend on every single request
+let maintenanceCache: { enabled: boolean; checkedAt: number } | null = null
+
+// Maintenance mode: re-checked at most every MAINTENANCE_CHECK_TTL_MS, so a
+// fresh navigation sees the flag within that window (unlike client-side
+// polling, already-open idle tabs are only caught on their next navigation).
+const maintenanceHandle: Handle = async ({ event, resolve }) => {
+  if (event.url.pathname.startsWith(MAINTENANCE_PATH) || event.url.pathname.startsWith('/_app')) {
+    return resolve(event)
+  }
+
+  const now = Date.now()
+  if (!maintenanceCache || now - maintenanceCache.checkedAt >= MAINTENANCE_CHECK_TTL_MS) {
+    let enabled = maintenanceCache?.enabled ?? false
+    try {
+      ;({ enabled } = await api.request<{ enabled: boolean }>('/maintenance/status'))
+    } catch (error) {
+      // Fail open: don't take the whole site down if the status check itself fails
+      logger.error('Maintenance status check failed', { error: `${error}` })
+    }
+    maintenanceCache = { enabled, checkedAt: now }
+  }
+
+  if (maintenanceCache.enabled) {
+    redirect(307, MAINTENANCE_PATH)
+  }
+
+  return resolve(event)
+}
+
 // Metrics middleware
 const metricsHandle: Handle = async ({ event, resolve }) => {
 	// Skip metrics endpoint itself
@@ -92,7 +126,10 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
 	return response
 }
 
-// Compose handles: metrics first, then paraglide
+// Compose handles: maintenance first, then metrics, then paraglide
 export const handle: Handle = async ({ event, resolve }) => {
-	return metricsHandle({ event, resolve: (e) => paraglideHandle({ event: e, resolve }) })
+	return maintenanceHandle({
+		event,
+		resolve: (e) => metricsHandle({ event: e, resolve: (e2) => paraglideHandle({ event: e2, resolve }) })
+	})
 }
