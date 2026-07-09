@@ -171,7 +171,7 @@ async def bot_response_async(
     if not llm_msg.tokens:
         llm_msg.tokens = token_counter(
             text=[llm_msg.reasoning_content, llm_msg.content],
-            model=llm.id,
+            model=llm.human_id,
         )
 
     # Final update with complete response and timing data
