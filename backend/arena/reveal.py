@@ -129,7 +129,7 @@ def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealDat
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {
         "a": get_llm_consumption(
-            llms[comparison.llm_id_a],
+            llms.all[comparison.llm_id_a],
             sum(turn.llm_msg_a.tokens for turn in comparison.turns),
             count_input_tokens(
                 comparison,
@@ -139,7 +139,7 @@ def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealDat
             ),
         ),
         "b": get_llm_consumption(
-            llms[comparison.llm_id_b],
+            llms.all[comparison.llm_id_b],
             sum(turn.llm_msg_b.tokens for turn in comparison.turns),
             count_input_tokens(
                 comparison,

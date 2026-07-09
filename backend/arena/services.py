@@ -207,7 +207,7 @@ async def get_user_comparisons(user_id: uuid.UUID) -> list[ComparisonPublic]:
             .order_by(col(Comparison.updated_at).desc())
         )
         db_comparisons = (await session.exec(query)).all()
-        llms_data = (await get_llms_data()).all
+        llms_data = await get_llms_data()
 
         return [
             ComparisonPublic.model_validate(
