@@ -27,6 +27,12 @@
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue"
     },
+    "admin": {
+        "llms": {
+            "title": "LLMs data configuration",
+            "subTitle": "LLMs, labs, licenses and endpoints."
+        }
+    },
     "arenaHome": {
         "compareModels": {
             "count": "{count}/2 modèles",
