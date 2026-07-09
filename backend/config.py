@@ -66,6 +66,16 @@ class Settings(BaseSettings):
     AUTH_SESSION_LENGTH_DAYS: int = 30
     # Bumping this value invalidates existing consent logs and forces re-consent
     AUTH_TERMS_VERSION: str = "1.0"
+
+    # Deliberately high: keyed on IP, so a school class behind one shared NAT
+    # must never be locked out. The real anti-abuse limit is per-email below.
+    AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR: int = 2000
+    AUTH_EMAIL_REQUEST_PER_EMAIL_PER_HOUR: int = 5
+    AUTH_VERIFY_MAX_ATTEMPTS: int = 5
+
+    # Anonymous
+    ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
+
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
 
@@ -73,9 +83,6 @@ class Settings(BaseSettings):
     @classmethod
     def _strip_trailing_slash(cls, value: str) -> str:
         return value.rstrip("/")
-
-    # Anonymous
-    ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
 
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email
