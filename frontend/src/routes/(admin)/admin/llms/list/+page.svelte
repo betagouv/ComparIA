@@ -51,15 +51,9 @@
     }
   })
 
-  const sortedRows = $derived.by(() => {
-    const _search = search.toLowerCase()
-
-    return sortRows(llms, cols, {
-      col: orderingCol,
-      method: orderingMethod,
-      search: search.toLowerCase()
-    })
-  })
+  const sortedRows = $derived(
+    sortRows(llms, cols, { col: orderingCol, method: orderingMethod, search })
+  )
 </script>
 
 <Table
