@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("languia")
 
 _LOGIN_CODE_TTL_MINUTES = 10
-_INVITE_TOKEN_TTL_HOURS = 1
+_INVITE_TOKEN_TTL_HOURS = 24
 
 
 def _hash(value: str) -> str:

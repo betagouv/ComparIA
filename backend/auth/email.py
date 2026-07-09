@@ -32,7 +32,7 @@ _INVITE_HTML_TEMPLATE = """\
   <p style="text-align: center; padding: 20px 0;">
     <a href="{link}" style="background: #000091; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 4px; display: inline-block;">Rejoindre ComparIA</a>
   </p>
-  <p>Ce lien est valable 1&nbsp;heure. Si vous n'êtes pas à l'origine de cette invitation, ignorez cet email.</p>
+  <p>Ce lien est valable 24&nbsp;heures. Si vous n'êtes pas à l'origine de cette invitation, ignorez cet email.</p>
   <p>L'équipe ComparIA</p>
 </body>
 </html>
