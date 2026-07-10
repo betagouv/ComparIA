@@ -82,6 +82,24 @@ async def list_users(
         return rows, total
 
 
+async def cancel_user_invite(user_id: uuid.UUID) -> bool:
+    async with get_session() as session:
+        result = await session.exec(
+            select(InviteToken).where(
+                InviteToken.user_id == user_id,
+                InviteToken.used_at.is_(None),
+            )
+        )
+        invites = result.all()
+        if not invites:
+            return False
+
+        for invite in invites:
+            await session.delete(invite)
+        await session.commit()
+        return True
+
+
 async def set_user_role(user_id: uuid.UUID, role: str) -> User | None:
     async with get_session() as session:
         user = await session.get(User, user_id)

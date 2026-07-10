@@ -8,6 +8,7 @@ from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
+    cancel_user_invite,
     delete_user,
     list_users,
     set_user_role,
@@ -120,3 +121,10 @@ async def invite_user(
     token = await create_invite(body.email, invited_by=current_user.id)
     link = f"{settings.COMPARIA_APP_URL}/invite/{token}"
     await send_invite_link(body.email, link)
+
+
+@router.delete("/users/{user_id}/invite", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_user_invite(user_id: uuid.UUID) -> None:
+    canceled = await cancel_user_invite(user_id)
+    if not canceled:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
