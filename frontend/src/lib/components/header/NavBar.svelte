@@ -12,6 +12,7 @@
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
   import { auth, logout } from '$lib/auth.svelte'
+  import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { History, LanguageSelector, VoteGauge } from '.'
@@ -68,13 +69,18 @@
       { 'lg:sr-only': !expanded }
     ]}
   >
-    <img src="/orgs/comparia.png" aria-hidden="true" alt="" class="h-[35px]" />
+    <img
+      src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : '/orgs/comparia.png'}
+      aria-hidden="true"
+      alt=""
+      class="h-[35px]"
+    />
     <a
       href={resolve('/')}
       title={m['header.homeTitle']()}
       class="font-bold text-lg text-[--text-title-grey]"
     >
-      {m['header.title']()}
+      {auth.config?.platform_name || m['header.title']()}
     </a>
   </div>
 {/snippet}
