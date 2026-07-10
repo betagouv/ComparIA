@@ -38,6 +38,7 @@
             "personnalisation": "Personnalisation",
             "authentification": "Authentification"
         },
+        "panelLink": "Administration",
         "settings": {
             "subtitle": "Configuration de l'application.",
             "loading": "Chargement...",

@@ -32,6 +32,7 @@
             "personnalisation": "Tilpasning",
             "authentification": "Autentificering"
         },
+        "panelLink": "Administration",
         "settings": {
             "subtitle": "Applikationskonfiguration.",
             "loading": "Indlæser...",
