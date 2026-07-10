@@ -108,6 +108,42 @@
         bind:value={platformName}
         groupClass="mt-4!"
       />
+
+      <div class="mt-4!">
+        <p class="fr-label mb-2!">{m['admin.settings.personnalisation.logo.label']()}</p>
+        <div class="gap-4 flex items-center">
+          <img
+            src={logoSrc}
+            alt=""
+            class="bg-white h-[48px] border border-[--border-default-grey]"
+          />
+          <div class="gap-2 flex flex-col">
+            <label class="fr-label">
+              <span class="fr-sr-only"
+                >{m['admin.settings.personnalisation.logo.chooseFile']()}</span
+              >
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                disabled={uploadingLogo}
+                onchange={uploadLogo}
+              />
+            </label>
+            {#if hasCustomLogo}
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                text={m['admin.settings.personnalisation.logo.reset']()}
+                disabled={uploadingLogo}
+                onclick={resetLogo}
+              />
+            {/if}
+          </div>
+        </div>
+        <p class="fr-hint-text mt-1!">{m['admin.settings.personnalisation.logo.hint']()}</p>
+      </div>
+
       <Input
         id="settings-votes-objective"
         type="number"
@@ -123,34 +159,5 @@
         class="mt-4!"
       />
     </form>
-
-    <div class="mt-8! max-w-[480px]">
-      <p class="fr-label mb-2!">{m['admin.settings.personnalisation.logo.label']()}</p>
-      <div class="gap-4 flex items-center">
-        <img src={logoSrc} alt="" class="bg-white h-[48px] border border-[--border-default-grey]" />
-        <div class="gap-2 flex flex-col">
-          <label class="fr-label">
-            <span class="fr-sr-only">{m['admin.settings.personnalisation.logo.chooseFile']()}</span>
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/svg+xml,image/webp"
-              disabled={uploadingLogo}
-              onchange={uploadLogo}
-            />
-          </label>
-          {#if hasCustomLogo}
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              text={m['admin.settings.personnalisation.logo.reset']()}
-              disabled={uploadingLogo}
-              onclick={resetLogo}
-            />
-          {/if}
-        </div>
-      </div>
-      <p class="fr-hint-text mt-1!">{m['admin.settings.personnalisation.logo.hint']()}</p>
-    </div>
   {/if}
 </PageLayout>
