@@ -152,8 +152,23 @@ async def create_invite(email: str, invited_by: uuid.UUID) -> str:
         elif user.deleted_at is not None:
             # Email is unique, so re-inviting a deleted user must revive
             # their existing row rather than leave it permanently dead.
+            # Clear their old auth history too, otherwise a previously
+            # accepted invite or used login code makes list_users report
+            # them as already joined instead of pending on the new invite.
             user.deleted_at = None
             session.add(user)
+
+            old_invites = await session.exec(
+                select(InviteToken).where(InviteToken.user_id == user.id)
+            )
+            for invite in old_invites.all():
+                await session.delete(invite)
+
+            old_codes = await session.exec(
+                select(LoginCode).where(LoginCode.user_id == user.id)
+            )
+            for login_code in old_codes.all():
+                await session.delete(login_code)
 
         token = secrets.token_urlsafe(32)
         session.add(
