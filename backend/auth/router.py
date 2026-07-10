@@ -18,6 +18,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
@@ -58,11 +59,12 @@ class InviteAcceptBody(BaseModel):
 
 @router.get("/config")
 async def get_config() -> AuthConfig:
+    app_settings = await get_app_settings()
     return AuthConfig(
-        access_policy=settings.AUTH_ACCESS_POLICY,
+        access_policy=app_settings.auth_access_policy,
         methods=["email_code"],
         smtp_configured=bool(settings.SMTP_HOST),
-        domain_allowlist=settings.AUTH_DOMAIN_ALLOWLIST,
+        domain_allowlist=app_settings.auth_domain_allowlist,
     )
 
 
@@ -100,9 +102,10 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    if settings.AUTH_DOMAIN_ALLOWLIST:
+    app_settings = await get_app_settings()
+    if app_settings.auth_domain_allowlist:
         domain = body.email.split("@")[-1].lower()
-        if domain not in [d.lower() for d in settings.AUTH_DOMAIN_ALLOWLIST]:
+        if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Email domain not allowed.",

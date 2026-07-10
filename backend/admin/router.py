@@ -17,6 +17,7 @@ from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
 from backend.config import settings
+from utils.database.settings import get_app_settings, update_app_settings
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -47,6 +48,20 @@ class SetRoleBody(BaseModel):
 
 class InviteBody(BaseModel):
     email: EmailStr
+
+
+class AppSettingsOut(BaseModel):
+    auth_access_policy: Literal["anonymous_first", "sign_in_required"]
+    auth_domain_allowlist: list[str]
+    votes_objective: int
+    updated_at: str
+    updated_by: uuid.UUID | None = None
+
+
+class AppSettingsPatch(BaseModel):
+    auth_access_policy: Literal["anonymous_first", "sign_in_required"] | None = None
+    auth_domain_allowlist: list[str] | None = None
+    votes_objective: int | None = None
 
 
 @router.get("/users", response_model=UsersPage)
@@ -128,3 +143,32 @@ async def remove_user_invite(user_id: uuid.UUID) -> None:
     canceled = await cancel_user_invite(user_id)
     if not canceled:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+
+@router.get("/settings", response_model=AppSettingsOut)
+async def get_settings() -> AppSettingsOut:
+    row = await get_app_settings()
+    return AppSettingsOut(
+        auth_access_policy=row.auth_access_policy,
+        auth_domain_allowlist=row.auth_domain_allowlist,
+        votes_objective=row.votes_objective,
+        updated_at=row.updated_at.isoformat(),
+        updated_by=row.updated_by,
+    )
+
+
+@router.patch("/settings", response_model=AppSettingsOut)
+async def patch_settings(
+    body: AppSettingsPatch,
+    current_user: RequiredAdmin,
+) -> AppSettingsOut:
+    row = await update_app_settings(
+        body.model_dump(exclude_unset=True), updated_by=current_user.id
+    )
+    return AppSettingsOut(
+        auth_access_policy=row.auth_access_policy,
+        auth_domain_allowlist=row.auth_domain_allowlist,
+        votes_objective=row.votes_objective,
+        updated_at=row.updated_at.isoformat(),
+        updated_by=row.updated_by,
+    )
