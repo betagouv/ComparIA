@@ -35,6 +35,11 @@
       label: m['admin.nav.authentification'](),
       href: '/admin/authentification',
       icon: 'i-ri-fingerprint-line'
+    },
+    {
+      label: m['actions.returnArena'](),
+      href: '/arene',
+      icon: 'i-ri-arrow-left-line'
     }
   ])
 </script>
