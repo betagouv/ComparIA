@@ -101,6 +101,16 @@
     }
   }
 
+  async function cancelInvite(row: { id: string; email: string }) {
+    try {
+      await api.request(`/admin/users/${row.id}/invite`, { method: 'DELETE' })
+      useToast(`Invite for ${row.email} canceled`, 4000)
+      await fetchUsers()
+    } catch (err) {
+      useToast((err as Error).message, 6000, 'error')
+    }
+  }
+
   const cols = [
     { id: 'email', label: 'Email', orderable: true },
     { id: 'source', label: 'Source', orderable: true },
@@ -144,6 +154,18 @@
           <span class="fr-text--sm text-[--text-disabled-grey]">—</span>
         {:else}
           <div class="gap-1 flex items-center justify-end">
+            {#if row.source === 'pending_invite'}
+              <Button
+                iconOnly
+                variant="tertiary-no-outline"
+                size="sm"
+                title="Cancel invite"
+                aria-label={`Cancel invite for ${row.email}`}
+                onclick={() => cancelInvite(row)}
+              >
+                <Icon icon="i-ri-mail-close-line" />
+              </Button>
+            {/if}
             {#if row.role !== 'admin'}
               <Button
                 iconOnly
