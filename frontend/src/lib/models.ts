@@ -191,6 +191,25 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
   }
 }
 
+export function getLicenceBadge(licenseType: APILLMData['license']['kind']) {
+  return {
+    'open-source': {
+      variant: 'green' as const,
+      text: m['models.licenses.type.openSource'](),
+      tooltip: m['models.openWeight.tooltips.openSource']()
+    },
+    'open-weights': {
+      variant: 'yellow' as const,
+      text: m['models.licenses.type.semiOpen'](),
+      tooltip: m['models.openWeight.tooltips.openWeight']()
+    },
+    proprietary: {
+      variant: 'orange' as const,
+      text: m['models.licenses.type.proprietary']()
+    }
+  }[licenseType]
+}
+
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
@@ -211,25 +230,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       return obj[v] ? score + 1 : score
     }, 0),
     badges: {
-      license: {
-        'open-source': {
-          id: `model-os-${model.id}`,
-          variant: 'green' as const,
-          text: m['models.licenses.type.openSource'](),
-          tooltip: m['models.openWeight.tooltips.openSource']()
-        },
-        'open-weights': {
-          id: `model-ow-${model.id}`,
-          variant: 'yellow' as const,
-          text: m['models.licenses.type.semiOpen'](),
-          tooltip: m['models.openWeight.tooltips.openWeight']()
-        },
-        proprietary: {
-          id: `model-proprietary-${model.id}`,
-          variant: 'orange' as const,
-          text: m['models.licenses.type.proprietary']()
-        }
-      }[licenseType],
+      license: { ...getLicenceBadge(licenseType), id: `llm-license-${model.id}` },
       release: {
         variant: 'brown' as const,
         text: m['models.release']({

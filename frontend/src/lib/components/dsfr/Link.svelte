@@ -1,14 +1,16 @@
-<script lang="ts">
-  import { m } from '$lib/i18n/messages'
-  import type { HTMLAnchorAttributes } from 'svelte/elements'
-  import type { ButtonProps } from './Button.svelte'
-
-  type LinkProps = {
+<script module lang="ts">
+  export type LinkProps = {
     href: string
     button?: boolean
     hideExternalIcon?: boolean
   } & ButtonProps &
     HTMLAnchorAttributes
+</script>
+
+<script lang="ts">
+  import { m } from '$lib/i18n/messages'
+  import type { HTMLAnchorAttributes } from 'svelte/elements'
+  import type { ButtonProps } from './Button.svelte'
 
   let {
     href,
@@ -32,7 +34,7 @@
           rel: 'noopener external',
           target: '_blank',
           // FIXME a11y mailto
-          title: m['a11y.externalLink']({ text })
+          title: m['a11y.externalLink']({ text: text || '' })
         }
       : {}
   )

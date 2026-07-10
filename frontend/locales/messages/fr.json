@@ -1,6 +1,6 @@
 {
     "a11y": {
-        "externalLink": "{text}"
+        "externalLink": "{text} (nouvelle fenêtre)"
     },
     "actions": {
         "accessData": "Accéder aux données",
@@ -26,6 +26,12 @@
         "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue"
+    },
+    "admin": {
+        "llms": {
+            "title": "LLMs data configuration",
+            "subTitle": "LLMs, labs, licenses and endpoints."
+        }
     },
     "arenaHome": {
         "compareModels": {

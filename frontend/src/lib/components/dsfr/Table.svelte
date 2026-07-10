@@ -1,15 +1,10 @@
-<script
-  lang="ts"
-  generics="
-    Col extends { id: string, label: string, orderable?: boolean, tooltip?: string, colHeaderClass?: ClassValue }, 
-    Row extends { id: string }
-  "
->
+<script lang="ts" generics="Col extends TableCol, Row extends { id: string }">
   import { Button, Pagination, Search, Select, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
+  import type { OrderingMethod, TableCol } from '$lib/utils/data'
   import { onMount, type Snippet } from 'svelte'
-  import type { ClassValue, HTMLTableAttributes } from 'svelte/elements'
+  import type { HTMLTableAttributes } from 'svelte/elements'
 
   type TableProps = {
     caption: string
@@ -17,7 +12,7 @@
     rows: Row[]
     pagination?: boolean
     orderingCol?: Col['id']
-    orderingMethod?: 'ascending' | 'descending'
+    orderingMethod?: OrderingMethod
     search?: string
     searchLabel?: string
     hideCaption?: boolean
@@ -123,7 +118,7 @@
           id="table-search"
           bind:value={search}
           label={searchLabel}
-          class="md:w-auto ms-auto w-full"
+          class="md:w-auto mb-0! ms-auto w-full"
         />
       {/if}
 
