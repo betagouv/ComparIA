@@ -149,6 +149,11 @@ async def create_invite(email: str, invited_by: uuid.UUID) -> str:
             user = User(email=email)
             session.add(user)
             await session.flush()
+        elif user.deleted_at is not None:
+            # Email is unique, so re-inviting a deleted user must revive
+            # their existing row rather than leave it permanently dead.
+            user.deleted_at = None
+            session.add(user)
 
         token = secrets.token_urlsafe(32)
         session.add(
