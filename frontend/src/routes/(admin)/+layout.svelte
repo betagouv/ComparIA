@@ -20,15 +20,16 @@
   const navLinks: NavLink[] = [
     { label: 'Utilisateurs', href: '/admin', icon: 'i-ri-user-settings-line' },
     {
-      label: 'Configuration auth',
-      href: '/admin/configuration/auth',
-      icon: 'i-ri-fingerprint-line'
-    },
-    {
       label: 'LLMs',
       href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
       isCurrent: () => page.url.pathname.includes('/admin/llms')
+    },
+    {
+      label: 'Paramètres',
+      href: '/admin/settings/authentification',
+      icon: 'i-ri-settings-4-line',
+      isCurrent: () => page.url.pathname.includes('/admin/settings')
     }
   ]
 </script>
