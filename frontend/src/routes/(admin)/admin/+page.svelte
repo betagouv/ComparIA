@@ -104,7 +104,7 @@
   async function cancelInvite(row: { id: string; email: string }) {
     try {
       await api.request(`/admin/users/${row.id}/invite`, { method: 'DELETE' })
-      useToast(`Invite for ${row.email} canceled`, 4000)
+      useToast(`Invite for ${row.email} canceled, user removed`, 4000)
       await fetchUsers()
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')

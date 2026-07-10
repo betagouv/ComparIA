@@ -96,6 +96,12 @@ async def cancel_user_invite(user_id: uuid.UUID) -> bool:
 
         for invite in invites:
             await session.delete(invite)
+
+        user = await session.get(User, user_id)
+        if user:
+            user.deleted_at = datetime.now()
+            session.add(user)
+
         await session.commit()
         return True
 
