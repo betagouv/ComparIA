@@ -36,6 +36,8 @@ class AuthConfig(BaseModel):
     methods: list[Literal["email_code"]]
     smtp_configured: bool
     domain_allowlist: list[str]
+    platform_name: str
+    has_custom_logo: bool
 
 
 class EmailRequestBody(BaseModel):
@@ -65,6 +67,20 @@ async def get_config() -> AuthConfig:
         methods=["email_code"],
         smtp_configured=bool(settings.SMTP_HOST),
         domain_allowlist=app_settings.auth_domain_allowlist,
+        platform_name=app_settings.platform_name,
+        has_custom_logo=app_settings.logo is not None,
+    )
+
+
+@router.get("/config/logo")
+async def get_config_logo() -> Response:
+    app_settings = await get_app_settings()
+    if not app_settings.logo:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return Response(
+        content=app_settings.logo,
+        media_type=app_settings.logo_content_type or "image/png",
+        headers={"Cache-Control": "public, max-age=300"},
     )
 
 
