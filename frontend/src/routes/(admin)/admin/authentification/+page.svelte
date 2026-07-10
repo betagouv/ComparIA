@@ -68,7 +68,7 @@
       />
       <Input
         id="settings-domain-allowlist"
-        label="Domaines autorisés"
+        label="Domaines email autorisés"
         help="Séparés par des virgules. Laisser vide pour autoriser tous les domaines."
         bind:value={domainAllowlist}
         groupClass="mt-4!"
