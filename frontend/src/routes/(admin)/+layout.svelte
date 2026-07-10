@@ -26,10 +26,14 @@
       isCurrent: () => page.url.pathname.includes('/admin/llms')
     },
     {
-      label: 'Paramètres',
-      href: '/admin/settings/authentification',
-      icon: 'i-ri-settings-4-line',
-      isCurrent: () => page.url.pathname.includes('/admin/settings')
+      label: 'Personnalisation',
+      href: '/admin/personnalisation',
+      icon: 'i-ri-palette-line'
+    },
+    {
+      label: 'Authentification',
+      href: '/admin/authentification',
+      icon: 'i-ri-fingerprint-line'
     }
   ]
 </script>
