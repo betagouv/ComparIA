@@ -2537,6 +2537,32 @@
                 "desc": "FIXME",
                 "title": "Pourquoi cette consommation ?"
             },
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>dense</strong> : il mobilise l’ensemble de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>Matformer</strong> : il adapte la part de ses paramètres mobilisée à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse (environ <strong>{activeParams} milliards</strong> sur <strong>{params} milliards</strong>). Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> est un modèle <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "un niveau <strong>comparable</strong> à celui de <strong>{otherModel}</strong>",
+                    "multipleLess": "près de <strong>{count} fois moins</strong> que <strong>{otherModel}</strong>",
+                    "multipleMore": "près de <strong>{count} fois plus</strong> que <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>−{percentage} %</strong> par rapport à <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>+{percentage} %</strong> par rapport à <strong>{otherModel}</strong>",
+                    "unavailable": "une comparaison indisponible avec <strong>{otherModel}</strong>"
+                },
+                "consumption": "Sur cette discussion, les <strong>{tokens} jetons</strong> générés représentent environ <strong>{energy} mWh</strong>, soit {comparison}.",
+                "size": {
+                    "estimated": "{size} (estimée)",
+                    "l": "de grande taille",
+                    "m": "de taille moyenne",
+                    "s": "de petite taille",
+                    "xl": "de très grande taille",
+                    "xs": "de très petite taille"
+                }
+            },
             "size": {
                 "count": "milliards param.",
                 "estimated": "(est.)",

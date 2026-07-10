@@ -1,15 +1,10 @@
+import { m } from '$lib/i18n/messages'
+import { getLocale } from '$lib/i18n/runtime'
+
 export const MULTIPLE_THRESHOLD = 2
 export const COMPARABLE_THRESHOLD = 1.1
 
-const SIZE_LEXICON = {
-  XS: 'de très petite taille',
-  S: 'de petite taille',
-  M: 'de taille moyenne',
-  L: 'de grande taille',
-  XL: 'de très grande taille'
-} as const
-
-type SizeClass = keyof typeof SIZE_LEXICON
+type SizeClass = 'XS' | 'S' | 'M' | 'L' | 'XL'
 type EnergyClass = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
 
 export interface ConsumptionSummaryModel {
@@ -27,140 +22,112 @@ export interface ConsumptionSummaryData {
   energy_mwh: number
 }
 
-export interface SummaryPart {
-  text: string
-  emphasized?: true
-}
-
 export interface ConsumptionSummary {
-  classification: SummaryPart[]
-  consumption: SummaryPart[]
+  classification: string
+  consumption: string
 }
 
-const text = (value: string): SummaryPart => ({ text: value })
-const emphasized = (value: string): SummaryPart => ({ text: value, emphasized: true })
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, (character) => {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]!
+  })
+}
 
-export function formatFrenchNumber(value: number, decimals = 0): string {
-  return value.toLocaleString('fr-FR', {
+export function formatLocalizedNumber(value: number, decimals = 0): string {
+  return value.toLocaleString(getLocale(), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
   })
 }
 
 function sizeDescription(model: ConsumptionSummaryModel): string {
-  return `${SIZE_LEXICON[model.size_class]}${model.license.kind === 'proprietary' ? ' (estimée)' : ''}`
+  const size = {
+    XS: () => m['reveal.impacts.summary.size.xs'](),
+    S: () => m['reveal.impacts.summary.size.s'](),
+    M: () => m['reveal.impacts.summary.size.m'](),
+    L: () => m['reveal.impacts.summary.size.l'](),
+    XL: () => m['reveal.impacts.summary.size.xl']()
+  }[model.size_class]()
+
+  return model.license.kind === 'proprietary'
+    ? m['reveal.impacts.summary.size.estimated']({ size })
+    : size
 }
 
-function buildClassification(model: ConsumptionSummaryModel): SummaryPart[] {
-  const size = sizeDescription(model)
-  const prefix = [emphasized(model.name), text(' est un modèle ')]
-  const classConclusion = [
-    text(' À ce titre, il obtient la classe énergétique '),
-    emphasized(model.energy_class),
-    text('.')
-  ]
+function buildClassification(model: ConsumptionSummaryModel): string {
+  const inputs = {
+    model: escapeHtml(model.name),
+    size: sizeDescription(model),
+    energyClass: model.energy_class
+  }
 
   switch (model.arch) {
     case 'dense':
-      return [
-        ...prefix,
-        emphasized(size),
-        text(" à l'architecture "),
-        emphasized('dense'),
-        text(" : il mobilise l'ensemble de ses paramètres à chaque réponse."),
-        ...classConclusion
-      ]
-
+      return m['reveal.impacts.summary.classification.dense'](inputs)
     case 'moe':
-      if (model.active_params === null) return buildUnknownClassification(model, size)
-      return [
-        ...prefix,
-        emphasized(size),
-        text(" à l'architecture "),
-        emphasized("par mélange d'experts"),
-        text(" : il n'active qu'une partie de ses paramètres à chaque réponse (~"),
-        emphasized(`${formatFrenchNumber(model.active_params)} mds`),
-        text(' sur '),
-        emphasized(formatFrenchNumber(model.params)),
-        text(').'),
-        ...classConclusion
-      ]
-
+      if (model.active_params !== null) {
+        return m['reveal.impacts.summary.classification.moe']({
+          ...inputs,
+          activeParams: formatLocalizedNumber(model.active_params),
+          params: formatLocalizedNumber(model.params)
+        })
+      }
+      return buildUnknownClassification(model, inputs)
     case 'matformer':
-      return [
-        ...prefix,
-        emphasized(size),
-        text(" à l'architecture "),
-        emphasized('Matformer'),
-        text(' : elle adapte la part de ses paramètres mobilisée à chaque réponse.'),
-        ...classConclusion
-      ]
-
+      return m['reveal.impacts.summary.classification.matformer'](inputs)
     case 'maybe-moe':
     case 'maybe-matformer':
     case 'maybe-dense':
     case 'na':
-      return buildUnknownClassification(model, size)
+      return buildUnknownClassification(model, inputs)
   }
 }
 
-function buildUnknownClassification(model: ConsumptionSummaryModel, size: string): SummaryPart[] {
-  const proprietary = model.license.kind === 'proprietary'
-  return [
-    emphasized(model.name),
-    text(' est un modèle '),
-    emphasized(`${proprietary ? 'propriétaire ' : ''}${size}`),
-    text(
-      ", dont l'architecture n'est pas communiquée. Compte tenu de sa taille, il obtient la classe énergétique "
-    ),
-    emphasized(model.energy_class),
-    text('.')
-  ]
+function buildUnknownClassification(
+  model: ConsumptionSummaryModel,
+  inputs: { model: string; size: string; energyClass: EnergyClass }
+): string {
+  return model.license.kind === 'proprietary'
+    ? m['reveal.impacts.summary.classification.unknownProprietary'](inputs)
+    : m['reveal.impacts.summary.classification.unknown'](inputs)
 }
 
 export function buildComparisonSegment(
   energyMwh: number,
   otherEnergyMwh: number,
   otherName: string
-): SummaryPart[] {
+): string {
+  const otherModel = escapeHtml(otherName)
   if (
     !Number.isFinite(energyMwh) ||
     !Number.isFinite(otherEnergyMwh) ||
     energyMwh <= 0 ||
     otherEnergyMwh <= 0
   ) {
-    return [text('une comparaison indisponible avec '), emphasized(otherName)]
+    return m['reveal.impacts.summary.comparison.unavailable']({ otherModel })
   }
 
   const ratio = Math.max(energyMwh, otherEnergyMwh) / Math.min(energyMwh, otherEnergyMwh)
   const consumesMore = energyMwh > otherEnergyMwh
 
   if (ratio < COMPARABLE_THRESHOLD) {
-    return [
-      text('un niveau '),
-      emphasized('comparable'),
-      text(' à celui de '),
-      emphasized(otherName)
-    ]
+    return m['reveal.impacts.summary.comparison.comparable']({ otherModel })
   }
 
   if (ratio >= MULTIPLE_THRESHOLD) {
-    return [
-      text('près de '),
-      emphasized(
-        `${formatFrenchNumber(Math.round(ratio))} fois ${consumesMore ? 'plus' : 'moins'}`
-      ),
-      text(' que '),
-      emphasized(otherName)
-    ]
+    return m[
+      consumesMore
+        ? 'reveal.impacts.summary.comparison.multipleMore'
+        : 'reveal.impacts.summary.comparison.multipleLess'
+    ]({ count: formatLocalizedNumber(Math.round(ratio)), otherModel })
   }
 
   const percentage = consumesMore ? (ratio - 1) * 100 : (1 - 1 / ratio) * 100
-  return [
-    emphasized(`${consumesMore ? '+' : '−'}${formatFrenchNumber(Math.round(percentage))} %`),
-    text(' par rapport à '),
-    emphasized(otherName)
-  ]
+  return m[
+    consumesMore
+      ? 'reveal.impacts.summary.comparison.percentageMore'
+      : 'reveal.impacts.summary.comparison.percentageLess'
+  ]({ percentage: formatLocalizedNumber(Math.round(percentage)), otherModel })
 }
 
 export function buildConsumptionSummary(
@@ -171,24 +138,18 @@ export function buildConsumptionSummary(
 ): ConsumptionSummary {
   return {
     classification: buildClassification(model),
-    consumption: [
-      text('Sur cette discussion, les '),
-      emphasized(`${formatFrenchNumber(consumption.tokens)} jetons`),
-      text(' générés représentent environ '),
-      emphasized(`${formatFrenchNumber(consumption.energy_mwh)} mWh`),
-      text(', soit '),
-      ...buildComparisonSegment(
+    consumption: m['reveal.impacts.summary.consumption']({
+      tokens: formatLocalizedNumber(consumption.tokens),
+      energy: formatLocalizedNumber(consumption.energy_mwh),
+      comparison: buildComparisonSegment(
         consumption.energy_mwh,
         otherConsumption.energy_mwh,
         otherModel.name
-      ),
-      text('.')
-    ]
+      )
+    })
   }
 }
 
 export function consumptionSummaryToText(summary: ConsumptionSummary): string {
-  return [summary.classification, summary.consumption]
-    .map((parts) => parts.map((part) => part.text).join(''))
-    .join('\n')
+  return `${summary.classification}\n${summary.consumption}`.replace(/<[^>]*>/g, '')
 }

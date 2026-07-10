@@ -9,7 +9,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext } from '$lib/models'
-  import { propsToAttrs } from '$lib/utils/commons'
+  import { propsToAttrs, sanitize } from '$lib/utils/commons'
 
   let {
     data,
@@ -211,13 +211,9 @@
       <article class="cg-border bg-white p-3 flex flex-col">
         <p class="text-xs! text-info mb-1!">{m['reveal.impacts.how.title']()}</p>
         <p class="text-xs! mb-0!">
-          {#each consumptionSummary.classification as part, index (index)}
-            {#if part.emphasized}<strong>{part.text}</strong>{:else}{part.text}{/if}
-          {/each}
+          {@html sanitize(consumptionSummary.classification)}
           <br />
-          {#each consumptionSummary.consumption as part, index (index)}
-            {#if part.emphasized}<strong>{part.text}</strong>{:else}{part.text}{/if}
-          {/each}
+          {@html sanitize(consumptionSummary.consumption)}
         </p>
       </article>
     </div>

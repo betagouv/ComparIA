@@ -207,5 +207,45 @@
     },
     "header": {
         "title": "palyginti:AI"
+    },
+    "models": {
+        "cards": {
+            "sovereignty": {
+                "title": "Atvirumo lygis"
+            }
+        },
+        "opennessSovereignty": {
+            "title": "Atvirumo lygis"
+        }
+    },
+    "reveal": {
+        "impacts": {
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> yra <strong>{size}</strong> modelis su <strong>tankiąja</strong> architektūra: kiekvienam atsakymui jis naudoja visus savo parametrus. Jo energinė klasė yra <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> yra <strong>{size}</strong> modelis su <strong>Matformer</strong> architektūra: kiekvienam atsakymui jis pritaiko naudojamų parametrų dalį. Jo energinė klasė yra <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> yra <strong>{size}</strong> modelis su <strong>ekspertų mišinio</strong> architektūra: kiekvienam atsakymui jis aktyvuoja tik dalį parametrų (apie <strong>{activeParams} mlrd.</strong> iš <strong>{params} mlrd.</strong>). Jo energinė klasė yra <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> yra <strong>{size}</strong> modelis, kurio architektūra neskelbiama. Atsižvelgiant į jo dydį, energinė klasė yra <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> yra nuosavybinis <strong>{size}</strong> modelis, kurio architektūra neskelbiama. Atsižvelgiant į jo dydį, energinė klasė yra <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "<strong>panašų</strong> lygį kaip <strong>{otherModel}</strong>",
+                    "multipleLess": "beveik <strong>{count} kartų mažiau</strong> nei <strong>{otherModel}</strong>",
+                    "multipleMore": "beveik <strong>{count} kartų daugiau</strong> nei <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage} % mažiau</strong> nei <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage} % daugiau</strong> nei <strong>{otherModel}</strong>",
+                    "unavailable": "palyginimas su <strong>{otherModel}</strong> nepasiekiamas"
+                },
+                "consumption": "Šiame pokalbyje <strong>{tokens} sugeneruotų žetonų</strong> sunaudojo apie <strong>{energy} mWh</strong>, t. y. {comparison}.",
+                "size": {
+                    "estimated": "numatomo {size}",
+                    "l": "didelis",
+                    "m": "vidutinio dydžio",
+                    "s": "mažas",
+                    "xl": "labai didelis",
+                    "xs": "labai mažas"
+                }
+            }
+        }
     }
 }

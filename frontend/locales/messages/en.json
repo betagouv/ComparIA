@@ -1437,6 +1437,11 @@
         "arch": {
             "title": "Did you know?"
         },
+        "cards": {
+            "sovereignty": {
+                "title": "Openness level"
+            }
+        },
         "conditions": {
             "commercialUse": {
                 "question": "Is commercial use of the model allowed?",
@@ -1476,6 +1481,9 @@
                 "proprietary": "Proprietary",
                 "semiOpen": "Open-weight"
             }
+        },
+        "opennessSovereignty": {
+            "title": "Openness level"
         },
         "list": {
             "filters": {
@@ -2039,6 +2047,32 @@
                 "label": "energy consumed",
                 "short": "{count} mWh consumed",
                 "tooltip": "Measured in milliwatt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
+            },
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>dense</strong> architecture: it uses all its parameters for each response. Its energy class is <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>Matformer</strong> architecture: it adapts the share of parameters used for each response. Its energy class is <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>Mixture-of-Experts</strong> architecture: it activates only part of its parameters for each response (about <strong>{activeParams} billion</strong> out of <strong>{params} billion</strong>). Its energy class is <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> is a <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "a <strong>comparable</strong> level to <strong>{otherModel}</strong>",
+                    "multipleLess": "almost <strong>{count} times less</strong> than <strong>{otherModel}</strong>",
+                    "multipleMore": "almost <strong>{count} times more</strong> than <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage}% less</strong> than <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage}% more</strong> than <strong>{otherModel}</strong>",
+                    "unavailable": "a comparison unavailable with <strong>{otherModel}</strong>"
+                },
+                "consumption": "In this conversation, <strong>{tokens} generated tokens</strong> used approximately <strong>{energy} mWh</strong>, {comparison}.",
+                "size": {
+                    "estimated": "estimated {size}",
+                    "l": "large",
+                    "m": "medium-sized",
+                    "s": "small",
+                    "xl": "very large",
+                    "xs": "very small"
+                }
             },
             "size": {
                 "count": "billion param.",
