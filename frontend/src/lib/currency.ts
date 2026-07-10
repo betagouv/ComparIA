@@ -25,10 +25,16 @@ export function formatUsageCostFromEuro(
   currency: CurrencyInfo,
   locale: string
 ): string {
-  const formatter = currencyFormatter(currency, locale)
   const converted = convertFromEuro(amount, currency)
-  const fractionDigits = formatter.resolvedOptions().maximumFractionDigits
-  const minimumUnit = 10 ** -fractionDigits
+  const maximumFractionDigits = 6
+  const minimumUnit = 10 ** -maximumFractionDigits
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency.code,
+    currencyDisplay: 'code',
+    minimumFractionDigits: 2,
+    maximumFractionDigits
+  })
 
   if (converted > 0 && converted < minimumUnit) {
     return `< ${formatter.format(minimumUnit)}`
