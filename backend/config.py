@@ -45,6 +45,12 @@ class Settings(BaseSettings):
     EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
+    # Display currency. Model prices are stored in euros and converted for the UI.
+    DISPLAY_CURRENCY: str = "EUR"
+    DISPLAY_CURRENCY_RATE_FROM_EUR: float | None = None
+    EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
+    EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
+
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
