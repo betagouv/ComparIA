@@ -1,6 +1,7 @@
 import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
+import { formatCurrencyFromEuro } from '$lib/currency'
 import { propsToAttrs } from '$lib/utils/commons'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
@@ -43,6 +44,7 @@ type ModelRevisedRank = { rank: number; rankClass: RankClass }
 export type Commons = {
   modelsCount: number
   rankingTiers: Record<RankClass, Record<'min' | 'max', number>>
+  currency: LLMList['currency']
 }
 export type Data = {
   lastUpdateDate: string | null
@@ -128,14 +130,14 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       contents: [
         {
           content: m['models.cards.price.price_count']({
-            count: model.price_in.toFixed(2),
+            count: formatCurrencyFromEuro(model.price_in, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_in']()
         },
         {
           content: m['models.cards.price.price_count']({
-            count: model.price_out.toFixed(2),
+            count: formatCurrencyFromEuro(model.price_out, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_out']()
@@ -308,6 +310,7 @@ export function setModelsContext(data: LLMList) {
     models: data.models.map((model) => parseModel(model, revisedRankData[model.id!])),
     commons: {
       modelsCount,
+      currency: data.currency,
       rankingTiers: {
         '1': { min: 1, max: groupMax[0] },
         '2': { min: groupMax[0] + 1, max: groupMax[1] },

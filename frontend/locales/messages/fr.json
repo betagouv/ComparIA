@@ -1691,7 +1691,7 @@
             },
             "sovereignty": {
                 "sub": "Critères atteints",
-                "title": "Souveraineté",
+                "title": "Niveau d’ouverture",
                 "tooltip": "Score calculé à partir de critères d’ouverture et de maîtrise : licence, poids, données et code d’entraînement publics, usage commercial, réutilisation des sorties et hébergement possible dans l’Union européenne."
             }
         },
@@ -1837,7 +1837,7 @@
                 "public_weights": "Poids du modèle",
                 "reuse": "Réutilisation des sorties"
             },
-            "title": "Ouverture et souveraineté"
+            "title": "Niveau d’ouverture"
         },
         "openWeight": {
             "tooltips": {
@@ -2394,8 +2394,6 @@
         },
         "impacts": {
             "cost": {
-                "count": "{count}<span {smallProps}> centimes $</span>",
-                "count_low": "<1<span {smallProps}> centime $</span>",
                 "sub": "Prix global (entrée et sortie)",
                 "title": "Coût",
                 "tooltip": "FIXME"
@@ -2403,7 +2401,6 @@
             "energy": {
                 "conso": "{count}<span {midProps}>mWh</span>",
                 "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimé</span>",
-                "higher": "<span {props}>+{count}%</span> comparé au 2nd modèle",
                 "title": "Énergie conso.",
                 "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
