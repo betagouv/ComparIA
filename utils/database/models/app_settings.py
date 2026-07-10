@@ -1,6 +1,7 @@
 import uuid
 from typing import Annotated
 
+from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
@@ -16,5 +17,8 @@ class AppSettings(SQLModel, table=True):
     auth_access_policy: str = Field(default="anonymous_first")
     auth_domain_allowlist: Annotated[list[str], Field(sa_type=JSONB)] = []
     votes_objective: int = Field(default=300_000)
+    platform_name: str = Field(default="Compar:IA")
+    logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
+    logo_content_type: str | None = None
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
