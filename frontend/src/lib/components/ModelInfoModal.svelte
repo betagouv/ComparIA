@@ -184,7 +184,7 @@
                             {#each card.contents as c, i (i)}
                               <div>
                                 <p class="mb-0! font-bold text-[22px]!">
-                                  ${@html sanitize(c.content)}
+                                  {@html sanitize(c.content)}
                                 </p>
                                 <p class="text-sm! text-grey mb-0!">
                                   {c.subContent}
