@@ -34,7 +34,9 @@
         alt=""
         class="h-[35px]"
       />
-      <h1 class="font-bold text-base! mb-0!">{auth.config?.platform_name || m['header.title']()}</h1>
+      <h1 class="font-bold text-base! mb-0!">
+        {auth.config?.platform_name || m['header.title']()}
+      </h1>
     </div>
 
     <div>
