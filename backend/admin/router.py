@@ -17,7 +17,12 @@ from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
 from backend.config import settings
-from utils.database.models.app_settings import AppSettings
+from utils.database.models.app_settings import (
+    AppSettings,
+    AppSettingsPatch,
+    AppSettingsPublic,
+)
+from utils.database.models.auth import UserPublic
 from utils.database.settings import get_app_settings, update_app_settings
 
 router = APIRouter(
@@ -27,17 +32,8 @@ router = APIRouter(
 router.include_router(admin_llms_router)
 
 
-class UserOut(BaseModel):
-    id: uuid.UUID
-    email: str
-    role: str
-    created_at: str
-    last_seen_at: str
-    source: str
-
-
 class UsersPage(BaseModel):
-    items: list[UserOut]
+    items: list[UserPublic]
     total: int
     page: int
     page_size: int
@@ -51,23 +47,6 @@ class InviteBody(BaseModel):
     email: EmailStr
 
 
-class AppSettingsOut(BaseModel):
-    auth_access_policy: Literal["anonymous_first", "sign_in_required"]
-    auth_domain_allowlist: list[str]
-    votes_objective: int
-    platform_name: str
-    has_custom_logo: bool
-    updated_at: str
-    updated_by: uuid.UUID | None = None
-
-
-class AppSettingsPatch(BaseModel):
-    auth_access_policy: Literal["anonymous_first", "sign_in_required"] | None = None
-    auth_domain_allowlist: list[str] | None = None
-    votes_objective: int | None = None
-    platform_name: str | None = None
-
-
 _LOGO_MAX_SIZE = 2 * 1024 * 1024
 _LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
 
@@ -79,33 +58,18 @@ async def get_users(
     page_size: int = Query(default=50, ge=1, le=200),
 ) -> UsersPage:
     rows, total = await list_users(search=search, page=page, page_size=page_size)
-    return UsersPage(
-        items=[
-            UserOut(
-                id=row.id,
-                email=row.email,
-                role=row.role,
-                created_at=row.created_at.isoformat(),
-                last_seen_at=row.last_seen_at.isoformat(),
-                source=row.source,
-            )
-            for row in rows
-        ],
-        total=total,
-        page=page,
-        page_size=page_size,
-    )
+    return UsersPage(items=rows, total=total, page=page, page_size=page_size)
 
 
-@router.patch("/users/{user_id}/role", response_model=UserOut)
+@router.patch("/users/{user_id}/role", response_model=UserPublic)
 async def patch_user_role(
     user_id: uuid.UUID,
     body: SetRoleBody,
-) -> UserOut:
+) -> UserPublic:
     user = await set_user_role(user_id, body.role)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return UserOut(
+    return UserPublic(
         id=user.id,
         email=user.email,
         role=user.role,
@@ -153,8 +117,8 @@ async def remove_user_invite(user_id: uuid.UUID) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-def _to_app_settings_out(row: AppSettings) -> AppSettingsOut:
-    return AppSettingsOut(
+def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
+    return AppSettingsPublic(
         auth_access_policy=row.auth_access_policy,
         auth_domain_allowlist=row.auth_domain_allowlist,
         votes_objective=row.votes_objective,
@@ -165,28 +129,28 @@ def _to_app_settings_out(row: AppSettings) -> AppSettingsOut:
     )
 
 
-@router.get("/settings", response_model=AppSettingsOut)
-async def get_settings() -> AppSettingsOut:
+@router.get("/settings", response_model=AppSettingsPublic)
+async def get_settings() -> AppSettingsPublic:
     row = await get_app_settings()
-    return _to_app_settings_out(row)
+    return _to_app_settings_public(row)
 
 
-@router.patch("/settings", response_model=AppSettingsOut)
+@router.patch("/settings", response_model=AppSettingsPublic)
 async def patch_settings(
     body: AppSettingsPatch,
     current_user: RequiredAdmin,
-) -> AppSettingsOut:
+) -> AppSettingsPublic:
     row = await update_app_settings(
         body.model_dump(exclude_unset=True), updated_by=current_user.id
     )
-    return _to_app_settings_out(row)
+    return _to_app_settings_public(row)
 
 
-@router.put("/settings/logo", response_model=AppSettingsOut)
+@router.put("/settings/logo", response_model=AppSettingsPublic)
 async def upload_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
-) -> AppSettingsOut:
+) -> AppSettingsPublic:
     if file.content_type not in _LOGO_CONTENT_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -202,12 +166,12 @@ async def upload_logo(
         {"logo": content, "logo_content_type": file.content_type},
         updated_by=current_user.id,
     )
-    return _to_app_settings_out(row)
+    return _to_app_settings_public(row)
 
 
-@router.delete("/settings/logo", response_model=AppSettingsOut)
-async def remove_logo(current_user: RequiredAdmin) -> AppSettingsOut:
+@router.delete("/settings/logo", response_model=AppSettingsPublic)
+async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
     row = await update_app_settings(
         {"logo": None, "logo_content_type": None}, updated_by=current_user.id
     )
-    return _to_app_settings_out(row)
+    return _to_app_settings_public(row)

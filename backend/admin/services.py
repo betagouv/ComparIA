@@ -1,10 +1,9 @@
 import uuid
-from dataclasses import dataclass
 from datetime import datetime
 
 from sqlmodel import col, func, select
 
-from utils.database.models.auth import InviteToken, LoginCode, User
+from utils.database.models.auth import InviteToken, LoginCode, User, UserPublic
 from utils.database.session import get_session
 
 
@@ -16,21 +15,11 @@ class CannotDeleteLastAdminError(Exception):
     pass
 
 
-@dataclass
-class UserRow:
-    id: uuid.UUID
-    email: str
-    role: str
-    created_at: datetime
-    last_seen_at: datetime
-    source: str
-
-
 async def list_users(
     search: str | None = None,
     page: int = 1,
     page_size: int = 50,
-) -> tuple[list[UserRow], int]:
+) -> tuple[list[UserPublic], int]:
     async with get_session() as session:
         base = select(User).where(User.deleted_at.is_(None))
         if search:
@@ -69,12 +58,12 @@ async def list_users(
             else:
                 source = "unknown"
             rows.append(
-                UserRow(
+                UserPublic(
                     id=user.id,
                     email=user.email,
                     role=user.role,
-                    created_at=user.created_at,
-                    last_seen_at=user.last_seen_at,
+                    created_at=user.created_at.isoformat(),
+                    last_seen_at=user.last_seen_at.isoformat(),
                     source=source,
                 )
             )

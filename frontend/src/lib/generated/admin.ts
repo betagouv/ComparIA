@@ -5,6 +5,21 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface AppSettingsPatch {
+  auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
+  auth_domain_allowlist?: string[] | null;
+  votes_objective?: number | null;
+  platform_name?: string | null;
+}
+export interface AppSettingsPublic {
+  auth_access_policy: "anonymous_first" | "sign_in_required";
+  auth_domain_allowlist: string[];
+  votes_objective: number;
+  platform_name: string;
+  has_custom_logo: boolean;
+  updated_at: string;
+  updated_by?: string | null;
+}
 /**
  * LLM definition.
  *
@@ -162,4 +177,12 @@ export interface LLMLicense {
   name: string;
   reuse: boolean;
   commercial_use: boolean;
+}
+export interface UserPublic {
+  id: string;
+  email: string;
+  role: string;
+  created_at: string;
+  last_seen_at: string;
+  source: string;
 }
