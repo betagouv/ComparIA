@@ -3,6 +3,7 @@
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
   interface AppSettings {
@@ -43,7 +44,7 @@
             .filter(Boolean)
         })
       })
-      useToast('Paramètres mis à jour', 4000)
+      useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -52,28 +53,43 @@
   }
 </script>
 
-<PageLayout seoTitle="Authentification" title="Authentification" subtitle="Configuration de l'application.">
+<PageLayout
+  seoTitle={m['admin.nav.authentification']()}
+  title={m['admin.nav.authentification']()}
+  subtitle={m['admin.settings.subtitle']()}
+>
   {#if loading}
-    <p class="fr-text--sm text-[--text-mention-grey]">Chargement...</p>
+    <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
     <form onsubmit={save} class="max-w-[480px]">
       <Select
         id="settings-access-policy"
-        label="Mode d'accès"
+        label={m['admin.settings.authentification.accessPolicy.label']()}
         bind:selected={accessPolicy}
         options={[
-          { value: 'anonymous_first', label: 'Connexion facultative (anonymous_first)' },
-          { value: 'sign_in_required', label: 'Connexion obligatoire (sign_in_required)' }
+          {
+            value: 'anonymous_first',
+            label: m['admin.settings.authentification.accessPolicy.anonymous']()
+          },
+          {
+            value: 'sign_in_required',
+            label: m['admin.settings.authentification.accessPolicy.required']()
+          }
         ]}
       />
       <Input
         id="settings-domain-allowlist"
-        label="Domaines email autorisés"
-        help="Séparés par des virgules. Laisser vide pour autoriser tous les domaines."
+        label={m['admin.settings.authentification.domainAllowlist.label']()}
+        help={m['admin.settings.authentification.domainAllowlist.help']()}
         bind:value={domainAllowlist}
         groupClass="mt-4!"
       />
-      <Button type="submit" text={saving ? 'Enregistrement...' : 'Enregistrer'} disabled={saving} class="mt-4!" />
+      <Button
+        type="submit"
+        text={saving ? m['admin.settings.saving']() : m['admin.settings.save']()}
+        disabled={saving}
+        class="mt-4!"
+      />
     </form>
   {/if}
 </PageLayout>

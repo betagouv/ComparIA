@@ -25,6 +25,44 @@
         "seeMore": "Se mere",
         "selectLanguage": "Vælg sprog"
     },
+    "admin": {
+        "nav": {
+            "users": "Brugere",
+            "llms": "LLMs",
+            "personnalisation": "Tilpasning",
+            "authentification": "Autentificering"
+        },
+        "settings": {
+            "subtitle": "Applikationskonfiguration.",
+            "loading": "Indlæser...",
+            "save": "Gem",
+            "saving": "Gemmer...",
+            "saved": "Indstillinger opdateret",
+            "personnalisation": {
+                "platformName": "Platformens navn",
+                "votesObjective": "Stemmemål",
+                "logo": {
+                    "label": "Logo",
+                    "chooseFile": "Vælg en fil",
+                    "reset": "Nulstil",
+                    "updated": "Logo opdateret",
+                    "resetDone": "Logo nulstillet",
+                    "hint": "PNG, JPEG, SVG eller WebP, maks. 2 MB."
+                }
+            },
+            "authentification": {
+                "accessPolicy": {
+                    "label": "Adgangstilstand",
+                    "anonymous": "Valgfri login (anonymous_first)",
+                    "required": "Login påkrævet (sign_in_required)"
+                },
+                "domainAllowlist": {
+                    "label": "Tilladte e-maildomæner",
+                    "help": "Adskilt med kommaer. Lad stå tomt for at tillade alle domæner."
+                }
+            }
+        }
+    },
     "arenaHome": {
         "compareModels": {
             "count": "{count}/2 modeller",

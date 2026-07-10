@@ -31,6 +31,42 @@
         "llms": {
             "title": "LLMs data configuration",
             "subTitle": "LLMs, labs, licenses and endpoints."
+        },
+        "nav": {
+            "users": "Utilisateurs",
+            "llms": "LLMs",
+            "personnalisation": "Personnalisation",
+            "authentification": "Authentification"
+        },
+        "settings": {
+            "subtitle": "Configuration de l'application.",
+            "loading": "Chargement...",
+            "save": "Enregistrer",
+            "saving": "Enregistrement...",
+            "saved": "Paramètres mis à jour",
+            "personnalisation": {
+                "platformName": "Nom de la plateforme",
+                "votesObjective": "Objectif de votes",
+                "logo": {
+                    "label": "Logo",
+                    "chooseFile": "Choisir un fichier",
+                    "reset": "Réinitialiser",
+                    "updated": "Logo mis à jour",
+                    "resetDone": "Logo réinitialisé",
+                    "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum."
+                }
+            },
+            "authentification": {
+                "accessPolicy": {
+                    "label": "Mode d'accès",
+                    "anonymous": "Connexion facultative (anonymous_first)",
+                    "required": "Connexion obligatoire (sign_in_required)"
+                },
+                "domainAllowlist": {
+                    "label": "Domaines email autorisés",
+                    "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines."
+                }
+            }
         }
     },
     "arenaHome": {

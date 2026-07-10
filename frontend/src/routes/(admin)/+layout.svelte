@@ -3,6 +3,7 @@
   import { page } from '$app/state'
   import NavBar, { type NavLink } from '$components/header/NavBar.svelte'
   import { initAuth, isAdmin } from '$lib/auth.svelte'
+  import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
   let { children } = $props()
@@ -17,25 +18,25 @@
     ready = true
   })
 
-  const navLinks: NavLink[] = [
-    { label: 'Utilisateurs', href: '/admin', icon: 'i-ri-user-settings-line' },
+  const navLinks: NavLink[] = $derived([
+    { label: m['admin.nav.users'](), href: '/admin', icon: 'i-ri-user-settings-line' },
     {
-      label: 'LLMs',
+      label: m['admin.nav.llms'](),
       href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
       isCurrent: () => page.url.pathname.includes('/admin/llms')
     },
     {
-      label: 'Personnalisation',
+      label: m['admin.nav.personnalisation'](),
       href: '/admin/personnalisation',
       icon: 'i-ri-palette-line'
     },
     {
-      label: 'Authentification',
+      label: m['admin.nav.authentification'](),
       href: '/admin/authentification',
       icon: 'i-ri-fingerprint-line'
     }
-  ]
+  ])
 </script>
 
 {#if ready}

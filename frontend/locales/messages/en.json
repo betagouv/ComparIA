@@ -25,6 +25,44 @@
         "seeMore": "See more",
         "selectLanguage": "Select a language"
     },
+    "admin": {
+        "nav": {
+            "users": "Users",
+            "llms": "LLMs",
+            "personnalisation": "Customization",
+            "authentification": "Authentication"
+        },
+        "settings": {
+            "subtitle": "Application configuration.",
+            "loading": "Loading...",
+            "save": "Save",
+            "saving": "Saving...",
+            "saved": "Settings updated",
+            "personnalisation": {
+                "platformName": "Platform name",
+                "votesObjective": "Votes objective",
+                "logo": {
+                    "label": "Logo",
+                    "chooseFile": "Choose a file",
+                    "reset": "Reset",
+                    "updated": "Logo updated",
+                    "resetDone": "Logo reset",
+                    "hint": "PNG, JPEG, SVG or WebP, 2 MB maximum."
+                }
+            },
+            "authentification": {
+                "accessPolicy": {
+                    "label": "Access mode",
+                    "anonymous": "Optional sign-in (anonymous_first)",
+                    "required": "Sign-in required (sign_in_required)"
+                },
+                "domainAllowlist": {
+                    "label": "Allowed email domains",
+                    "help": "Comma-separated. Leave empty to allow all domains."
+                }
+            }
+        }
+    },
     "arenaHome": {
         "compareModels": {
             "count": "{count}/2 models",

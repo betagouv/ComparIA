@@ -3,6 +3,7 @@
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
   interface AppSettings {
@@ -49,7 +50,7 @@
           platform_name: platformName
         })
       })
-      useToast('Paramètres mis à jour', 4000)
+      useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -69,7 +70,7 @@
       await api.request('/admin/settings/logo', { method: 'PUT', body: formData, headers: {} })
       hasCustomLogo = true
       logoVersion++
-      useToast('Logo mis à jour', 4000)
+      useToast(m['admin.settings.personnalisation.logo.updated'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -83,7 +84,7 @@
     try {
       await api.request('/admin/settings/logo', { method: 'DELETE', headers: {} })
       hasCustomLogo = false
-      useToast('Logo réinitialisé', 4000)
+      useToast(m['admin.settings.personnalisation.logo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -92,14 +93,18 @@
   }
 </script>
 
-<PageLayout seoTitle="Personnalisation" title="Personnalisation" subtitle="Configuration de l'application.">
+<PageLayout
+  seoTitle={m['admin.nav.personnalisation']()}
+  title={m['admin.nav.personnalisation']()}
+  subtitle={m['admin.settings.subtitle']()}
+>
   {#if loading}
-    <p class="fr-text--sm text-[--text-mention-grey]">Chargement...</p>
+    <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
     <form onsubmit={save} class="max-w-[480px]">
       <Input
         id="settings-platform-name"
-        label="Nom de la plateforme"
+        label={m['admin.settings.personnalisation.platformName']()}
         bind:value={platformName}
         groupClass="mt-4!"
       />
@@ -107,20 +112,25 @@
         id="settings-votes-objective"
         type="number"
         min="0"
-        label="Objectif de votes"
+        label={m['admin.settings.personnalisation.votesObjective']()}
         bind:value={votesObjective}
         groupClass="mt-4!"
       />
-      <Button type="submit" text={saving ? 'Enregistrement...' : 'Enregistrer'} disabled={saving} class="mt-4!" />
+      <Button
+        type="submit"
+        text={saving ? m['admin.settings.saving']() : m['admin.settings.save']()}
+        disabled={saving}
+        class="mt-4!"
+      />
     </form>
 
     <div class="mt-8! max-w-[480px]">
-      <p class="fr-label mb-2!">Logo</p>
+      <p class="fr-label mb-2!">{m['admin.settings.personnalisation.logo.label']()}</p>
       <div class="gap-4 flex items-center">
-        <img src={logoSrc} alt="" class="h-[48px] bg-white border border-[--border-default-grey]" />
+        <img src={logoSrc} alt="" class="bg-white h-[48px] border border-[--border-default-grey]" />
         <div class="gap-2 flex flex-col">
           <label class="fr-label">
-            <span class="fr-sr-only">Choisir un fichier</span>
+            <span class="fr-sr-only">{m['admin.settings.personnalisation.logo.chooseFile']()}</span>
             <input
               type="file"
               accept="image/png,image/jpeg,image/svg+xml,image/webp"
@@ -133,14 +143,14 @@
               type="button"
               variant="secondary"
               size="sm"
-              text="Réinitialiser"
+              text={m['admin.settings.personnalisation.logo.reset']()}
               disabled={uploadingLogo}
               onclick={resetLogo}
             />
           {/if}
         </div>
       </div>
-      <p class="fr-hint-text mt-1!">PNG, JPEG, SVG ou WebP, 2 Mo maximum.</p>
+      <p class="fr-hint-text mt-1!">{m['admin.settings.personnalisation.logo.hint']()}</p>
     </div>
   {/if}
 </PageLayout>
