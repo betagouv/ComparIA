@@ -30,6 +30,7 @@
             "personnalisation": "Customization",
             "authentification": "Authentication"
         },
+        "panelLink": "Admin panel",
         "settings": {
             "subtitle": "Application configuration.",
             "loading": "Loading...",
