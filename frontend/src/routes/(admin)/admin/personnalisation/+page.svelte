@@ -2,15 +2,10 @@
   import { Button, Input } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
+  import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
-
-  interface AppSettings {
-    votes_objective: number
-    platform_name: string
-    has_custom_logo: boolean
-  }
 
   let loading = $state(true)
   let saving = $state(false)
@@ -28,7 +23,7 @@
   async function load() {
     loading = true
     try {
-      const data = await api.request<AppSettings>('/admin/settings')
+      const data = await api.request<AppSettingsPublic>('/admin/settings')
       votesObjective = String(data.votes_objective)
       platformName = data.platform_name
       hasCustomLogo = data.has_custom_logo
@@ -43,13 +38,11 @@
     e.preventDefault()
     saving = true
     try {
-      await api.request('/admin/settings', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          votes_objective: Number(votesObjective),
-          platform_name: platformName
-        })
-      })
+      const patch: AppSettingsPatch = {
+        votes_objective: Number(votesObjective),
+        platform_name: platformName
+      }
+      await api.request('/admin/settings', { method: 'PATCH', body: JSON.stringify(patch) })
       useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
