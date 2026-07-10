@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Badge, Button, Icon, Table } from '$components/dsfr'
   import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
+  import ConfirmPromoteAdminModal from '$components/ConfirmPromoteAdminModal.svelte'
   import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { auth } from '$lib/auth.svelte'
@@ -75,6 +76,31 @@
     }
   }
 
+  let userToPromote = $state<{ id: string; email: string } | null>(null)
+
+  function openPromoteModal(row: { id: string; email: string }) {
+    userToPromote = row
+    const el = document.getElementById('fr-modal-promote-admin')
+    if (el) {
+      // @ts-expect-error - DSFR is globally available
+      window.dsfr(el).modal.disclose()
+    }
+  }
+
+  async function confirmPromote() {
+    if (!userToPromote) return
+    try {
+      await api.request(`/admin/users/${userToPromote.id}/role`, {
+        method: 'PATCH',
+        body: JSON.stringify({ role: 'admin' })
+      })
+      useToast(`${userToPromote.email} promoted to admin`, 4000)
+      await fetchUsers()
+    } catch (err) {
+      useToast((err as Error).message, 6000, 'error')
+    }
+  }
+
   const cols = [
     { id: 'email', label: 'Email', orderable: true },
     { id: 'source', label: 'Source', orderable: true },
@@ -117,17 +143,31 @@
         {#if row.email === auth.user?.email}
           <span class="fr-text--sm text-[--text-disabled-grey]">—</span>
         {:else}
-          <Button
-            iconOnly
-            variant="tertiary-no-outline"
-            size="sm"
-            title="Delete user"
-            aria-label={`Delete ${row.email}`}
-            class="text-[--text-default-error]!"
-            onclick={() => openDeleteModal(row)}
-          >
-            <Icon icon="i-ri-delete-bin-line" />
-          </Button>
+          <div class="gap-1 flex items-center justify-end">
+            {#if row.role !== 'admin'}
+              <Button
+                iconOnly
+                variant="tertiary-no-outline"
+                size="sm"
+                title="Promote to admin"
+                aria-label={`Promote ${row.email} to admin`}
+                onclick={() => openPromoteModal(row)}
+              >
+                <Icon icon="i-ri-shield-star-line" />
+              </Button>
+            {/if}
+            <Button
+              iconOnly
+              variant="tertiary-no-outline"
+              size="sm"
+              title="Delete user"
+              aria-label={`Delete ${row.email}`}
+              class="text-[--text-default-error]!"
+              onclick={() => openDeleteModal(row)}
+            >
+              <Icon icon="i-ri-delete-bin-line" />
+            </Button>
+          </div>
         {/if}
       {/if}
     {/snippet}
@@ -142,3 +182,4 @@
 
 <InviteUserModal onSuccess={fetchUsers} />
 <ConfirmDeleteUserModal email={userToDelete?.email ?? null} onConfirm={confirmDelete} />
+<ConfirmPromoteAdminModal email={userToPromote?.email ?? null} onConfirm={confirmPromote} />
