@@ -13,6 +13,7 @@ from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
 from backend.utils.countries import get_vote_count
+from utils.database.settings import get_app_settings
 from utils.storage.redis import get_maintenance_mode
 
 
@@ -73,9 +74,10 @@ app.include_router(admin_router)
 
 @app.get("/counter")
 async def get_counter():
+    app_settings = await get_app_settings()
     return {
         "count": await get_vote_count(),
-        "objective": settings.VOTES_OBJECTIVE,
+        "objective": app_settings.votes_objective,
     }
 
 
