@@ -51,6 +51,18 @@ class AuthSession(SQLModel, table=True):
     user: User | None = Relationship(back_populates="auth_sessions")
 
 
+class InviteToken(SQLModel, table=True):
+    __tablename__ = "auth_invite_token"
+
+    id: ModelId
+    user_id: UserId
+    invited_by: UserId
+    token_hash: str = Field(index=True)
+    created_at: AutoDatetime
+    expires_at: Datetime
+    used_at: OptionalDatetime = None
+
+
 class ConsentLog(SQLModel, table=True):
     __tablename__ = "auth_consent_log"
 

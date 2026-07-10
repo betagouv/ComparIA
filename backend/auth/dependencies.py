@@ -34,7 +34,7 @@ async def require_user(request: Request, role: str | None = None) -> User:
 
 
 async def require_admin(request: Request) -> User:
-    return require_user(request, "admin")
+    return await require_user(request, "admin")
 
 
 async def require_anonymous(request: Request) -> str:

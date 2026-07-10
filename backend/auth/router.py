@@ -7,6 +7,8 @@ from pydantic import BaseModel, EmailStr
 from backend.arena.captcha import verify_altcha_token
 from backend.auth.email import send_login_code
 from backend.auth.services import (
+    accept_invite,
+    get_invite_token_info,
     get_user_from_token,
     request_login_code,
     revoke_all_user_sessions,
@@ -39,6 +41,15 @@ class EmailRequestBody(BaseModel):
 class EmailVerifyBody(BaseModel):
     email: EmailStr
     code: str
+
+
+class InviteStatus(BaseModel):
+    valid: bool
+    email: str | None = None
+
+
+class InviteAcceptBody(BaseModel):
+    token: str
 
 
 @router.get("/config")
@@ -123,6 +134,45 @@ async def email_verify(
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
     )
     return {"email": body.email}
+
+
+@router.get("/invite/{token}")
+async def invite_status(token: str) -> InviteStatus:
+    info = await get_invite_token_info(token)
+    if not info:
+        return InviteStatus(valid=False)
+    return InviteStatus(valid=True, email=info.email)
+
+
+@router.post("/invite/accept")
+async def invite_accept(
+    body: InviteAcceptBody, request: Request, response: Response
+) -> dict:
+    ip = get_ip(request)
+    user_agent = request.headers.get("user-agent")
+    visitor_id = get_matomo_tracker_from_cookies(request.cookies)
+
+    token = await accept_invite(
+        token=body.token,
+        ip=ip,
+        user_agent=user_agent,
+        visitor_id=visitor_id,
+    )
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired invite link.",
+        )
+
+    response.set_cookie(
+        "auth_session",
+        token,
+        httponly=True,
+        secure=not settings.LANGUIA_DEBUG,
+        samesite="lax",
+        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
+    )
+    return {"success": True}
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
