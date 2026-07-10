@@ -11,7 +11,7 @@
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
-  import { auth, logout } from '$lib/auth.svelte'
+  import { auth, isAdmin as isAdminUser, logout } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
@@ -129,6 +129,18 @@
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>
+
+    {#if isAdminUser()}
+      {@render renderLink({
+        href: '/admin',
+        label: m['admin.panelLink'](),
+        icon: 'i-ri-admin-line',
+        button: true,
+        size: 'sm',
+        variant: 'tertiary-no-outline',
+        class: 'text-sm! text-black! -ms-3'
+      })}
+    {/if}
 
     {#if auth.user}
       <div
