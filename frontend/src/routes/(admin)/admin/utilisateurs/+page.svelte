@@ -131,11 +131,21 @@
       actions: undefined
     }))
   )
-  const sortedRows = $derived(sortRows(tableRows, cols, { col: orderingCol, method: orderingMethod, search }))
+  const sortedRows = $derived(
+    sortRows(tableRows, cols, { col: orderingCol, method: orderingMethod, search })
+  )
 </script>
 
 <PageLayout seoTitle="Users" title="Users" subtitle="Registered users">
-  <Table bind:search bind:orderingMethod bind:orderingCol caption="Users" hideCaption {cols} rows={sortedRows}>
+  <Table
+    bind:search
+    bind:orderingMethod
+    bind:orderingCol
+    caption="Users"
+    hideCaption
+    {cols}
+    rows={sortedRows}
+  >
     {#snippet headerRight()}
       <Button text="Invite user" aria-controls="fr-modal-invite-user" data-fr-opened="false" />
     {/snippet}
