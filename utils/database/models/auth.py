@@ -23,6 +23,15 @@ class User(SQLModel, table=True):
     consent_logs: list["ConsentLog"] = Relationship(back_populates="user")
 
 
+class UserPublic(SQLModel):
+    id: uuid.UUID
+    email: str
+    role: str
+    created_at: str
+    last_seen_at: str
+    source: str
+
+
 class LoginCode(SQLModel, table=True):
     __tablename__ = "auth_login_code"
 
