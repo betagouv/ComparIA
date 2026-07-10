@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+import { m } from '$lib/i18n/messages'
+import { overwriteGetLocale } from '$lib/i18n/runtime'
 import {
   buildComparisonSegment,
   buildConsumptionSummary,
@@ -26,62 +28,63 @@ const claude: ConsumptionSummaryModel = {
   energy_class: 'F'
 }
 
+const plainText = (value: string) => value.replace(/<[^>]*>/g, '')
 const segmentText = (current: number, other: number) =>
-  buildComparisonSegment(current, other, 'Autre modèle')
-    .map((part) => part.text)
-    .join('')
+  plainText(buildComparisonSegment(current, other, 'Autre modèle'))
+
+let activeLocale: 'da' | 'en' | 'fr' | 'lt' | 'sv' = 'fr'
+overwriteGetLocale(() => activeLocale)
+afterEach(() => (activeLocale = 'fr'))
 
 describe('buildConsumptionSummary', () => {
-  it('builds the expected dense and proprietary summaries', () => {
-    expect(
-      consumptionSummaryToText(
-        buildConsumptionSummary(
-          gemma,
-          claude,
-          { tokens: 1458, energy_mwh: 1348 },
-          { tokens: 3492, energy_mwh: 13727 }
-        )
+  it('builds dense and proprietary summaries', () => {
+    const openSummary = consumptionSummaryToText(
+      buildConsumptionSummary(
+        gemma,
+        claude,
+        { tokens: 1458, energy_mwh: 1348 },
+        { tokens: 3492, energy_mwh: 13727 }
       )
-    ).toBe(
-      "Gemma 4 31B est un modèle de taille moyenne à l'architecture dense : il mobilise l'ensemble de ses paramètres à chaque réponse. À ce titre, il obtient la classe énergétique B.\n" +
-        'Sur cette discussion, les 1 458 jetons générés représentent environ 1 348 mWh, soit près de 10 fois moins que Claude 4.6 Sonnet.'
+    )
+    const proprietarySummary = consumptionSummaryToText(
+      buildConsumptionSummary(
+        claude,
+        gemma,
+        { tokens: 3492, energy_mwh: 13727 },
+        { tokens: 1458, energy_mwh: 1348 }
+      )
     )
 
-    expect(
-      consumptionSummaryToText(
-        buildConsumptionSummary(
-          claude,
-          gemma,
-          { tokens: 3492, energy_mwh: 13727 },
-          { tokens: 1458, energy_mwh: 1348 }
-        )
-      )
-    ).toBe(
-      "Claude 4.6 Sonnet est un modèle propriétaire de très grande taille (estimée), dont l'architecture n'est pas communiquée. Compte tenu de sa taille, il obtient la classe énergétique F.\n" +
-        'Sur cette discussion, les 3 492 jetons générés représentent environ 13 727 mWh, soit près de 10 fois plus que Gemma 4 31B.'
+    expect(openSummary).toContain(
+      'Gemma 4 31B est un modèle de taille moyenne à l’architecture dense'
     )
+    expect(openSummary).toContain('1 458 jetons')
+    expect(openSummary).toContain('près de 10 fois moins que Claude 4.6 Sonnet')
+    expect(proprietarySummary).toContain(
+      'Claude 4.6 Sonnet est un modèle propriétaire de très grande taille (estimée)'
+    )
+    expect(proprietarySummary).toContain('près de 10 fois plus que Gemma 4 31B')
   })
 
   it('describes a mixture of experts with active and total parameters', () => {
-    const moe = {
-      ...gemma,
-      name: 'Modèle MoE',
-      size_class: 'XL' as const,
-      arch: 'moe' as const,
-      params: 671,
-      active_params: 37
-    }
     const summary = consumptionSummaryToText(
       buildConsumptionSummary(
-        moe,
+        {
+          ...gemma,
+          name: 'Modèle MoE',
+          size_class: 'XL',
+          arch: 'moe',
+          params: 671,
+          active_params: 37
+        },
         gemma,
         { tokens: 100, energy_mwh: 100 },
         { tokens: 100, energy_mwh: 100 }
       )
     )
 
-    expect(summary).toContain("architecture par mélange d'experts")
-    expect(summary).toContain('(~37 mds sur 671)')
+    expect(summary).toContain('architecture par mélange d’experts')
+    expect(summary).toContain('environ 37 milliards sur 671 milliards')
     expect(summary).toContain('un niveau comparable')
   })
 
@@ -95,15 +98,15 @@ describe('buildConsumptionSummary', () => {
       )
     )
 
-    expect(summary).toContain("modèle de très petite taille à l'architecture Matformer")
-    expect(summary).toContain('elle adapte la part de ses paramètres mobilisée')
+    expect(summary).toContain('modèle de très petite taille à l’architecture Matformer')
+    expect(summary).toContain('il adapte la part de ses paramètres mobilisée')
   })
 
   it.each([
     [1348, 1360, 'un niveau comparable à celui de Autre modèle'],
-    [110, 100, '+10 % par rapport à Autre modèle'],
-    [1348, 1900, '−29 % par rapport à Autre modèle'],
-    [1900, 1348, '+41 % par rapport à Autre modèle'],
+    [110, 100, '+10 % par rapport à Autre modèle'],
+    [1348, 1900, '−29 % par rapport à Autre modèle'],
+    [1900, 1348, '+41 % par rapport à Autre modèle'],
     [200, 100, 'près de 2 fois plus que Autre modèle'],
     [100, 200, 'près de 2 fois moins que Autre modèle']
   ])('uses the correct comparison regime for %s and %s', (current, other, expected) => {
@@ -131,7 +134,39 @@ describe('buildConsumptionSummary', () => {
       )
     )
 
-    expect(summary).toContain("modèle de taille moyenne, dont l'architecture")
+    expect(summary).toContain('modèle de taille moyenne dont l’architecture')
     expect(summary).not.toContain('(estimée)')
+  })
+
+  it.each([
+    ['en', 'Gemma 4 31B is a medium-sized model'],
+    ['da', 'Gemma 4 31B er en mellemstor model'],
+    ['sv', 'Gemma 4 31B är en mellanstor modell'],
+    ['lt', 'Gemma 4 31B yra vidutinio dydžio modelis']
+  ])('uses the %s translation instead of French fallback', (locale, expected) => {
+    activeLocale = locale as 'da' | 'en' | 'lt' | 'sv'
+    const summary = consumptionSummaryToText(
+      buildConsumptionSummary(
+        gemma,
+        claude,
+        { tokens: 100, energy_mwh: 100 },
+        { tokens: 100, energy_mwh: 100 }
+      )
+    )
+
+    expect(summary).toContain(expected)
+    expect(summary).not.toContain('est un modèle')
+  })
+
+  it.each([
+    ['fr', 'Niveau d’ouverture'],
+    ['en', 'Openness level'],
+    ['da', 'Åbenhedsgrad'],
+    ['sv', 'Öppenhetsgrad'],
+    ['lt', 'Atvirumo lygis']
+  ])('translates the openness label in %s', (locale, expected) => {
+    activeLocale = locale as 'da' | 'en' | 'fr' | 'lt' | 'sv'
+    expect(m['models.cards.sovereignty.title']()).toBe(expected)
+    expect(m['models.opennessSovereignty.title']()).toBe(expected)
   })
 })
