@@ -19,13 +19,6 @@
   })
 
   const navLinks: NavLink[] = $derived([
-    { label: m['admin.nav.users'](), href: '/admin', icon: 'i-ri-user-settings-line' },
-    {
-      label: m['admin.nav.llms'](),
-      href: '/admin/llms/llms',
-      icon: 'i-ri-ai-agent-line',
-      isCurrent: () => page.url.pathname.includes('/admin/llms')
-    },
     {
       label: m['admin.nav.personnalisation'](),
       href: '/admin/personnalisation',
@@ -35,6 +28,17 @@
       label: m['admin.nav.authentification'](),
       href: '/admin/authentification',
       icon: 'i-ri-fingerprint-line'
+    },
+    {
+      label: m['admin.nav.users'](),
+      href: '/admin/utilisateurs',
+      icon: 'i-ri-user-settings-line'
+    },
+    {
+      label: m['admin.nav.llms'](),
+      href: '/admin/llms/llms',
+      icon: 'i-ri-ai-agent-line',
+      isCurrent: () => page.url.pathname.includes('/admin/llms')
     },
     {
       label: m['actions.returnArena'](),
