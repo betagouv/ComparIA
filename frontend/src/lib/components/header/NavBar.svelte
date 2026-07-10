@@ -135,6 +135,7 @@
         href: '/admin',
         label: m['admin.panelLink'](),
         icon: 'i-ri-admin-line',
+        isCurrent: () => page.url.pathname.startsWith('/admin'),
         button: true,
         size: 'sm',
         variant: 'tertiary-no-outline',
