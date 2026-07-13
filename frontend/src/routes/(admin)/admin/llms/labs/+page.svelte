@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import AILogo from '$components/AILogo.svelte'
   import { Table } from '$components/dsfr'
   import { getLocale } from '$lib/i18n/runtime'
@@ -57,10 +58,10 @@
 >
   {#snippet cell(lab, col)}
     {#if col.id === 'name'}
-      <span class="gap-2 flex items-center">
+      <div class="gap-2 flex items-center">
         <AILogo logo={lab.logo} alt="" />
-        {lab[col.id]}
-      </span>
+        <a href={resolve(`/admin/llms/labs/${lab.id}`)}>{lab[col.id]}</a>
+      </div>
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
       <span class="fr-text--sm text-[--text-mention-grey]">
         {toRelativeTime(lab[col.id], locale)}

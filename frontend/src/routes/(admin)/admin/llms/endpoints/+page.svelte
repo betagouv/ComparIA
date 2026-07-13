@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Icon, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -58,7 +59,9 @@
   rows={sortedRows}
 >
   {#snippet cell(endpoint, col)}
-    {#if col.id === 'created_at' || col.id === 'updated_at'}
+    {#if col.id === 'name'}
+      <a href={resolve(`/admin/llms/endpoints/${endpoint.id}`)}>{endpoint[col.id]}</a>
+    {:else if col.id === 'created_at' || col.id === 'updated_at'}
       <span class="fr-text--sm text-[--text-mention-grey]">
         {toRelativeTime(endpoint[col.id], locale)}
       </span>

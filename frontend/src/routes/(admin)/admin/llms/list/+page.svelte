@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Badge, Icon, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -62,7 +63,7 @@
 >
   {#snippet cell(llm, col)}
     {#if col.id === 'human_id'}
-      {llm[col.id]}
+      <a href={resolve(`/admin/llms/${llm.id}`)}>{llm[col.id]}</a>
     {:else if col.id === 'status'}
       {@const status = llm[col.id]}
       <Badge

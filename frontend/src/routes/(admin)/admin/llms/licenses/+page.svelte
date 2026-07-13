@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Badge, Table } from '$components/dsfr'
   import { getLocale } from '$lib/i18n/runtime'
   import { getLicenceBadge } from '$lib/models'
@@ -57,7 +58,9 @@
   rows={sortedRows}
 >
   {#snippet cell(lic, col)}
-    {#if col.id === 'kind'}
+    {#if col.id === 'name'}
+      <a href={resolve(`/admin/llms/licenses/${lic.id}`)}>{lic[col.id]}</a>
+    {:else if col.id === 'kind'}
       <Badge {...getLicenceBadge(lic.kind)} size="xs" tooltip={undefined} />
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
       <span class="fr-text--sm text-[--text-mention-grey]">
