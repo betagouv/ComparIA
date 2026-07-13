@@ -134,7 +134,7 @@
 >
   {#if lastUpdateDate}
     <div class="relative">
-      <div class="mb-4 gap-2 md:absolute md:top-0 md:right-0 md:mb-0 z-10 flex items-center">
+      <div class="mb-4 gap-2 md:absolute md:top-4 md:right-0 md:mb-0 z-10 flex items-center">
         <Toggle
           id="style-control"
           bind:value={styleEnabled}
