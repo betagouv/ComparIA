@@ -1361,7 +1361,7 @@
             "title": "Hur är preferenserna fördelade?"
         },
         "ranking": {
-            "desc": "Tack för dina bidrag! Dina röster matas in i en Bradley-Terry-ranking. Denna nöjdhetspoäng är skapad i samarbete med <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> och baseras på dina röster och reaktioner.",
+            "desc": "Den här rankningen beräknas från röster som samlats in genom <strong>blinda jämförelser</strong> med den statistiska <strong>Bradley-Terry-modellen</strong>. Den speglar <strong>subjektiva preferenser</strong> och bör tolkas med försiktighet: den mäter varken faktakorrekthet eller modellernas övergripande prestanda.",
             "tabLabel": "Rankning"
         },
         "table": {

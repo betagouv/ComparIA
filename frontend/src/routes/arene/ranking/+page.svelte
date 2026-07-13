@@ -4,7 +4,7 @@
   import { m } from '$lib/i18n/messages'
   import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
   import { styleControl } from '$lib/styleControl.svelte'
-  import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, RankingTable } from './components'
 
@@ -151,11 +151,7 @@
         {#snippet tab({ id })}
           {#if id === 'ranking'}
             <p class="mb-12! text-dark-grey text-[14px]!">
-              {@html sanitize(
-                m['ranking.ranking.desc']({
-                  linkProps: externalLinkProps('https://www.peren.gouv.fr/')
-                })
-              )}
+              {@html sanitize(m['ranking.ranking.desc']())}
             </p>
 
             <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
