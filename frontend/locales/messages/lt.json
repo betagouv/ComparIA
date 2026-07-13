@@ -229,16 +229,20 @@
                     "unknownProprietary": "<strong>{model}</strong> yra nuosavybinis <strong>{size}</strong> modelis, kurio architektūra neskelbiama. Atsižvelgiant į jo dydį, energinė klasė yra <strong>{energyClass}</strong>."
                 },
                 "comparison": {
-                    "comparable": "<strong>panašų</strong> lygį kaip <strong>{otherModel}</strong>",
+                    "comparable": "<strong>panašiai</strong> kaip <strong>{otherModel}</strong>",
                     "multipleLess": "beveik <strong>{count} kartų mažiau</strong> nei <strong>{otherModel}</strong>",
                     "multipleMore": "beveik <strong>{count} kartų daugiau</strong> nei <strong>{otherModel}</strong>",
                     "percentageLess": "<strong>{percentage} % mažiau</strong> nei <strong>{otherModel}</strong>",
                     "percentageMore": "<strong>{percentage} % daugiau</strong> nei <strong>{otherModel}</strong>",
-                    "unavailable": "palyginimas su <strong>{otherModel}</strong> nepasiekiamas"
+                    "unavailable": "nepalyginama su <strong>{otherModel}</strong>"
                 },
-                "consumption": "Šiame pokalbyje <strong>{tokens} sugeneruotų žetonų</strong> sunaudojo apie <strong>{energy} mWh</strong>, t. y. {comparison}.",
+                "consumption": "Šiame pokalbyje buvo sugeneruota <strong>{tokens} žetonų</strong>, o tam sunaudota apie <strong>{energy} mWh</strong>, t. y. {comparison}.",
                 "size": {
-                    "estimated": "numatomo {size}",
+                    "estimatedL": "numatomo didelio dydžio",
+                    "estimatedM": "numatomo vidutinio dydžio",
+                    "estimatedS": "numatomo mažo dydžio",
+                    "estimatedXl": "numatomo labai didelio dydžio",
+                    "estimatedXs": "numatomo labai mažo dydžio",
                     "l": "didelis",
                     "m": "vidutinio dydžio",
                     "s": "mažas",

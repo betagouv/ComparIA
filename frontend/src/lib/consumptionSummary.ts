@@ -49,9 +49,15 @@ function sizeDescription(model: ConsumptionSummaryModel): string {
     XL: () => m['reveal.impacts.summary.size.xl']()
   }[model.size_class]()
 
-  return model.license.kind === 'proprietary'
-    ? m['reveal.impacts.summary.size.estimated']({ size })
-    : size
+  if (model.license.kind !== 'proprietary') return size
+
+  return {
+    XS: () => m['reveal.impacts.summary.size.estimatedXs'](),
+    S: () => m['reveal.impacts.summary.size.estimatedS'](),
+    M: () => m['reveal.impacts.summary.size.estimatedM'](),
+    L: () => m['reveal.impacts.summary.size.estimatedL'](),
+    XL: () => m['reveal.impacts.summary.size.estimatedXl']()
+  }[model.size_class]()
 }
 
 function buildClassification(model: ConsumptionSummaryModel): string {
