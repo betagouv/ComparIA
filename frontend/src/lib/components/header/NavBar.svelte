@@ -97,7 +97,7 @@
             size="sm"
             aria-controls="fr-modal-signin"
             data-fr-opened="false"
-            class="block w-full!"
+            class="mt-2! block w-full!"
           />
         {/if}
       </div>
@@ -140,7 +140,12 @@
           </span>
         </Button>
 
-        <p class={['text-sm mb-0! text-grey truncate', { 'lg:hidden': !expanded }]}>
+        <p
+          class={[
+            'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
+            { 'lg:hidden': !expanded }
+          ]}
+        >
           {auth.user.email}
         </p>
       </div>

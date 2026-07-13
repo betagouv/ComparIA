@@ -116,7 +116,12 @@
 
   <svelte:element this={contentTag} class="p-0">
     {#if badge && size === 'xxs'}
-      <Badge {...badge} tooltip={undefined} size="sm" />
+      <Badge
+        {...badge}
+        tooltip={undefined}
+        size="xs"
+        class="px-1! leading-tight! tracking-normal! max-w-full text-center text-[10px]! [overflow-wrap:anywhere] whitespace-normal!"
+      />
     {:else if content}
       {@render innerContent(content, subContent)}
     {:else}
