@@ -1,3 +1,12 @@
+import type {
+  FormCheckboxGroupProps,
+  FormCheckboxProps,
+  FormFieldsetItemProps,
+  FormFieldsetListProps,
+  FormInputProps,
+  FormSelectProps,
+  FormToggleProps
+} from '$components/form'
 export type AnyFormItemComponent =
   | 'input'
   | 'select'
@@ -18,3 +27,12 @@ export type BaseFormFieldProps<C extends AnyFormItemComponent, T = any> = {
 }
 
 export type Option<T> = { value: T; label: string }
+
+export type AnyFormItemProps =
+  | FormInputProps
+  | FormSelectProps
+  | FormToggleProps
+  | FormCheckboxProps
+  | FormCheckboxGroupProps
+  | FormFieldsetItemProps
+  | FormFieldsetListProps
