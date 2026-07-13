@@ -134,6 +134,19 @@
 >
   {#if lastUpdateDate}
     <div class="relative">
+      <div class="mb-4 gap-2 md:absolute md:top-0 md:right-0 md:mb-0 z-10 flex items-center">
+        <Toggle
+          id="style-control"
+          bind:value={styleEnabled}
+          label={m['ranking.styleControl.label']()}
+          hideCheckLabel
+          class="mb-0! pr-13! font-medium text-[14px]! whitespace-nowrap"
+        />
+        <Tooltip id="style-control-help" size="sm">
+          {@html sanitize(m['ranking.styleControl.help']())}
+        </Tooltip>
+      </div>
+
       <Tabs {tabs} noBorders kind="nav">
         {#snippet tab({ id })}
           {#if id === 'ranking'}
@@ -155,21 +168,6 @@
           {/if}
         {/snippet}
       </Tabs>
-
-      <!-- Placed after the tabs in the DOM so it paints above the tab list and
-           stays clickable; absolutely positioned over the tab row on md+. -->
-      <div class="mb-4 gap-2 md:absolute md:top-0 md:right-0 md:mb-0 z-10 flex items-center">
-        <Toggle
-          id="style-control"
-          bind:value={styleEnabled}
-          label={m['ranking.styleControl.label']()}
-          hideCheckLabel
-          class="mb-0! pr-13! font-medium text-[14px]! whitespace-nowrap"
-        />
-        <Tooltip id="style-control-help" size="sm">
-          {@html sanitize(m['ranking.styleControl.help']())}
-        </Tooltip>
-      </div>
     </div>
   {:else}
     <section
