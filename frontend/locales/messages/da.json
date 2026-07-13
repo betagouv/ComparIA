@@ -2096,16 +2096,20 @@
                     "unknownProprietary": "<strong>{model}</strong> er en proprietær <strong>{size}</strong> model, hvis arkitektur ikke er offentliggjort. På grund af sin størrelse er dens energiklasse <strong>{energyClass}</strong>."
                 },
                 "comparison": {
-                    "comparable": "et <strong>sammenligneligt</strong> niveau med <strong>{otherModel}</strong>",
-                    "multipleLess": "næsten <strong>{count} gange mindre</strong> end <strong>{otherModel}</strong>",
-                    "multipleMore": "næsten <strong>{count} gange mere</strong> end <strong>{otherModel}</strong>",
-                    "percentageLess": "<strong>{percentage} % mindre</strong> end <strong>{otherModel}</strong>",
-                    "percentageMore": "<strong>{percentage} % mere</strong> end <strong>{otherModel}</strong>",
-                    "unavailable": "en sammenligning med <strong>{otherModel}</strong> er ikke tilgængelig"
+                    "comparable": "på niveau med <strong>{otherModel}</strong>",
+                    "multipleLess": "næsten <strong>{count} gange så lidt</strong> som <strong>{otherModel}</strong>",
+                    "multipleMore": "næsten <strong>{count} gange så meget</strong> som <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage} % lavere</strong> end <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage} % højere</strong> end <strong>{otherModel}</strong>",
+                    "unavailable": "uden mulighed for sammenligning med <strong>{otherModel}</strong>"
                 },
-                "consumption": "I denne samtale brugte de <strong>{tokens} genererede tokens</strong> cirka <strong>{energy} mWh</strong>, {comparison}.",
+                "consumption": "I denne samtale brugte genereringen af <strong>{tokens} tokens</strong> cirka <strong>{energy} mWh</strong>, {comparison}.",
                 "size": {
-                    "estimated": "anslået {size}",
+                    "estimatedL": "anslået stor",
+                    "estimatedM": "anslået mellemstor",
+                    "estimatedS": "anslået lille",
+                    "estimatedXl": "anslået meget stor",
+                    "estimatedXs": "anslået meget lille",
                     "l": "stor",
                     "m": "mellemstor",
                     "s": "lille",

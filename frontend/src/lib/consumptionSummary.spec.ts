@@ -59,11 +59,11 @@ describe('buildConsumptionSummary', () => {
       'Gemma 4 31B est un modèle de taille moyenne à l’architecture dense'
     )
     expect(openSummary).toContain('1 458 jetons')
-    expect(openSummary).toContain('près de 10 fois moins que Claude 4.6 Sonnet')
+    expect(openSummary).toContain('près de 10 fois moins élevée que celle de Claude 4.6 Sonnet')
     expect(proprietarySummary).toContain(
       'Claude 4.6 Sonnet est un modèle propriétaire de très grande taille (estimée)'
     )
-    expect(proprietarySummary).toContain('près de 10 fois plus que Gemma 4 31B')
+    expect(proprietarySummary).toContain('près de 10 fois plus élevée que celle de Gemma 4 31B')
   })
 
   it('describes a mixture of experts with active and total parameters', () => {
@@ -85,7 +85,7 @@ describe('buildConsumptionSummary', () => {
 
     expect(summary).toContain('architecture par mélange d’experts')
     expect(summary).toContain('environ 37 milliards sur 671 milliards')
-    expect(summary).toContain('un niveau comparable')
+    expect(summary).toContain('une consommation comparable')
   })
 
   it('handles the existing XS and Matformer repository values explicitly', () => {
@@ -103,12 +103,12 @@ describe('buildConsumptionSummary', () => {
   })
 
   it.each([
-    [1348, 1360, 'un niveau comparable à celui de Autre modèle'],
-    [110, 100, '+10 % par rapport à Autre modèle'],
-    [1348, 1900, '−29 % par rapport à Autre modèle'],
-    [1900, 1348, '+41 % par rapport à Autre modèle'],
-    [200, 100, 'près de 2 fois plus que Autre modèle'],
-    [100, 200, 'près de 2 fois moins que Autre modèle']
+    [1348, 1360, 'une consommation comparable à celle de Autre modèle'],
+    [110, 100, 'une consommation 10 % plus élevée que celle de Autre modèle'],
+    [1348, 1900, 'une consommation 29 % moins élevée que celle de Autre modèle'],
+    [1900, 1348, 'une consommation 41 % plus élevée que celle de Autre modèle'],
+    [200, 100, 'une consommation près de 2 fois plus élevée que celle de Autre modèle'],
+    [100, 200, 'une consommation près de 2 fois moins élevée que celle de Autre modèle']
   ])('uses the correct comparison regime for %s and %s', (current, other, expected) => {
     expect(segmentText(current as number, other as number)).toBe(expected)
   })
@@ -120,7 +120,7 @@ describe('buildConsumptionSummary', () => {
     [Number.POSITIVE_INFINITY, 100]
   ])('does not leak an invalid ratio for %s and %s', (current, other) => {
     const result = segmentText(current, other)
-    expect(result).toBe('une comparaison indisponible avec Autre modèle')
+    expect(result).toBe('une consommation qui ne peut pas être comparée à celle de Autre modèle')
     expect(result).not.toMatch(/NaN|Infinity/)
   })
 
@@ -139,11 +139,15 @@ describe('buildConsumptionSummary', () => {
   })
 
   it.each([
-    ['en', 'Gemma 4 31B is a medium-sized model'],
-    ['da', 'Gemma 4 31B er en mellemstor model'],
-    ['sv', 'Gemma 4 31B är en mellanstor modell'],
-    ['lt', 'Gemma 4 31B yra vidutinio dydžio modelis']
-  ])('uses the %s translation instead of French fallback', (locale, expected) => {
+    [
+      'en',
+      'Gemma 4 31B is a medium-sized model',
+      'generating 100 tokens used approximately 100 mWh'
+    ],
+    ['da', 'Gemma 4 31B er en mellemstor model', 'genereringen af 100 tokens cirka 100 mWh'],
+    ['sv', 'Gemma 4 31B är en mellanstor modell', 'genereringen av 100 token cirka 100 mWh'],
+    ['lt', 'Gemma 4 31B yra vidutinio dydžio modelis', 'buvo sugeneruota 100 žetonų']
+  ])('uses the %s translation instead of French fallback', (locale, expected, consumption) => {
     activeLocale = locale as 'da' | 'en' | 'lt' | 'sv'
     const summary = consumptionSummaryToText(
       buildConsumptionSummary(
@@ -155,7 +159,22 @@ describe('buildConsumptionSummary', () => {
     )
 
     expect(summary).toContain(expected)
+    expect(summary).toContain(consumption)
     expect(summary).not.toContain('est un modèle')
+  })
+
+  it('uses grammatically correct Lithuanian wording for an estimated proprietary model', () => {
+    activeLocale = 'lt'
+    const summary = consumptionSummaryToText(
+      buildConsumptionSummary(
+        claude,
+        gemma,
+        { tokens: 100, energy_mwh: 100 },
+        { tokens: 100, energy_mwh: 100 }
+      )
+    )
+
+    expect(summary).toContain('yra nuosavybinis numatomo labai didelio dydžio modelis')
   })
 
   it.each([

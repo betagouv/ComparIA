@@ -2546,16 +2546,20 @@
                     "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>."
                 },
                 "comparison": {
-                    "comparable": "un niveau <strong>comparable</strong> à celui de <strong>{otherModel}</strong>",
-                    "multipleLess": "près de <strong>{count} fois moins</strong> que <strong>{otherModel}</strong>",
-                    "multipleMore": "près de <strong>{count} fois plus</strong> que <strong>{otherModel}</strong>",
-                    "percentageLess": "<strong>−{percentage} %</strong> par rapport à <strong>{otherModel}</strong>",
-                    "percentageMore": "<strong>+{percentage} %</strong> par rapport à <strong>{otherModel}</strong>",
-                    "unavailable": "une comparaison indisponible avec <strong>{otherModel}</strong>"
+                    "comparable": "une consommation <strong>comparable</strong> à celle de <strong>{otherModel}</strong>",
+                    "multipleLess": "une consommation près de <strong>{count} fois moins élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "multipleMore": "une consommation près de <strong>{count} fois plus élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "percentageLess": "une consommation <strong>{percentage} % moins élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "percentageMore": "une consommation <strong>{percentage} % plus élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "unavailable": "une consommation qui ne peut pas être comparée à celle de <strong>{otherModel}</strong>"
                 },
-                "consumption": "Sur cette discussion, les <strong>{tokens} jetons</strong> générés représentent environ <strong>{energy} mWh</strong>, soit {comparison}.",
+                "consumption": "Au cours de cette discussion, la génération de <strong>{tokens} jetons</strong> a consommé environ <strong>{energy} mWh</strong>, soit {comparison}.",
                 "size": {
-                    "estimated": "{size} (estimée)",
+                    "estimatedL": "de grande taille (estimée)",
+                    "estimatedM": "de taille moyenne (estimée)",
+                    "estimatedS": "de petite taille (estimée)",
+                    "estimatedXl": "de très grande taille (estimée)",
+                    "estimatedXs": "de très petite taille (estimée)",
                     "l": "de grande taille",
                     "m": "de taille moyenne",
                     "s": "de petite taille",
