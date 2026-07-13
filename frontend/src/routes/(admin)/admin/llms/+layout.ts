@@ -1,5 +1,6 @@
 import { api } from '$lib/fastapi-client'
 import type { LLMData, LLMEndpoint, LLMLab, LLMLicense } from '$lib/generated/admin'
+import type { JSONSchema } from '$lib/utils/form'
 import type { LayoutLoad } from './$types'
 
 export const ssr = false // auth error on server side
@@ -11,6 +12,15 @@ export const load: LayoutLoad = async () => {
     labs: LLMLab[]
     llms: LLMData[]
   }>('/admin/llms/data')
+  const schemas = await api.request<{
+    endpoints: JSONSchema
+    licenses: JSONSchema
+    labs: JSONSchema
+    llms: JSONSchema
+  }>('/admin/llms/schemas')
 
-  return data
+  return {
+    ...data,
+    schemas
+  }
 }
