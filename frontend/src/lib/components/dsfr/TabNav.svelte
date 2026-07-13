@@ -28,7 +28,7 @@
         <a
           href={link.href}
           class="fr-nav__link cl-nav-link py-2! min-h-unset! relative"
-          aria-current={page.url.pathname === link.href ? 'true' : undefined}
+          aria-current={page.url.pathname.includes(link.href) ? 'true' : undefined}
         >
           <span>
             {#if link.icon}<Icon icon={link.icon} size="sm" class="me-2" />{/if}
