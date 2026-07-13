@@ -108,7 +108,11 @@
         aria-disabled={submitDisabled}
         text={m['words.send']()}
         onclick={() => (submitDisabled ? onSubmitBlocked() : onSubmit(value))}
+<<<<<<< HEAD
         class="right-3 bottom-3 absolute"
+=======
+        class={['right-3 bottom-3 absolute', { 'cursor-not-allowed opacity-50': submitDisabled }]}
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène)
       />
     {/if}
   </div>

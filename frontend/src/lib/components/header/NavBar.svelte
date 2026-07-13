@@ -93,6 +93,7 @@
   </div>
 {/snippet}
 
+<<<<<<< HEAD
 {#snippet account()}
   {@const { icon: connectionIcon, text: connectionText, ...connectionProps } = connectionBtnProps}
   <div class="gap-1 pb-3 flex flex-col">
@@ -126,6 +127,35 @@
       <span class={{ 'lg:sr-only': !expanded }}>{connectionText}</span>
     </button>
   </div>
+=======
+{#snippet discussions(mode: 'desktop' | 'mobile' = 'desktop')}
+  {#if !isAdmin}
+    <div class={['gap-2 lg:min-h-0 flex flex-col', { 'lg:hidden': !expanded }]}>
+      <div class="px-4">
+        <p class="text-sm! mb-0! text-black font-bold">
+          {m['auth.discussions.title']()}
+        </p>
+        {#if !auth.user}
+          <p class="text-sm mb-0! text-black">
+            {m['auth.discussions.prompt']()}
+          </p>
+          <Button
+            variant="tertiary"
+            text={m['auth.discussions.signIn']()}
+            icon="user-line"
+            size="sm"
+            aria-controls="fr-modal-signin"
+            data-fr-opened="false"
+            class="mt-2! block w-full!"
+          />
+        {/if}
+      </div>
+      {#if auth.user}
+        <History {mode} class="lg:overflow-y-auto" />
+      {/if}
+    </div>
+  {/if}
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène)
 {/snippet}
 
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
@@ -138,6 +168,40 @@
       </div>
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>
+<<<<<<< HEAD
+=======
+
+    {#if auth.user}
+      <div
+        class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start -mt-1 md:justify-between flex flex-col"
+      >
+        <Button
+          variant="tertiary-no-outline"
+          size="sm"
+          class="text-black! -ms-3"
+          onclick={() => logout()}
+        >
+          <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
+            <Icon icon="i-ri-logout-box-r-line" block size={expanded ? 'sm' : 'md'} />
+            <span class={{ 'lg:sr-only': !expanded }}>{m['auth.settings.logout']()}</span>
+          </span>
+        </Button>
+
+        <p
+          class={[
+            'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
+            { 'lg:hidden': !expanded }
+          ]}
+        >
+          {auth.user.email}
+        </p>
+      </div>
+    {/if}
+
+    <!-- {@render helpLink()} -->
+
+    <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène)
   </div>
 {/snippet}
 

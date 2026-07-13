@@ -127,6 +127,29 @@
     100% {
       transform: scale(1);
       box-shadow: 0 2px 6px rgb(0 0 0 / 16%);
+<<<<<<< HEAD:frontend/src/routes/(arena)/components/VoteSelect.svelte
+=======
+    }
+    35%,
+    65% {
+      transform: scale(1.025);
+      box-shadow:
+        0 0 0 4px var(--blue-france-850-200),
+        0 4px 12px rgb(0 0 0 / 20%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.cl-vote-nudge) {
+      animation: none;
+      box-shadow: 0 0 0 4px var(--blue-france-850-200);
+    }
+  }
+
+  @media (max-width: 47.99em) {
+    .cl-vote-select button[data-choice='a_better'] {
+      order: 1;
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène):frontend/src/routes/arene/components/VoteSelect.svelte
     }
     35%,
     65% {

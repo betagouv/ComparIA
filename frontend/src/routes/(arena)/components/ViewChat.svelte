@@ -5,8 +5,13 @@
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+<<<<<<< HEAD:frontend/src/routes/(arena)/components/ViewChat.svelte
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
+=======
+  import { GroupedMessages, RevealArea, VoteModal } from '.'
+  import { onDestroy } from 'svelte'
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène):frontend/src/routes/arene/components/ViewChat.svelte
 
   let {
     comparisonId,
@@ -18,6 +23,7 @@
 
   const comparator = $derived(getComparison(comparisonId))
 
+<<<<<<< HEAD:frontend/src/routes/(arena)/components/ViewChat.svelte
   // A comparison that isn't in the store sends us back to the arena. The
   // redirect only lands on the next tick, so everything below has to survive
   // a render with no comparison rather than throw on the way out.
@@ -26,6 +32,11 @@
       goto(resolve('/'))
     }
   })
+=======
+  let prompt = $state('')
+  let voteReminder = $state(false)
+  let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène):frontend/src/routes/arene/components/ViewChat.svelte
 
   let prompt = $state('')
   let voteReminder = $state(false)
@@ -56,7 +67,11 @@
   }
 
   function remindToVote() {
+<<<<<<< HEAD:frontend/src/routes/(arena)/components/ViewChat.svelte
     const turn = comparator.comparison?.turns.findLast((currentTurn) => !currentTurn.choice)
+=======
+    const turn = comparator.comparison.turns.findLast((currentTurn) => !currentTurn.choice)
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène):frontend/src/routes/arene/components/ViewChat.svelte
     if (!turn) return
 
     voteReminder = true
@@ -77,6 +92,7 @@
 
   onDestroy(() => clearTimeout(voteReminderTimeout))
 
+<<<<<<< HEAD:frontend/src/routes/(arena)/components/ViewChat.svelte
   // Screen readers get milestones, not tokens: the streaming answers are no
   // longer inside a live region, so this sentence is the only thing spoken.
   // 'pending' is skipped because Pending.svelte already announces it.
@@ -91,6 +107,8 @@
     }
   })
 
+=======
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène):frontend/src/routes/arene/components/ViewChat.svelte
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
   let footerSize: number = $derived(footer ? footer.offsetHeight : 0)
@@ -175,7 +193,11 @@
         aria-disabled={!canContinue}
         size="sm"
         icon="arrow-up-circle-line"
+<<<<<<< HEAD:frontend/src/routes/(arena)/components/ViewChat.svelte
         class="md:w-fit! lh-none! w-full!"
+=======
+        class={['md:w-fit! lh-none! w-full!', { 'cursor-not-allowed opacity-50': !canContinue }]}
+>>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène):frontend/src/routes/arene/components/ViewChat.svelte
         onclick={() => (canContinue ? comparator.reveal() : remindToVote())}
       />
     </div>
