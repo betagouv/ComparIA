@@ -69,6 +69,19 @@ export function selectRandomFromArray<T>(array: T[]): T | undefined {
   return array[Math.floor(Math.random() * array.length)]
 }
 
+/*
+ Try to get translation but do not error out, use default or warning string if no default
+ */
+export function tryI18n(key: string, default_?: string): string {
+  try {
+    // @ts-expect-error - fallback if error
+    return m[`generated.${key}`]()
+  } catch (_e) {
+    // FIXME throw error?
+    return default_ ?? `Error: missing translation for 'generated.${key}'`
+  }
+}
+
 // Typescript object helpers
 
 type Key = PropertyKey
