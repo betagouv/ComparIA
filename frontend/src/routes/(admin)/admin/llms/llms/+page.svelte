@@ -63,7 +63,7 @@
 >
   {#snippet cell(llm, col)}
     {#if col.id === 'human_id'}
-      <a href={resolve(`/admin/llms/${llm.id}`)}>{llm[col.id]}</a>
+      <a href={resolve(`/admin/llms/llms/${llm.id}`)}>{llm[col.id]}</a>
     {:else if col.id === 'status'}
       {@const status = llm[col.id]}
       <Badge

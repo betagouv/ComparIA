@@ -9,10 +9,10 @@
   let { children }: LayoutProps = $props()
 
   const links = [
-    { id: 'list', icon: 'i-ri-ai-agent-line', label: 'LLMs' },
-    { id: 'labs', icon: 'i-ri-flask-line', label: 'Labs' },
-    { id: 'licenses', icon: 'i-ri-copyright-line', label: 'Licenses' },
-    { id: 'endpoints', icon: 'i-ri-server-line', label: 'Endpoints' }
+    { id: 'llms' as const, icon: 'i-ri-ai-agent-line', label: 'LLMs' },
+    { id: 'labs' as const, icon: 'i-ri-flask-line', label: 'Labs' },
+    { id: 'licenses' as const, icon: 'i-ri-copyright-line', label: 'Licenses' },
+    { id: 'endpoints' as const, icon: 'i-ri-server-line', label: 'Endpoints' }
   ].map((link) => ({ ...link, href: resolve(`/admin/llms/${link.id}`) }))
 </script>
 
