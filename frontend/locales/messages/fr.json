@@ -1919,6 +1919,7 @@
         "title": "Statistiques de la plateforme"
     },
     "vote": {
+        "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
         "choices": {
             "negative": {
                 "comment": "Précisez ce que vous n’avez pas aimé…",
