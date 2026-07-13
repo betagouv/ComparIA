@@ -108,7 +108,7 @@
         aria-disabled={submitDisabled}
         text={m['words.send']()}
         onclick={() => (submitDisabled ? onSubmitBlocked() : onSubmit(value))}
-        class={['right-3 bottom-3 absolute', { 'cursor-not-allowed opacity-50': submitDisabled }]}
+        class="right-3 bottom-3 absolute"
       />
     {/if}
   </div>
