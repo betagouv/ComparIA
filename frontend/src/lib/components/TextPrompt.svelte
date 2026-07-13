@@ -20,6 +20,7 @@
     el?: HTMLTextAreaElement
     class?: string
     onSubmit?: (value: string) => void
+    onSubmitBlocked?: () => void
     onBlur?: (value: string) => void
     onFocus?: () => void
   } & Partial<Pick<HTMLTextAreaElement, 'disabled' | 'placeholder' | 'rows'>>
@@ -41,6 +42,7 @@
     el = $bindable(),
     class: classNames = '',
     onSubmit = noop,
+    onSubmitBlocked = noop,
     onBlur = noop,
     onFocus = noop,
     ...nativeTextAreaProps
@@ -66,6 +68,8 @@
       e.preventDefault()
       if (!submitDisabled) {
         onSubmit(value)
+      } else {
+        onSubmitBlocked()
       }
     }
   }
@@ -101,10 +105,10 @@
         icon="arrow-up-line"
         iconOnly
         {size}
-        disabled={submitDisabled}
+        aria-disabled={submitDisabled}
         text={m['words.send']()}
-        onclick={() => onSubmit(value)}
-        class="right-3 bottom-3 absolute"
+        onclick={() => (submitDisabled ? onSubmitBlocked() : onSubmit(value))}
+        class={['right-3 bottom-3 absolute', { 'cursor-not-allowed opacity-50': submitDisabled }]}
       />
     {/if}
   </div>

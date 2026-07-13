@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tabs, Toggle, Tooltip } from '$components/dsfr'
+  import { Icon, Tabs, Toggle, Tooltip } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
   import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
@@ -172,6 +172,18 @@
       </div>
     </div>
   {:else}
-    <p>{m['ranking.no_data']()}</p>
+    <section
+      aria-labelledby="ranking-empty-title"
+      class="cg-border bg-very-light-grey mt-8 max-w-2xl rounded-xl px-6 py-12 mx-auto text-center"
+    >
+      <span
+        aria-hidden="true"
+        class="bg-light-info mb-5 size-16 mx-auto flex items-center justify-center rounded-full"
+      >
+        <Icon icon="trophy-line" size="lg" class="text-primary" />
+      </span>
+      <h2 id="ranking-empty-title" class="fr-h4 mb-3!">{m['seo.titles.ranking']()}</h2>
+      <p class="mb-0! text-grey">{m['ranking.no_data']()}</p>
+    </section>
   {/if}
 </PageLayout>

@@ -1445,6 +1445,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "choices": {
             "negative": {
                 "incorrect": "Fel",

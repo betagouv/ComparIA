@@ -2087,6 +2087,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {
             "negative": {
                 "incorrect": "Incorrect",

@@ -115,6 +115,32 @@
     color: white !important;
   }
 
+  :global(.cl-vote-nudge) {
+    animation: vote-nudge 700ms ease-in-out;
+  }
+
+  @keyframes vote-nudge {
+    0%,
+    100% {
+      transform: scale(1);
+      box-shadow: 0 2px 6px rgb(0 0 0 / 16%);
+    }
+    35%,
+    65% {
+      transform: scale(1.025);
+      box-shadow:
+        0 0 0 4px var(--blue-france-850-200),
+        0 4px 12px rgb(0 0 0 / 20%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.cl-vote-nudge) {
+      animation: none;
+      box-shadow: 0 0 0 4px var(--blue-france-850-200);
+    }
+  }
+
   @media (max-width: 47.99em) {
     .cl-vote-select button[data-choice='a_better'] {
       order: 1;

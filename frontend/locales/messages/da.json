@@ -2128,6 +2128,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "choices": {
             "negative": {
                 "comment": "Uddyb hvad du ikke kunne lide…",
