@@ -33,6 +33,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/svelte": "^5.3.1",
+    "@types/json-schema": "^7.0.15",
     "@types/katex": "^0.16.8",
     "@types/prismjs": "^1.26.6",
     "@types/sanitize-html": "^2.16.0",
