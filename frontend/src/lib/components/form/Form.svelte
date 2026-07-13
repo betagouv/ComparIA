@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button } from '$components/dsfr'
   import { api, ValidationError } from '$lib/fastapi-client'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import { toEntries } from '$lib/utils/commons'
   import type { AnyFormItemProps } from '$lib/utils/form'
   import type { SvelteHTMLElements } from 'svelte/elements'
@@ -30,6 +31,8 @@
     errors = {}
     try {
       await api.request(url, { body: JSON.stringify(form), method })
+      // FIXME i18n
+      useToast('Successfully saved data', 5000, 'success')
     } catch (e) {
       if (e instanceof ValidationError) {
         e.errors.forEach((err) => {
