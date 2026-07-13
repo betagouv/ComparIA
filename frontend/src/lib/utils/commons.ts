@@ -70,15 +70,15 @@ export function selectRandomFromArray<T>(array: T[]): T | undefined {
 }
 
 /*
- Try to get translation but do not error out, use default or warning string if no default
+ Try to get translation but do not error out and use default if any
  */
-export function tryI18n(key: string, default_?: string): string {
+export function tryI18n(key: string, default_?: string): string | undefined {
   try {
     // @ts-expect-error - fallback if error
     return m[`generated.${key}`]()
   } catch (_e) {
     // FIXME throw error?
-    return default_ ?? `Error: missing translation for 'generated.${key}'`
+    return default_
   }
 }
 
