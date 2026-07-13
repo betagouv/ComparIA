@@ -132,7 +132,7 @@
         aria-disabled={!canContinue}
         size="sm"
         icon="arrow-up-circle-line"
-        class={['md:w-fit! lh-none! w-full!', { 'cursor-not-allowed opacity-50': !canContinue }]}
+        class="md:w-fit! lh-none! w-full!"
         onclick={() => (canContinue ? comparator.reveal() : remindToVote())}
       />
     </div>
