@@ -8,6 +8,8 @@ from pydantic_core import PydanticCustomError
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel, Datetime, OptionalDatetime
 from .constants import LLMArchKind, LLMStatus
 from .endpoint import LLMEndpoint
@@ -95,16 +97,18 @@ FIELDS = {
 
 
 class Link(SQLModel):
-    text: str
+    text: NonEmptyStr
     url: HttpUrl
 
 
 class LLMDataBase(BaseDBModel):
     status: Annotated[LLMStatus, Field(sa_type=String, **FIELDS["status"])]
-    name: Annotated[str, Field(**FIELDS["name"])]
-    human_id: Annotated[str, Field(index=True, unique=True, **FIELDS["human_id"])]
+    name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
+    human_id: Annotated[
+        NonEmptyStr, Field(index=True, unique=True, **FIELDS["human_id"])
+    ]
     api_model_id: Annotated[
-        str | None, Field(**FIELDS["api_model_id"])
+        NonEmptyStr | None, Field(**FIELDS["api_model_id"])
     ]  # used to computed litellm args alongside LLMEndpoint data
     endpoint_id: Annotated[
         UUID | None, Field(foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"])
@@ -112,7 +116,9 @@ class LLMDataBase(BaseDBModel):
     rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
     release_date: Annotated[Datetime, Field(**FIELDS["release_date"])]
-    knowledge_cutoff: Annotated[OptionalDatetime, Field(**FIELDS["knowledge_cutoff"])]
+    knowledge_cutoff: Annotated[
+        OptionalDatetime, Field(default=None, **FIELDS["knowledge_cutoff"])
+    ]
     license_id: Annotated[
         UUID, Field(foreign_key="llm_license.id", **FIELDS["license_id"])
     ]
@@ -133,7 +139,7 @@ class LLMDataBase(BaseDBModel):
     ]
     price_in: Annotated[float, Field(**FIELDS["price_in"])]
     price_out: Annotated[float, Field(**FIELDS["price_out"])]
-    system_prompt: Annotated[str | None, Field(**FIELDS["system_prompt"])]
+    system_prompt: Annotated[NonEmptyStr | None, Field(**FIELDS["system_prompt"])]
     links: Annotated[
         list[Link],
         Field(sa_type=JSONB, **FIELDS["links"]),
@@ -168,9 +174,6 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
-    # test: Link
-    # test2: list[str]
-
     @field_validator("active_params", mode="before")
     @classmethod
     def check_active_params_is_defined_if_moe(

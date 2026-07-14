@@ -2,6 +2,8 @@ from typing import Annotated
 
 from sqlmodel import Field
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel
 
 FIELDS = {
@@ -23,10 +25,10 @@ FIELDS = {
 
 
 class LLMEndpointBase(BaseDBModel):
-    name: Annotated[str, Field(index=True, **FIELDS["name"])]
-    api_type: Annotated[str, Field(**FIELDS["api_type"])]
-    api_base: Annotated[str | None, Field(**FIELDS["api_base"])] = None
-    api_version: Annotated[str | None, Field(**FIELDS["api_version"])] = None
+    name: Annotated[NonEmptyStr, Field(index=True, **FIELDS["name"])]
+    api_type: Annotated[NonEmptyStr, Field(**FIELDS["api_type"])]
+    api_base: Annotated[NonEmptyStr | None, Field(**FIELDS["api_base"])] = None
+    api_version: Annotated[NonEmptyStr | None, Field(**FIELDS["api_version"])] = None
 
 
 class LLMEndpointPrivate(LLMEndpointBase):

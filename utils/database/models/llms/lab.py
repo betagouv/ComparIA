@@ -2,6 +2,8 @@ from typing import Annotated
 
 from sqlmodel import Field
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel
 
 FIELDS = {
@@ -16,9 +18,11 @@ FIELDS = {
 
 
 class LLMLabBase(BaseDBModel):
-    name: Annotated[str, Field(**FIELDS["name"])]
-    logo: Annotated[str, Field(**FIELDS["logo"])]  # icon name, or file?
-    origin_country: Annotated[str, Field(**FIELDS["origin_country"])]  # FIXME use lib?
+    name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
+    logo: Annotated[NonEmptyStr, Field(**FIELDS["logo"])]  # icon name, or file?
+    origin_country: Annotated[
+        NonEmptyStr, Field(**FIELDS["origin_country"])
+    ]  # FIXME use lib?
 
 
 class LLMLab(LLMLabBase, table=True):
