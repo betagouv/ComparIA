@@ -69,7 +69,7 @@ async def upsert_llm_endpoint(
     return await _upsert_item(LLMEndpoint, endpoint, session, commit)
 
 
-async def upsert_llm(
+async def upsert_llm_data(
     llm: LLMDataUpsert, session: "AsyncSession", commit: bool = True
 ) -> LLMData:
     return await _upsert_item(LLMData, llm, session, commit)
