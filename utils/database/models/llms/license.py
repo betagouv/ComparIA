@@ -2,6 +2,8 @@ from typing import Annotated
 
 from sqlmodel import Field, String
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel
 from .constants import LLMLicenseKind
 
@@ -15,7 +17,7 @@ FIELDS = {
 
 class LLMLicenseBase(BaseDBModel):
     kind: Annotated[LLMLicenseKind, Field(sa_type=String, **FIELDS["kind"])]
-    name: Annotated[str, Field(**FIELDS["name"])]
+    name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
     reuse: Annotated[bool, Field(**FIELDS["reuse"])]
     commercial_use: Annotated[bool, Field(**FIELDS["commercial_use"])]
 
