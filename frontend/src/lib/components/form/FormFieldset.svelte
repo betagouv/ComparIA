@@ -3,12 +3,12 @@
   import type { Snippet } from 'svelte'
 
   export type FormFieldsetProps = {
-    formItem: Snippet<[{ 'aria-describedby': string; id: string }]>
-  } & Omit<BaseFormFieldProps<'fieldset'>, 'value'>
+    formItem: Snippet<[{ 'aria-describedby': string; id: string; required?: boolean }]>
+  } & Omit<BaseFormFieldProps<'fieldset', any>, 'value'>
 </script>
 
 <script lang="ts">
-  let { id, label, help, component: _component, errors, formItem }: FormFieldsetProps = $props()
+  let { id, label, help, required, errors, formItem }: FormFieldsetProps = $props()
 
   const legendId = $derived(`${id}-legend`)
   const messagesId = $derived(`${id}-messages`)
@@ -25,12 +25,13 @@
     id={legendId}
   >
     {label}
+    {#if required}<span class="text-error">*</span>{/if}
     {#if help}
       <span class="fr-hint-text">{help}</span>
     {/if}
   </legend>
 
-  {@render formItem?.({ 'aria-describedby': '', id })}
+  {@render formItem?.({ 'aria-describedby': '', id, required })}
 
   {#if error}
     <div class="fr-messages-group" id={messagesId} aria-live="polite">

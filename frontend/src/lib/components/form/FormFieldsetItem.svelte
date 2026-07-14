@@ -1,7 +1,7 @@
 <script module lang="ts">
   export type FormFieldsetItemProps = {
     subProps: AnyFormItemProps[]
-  } & BaseFormFieldProps<'fieldset-item'>
+  } & BaseFormFieldProps<'fieldset-item', any>
 </script>
 
 <script lang="ts">
