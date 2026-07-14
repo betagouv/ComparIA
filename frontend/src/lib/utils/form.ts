@@ -109,7 +109,7 @@ function parseSchema(
     }
   } else if (type === 'string') {
     const types = {
-      'date-time': 'date',
+      'date-time': 'datetime-local',
       uri: 'url',
       default: 'text'
     }
