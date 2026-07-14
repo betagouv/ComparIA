@@ -9,12 +9,12 @@
   import type { BaseFormFieldProps } from '$lib/utils/form'
   import { FormField } from '.'
 
-  let { value = $bindable(), type, step, ...props }: FormInputProps = $props()
+  let { value = $bindable(), type, disabled, step, ...props }: FormInputProps = $props()
 </script>
 
 <FormField {...props} component="input">
   {#snippet formItem(fieldProps)}
-    <input {...fieldProps} {type} {step} bind:value class="fr-input" />
+    <input {...fieldProps} {type} {disabled} {step} bind:value class="fr-input" />
   {/snippet}
 </FormField>
 

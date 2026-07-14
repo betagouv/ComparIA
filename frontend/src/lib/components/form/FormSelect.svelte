@@ -8,12 +8,12 @@
   import type { BaseFormFieldProps, Option } from '$lib/utils/form'
   import { FormField } from '.'
 
-  let { value = $bindable(), options, ...props }: FormSelectProps = $props()
+  let { value = $bindable(), disabled, options, ...props }: FormSelectProps = $props()
 </script>
 
 <FormField {...props} component="select">
   {#snippet formItem(fieldProps)}
-    <select {...fieldProps} bind:value class="fr-select">
+    <select {...fieldProps} {disabled} bind:value class="fr-select">
       {#each options as option (option.value)}
         <option value={option.value}>{option.label}</option>
       {/each}
