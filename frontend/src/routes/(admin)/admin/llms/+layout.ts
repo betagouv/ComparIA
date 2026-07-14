@@ -19,6 +19,21 @@ export const load: LayoutLoad = async () => {
     llms: JSONSchema
   }>('/admin/llms/schemas')
 
+  const llmsSchemaProps = schemas.llms.properties!
+
+  llmsSchemaProps.lab_id.type = 'string'
+  llmsSchemaProps.lab_id.enum = data.labs.map((l) => ({ label: l.name, value: l.id! }))
+  llmsSchemaProps.license_id.type = 'string'
+  llmsSchemaProps.license_id.enum = data.licenses.map((l) => ({
+    label: l.name,
+    value: l.id!
+  }))
+  llmsSchemaProps.endpoint_id.type = 'string'
+  llmsSchemaProps.endpoint_id.enum = data.endpoints.map((e) => ({
+    label: e.name,
+    value: e.id!
+  }))
+
   return {
     ...data,
     schemas
