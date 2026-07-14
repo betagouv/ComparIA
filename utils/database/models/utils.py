@@ -8,12 +8,18 @@ from sqlmodel import Field, SQLModel
 BotPos = Literal["a", "b"]
 BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 
-ModelId = Annotated[uuid.UUID, Field(default_factory=uuid.uuid4, primary_key=True)]
+ModelId = Annotated[
+    uuid.UUID,
+    Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        schema_extra={"json_schema_extra": {"hidden": True, "disabled": True}},
+    ),
+]
 AutoDatetime = Annotated[
     datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
 ]
 OptionalDatetime = Annotated[datetime | None, Field(sa_type=TIMESTAMP)]
-
 Datetime = Annotated[datetime, Field(sa_type=TIMESTAMP)]
 
 
