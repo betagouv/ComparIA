@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import { Badge, Table } from '$components/dsfr'
+  import { Badge, Link, Table } from '$components/dsfr'
+  import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { getLicenceBadge } from '$lib/models'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -10,6 +11,7 @@
 
   let { data }: PageProps = $props()
   const locale = getLocale()
+  const baseRoute = '/admin/llms/licenses' as const
 
   const licenses = $derived(
     data.licenses.map((lic) => ({
@@ -57,9 +59,13 @@
   {cols}
   rows={sortedRows}
 >
+  {#snippet headerLeft()}
+    <Link button icon="add-line" text={m['words.add']()} href={`${baseRoute}/create`} />
+  {/snippet}
+
   {#snippet cell(lic, col)}
     {#if col.id === 'name'}
-      <a href={resolve(`/admin/llms/licenses/${lic.id}`)}>{lic[col.id]}</a>
+      <a href={resolve(`${baseRoute}/${lic.id}`)}>{lic[col.id]}</a>
     {:else if col.id === 'kind'}
       <Badge {...getLicenceBadge(lic.kind)} size="xs" tooltip={undefined} />
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
