@@ -75,5 +75,5 @@
     </div>
   {/if}
 
-  <Button type="submit" text="submit" />
+  <Button type="submit" text={m['words.save']()} />
 </form>
