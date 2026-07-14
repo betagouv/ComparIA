@@ -1,31 +1,34 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import Form from '$components/form/Form.svelte'
-  import { omit } from '$lib/utils/commons'
-  import { getFormFields } from '$lib/utils/form'
+  import { useForm } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
-  const { data: _data }: PageProps = $props()
+  const { data }: PageProps = $props()
 
-  const omittedKeys = ['id', 'updated_at', 'created_at'] as const
-  const data = $derived(_data.labs.find((item) => item.id === page.params.id)!)
-  const schema = $derived(_data.schemas.labs)
-  const form = $state({ ...omit(data, omittedKeys) })
-  const fields = $derived(
-    getFormFields(schema, 'lab_upsert').filter((f) => !omittedKeys.includes(f.id))
+  const id = $derived(page.params.id)
+  const method = $derived(id === 'create' ? 'post' : 'put')
+  const form = $derived(
+    useForm({
+      url: '/admin/llms/lab',
+      ...data.formProps,
+      omitKeys: ['updated_at', 'created_at'],
+      i18nKey: 'lab_upsert',
+      method,
+      onSuccess: (updated) => {
+        Object.assign(data.formProps.data, updated)
+        if (method === 'post') {
+          // Update app data
+          data.labs.push(updated)
+          goto(resolve(`/admin/llms/labs/${updated.id}`))
+        }
+      }
+    })
   )
-  let errors = $state({})
 </script>
 
 <div>
-  <Form
-    id={data.id}
-    label="Lab"
-    subLabel={data.id}
-    items={fields}
-    {form}
-    {errors}
-    url={`/admin/llms/lab/${data.id}`}
-    method="put"
-  />
+  <Form {id} label="Lab" subLabel={id} {...form} />
 </div>
