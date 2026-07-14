@@ -17,6 +17,7 @@ export type JSONSchema = BaseJSONSchema & {
   $defs: Record<string, JSONSchema>
   optional?: boolean
   disabled?: boolean
+  hidden?: boolean
 }
 
 export type AnyFormItemComponent =
@@ -35,6 +36,7 @@ export type BaseFormFieldProps<C extends AnyFormItemComponent, T> = {
   value: T
   required?: boolean
   disabled?: boolean
+  hidden?: boolean
   component: C
   help?: string
   errors?: Record<string, string>
@@ -56,8 +58,8 @@ function parseSchema(
   id: string,
   i18nBaseKey?: string
 ): AnyFormItemProps | AnyFormItemProps[] {
-  const { properties, $defs, type, $ref, enum: $enum, optional, disabled } = schema
-  const label = tryI18n(`${i18nBaseKey}.${id}.label`, schema.title)
+  const { properties, $defs, type, $ref, enum: $enum, optional, disabled, hidden } = schema
+  const label = tryI18n(`${i18nBaseKey}.${id}.label`, schema.title)!
   const help = tryI18n(`${i18nBaseKey}.${id}.help`, schema.description)
   const baseProps = {
     id,
@@ -65,6 +67,7 @@ function parseSchema(
     help,
     required: !optional,
     disabled,
+    hidden,
     value: 'placeholder' as any
   } // FIXME value to remove
 
