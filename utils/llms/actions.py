@@ -6,7 +6,7 @@ from pydantic import FilePath
 from utils.database.session import get_session
 from utils.llms.data import LLMImportData, get_llms_data
 from utils.llms.services import (
-    upsert_llm,
+    upsert_llm_data,
     upsert_llm_endpoint,
     upsert_llm_lab,
     upsert_llm_license,
@@ -35,7 +35,7 @@ async def llms_import(
             await upsert_llm_lab(lab, session)
 
         for llm in data.llms:
-            await upsert_llm(llm, session)
+            await upsert_llm_data(llm, session)
 
 
 async def llms_export(path: Path = Path("./llms_data.json")) -> None:

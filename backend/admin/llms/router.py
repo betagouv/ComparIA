@@ -17,7 +17,7 @@ from utils.database.models.llms import (
 )
 from utils.database.session import get_session
 from utils.llms.services import (
-    upsert_llm,
+    upsert_llm_data,
     upsert_llm_endpoint,
     upsert_llm_lab,
     upsert_llm_license,
@@ -69,29 +69,29 @@ async def get_schema():
     }
 
 
-@router.put("/llm/{item_id}")
-async def update_llm(item_id: UUID, body: LLMDataUpsert) -> LLMData:
-    body.id = item_id
+@router.post("/llm")
+@router.put("/llm")
+async def upsert_llm(body: LLMDataUpsert) -> LLMData:
     async with get_session() as session:
-        return await upsert_llm(body, session, commit=COMMIT)
+        return await upsert_llm_data(body, session, commit=COMMIT)
 
 
-@router.put("/endpoint/{item_id}")
-async def update_endpoint(item_id: UUID, body: LLMEndpointUpsert) -> LLMEndpoint:
-    body.id = item_id
+@router.post("/endpoint")
+@router.put("/endpoint")
+async def upsert_endpoint(body: LLMEndpointUpsert) -> LLMEndpoint:
     async with get_session() as session:
         return await upsert_llm_endpoint(body, session, commit=COMMIT)
 
 
-@router.put("/lab/{item_id}")
-async def update_lab(item_id: UUID, body: LLMLabUpsert) -> LLMLab:
-    body.id = item_id
+@router.post("/lab")
+@router.put("/lab")
+async def upsert_lab(body: LLMLabUpsert) -> LLMLab:
     async with get_session() as session:
         return await upsert_llm_lab(body, session, commit=COMMIT)
 
 
-@router.put("/license/{item_id}")
-async def update_license(item_id: UUID, body: LLMLicenseUpsert) -> LLMLicense:
-    body.id = item_id
+@router.post("/license")
+@router.put("/license")
+async def upsert_license(body: LLMLicenseUpsert) -> LLMLicense:
     async with get_session() as session:
         return await upsert_llm_license(body, session, commit=COMMIT)
