@@ -1,7 +1,7 @@
 <script module lang="ts">
   export type FormSelectProps = {
-    options: Option<string>[]
-  } & BaseFormFieldProps<'select', string>
+    options: Option<string | null>[]
+  } & BaseFormFieldProps<'select', string | null>
 </script>
 
 <script lang="ts">
@@ -13,7 +13,7 @@
 
 <FormField {...props} component="select">
   {#snippet formItem(fieldProps)}
-    <select {...props} {...fieldProps} bind:value class="fr-select">
+    <select {...fieldProps} bind:value class="fr-select">
       {#each options as option (option.value)}
         <option value={option.value}>{option.label}</option>
       {/each}

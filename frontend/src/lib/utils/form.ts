@@ -15,6 +15,7 @@ export type JSONSchema = BaseJSONSchema & {
   properties?: Record<string, JSONSchema>
   required: string[]
   $defs: Record<string, JSONSchema>
+  optional?: boolean
 }
 
 export type AnyFormItemComponent =
@@ -27,10 +28,11 @@ export type AnyFormItemComponent =
   | 'fieldset-item'
   | 'fieldset-list'
 
-export type BaseFormFieldProps<C extends AnyFormItemComponent, T = any> = {
+export type BaseFormFieldProps<C extends AnyFormItemComponent, T> = {
   id: string
   label: string
   value: T
+  required?: boolean
   component: C
   help?: string
   errors?: Record<string, string>
@@ -48,14 +50,20 @@ export type AnyFormItemProps =
   | FormFieldsetListProps
 
 function parseSchema(
-  schema: BaseJSONSchema,
+  schema: JSONSchema,
   id: string,
   i18nBaseKey?: string
 ): AnyFormItemProps | AnyFormItemProps[] {
-  const { properties, $defs, type, $ref, enum: $enum } = schema
+  const { properties, $defs, type, $ref, enum: $enum, optional } = schema
   const label = tryI18n(`${i18nBaseKey}.${id}.label`, schema.title)
   const help = tryI18n(`${i18nBaseKey}.${id}.help`, schema.description)
-  const baseProps = { id, label, help, value: 'placeholder' as any } // FIXME value to remove
+  const baseProps = {
+    id,
+    label,
+    help,
+    required: !optional,
+    value: 'placeholder' as any
+  } // FIXME value to remove
 
   if (type === 'object') {
     if (!properties) throw new Error('no properties')
@@ -80,14 +88,18 @@ function parseSchema(
     const innerSchema = { ...$defs[ref], $defs }
     return parseSchema(innerSchema, id, `${i18nBaseKey}.${ref}`)
   } else if ($enum) {
+    const options = $enum.map((value) =>
+      typeof value === 'string'
+        ? { label: value as string, value: value as string }
+        : (value as unknown as Option<string | null>)
+    )
+    if (optional) {
+      options.push({ value: null, label: 'None' })
+    }
     return {
       ...baseProps,
       component: 'select',
-      options: $enum.map((value) =>
-        typeof value === 'string'
-          ? { label: value as string, value: value as string }
-          : (value as unknown as Option<any>)
-      )
+      options
     }
   } else if (type === 'string') {
     const types = {
