@@ -11,9 +11,10 @@
   let {
     value = $bindable(),
     id,
-    disabled,
     label,
     help,
+    disabled,
+    hidden,
     errors,
     checkKind = 'truth'
   }: FormToggleProps = $props()
@@ -25,7 +26,7 @@
   const error = $derived(errors?.[id])
 </script>
 
-<div class={['fr-toggle mb-6!', { 'fr-toggle--error': !!error }]}>
+<div class={['fr-toggle mb-6!', { 'fr-toggle--error': !!error, 'hidden!': hidden }]}>
   <input
     {id}
     type="checkbox"

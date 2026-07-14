@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-  let { id, label, help, required, errors, formItem }: FormFieldsetProps = $props()
+  let { id, label, help, required, hidden, errors, formItem }: FormFieldsetProps = $props()
 
   const legendId = $derived(`${id}-legend`)
   const messagesId = $derived(`${id}-messages`)
@@ -18,7 +18,7 @@
 <fieldset
   id="fieldset-{id}"
   aria-labelledby={`${legendId} ${messagesId}`}
-  class={['fr-fieldset cg-border! p-4!', { 'fr-fieldset--error': !!error }]}
+  class={['fr-fieldset cg-border! p-4!', { 'fr-fieldset--error': !!error, 'hidden!': hidden }]}
 >
   <legend
     class="fr-fieldset__legend--regular fr-fieldset__legend pb-0! px-2! w-auto!"

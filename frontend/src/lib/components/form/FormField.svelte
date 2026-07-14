@@ -8,14 +8,14 @@
 </script>
 
 <script lang="ts">
-  let { id, label, required, component, help, errors, formItem }: FormFieldProps = $props()
+  let { id, label, required, hidden, component, help, errors, formItem }: FormFieldProps = $props()
 
   const messagesId = $derived(`${id}-messages`)
   const props_ = $derived({ 'aria-describedby': messagesId, id, required })
   const error = $derived(errors?.[id])
 </script>
 
-<div class={[`fr-${component}-group`, { [`fr-${component}-group--error`]: !!error }]}>
+<div class={[`fr-${component}-group`, { [`fr-${component}-group--error`]: !!error, hidden }]}>
   {#if component === 'checkbox'}
     {@render formItem?.(props_)}
   {/if}
