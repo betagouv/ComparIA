@@ -11,6 +11,7 @@
   let {
     value = $bindable(),
     id,
+    disabled,
     label,
     help,
     errors,
@@ -29,6 +30,7 @@
     {id}
     type="checkbox"
     bind:checked={value}
+    {disabled}
     class="fr-toggle__input"
     aria-describedby="{hintId} {messagesId}"
   />

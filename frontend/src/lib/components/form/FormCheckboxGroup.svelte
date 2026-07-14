@@ -8,7 +8,7 @@
   import type { BaseFormFieldProps, Option } from '$lib/utils/form'
   import { FormField, FormFieldset } from '.'
 
-  let { value = $bindable(), options, ...props }: FormCheckboxGroupProps = $props()
+  let { value = $bindable(), disabled, options, ...props }: FormCheckboxGroupProps = $props()
 </script>
 
 <FormFieldset {...props} component="fieldset">
@@ -17,7 +17,7 @@
       <div class="fr-fieldset__element">
         <FormField id={`${id}-${opt.value}`} label={opt.label} component="checkbox">
           {#snippet formItem({ id })}
-            <input name={id} {id} type="checkbox" value={opt.value} bind:group={value} />
+            <input name={id} {id} type="checkbox" value={opt.value} {disabled} bind:group={value} />
           {/snippet}
         </FormField>
       </div>
