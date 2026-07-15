@@ -1,4 +1,5 @@
-from .auth import AuthSession, ConsentLog, LoginCode, User
+from .app_settings import AppSettings, AppSettingsPatch, AppSettingsPublic
+from .auth import AuthSession, ConsentLog, LoginCode, User, UserPublic
 from .comparison import (
     ArchivedReason,
     Comparison,

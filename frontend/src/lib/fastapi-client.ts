@@ -108,7 +108,7 @@ export class FastAPIClient {
   /**
    * Get full URL for an endpoint
    */
-  private getUrl(path: string): string {
+  getUrl(path: string): string {
     return `${this.baseUrl}${path}`
   }
 

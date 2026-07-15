@@ -18,6 +18,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
@@ -35,6 +36,8 @@ class AuthConfig(BaseModel):
     methods: list[Literal["email_code"]]
     smtp_configured: bool
     domain_allowlist: list[str]
+    platform_name: str
+    has_custom_logo: bool
 
 
 class EmailRequestBody(BaseModel):
@@ -58,11 +61,26 @@ class InviteAcceptBody(BaseModel):
 
 @router.get("/config")
 async def get_config() -> AuthConfig:
+    app_settings = await get_app_settings()
     return AuthConfig(
-        access_policy=settings.AUTH_ACCESS_POLICY,
+        access_policy=app_settings.auth_access_policy,
         methods=["email_code"],
         smtp_configured=bool(settings.SMTP_HOST),
-        domain_allowlist=settings.AUTH_DOMAIN_ALLOWLIST,
+        domain_allowlist=app_settings.auth_domain_allowlist,
+        platform_name=app_settings.platform_name,
+        has_custom_logo=app_settings.logo is not None,
+    )
+
+
+@router.get("/config/logo")
+async def get_config_logo() -> Response:
+    app_settings = await get_app_settings()
+    if not app_settings.logo:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return Response(
+        content=app_settings.logo,
+        media_type=app_settings.logo_content_type or "image/png",
+        headers={"Cache-Control": "public, max-age=300"},
     )
 
 
@@ -100,9 +118,10 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    if settings.AUTH_DOMAIN_ALLOWLIST:
+    app_settings = await get_app_settings()
+    if app_settings.auth_domain_allowlist:
         domain = body.email.split("@")[-1].lower()
-        if domain not in [d.lower() for d in settings.AUTH_DOMAIN_ALLOWLIST]:
+        if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Email domain not allowed.",

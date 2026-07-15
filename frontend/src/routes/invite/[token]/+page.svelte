@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
-  import { initAuth } from '$lib/auth.svelte'
+  import { auth, initAuth } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
@@ -17,6 +17,7 @@
   let error = $state<string>()
 
   onMount(async () => {
+    if (!auth.config) initAuth()
     try {
       const result = await api.request<{ valid: boolean; email: string | null }>(
         `/auth/invite/${token}`
@@ -55,8 +56,15 @@
 <div class="md:flex-row flex min-h-screen flex-col">
   <header class="px-8 py-10 gap-20 md:justify-center flex basis-1/2 flex-col">
     <div class="gap-2 flex items-center">
-      <img src="/orgs/comparia.png" aria-hidden="true" alt="" class="h-[35px]" />
-      <h1 class="font-bold text-base! mb-0!">{m['header.title']()}</h1>
+      <img
+        src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : '/orgs/comparia.png'}
+        aria-hidden="true"
+        alt=""
+        class="h-[35px]"
+      />
+      <h1 class="font-bold text-base! mb-0!">
+        {auth.config?.platform_name || m['header.title']()}
+      </h1>
     </div>
 
     <div>

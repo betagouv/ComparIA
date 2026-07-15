@@ -6,6 +6,7 @@
   import PageLayout from '$components/PageLayout.svelte'
   import { auth } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
+  import type { UserPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -13,15 +14,6 @@
   import { onMount } from 'svelte'
 
   const locale = getLocale()
-
-  interface UserRow {
-    id: string
-    email: string
-    role: string
-    source: string
-    created_at: string
-    last_seen_at: string
-  }
 
   function sourceBadgeVariant(source: string) {
     switch (source) {
@@ -36,7 +28,7 @@
     }
   }
 
-  let users = $state<UserRow[]>([])
+  let users = $state<UserPublic[]>([])
   let total = $state(0)
   let loading = $state(true)
 
@@ -44,7 +36,9 @@
     loading = true
     try {
       const params = new URLSearchParams({ page: '1', page_size: '50' })
-      const data = await api.request<{ items: UserRow[]; total: number }>(`/admin/users?${params}`)
+      const data = await api.request<{ items: UserPublic[]; total: number }>(
+        `/admin/users?${params}`
+      )
       users = data.items
       total = data.total
     } finally {
@@ -131,11 +125,21 @@
       actions: undefined
     }))
   )
-  const sortedRows = $derived(sortRows(tableRows, cols, { col: orderingCol, method: orderingMethod, search }))
+  const sortedRows = $derived(
+    sortRows(tableRows, cols, { col: orderingCol, method: orderingMethod, search })
+  )
 </script>
 
 <PageLayout seoTitle="Users" title="Users" subtitle="Registered users">
-  <Table bind:search bind:orderingMethod bind:orderingCol caption="Users" hideCaption {cols} rows={sortedRows}>
+  <Table
+    bind:search
+    bind:orderingMethod
+    bind:orderingCol
+    caption="Users"
+    hideCaption
+    {cols}
+    rows={sortedRows}
+  >
     {#snippet headerRight()}
       <Button text="Invite user" aria-controls="fr-modal-invite-user" data-fr-opened="false" />
     {/snippet}

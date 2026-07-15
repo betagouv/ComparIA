@@ -12,6 +12,8 @@ export interface AuthConfig {
   methods: 'email_code'[]
   smtp_configured: boolean
   domain_allowlist: string[]
+  platform_name: string
+  has_custom_logo: boolean
 }
 
 export const auth = $state<{ user: AuthUser | null; config: AuthConfig | null }>({
