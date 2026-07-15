@@ -1770,7 +1770,7 @@
             },
             "sovereignty": {
                 "sub": "Critères atteints",
-                "title": "Souveraineté",
+                "title": "Niveau d’ouverture",
                 "tooltip": "Score calculé à partir de critères d’ouverture et de maîtrise : licence, poids, données et code d’entraînement publics, usage commercial, réutilisation des sorties et hébergement possible dans l’Union européenne."
             }
         },
@@ -1916,7 +1916,7 @@
                 "public_weights": "Poids du modèle",
                 "reuse": "Réutilisation des sorties"
             },
-            "title": "Ouverture et souveraineté"
+            "title": "Niveau d’ouverture"
         },
         "openWeight": {
             "tooltips": {
@@ -2473,8 +2473,6 @@
         },
         "impacts": {
             "cost": {
-                "count": "{count}<span {smallProps}> centimes $</span>",
-                "count_low": "<1<span {smallProps}> centime $</span>",
                 "sub": "Prix global (entrée et sortie)",
                 "title": "Coût",
                 "tooltip": "FIXME"
@@ -2482,13 +2480,42 @@
             "energy": {
                 "conso": "{count}<span {midProps}>mWh</span>",
                 "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimé</span>",
-                "higher": "<span {props}>+{count}%</span> comparé au 2nd modèle",
                 "title": "Énergie conso.",
                 "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "how": {
                 "desc": "FIXME",
                 "title": "Pourquoi cette consommation ?"
+            },
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>dense</strong> : il mobilise l’ensemble de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>Matformer</strong> : il adapte la part de ses paramètres mobilisée à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse (environ <strong>{activeParams} milliards</strong> sur <strong>{params} milliards</strong>). Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> est un modèle <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "une consommation <strong>comparable</strong> à celle de <strong>{otherModel}</strong>",
+                    "multipleLess": "une consommation près de <strong>{count} fois moins élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "multipleMore": "une consommation près de <strong>{count} fois plus élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "percentageLess": "une consommation <strong>{percentage} % moins élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "percentageMore": "une consommation <strong>{percentage} % plus élevée</strong> que celle de <strong>{otherModel}</strong>",
+                    "unavailable": "une consommation qui ne peut pas être comparée à celle de <strong>{otherModel}</strong>"
+                },
+                "consumption": "Au cours de cette discussion, la génération de <strong>{tokens} jetons</strong> a consommé environ <strong>{energy} mWh</strong>, soit {comparison}.",
+                "size": {
+                    "estimatedL": "de grande taille (estimée)",
+                    "estimatedM": "de taille moyenne (estimée)",
+                    "estimatedS": "de petite taille (estimée)",
+                    "estimatedXl": "de très grande taille (estimée)",
+                    "estimatedXs": "de très petite taille (estimée)",
+                    "l": "de grande taille",
+                    "m": "de taille moyenne",
+                    "s": "de petite taille",
+                    "xl": "de très grande taille",
+                    "xs": "de très petite taille"
+                }
             },
             "size": {
                 "count": "milliards param.",

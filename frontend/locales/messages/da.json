@@ -1477,6 +1477,11 @@
         "arch": {
             "title": "Vidste du?"
         },
+        "cards": {
+            "sovereignty": {
+                "title": "Åbenhedsgrad"
+            }
+        },
         "conditions": {
             "commercialUse": {
                 "question": "Er kommerciel brug af modellen tilladt?",
@@ -1516,6 +1521,9 @@
                 "proprietary": "Ophavsretligt beskyttet",
                 "semiOpen": "Open-weight"
             }
+        },
+        "opennessSovereignty": {
+            "title": "Åbenhedsgrad"
         },
         "list": {
             "filters": {
@@ -2078,6 +2086,36 @@
             "energy": {
                 "label": "energiforbrug",
                 "tooltip": "Målt i milliwatttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Jo større en model er (i milliarder af parametre), desto mere energi kræves der for at producere et token."
+            },
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>tæt</strong> arkitektur: den bruger alle sine parametre i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Matformer</strong>-arkitektur: den tilpasser den andel af parametrene, der bruges i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Mixture of Experts</strong>-arkitektur: den aktiverer kun en del af sine parametre i hvert svar (omkring <strong>{activeParams} mia.</strong> ud af <strong>{params} mia.</strong>). Dens energiklasse er <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> er en <strong>{size}</strong> model, hvis arkitektur ikke er offentliggjort. På grund af sin størrelse er dens energiklasse <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> er en proprietær <strong>{size}</strong> model, hvis arkitektur ikke er offentliggjort. På grund af sin størrelse er dens energiklasse <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "på niveau med <strong>{otherModel}</strong>",
+                    "multipleLess": "næsten <strong>{count} gange så lidt</strong> som <strong>{otherModel}</strong>",
+                    "multipleMore": "næsten <strong>{count} gange så meget</strong> som <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage} % lavere</strong> end <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage} % højere</strong> end <strong>{otherModel}</strong>",
+                    "unavailable": "uden mulighed for sammenligning med <strong>{otherModel}</strong>"
+                },
+                "consumption": "I denne samtale brugte genereringen af <strong>{tokens} tokens</strong> cirka <strong>{energy} mWh</strong>, {comparison}.",
+                "size": {
+                    "estimatedL": "anslået stor",
+                    "estimatedM": "anslået mellemstor",
+                    "estimatedS": "anslået lille",
+                    "estimatedXl": "anslået meget stor",
+                    "estimatedXs": "anslået meget lille",
+                    "l": "stor",
+                    "m": "mellemstor",
+                    "s": "lille",
+                    "xl": "meget stor",
+                    "xs": "meget lille"
+                }
             },
             "size": {
                 "count": "milliarder parametre.",

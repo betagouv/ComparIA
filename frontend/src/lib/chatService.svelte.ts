@@ -117,7 +117,6 @@ export type AnyAPIVote = APIVoteChoice | APIVoteAnnotate
 export interface RevealModelData extends APIConsoData {
   id: string
   pos: Bot
-  consoOther: number
 }
 
 export interface RevealData {
@@ -184,7 +183,6 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
     modelsData: (['a', 'b'] as const).map((pos) => ({
       id: data[pos].llm_id,
       pos,
-      consoOther: data[pos === 'a' ? 'b' : 'a'].conso.energy_mwh,
       ...data[pos].conso
     })),
     shareB64Data: data.b64

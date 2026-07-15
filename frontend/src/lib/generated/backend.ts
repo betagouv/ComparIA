@@ -108,6 +108,13 @@ export interface LLMList {
   style_coefficients: {
     [k: string]: number;
   } | null;
+  currency: CurrencyInfo;
+}
+export interface CurrencyInfo {
+  code: string;
+  rate_from_eur: number;
+  date: string | null;
+  source: "base" | "frankfurter" | "manual";
 }
 /**
  * LLM data used for LLM list, sent to clients.
