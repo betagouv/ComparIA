@@ -21,6 +21,7 @@
     iconPos = 'left',
     cornered = false,
     native = false,
+    type = 'button',
     children,
     ...props
   }: Omit<HTMLButtonAttributes, 'size'> & ButtonProps = $props()
@@ -45,7 +46,7 @@
   ])
 </script>
 
-<button {...props} class={classes}>
+<button {...props} {type} class={classes}>
   {#if text}{text}{:else}{@render children?.()}{/if}
 </button>
 
@@ -67,5 +68,17 @@
       --border-action-high-blue-france: var(--blue-france-main-525);
       --text-action-high-blue-france: var(--blue-france-main-525);
     }
+  }
+
+  /* Keep blocked actions focusable so they can explain what is required,
+     while preserving the standard DSFR disabled appearance. */
+  .fr-btn[aria-disabled='true'] {
+    color: var(--text-disabled-grey);
+    background-color: var(--background-disabled-grey);
+    cursor: not-allowed;
+
+    --idle: transparent;
+    --hover: var(--background-disabled-grey-hover);
+    --active: var(--background-disabled-grey-active);
   }
 </style>

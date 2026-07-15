@@ -6,6 +6,7 @@ from typing import Any, TypeVar, overload
 import markdown
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, FieldSerializationInfo, PlainSerializer
+from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
 
 from utils.logger import configure_logger
 
@@ -103,3 +104,19 @@ def sort_dict(data: Obj, deep: bool = True) -> Obj:
     ]
 
     return dict(sorted(items, key=lambda i: i[0].lower()))
+
+
+class FormJsonSchema(GenerateJsonSchema):
+    def sort(
+        self, value: JsonSchemaValue, parent_key: str | None = None
+    ) -> JsonSchemaValue:
+        # Do not sort at all, form will be displayed based on attribute order
+        return value
+
+    def get_flattened_anyof(self, schemas: list[JsonSchemaValue]) -> JsonSchemaValue:
+        # remove null values for simplicity, inject 'optional' prop if null in schemas
+        non_null = [schema for schema in schemas if schema["type"] != "null"]
+        flattened = super().get_flattened_anyof(schemas=non_null)
+        if len(schemas) != len(non_null):
+            flattened["optional"] = True
+        return flattened

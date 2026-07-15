@@ -27,9 +27,13 @@
   <div class="px-4 md:px-6">
     <SideSwitcher>
       <div class="gap-4 sm:gap-6 md:w-full flex">
-        {#each modelsData as data (data.pos)}
+        {#each modelsData as data, index (data.pos)}
           <div class="md:w-full min-w-0 w-[85vw]">
-            <RevealCard {data} selected={selected === data.pos} />
+            <RevealCard
+              {data}
+              otherData={modelsData[index === 0 ? 1 : 0]}
+              selected={selected === data.pos}
+            />
           </div>
         {/each}
       </div>

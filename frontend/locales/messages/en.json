@@ -1420,6 +1420,13 @@
             "title": "Why is your vote important?"
         }
     },
+    "invite": {
+        "accept": "Accept and continue",
+        "accepting": "Signing in...",
+        "backToLogin": "Sign in another way",
+        "invalid": "This invite link is no longer valid. It may have expired or already been used.",
+        "title": "You've been invited to compar:IA"
+    },
     "maintenance": {
         "desc": "compar:IA is currently under maintenance. We'll be back shortly.",
         "title": "Site under maintenance"
@@ -1427,6 +1434,11 @@
     "models": {
         "arch": {
             "title": "Did you know?"
+        },
+        "cards": {
+            "sovereignty": {
+                "title": "Openness level"
+            }
         },
         "conditions": {
             "commercialUse": {
@@ -1467,6 +1479,9 @@
                 "proprietary": "Proprietary",
                 "semiOpen": "Open-weight"
             }
+        },
+        "opennessSovereignty": {
+            "title": "Openness level"
         },
         "list": {
             "filters": {
@@ -1947,7 +1962,7 @@
             "title": "How are user preferences distributed?"
         },
         "ranking": {
-            "desc": "Thank you for your contributions!<br> The <strong>arena ranking</strong> is based on all votes and reactions from the <strong>blind comparison</strong> of the models, collected since the service opened to the public in October 2024.<br>Developed in partnership with the Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), the model ranking is based on the <strong>satisfaction score</strong> calculated using the <strong>Bradley Terry</strong> statistical model, a widely used method for converting binary votes into a probabilistic ranking.<br> The compar:IA ranking is not intended to be an official recommendation or to evaluate the technical performance of the models. It reflects the <strong>subjective preferences</strong> of the platform's users and not the factual accuracy or veracity of the responses.",
+            "desc": "This ranking is calculated from votes collected through <strong>blind comparisons</strong>, using the <strong>Bradley-Terry</strong> statistical model. It reflects <strong>subjective preferences</strong> and should be interpreted with caution: it measures neither factual accuracy nor overall model performance.",
             "tabLabel": "Leaderboard"
         },
         "table": {
@@ -2031,6 +2046,36 @@
                 "short": "{count} mWh consumed",
                 "tooltip": "Measured in milliwatt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
             },
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>dense</strong> architecture: it uses all its parameters for each response. Its energy class is <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>Matformer</strong> architecture: it adjusts how many of its parameters are used for each response. Its energy class is <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>mixture-of-experts</strong> architecture: it activates only some of its parameters to generate each response (about <strong>{activeParams} billion</strong> out of <strong>{params} billion</strong>). Its energy class is <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> is a <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "comparable to <strong>{otherModel}</strong>",
+                    "multipleLess": "nearly <strong>{count} times lower</strong> than <strong>{otherModel}</strong>",
+                    "multipleMore": "nearly <strong>{count} times higher</strong> than <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage}% lower</strong> than <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage}% higher</strong> than <strong>{otherModel}</strong>",
+                    "unavailable": "unavailable for comparison with <strong>{otherModel}</strong>"
+                },
+                "consumption": "In this conversation, generating <strong>{tokens} tokens</strong> used approximately <strong>{energy} mWh</strong>; this is {comparison}.",
+                "size": {
+                    "estimatedL": "estimated large",
+                    "estimatedM": "estimated medium-sized",
+                    "estimatedS": "estimated small",
+                    "estimatedXl": "estimated very large",
+                    "estimatedXs": "estimated very small",
+                    "l": "large",
+                    "m": "medium-sized",
+                    "s": "small",
+                    "xl": "very large",
+                    "xs": "very small"
+                }
+            },
             "size": {
                 "count": "billion param.",
                 "estimated": "(est.)",
@@ -2080,6 +2125,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {
             "negative": {
                 "incorrect": "Incorrect",

@@ -8,47 +8,142 @@ from pydantic_core import PydanticCustomError
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel, Datetime, OptionalDatetime
 from .constants import LLMArchKind, LLMStatus
 from .endpoint import LLMEndpoint
 from .lab import LLMLab
 from .license import LLMLicense
 
+FIELDS = {
+    "lab_id": {
+        "title": "Lab",
+        "description": "The lab that developed the LLM, create it first if not already available",
+    },
+    "license_id": {
+        "title": "License",
+        "description": "The LLM's license, create it first if not already available",
+    },
+    "endpoint_id": {
+        "title": "Endpoint",
+        "description": "The LLM's endpoint information, create it first if not already available",
+    },
+    "human_id": {
+        "title": "Readable id",
+        "description": "(legacy id), usually the LLM id specified in 'api_model_id'",
+    },
+    "api_model_id": {
+        "title": "API model id",
+        "description": "Complete identifier used for API calls.",
+    },
+    "status": {
+        "description": "enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.",
+    },
+    "name": {
+        "title": "Readable name",
+    },
+    "rate_limited": {
+        "description": "Apply rate limits (usually for high API costs LLMs).",
+    },
+    "release_date": {},
+    "knowledge_cutoff": {
+        "description": "Date after which the LLM no longer has knowledge.",
+    },
+    "arch": {
+        "description": "LLM architecture, Use `maybe-*` if information is not confirmed.",
+    },
+    "params": {
+        "description": "Total parameters in billions.",
+    },
+    "active_params": {
+        "description": "Active parameters in billions (only for MoE LLMs).",
+    },
+    "context_tokens": {
+        "description": "Size of its context window in tokens.",
+    },
+    "quantization": {
+        "description": "Quantization scheme applied (q4, q8, or None for full precision).",
+    },
+    "inputs": {
+        "title": "Modalities",
+        "description": "What kind of media the LLM can have in input.",
+    },
+    "public_weights": {
+        "description": "Whether the LLM weights are public.",
+    },
+    "public_training_data": {
+        "description": "Whether the LLM training data is public.",
+    },
+    "public_training_code": {
+        "description": "Whether the LLM training code is public.",
+    },
+    "eu_hostable": {
+        "description": "Whether the LLM is hostable in the EU.",
+    },
+    "price_in": {
+        "description": "Price per million input tokens in $.",
+    },
+    "price_out": {
+        "description": "Price per million output tokens in $.",
+    },
+    "system_prompt": {
+        "description": "System message to add in llm call if specified",
+    },
+    "links": {
+        "description": "List of links to display in LLM card.",
+    },
+}
+
 
 class Link(SQLModel):
-    text: str
+    text: NonEmptyStr
     url: HttpUrl
 
 
 class LLMDataBase(BaseDBModel):
-    lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id")]
-    license_id: Annotated[UUID, Field(foreign_key="llm_license.id")]
-    endpoint_id: Annotated[UUID | None, Field(foreign_key="llm_endpoint.id")]
-
-    human_id: Annotated[str, Field(index=True, unique=True)]
-    api_model_id: str | None  # used to computed litellm args alongside LLMEndpoint data
-    status: Annotated[LLMStatus, Field(sa_type=String)]
-    name: str
-    rate_limited: bool  # previous "pricey"
-    release_date: Datetime
-    knowledge_cutoff: OptionalDatetime
-    arch: Annotated[LLMArchKind, Field(sa_type=String)]
-    params: float
-    active_params: float | None
-    context_tokens: int | None
-    quantization: Annotated[Literal["q4", "q8"] | None, Field(sa_type=String)]
-    inputs: Annotated[
-        list[Literal["text", "image", "audio", "video"]], Field(sa_type=JSONB)
+    status: Annotated[LLMStatus, Field(sa_type=String, **FIELDS["status"])]
+    name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
+    human_id: Annotated[
+        NonEmptyStr, Field(index=True, unique=True, **FIELDS["human_id"])
     ]
-    public_weights: bool
-    public_training_data: bool
-    public_training_code: bool
-    eu_hostable: bool
-    price_in: float
-    price_out: float
-    system_prompt: str | None
+    api_model_id: Annotated[
+        NonEmptyStr | None, Field(**FIELDS["api_model_id"])
+    ]  # used to computed litellm args alongside LLMEndpoint data
+    endpoint_id: Annotated[
+        UUID | None, Field(foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"])
+    ]
+    rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
+    lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
+    release_date: Annotated[Datetime, Field(**FIELDS["release_date"])]
+    knowledge_cutoff: Annotated[
+        OptionalDatetime, Field(default=None, **FIELDS["knowledge_cutoff"])
+    ]
+    license_id: Annotated[
+        UUID, Field(foreign_key="llm_license.id", **FIELDS["license_id"])
+    ]
+    public_weights: Annotated[bool, Field(**FIELDS["public_weights"])]
+    public_training_data: Annotated[bool, Field(**FIELDS["public_training_data"])]
+    public_training_code: Annotated[bool, Field(**FIELDS["public_training_code"])]
+    eu_hostable: Annotated[bool, Field(**FIELDS["eu_hostable"])]
+    arch: Annotated[LLMArchKind, Field(sa_type=String, **FIELDS["arch"])]
+    params: Annotated[float, Field(**FIELDS["params"])]
+    active_params: Annotated[float | None, Field(**FIELDS["active_params"])]
+    context_tokens: Annotated[int | None, Field(**FIELDS["context_tokens"])]
+    quantization: Annotated[
+        Literal["q4", "q8"] | None, Field(sa_type=String, **FIELDS["quantization"])
+    ]
+    inputs: Annotated[
+        list[Literal["text", "image", "audio", "video"]],
+        Field(sa_type=JSONB, **FIELDS["inputs"]),
+    ]
+    price_in: Annotated[float, Field(**FIELDS["price_in"])]
+    price_out: Annotated[float, Field(**FIELDS["price_out"])]
+    system_prompt: Annotated[NonEmptyStr | None, Field(**FIELDS["system_prompt"])]
     links: Annotated[
-        list[Link], Field(sa_type=JSONB), AfterValidator(jsonable_encoder)
+        list[Link],
+        Field(sa_type=JSONB, **FIELDS["links"]),
+        AfterValidator(jsonable_encoder),
     ] = []
 
 
@@ -57,55 +152,6 @@ class LLMData(LLMDataBase, table=True):
     LLM definition.
 
     Contains basic LLM information and links to licence, lab and endpoint.
-
-    Attributes
-    ----------
-    human_id
-        Readable id (legacy id), usually the id specified in `api_model_id`
-        `'{labid}/{llmid}'`.
-    api_model_id
-        Identifier used in API calls.
-    status
-        Current status:
-          - 'enabled': callable and displayed in llm list + rankings;
-          - 'archived': not callable but displayed in llm list + rankings,
-          - 'disabled': not callable and hidden in llm list + rankings.
-    name
-        Readable name.
-    rate_limited
-        Apply rate limits (usually for high API costs LLMs).
-    release_date
-        Release date.
-    knowledge_cutoff
-        Date after which the LLM no longer has knowledge.
-    arch
-        LLM architecture, Use `maybe-*` if information is not confirmed.
-    params
-        Total parameters in billions.
-    active_params
-        Active parameters in billions (only for MoE LLMs).
-    context_tokens
-        Size of its context window in tokens.
-    quantization
-        Quantization scheme applied (q4, q8, or None for full precision).
-    inputs
-        What kind of media the LLM can have in input.
-    public_weights
-        Whether the LLM weights are public.
-    public_training_data
-        Whether the LLM training data is public.
-    public_training_code
-        Whether the LLM training code is public.
-    eu_hostable
-        Whether the LLM is hostable in the EU.
-    price_in
-        Price per million input tokens in €.
-    price_out
-        Price per million output tokens in €.
-    system_prompt
-        System message to add in llm call if specified
-    links
-        List of links to display in LLM card.
     """
 
     __tablename__ = "llm_data"
@@ -157,20 +203,3 @@ class LLMDataUpsert(LLMDataBase):
 class LLMDataPublic(LLMDataBase):
     # add license + lab?
     pass
-
-
-# Computed
-
-
-# class LLMFinalData(LLMData):
-#     """
-#     Computed model
-#     """
-
-#     # consumption data
-#     required_ram: int  # computed from params?
-
-#     # Linked data
-#     lab: LLMLab
-#     license: LLMLicense
-#     endpoint: LLMEndpoint

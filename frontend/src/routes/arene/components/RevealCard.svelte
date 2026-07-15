@@ -4,13 +4,22 @@
   import InfoCard from '$components/InfoCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealModelData } from '$lib/chatService.svelte'
+  import { buildConsumptionSummary } from '$lib/consumptionSummary'
+  import { formatUsageCostFromEuro } from '$lib/currency'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext } from '$lib/models'
-  import { propsToAttrs } from '$lib/utils/commons'
+  import { propsToAttrs, sanitize } from '$lib/utils/commons'
 
-  let { data, selected }: { data: RevealModelData; selected: boolean } = $props()
+  let {
+    data,
+    otherData,
+    selected
+  }: { data: RevealModelData; otherData: RevealModelData; selected: boolean } = $props()
   const { models, commons } = getModelsContext()
   const model = $derived(models.find((llm) => llm.id === data.id)!)
+  const otherModel = $derived(models.find((llm) => llm.id === otherData.id)!)
+  const consumptionSummary = $derived(buildConsumptionSummary(model, otherModel, data, otherData))
   const modelBadges = $derived(
     (['license', 'size', 'release'] as const).map((k) => model.badges[k]).filter((b) => !!b)
   )
@@ -25,23 +34,10 @@
 
   const midProps = propsToAttrs({ class: 'text-xs!' })
   const smallProps = propsToAttrs({ class: 'text-xxs!' })
-  // in cents
   const cost = $derived(
-    ((model.price_in / 1_000_000) * data.input_tokens +
-      (model.price_out / 1_000_000) * data.tokens) /
-      100
+    (model.price_in / 1_000_000) * data.input_tokens + (model.price_out / 1_000_000) * data.tokens
   )
-  const higherConso = $derived.by(() => {
-    if (data.consoOther > data.energy_mwh) return undefined
-    const percent = ((data.energy_mwh / data.consoOther) * 100).toFixed()
-    return (
-      '<span class="inline-block align-sub text-error i-ri-triangle-fill"></span>' +
-      m['reveal.impacts.energy.higher']({
-        props: propsToAttrs({ class: 'text-error' }),
-        count: percent
-      })
-    )
-  })
+  const formattedCost = $derived(formatUsageCostFromEuro(cost, commons.currency, getLocale()))
   const consoCards = $derived([
     {
       id: 'conso-tokens' as const,
@@ -59,13 +55,10 @@
     },
     {
       id: 'conso-cost' as const,
-      icon: 'i-ri-money-euro-circle-line',
+      icon: 'i-ri-coins-line',
       title: m['reveal.impacts.cost.title'](),
       tooltip: m['reveal.impacts.cost.tooltip'](),
-      content:
-        cost < 1
-          ? m['reveal.impacts.cost.count_low']({ smallProps })
-          : m['reveal.impacts.cost.count']({ count: cost, smallProps }),
+      content: formattedCost,
       subContent: m['reveal.impacts.cost.sub']()
     },
     {
@@ -83,8 +76,7 @@
               count: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
               midProps,
               smallProps
-            }),
-      subContent: higherConso
+            })
     }
   ])
 
@@ -218,7 +210,11 @@
 
       <article class="cg-border bg-white p-3 flex flex-col">
         <p class="text-xs! text-info mb-1!">{m['reveal.impacts.how.title']()}</p>
-        <p class="text-xs! mb-0!">{m['reveal.impacts.how.desc']()}</p>
+        <p class="text-xs! mb-0!">
+          {@html sanitize(consumptionSummary.classification)}
+          <br />
+          {@html sanitize(consumptionSummary.consumption)}
+        </p>
       </article>
     </div>
   </div>

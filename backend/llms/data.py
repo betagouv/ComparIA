@@ -13,6 +13,7 @@ from backend.config import (
     SelectionMode,
 )
 from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
+from backend.llms.currency import CurrencyInfo, get_currency_info
 from backend.utils.countries import get_ranking
 from utils.database.models.llms import LLMData
 from utils.database.session import get_session
@@ -184,6 +185,9 @@ class LLMsData(BaseModel):
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
+            # Custom selection are not uuid
+            custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+
             if unknown_llms := [
                 llm_id
                 for llm_id in custom_selection
@@ -239,18 +243,21 @@ class LLMList(BaseModel):
     data_timestamp: float | None
     models: list[APILLMData]
     style_coefficients: dict[str, float] | None
+    currency: CurrencyInfo
 
 
 # FIXME use cache?
 async def get_llms_list() -> LLMList:
     llms = await get_llms_data()
     ranking = get_ranking()
+    currency = await get_currency_info()
 
     return LLMList.model_validate(
         {
             "models": llms.all.values(),
             "data_timestamp": ranking.timestamp if ranking else None,
             "style_coefficients": ranking.style_coefficients if ranking else None,
+            "currency": currency,
         },
         context={"ranking": ranking},
     )

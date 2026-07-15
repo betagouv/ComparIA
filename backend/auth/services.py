@@ -2,19 +2,31 @@ import hashlib
 import logging
 import secrets
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 
 from sqlalchemy import update as sa_update
 from sqlmodel import select
 
 from backend.config import settings
-from utils.database.models.auth import AuthSession, ConsentLog, LoginCode, User
+from utils.database.models.auth import (
+    AuthSession,
+    ConsentLog,
+    InviteToken,
+    LoginCode,
+    User,
+)
 from utils.database.models.comparison import Comparison
 from utils.database.session import get_session
+
+if TYPE_CHECKING:
+    from sqlmodel.ext.asyncio.session import AsyncSession
 
 logger = logging.getLogger("languia")
 
 _LOGIN_CODE_TTL_MINUTES = 10
+_INVITE_TOKEN_TTL_HOURS = 24
 
 
 def _hash(value: str) -> str:
@@ -49,6 +61,50 @@ async def request_login_code(email: str) -> str:
     return code
 
 
+async def _create_session_and_consent(
+    session: "AsyncSession",
+    user: User,
+    ip: str,
+    user_agent: str | None,
+    visitor_id: str | None,
+) -> str:
+    """Create the AuthSession + ConsentLog for a user that just authenticated
+    (login code or invite link), and reattach their anonymous comparisons.
+    Does not commit; caller owns the transaction."""
+    user.last_seen_at = datetime.now()
+
+    token = secrets.token_urlsafe(32)
+    session.add(
+        AuthSession(
+            user_id=user.id,
+            token_hash=_hash(token),
+            expires_at=datetime.now()
+            + timedelta(days=settings.AUTH_SESSION_LENGTH_DAYS),
+            ip=ip,
+            user_agent=user_agent,
+        )
+    )
+    session.add(
+        ConsentLog(
+            user_id=user.id,
+            terms_version=settings.AUTH_TERMS_VERSION,
+            ip=ip,
+        )
+    )
+
+    if visitor_id:
+        await session.execute(
+            sa_update(Comparison)
+            .where(
+                Comparison.visitor_id == visitor_id,
+                Comparison.user_id.is_(None),
+            )
+            .values(user_id=user.id)
+        )
+
+    return token
+
+
 async def verify_login_code(
     email: str,
     code: str,
@@ -75,40 +131,118 @@ async def verify_login_code(
             return None
 
         login_code.used_at = datetime.now()
-        user.last_seen_at = datetime.now()
 
-        token = secrets.token_urlsafe(32)
-        session.add(
-            AuthSession(
-                user_id=user.id,
-                token_hash=_hash(token),
-                expires_at=datetime.now()
-                + timedelta(days=settings.AUTH_SESSION_LENGTH_DAYS),
-                ip=ip,
-                user_agent=user_agent,
-            )
+        token = await _create_session_and_consent(
+            session, user, ip, user_agent, visitor_id
         )
-        session.add(
-            ConsentLog(
-                user_id=user.id,
-                terms_version=settings.AUTH_TERMS_VERSION,
-                ip=ip,
-            )
-        )
-
-        if visitor_id:
-            await session.execute(
-                sa_update(Comparison)
-                .where(
-                    Comparison.visitor_id == visitor_id,
-                    Comparison.user_id.is_(None),
-                )
-                .values(user_id=user.id)
-            )
 
         await session.commit()
 
     return token
+
+
+async def create_invite(email: str, invited_by: uuid.UUID) -> str:
+    async with get_session() as session:
+        result = await session.exec(select(User).where(User.email == email))
+        user = result.first()
+        if not user:
+            user = User(email=email)
+            session.add(user)
+            await session.flush()
+        elif user.deleted_at is not None:
+            # Email is unique, so re-inviting a deleted user must revive
+            # their existing row rather than leave it permanently dead.
+            # Clear their old auth history too, otherwise a previously
+            # accepted invite or used login code makes list_users report
+            # them as already joined instead of pending on the new invite.
+            user.deleted_at = None
+            session.add(user)
+
+            old_invites = await session.exec(
+                select(InviteToken).where(InviteToken.user_id == user.id)
+            )
+            for invite in old_invites.all():
+                await session.delete(invite)
+
+            old_codes = await session.exec(
+                select(LoginCode).where(LoginCode.user_id == user.id)
+            )
+            for login_code in old_codes.all():
+                await session.delete(login_code)
+
+        token = secrets.token_urlsafe(32)
+        session.add(
+            InviteToken(
+                user_id=user.id,
+                invited_by=invited_by,
+                token_hash=_hash(token),
+                expires_at=datetime.now() + timedelta(hours=_INVITE_TOKEN_TTL_HOURS),
+            )
+        )
+        await session.commit()
+
+    return token
+
+
+@dataclass
+class InviteTokenInfo:
+    email: str
+
+
+async def get_invite_token_info(token: str) -> InviteTokenInfo | None:
+    """Read-only check used by the frontend to show an error before the user
+    even fills in the consent form. Does not mark the token as used — the
+    actual accept_invite() call re-validates everything regardless."""
+    async with get_session() as session:
+        result = await session.exec(
+            select(InviteToken).where(
+                InviteToken.token_hash == _hash(token),
+                InviteToken.used_at.is_(None),
+                InviteToken.expires_at > datetime.now(),
+            )
+        )
+        invite = result.first()
+        if not invite:
+            return None
+
+        user = await session.get(User, invite.user_id)
+        if not user or user.deleted_at is not None:
+            return None
+
+        return InviteTokenInfo(email=user.email)
+
+
+async def accept_invite(
+    token: str,
+    ip: str,
+    user_agent: str | None,
+    visitor_id: str | None,
+) -> str | None:
+    async with get_session() as session:
+        result = await session.exec(
+            select(InviteToken).where(
+                InviteToken.token_hash == _hash(token),
+                InviteToken.used_at.is_(None),
+                InviteToken.expires_at > datetime.now(),
+            )
+        )
+        invite = result.first()
+        if not invite:
+            return None
+
+        user = await session.get(User, invite.user_id)
+        if not user or user.deleted_at is not None:
+            return None
+
+        invite.used_at = datetime.now()
+
+        session_token = await _create_session_and_consent(
+            session, user, ip, user_agent, visitor_id
+        )
+
+        await session.commit()
+
+    return session_token
 
 
 async def get_user_from_token(token: str) -> User | None:

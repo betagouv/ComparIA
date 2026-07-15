@@ -117,7 +117,6 @@ export type AnyAPIVote = APIVoteChoice | APIVoteAnnotate
 export interface RevealModelData extends APIConsoData {
   id: string
   pos: Bot
-  consoOther: number
 }
 
 export interface RevealData {
@@ -184,7 +183,6 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
     modelsData: (['a', 'b'] as const).map((pos) => ({
       id: data[pos].llm_id,
       pos,
-      consoOther: data[pos === 'a' ? 'b' : 'a'].conso.energy_mwh,
       ...data[pos].conso
     })),
     shareB64Data: data.b64
@@ -279,7 +277,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        promptError = err.message
+        promptError = typeof err.errors === 'string' ? err.errors : err.errors[0].msg
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
       } else {

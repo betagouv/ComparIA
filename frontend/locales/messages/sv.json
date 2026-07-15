@@ -1030,6 +1030,11 @@
         "arch": {
             "title": "Visste du?"
         },
+        "cards": {
+            "sovereignty": {
+                "title": "Öppenhetsgrad"
+            }
+        },
         "conditions": {
             "commercialUse": {
                 "question": "Är kommersiell användning av modellen tillåten?",
@@ -1061,6 +1066,9 @@
                 "proprietary": "Proprietär",
                 "semiOpen": "Semi-öppen"
             }
+        },
+        "opennessSovereignty": {
+            "title": "Öppenhetsgrad"
         },
         "list": {
             "filters": {
@@ -1353,7 +1361,7 @@
             "title": "Hur är preferenserna fördelade?"
         },
         "ranking": {
-            "desc": "Tack för dina bidrag! Dina röster matas in i en Bradley-Terry-ranking. Denna nöjdhetspoäng är skapad i samarbete med <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> och baseras på dina röster och reaktioner.",
+            "desc": "Den här rankningen beräknas från röster som samlats in genom <strong>blinda jämförelser</strong> med den statistiska <strong>Bradley-Terry-modellen</strong>. Den speglar <strong>subjektiva preferenser</strong> och bör tolkas med försiktighet: den mäter varken faktakorrekthet eller modellernas övergripande prestanda.",
             "tabLabel": "Rankning"
         },
         "table": {
@@ -1406,6 +1414,36 @@
                 "label": "energiförbrukning",
                 "tooltip": "Mätt i wattimmar representerar strömförbrukningen den elektricitet som modellen använder för att bearbeta en fråga och generera motsvarande svar. Ju större en modell är (i antal parametrar), desto mer energi krävs för att producera varje token."
             },
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> är en <strong>{size}</strong> modell med en <strong>tät</strong> arkitektur: den använder alla sina parametrar för varje svar. Dess energiklass är <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> är en <strong>{size}</strong> modell med en <strong>Matformer</strong>-arkitektur: den anpassar den andel av parametrarna som används för varje svar. Dess energiklass är <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> är en <strong>{size}</strong> modell med en <strong>Mixture-of-Experts</strong>-arkitektur: den aktiverar bara en del av sina parametrar för varje svar (cirka <strong>{activeParams} miljarder</strong> av <strong>{params} miljarder</strong>). Dess energiklass är <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> är en <strong>{size}</strong> modell vars arkitektur inte har offentliggjorts. Med tanke på dess storlek är energiklassen <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> är en proprietär <strong>{size}</strong> modell vars arkitektur inte har offentliggjorts. Med tanke på dess storlek är energiklassen <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "jämförbart med <strong>{otherModel}</strong>",
+                    "multipleLess": "nästan <strong>{count} gånger mindre</strong> än <strong>{otherModel}</strong>",
+                    "multipleMore": "nästan <strong>{count} gånger så mycket</strong> som <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage} % lägre</strong> än <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage} % högre</strong> än <strong>{otherModel}</strong>",
+                    "unavailable": "ingen jämförelse med <strong>{otherModel}</strong> är tillgänglig"
+                },
+                "consumption": "I den här diskussionen krävde genereringen av <strong>{tokens} token</strong> cirka <strong>{energy} mWh</strong>, vilket är {comparison}.",
+                "size": {
+                    "estimatedL": "uppskattningsvis stor",
+                    "estimatedM": "uppskattningsvis mellanstor",
+                    "estimatedS": "uppskattningsvis liten",
+                    "estimatedXl": "uppskattningsvis mycket stor",
+                    "estimatedXs": "uppskattningsvis mycket liten",
+                    "l": "stor",
+                    "m": "mellanstor",
+                    "s": "liten",
+                    "xl": "mycket stor",
+                    "xs": "mycket liten"
+                }
+            },
             "size": {
                 "count": "miljarder parametrar",
                 "estimated": "(ca)",
@@ -1445,6 +1483,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "choices": {
             "negative": {
                 "incorrect": "Fel",

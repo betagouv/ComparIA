@@ -329,7 +329,7 @@ def _is_model_user_selected(
     """
     if mode != "custom" or not custom_selection:
         return False
-    return model_name in custom_selection
+    return str(model_name) in custom_selection
 
 
 def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:

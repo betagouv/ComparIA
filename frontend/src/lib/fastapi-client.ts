@@ -70,9 +70,14 @@ export class InternalError extends Error {
   }
 }
 
+type PydanticValidationError = { loc: string[]; msg: string }
+
 export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message)
+  errors: PydanticValidationError[] | string
+
+  constructor(errors: PydanticValidationError[] | string) {
+    super('Error in form')
+    this.errors = errors
   }
 }
 
@@ -118,7 +123,7 @@ export class FastAPIClient {
       const detail = JSON.parse(content).detail
 
       if (response.status === 422) {
-        return new ValidationError(detail[0].msg)
+        return new ValidationError(detail)
       } else if (response.status === 429) {
         return new ValidationError(detail)
       } else {

@@ -1,6 +1,7 @@
 import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
+import { formatCurrencyFromEuro } from '$lib/currency'
 import { propsToAttrs } from '$lib/utils/commons'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
@@ -43,6 +44,7 @@ type ModelRevisedRank = { rank: number; rankClass: RankClass }
 export type Commons = {
   modelsCount: number
   rankingTiers: Record<RankClass, Record<'min' | 'max', number>>
+  currency: LLMList['currency']
 }
 export type Data = {
   lastUpdateDate: string | null
@@ -128,14 +130,14 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       contents: [
         {
           content: m['models.cards.price.price_count']({
-            count: model.price_in.toFixed(2),
+            count: formatCurrencyFromEuro(model.price_in, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_in']()
         },
         {
           content: m['models.cards.price.price_count']({
-            count: model.price_out.toFixed(2),
+            count: formatCurrencyFromEuro(model.price_out, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_out']()
@@ -191,6 +193,25 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
   }
 }
 
+export function getLicenceBadge(licenseType: APILLMData['license']['kind']) {
+  return {
+    'open-source': {
+      variant: 'green' as const,
+      text: m['models.licenses.type.openSource'](),
+      tooltip: m['models.openWeight.tooltips.openSource']()
+    },
+    'open-weights': {
+      variant: 'yellow' as const,
+      text: m['models.licenses.type.semiOpen'](),
+      tooltip: m['models.openWeight.tooltips.openWeight']()
+    },
+    proprietary: {
+      variant: 'orange' as const,
+      text: m['models.licenses.type.proprietary']()
+    }
+  }[licenseType]
+}
+
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
@@ -211,25 +232,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       return obj[v] ? score + 1 : score
     }, 0),
     badges: {
-      license: {
-        'open-source': {
-          id: `model-os-${model.id}`,
-          variant: 'green' as const,
-          text: m['models.licenses.type.openSource'](),
-          tooltip: m['models.openWeight.tooltips.openSource']()
-        },
-        'open-weights': {
-          id: `model-ow-${model.id}`,
-          variant: 'yellow' as const,
-          text: m['models.licenses.type.semiOpen'](),
-          tooltip: m['models.openWeight.tooltips.openWeight']()
-        },
-        proprietary: {
-          id: `model-proprietary-${model.id}`,
-          variant: 'orange' as const,
-          text: m['models.licenses.type.proprietary']()
-        }
-      }[licenseType],
+      license: { ...getLicenceBadge(licenseType), id: `llm-license-${model.id}` },
       release: {
         variant: 'brown' as const,
         text: m['models.release']({
@@ -307,6 +310,7 @@ export function setModelsContext(data: LLMList) {
     models: data.models.map((model) => parseModel(model, revisedRankData[model.id!])),
     commons: {
       modelsCount,
+      currency: data.currency,
       rankingTiers: {
         '1': { min: 1, max: groupMax[0] },
         '2': { min: groupMax[0] + 1, max: groupMax[1] },

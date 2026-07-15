@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import NavBar from '$components/header/NavBar.svelte'
+  import { page } from '$app/state'
+  import NavBar, { type NavLink } from '$components/header/NavBar.svelte'
   import { initAuth, isAdmin } from '$lib/auth.svelte'
   import { onMount } from 'svelte'
 
@@ -16,14 +17,19 @@
     ready = true
   })
 
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { label: 'Utilisateurs', href: '/admin', icon: 'i-ri-user-settings-line' },
     {
       label: 'Configuration auth',
       href: '/admin/configuration/auth',
       icon: 'i-ri-fingerprint-line'
     },
-    { label: 'LLMs', href: '/admin/llms', icon: 'i-ri-ai-agent-line' }
+    {
+      label: 'LLMs',
+      href: '/admin/llms/llms',
+      icon: 'i-ri-ai-agent-line',
+      isCurrent: () => page.url.pathname.includes('/admin/llms')
+    }
   ]
 </script>
 

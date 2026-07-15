@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Literal, get_args
 
 from httpx import Timeout
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
@@ -34,6 +35,12 @@ class Settings(BaseSettings):
 
     DEFAULT_COUNTRY_PORTAL: str = "fr"
 
+    # Display currency. Model prices are stored in euros and converted for the UI.
+    DISPLAY_CURRENCY: str = "EUR"
+    DISPLAY_CURRENCY_RATE_FROM_EUR: float | None = None
+    EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
+    EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
+
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
@@ -59,6 +66,13 @@ class Settings(BaseSettings):
     AUTH_SESSION_LENGTH_DAYS: int = 30
     # Bumping this value invalidates existing consent logs and forces re-consent
     AUTH_TERMS_VERSION: str = "1.0"
+    # Public app origin, used to build absolute links in emails (e.g. invite links)
+    COMPARIA_APP_URL: str = "http://localhost:5173"
+
+    @field_validator("COMPARIA_APP_URL")
+    @classmethod
+    def _strip_trailing_slash(cls, value: str) -> str:
+        return value.rstrip("/")
 
     # Anonymous
     ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
@@ -78,6 +92,28 @@ class Settings(BaseSettings):
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
     CACHE_TTL: int = 172800  # Cache TTL in seconds (default 48h)
     CACHE_MAX_RESPONSES: int = 5  # Max cached responses per (model, prompt) pair
+
+    @field_validator("DISPLAY_CURRENCY")
+    @classmethod
+    def validate_display_currency(cls, value: str) -> str:
+        currency = value.strip().upper()
+        if len(currency) != 3 or not currency.isalpha():
+            raise ValueError("DISPLAY_CURRENCY must be a three-letter ISO 4217 code")
+        return currency
+
+    @field_validator("DISPLAY_CURRENCY_RATE_FROM_EUR")
+    @classmethod
+    def validate_manual_currency_rate(cls, value: float | None) -> float | None:
+        if value is not None and value <= 0:
+            raise ValueError("DISPLAY_CURRENCY_RATE_FROM_EUR must be greater than zero")
+        return value
+
+    @field_validator("EXCHANGE_RATE_CACHE_SECONDS")
+    @classmethod
+    def validate_exchange_rate_cache_seconds(cls, value: int) -> int:
+        if value <= 0:
+            raise ValueError("EXCHANGE_RATE_CACHE_SECONDS must be greater than zero")
+        return value
 
 
 settings = Settings()
