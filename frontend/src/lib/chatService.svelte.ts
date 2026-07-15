@@ -281,7 +281,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        const message = err.errors[0].msg
+        const message = typeof err.errors === 'string' ? err.errors : err.errors[0].msg
         promptError = message in ERROR_MESSAGES ? m[ERROR_MESSAGES[message]]() : message
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
