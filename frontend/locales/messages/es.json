@@ -180,6 +180,7 @@
                     "title": "¿Los indicadores ambientales tienen en cuenta la matriz energética de los diferentes países?"
                 },
                 "3": {
+                    "desc": "<p> Muchas métricas de impacto ambiental se centran principalmente en el impacto de la <strong>inferencia</strong>, es decir, el uso de modelos de IA para responder consultas. Este enfoque puede dar la ilusión de que la inferencia consume menos energía que el entrenamiento del modelo. Sin embargo, <strong> la realidad es más compleja. </strong> Consideremos la analogía del automóvil: </p> <ul> <li> Construir un automóvil (entrenamiento) es un proceso único que consume muchos recursos. </li> <li> Cada viaje en automóvil (inferencia) consume menos energía, pero estos viajes se repiten diariamente y su número es potencialmente inmenso. </li> </ul> <p> De manera similar, <strong> el impacto acumulativo de la inferencia, en millones de usuarios que realizan consultas diariamente, suele ser significativamente mayor que el impacto del entrenamiento inicial. <strong> Por eso es crucial que las herramientas de evaluación de la huella de carbono de la IA consideren todo el ciclo de vida de los modelos, desde el entrenamiento hasta la inferencia. </strong> </p>",
                     "title": "¿Los indicadores de impacto ambiental tienen en cuenta los recursos utilizados para entrenar los modelos?"
                 }
             },
@@ -188,9 +189,11 @@
         "i18n": {
             "questions": {
                 "1": {
+                    "desc": "<p>Sí, la internacionalización de compar:AI está en marcha. Comenzamos con una expansión a tres países piloto: Lituania, Suecia y Dinamarca. Esta primera fase nos permitirá probar el enfoque y adaptar la interfaz a diferentes contextos lingüísticos y culturales europeos. Posteriormente, el proyecto podría ampliarse a más idiomas europeos en función de los comentarios recibidos en estos países piloto. El objetivo es construir gradualmente un verdadero espacio digital europeo común para la evaluación humana de la IA conversacional, con una gobernanza colaborativa que aún está por definir entre los diferentes países participantes.</p>",
                     "title": "compar:AI se centró inicialmente en el francés: ¿hay planes para otros idiomas europeos?"
                 },
                 "2": {
+                    "desc": "<p>El desarrollo de una plataforma europea para comparar modelos de IA conversacional ofrece varias ventajas concretas. Permite recopilar datos de preferencias que reflejen las necesidades reales de los usuarios europeos, mejorando así la relevancia de las respuestas de los modelos para esta base de usuarios. La publicación de los conjuntos de datos garantiza una mejor representación de las lenguas y culturas europeas, a menudo infrarrepresentadas en los conjuntos de datos y evaluaciones globales dominados por el inglés. Asimismo, garantiza el cumplimiento de la normativa europea (RGPD, Ley de IA) e integra criterios de evaluación alineados con las prioridades europeas, como la reducción del impacto ambiental y la transparencia algorítmica. Por último, fomenta el surgimiento de un ecosistema de IA europeo competitivo y autónomo.</p>",
                     "title": "¿Cuáles son las ventajas de una plataforma de recopilación de preferencias específicamente europea?"
                 }
             },
@@ -200,8 +203,13 @@
             "questions": {
                 "1": {
                     "desc": "<p>Seleccionamos los modelos en función de su popularidad, diversidad y relevancia para los usuarios. Prestamos especial atención a que dichos modelos sean accesibles <em>open weights</em> (semiabiertas) y de diferentes tamaños.</p>"
+                },
+                "5": {
+                    "title": "¿Puede ver los datos de entrenamiento de los modelos?"
                 }
-            }
-        }
+            },
+            "title": "Modelos"
+        },
+        "title": "Preguntas Más Frecuentes"
     }
 }
