@@ -26,7 +26,7 @@
     },
     {
       label: 'LLMs',
-      href: '/admin/llms/list',
+      href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
       isCurrent: () => page.url.pathname.includes('/admin/llms')
     }
