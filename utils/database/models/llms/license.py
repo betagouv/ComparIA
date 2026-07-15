@@ -2,31 +2,29 @@ from typing import Annotated
 
 from sqlmodel import Field, String
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel
 from .constants import LLMLicenseKind
 
+FIELDS = {
+    "kind": {"title": "Licence type"},
+    "name": {"description": "Licence name (e.g. 'Apache 2.0' or 'MIT')."},
+    "reuse": {"title": "Allows reuse/redistribution."},
+    "commercial_use": {"title": "Allows commercial use."},
+}
+
 
 class LLMLicenseBase(BaseDBModel):
-    kind: Annotated[LLMLicenseKind, Field(sa_type=String)]
-    name: str
-    reuse: bool
-    commercial_use: bool
+    kind: Annotated[LLMLicenseKind, Field(sa_type=String, **FIELDS["kind"])]
+    name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
+    reuse: Annotated[bool, Field(**FIELDS["reuse"])]
+    commercial_use: Annotated[bool, Field(**FIELDS["commercial_use"])]
 
 
 class LLMLicense(LLMLicenseBase, table=True):
     """
     LLM licence metadata.
-
-    Attributes
-    ----------
-    kind
-        Licence type.
-    name
-        Licence name (e.g. 'Apache 2.0' or 'MIT').
-    reuse
-        Whether the licence allows reuse/redistribution.
-    commercial_use
-        Whether the licence allows commercial use.
     """
 
     __tablename__ = "llm_license"

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Icon, Table } from '$components/dsfr'
+  import { resolve } from '$app/paths'
+  import { Icon, Link, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -8,6 +9,7 @@
 
   let { data }: PageProps = $props()
   const locale = getLocale()
+  const baseRoute = '/admin/llms/endpoints' as const
 
   const endpoints = $derived(
     data.endpoints.map((endpoint) => ({
@@ -57,8 +59,14 @@
   {cols}
   rows={sortedRows}
 >
+  {#snippet headerLeft()}
+    <Link button icon="add-line" text={m['words.add']()} href={`${baseRoute}/create`} />
+  {/snippet}
+
   {#snippet cell(endpoint, col)}
-    {#if col.id === 'created_at' || col.id === 'updated_at'}
+    {#if col.id === 'name'}
+      <a href={resolve(`${baseRoute}/${endpoint.id}`)}>{endpoint[col.id]}</a>
+    {:else if col.id === 'created_at' || col.id === 'updated_at'}
       <span class="fr-text--sm text-[--text-mention-grey]">
         {toRelativeTime(endpoint[col.id], locale)}
       </span>

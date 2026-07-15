@@ -2,7 +2,7 @@ export type ToastItem = {
   id: number
   text: string
   duration: number
-  variant?: 'primary' | 'error'
+  variant?: 'primary' | 'error' | 'success'
 }
 
 let count = $state(10)

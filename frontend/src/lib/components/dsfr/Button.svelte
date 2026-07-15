@@ -21,6 +21,7 @@
     iconPos = 'left',
     cornered = false,
     native = false,
+    type = 'button',
     children,
     ...props
   }: Omit<HTMLButtonAttributes, 'size'> & ButtonProps = $props()
@@ -45,7 +46,7 @@
   ])
 </script>
 
-<button {...props} class={classes}>
+<button {...props} {type} class={classes}>
   {#if text}{text}{:else}{@render children?.()}{/if}
 </button>
 

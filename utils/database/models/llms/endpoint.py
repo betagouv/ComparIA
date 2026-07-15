@@ -2,36 +2,42 @@ from typing import Annotated
 
 from sqlmodel import Field
 
+from utils.validation import NonEmptyStr
+
 from ..utils import BaseDBModel
+
+FIELDS = {
+    "name": {"description": "Readable endpoint name (e.g. 'OpenRouter')."},
+    "api_type": {
+        "title": "Api type",
+        "description": "API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).",
+    },
+    "api_base": {
+        "title": "API base URL",
+        "description": "Base URL for the API endpoint.",
+    },
+    "api_version": {"title": "API version", "description": "API version (optional)"},
+    "api_key": {
+        "title": "API secret key",
+        "description": "if not given, all LLMs depending on this endpoint will be disabled.",
+    },
+}
 
 
 class LLMEndpointBase(BaseDBModel):
-    name: Annotated[str, Field(index=True)]
-    api_type: str
-    api_base: str | None = None
-    api_version: str | None = None
+    name: Annotated[NonEmptyStr, Field(index=True, **FIELDS["name"])]
+    api_type: Annotated[NonEmptyStr, Field(**FIELDS["api_type"])]
+    api_base: Annotated[NonEmptyStr | None, Field(**FIELDS["api_base"])] = None
+    api_version: Annotated[NonEmptyStr | None, Field(**FIELDS["api_version"])] = None
 
 
 class LLMEndpointPrivate(LLMEndpointBase):
-    api_key: str | None = None
+    api_key: Annotated[str | None, Field(**FIELDS["api_key"])] = None
 
 
 class LLMEndpoint(LLMEndpointPrivate, table=True):
     """
     LLM endpoint configuration for API calls.
-
-    Attributes
-    ----------
-    name
-        Readable endpoint name (e.g. 'OpenRouter').
-    api_type
-        API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).
-    api_base
-        Base URL for the API endpoint.
-    api_version
-        API version (optional)
-    api_key
-        API secret key.
     """
 
     __tablename__ = "llm_endpoint"

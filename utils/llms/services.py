@@ -25,7 +25,7 @@ TD = TypeVar(
 
 async def _upsert_item(
     item_class: type[T], item: TD, session: "AsyncSession", commit: bool
-) -> None:
+) -> T:
     base_msg = f"'{item_class.__name__}' with id: '{item.id}'"
 
     try:
@@ -44,6 +44,8 @@ async def _upsert_item(
         if commit:
             await session.commit()
             logger.info(f"Successfully added/updated {base_msg}")
+
+        return db_item
     except Exception as e:
         logger.error(f"Error adding/updating {base_msg}: {e}")
         raise
@@ -51,23 +53,23 @@ async def _upsert_item(
 
 async def upsert_llm_license(
     license: LLMLicenseUpsert, session: "AsyncSession", commit: bool = True
-) -> None:
-    await _upsert_item(LLMLicense, license, session, commit)
+) -> LLMLicense:
+    return await _upsert_item(LLMLicense, license, session, commit)
 
 
 async def upsert_llm_lab(
     lab: LLMLabUpsert, session: "AsyncSession", commit: bool = True
-) -> None:
-    await _upsert_item(LLMLab, lab, session, commit)
+) -> LLMLab:
+    return await _upsert_item(LLMLab, lab, session, commit)
 
 
 async def upsert_llm_endpoint(
     endpoint: LLMEndpointUpsert, session: "AsyncSession", commit: bool = True
-) -> None:
-    await _upsert_item(LLMEndpoint, endpoint, session, commit)
+) -> LLMEndpoint:
+    return await _upsert_item(LLMEndpoint, endpoint, session, commit)
 
 
-async def upsert_llm(
+async def upsert_llm_data(
     llm: LLMDataUpsert, session: "AsyncSession", commit: bool = True
-) -> None:
-    await _upsert_item(LLMData, llm, session, commit)
+) -> LLMData:
+    return await _upsert_item(LLMData, llm, session, commit)

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Badge, Icon, Table } from '$components/dsfr'
+  import { resolve } from '$app/paths'
+  import { Badge, Icon, Link, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -9,6 +10,7 @@
 
   let { data }: PageProps = $props()
   const locale = getLocale()
+  const baseRoute = '/admin/llms/llms' as const
 
   const llms = $derived(
     data.llms.map((llm) => ({
@@ -60,9 +62,13 @@
   {cols}
   rows={sortedRows}
 >
+  {#snippet headerLeft()}
+    <Link button icon="add-line" text={m['words.add']()} href={`${baseRoute}/create`} />
+  {/snippet}
+
   {#snippet cell(llm, col)}
     {#if col.id === 'human_id'}
-      {llm[col.id]}
+      <a href={resolve(`${baseRoute}/${llm.id}`)}>{llm[col.id]}</a>
     {:else if col.id === 'status'}
       {@const status = llm[col.id]}
       <Badge
