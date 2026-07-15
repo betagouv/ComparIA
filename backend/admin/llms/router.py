@@ -28,8 +28,6 @@ logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/llms", tags=["llms"])
 
-# FIXME temp
-COMMIT = False
 
 ModelKind = Literal["endpoints", "licenses", "labs", "llms"]
 MODELS_UPSERT: dict[ModelKind, SQLModel] = {
@@ -73,25 +71,25 @@ async def get_schema():
 @router.put("/llm")
 async def upsert_llm(body: LLMDataUpsert) -> LLMData:
     async with get_session() as session:
-        return await upsert_llm_data(body, session, commit=COMMIT)
+        return await upsert_llm_data(body, session)
 
 
 @router.post("/endpoint")
 @router.put("/endpoint")
 async def upsert_endpoint(body: LLMEndpointUpsert) -> LLMEndpoint:
     async with get_session() as session:
-        return await upsert_llm_endpoint(body, session, commit=COMMIT)
+        return await upsert_llm_endpoint(body, session)
 
 
 @router.post("/lab")
 @router.put("/lab")
 async def upsert_lab(body: LLMLabUpsert) -> LLMLab:
     async with get_session() as session:
-        return await upsert_llm_lab(body, session, commit=COMMIT)
+        return await upsert_llm_lab(body, session)
 
 
 @router.post("/license")
 @router.put("/license")
 async def upsert_license(body: LLMLicenseUpsert) -> LLMLicense:
     async with get_session() as session:
-        return await upsert_llm_license(body, session, commit=COMMIT)
+        return await upsert_llm_license(body, session)
