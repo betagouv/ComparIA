@@ -47,10 +47,14 @@ export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
       onSuccess?.(updated)
     } catch (e) {
       if (e instanceof ValidationError) {
-        e.errors.forEach((err) => {
-          const [_body, ...rest] = err.loc
-          errors[rest.join('-')] = err.msg
-        })
+        if (Array.isArray(e.errors)) {
+          e.errors.forEach((err) => {
+            const [_body, ...rest] = err.loc
+            errors[rest.join('-')] = err.msg
+          })
+        } else {
+          errors['unexpected'] = e.errors
+        }
       }
     }
   }

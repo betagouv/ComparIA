@@ -73,9 +73,9 @@ export class InternalError extends Error {
 type PydanticValidationError = { loc: string[]; msg: string }
 
 export class ValidationError extends Error {
-  errors: PydanticValidationError[]
+  errors: PydanticValidationError[] | string
 
-  constructor(errors: PydanticValidationError[]) {
+  constructor(errors: PydanticValidationError[] | string) {
     super('Error in form')
     this.errors = errors
   }
