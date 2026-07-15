@@ -185,6 +185,9 @@ class LLMsData(BaseModel):
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
+            # Custom selection are not uuid
+            custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+
             if unknown_llms := [
                 llm_id
                 for llm_id in custom_selection
