@@ -4,12 +4,15 @@
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { GroupedMessages, RevealArea, VoteModal } from '.'
+  import { onDestroy } from 'svelte'
 
   let { comparisonId }: { comparisonId: string } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
 
   let prompt = $state('')
+  let voteReminder = $state(false)
+  let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
 
   const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison.mode)!)
 
@@ -25,6 +28,28 @@
       prompt = ''
     }
   }
+
+  function remindToVote() {
+    const turn = comparator.comparison.turns.findLast((currentTurn) => !currentTurn.choice)
+    if (!turn) return
+
+    voteReminder = true
+    clearTimeout(voteReminderTimeout)
+    voteReminderTimeout = setTimeout(() => (voteReminder = false), 5000)
+
+    requestAnimationFrame(() => {
+      const voteArea = document.getElementById(`vote-select-${turn.id}`)
+      if (!voteArea) return
+
+      voteArea.classList.remove('cl-vote-nudge')
+      void voteArea.offsetWidth
+      voteArea.classList.add('cl-vote-nudge')
+      voteArea.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      voteArea.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true })
+    })
+  }
+
+  onDestroy(() => clearTimeout(voteReminderTimeout))
 
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
@@ -91,17 +116,24 @@
         rows={3}
         maxRows={4}
         onSubmit={onPromptSubmit}
+        onSubmitBlocked={remindToVote}
         onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
         class="mb-0! w-full"
       />
 
+      {#if voteReminder}
+        <p role="status" class="fr-message fr-message--info mb-0! text-center">
+          {m['vote.continueReminder']()}
+        </p>
+      {/if}
+
       <Button
         text={m['chatbot.revealButton']()}
-        disabled={!canContinue}
+        aria-disabled={!canContinue}
         size="sm"
         icon="arrow-up-circle-line"
         class="md:w-fit! lh-none! w-full!"
-        onclick={() => comparator.reveal()}
+        onclick={() => (canContinue ? comparator.reveal() : remindToVote())}
       />
     </div>
   {/if}

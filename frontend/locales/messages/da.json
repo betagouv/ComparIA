@@ -2004,7 +2004,7 @@
             "title": "Hvordan fordeler brugernes præferencer sig?"
         },
         "ranking": {
-            "desc": "Tak for jeres bidrag!<br> Rangeringen <strong>AI-arenaen</strong> er baseret på alle stemmer og reaktioner fra den <strong>blinde sammenligning</strong> af modellerne og indsamlet siden tjenestens offentlige lancering i oktober 2024.<br> Bygget i partnerskab med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), er modelrangeringen etableret baseret på <strong>tilfredshedsscore</strong> beregnet ud fra den statistiske model <strong>Bradley Terry</strong>, en udbredt metode til at konvertere binære stemmer til probabilistisk rangering.<br> AI-arenaens-rangeringen har ikke til formål at udgøre en officiel anbefaling eller evaluere modellernes tekniske ydeevne. Den afspejler platformens brugeres <strong>subjektive præferencer</strong> og ikke svarenes faktualitet eller sandfærdighed.",
+            "desc": "Denne rangering beregnes ud fra stemmer indsamlet gennem <strong>blinde sammenligninger</strong> ved hjælp af den statistiske <strong>Bradley-Terry-model</strong>. Den afspejler <strong>subjektive præferencer</strong> og bør fortolkes med forsigtighed: den måler hverken faktuel korrekthed eller modellernes samlede ydeevne.",
             "tabLabel": "Rangliste"
         },
         "table": {
@@ -2166,6 +2166,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "choices": {
             "negative": {
                 "comment": "Uddyb hvad du ikke kunne lide…",

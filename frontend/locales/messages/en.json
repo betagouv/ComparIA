@@ -1962,7 +1962,7 @@
             "title": "How are user preferences distributed?"
         },
         "ranking": {
-            "desc": "Thank you for your contributions!<br> The <strong>arena ranking</strong> is based on all votes and reactions from the <strong>blind comparison</strong> of the models, collected since the service opened to the public in October 2024.<br>Developed in partnership with the Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), the model ranking is based on the <strong>satisfaction score</strong> calculated using the <strong>Bradley Terry</strong> statistical model, a widely used method for converting binary votes into a probabilistic ranking.<br> The compar:IA ranking is not intended to be an official recommendation or to evaluate the technical performance of the models. It reflects the <strong>subjective preferences</strong> of the platform's users and not the factual accuracy or veracity of the responses.",
+            "desc": "This ranking is calculated from votes collected through <strong>blind comparisons</strong>, using the <strong>Bradley-Terry</strong> statistical model. It reflects <strong>subjective preferences</strong> and should be interpreted with caution: it measures neither factual accuracy nor overall model performance.",
             "tabLabel": "Leaderboard"
         },
         "table": {
@@ -2125,6 +2125,7 @@
         }
     },
     "vote": {
+        "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {
             "negative": {
                 "incorrect": "Incorrect",
