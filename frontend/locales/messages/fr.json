@@ -35,7 +35,7 @@
         "nav": {
             "users": "Utilisateurs",
             "llms": "LLMs",
-            "personnalisation": "Personnalisation",
+            "customization": "Personnalisation",
             "authentification": "Authentification"
         },
         "panelLink": "Administration",
@@ -45,7 +45,7 @@
             "save": "Enregistrer",
             "saving": "Enregistrement...",
             "saved": "Paramètres mis à jour",
-            "personnalisation": {
+            "customization": {
                 "platformName": "Nom de la plateforme",
                 "votesObjective": "Objectif de votes",
                 "logo": {

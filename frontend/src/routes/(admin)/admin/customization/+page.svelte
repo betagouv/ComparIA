@@ -63,7 +63,7 @@
       await api.request('/admin/settings/logo', { method: 'PUT', body: formData, headers: {} })
       hasCustomLogo = true
       logoVersion++
-      useToast(m['admin.settings.personnalisation.logo.updated'](), 4000)
+      useToast(m['admin.settings.customization.logo.updated'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -77,7 +77,7 @@
     try {
       await api.request('/admin/settings/logo', { method: 'DELETE', headers: {} })
       hasCustomLogo = false
-      useToast(m['admin.settings.personnalisation.logo.resetDone'](), 4000)
+      useToast(m['admin.settings.customization.logo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -87,8 +87,8 @@
 </script>
 
 <PageLayout
-  seoTitle={m['admin.nav.personnalisation']()}
-  title={m['admin.nav.personnalisation']()}
+  seoTitle={m['admin.nav.customization']()}
+  title={m['admin.nav.customization']()}
   subtitle={m['admin.settings.subtitle']()}
 >
   {#if loading}
@@ -97,13 +97,13 @@
     <form onsubmit={save} class="max-w-[480px]">
       <Input
         id="settings-platform-name"
-        label={m['admin.settings.personnalisation.platformName']()}
+        label={m['admin.settings.customization.platformName']()}
         bind:value={platformName}
         groupClass="mt-4!"
       />
 
       <div class="mt-4!">
-        <p class="fr-label mb-2!">{m['admin.settings.personnalisation.logo.label']()}</p>
+        <p class="fr-label mb-2!">{m['admin.settings.customization.logo.label']()}</p>
         <div class="gap-4 flex items-center">
           <img
             src={logoSrc}
@@ -113,7 +113,7 @@
           <div class="gap-2 flex flex-col">
             <label class="fr-label">
               <span class="fr-sr-only"
-                >{m['admin.settings.personnalisation.logo.chooseFile']()}</span
+                >{m['admin.settings.customization.logo.chooseFile']()}</span
               >
               <input
                 type="file"
@@ -127,21 +127,21 @@
                 type="button"
                 variant="secondary"
                 size="sm"
-                text={m['admin.settings.personnalisation.logo.reset']()}
+                text={m['admin.settings.customization.logo.reset']()}
                 disabled={uploadingLogo}
                 onclick={resetLogo}
               />
             {/if}
           </div>
         </div>
-        <p class="fr-hint-text mt-1!">{m['admin.settings.personnalisation.logo.hint']()}</p>
+        <p class="fr-hint-text mt-1!">{m['admin.settings.customization.logo.hint']()}</p>
       </div>
 
       <Input
         id="settings-votes-objective"
         type="number"
         min="0"
-        label={m['admin.settings.personnalisation.votesObjective']()}
+        label={m['admin.settings.customization.votesObjective']()}
         bind:value={votesObjective}
         groupClass="mt-4!"
       />
