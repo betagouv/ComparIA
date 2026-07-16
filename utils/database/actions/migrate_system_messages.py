@@ -1,11 +1,13 @@
 import logging
 import uuid
 from datetime import datetime
+from typing import Annotated, Literal
 
 import polars as pl
 from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlmodel import Field, SQLModel, String
 
-from utils.database.models.messages.system import SystemMessage
 from utils.database.session import get_session
 
 from .migrate_utils import (
@@ -24,6 +26,16 @@ QUERY = f"""
         SELECT system_prompt_b AS content FROM conversations WHERE system_prompt_b IS NOT NULL AND system_prompt_b <> ''
     ) sub
 """
+
+
+class SystemMessage(SQLModel, table=True):
+    __tablename__ = "system_message"
+    id: Annotated[uuid.UUID, Field(default_factory=uuid.uuid4, primary_key=True)]
+    created_at: Annotated[
+        datetime, Field(default_factory=datetime.now, sa_type=TIMESTAMP)
+    ]
+    role: Annotated[Literal["system"], Field(sa_type=String)] = "system"
+    content: str
 
 
 async def migrate_system_messages(

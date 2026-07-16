@@ -1,6 +1,8 @@
 import logging
+from datetime import datetime
 
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 
 from backend.config import settings
 from utils.storage.redis import get_redis_client, maintenance_key_for_instance
@@ -64,5 +66,32 @@ def maintenance_disconnect_db() -> None:
             terminated = len(result.fetchall())
             conn.commit()
         logger.info(f"Terminated {terminated} other connection(s) to the database")
+    finally:
+        engine.dispose()
+
+
+def maintenance_backup_db() -> None:
+    """
+    Create a backup copy of the database targeted by COMPARIA_DB_URI.
+
+    Runs CREATE DATABASE <dbname>_backup_<timestamp> TEMPLATE <dbname>. Postgres
+    requires no open connections to the source database for this to succeed
+    (see disconnect-db), and the connection issuing the command must not itself
+    be connected to the source database, so this connects to 'postgres' instead.
+    """
+    if not settings.COMPARIA_DB_URI:
+        raise Exception("COMPARIA_DB_URI is not set")
+
+    url = make_url(settings.COMPARIA_DB_URI)
+    source_db = url.database
+    if not source_db:
+        raise Exception("COMPARIA_DB_URI has no database name")
+
+    backup_db = f"{source_db}_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    engine = create_engine(url.set(database="postgres"))
+    try:
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            conn.execute(text(f'CREATE DATABASE "{backup_db}" TEMPLATE "{source_db}"'))
+        logger.info(f"Created backup database '{backup_db}' from '{source_db}'")
     finally:
         engine.dispose()

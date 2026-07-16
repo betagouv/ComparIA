@@ -111,8 +111,8 @@ BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
 # Rate limiting for custom model selection per IP
-RATELIMIT_CUSTOM_SELECTION_PER_HOUR = 3
-RATELIMIT_CUSTOM_SELECTION_PER_DAY = 5
+RATELIMIT_CUSTOM_SELECTION_PER_HOUR = 400
+RATELIMIT_CUSTOM_SELECTION_PER_DAY = 400
 
 # Cooldown for IPs that hit the content-safety guardrail too often (abuse /
 # jailbreak probing). Counts only enforced blocks in a rolling window; once an

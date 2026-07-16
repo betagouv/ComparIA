@@ -22,7 +22,7 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from utils.database.models import Comparison, Turn
-from utils.database.models.messages import LLMMessage, SystemMessage, UserMessage
+from utils.database.models.messages import LLMMessage, UserMessage
 from utils.dataset import compute
 from utils.dataset.models import (
     DatasetComparison,
@@ -82,10 +82,6 @@ T0 = datetime(2024, 1, 1, 12, 0, 0)
 
 def user_msg(content="hi", **kw):
     return UserMessage(content=content, created_at=T0, **kw)
-
-
-def system_msg(content="be nice"):
-    return SystemMessage(content=content, created_at=T0)
 
 
 def llm_msg(
@@ -174,8 +170,8 @@ def equivalent_cases():
                 llm_msg("b2", 80),
             ),
         ],
-        sys_a=system_msg("sys a"),
-        sys_b=system_msg("sys b"),
+        sys_a="sys a",
+        sys_b="sys b",
         cohorts="some-cohort",
         llm_analyzed=True,
         archived=False,

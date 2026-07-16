@@ -9,7 +9,6 @@ from sqlmodel import Field, Relationship, SQLModel, String
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
-from .messages import SystemMessage, SystemMessageRead
 from .turn import BotPos, Turn, TurnPublic, TurnRead
 from .utils import AutoDatetime, ModelId, OptionalDatetime
 
@@ -42,8 +41,6 @@ ArchivedReason = Literal[
 #   - remove corresponding UserMessage + LLMMessage
 # - "corrupted_model_stream": reparse LLMMessage content
 
-SystemMessageId = Annotated[uuid.UUID | None, Field(foreign_key="system_message.id")]
-
 
 class ErrorDetails(BaseModel):
     message: str
@@ -66,11 +63,11 @@ class ComparisonBase(SQLModel):
 
     # a
     llm_id_a: str
-    system_msg_a_id: SystemMessageId = None
+    system_msg_a: str | None = None
 
     # b
     llm_id_b: str
-    system_msg_b_id: SystemMessageId = None
+    system_msg_b: str | None = None
 
     error: Annotated[ErrorDetails | None, Field(sa_type=JSONB)] = None
 
@@ -92,21 +89,9 @@ class ComparisonWithAnalyzeData(ComparisonBase):
 
 
 class Comparison(ComparisonWithAnalyzeData, table=True):
-    system_msg_a: SystemMessage | None = Relationship(
-        sa_relationship_kwargs={
-            "foreign_keys": "[Comparison.system_msg_a_id]",
-            "lazy": "joined",
-        }
-    )
-    system_msg_b: SystemMessage | None = Relationship(
-        sa_relationship_kwargs={
-            "foreign_keys": "[Comparison.system_msg_b_id]",
-            "lazy": "joined",
-        }
-    )
-
     turns: list[Turn] = Relationship(
         back_populates="comparison",
+        cascade_delete=True,
         sa_relationship_kwargs={"lazy": "selectin", "order_by": "Turn.created_at"},
     )
 
@@ -116,8 +101,6 @@ class ComparisonCreate(ComparisonBase):
 
 
 class ComparisonRead(ComparisonBase):
-    system_msg_a: SystemMessageRead | None
-    system_msg_b: SystemMessageRead | None
     turns: list[TurnRead]
 
 

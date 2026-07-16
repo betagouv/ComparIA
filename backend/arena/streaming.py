@@ -15,6 +15,11 @@ from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
+from backend.arena.conversation import (
+    AnyMessageRead,
+    SystemMessageRead,
+    bot_response_async,
+)
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
@@ -22,7 +27,6 @@ from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
     BOT_POS,
-    AnyMessageRead,
     BotPos,
     ComparisonPublic,
     ComparisonRead,
@@ -116,7 +120,6 @@ async def stream_llm_response(
     Yields:
         AnySSEEventMsg
     """
-    from backend.arena.conversation import bot_response_async
 
     try:
         # Stream responses from bot_response_async generator
@@ -306,7 +309,7 @@ def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRea
     messages: list[AnyMessageRead] = []
 
     if system_msg := getattr(comparison, f"system_msg_{pos}"):
-        messages.append(system_msg)
+        messages.append(SystemMessageRead(content=system_msg))
 
     for turn in comparison.turns:
         messages.append(turn.user_msg)

@@ -15,7 +15,6 @@ from utils.database.models import (
     ErrorDetails,
     LLMMessage,
     LLMMessageCreate,
-    SystemMessage,
     Turn,
     TurnCreate,
     TurnRead,
@@ -51,9 +50,7 @@ async def create_comparison(comparison: ComparisonCreate) -> ComparisonRead:
 
         for pos in BOT_POS:
             if content := llms_data[getattr(comparison, f"llm_id_{pos}")].system_prompt:
-                setattr(
-                    db_comparison, f"system_msg_{pos}", SystemMessage(content=content)
-                )
+                setattr(db_comparison, f"system_msg_{pos}", content)
 
         session.add(db_comparison)
         await session.commit()
@@ -73,14 +70,13 @@ async def update_comparison_llm_id(
     comparison: ComparisonRead, pos: BotPos, new_llm_id: str
 ) -> None:
     failing_llm_id = getattr(comparison, f"llm_id_{pos}")
-    failing_system_msg = getattr(comparison, f"system_msg_{pos}")
 
     # Mutate the current ComparisonRead and TurnRead
     # Update current ComparisonRead failing LLM id
     setattr(comparison, f"llm_id_{pos}", new_llm_id)
-    # Remove or add new SystemMessage if any
+    # Remove or add new system_msg if any
     llm = get_llms_data().enabled[new_llm_id]
-    system_msg = SystemMessage(content=llm.system_prompt) if llm.system_prompt else None
+    system_msg = llm.system_prompt if llm.system_prompt else None
     setattr(comparison, f"system_msg_{pos}", system_msg)
     # Reset TurnRead llm_msg_* to None (no need to do it in db, it is not yet saved)
     setattr(comparison.turns[-1], f"llm_msg_{pos}", None)
@@ -96,10 +92,6 @@ async def update_comparison_llm_id(
 
     # Reflect changes in db
     async with get_session() as session:
-        if failing_system_msg:
-            await session.delete(failing_system_msg)
-            await session.flush()
-
         db_comparison = await _get_item(Comparison, comparison.id, session)
         setattr(db_comparison, f"llm_id_{pos}", new_llm_id)
         setattr(db_comparison, f"system_msg_{pos}", system_msg)

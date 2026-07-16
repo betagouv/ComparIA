@@ -8,10 +8,11 @@ handling streaming responses, token counting, and message tracking.
 import asyncio
 import logging
 from datetime import datetime
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Literal
 
 from fastapi import Request
 from litellm.litellm_core_utils.token_counter import token_counter
+from pydantic import BaseModel
 
 from backend.arena.cache import (
     CachedResponse,
@@ -21,9 +22,23 @@ from backend.arena.cache import (
 from backend.arena.litellm import litellm_stream_iter
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
-from utils.database.models import AnyMessageRead, BotPos, LLMMessageCreate, TurnRead
+from utils.database.models import (
+    BotPos,
+    LLMMessageCreate,
+    LLMMessageRead,
+    TurnRead,
+    UserMessageRead,
+)
 
 logger = logging.getLogger("languia")
+
+
+class SystemMessageRead(BaseModel):
+    role: Literal["system"] = "system"
+    content: str
+
+
+AnyMessageRead = LLMMessageRead | SystemMessageRead | UserMessageRead
 
 
 async def _stream_cached_response(
