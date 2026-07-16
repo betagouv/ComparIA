@@ -16,13 +16,9 @@ from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
 from backend.config import settings
-from utils.database.models.app_settings import (
-    AppSettings,
-    AppSettingsPatch,
-    AppSettingsPublic,
-)
+from utils.database.models.app_settings import AppSettingsPatch, AppSettingsPublic
 from utils.database.models.auth import UserPublic, UserRole
-from utils.database.settings import get_app_settings, update_app_settings
+from utils.database.settings import to_app_settings_public, update_app_settings
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -116,24 +112,6 @@ async def remove_user_invite(user_id: uuid.UUID) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
-    return AppSettingsPublic(
-        auth_access_policy=row.auth_access_policy,
-        auth_domain_allowlist=row.auth_domain_allowlist,
-        votes_objective=row.votes_objective,
-        platform_name=row.platform_name,
-        has_custom_logo=row.logo is not None,
-        updated_at=row.updated_at.isoformat(),
-        updated_by=row.updated_by,
-    )
-
-
-@router.get("/settings", response_model=AppSettingsPublic)
-async def get_settings() -> AppSettingsPublic:
-    row = await get_app_settings()
-    return _to_app_settings_public(row)
-
-
 @router.patch("/settings", response_model=AppSettingsPublic)
 async def patch_settings(
     body: AppSettingsPatch,
@@ -142,7 +120,7 @@ async def patch_settings(
     row = await update_app_settings(
         body.model_dump(exclude_unset=True), updated_by=current_user.id
     )
-    return _to_app_settings_public(row)
+    return to_app_settings_public(row)
 
 
 @router.put("/settings/logo", response_model=AppSettingsPublic)
@@ -165,7 +143,7 @@ async def upload_logo(
         {"logo": content, "logo_content_type": file.content_type},
         updated_by=current_user.id,
     )
-    return _to_app_settings_public(row)
+    return to_app_settings_public(row)
 
 
 @router.delete("/settings/logo", response_model=AppSettingsPublic)
@@ -173,4 +151,4 @@ async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
     row = await update_app_settings(
         {"logo": None, "logo_content_type": None}, updated_by=current_user.id
     )
-    return _to_app_settings_public(row)
+    return to_app_settings_public(row)

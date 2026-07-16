@@ -20,6 +20,7 @@ class AppSettings(SQLModel, table=True):
     platform_name: str = Field(default="Compar:IA")
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
+    terms_content: str | None = None
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
@@ -30,6 +31,7 @@ class AppSettingsPublic(SQLModel):
     votes_objective: int
     platform_name: str
     has_custom_logo: bool
+    terms_content: str | None
     updated_at: str
     updated_by: uuid.UUID | None = None
 
@@ -39,3 +41,4 @@ class AppSettingsPatch(SQLModel):
     auth_domain_allowlist: list[str] | None = None
     votes_objective: int | None = None
     platform_name: str | None = None
+    terms_content: str | None = None
