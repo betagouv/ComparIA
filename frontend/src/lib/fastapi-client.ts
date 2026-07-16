@@ -139,11 +139,17 @@ export class FastAPIClient {
   /**
    * Make a single HTTP request (non-streaming)
    */
-  async request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  async request<T>(
+    path: string,
+    options: RequestInit & { fetch?: typeof fetch } = { fetch }
+  ): Promise<T> {
     const url = this.getUrl(path)
+    // Get svelte load function's fetch or use default
+    const _fetch = options.fetch ?? fetch
+    delete options.fetch
 
     try {
-      const response = await fetch(url, {
+      const response = await _fetch(url, {
         ...options,
         headers: options.headers ?? {
           'Content-Type': 'application/json'

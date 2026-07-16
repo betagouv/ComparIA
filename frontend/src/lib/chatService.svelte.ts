@@ -189,8 +189,8 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export async function queryComparisons() {
-  const data = await api.request<APIComparison[]>('/arena/comparison/list')
+export async function queryComparisons(_fetch: typeof fetch = fetch) {
+  const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
   return data.map((c) => parseAPIComparison(c))
 }
 
