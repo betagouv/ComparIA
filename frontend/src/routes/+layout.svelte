@@ -1,9 +1,11 @@
 <script lang="ts">
   import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import Toaster from '$components/Toaster.svelte'
   import { setAuthContext } from '$lib/auth.svelte'
+  import { UnauthorizedError } from '$lib/fastapi-client'
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
@@ -39,6 +41,9 @@
   function handleError(_event: PromiseRejectionEvent) {
     // FIXME display error page on some error? display custom text in toast?
     useToast('Unexpected error', 10000, 'error')
+    if (_event.reason instanceof UnauthorizedError) {
+      goto(resolve('/login'))
+    }
   }
 </script>
 
