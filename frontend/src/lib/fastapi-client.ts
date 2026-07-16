@@ -78,12 +78,13 @@ export class ValidationError extends Error {
   constructor(errors: PydanticValidationError[] | string) {
     super('Error in form')
     this.errors = errors
+    this.name = 'ValidationError'
   }
 }
 
 export class UnauthorizedError extends Error {
-  constructor() {
-    super('Unauthorized')
+  constructor(key: string) {
+    super(key)
     this.name = 'UnauthorizedError'
   }
 }
@@ -121,8 +122,9 @@ export class FastAPIClient {
     const content = await response.text()
     try {
       const detail = JSON.parse(content).detail
-
-      if (response.status === 422) {
+      if (response.status === 401 || response.status === 403) {
+        return new UnauthorizedError(detail)
+      } else if (response.status === 422) {
         return new ValidationError(detail)
       } else if (response.status === 429) {
         return new ValidationError(detail)
@@ -148,11 +150,6 @@ export class FastAPIClient {
         },
         credentials: 'include'
       })
-
-      if (response.status === 401) {
-        unauthorizedHandler?.()
-        throw new UnauthorizedError()
-      }
 
       if (!response.ok) {
         throw await this.parseErrorResponse(response, path, options.method)
