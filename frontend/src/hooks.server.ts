@@ -46,6 +46,7 @@ export const handleError: HandleServerError = async ({ error, event }) => {
     const path = event.url.pathname
     redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
   }
+  console.error(error)
 }
 
 // creating a handle to use the paraglide middleware
