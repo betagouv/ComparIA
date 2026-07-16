@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 
 from backend.auth.services import get_user_from_token
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings
+from utils.database.settings import get_app_settings
 
 logger = logging.getLogger("languia")
 
@@ -15,8 +16,10 @@ _AUTH_REQUIRED_RESPONSE = JSONResponse(
 
 
 async def auth_middleware(request: Request, call_next):
+    app_settings = await get_app_settings()
+
     if (
-        settings.AUTH_ACCESS_POLICY == "sign_in_required"
+        app_settings.auth_access_policy == "sign_in_required"
         and request.url.path.startswith("/arena")
         and request.url.path != "/arena/challenge"
         and settings.COMPARIA_DB_URI
