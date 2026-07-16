@@ -125,7 +125,7 @@
         button: true,
         size: 'sm',
         variant: 'tertiary-no-outline',
-        class: 'text-sm! text-black! -ms-3'
+        class: 'text-sm! text-grey! -ms-3 pointer-events-none'
       })}
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
