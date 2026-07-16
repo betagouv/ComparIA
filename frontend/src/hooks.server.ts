@@ -6,6 +6,7 @@ import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import { redirect, type Handle } from '@sveltejs/kit'
+import { sequence } from '@sveltejs/kit/hooks'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
@@ -141,15 +142,4 @@ const authWallHandle: Handle = ({ event, resolve }) => {
   return resolve(event)
 }
 
-// Compose handles: maintenance first, then auth wall, then metrics, then paraglide
-export const handle: Handle = async ({ event, resolve }) => {
-  return maintenanceHandle({
-    event,
-    resolve: (e) =>
-      authWallHandle({
-        event: e,
-        resolve: (e2) =>
-          metricsHandle({ event: e2, resolve: (e3) => paraglideHandle({ event: e3, resolve }) })
-      })
-  })
-}
+export const handle = sequence(maintenanceHandle, authWallHandle, metricsHandle, paraglideHandle)
