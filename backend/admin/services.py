@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlmodel import col, func, select
 
-from utils.database.models.auth import InviteToken, LoginCode, User, UserPublic
+from utils.database.models.auth import InviteToken, LoginCode, User, UserPublic, UserRole
 from utils.database.session import get_session
 
 
@@ -95,7 +95,7 @@ async def cancel_user_invite(user_id: uuid.UUID) -> bool:
         return True
 
 
-async def set_user_role(user_id: uuid.UUID, role: str) -> User | None:
+async def set_user_role(user_id: uuid.UUID, role: UserRole) -> User | None:
     async with get_session() as session:
         user = await session.get(User, user_id)
         if not user or user.deleted_at is not None:

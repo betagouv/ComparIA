@@ -1,5 +1,4 @@
 import uuid
-from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, EmailStr
@@ -22,7 +21,7 @@ from utils.database.models.app_settings import (
     AppSettingsPatch,
     AppSettingsPublic,
 )
-from utils.database.models.auth import UserPublic
+from utils.database.models.auth import UserPublic, UserRole
 from utils.database.settings import get_app_settings, update_app_settings
 
 router = APIRouter(
@@ -40,7 +39,7 @@ class UsersPage(BaseModel):
 
 
 class SetRoleBody(BaseModel):
-    role: Literal["user", "admin"]
+    role: UserRole
 
 
 class InviteBody(BaseModel):
