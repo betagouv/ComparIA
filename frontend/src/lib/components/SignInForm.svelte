@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Checkbox, Input } from '$components/dsfr'
-  import { initAuth } from '$lib/auth.svelte'
+  import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { consumeAltchaToken } from '$lib/captcha.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -14,6 +14,7 @@
     onSuccess?: () => void
   } & SvelteHTMLElements['div'] = $props()
 
+  const auth = getAuthContext()
   let step = $state<'email' | 'code'>('email')
   let email = $state('')
   let code = $state('')
@@ -33,7 +34,6 @@
       })
       step = 'code'
     } catch (err) {
-      console.log('eeeerr', err)
       error = (err as Error).message
     } finally {
       loading = false
@@ -48,7 +48,8 @@
         method: 'POST',
         body: JSON.stringify({ email, code })
       })
-      await initAuth()
+      const data = await api.request<{ user: AuthUser | null }>('/auth/me')
+      auth.user = data.user
       onSuccess?.()
       useToast(m['auth.success'](), 4000)
     } catch {

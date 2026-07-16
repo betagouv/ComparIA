@@ -1,6 +1,7 @@
-import { browser } from '$app/environment'
 import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 import { api } from '$lib/fastapi-client'
+import { createContext } from 'svelte'
 
 export interface AuthUser {
   email: string
@@ -16,30 +17,15 @@ export interface AuthConfig {
   has_custom_logo: boolean
 }
 
-export const auth = $state<{ user: AuthUser | null; config: AuthConfig | null }>({
-  user: null,
-  config: null
-})
-
-export function isAdmin(): boolean {
-  return auth.user?.role === 'admin'
+type AuthCtx = {
+  user: AuthUser | null
+  config: AuthConfig
 }
+export const [getAuthContext, baseSetAuthContext] = createContext<AuthCtx>()
 
-export async function initAuth(): Promise<void> {
-  if (!browser) return
-
-  try {
-    auth.config = await api.request<AuthConfig>('/auth/config')
-  } catch {
-    // silently ignore
-  }
-
-  try {
-    const data = await api.request<{ user: AuthUser | null }>('/auth/me')
-    auth.user = data.user
-  } catch {
-    auth.user = null
-  }
+export function setAuthContext(data: AuthCtx) {
+  const auth = $state(data)
+  baseSetAuthContext(auth)
 }
 
 export function openSignInModal(): void {
@@ -50,13 +36,15 @@ export function openSignInModal(): void {
   }
 }
 
-export async function logout(): Promise<void> {
+export async function logout(auth: AuthCtx): Promise<void> {
   try {
     await api.request<void>('/auth/logout', { method: 'POST' })
   } finally {
     auth.user = null
     if (auth.config?.access_policy === 'sign_in_required') {
-      goto('/login')
+      goto(resolve('/login'))
+    } else {
+      goto(resolve('/arene'))
     }
   }
 }

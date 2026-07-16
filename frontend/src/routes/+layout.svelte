@@ -3,11 +3,10 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import Toaster from '$components/Toaster.svelte'
-  import { auth, initAuth, openSignInModal } from '$lib/auth.svelte'
+  import { setAuthContext } from '$lib/auth.svelte'
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
-  import { setUnauthorizedHandler } from '$lib/fastapi-client'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -23,16 +22,6 @@
   let { children, data } = $props()
 
   onMount(() => {
-    void initAuth()
-
-    setUnauthorizedHandler(() => {
-      if (auth.config?.access_policy === 'sign_in_required') {
-        goto('/login?redirect=' + encodeURIComponent(location.pathname))
-      } else {
-        openSignInModal()
-      }
-    })
-
     // Remove locale param to avoid locale changes override problems
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
@@ -43,6 +32,7 @@
 
   setVotesContext(data.votes)
   setModelsContext(data.data)
+  setAuthContext(data.auth)
   setI18nContext()
   setCohortContext()
 
