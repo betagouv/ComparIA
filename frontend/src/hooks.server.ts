@@ -1,11 +1,12 @@
 import { env } from '$env/dynamic/private'
-import { api } from '$lib/fastapi-client'
+import { api, UnauthorizedError } from '$lib/fastapi-client'
 import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
-import { redirect, type Handle } from '@sveltejs/kit'
+import type { Handle, HandleServerError } from '@sveltejs/kit'
+import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
 const MATOMO_ID = env.MATOMO_ID || ''
@@ -39,6 +40,13 @@ defineCustomServerStrategy('custom-url', {
     }
   }
 })
+
+export const handleError: HandleServerError = async ({ error, event }) => {
+  if (error instanceof UnauthorizedError) {
+    const path = event.url.pathname
+    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+  }
+}
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {

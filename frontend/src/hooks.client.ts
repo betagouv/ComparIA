@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 import { UnauthorizedError } from '$lib/fastapi-client'
 import type { HandleClientError } from '@sveltejs/kit'
 
@@ -7,7 +8,7 @@ import type { HandleClientError } from '@sveltejs/kit'
 // so we don't fall through to the generic error page.
 export const handleError: HandleClientError = ({ error }) => {
   if (error instanceof UnauthorizedError) {
-    goto('/login?redirect=' + encodeURIComponent(location.pathname))
+    goto(resolve(`/login?redirect=${encodeURIComponent(location.pathname)}`))
     return
   }
   console.error(error)
