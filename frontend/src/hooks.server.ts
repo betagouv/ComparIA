@@ -87,7 +87,9 @@ const maintenanceHandle: Handle = async ({ event, resolve }) => {
   if (!maintenanceCache || now - maintenanceCache.checkedAt >= MAINTENANCE_CHECK_TTL_MS) {
     let enabled = maintenanceCache?.enabled ?? false
     try {
-      ;({ enabled } = await api.request<{ enabled: boolean }>('/maintenance/status'))
+      ;({ enabled } = await api.request<{ enabled: boolean }>('/maintenance/status', {
+        fetch: event.fetch
+      }))
     } catch (error) {
       // Fail open: don't take the whole site down if the status check itself fails
       logger.error('Maintenance status check failed', { error: `${error}` })

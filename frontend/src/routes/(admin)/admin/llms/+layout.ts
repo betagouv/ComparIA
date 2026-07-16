@@ -3,21 +3,19 @@ import type { LLMData, LLMEndpoint, LLMLab, LLMLicense } from '$lib/generated/ad
 import type { JSONSchema } from '$lib/utils/form'
 import type { LayoutLoad } from './$types'
 
-export const ssr = false // auth error on server side
-
-export const load: LayoutLoad = async () => {
+export const load: LayoutLoad = async ({ fetch }) => {
   const data = await api.request<{
     endpoints: LLMEndpoint[]
     licenses: LLMLicense[]
     labs: LLMLab[]
     llms: LLMData[]
-  }>('/admin/llms/data')
+  }>('/admin/llms/data', { fetch })
   const schemas = await api.request<{
     endpoints: JSONSchema
     licenses: JSONSchema
     labs: JSONSchema
     llms: JSONSchema
-  }>('/admin/llms/schemas')
+  }>('/admin/llms/schemas', { fetch })
 
   const llmsSchemaProps = schemas.llms.properties!
 
