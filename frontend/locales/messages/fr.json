@@ -1668,7 +1668,7 @@
         "cards": {
             "arch": {
                 "title": "Architecture",
-                "tooltip": "FIXME"
+                "tooltip": "Estimation basée sur le tarif public affiché par OpenRouter ou communiqué par l’éditeur du modèle, pour les jetons en entrée et en sortie. Le coût réel peut varier selon le fournisseur, les remises, la mise en cache ou les conditions commerciales."
             },
             "context": {
                 "chars_count": "Soit envir. {count}k caractères",
@@ -2510,18 +2510,58 @@
         },
         "impacts": {
             "cost": {
-                "sub": "Prix global (entrée et sortie)",
+                "comparison": {
+                    "less": "≈ {factor}× moins cher que l’autre modèle",
+                    "more": "≈ {factor}× plus cher que l’autre modèle",
+                    "similar": "Coût comparable à l’autre modèle",
+                    "unavailable": "Coût non comparable avec l’autre modèle"
+                },
+                "sub": "Tarif standard (entrée et sortie)",
                 "title": "Coût",
-                "tooltip": "FIXME"
+                "tooltip": "Estimation fondée sur le tarif public d’entrée et de sortie du modèle. Pour les scénarios, elle suppose une exécution sans cache et peut varier selon le fournisseur."
             },
             "energy": {
+                "comparison": {
+                    "less": "≈ {factor}× moins d’énergie que l’autre modèle",
+                    "more": "≈ {factor}× plus d’énergie que l’autre modèle",
+                    "similar": "Énergie comparable à l’autre modèle",
+                    "unavailable": "Énergie non comparable avec l’autre modèle"
+                },
                 "conso": "{count}<span {midProps}>mWh</span>",
                 "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimé</span>",
-                "title": "Énergie conso.",
-                "tooltip": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+                "estimate": "Pour les scénarios, cette estimation porte sur la génération de la réponse. Elle ne modélise ni le contexte envoyé au modèle ni les effets éventuels du cache.",
+                "equivalences": {
+                    "intro": "Cette énergie correspond environ à :",
+                    "led": {
+                        "description": "d’éclairage avec une ampoule LED de 6 W",
+                        "title": "Ampoule LED",
+                        "tooltip": "Comparaison avec une ampoule LED de 6 W allumée en continu. Une consommation de 6 Wh correspond à une heure d’éclairage."
+                    },
+                    "phone": {
+                        "description": "de la capacité d’une batterie de smartphone de référence",
+                        "title": "Batterie de smartphone",
+                        "tooltip": "Comparaison avec la capacité d’une batterie de smartphone de référence (15 Wh). 100 % correspond à une recharge complète."
+                    },
+                    "tabs": {
+                        "label": "Choisir une équivalence énergétique"
+                    },
+                    "tooltip": "Équivalences indicatives : une heure de streaming vidéo (80 Wh), une ampoule LED de référence de 6 W et une batterie de smartphone de référence de 15 Wh.",
+                    "unavailable": "Aucune équivalence n’est disponible pour cette estimation.",
+                    "video": {
+                        "description": "de streaming vidéo (référence : 80 Wh par heure)",
+                        "title": "Streaming vidéo",
+                        "tooltip": "Comparaison avec une heure de streaming vidéo, estimée à 80 Wh. Cette référence inclut la lecture vidéo et les équipements associés ; elle reste indicative."
+                    }
+                },
+                "title": "Énergie de génération estimée",
+                "tooltip": "Exprimée en milliwattheures, cette estimation représente l'électricité mobilisée par le modèle pour générer une réponse. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "how": {
-                "desc": "FIXME",
+                "tabs": {
+                    "equivalences": "Équivalences",
+                    "explanation": "Explication",
+                    "label": "Détail de la consommation"
+                },
                 "title": "Pourquoi cette consommation ?"
             },
             "summary": {
@@ -2540,7 +2580,7 @@
                     "percentageMore": "une consommation <strong>{percentage} % plus élevée</strong> que celle de <strong>{otherModel}</strong>",
                     "unavailable": "une consommation qui ne peut pas être comparée à celle de <strong>{otherModel}</strong>"
                 },
-                "consumption": "Au cours de cette discussion, la génération de <strong>{tokens} jetons</strong> a consommé environ <strong>{energy} mWh</strong>, soit {comparison}.",
+                "consumption": "Pour {usage}, la génération de <strong>{tokens} jetons</strong> a consommé environ <strong>{energy} mWh</strong>, soit {comparison}.",
                 "size": {
                     "estimatedL": "de grande taille (estimée)",
                     "estimatedM": "de taille moyenne (estimée)",
@@ -2560,12 +2600,33 @@
                 "label": "taille du modèle",
                 "quantized": "(quantisé)"
             },
-            "title": "Bilan de la discussion",
+            "title": "Bilan",
             "tokens": {
                 "max": "Contexte max : {count}k jetons",
                 "title": "Texte généré",
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand.",
                 "used": "{count}<span {midProps}> jetons</span><span {smallProps}> utilisés</span>"
+            },
+            "usage": {
+                "coding": "une session de code agentique (500 k jetons)",
+                "changeLabel": "Changer le scénario de l’estimation",
+                "assumption": "Hypothèse : exécution sans cache. Les éventuelles réductions tarifaires ou énergétiques liées au cache ne sont pas incluses.",
+                "descriptionCoding": "Exemple de session de code agentique (500 k jetons). Sa taille peut beaucoup varier selon le dépôt et les tâches.",
+                "descriptionDiscussion": "Estimation calculée à partir de cette discussion.",
+                "descriptionDocument": "Projection si ce modèle devait générer un document de 5 pages.",
+                "descriptionResearch": "Projection pour une recherche approfondie : recherches web, lecture de sources et synthèse citée.",
+                "discussion": "cette discussion",
+                "document": "un document de 5 pages",
+                "headingCoding": "pour une session de code agentique",
+                "headingDiscussion": "de cette discussion",
+                "headingDocument": "Bilan pour un document de 5 pages",
+                "headingResearch": "pour une recherche approfondie",
+                "label": "Usage à estimer",
+                "menuCoding": "Session de code agentique",
+                "menuDiscussion": "Cette discussion",
+                "menuDocument": "Document · 5 pages",
+                "menuResearch": "Recherche approfondie",
+                "research": "une recherche approfondie (310 k jetons)"
             },
             "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée."
         },

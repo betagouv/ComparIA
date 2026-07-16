@@ -192,7 +192,7 @@
   <button
     bind:this={buttonEl}
     type="button"
-    aria-haspopup="true"
+    aria-haspopup={role ?? true}
     aria-expanded={open}
     aria-controls={id}
     class={[buttonClass, { 'not-hover:bg-white': variant === 'light' }]}
