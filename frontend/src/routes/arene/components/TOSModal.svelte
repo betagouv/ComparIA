@@ -67,7 +67,7 @@
                   bind:checked={acceptTos.value}
                   id="tos-modal"
                   label={m['home.intro.tos.accept']({
-                    linkProps: propsToAttrs({ href: '/modalites', target: '_blank' })
+                    linkProps: propsToAttrs({ href: '/terms', target: '_blank' })
                   })}
                   error={tosError}
                   class={{ 'mb-0!': !tosError }}

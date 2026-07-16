@@ -105,7 +105,7 @@
                 "title": "Log ind eller opret konto",
                 "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
                 "emailLabel": "E-mail",
-                "consent": "Jeg har læst oplysningerne om databrug og accepterer <a href='/modalites' target='_blank'>brugsbetingelserne</a>",
+                "consent": "Jeg har læst oplysningerne om databrug og accepterer <a href='/terms' target='_blank'>brugsbetingelserne</a>",
                 "submit": "Modtag loginkode",
                 "submitting": "Sender..."
             },
@@ -2193,7 +2193,7 @@
             "history": "Nøgledatoer",
             "home": "Hjem",
             "mentions-legales": "Om os",
-            "modalites": "Brugsbetingelser",
+            "terms": "Brugsbetingelser",
             "modeles": "Modelliste",
             "news": "Nyheder og ressourcer",
             "partners": "Partnere",

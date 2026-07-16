@@ -116,7 +116,7 @@
                 "verifying": "Vérification..."
             },
             "email": {
-                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/modalites' target='_blank'>conditions générales d'utilisation</a>",
+                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/terms' target='_blank'>conditions générales d'utilisation</a>",
                 "emailLabel": "Email",
                 "submit": "Recevoir le code de connexion",
                 "submitting": "Envoi en cours...",
@@ -2592,7 +2592,7 @@
             "history": "Dates clés",
             "home": "Accueil",
             "mentions-legales": "Mentions légales",
-            "modalites": "Modalités d’utilisation",
+            "terms": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "news": "Actualités et ressources",
             "partners": "Partenaires",

@@ -11,7 +11,7 @@
   const links = (
     [
       { href: '/mentions-legales', labelKey: 'legal' },
-      { href: '/modalites', labelKey: 'tos' },
+      { href: '/terms', labelKey: 'tos' },
       { href: '/donnees-personnelles', labelKey: 'privacy' },
       { href: '/accessibilite', labelKey: 'accessibility' },
       { href: '/ecoconception', labelKey: 'rgesn' },

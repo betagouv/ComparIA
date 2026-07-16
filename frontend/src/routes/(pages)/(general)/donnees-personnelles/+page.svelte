@@ -78,7 +78,7 @@
       <li>{m['general.privacy.privacyDataForm']()}</li>
     </ul>
     <p>
-      {@html sanitize(m['general.privacy.privacyResp']({ linkProps: 'href="/modalites"' }))}
+      {@html sanitize(m['general.privacy.privacyResp']({ linkProps: 'href="/terms"' }))}
     </p>
 
     <h2 id="data-use">{m['general.privacy.dataUseTitle']()}</h2>

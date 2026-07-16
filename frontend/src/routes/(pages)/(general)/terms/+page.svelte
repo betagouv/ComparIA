@@ -9,11 +9,11 @@
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 </script>
 
-<SeoHead title={m['seo.titles.modalites']()} />
+<SeoHead title={m['seo.titles.terms']()} />
 
 <main class="py-10 lg:py-15">
   <div class="fr-container">
-    <h1 id="modalites-d-utilisation">{m['general.tos.title']()}</h1>
+    <h1 id="terms-of-use">{m['general.tos.title']()}</h1>
 
     <h2 id="1-champ-d-application">{m['general.tos.scopeTitle']()}</h2>
     <p>{m['general.tos.scopeDesc']()}</p>
@@ -109,7 +109,7 @@
     <p>{m['general.tos.dispoWarranty']()}</p>
     <p>{m['general.tos.dispoResp']()}</p>
 
-    <h2 id="8-evolution-des-modalites-d-utilisation">{m['general.tos.evoTitle']()}</h2>
+    <h2 id="8-changes-to-the-terms-of-use">{m['general.tos.evoTitle']()}</h2>
     <p>{m['general.tos.evoDesc']()}</p>
     <p>{m['general.tos.evoDescMore']()}</p>
 

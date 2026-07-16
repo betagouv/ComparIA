@@ -104,7 +104,7 @@
                 "title": "Sign in or create an account",
                 "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on compar:IA",
                 "emailLabel": "Email",
-                "consent": "I have read the data usage information and accept the <a href='/modalites' target='_blank'>terms of use</a>",
+                "consent": "I have read the data usage information and accept the <a href='/terms' target='_blank'>terms of use</a>",
                 "submit": "Receive login code",
                 "submitting": "Sending..."
             },
@@ -2153,7 +2153,7 @@
             "history": "Key Dates",
             "home": "Home",
             "mentions-legales": "Legal notice",
-            "modalites": "Terms of use",
+            "terms": "Terms of use",
             "modeles": "Model list",
             "news": "News and resources",
             "partners": "Partners",
