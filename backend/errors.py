@@ -1,3 +1,6 @@
+from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
+
 from utils.database.models import BotPos
 
 # from enum import StrEnum
@@ -40,3 +43,30 @@ class ChatError(RuntimeError):
 
     def __str__(self):
         return self.message
+
+
+class AnonymousRequiredError(HTTPException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="anonymous_required"
+        )
+
+
+class AuthRequiredError(HTTPException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="auth_required"
+        )
+
+
+# Used in middleware, can't raise HTTPException
+AUTH_REQUIRED_RESPONSE = JSONResponse(
+    {"detail": "auth_required"}, status_code=status.HTTP_401_UNAUTHORIZED
+)
+
+
+class RoleRequiredError(HTTPException):
+    def __init__(self, role: str = "admin") -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN, detail=f"{role}_required"
+        )
