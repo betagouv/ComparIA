@@ -1,19 +1,25 @@
 <script lang="ts">
-  import { Badge, Button, Icon, Table } from '$components/dsfr'
+  import { invalidate } from '$app/navigation'
   import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
   import ConfirmPromoteAdminModal from '$components/ConfirmPromoteAdminModal.svelte'
+  import { Badge, Button, Icon, Table } from '$components/dsfr'
   import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
-  import { auth } from '$lib/auth.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
-  import type { UserPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
   import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
-  import { onMount } from 'svelte'
+  import type { PageProps } from './$types'
 
+  const { data }: PageProps = $props()
+  const refetch = () => invalidate('admin:users')
   const locale = getLocale()
+  const auth = getAuthContext()
+
+  const users = $derived(data.users.items)
+  const total = $derived(data.users.total)
 
   function sourceBadgeVariant(source: string) {
     switch (source) {
@@ -27,26 +33,6 @@
         return ''
     }
   }
-
-  let users = $state<UserPublic[]>([])
-  let total = $state(0)
-  let loading = $state(true)
-
-  async function fetchUsers() {
-    loading = true
-    try {
-      const params = new URLSearchParams({ page: '1', page_size: '50' })
-      const data = await api.request<{ items: UserPublic[]; total: number }>(
-        `/admin/users?${params}`
-      )
-      users = data.items
-      total = data.total
-    } finally {
-      loading = false
-    }
-  }
-
-  onMount(fetchUsers)
 
   let userToDelete = $state<{ id: string; email: string } | null>(null)
 
@@ -64,7 +50,7 @@
     try {
       await api.request(`/admin/users/${userToDelete.id}`, { method: 'DELETE' })
       useToast(`${userToDelete.email} deleted`, 4000)
-      await fetchUsers()
+      await refetch()
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     }
@@ -89,7 +75,7 @@
         body: JSON.stringify({ role: 'admin' })
       })
       useToast(`${userToPromote.email} promoted to admin`, 4000)
-      await fetchUsers()
+      await refetch()
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     }
@@ -99,7 +85,7 @@
     try {
       await api.request(`/admin/users/${row.id}/invite`, { method: 'DELETE' })
       useToast(`Invite for ${row.email} canceled, user removed`, 4000)
-      await fetchUsers()
+      await refetch()
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     }
@@ -199,13 +185,11 @@
     {/snippet}
   </Table>
 
-  {#if !loading}
-    <p class="fr-text--sm mt-2! text-[--text-mention-grey]">
-      {total} user{total !== 1 ? 's' : ''}.
-    </p>
-  {/if}
+  <p class="fr-text--sm mt-2! text-[--text-mention-grey]">
+    {total} user{total !== 1 ? 's' : ''}.
+  </p>
 </PageLayout>
 
-<InviteUserModal onSuccess={fetchUsers} />
+<InviteUserModal onSuccess={refetch} />
 <ConfirmDeleteUserModal email={userToDelete?.email ?? null} onConfirm={confirmDelete} />
 <ConfirmPromoteAdminModal email={userToPromote?.email ?? null} onConfirm={confirmPromote} />
