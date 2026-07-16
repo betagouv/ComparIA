@@ -29,7 +29,7 @@
         "nav": {
             "users": "Users",
             "llms": "LLMs",
-            "personnalisation": "Customization",
+            "customization": "Customization",
             "authentification": "Authentication"
         },
         "panelLink": "Admin panel",
@@ -39,7 +39,7 @@
             "save": "Save",
             "saving": "Saving...",
             "saved": "Settings updated",
-            "personnalisation": {
+            "customization": {
                 "platformName": "Platform name",
                 "votesObjective": "Votes objective",
                 "logo": {

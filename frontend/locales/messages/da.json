@@ -29,7 +29,7 @@
         "nav": {
             "users": "Brugere",
             "llms": "LLMs",
-            "personnalisation": "Tilpasning",
+            "customization": "Tilpasning",
             "authentification": "Autentificering"
         },
         "panelLink": "Administration",
@@ -39,7 +39,7 @@
             "save": "Gem",
             "saving": "Gemmer...",
             "saved": "Indstillinger opdateret",
-            "personnalisation": {
+            "customization": {
                 "platformName": "Platformens navn",
                 "votesObjective": "Stemmemål",
                 "logo": {
