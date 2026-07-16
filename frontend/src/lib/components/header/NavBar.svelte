@@ -20,7 +20,6 @@
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   const auth = getAuthContext()
-  const isAdminUser = $derived(auth.user?.role === 'admin')
   let expanded = $state(true)
 </script>
 
@@ -131,19 +130,6 @@
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>
-
-    {#if isAdminUser}
-      {@render renderLink({
-        href: '/admin',
-        label: m['admin.panelLink'](),
-        icon: 'i-ri-admin-line',
-        isCurrent: () => page.url.pathname.startsWith('/admin'),
-        button: true,
-        size: 'sm',
-        variant: 'tertiary-no-outline',
-        class: 'text-sm! text-black! -ms-3'
-      })}
-    {/if}
 
     {#if auth.user}
       <div
