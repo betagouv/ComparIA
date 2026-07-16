@@ -1,11 +1,13 @@
 import uuid
-from typing import Annotated
+from typing import Annotated, Literal
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, String
 
 from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime
 
 UserId = Annotated[uuid.UUID, Field(foreign_key="auth_user.id")]
+
+UserRole = Literal["user", "admin"]
 
 
 class User(SQLModel, table=True):
@@ -13,7 +15,7 @@ class User(SQLModel, table=True):
 
     id: ModelId
     email: str = Field(unique=True)
-    role: str = Field(default="user")
+    role: Annotated[UserRole, Field(sa_type=String)] = "user"
     created_at: AutoDatetime
     last_seen_at: AutoDatetime
     deleted_at: OptionalDatetime = None
@@ -26,7 +28,7 @@ class User(SQLModel, table=True):
 class UserPublic(SQLModel):
     id: uuid.UUID
     email: str
-    role: str
+    role: UserRole
     created_at: str
     last_seen_at: str
     source: str

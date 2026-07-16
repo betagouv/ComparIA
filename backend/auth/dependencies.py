@@ -4,11 +4,10 @@ from fastapi import Depends, HTTPException, Request, status
 
 from backend.auth.services import _hash, get_user_from_token
 from backend.config import ANONYMOUS_SESSION_COOKIE
-from utils.database.models.auth import User
+from utils.database.models.auth import User, UserRole
 
 
-# FIXME role should be a literal, update db model
-async def optional_user(request: Request, role: str | None = None) -> User | None:
+async def optional_user(request: Request, role: UserRole | None = None) -> User | None:
     token = request.cookies.get("auth_session")
     if not token:
         return None
@@ -20,8 +19,7 @@ async def optional_user(request: Request, role: str | None = None) -> User | Non
     return user
 
 
-# FIXME role should be a literal, update db model
-async def require_user(request: Request, role: str | None = None) -> User:
+async def require_user(request: Request, role: UserRole | None = None) -> User:
     token = request.cookies.get("auth_session")
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
