@@ -20,8 +20,8 @@
 
   const navLinks: NavLink[] = $derived([
     {
-      label: m['admin.nav.personnalisation'](),
-      href: '/admin/personnalisation',
+      label: m['admin.nav.customization'](),
+      href: '/admin/customization',
       icon: 'i-ri-palette-line'
     },
     {
