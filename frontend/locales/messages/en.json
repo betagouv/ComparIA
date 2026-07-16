@@ -48,6 +48,10 @@
                     "updated": "Logo updated",
                     "resetDone": "Logo reset",
                     "hint": "PNG, JPEG, SVG or WebP, 2 MB maximum."
+                },
+                "termsContent": {
+                    "label": "Terms of use text",
+                    "hint": "If set, replaces the default content of the /terms page."
                 }
             },
             "authentification": {

@@ -1,18 +1,34 @@
-<script>
+<script lang="ts">
   import SeoHead from '$components/SEOHead.svelte'
   import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import type { PageProps } from './$types'
+
+  const { data }: PageProps = $props()
 
   const i18nData = getI18nContext()
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
+
+  const termsParagraphs = $derived(
+    data.termsContent
+      ?.split(/\n{2,}/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean)
+  )
 </script>
 
 <SeoHead title={m['seo.titles.terms']()} />
 
 <main class="py-10 lg:py-15">
   <div class="fr-container">
+    {#if termsParagraphs?.length}
+      <h1 id="terms-of-use">{m['general.tos.title']()}</h1>
+      {#each termsParagraphs as paragraph, i (i)}
+        <p>{paragraph}</p>
+      {/each}
+    {:else}
     <h1 id="terms-of-use">{m['general.tos.title']()}</h1>
 
     <h2 id="1-champ-d-application">{m['general.tos.scopeTitle']()}</h2>
@@ -122,5 +138,6 @@
         })
       )}
     </p>
+    {/if}
   </div>
 </main>

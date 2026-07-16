@@ -10,6 +10,7 @@ export interface AppSettingsPatch {
   auth_domain_allowlist?: string[] | null;
   votes_objective?: number | null;
   platform_name?: string | null;
+  terms_content?: string | null;
 }
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
@@ -17,6 +18,7 @@ export interface AppSettingsPublic {
   votes_objective: number;
   platform_name: string;
   has_custom_logo: boolean;
+  terms_content: string | null;
   updated_at: string;
   updated_by?: string | null;
 }

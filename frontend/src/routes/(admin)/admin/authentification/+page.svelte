@@ -16,7 +16,7 @@
   async function load() {
     loading = true
     try {
-      const data = await api.request<AppSettingsPublic>('/admin/settings')
+      const data = await api.request<AppSettingsPublic>('/settings')
       accessPolicy = data.auth_access_policy
       domainAllowlist = data.auth_domain_allowlist.join(', ')
     } finally {

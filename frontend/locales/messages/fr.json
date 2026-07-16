@@ -55,6 +55,10 @@
                     "updated": "Logo mis à jour",
                     "resetDone": "Logo réinitialisé",
                     "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum."
+                },
+                "termsContent": {
+                    "label": "Texte des modalités d'utilisation",
+                    "hint": "Si renseigné, remplace le texte par défaut de la page /terms."
                 }
             },
             "authentification": {

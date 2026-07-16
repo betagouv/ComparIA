@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Input } from '$components/dsfr'
+  import { Button, Input, Textarea } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
@@ -13,6 +13,7 @@
 
   let votesObjective = $state('')
   let platformName = $state('')
+  let termsContent = $state('')
   let hasCustomLogo = $state(false)
   let logoVersion = $state(0)
 
@@ -23,9 +24,10 @@
   async function load() {
     loading = true
     try {
-      const data = await api.request<AppSettingsPublic>('/admin/settings')
+      const data = await api.request<AppSettingsPublic>('/settings')
       votesObjective = String(data.votes_objective)
       platformName = data.platform_name
+      termsContent = data.terms_content ?? ''
       hasCustomLogo = data.has_custom_logo
     } finally {
       loading = false
@@ -40,7 +42,8 @@
     try {
       const patch: AppSettingsPatch = {
         votes_objective: Number(votesObjective),
-        platform_name: platformName
+        platform_name: platformName,
+        terms_content: termsContent || null
       }
       await api.request('/admin/settings', { method: 'PATCH', body: JSON.stringify(patch) })
       useToast(m['admin.settings.saved'](), 4000)
@@ -145,6 +148,16 @@
         bind:value={votesObjective}
         groupClass="mt-4!"
       />
+
+      <Textarea
+        id="settings-terms-content"
+        rows={10}
+        label={m['admin.settings.customization.termsContent.label']()}
+        help={m['admin.settings.customization.termsContent.hint']()}
+        bind:value={termsContent}
+        groupClass="mt-4!"
+      />
+
       <Button
         type="submit"
         text={saving ? m['admin.settings.saving']() : m['admin.settings.save']()}
