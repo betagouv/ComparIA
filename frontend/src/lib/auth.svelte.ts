@@ -28,6 +28,11 @@ export function setAuthContext(data: AuthCtx) {
   baseSetAuthContext(auth)
 }
 
+export function userAllowed(auth: AuthCtx, role?: AuthUser['role']) {
+  if (!role) return true
+  return auth.user?.role === role
+}
+
 export function openSignInModal(): void {
   const el = document.getElementById('fr-modal-signin')
   if (el) {
