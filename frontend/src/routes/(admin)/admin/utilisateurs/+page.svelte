@@ -1,8 +1,8 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
+  import { resolve } from '$app/paths'
+  import { Badge, Button, Icon, Link, Table } from '$components/dsfr'
   import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
-  import ConfirmPromoteAdminModal from '$components/ConfirmPromoteAdminModal.svelte'
-  import { Badge, Button, Icon, Table } from '$components/dsfr'
   import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
@@ -56,31 +56,6 @@
     }
   }
 
-  let userToPromote = $state<{ id: string; email: string } | null>(null)
-
-  function openPromoteModal(row: { id: string; email: string }) {
-    userToPromote = row
-    const el = document.getElementById('fr-modal-promote-admin')
-    if (el) {
-      // @ts-expect-error - DSFR is globally available
-      window.dsfr(el).modal.disclose()
-    }
-  }
-
-  async function confirmPromote() {
-    if (!userToPromote) return
-    try {
-      await api.request(`/admin/users/${userToPromote.id}/role`, {
-        method: 'PATCH',
-        body: JSON.stringify({ role: 'admin' })
-      })
-      useToast(`${userToPromote.email} promoted to admin`, 4000)
-      await refetch()
-    } catch (err) {
-      useToast((err as Error).message, 6000, 'error')
-    }
-  }
-
   async function cancelInvite(row: { id: string; email: string }) {
     try {
       await api.request(`/admin/users/${row.id}/invite`, { method: 'DELETE' })
@@ -106,6 +81,7 @@
   const tableRows = $derived(
     users.map((u) => ({
       ...u,
+      id: u.id!,
       created_at: new Date(u.created_at),
       search: toSearchString([u.email, u.source]),
       actions: undefined
@@ -127,7 +103,10 @@
     rows={sortedRows}
   >
     {#snippet headerRight()}
-      <Button text="Invite user" aria-controls="fr-modal-invite-user" data-fr-opened="false" />
+      <div class="gap-2 flex">
+        <Link button variant="secondary" text="Add user" href={resolve('/admin/utilisateurs/create')} />
+        <Button text="Invite user" aria-controls="fr-modal-invite-user" data-fr-opened="false" />
+      </div>
     {/snippet}
 
     {#snippet cell(row, col)}
@@ -156,18 +135,17 @@
                 <Icon icon="i-ri-mail-close-line" />
               </Button>
             {/if}
-            {#if row.role !== 'admin'}
-              <Button
-                iconOnly
-                variant="tertiary-no-outline"
-                size="sm"
-                title="Promote to admin"
-                aria-label={`Promote ${row.email} to admin`}
-                onclick={() => openPromoteModal(row)}
-              >
-                <Icon icon="i-ri-shield-star-line" />
-              </Button>
-            {/if}
+            <Link
+              button
+              iconOnly
+              variant="tertiary-no-outline"
+              size="sm"
+              title="Edit user"
+              aria-label={`Edit ${row.email}`}
+              href={resolve(`/admin/utilisateurs/${row.id}`)}
+            >
+              <Icon icon="i-ri-edit-line" />
+            </Link>
             <Button
               iconOnly
               variant="tertiary-no-outline"
@@ -192,4 +170,3 @@
 
 <InviteUserModal onSuccess={refetch} />
 <ConfirmDeleteUserModal email={userToDelete?.email ?? null} onConfirm={confirmDelete} />
-<ConfirmPromoteAdminModal email={userToPromote?.email ?? null} onConfirm={confirmPromote} />

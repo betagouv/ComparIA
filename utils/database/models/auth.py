@@ -9,13 +9,15 @@ UserId = Annotated[uuid.UUID, Field(foreign_key="auth_user.id")]
 
 UserRole = Literal["user", "admin"]
 
-
-class User(SQLModel, table=True):
-    __tablename__ = "auth_user"
-
+class UserBase(SQLModel):
     id: ModelId
     email: str = Field(unique=True)
     role: Annotated[UserRole, Field(sa_type=String)] = "user"
+
+
+class User(UserBase, table=True):
+    __tablename__ = "auth_user"
+
     created_at: AutoDatetime
     last_seen_at: AutoDatetime
     deleted_at: OptionalDatetime = None
@@ -25,10 +27,11 @@ class User(SQLModel, table=True):
     consent_logs: list["ConsentLog"] = Relationship(back_populates="user")
 
 
-class UserPublic(SQLModel):
-    id: uuid.UUID
-    email: str
-    role: UserRole
+class UserUpsert(UserBase):
+    pass
+
+
+class UserPublic(UserBase):
     created_at: str
     last_seen_at: str
     source: str
