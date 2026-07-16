@@ -6,6 +6,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import type { UsageProfileId } from '$lib/usageProfiles'
   import { RevealCard } from '.'
 
   let { data }: { data: APIRevealData } = $props()
@@ -13,6 +14,10 @@
   const locale = getLocale()
 
   const { selected, modelsData, shareB64Data } = $derived(parseAPIRevealData(data))
+  let usageProfile = $state<UsageProfileId>('discussion')
+  let impactTab = $state<'explanation' | 'equivalences'>('explanation')
+  let modelTitleHeights = $state<Record<string, number>>({})
+  const modelTitleHeight = $derived(Math.max(0, ...Object.values(modelTitleHeights)))
 
   let shareInput: HTMLInputElement
 
@@ -20,6 +25,12 @@
     shareInput.select()
     navigator.clipboard.writeText(shareInput.value)
     useToast(m['actions.copyLink.done'](), 2000)
+  }
+
+  function updateModelTitleHeight(pos: string, height: number) {
+    if (modelTitleHeights[pos] === height) return
+
+    modelTitleHeights = { ...modelTitleHeights, [pos]: height }
   }
 </script>
 
@@ -33,6 +44,12 @@
               {data}
               otherData={modelsData[index === 0 ? 1 : 0]}
               selected={selected === data.pos}
+              {usageProfile}
+              onUsageProfileChange={(profile) => (usageProfile = profile)}
+              {impactTab}
+              onImpactTabChange={(tab) => (impactTab = tab)}
+              {modelTitleHeight}
+              onModelTitleHeightChange={(height) => updateModelTitleHeight(data.pos, height)}
             />
           </div>
         {/each}

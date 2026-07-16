@@ -1,25 +1,114 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Badge, Button, Tooltip } from '$components/dsfr'
+  import Dropdown from '$components/Dropdown.svelte'
+  import { Badge, Button, Icon } from '$components/dsfr'
   import InfoCard from '$components/InfoCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import MiniCard from './MiniCard.svelte'
   import type { RevealModelData } from '$lib/chatService.svelte'
-  import { buildConsumptionSummary } from '$lib/consumptionSummary'
+  import { buildConsumptionSummary, formatLocalizedNumber } from '$lib/consumptionSummary'
+  import { buildCostComparison } from '$lib/costComparison'
   import { formatUsageCostFromEuro } from '$lib/currency'
+  import { buildEnergyEquivalences } from '$lib/energyEquivalences'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext } from '$lib/models'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
+  import { buildUsageConsumption, USAGE_PROFILES, type UsageProfileId } from '$lib/usageProfiles'
 
   let {
     data,
     otherData,
-    selected
-  }: { data: RevealModelData; otherData: RevealModelData; selected: boolean } = $props()
+    selected,
+    usageProfile,
+    onUsageProfileChange,
+    impactTab,
+    onImpactTabChange,
+    modelTitleHeight,
+    onModelTitleHeightChange
+  }: {
+    data: RevealModelData
+    otherData: RevealModelData
+    selected: boolean
+    usageProfile: UsageProfileId
+    onUsageProfileChange: (profile: UsageProfileId) => void
+    impactTab: 'explanation' | 'equivalences'
+    onImpactTabChange: (tab: 'explanation' | 'equivalences') => void
+    modelTitleHeight: number
+    onModelTitleHeightChange: (height: number) => void
+  } = $props()
+  let modelTitle = $state<HTMLDivElement>()
+
+  $effect(() => {
+    if (!modelTitle) return
+
+    const updateHeight = () => onModelTitleHeightChange(modelTitle!.getBoundingClientRect().height)
+    const observer = new ResizeObserver(updateHeight)
+    observer.observe(modelTitle)
+    updateHeight()
+
+    return () => observer.disconnect()
+  })
   const { models, commons } = getModelsContext()
   const model = $derived(models.find((llm) => llm.id === data.id)!)
   const otherModel = $derived(models.find((llm) => llm.id === otherData.id)!)
-  const consumptionSummary = $derived(buildConsumptionSummary(model, otherModel, data, otherData))
+  const usage = $derived(USAGE_PROFILES[usageProfile])
+  const usageData = $derived(
+    buildUsageConsumption(
+      usage,
+      {
+        inputTokens: data.input_tokens,
+        outputTokens: data.tokens,
+        totalTokens: data.total_tokens,
+        energyMwh: data.energy_mwh
+      },
+      model.wh_per_million_token
+    )
+  )
+  const otherUsageData = $derived(
+    buildUsageConsumption(
+      usage,
+      {
+        inputTokens: otherData.input_tokens,
+        outputTokens: otherData.tokens,
+        totalTokens: otherData.total_tokens,
+        energyMwh: otherData.energy_mwh
+      },
+      otherModel.wh_per_million_token
+    )
+  )
+  const usageLabel = $derived(m[`reveal.impacts.usage.${usageProfile}`]())
+  const usageOptions = $derived([
+    {
+      value: 'discussion' as const,
+      heading: m['reveal.impacts.usage.headingDiscussion'](),
+      label: m['reveal.impacts.usage.menuDiscussion'](),
+      description: m['reveal.impacts.usage.descriptionDiscussion']()
+    },
+    {
+      value: 'research' as const,
+      heading: m['reveal.impacts.usage.headingResearch'](),
+      label: m['reveal.impacts.usage.menuResearch'](),
+      description: m['reveal.impacts.usage.descriptionResearch']()
+    },
+    {
+      value: 'coding' as const,
+      heading: m['reveal.impacts.usage.headingCoding'](),
+      label: m['reveal.impacts.usage.menuCoding'](),
+      description: m['reveal.impacts.usage.descriptionCoding']()
+    }
+  ])
+  const selectedUsageOption = $derived(
+    usageOptions.find((option) => option.value === usageProfile)!
+  )
+  const consumptionSummary = $derived(
+    buildConsumptionSummary(
+      model,
+      otherModel,
+      { tokens: usageData.outputTokens, energy_mwh: usageData.energyMwh, usage: usageLabel },
+      { tokens: otherUsageData.outputTokens, energy_mwh: otherUsageData.energyMwh }
+    )
+  )
   const modelBadges = $derived(
     (['license', 'size', 'release'] as const).map((k) => model.badges[k]).filter((b) => !!b)
   )
@@ -35,9 +124,103 @@
   const midProps = propsToAttrs({ class: 'text-xs!' })
   const smallProps = propsToAttrs({ class: 'text-xxs!' })
   const cost = $derived(
-    (model.price_in / 1_000_000) * data.input_tokens + (model.price_out / 1_000_000) * data.tokens
+    (model.price_in / 1_000_000) * usageData.inputTokens +
+      (model.price_out / 1_000_000) * usageData.outputTokens
+  )
+  const otherCost = $derived(
+    (otherModel.price_in / 1_000_000) * otherUsageData.inputTokens +
+      (otherModel.price_out / 1_000_000) * otherUsageData.outputTokens
   )
   const formattedCost = $derived(formatUsageCostFromEuro(cost, commons.currency, getLocale()))
+  const costComparison = $derived(buildCostComparison(cost, otherCost))
+  const energyComparison = $derived(
+    buildCostComparison(usageData.energyMwh, otherUsageData.energyMwh)
+  )
+  const costComparisonText = $derived.by(() => {
+    switch (costComparison.kind) {
+      case 'more':
+        return m['reveal.impacts.cost.comparison.more']({
+          factor: formatLocalizedNumber(costComparison.factor, 1)
+        })
+      case 'less':
+        return m['reveal.impacts.cost.comparison.less']({
+          factor: formatLocalizedNumber(costComparison.factor, 1)
+        })
+      case 'similar':
+        return m['reveal.impacts.cost.comparison.similar']()
+      case 'unavailable':
+        return m['reveal.impacts.cost.comparison.unavailable']()
+    }
+  })
+  const energyComparisonText = $derived.by(() => {
+    switch (energyComparison.kind) {
+      case 'more':
+        return m['reveal.impacts.energy.comparison.more']({
+          factor: formatLocalizedNumber(energyComparison.factor, 1)
+        })
+      case 'less':
+        return m['reveal.impacts.energy.comparison.less']({
+          factor: formatLocalizedNumber(energyComparison.factor, 1)
+        })
+      case 'similar':
+        return m['reveal.impacts.energy.comparison.similar']()
+      case 'unavailable':
+        return m['reveal.impacts.energy.comparison.unavailable']()
+    }
+  })
+  const energyEquivalences = $derived(buildEnergyEquivalences(usageData.energyMwh, getLocale()))
+
+  const impactTabs = $derived([
+    { id: 'explanation' as const, label: m['reveal.impacts.how.tabs.explanation']() },
+    { id: 'equivalences' as const, label: m['reveal.impacts.how.tabs.equivalences']() }
+  ])
+  const equivalenceCards = $derived([
+    {
+      id: 'video' as const,
+      icon: 'i-ri-youtube-fill',
+      iconClass: 'text-[--red-marianne-main-472]',
+      title: m['reveal.impacts.energy.equivalences.video.title'](),
+      tooltip: m['reveal.impacts.energy.equivalences.video.tooltip'](),
+      value: energyEquivalences?.videoDuration
+    },
+    {
+      id: 'led' as const,
+      icon: 'i-ri-lightbulb-fill',
+      iconClass: 'text-[--yellow-tournesol-main-731]',
+      title: m['reveal.impacts.energy.equivalences.led.title'](),
+      tooltip: m['reveal.impacts.energy.equivalences.led.tooltip'](),
+      value: energyEquivalences?.ledDuration
+    },
+    {
+      id: 'phone' as const,
+      icon: 'i-ri-battery-charge-fill',
+      iconClass: 'text-info',
+      title: m['reveal.impacts.energy.equivalences.phone.title'](),
+      tooltip: m['reveal.impacts.energy.equivalences.phone.tooltip'](),
+      value: energyEquivalences?.phoneBatteryPercentage
+    }
+  ])
+
+  function selectTab<T extends string>(
+    event: KeyboardEvent,
+    tabIds: readonly T[],
+    currentTab: T,
+    setTab: (tab: T) => void
+  ) {
+    const currentIndex = tabIds.indexOf(currentTab)
+    let nextIndex: number | undefined
+
+    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabIds.length) % tabIds.length
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabIds.length
+    if (event.key === 'Home') nextIndex = 0
+    if (event.key === 'End') nextIndex = tabIds.length - 1
+    if (nextIndex === undefined) return
+
+    event.preventDefault()
+    const nextTab = tabIds[nextIndex]
+    setTab(nextTab)
+    document.getElementById(`${data.id}-${nextTab}-tab`)?.focus()
+  }
   const consoCards = $derived([
     {
       id: 'conso-tokens' as const,
@@ -45,120 +228,31 @@
       title: m['reveal.impacts.tokens.title'](),
       tooltip: m['reveal.impacts.tokens.tooltip'](),
       content: m['reveal.impacts.tokens.used']({
-        count: data.total_tokens,
+        count: usageData.totalTokens,
         midProps,
         smallProps
       }),
       subContent: model.context_tokens
         ? m['reveal.impacts.tokens.max']({ count: Math.floor(model.context_tokens / 1000) })
         : m['words.NA']()
-    },
-    {
-      id: 'conso-cost' as const,
-      icon: 'i-ri-coins-line',
-      title: m['reveal.impacts.cost.title'](),
-      tooltip: m['reveal.impacts.cost.tooltip'](),
-      content: formattedCost,
-      subContent: m['reveal.impacts.cost.sub']()
-    },
-    {
-      id: 'conso-energy' as const,
-      icon: 'i-ri-flashlight-fill',
-      title: m['reveal.impacts.energy.title'](),
-      tooltip: m['reveal.impacts.energy.tooltip'](),
-      content:
-        model.license.kind !== 'proprietary'
-          ? m['reveal.impacts.energy.conso']({
-              count: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
-              midProps
-            })
-          : m['reveal.impacts.energy.conso_estimated']({
-              count: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0),
-              midProps,
-              smallProps
-            })
     }
   ])
 
-  // FIXME equivalences legacy?
-  // const conso = $derived.by(() => {
-  //   const co2 = data.scaled_co2_t
-  //   return {
-  //     energy: data.energy_mwh.toFixed(data.energy_mwh < 2 ? 2 : 0)
-  //     co2: co2 < 1 ? co2.toFixed(3) : co2 < 10 ? co2.toFixed(1) : co2.toFixed(0)
-  //   }
-  // })
-  // const i18nData = getI18nContext()
-  // const equivalencesData: Record<
-  //   EquivalenceType,
-  //   { emoji: string; source: string; unit?: string; decimals?: number }
-  // > = {
-  //   paris_nyc_flights: {
-  //     emoji: '✈️',
-  //     decimals: 1,
-  //     source: 'https://impactco2.fr/outils/transport/avion-longcourrier'
-  //   },
-  //   baguette_production: {
-  //     emoji: '🥖',
-  //     unit: 'kg',
-  //     source: 'https://impactco2.fr/outils/alimentation/baguette'
-  //   },
-  //   one_year_tree_absortion: {
-  //     emoji: '🌳',
-  //     source: 'https://www.usda.gov/about-usda/news/blog/power-one-tree-very-air-we-breathe'
-  //   },
-  //   package_delivery: {
-  //     emoji: '📦',
-  //     source: 'https://impactco2.fr/outils/livraison/livraisondomicile'
-  //   },
-  //   mango_import: {
-  //     emoji: '🥭',
-  //     unit: 'kg',
-  //     source: 'https://impactco2.fr/outils/fruitsetlegumes/mangue'
-  //   },
-  //   pool_filing: { emoji: '💦', source: 'https://impactco2.fr/outils/caspratiques/piscine' }
-  // }
-
-  // let containerElem = $state<HTMLDivElement>()
-  // let scrollable = $state({ left: false, right: false })
-
-  // function checkIfScollable() {
-  //   scrollable.left = containerElem!.scrollLeft !== 0
-  //   scrollable.right =
-  //     Math.round(containerElem!.offsetWidth + containerElem!.scrollLeft) <
-  //     containerElem!.scrollWidth
-  // }
-
-  // function scrollEquivalence(direction: -1 | 1) {
-  //   const { offsetWidth, scrollLeft } = containerElem!
-  //   const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('.eq-card')).reverse()
-  //   const col = cols.find((col) => {
-  //     const offsetLeft = col.offsetLeft - direction
-  //     return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
-  //   })
-
-  //   if (!col) return
-  //   containerElem!.scrollTo({
-  //     left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
-  //   })
-  // }
-
-  // onMount(() => {
-  //   checkIfScollable()
-  // })
 </script>
-
-<!-- FIXME equivalences legacy? -->
-<!-- <svelte:window onresize={() => checkIfScollable()} {onscroll} /> -->
 
 <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex h-full flex-col">
   <div>
-    <h5 class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-center">
+    <h5
+      class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-start"
+      style="min-height: {Math.max(40, modelTitleHeight)}px"
+    >
       <AILogo logo={model.lab.logo} size="lg" alt={model.lab.name} />
-      <div><span class="font-normal">{model.lab.name}/</span>{model.name}</div>
+      <div bind:this={modelTitle} class="min-w-0 flex-1">
+        <span class="font-normal">{model.lab.name}/</span>{model.name}
+      </div>
       {#if selected}
         <div
-          class="border-primary text-primary px-3 font-bold ms-auto rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px] text-nowrap"
+          class="border-primary text-primary px-3 font-bold ms-auto shrink-0 rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px] text-nowrap"
         >
           {m['vote.yours']()}
         </div>
@@ -197,114 +291,202 @@
   </div>
 
   <div class="mt-8 cg-border rounded-sm! bg-light-grey p-3 pb-5">
-    <h6 class="mb-3! text-base! mt-auto!">
-      {m['reveal.impacts.title']()}
-      <Tooltip id="impact-{data.pos}" text={m['reveal.impacts.tooltip']()} />
+    <h6 class="text-sm! mb-1! gap-1 mt-auto! flex flex-wrap items-center text-left!">
+      <span class="text-dark-grey! font-bold whitespace-nowrap">{m['reveal.impacts.title']()}</span>
+      <Dropdown
+        id="usage-profile-{data.pos}"
+        label={m['reveal.impacts.usage.changeLabel']()}
+        closeOnSelect
+        role="menu"
+        buttonClass="border-primary text-primary py-1! px-2! rounded-full! border bg-white text-sm! text-left! font-bold inline-flex w-fit! max-w-full! items-center justify-start! gap-1 shadow-sm hover:bg-[--blue-france-975-75] focus:bg-[--blue-france-975-75]"
+        class="p-1 w-fit! max-w-full"
+      >
+        {#snippet buttonLabel()}
+          <span class="text-left!">{selectedUsageOption.heading}</span>
+          <Icon icon="i-ri-arrow-down-s-line shrink-0" size="sm" aria-hidden="true" />
+        {/snippet}
+        <ul class="m-0! p-0! list-none">
+          {#each usageOptions as option (option.value)}
+            <li>
+              <button
+                type="button"
+                role="menuitemradio"
+                aria-checked={usageProfile === option.value}
+                class="py-2! px-3! flex w-full items-center justify-between border-0 bg-transparent text-left hover:bg-[--blue-france-975-75] focus:bg-[--blue-france-975-75]"
+                onclick={() => onUsageProfileChange(option.value)}
+              >
+                <span>{option.label}</span>
+                {#if usageProfile === option.value}
+                  <Icon icon="i-ri-check-line" size="sm" aria-hidden="true" />
+                {/if}
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </Dropdown>
     </h6>
+    <p class="text-xxs! text-grey mb-3!">{selectedUsageOption.description}</p>
+    {#if usageProfile !== 'discussion'}
+      <p class="text-xxs! text-grey mb-3! -mt-2!">{m['reveal.impacts.usage.assumption']()}</p>
+    {/if}
     <div class="gap-4 flex flex-col">
       <div class="gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 grid">
         {#each consoCards as card (card.id)}
           <InfoCard {...card} id="{model.id}-{card.id}" iconClass="text-info" size="sm" />
         {/each}
+        <InfoCard
+          id="{model.id}-conso-cost"
+          icon="i-ri-coins-line"
+          title={m['reveal.impacts.cost.title']()}
+          tooltip={m['reveal.impacts.cost.tooltip']()}
+          iconClass="text-info"
+          size="sm"
+        >
+          <p class="text-base! mb-1! font-bold leading-[1.1]!">{formattedCost}</p>
+          <p class="text-xxs! text-grey mb-1!">{m['reveal.impacts.cost.sub']()}</p>
+          <div
+            class={[
+              'gap-1 text-xxs! flex items-center',
+              {
+                'text-error': costComparison.kind === 'more',
+                'text-success': costComparison.kind === 'less',
+                'text-grey':
+                  costComparison.kind === 'similar' || costComparison.kind === 'unavailable'
+              }
+            ]}
+          >
+            {#if costComparison.kind === 'more' || costComparison.kind === 'less'}
+              <Icon
+                icon="i-ri-triangle-fill"
+                size="xs"
+                class={costComparison.kind === 'less' ? 'rotate-180' : undefined}
+                aria-hidden="true"
+              />
+            {/if}
+            <span>{costComparisonText}</span>
+          </div>
+        </InfoCard>
+        <InfoCard
+          id="{model.id}-conso-energy"
+          icon="i-ri-flashlight-fill"
+          title={m['reveal.impacts.energy.title']()}
+          tooltip={`${m['reveal.impacts.energy.tooltip']()} ${m['reveal.impacts.energy.estimate']()}`}
+          iconClass="text-info"
+          size="sm"
+        >
+          <p class="text-base! mb-1! font-bold leading-[1.1]!">
+            {@html sanitize(
+              m['reveal.impacts.energy.conso']({
+                count: usageData.energyMwh.toFixed(usageData.energyMwh < 2 ? 2 : 0),
+                midProps
+              })
+            )}
+          </p>
+          <div
+            class={[
+              'gap-1 text-xxs! flex items-center',
+              {
+                'text-error': energyComparison.kind === 'more',
+                'text-success': energyComparison.kind === 'less',
+                'text-grey':
+                  energyComparison.kind === 'similar' || energyComparison.kind === 'unavailable'
+              }
+            ]}
+          >
+            {#if energyComparison.kind === 'more' || energyComparison.kind === 'less'}
+              <Icon
+                icon="i-ri-triangle-fill"
+                size="xs"
+                class={energyComparison.kind === 'less' ? 'rotate-180' : undefined}
+                aria-hidden="true"
+              />
+            {/if}
+            <span>{energyComparisonText}</span>
+          </div>
+        </InfoCard>
       </div>
 
-      <article class="cg-border bg-white p-3 flex flex-col">
-        <p class="text-xs! text-info mb-1!">{m['reveal.impacts.how.title']()}</p>
-        <p class="text-xs! mb-0!">
-          {@html sanitize(consumptionSummary.classification)}
-          <br />
-          {@html sanitize(consumptionSummary.consumption)}
-        </p>
+      <article class="cg-border bg-white">
+        <div class="px-3 pt-3">
+          <div
+            class="rounded-md p-1 gap-1 inline-flex items-center bg-[--blue-france-975-75]"
+            role="tablist"
+            aria-label={m['reveal.impacts.how.tabs.label']()}
+          >
+            {#each impactTabs as tab (tab.id)}
+              <button
+                id="{data.id}-{tab.id}-tab"
+                type="button"
+                role="tab"
+                aria-selected={impactTab === tab.id}
+                aria-controls="{data.id}-{tab.id}-panel"
+                tabindex={impactTab === tab.id ? 0 : -1}
+                class="rounded-sm px-3 py-1.5 text-xs font-bold border-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--blue-france-sun-113]"
+                class:bg-white={impactTab === tab.id}
+                class:text-primary={impactTab === tab.id}
+                class:shadow-sm={impactTab === tab.id}
+                class:text-grey={impactTab !== tab.id}
+                class:hover:bg-white={impactTab !== tab.id}
+                class:hover:text-primary={impactTab !== tab.id}
+                onclick={() => onImpactTabChange(tab.id)}
+                onkeydown={(event) =>
+                  selectTab(event, ['explanation', 'equivalences'], impactTab, onImpactTabChange)}
+                >{tab.label}</button
+              >
+            {/each}
+          </div>
+        </div>
+
+        <div
+          id="{data.id}-explanation-panel"
+          role="tabpanel"
+          aria-labelledby="{data.id}-explanation-tab"
+          hidden={impactTab !== 'explanation'}
+          class="p-3"
+        >
+          <p class="text-xs! mb-0!">
+            {@html sanitize(consumptionSummary.classification)}
+            <br />
+            {@html sanitize(consumptionSummary.consumption)}
+          </p>
+        </div>
+
+        <div
+          id="{data.id}-equivalences-panel"
+          role="tabpanel"
+          aria-labelledby="{data.id}-equivalences-tab"
+          hidden={impactTab !== 'equivalences'}
+          class="p-3"
+        >
+          {#if energyEquivalences}
+            <div class="mb-2">
+              <p class="text-xs! text-grey mb-0!">
+                {m['reveal.impacts.energy.equivalences.intro']()}
+              </p>
+            </div>
+            <div class="gap-1.5 sm:grid-cols-3 min-w-0 grid grid-cols-1">
+              {#each equivalenceCards as card (card.id)}
+                <MiniCard
+                  id="equivalence-{card.id}-{data.pos}"
+                  value={card.value ?? ''}
+                  desc={card.title}
+                  tooltip={card.tooltip}
+                  icon={card.icon}
+                  iconClass={card.iconClass}
+                  compact
+                  class="min-w-0 bg-white p-1.5!"
+                />
+              {/each}
+            </div>
+          {:else}
+            <p class="text-xs! text-grey mb-0!">
+              {m['reveal.impacts.energy.equivalences.unavailable']()}
+            </p>
+          {/if}
+        </div>
       </article>
     </div>
   </div>
-
-  <!-- FIXME equivalences legacy? -->
-  <!-- <div class="mt-6! md:mt-9! cg-border rounded-sm! bg-very-light-grey">
-    <div class="p-3 bg-light-grey">
-      <h6 class="text-base! mb-2!">
-        {m['reveal.equivalent.title']()}
-        <Tooltip id="equivalent-{data.pos}">
-          {@html sanitize(
-            m['reveal.equivalent.title_tooltip']({
-              linkProps: externalLinkProps({
-                href: i18nData.peopleUsingAIDataLink
-              })
-            })
-          )}
-        </Tooltip>
-      </h6>
-      <div class="gap-6 sm:flex-row flex flex-col items-start">
-        <p class="text-grey! md:text-[13px]! mb-0! lh-normal! text-[12px]!">
-          {m['reveal.equivalent.desc']()}
-        </p>
-
-        <MiniCard
-          id="co2-{data.pos}"
-          value={conso.co2}
-          units={m['reveal.equivalent.co2.unit']()}
-          icon="i-ri-cloudy-2-fill"
-          iconClass="text-[--grey-975-75-active]"
-          desc={m['reveal.equivalent.co2.label']()}
-          tooltip={m['reveal.equivalent.co2.tooltip']()}
-          class="bg-white xl:-mt-6 min-w-[180px]"
-        />
-      </div>
-    </div>
-
-    <div class="py-3 flex max-w-full items-center">
-      <Button
-        text={m['actions.scrollLeft']()}
-        icon="arrow-left-line"
-        iconOnly
-        variant="tertiary"
-        disabled={!scrollable.left}
-        onclick={() => scrollEquivalence(-1)}
-        class="mx-5"
-      />
-      <div
-        bind:this={containerElem}
-        onscroll={() => checkIfScollable()}
-        class="pb-3 relative flex w-full overflow-auto"
-      >
-        {#each data.equivalences as eq, i (i)}
-          <div
-            class="eq-card sm:min-w-1/2 md:min-w-1/3 lg:min-w-1/2 xl:min-w-1/3 px-2 flex min-w-full flex-col items-center"
-          >
-            <div class="mb-1 text-[20px]">
-              {equivalencesData[eq.type].emoji}
-            </div>
-
-            <strong class="text-[18px]">
-              {eq.value.toFixed(equivalencesData[eq.type].decimals ?? 0)}
-              {@html sanitize(equivalencesData[eq.type].unit ?? '')}
-            </strong>
-            <p class="mb-0! text-grey! lh-tight text-center text-[11px]!">
-              {m[`reveal.equivalent.scales.${eq.type}.unit`]()}
-              <Tooltip id="equivalent-{eq.type}-{data.pos}">
-                {@html sanitize(
-                  m[`reveal.equivalent.scales.${eq.type}.tooltip`]({
-                    linkProps: externalLinkProps({
-                      href: equivalencesData[eq.type].source
-                    })
-                  })
-                )}
-              </Tooltip>
-            </p>
-          </div>
-        {/each}
-      </div>
-      <Button
-        text={m['actions.scrollRight']()}
-        icon="arrow-right-line"
-        iconOnly
-        variant="tertiary"
-        disabled={!scrollable.right}
-        class="mx-5"
-        onclick={() => scrollEquivalence(1)}
-      />
-    </div>
-  </div> -->
 
   <div class="mt-9 text-center">
     <Button

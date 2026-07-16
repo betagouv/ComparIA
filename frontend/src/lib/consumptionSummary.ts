@@ -20,6 +20,7 @@ export interface ConsumptionSummaryModel {
 export interface ConsumptionSummaryData {
   tokens: number
   energy_mwh: number
+  usage?: string
 }
 
 export interface ConsumptionSummary {
@@ -145,6 +146,7 @@ export function buildConsumptionSummary(
   return {
     classification: buildClassification(model),
     consumption: m['reveal.impacts.summary.consumption']({
+      usage: consumption.usage ?? m['reveal.impacts.usage.discussion'](),
       tokens: formatLocalizedNumber(consumption.tokens),
       energy: formatLocalizedNumber(consumption.energy_mwh),
       comparison: buildComparisonSegment(
