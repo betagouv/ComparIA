@@ -12,6 +12,7 @@
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
+  import { getComparisonsContext } from '$lib/chatService.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
@@ -20,6 +21,7 @@
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   const auth = getAuthContext()
+  const comparisons = getComparisonsContext()
   let expanded = $state(true)
 
   const connectionBtnProps = $derived(
@@ -27,7 +29,7 @@
       ? {
           text: m['auth.settings.logout'](),
           icon: 'i-ri-logout-box-r-line',
-          onclick: () => logout(auth)
+          onclick: () => logout(auth, comparisons)
         }
       : {
           text: m['auth.discussions.signIn'](),

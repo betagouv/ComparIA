@@ -146,7 +146,7 @@ export const modeInfos: ModeInfos[] = (
 
 // COMPARISON LOGIC
 
-type ComparisonsCtx = Comparison[]
+export type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
