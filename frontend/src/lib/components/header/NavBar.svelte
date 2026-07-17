@@ -21,6 +21,21 @@
 
   const auth = getAuthContext()
   let expanded = $state(true)
+
+  const connectionBtnProps = $derived(
+    auth.user
+      ? {
+          text: m['auth.settings.logout'](),
+          icon: 'i-ri-logout-box-r-line',
+          onclick: () => logout(auth)
+        }
+      : {
+          text: m['auth.discussions.signIn'](),
+          icon: 'i-ri-login-box-line',
+          'aria-controls': 'fr-modal-signin',
+          'data-fr-opened': 'false'
+        }
+  )
 </script>
 
 {#snippet helpLink()}
@@ -93,24 +108,8 @@
         <p class="text-sm! mb-0! text-black font-bold">
           {m['auth.discussions.title']()}
         </p>
-        {#if !auth.user}
-          <p class="text-sm mb-0! text-black">
-            {m['auth.discussions.prompt']()}
-          </p>
-          <Button
-            variant="tertiary"
-            text={m['auth.discussions.signIn']()}
-            icon="user-line"
-            size="sm"
-            aria-controls="fr-modal-signin"
-            data-fr-opened="false"
-            class="mt-2! block w-full!"
-          />
-        {/if}
       </div>
-      {#if auth.user}
-        <History {mode} class="lg:overflow-y-auto" />
-      {/if}
+      <History {mode} class="lg:overflow-y-auto" />
     </div>
   {/if}
 {/snippet}
@@ -131,22 +130,24 @@
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>
 
-    {#if auth.user}
-      <div
-        class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start -mt-1 md:justify-between flex flex-col"
+    <div
+      class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start md:justify-between flex flex-col"
+    >
+      <Button
+        variant="tertiary"
+        size="sm"
+        {...connectionBtnProps}
+        icon={undefined}
+        text={undefined}
+        class={['w-full!', { '-ms-[2px]': !expanded }]}
       >
-        <Button
-          variant="tertiary-no-outline"
-          size="sm"
-          class="text-black! -ms-3"
-          onclick={() => logout(auth)}
-        >
-          <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
-            <Icon icon="i-ri-logout-box-r-line" block size={expanded ? 'sm' : 'md'} />
-            <span class={{ 'lg:sr-only': !expanded }}>{m['auth.settings.logout']()}</span>
-          </span>
-        </Button>
+        <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
+          <Icon icon={connectionBtnProps.icon} block size={expanded ? 'sm' : 'md'} />
+          <span class={{ 'lg:sr-only': !expanded }}>{connectionBtnProps.text}</span>
+        </span>
+      </Button>
 
+      {#if auth.user}
         <p
           class={[
             'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
@@ -155,8 +156,8 @@
         >
           {auth.user.email}
         </p>
-      </div>
-    {/if}
+      {/if}
+    </div>
 
     <!-- {@render helpLink()} -->
 
