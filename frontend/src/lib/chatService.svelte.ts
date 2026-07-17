@@ -203,6 +203,7 @@ export function initComparisonsContext(data: ComparisonsCtx) {
 
 export async function updateComparisonsContext(comparisons: ComparisonsCtx) {
   const data = await queryComparisons()
+  comparisons.length = 0
   comparisons.push(...data)
 }
 
