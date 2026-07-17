@@ -77,7 +77,7 @@
         },
         "revealButton": "Termina e rivela i modelli",
         "webSearch": {
-            "label": "Risultati di ricerca web correlati."
+            "label": "Risultati di ricerca web associati."
         }
     },
     "closeModal": "Chiudi la finestra popup",
@@ -167,17 +167,17 @@
                     "title": "Cosa rende compar:IA unico rispetto ad altre iniziative simili?"
                 }
             },
-            "title": "Set di dati"
+            "title": "Dataset"
         },
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto). Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello. </p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
-                    "title": "Come vengono calcolati gli indicatori ecologici?"
+                    "desc": "<p>compar:AI utilizza la metodologia sviluppata da <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologists</strong> (GenAI Impact)</a> per fornire un bilancio energetico che consente agli utenti di confrontare l'impatto ambientale di diversi modelli di IA per la stessa query. Questa trasparenza è essenziale per incoraggiare lo sviluppo e l'adozione di modelli di IA più ecocompatibili.</p><p>Ecologits applica i principi della Valutazione del Ciclo di Vita (LCA) in conformità con la norma ISO 14044 concentrandosi attualmente sull'impatto dell' <strong>inferenza</strong> (ovvero, l'utilizzo di modelli per rispondere alle query) e della <strong>produzione di schede grafiche</strong> (estrazione delle risorse, produzione e trasporto).</p><p>Il consumo energetico del modello viene stimato tenendo conto di vari parametri come le dimensioni del modello di IA utilizzato, la posizione dei server in cui vengono distribuiti i modelli e il numero di token di output. Il calcolo dell'indicatore del potenziale di riscaldamento globale espresso in CO2 equivalente deriva dalla misurazione del consumo energetico del modello.</p><p>È importante sottolineare che le metodologie per la valutazione dell'impatto ambientale dell'IA sono ancora in fase di sviluppo.</p>",
+                    "title": "Come vengono calcolati gli indicatori di impatto ambientale?"
                 },
                 "2": {
                     "desc": "<p>La posizione dei data center influisce sull'impronta di carbonio dell'IA. Se un modello viene addestrato o utilizzato in un paese fortemente dipendente dai combustibili fossili, il suo impatto ambientale sarà maggiore rispetto a un modello ospitato in un paese che utilizza principalmente energie rinnovabili.</p><p>Il metodo di analisi dell'impatto ambientale dell'IA sviluppato da <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (di GenAI Impact)</a>, incorpora dati sul mix energetico dei diversi paesi in cui si trovano i server. Ciò consente una stima più accurata e dettagliata dell'effettiva impronta carbonio dell'inferenza su diversi modelli di IA generativa.</p>",
-                    "title": "Gli indicatori ambientali tengono conto del mix energetico dei diversi paesi?"
+                    "title": "Gli indicatori di impatto ambientale tengono conto del mix energetico dei diversi paesi?"
                 },
                 "3": {
                     "desc": "<p>Gli attuali indicatori di impatto ambientale si concentrano principalmente sull'impatto dell' <strong>inferenza</strong>, ovvero sull'utilizzo di modelli di intelligenza artificiale per rispondere alle richieste. Questo approccio può dare l'illusione che l'inferenza sia meno dispendiosa in termini di energia rispetto all'addestramento del modello. Tuttavia, <strong>la realtà è più complessa.</strong> Si consideri l'analogia dell'auto:</p><ul><li>Costruire una macchina (addestramento) è un processo unico e ad alta intensità di risorse.</li> <li>Ogni viaggio in auto ( inferenza) consuma meno energia, ma questi viaggi si ripetono quotidianamente e il loro numero è potenzialmente immenso.</li></ul><p>Allo stesso modo, <strong>l'impatto cumulativo dell'inferenza, su milioni di utenti che effettuano richieste ogni giorno, può superare l'impatto dell'addestramento iniziale.</strong> Per questo motivo è fondamentale che gli strumenti di valutazione dell'impronta di carbonio dell'IA considerino <strong>l'intero ciclo di vita</strong> dei modelli, dall'addestramento all'utilizzo in produzione</p>",
@@ -203,7 +203,7 @@
             "questions": {
                 "1": {
                     "desc": "<p>Scegliamo i modelli in base alla loro popolarità, diversità e rilevanza per gli utenti. Prestiamo particolare attenzione a rendere accessibili i modelli chiamati <em>open weights</em> e quelli di diverse dimensioni.</p>",
-                    "title": "Come si scelgono i modelli da includere nello strumento di confronto?"
+                    "title": "Come si scelgono i modelli da includere nel comparatore?"
                 },
                 "2": {
                     "desc": "<p>L'inferenza, ovvero la capacità di interrogare i modelli, è gestita dal progetto. Per la maggior parte dei modelli, utilizziamo le API Open Router e Hugging Face e applichiamo una tariffazione basata su token e sull'utilizzo.</p>",
@@ -211,7 +211,7 @@
                 },
                 "3": {
                     "desc": "<p>I modelli sono ottimizzati per consumare meno risorse semplificando alcuni calcoli, pur puntando migliore qualità di risposta.</p><p>La quantizzazione è una tecnica di ottimizzazione che riduce la precisione dei numeri utilizzati per rappresentare i parametri di un modello . Ciò consente di <strong>diminuire la dimensione del modello</strong> e <strong>di accelerare i calcoli</strong>, il che risulta vantaggioso per l'inferenza su macchine con risorse limitate.</p>",
-                    "title": "\"Modello quantificato\", che cos'è?"
+                    "title": "che cos'è un \"modello quantificato\"?"
                 },
                 "4": {
                     "desc": "<p><strong>La capacità di un modello di parlare più lingue è legata alla diversità linguistica dei suoi dati di addestramento, non al paese</strong>. I modelli linguistici <strong>LLM utilizzano enormi corpus in molte lingue</strong>, ma la distribuzione delle lingue nei dati di addestramento non è uniforme. Una sovrarappresentazione dell'inglese può portare a limitazioni in altre lingue. Queste limitazioni si traducono, ad esempio, in dei <strong>anglicismi o nell'incapacità di generare contenuti in alcune lingue classificate come \"a rischio di estinzione\" dall'UNESCO</strong>.</p><p><strong>L'accuratezza e la ricchezza del vocabolario di un modello dipendono dai dati utilizzati per il suo addestramento</strong>.</p>",
@@ -233,7 +233,7 @@
                 },
                 "2": {
                     "desc": "<p>Hai mai posto la domanda \"Spiegami la mozione di censura attualmente in discussione all'Assemblea nazionale francese e cita le tue fonti\" e sei rimasto deluso dalle risposte? È normale...</p><p><strong>I modelli di IA conversazionale grezzi\" non possono rispondere a domande sulle ultime notizie.</strong> Sono addestrati su set di dati statici e non possono interagire con il web o aprire link. Non hanno la capacità di aggiornarsi in tempo reale con gli eventi che accadono in tutto il mondo. Le informazioni a cui il modello ha accesso sono limitate alla data del suo ultimo addestramento.</p><p>Di conseguenza, se si pone una domanda su un fatto di attualità recente, il modello si baserà su informazioni potenzialmente obsolete, con il rischio di fornire risposte inesatte.</p><p>Nel caso di Perplexity, Copilot o ChatGPT, i cosiddetti modelli di IA conversazionale \"grezzi\" sono combinati con altri componenti tecnologici che consentono loro di connettersi a Internet per accedere a informazioni in tempo reale. Quest'ultimi si vengono chiamati \"agenti conversazionali\".</p>",
-                    "title": "Se pongo una domanda sulle ultime notizie, il modello è in grado di rispondere?"
+                    "title": "Se pongo una domanda riguardante le ultime notizie, il modello è in grado di rispondere?"
                 },
                 "3": {
                     "desc": "<p>Se si include un URL in una richiesta, il modello conversazionale non può accedervi direttamente. I modelli linguistici elaborano il testo della richiesta, ma non sono in grado di interagire con il web o aprire link. Sono addestrati su dataset testuali fissi e le loro risposte si basano su questi dati di addestramento. Quando viene posta una domanda, i modelli utilizzano questo addestramento per generare una risposta, ma non possono accedere a nuove informazioni online.</p><p>Per analogia, si immagini uno studente sostiene un esame senza accesso a Internet. Può utilizzare le conoscenze acquisite per rispondere alle domande ma non può consultare siti web per ulteriori informazioni.</p>",
@@ -244,11 +244,12 @@
                     "title": "Perché alcuni modelli perdono rapidamente il filo della conversazione?"
                 },
                 "5": {
-                    "title": "Quali sono le migliori pratiche per fornire suggerimenti?"
+                    "desc": "<p>Il modo in cui vengono formulate le domande, o \"prompt\", influenza la coerenza della conversazione. Per ottenere i migliori risultati da un modello linguistico, è essenziale padroneggiare l'arte del <em>prompting</em>, ovvero la formulazione di domande o istruzioni. <strong>La chiarezza è fondamentale </strong>:</p><ul><li>Utilizza un linguaggio semplice e diretto, evitando domande eccessivamente lunghe o complesse. Suddividi le domande in più domande più semplici per risposte più precise.</li><li><strong>Specifica eventuali vincoli di formato necessari</strong>: se hai bisogno di una risposta in un determinato formato (elenco, tabella, riassunto, ecc ), specificalo nel prompt. Puoi anche specificare i passaggi da seguire e i criteri di qualità desiderati.</li><li><strong>Specifica il ruolo del modello</strong>: ad esempio, inizia con \"Agisci come un esperto in...\" o \"Immagina di essere un insegnante...\" per guidare il tono e la prospettiva della risposta.</li><li><strong>Contestualizza le tue domande</strong>: se necessario, fornisci esempi pertinenti per guidare il modello. </li><li><strong>Incoraggia il ragionamento</strong>: usa suggerimenti che inducono un ragionamento a catena (<em>Chain-of-Thought Prompting</em>) per chiedere al modello di elaborare il proprio ragionamento, ovvero ciò che risposte più solide.</li></ul><p>I modelli conversazionali sono sensibili alle variazioni di formulazione: un linguaggio semplice, domande brevi e la riformulazione quando è necessaria, possono aiutare a guidare il modello verso risposte pertinenti. Fai una prova e perfeziona i tuoi suggerimenti per trovare la formulazione più efficace!</p>",
+                    "title": "Quali sono le migliori pratiche per fornire dei prompt?"
                 },
                 "6": {
                     "desc": "<p>L'intelligenza artificiale conversazionale risponde direttamente formulando frasi basate su un ampio set di dati su cui è stato addestrato il modello, mentre un motore di ricerca suggerisce link e risorse che l'utente può esplorare in autonomia.</p>",
-                    "title": "Qual è la differenza tra porre una domanda a un modello di intelligenza artificiale conversazionale e fare una ricerca su Google?"
+                    "title": "Qual è la differenza tra porre una domanda a un modello di IA conversazionale e fare una ricerca su Google?"
                 }
             },
             "title": "Utilizzo"
@@ -270,7 +271,7 @@
             "sources": "Codice sorgente",
             "tos": "Termini di utilizzo"
         },
-        "writeUs": "Se riscontri un problema o hai commenti sullo strumento di confronto, non esitare a scriverci <a {formLinkProps}>tramite questo modulo</a>. Leggiamo tutti i vostri messaggi.<br />Grazie!"
+        "writeUs": "Se riscontri un problema o hai commenti sulla Chatbot arena, non esitare a scriverci <a {formLinkProps}>tramite questo modulo</a>. Leggiamo tutti i vostri messaggi.<br />Grazie!"
     },
     "general": {
         "a11y": {
@@ -284,7 +285,7 @@
             "remedyAdvocate": "Scrivi un messaggio al <a {linkProps}>Difensore dei diritti</a>",
             "remedyAdvocateAdress": "Invia una lettera per posta (gratuitamente, senza francobolli): Difensore dei Diritti - Risposta libera 71120 75342 Parigi CEDEX 07",
             "remedyDelegateAdvocate": "Contatta il rappresentante del <a {linkProps}>Difensore dei diritti nella tua regione</a>",
-            "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato al gestore del sito web un problema di accessibilità che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
+            "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato un problema di accessibilità, al gestore del sito web, che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
             "remedyList": "Puoi :",
             "remedyTitle": "Procedura di ricorso",
             "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
@@ -300,9 +301,9 @@
             "directorDesc": "Il signor Romain Delassus, responsabile del dipartimento digitale presso il Ministero della Cultura",
             "directorTitle": "Direttore della pubblicazione",
             "editorDesc": "Questo sito web è pubblicato dal Ministero Francese della Cultura, 182, rue Saint-Honoré 75001 Parigi",
-            "editorTitle": "Redattore",
+            "editorTitle": "Editore",
             "hostingDesc": "Questo sito è ospitato da OVH SAS (<a {linkProps}>https://www.ovh.com</a>) la cui sede legale si trova in 2 rue Kellermann - 59100 Roubaix - Francia.",
-            "hostingTitle": "Hosting di siti web",
+            "hostingTitle": "Hosting del sito",
             "reportA11y": "Se riscontri un problema di accessibilità che ti impedisce di accedere a contenuti o funzionalità del sito, ti invitiamo a comunicarcelo.",
             "reportA11yDesc": "Per saperne di più sulla politica statale in materia di accessibilità digitale: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numeriche</a>",
             "reportDesc": "Se non ricevi una risposta tempestiva da parte nostra, hai il diritto di inviare i tuoi reclami o una procedura di ricorso al Difensore dei diritti.",
@@ -326,7 +327,7 @@
             "dataAccessTitle": "Contribuisco ad arricchire i vostri dati, posso accedervi?",
             "dataExtraCountry": "Paese destinatario: Francia",
             "dataExtraHost": "Subappaltatore: OVH",
-            "dataExtraTitle": "Chi ci aiuta a elaborare i dati?",
+            "dataExtraTitle": "Chi ci aiuta ad elaborare i dati?",
             "dataExtraWarranty": "Garanzie: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
             "dataExtraWhat": "Processo eseguito: Hosting",
             "dataRespDesc": "Il dipartimento digitale del Ministero Francese della Cultura è responsabile del trattamento dei vostri dati personali.",
@@ -345,17 +346,17 @@
             "tallyData": "Quando compili uno di questi moduli, i dati che inserisci vengono trasmessi e ospitati da Tally (Tally BV, Belgio). Tally si impegna a non utilizzare i tuoi dati per scopi commerciali e a rispettare il GDPR. Per ulteriori informazioni, consulta l'Informativa sulla privacy di Tally <a {tallyPrivacyLinkProps}>Privacy Policy</a>.",
             "tallyDesc": "Questo sito utilizza <a {tallyLinkProps}>Tally</a>, un servizio online per la creazione di moduli, per due funzionalità:",
             "tallyFeedback": "Il modulo \"La tua opinione\" ci permette di raccogliere il tuo feedback sul servizio",
-            "tallyNewsletter": "Il modulo di iscrizione alla newsletter (newsletter) compar:IA",
+            "tallyNewsletter": "Il modulo di iscrizione alla newsletter compar:IA",
             "tallyTitle": "Moduli Tally",
             "title": "Politica sulla riservatezza"
         },
         "rgesn": {
             "1": {
                 "1": "Il sito web compar:IA offre un accesso facile e gratuito a un'ampia varietà di modelli di intelligenza artificiale conversazionale, sensibilizzando così il pubblico sulle diverse sfide dell'IA generativa: diversità, pregiudizi e impatto ambientale. Inoltre, gli insiemi di dati relativi a domande e preferenze raccolti sono condivisi come open source con licenza MIT/Etalab 2.0.",
-                "2": "Gli utenti target del servizio Compar:IA sono stati identificati attraverso interviste agli utenti e una fase preliminare di analisi dei bisogni.",
+                "2": "Gli utenti target del servizio Compar:IA sono stati identificati attraverso interviste fatte agli utenti ed attraverso una fase preliminare di analisi dei bisogni.",
                 "3": "Pertanto, tutti i cittadini sono interessati in quanto potenziali utenti, ma in particolare insegnanti, alunni, studenti, mediatori digitali, formatori di intelligenza artificiale, nonché ricercatori (informatica, intelligenza artificiale, scienze umane e sociali) e aziende interessate ad analizzare o utilizzare gli insiemi di dati condivisi in open source. Di conseguenza, il servizio digitale soddisfa le loro esigenze attraverso le seguenti caratteristiche: testare e confrontare modelli gratuitamente e utilizzare dati open source condivisi.",
                 "4": "Il servizio compar:IA si inserisce in un approccio di ecodesign volto a ridurre l'impatto ambientale. A tal fine, la presente dichiarazione è stata redatta nell'ambito dell'attuazione del Quadro generale di ecodesign per i servizi digitali (RGESN, versione 2024). Il RGESN, elaborato da Arcep e Arcom in collaborazione con ADEME, DINUM, CNIL e Inria, è disponibile sul <a {linkProps}>sito web di Arcep</a>.",
-                "title": "Scopo di questo servizio"
+                "title": "Obiettivo di questo servizio"
             },
             "2": {
                 "1": "L'ecodesign dei servizi digitali è un approccio volto a ridurre e limitare l'impatto ambientale di un servizio fin dalla fase di progettazione e per tutto il suo ciclo di vita.",
@@ -389,7 +390,7 @@
                 "title": "Strategia attuata e obiettivi relativi alla riduzione o limitazione degli impatti ambientali"
             },
             "4": {
-                "1": "L'autovalutazione, condotta tra maggio e ottobre 2025 dal team di prodotto (due persone si sono occupate della revisione e della convalida di tutti i criteri), ha riguardato tutte le pagine del sito. Gli strumenti utilizzati per valutare alcuni indicatori tecnici sono stati lo strumento di ispezione \"rete\" degli strumenti per sviluppatori del browser, l'estensione <a {greenitLinkProps}>Green IT Analysis</a> e lo strumento <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "1": "L'autodiagnosi, condotta tra maggio e ottobre 2025 dal team di prodotto (due persone si sono occupate della revisione e della convalida di tutti i criteri), ha riguardato tutte le pagine del sito. Gli strumenti utilizzati per valutare alcuni indicatori tecnici sono stati lo strumento di ispezione \"network\" degli strumenti per sviluppatori del browser, l'estensione <a {greenitLinkProps}>Green IT Analysis</a> e lo strumento <a {ecoindexLinkProps}>EcoIndex</a>.",
                 "title": "Diagnosi RGESN"
             },
             "5": {
@@ -414,11 +415,11 @@
                     "date": "10 dicembre 2025",
                     "title": "Tabella di audit RGESN"
                 },
-                "title": "Punteggio nell'implementazione del quadro"
+                "title": "Punteggio nell'implementazione del framework"
             },
             "6": {
                 "1": "Il sito è stato progettato per essere accessibile da qualsiasi dispositivo mobile prodotto a partire dal 2017.",
-                "2": "Connessione minima richiesta per un accesso e un utilizzo agevoli del servizio: 3G su rete mobile e 512 Kbps su connessione fissa.",
+                "2": "Connessione minima richiesta per un accesso e un utilizzo agevole del servizio: 3G su rete mobile e 512 Kbps su connessione fissa.",
                 "3": "Il sito è progettato per adattarsi a diverse dimensioni dello schermo (larghezza minima 320 pixel).",
                 "4": "Il sito non è accessibile tramite il browser Internet Explorer. ",
                 "title": "Requisiti minimi per accedere al sito"
@@ -433,7 +434,7 @@
                 },
                 "4": "Converti le illustrazioni in WebP, AVIF, JPEG XL o in un formato immagine più efficiente per le immagini raster (criterio 5.1).",
                 "5": "Consentire la possibilità di interrompere l'inferenza (caricamento delle risposte) durante il confronto dei modelli.",
-                "6": "I punteggi dell'analisi EcoIndex dimostrano una significativa discrepanza nelle misurazioni dell'impatto, con alcune pagine che ricevono punteggi fino a E o F (peso della pagina, complessità e numero di richieste relativamente elevati); la sfida ora è comprendere questi risultati in modo più preciso caso per caso, nonostante le buone pratiche implementate, al fine di individuare ulteriori miglioramenti.",
+                "6": "I punteggi dell'analisi EcoIndex dimostrano una discrepanza significativa nelle misurazioni dell'impatto, con alcune pagine che ricevono punteggi fino a E o F (peso della pagina, complessità e numero di richieste relativamente elevati); la sfida ora è comprendere questi risultati in modo più preciso, caso per caso, nonostante le buone pratiche implementate, al fine di individuare ulteriori miglioramenti.",
                 "desc": "Sono stati individuati o sono tuttora in fase di individuazione diversi miglioramenti, tra cui:",
                 "title": "Miglioramenti individuati"
             },
@@ -472,7 +473,7 @@
             "featuresVoteMore": "Condividere, rendere disponibili e riutilizzare i dataset derivanti dalla raccolta delle preferenze degli utenti.",
             "licenceCode": "Il codice sorgente della piattaforma è aperto e disponibile qui: <a {linkProps}>https://github.com/betagouv/languia</a>",
             "licenceLLM": "I LLM utilizzati per alimentare i servizi sono regolati dalle seguenti licenze:",
-            "licenceLLMEvolution": "L'elenco dei modelli linguistici integrati nella piattaforma è soggetto a modifiche nel tempo e viene aggiornato a ogni modifica.",
+            "licenceLLMEvolution": "L'elenco dei modelli linguistici integrati nella piattaforma è soggetto a modifiche nel tempo e viene aggiornato ad ogni modifica.",
             "licenceLLMLicence": "Licenza",
             "licenceLLMModel": "Modello di intelligenza artificiale conversazionale",
             "licenceLLMNoticeLink": "Link alle licenze del modello",
@@ -480,7 +481,7 @@
             "licenceTitle": "6. Codice e licenze",
             "respEditor": "In generale, l'editore declina ogni responsabilità in caso di utilizzo non conforme alle condizioni d'uso.",
             "respLegal": "La piattaforma non è destinata a essere utilizzata per generare contenuti illegali o contrari all'ordine pubblico e più in generale qualsiasi generazione di contenuti che contravvenga al quadro giuridico vigente.",
-            "respLegalMore": "A tale proposito, l'utente si impegna a non inserire nel prompt contenuti o informazioni contrari alle disposizioni legali e regolamentari vigenti.",
+            "respLegalMore": "A tale proposito, l'utente si impegna a non inserire nel prompt contenuti o informazioni contrari alle disposizioni legali e ai regolamentari vigenti.",
             "respPrivacy": "Poiché i dati inseriti dall'utente sulla piattaforma sono destinati a essere resi pubblici, l'utente si impegna a non trasmettere alcuna informazione che possa identificarlo o identificare terzi.",
             "respPrivacyMore": "In ogni caso, l'editore si impegna ad adottare misure per garantire, per quanto possibile, l'anonimizzazione dei dati dei dialoghi prima di renderli disponibili. Qualora, nonostante gli sforzi dell'editore, nei dataset venissero pubblicati dati sensibili, è possibile segnalarlo immediatamente tramite questo modulo: [https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ](https://adtk8x51mbw.eu.typeform.com/to/B49aloXZ).",
             "respTitle": "5. Responsabilità",
@@ -680,7 +681,7 @@
             "DeepSeek R1 0528": {
                 "desc": "<p>Un modello molto ampio, specializzato in compiti matematici, scientifici e di programmazione. Simula un passaggio di ragionamento prima di generare la sua risposta, con l'aggiornamento di maggio 2025, ha guadagnato in profondità di analisi e precisione grazie all'ottimizzazione post-addestramento.</p>",
                 "fyi": "<p>Questo modello si basa su un'architettura Mixture of Experts (MoE) con 61 livelli. Possiede un totale di 671 miliardi di parametri, tra cui 37 miliardi attivati per token. L'addestramento ha utilizzato l'apprendimento per rinforzo su larga scala, con diverse fasi di adattamento SFT (<em>supervised fine-tuning</em> : un processo supervisionato in cui il modello apprende da esempi di risposte corrette) e dati di avvio. La sua ultima versione (DeepSeek-R1-0528) migliora significativamente le sue capacità di ragionamento, riducendo il tasso di allucinazione e aumentando l'efficienza nella programmazione, nella logica e nella function calling. Nel test AIME 2025, il suo punteggio è aumentato dal 70% all'87,5%, avvicinandolo a modelli come o3 e Gemini 2.5 Pro.</p>",
-                "size_desc": "<p>Con 671 miliardi di parametri, DeepSeek R1 è un modello molto grande che richiede diverse schede grafiche potenti per funzionare. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Tuttavia, l'architettura Mixture of Experts (MoE) attiva solo una parte dei parametri con ogni token, limitando così il suo impatto energetico. La finestra di contesto raggiunge i 163.840 token, il che è adatto all'analisi di documenti lunghi.</p>"
+                "size_desc": "<p>Con 671 miliardi di parametri, DeepSeek R1 è un modello molto grande che richiede diverse schede grafiche potenti per funzionare. I modelli di ragionamento di questo tipo impiegano più tempo per produrre una risposta, il che aumenta il consumo energetico. Tuttavia, l'architettura Mixture of Experts (MoE) attiva solo una parte dei parametri con ogni token, limitando così il suo impatto energetico. La finestra di contesto raggiunge 163.840 token, il che è adatto all'analisi di documenti lunghi.</p>"
             },
             "DeepSeek R1 Llama 70B": {
                 "desc": "<p>Modello di grandi dimensioni basato su Meta Llama 3.3 70B, riaddestrato con esempi di ragionamento presi dal modello DeepSeek R1. Offre buone capacità matematiche e di programmazione.</p>",
@@ -773,7 +774,7 @@
                 "size_desc": "<p>Il modello Nano è il più compatto della famiglia GPT-5 (presumibilmente di piccole dimensioni). Viene selezionato dal sistema di routing per le richieste che richiedono latenza estremamente bassa e risposte istantanee. La sua architettura è probabilmente basata su una \"Mixture of Experts\" (MoE), che consente una migliore efficienza energetica e prestazioni elevate, anche per le query che richiedono una risposta rapida.</p>"
             },
             "GPT 5.1": {
-                "desc": "<p>Seconda iterazione di GPT 5, con uno stile ritenuto (dall'editore) più naturale e risultati migliori nei compiti agentici e di programmazione. Il modello ha la caratteristica unica di adattare il tempo di ragionamento in base alla difficoltà.</p>",
+                "desc": "<p>Seconda iterazione di GPT 5, con uno stile ritenuto (dall'editore) più naturale e risultati migliori nei compiti agentici e di programmazione . Il modello ha la caratteristica unica di adattare il tempo di ragionamento in base alla difficoltà.</p>",
                 "fyi": "<p>L'arrivo di questa nuova iterazione introduce il routing automatico tra due modalità. Per le richieste semplici, il modello sceglie una risposta rapida. Per le attività più complesse, passa a una modalità che richiede un ragionamento prima di rispondere. Questa logica evita di sprecare tempo con richieste semplici, mantenendo al contempo la necessaria profondità quando necessario.</p>\n<p>La prima versione della famiglia GPT 5 ha suscitato molte reazioni negative riguardo al suo stile di scrittura. Molti utenti hanno trovato il modello meno cordiale rispetto a GPT 4o. Questa iterazione mira a tornare a uno stile più cordiale.</p>\n<p>Questa nuova versione segna anche un progresso nella programmazione e nella matematica, come confermato da benchmark quali SWE Bench per la programmazione e AIME per le competenze matematiche.</p>",
                 "size_desc": "<p>Le dimensioni del modello alla base del sistema GPT-5.1 non sono note. L'architettura è probabilmente basata su una \"Mixture of Experts\" (MoE), il che significa che solo un insieme di parametri viene attivato per ogni richiesta. Ciò consente una maggiore efficienza energetica e prestazioni elevate. Le stime disponibili sulle dimensioni del modello si basano su informazioni pubblicamente disponibili e indicatori indiretti come i costi di inferenza e la latenza di risposta.</p>"
             },
@@ -889,7 +890,7 @@
             },
             "Gemma 2 9B": {
                 "desc": "<p>Il fratello minore della famiglia Gemma 2, questo modello, lanciato a giugno 2024, è addestrato a rispondere a istruzioni specifiche, elaborare richieste complesse e offrire soluzioni creative.</p>",
-                "fyi": "<p>Il fratello minore della famiglia Gemma 2, questo modello, lanciato a giugno 2024, è addestrato a rispondere a istruzioni specifiche, elaborare richieste complesse e offrire soluzioni creative.</p>",
+                "fyi": "<p>Il fratello minore della famiglia Gemma 2, questo modello, rilasciato nel giugno 2024, è addestrato a rispondere a istruzioni specifiche, elaborare richieste complesse e offrire soluzioni creative.</p>",
                 "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
             },
             "Gemma 3 12B": {
@@ -1119,7 +1120,7 @@
             },
             "Mistral Small 3.2 24B": {
                 "desc": "<p>Mistral Small 3.2 24B Instruct è una versione migliorata di Mistral Small 3.1 (marzo 2025), dotata di 24 miliardi di parametri e funzionalità multimodali avanzate.</p>",
-                "fyi": "<p>Mistral Small 3.1 24B Instruct è un modello multimodale che offre prestazioni all'avanguardia in attività di ragionamento basate su testo e visione , tra cui analisi di immagini, programmazione, ragionamento matematico e supporto multilingue per decine di lingue.</p>",
+                "fyi": "<p>Mistral Small 3.1 24B Instruct è un modello multimodale che offre prestazioni all'avanguardia nelle attività di ragionamento basate su testo e visione , tra cui analisi di immagini, programmazione, ragionamento matematico e supporto multilingue per decine di lingue.</p>",
                 "size_desc": "<p>I modelli di medie dimensioni offrono un buon equilibrio tra complessità, costi e prestazioni: richiedono molte meno risorse rispetto ai modelli di grandi dimensioni pur essendo in grado di gestire attività complesse come l'analisi del sentiment o il ragionamento.</p>"
             },
             "Mistral Small 4": {
@@ -1284,7 +1285,7 @@
             },
             "Yi-1.5 9B": {
                 "desc": "<p>Yi 1.5 è un modello dell'azienda cinese 01-ai, specializzato in programmazione, matematica, ragionamento, esecuzione di istruzioni e dotato di una solida comprensione del linguaggio.</p>",
-                "fyi": "<p>Yi 1.5 è un modello dell'azienda cinese 01-ai, specializzato in programmazione, matematica, ragionamento, esecuzione di istruzioni e dotato di una solida comprensione del linguaggio.</p>",
+                "fyi": "<p>Yi 1.5 è un modello dell'azienda cinese 01-ai, specializzato in programmazione, calcoli matematici, ragionamento, esecuzione di istruzioni e dotato di una solida comprensione del linguaggio.</p>",
                 "size_desc": "<p>Un modello di piccole dimensioni è meno complesso e richiede meno risorse rispetto a modelli più grandi, pur offrendo prestazioni sufficienti per diverse attività (riassunto, traduzione, classificazione del testo...)</p>"
             },
             "o3-mini": {
@@ -1347,7 +1348,7 @@
         },
         "faq": {
             "discover": "Scopri le altre domande",
-            "title": "Le domande più frequenti"
+            "title": "Le tue domande più frequenti"
         },
         "intro": {
             "desc": "Avvia una conversazione alla cieca con due intelligenze artificiali e valuta le loro risposte",
@@ -1376,7 +1377,7 @@
         },
         "origin": {
             "project": {
-                "desc": "Il comparatore è stato progettato e sviluppato nell'ambito di una start-up statale supportata dal Ministero della Cultura e integrato nel programma <a {linkProps}>Beta.gouv.fr</a> della Direzione Interministeriale per gli Affari Digitali (DINUM), che aiuta le amministrazioni pubbliche francesi a creare servizi digitali utili, semplici e facili da usare.",
+                "desc": "Il comparatore è stato progettato e sviluppato nell'ambito di una start-up statale supportata dal Ministero della Cultura e integrato nel programma <a {linkProps}>Beta.gouv.fr</a> della Direzione Interministeriale per gli Affari Digitali (DINUM), che aiuta le amministrazioni pubbliche francesi a creare servizi digitali utili, semplici e facili da utilizzare.",
                 "title": "Chi c'è dietro il progetto?"
             },
             "team": {
@@ -1413,7 +1414,7 @@
                 "title": "Misurare l'impronta ecologica delle domande poste all'IA"
             },
             "test": {
-                "alt": "Test",
+                "alt": "Testare",
                 "desc": "Prova diversi modelli, proprietari o meno, in piccole e grandi dimensioni...",
                 "title": "Testare le più recenti IA dell'ecosistema, tutto in un unico luogo"
             },
@@ -1453,7 +1454,7 @@
                 "subTitle": "Non è possibile riutilizzarli per addestrare altri modelli",
                 "title": "Riutilizzo dei risultati generati"
             },
-            "title": "Termini di utilizzo",
+            "title": "Termini d'uso",
             "types": {
                 "allowed": "Consentito",
                 "conditions": "Soggetto a condizioni",
@@ -1541,7 +1542,7 @@
         },
         "parameters": "{numero} mds dei parametri",
         "ram": "{min} a {max} GB",
-        "release": "Uscita {data}",
+        "release": "Uscita {date}",
         "size": {
             "count": {
                 "L": "da 100 a 400 miliardi",
@@ -1598,7 +1599,7 @@
                     "people": {
                         "aurelien": {
                             "date": "Da giugno 2024",
-                            "job": "Progettista di prodotto UX/UI"
+                            "job": "Designer del prodotto UX/UI"
                         },
                         "elie": {
                             "date": "Da novembre 2025",
@@ -1690,7 +1691,8 @@
                     "items": {
                         "1": {
                             "date": "Giugno-settembre 2024",
-                            "desc": "Sviluppo delle prime funzionalità del comparatore e integrazione del feedback dei primi beta tester."
+                            "desc": "Sviluppo delle prime funzionalità del comparatore e integrazione del feedback dei primi beta tester.",
+                            "title": "Progettazione del prodotto minimo valido"
                         },
                         "2": {
                             "date": "Ottobre 2024",
@@ -1787,12 +1789,13 @@
                 },
                 "datasets": {
                     "a": "L'allineamento utilizza dati molto specifici, creati appositamente per insegnare al modello come comportarsi \"correttamente\".",
-                    "b": "I <strong>dati di preferenza</strong> costituiscono una tipologia particolare di dati di allineamento, insieme ai </strong>dati di dimostrazione</strong> (esempi di conversazioni tra gli umani e assistenti IA, redatti da annotatori esperti secondo precise linee guida di tono e stile), ai <strong>dati di sicurezza</strong> (esempi specifici che insegnano al modello a evitare contenuti pericolosi mostrando come rifiutare richieste problematiche) o ai <strong>dati specialistici</strong> che riguardano ambiti specifici (medicina, diritto , istruzione...).",
+                    "b": "I <strong>dati di preferenza</strong> costituiscono una tipologia particolare di dati di allineamento, insieme ai <strong>dati di dimostrazione</strong> (esempi di conversazioni tra gli umani e assistenti IA, redatti da annotatori esperti secondo precise linee guida di tono e stile), ai <strong>dati di sicurezza</strong> (esempi specifici che insegnano al modello a evitare contenuti pericolosi mostrando come rifiutare richieste problematiche) o ai <strong>dati specialistici</strong> che riguardano ambiti specifici (medicina, diritto , istruzione...).",
                     "c": "I dati sulle preferenze presentano molteplici risposte possibili alla stessa domanda, classificate in base alla qualità da valutatori umani: gli utenti indicano quale risposta è la migliore secondo determinati criteri, come pertinenza, utilità e pericolosità. Una volta raccolti, questi dataset vengono utilizzati per addestrare modelli, adattandoli alle preferenze espresse dagli utenti.",
                     "title": "Dataset specifici"
                 },
                 "desc": "Allineamento: una tecnica di riduzione dei pregiudizi basata sulla raccolta delle preferenze degli utenti",
                 "diversity": {
+                    "a": "Per riflettere la diversità di culture e lingue nei risultati generati dai modelli, <strong>i dataset di allineamento devono includere una varietà di lingue</strong> dei contesti di esempi tratti da attività comuni degli utenti. La diversificazione dei dati di allineamento migliora in definitiva le prestazioni del modello in due modi:",
                     "b": "Da un lato, questo <strong>riduce i pregiudizi culturali</strong> impedendo che un'unica prospettiva, spesso anglosassone, domini le risposte dell'IA. Il modello impara quindi a riconoscere che esistono diversi modi validi di affrontare la stessa domanda a seconda del contesto culturale.",
                     "c": "D'altro canto, questa esposizione alla diversità di lingue e culture favorisce l'adattamento delle risposte a contesti specifici: un utente francese riceverà consigli adattati al sistema francese, mentre un utente danese otterrà informazioni corrispondenti al proprio contesto nazionale.",
                     "d": "Il risultato è un modello di IA conversazionale più inclusivo, in grado di tenere conto delle diverse culture.",
@@ -1800,6 +1803,7 @@
                 },
                 "english": {
                     "a": "La produzione di dati sulle preferenze è costosa perché <strong>richiede manodopera umana specializzata per ogni singolo esempio</strong>. Piattaforme come https://chat.lmsys.org/ consentono la creazione di questi dataset sulle preferenze ma pochi utenti li utilizzano nella propria lingua madre.",
+                    "b": "I set di dati sulle preferenze linguistiche sono rari, se non inesistenti, nelle lingue europee. Ad esempio, la percentuale di domande poste in francese nel dataset LMSYS è inferiore all'1%.",
                     "c": "comparIA è un esempio di dispositivo che consente la raccolta di conversazioni in più lingue, comprese le referenze culturali specifiche di ogni regione o paese: attività quotidiane, tradizioni culinarie locali, sistemi educativi, riferimenti storici o letterari, ecc.",
                     "title": "Pochi dati sulle preferenze nelle lingue europee"
                 },
@@ -1815,7 +1819,8 @@
                     "title": "I dati di addestramento sono perlopiù in inglese"
                 },
                 "stereotypes": {
-                    "desc": "I sistemi di IA conversazionale danno l'impressione di parlare tutte le lingue, ma i risultati che generano sono talvolta stereotipati o discriminatori."
+                    "desc": "I sistemi di IA conversazionale danno l'impressione di parlare tutte le lingue, ma i risultati che generano sono talvolta stereotipati o discriminatori.",
+                    "title": "Risposte stereotipate"
                 }
             },
             "tabLabel": "Il problema iniziale",
@@ -1917,6 +1922,7 @@
                 "winrate": {
                     "def": "<strong>Definizione</strong>:Un sistema di classificazione empirico per i modelli basato sulla percentuale di partite vinte da un modello rispetto a tutti gli altri modelli.",
                     "list": {
+                        "1": "<strong>Distorsione del numero di partite</strong>: un modello che ha vinto tre \"partite\" su tre mostra un tasso di vittoria del 100%, ma questo punteggio non è molto significativo in quanto basato su pochissimi dati.",
                         "2": "<strong>Nessuna considerazione della difficoltà della partita</strong> : battere un modello \"principiante\" o un modello \"esperto\" ha lo stesso valore. Le percentuali di vittoria sono inique perché non tengono conto della difficoltà della partita.",
                         "3": "<strong>Stagnazione</strong>: Nel lungo periodo, molti buoni modelli finiscono per avere un tasso di vittoria intorno al 50% perché si confrontano con modelli del loro stesso livello, rendendo la classifica meno discriminante."
                     },
@@ -1926,6 +1932,7 @@
             "style": {
                 "coef": {
                     "footnote": "La lunghezza e gli indicatori markdown sono correlati: questi coefficienti vanno letti insieme e non come effetti indipendenti presi isolatamente.",
+                    "hint": "Coefficienti di regressione stimati su tutti i voti. Un valore positivo indica che questo linea di presentazione è associata ad una maggiore probabilità di vittoria, una volta presa in considerazione la forza del modello. Questa è precisamente la parte della classifica che il controllo dello stile elimina.",
                     "title": "Effetto misurato della presentazione"
                 },
                 "desc": {
@@ -1945,11 +1952,12 @@
         },
         "no_data": "La classifica al momento non è disponibile o è in fase di calcolo.",
         "preferences": {
-            "desc": "Quando voti, puoi categorizzare la tua preferenza utilizzando diverse categorie positive e negative. Confronta la loro distribuzione da un modello all'altro.",
+            "desc": "Quando esprimi il tuo voto, puoi categorizzare la tua preferenza utilizzando diverse categorie positive e negative. Confronta la loro distribuzione da un modello all'altro.",
             "modal": {
                 "cta": "Che cos'è una preferenza?",
                 "title": "Preferenze positive e negative"
             },
+            "tabLabel": "Fous sulle preferenze",
             "table": {
                 "cols": {
                     "clear_formatting": "Formattazione<br> chiara",
@@ -1977,7 +1985,7 @@
             "tabLabel": "Classifica"
         },
         "styleControl": {
-            "help": "Rimuove l'effetto della formattazione (lunghezza della risposta, titoli, grassetto, elenchi) dalla valutazione, in modo che il punteggio rifletta il contenuto piuttosto che la presentazione. Attivato per impostazione predefinita. Dettagli nella scheda Metodologia.",
+            "help": "Rimuove l'effetto della formattazione (lunghezza della risposta, titoli, grassetto, elenchi) dalla classifica, in modo che il punteggio rifletta il contenuto piuttosto che la presentazione. Attivato per impostazione predefinita. Dettagli nella scheda Metodologia.",
             "label": "Controllo dello stile"
         },
         "table": {
@@ -2022,7 +2030,7 @@
             "desc": "Se tutti i francesi che utilizzano l'IA generativa (48%) avessero avuto questa discussione, ciò rappresenterebbe:",
             "scales": {
                 "baguette_production": {
-                    "tooltip": "Dati calcolati in base all'impronta di carbonio della produzione tradizionale di baguette. (fonte <a {linkProps}>ADEME</a>)",
+                    "tooltip": "Dati calcolati in base all'impronta carbonio della produzione di baguette. (fonte <a {linkProps}>ADEME</a>)",
                     "unit": "Baguette prodotte"
                 },
                 "mango_import": {
@@ -2031,7 +2039,7 @@
                 },
                 "one_year_tree_absortion": {
                     "tooltip": "Stima basata su una media: un albero maturo assorbe circa ~22 kg CO₂/anno (≈48 lb). Questo risultato è un ordine di grandezza; varia a seconda della specie, dell'età, del clima e del tipo di terreno. (Source <a {linkProps}>USDA</a>)",
-                    "unit": "Alberi in grado di assorbire CO2 per 1 anno"
+                    "unit": "Alberi che sono grado di assorbire CO2 per 1 anno"
                 },
                 "package_delivery": {
                     "tooltip": "Dati calcolati in base all'impronta di carbonio delle consegne a domicilio di pacchi da 1 kg. (fonte <a {linkProps}>ADEME</a>)",
@@ -2052,7 +2060,7 @@
         "feedback": {
             "description": "Aiuta a promuovere compar:IA condividendo i modelli di IA con cui hai interagito! Tramite questo link saranno visibili solo i nomi e l'impatto energetico della discussione, senza accesso ai messaggi scambiati.",
             "example": "Esempio di condivisione dei risultati",
-            "moreOnVotes": "Scopri di più sul voto",
+            "moreOnVotes": "Scopri di più sui voti",
             "shareResult": "Condividi il tuo risultato"
         },
         "impacts": {
@@ -2104,6 +2112,7 @@
             "problem": "Il problema iniziale",
             "product": "Chi siamo",
             "ranking": "Classifica",
+            "rgesn": "Dichiarazione di ecodesign",
             "share": "I miei risultati"
         }
     },
@@ -2112,6 +2121,7 @@
             "negative": {
                 "comment": "Per favore, specifica cosa non ti è piaciuto…",
                 "incorrect": "Non corretto",
+                "instructions_not_followed": "Istruzioni non seguite",
                 "question": "Perché questa risposta non è adeguata?",
                 "superficial": "Superficiale"
             },
@@ -2147,7 +2157,7 @@
             "desc": "Le conversazioni e le preferenze che esprimi su compar:AI vengono utilizzate in forma anonima per creare dataset rappresentativi delle lingue e degli usi europei, al fine di ridurre i pregiudizi culturali e proporre in futuro modelli di intelligenza artificiale più inclusivi.",
             "moreInfos": "Scopri di più sul progetto."
         },
-        "use": "Non utilizzare l'arena per scopi illegali o dannosi."
+        "use": "Non utilizzare il comparatore per scopi illegali o dannosi."
     },
     "words": {
         "NA": "N/A",
@@ -2163,7 +2173,9 @@
         "reset": "Reset",
         "restart": "Ricominciare",
         "retry": "Ricominciare",
+        "search": "Ricercare",
         "send": "Inviare",
-        "tooltip": "Strumento di suggerimento"
+        "tooltip": "Strumento di suggerimento",
+        "validate": "Convalidare"
     }
 }
