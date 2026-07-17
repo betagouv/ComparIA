@@ -601,6 +601,83 @@
                 "name": "N/A"
             }
         },
+        "endpoint_upsert": {
+            "api_base": {
+                "help": "Base URL for the API endpoint.",
+                "label": "API base URL"
+            },
+            "api_key": {
+                "help": "if not given, all LLMs depending on this endpoint will be disabled.",
+                "label": "API secret key"
+            },
+            "api_type": {
+                "help": "API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).",
+                "label": "Api type"
+            },
+            "api_version": {
+                "help": "API version (optional)",
+                "label": "API version"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "name": {
+                "help": "Readable endpoint name (e.g. 'OpenRouter').",
+                "label": "Name"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            }
+        },
+        "lab_upsert": {
+            "created_at": {
+                "label": "Created At"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "logo": {
+                "help": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.",
+                "label": "Logo"
+            },
+            "name": {
+                "label": "Name"
+            },
+            "origin_country": {
+                "help": "A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.",
+                "label": "Origin Country"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            }
+        },
+        "license_upsert": {
+            "commercial_use": {
+                "label": "Allows commercial use."
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "kind": {
+                "label": "Licence type"
+            },
+            "name": {
+                "help": "Licence name (e.g. 'Apache 2.0' or 'MIT').",
+                "label": "Name"
+            },
+            "reuse": {
+                "label": "Allows reuse/redistribution."
+            },
+            "updated_at": {
+                "label": "Updated At"
+            }
+        },
         "licenses": {
             "os": {
                 "Apache 2.0": {
@@ -800,6 +877,111 @@
                     "license_desc": "",
                     "reuse_specificities": ""
                 }
+            }
+        },
+        "llm_upsert": {
+            "active_params": {
+                "help": "Active parameters in billions (only for MoE LLMs).",
+                "label": "Active Params"
+            },
+            "api_model_id": {
+                "help": "Complete identifier used for API calls.",
+                "label": "API model id"
+            },
+            "arch": {
+                "help": "LLM architecture, Use `maybe-*` if information is not confirmed.",
+                "label": "Arch"
+            },
+            "context_tokens": {
+                "help": "Size of its context window in tokens.",
+                "label": "Context Tokens"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "endpoint_id": {
+                "help": "The LLM's endpoint information, create it first if not already available",
+                "label": "Endpoint"
+            },
+            "eu_hostable": {
+                "help": "Whether the LLM is hostable in the EU.",
+                "label": "Eu Hostable"
+            },
+            "human_id": {
+                "help": "(legacy id), usually the LLM id specified in 'api_model_id'",
+                "label": "Readable id"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "inputs": {
+                "help": "What kind of media the LLM can have in input.",
+                "label": "Modalities"
+            },
+            "knowledge_cutoff": {
+                "help": "Date after which the LLM no longer has knowledge.",
+                "label": "Knowledge Cutoff"
+            },
+            "lab_id": {
+                "help": "The lab that developed the LLM, create it first if not already available",
+                "label": "Lab"
+            },
+            "license_id": {
+                "help": "The LLM's license, create it first if not already available",
+                "label": "License"
+            },
+            "links": {
+                "help": "List of links to display in LLM card.",
+                "label": "Links"
+            },
+            "name": {
+                "label": "Readable name"
+            },
+            "params": {
+                "help": "Total parameters in billions.",
+                "label": "Params"
+            },
+            "price_in": {
+                "help": "Price per million input tokens in $.",
+                "label": "Price In"
+            },
+            "price_out": {
+                "help": "Price per million output tokens in $.",
+                "label": "Price Out"
+            },
+            "public_training_code": {
+                "help": "Whether the LLM training code is public.",
+                "label": "Public Training Code"
+            },
+            "public_training_data": {
+                "help": "Whether the LLM training data is public.",
+                "label": "Public Training Data"
+            },
+            "public_weights": {
+                "help": "Whether the LLM weights are public.",
+                "label": "Public Weights"
+            },
+            "quantization": {
+                "help": "Quantization scheme applied (q4, q8, or None for full precision).",
+                "label": "Quantization"
+            },
+            "rate_limited": {
+                "help": "Apply rate limits (usually for high API costs LLMs).",
+                "label": "Rate Limited"
+            },
+            "release_date": {
+                "label": "Release Date"
+            },
+            "status": {
+                "help": "enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.",
+                "label": "Status"
+            },
+            "system_prompt": {
+                "help": "System message to add in llm call if specified",
+                "label": "System Prompt"
+            },
+            "updated_at": {
+                "label": "Updated At"
             }
         },
         "models": {
