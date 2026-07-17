@@ -1,3 +1,5 @@
+import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
 import { api, ValidationError } from '$lib/fastapi-client'
 import type {
@@ -189,8 +191,8 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export async function queryComparisons() {
-  const data = await api.request<APIComparison[]>('/arena/comparison/list')
+export async function queryComparisons(_fetch: typeof fetch = fetch) {
+  const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
   return data.map((c) => parseAPIComparison(c))
 }
 
@@ -245,11 +247,13 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
           if (event.type === 'add') {
             comparison.turns.push(parseAPITurn(event.turn))
+            goto(resolve(`/arene/${comparisonId_ as string}`))
           } else {
             if (!turn) throw new InternalError('No turn to update')
 
             if (event.type === 'update') {
               comparison.turns[comparison.turns.length - 1] = parseAPITurn(event.turn)
+              goto(resolve(`/arene/${comparisonId_ as string}`))
             } else if (event.type === 'error') {
               if (event.pos) {
                 turn[event.pos].status = 'error'
@@ -277,7 +281,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        promptError = typeof err.errors === 'string' ? err.errors : err.errors[0].msg
+        promptError = err.errors ? err.errors[0].msg : err.message
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
       } else {

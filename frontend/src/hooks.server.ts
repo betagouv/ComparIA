@@ -1,11 +1,13 @@
 import { env } from '$env/dynamic/private'
-import { api } from '$lib/fastapi-client'
+import { api, UnauthorizedError } from '$lib/fastapi-client'
 import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
-import { redirect, type Handle } from '@sveltejs/kit'
+import type { Handle, HandleServerError } from '@sveltejs/kit'
+import { redirect } from '@sveltejs/kit'
+import { sequence } from '@sveltejs/kit/hooks'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
@@ -38,6 +40,14 @@ defineCustomServerStrategy('custom-url', {
     }
   }
 })
+
+export const handleError: HandleServerError = async ({ error, event }) => {
+  if (error instanceof UnauthorizedError) {
+    const path = event.url.pathname
+    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+  }
+  console.error(error)
+}
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {
@@ -78,7 +88,9 @@ const maintenanceHandle: Handle = async ({ event, resolve }) => {
   if (!maintenanceCache || now - maintenanceCache.checkedAt >= MAINTENANCE_CHECK_TTL_MS) {
     let enabled = maintenanceCache?.enabled ?? false
     try {
-      ;({ enabled } = await api.request<{ enabled: boolean }>('/maintenance/status'))
+      ;({ enabled } = await api.request<{ enabled: boolean }>('/maintenance/status', {
+        fetch: event.fetch
+      }))
     } catch (error) {
       // Fail open: don't take the whole site down if the status check itself fails
       logger.error('Maintenance status check failed', { error: `${error}` })
@@ -141,15 +153,4 @@ const authWallHandle: Handle = ({ event, resolve }) => {
   return resolve(event)
 }
 
-// Compose handles: maintenance first, then auth wall, then metrics, then paraglide
-export const handle: Handle = async ({ event, resolve }) => {
-  return maintenanceHandle({
-    event,
-    resolve: (e) =>
-      authWallHandle({
-        event: e,
-        resolve: (e2) =>
-          metricsHandle({ event: e2, resolve: (e3) => paraglideHandle({ event: e3, resolve }) })
-      })
-  })
-}
+export const handle = sequence(maintenanceHandle, authWallHandle, metricsHandle, paraglideHandle)

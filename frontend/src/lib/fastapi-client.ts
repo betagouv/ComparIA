@@ -73,26 +73,22 @@ export class InternalError extends Error {
 type PydanticValidationError = { loc: string[]; msg: string }
 
 export class ValidationError extends Error {
-  errors: PydanticValidationError[] | string
+  errors?: PydanticValidationError[]
 
   constructor(errors: PydanticValidationError[] | string) {
-    super('Error in form')
-    this.errors = errors
+    const simple = typeof errors === 'string'
+    const message = simple ? errors : 'Error in form'
+    super(message)
+    this.errors = simple ? undefined : errors
+    this.name = 'ValidationError'
   }
 }
 
 export class UnauthorizedError extends Error {
-  constructor() {
-    super('Unauthorized')
+  constructor(key: string) {
+    super(key)
     this.name = 'UnauthorizedError'
   }
-}
-
-type UnauthorizedHandler = () => void
-let unauthorizedHandler: UnauthorizedHandler | null = null
-
-export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
-  unauthorizedHandler = handler
 }
 
 /**
@@ -121,8 +117,9 @@ export class FastAPIClient {
     const content = await response.text()
     try {
       const detail = JSON.parse(content).detail
-
-      if (response.status === 422) {
+      if (response.status === 401 || response.status === 403) {
+        return new UnauthorizedError(detail)
+      } else if (response.status === 422) {
         return new ValidationError(detail)
       } else if (response.status === 429) {
         return new ValidationError(detail)
@@ -137,22 +134,23 @@ export class FastAPIClient {
   /**
    * Make a single HTTP request (non-streaming)
    */
-  async request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  async request<T>(
+    path: string,
+    options: RequestInit & { fetch?: typeof fetch } = { fetch }
+  ): Promise<T> {
     const url = this.getUrl(path)
+    // Get svelte load function's fetch or use default
+    const _fetch = options.fetch ?? fetch
+    delete options.fetch
 
     try {
-      const response = await fetch(url, {
+      const response = await _fetch(url, {
         ...options,
         headers: options.headers ?? {
           'Content-Type': 'application/json'
         },
         credentials: 'include'
       })
-
-      if (response.status === 401) {
-        unauthorizedHandler?.()
-        throw new UnauthorizedError()
-      }
 
       if (!response.ok) {
         throw await this.parseErrorResponse(response, path, options.method)

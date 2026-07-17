@@ -11,7 +11,7 @@
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
-  import { auth, isAdmin as isAdminUser, logout } from '$lib/auth.svelte'
+  import { getAuthContext, logout } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
@@ -19,6 +19,7 @@
 
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
+  const auth = getAuthContext()
   let expanded = $state(true)
 </script>
 
@@ -124,24 +125,11 @@
         button: true,
         size: 'sm',
         variant: 'tertiary-no-outline',
-        class: 'text-sm! text-black! -ms-3'
+        class: 'text-sm! text-grey! -ms-3 pointer-events-none'
       })}
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>
-
-    {#if isAdminUser()}
-      {@render renderLink({
-        href: '/admin',
-        label: m['admin.panelLink'](),
-        icon: 'i-ri-admin-line',
-        isCurrent: () => page.url.pathname.startsWith('/admin'),
-        button: true,
-        size: 'sm',
-        variant: 'tertiary-no-outline',
-        class: 'text-sm! text-black! -ms-3'
-      })}
-    {/if}
 
     {#if auth.user}
       <div
@@ -151,7 +139,7 @@
           variant="tertiary-no-outline"
           size="sm"
           class="text-black! -ms-3"
-          onclick={() => logout()}
+          onclick={() => logout(auth)}
         >
           <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
             <Icon icon="i-ri-logout-box-r-line" block size={expanded ? 'sm' : 'md'} />

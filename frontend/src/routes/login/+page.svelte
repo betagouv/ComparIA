@@ -3,10 +3,9 @@
   import { page } from '$app/state'
   import SignInForm from '$components/SignInForm.svelte'
   import { env } from '$env/dynamic/public'
-  import { auth, initAuth } from '$lib/auth.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
-  import { onMount } from 'svelte'
 
   const redirectTo = $derived(page.url.searchParams.get('redirect') || '/arene')
 
@@ -15,10 +14,7 @@
     env.PUBLIC_AUTH_LOGIN_DESCRIPTION ||
     "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe."
 
-  onMount(() => {
-    if (auth.user) goto(redirectTo)
-    if (!auth.config) initAuth()
-  })
+  const auth = getAuthContext()
 </script>
 
 <svelte:head>
