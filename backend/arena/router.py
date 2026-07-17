@@ -509,6 +509,7 @@ async def reveal(
 @router.get("/comparison/list")
 async def get_comparisons(
     user: OptionalUser,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> list[ComparisonPublic]:
     """
@@ -521,9 +522,7 @@ async def get_comparisons(
     Returns:
         list: list of user's Comparison if logged in.
     """
-    if not user:
-        return []
-
-    comparisons = await get_user_comparisons(user.id)
+    user_id = user.id if user else None
+    comparisons = await get_user_comparisons(user_id, anonymous_user_hash)
 
     return comparisons

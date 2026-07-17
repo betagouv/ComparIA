@@ -199,11 +199,18 @@ async def update_turn_vote(
         await session.commit()
 
 
-async def get_user_comparisons(user_id: uuid.UUID) -> list[ComparisonPublic]:
+async def get_user_comparisons(
+    user_id: uuid.UUID | None,
+    anonymous_user_hash: str,
+) -> list[ComparisonPublic]:
     async with get_session() as session:
         query = (
             select(Comparison)
-            .where(Comparison.user_id == user_id)
+            .where(
+                Comparison.user_id == user_id
+                if user_id
+                else Comparison.anonymous_user_hash == anonymous_user_hash
+            )
             .order_by(col(Comparison.updated_at).desc())
         )
         db_comparisons = (await session.exec(query)).all()
