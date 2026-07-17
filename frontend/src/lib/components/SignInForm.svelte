@@ -19,6 +19,7 @@
   let email = $state('')
   let code = $state('')
   let consented = $state(false)
+  let mergeComparisons = $state(false)
   let loading = $state(false)
   let error = $state<string>()
 
@@ -50,6 +51,9 @@
       })
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
+      if (mergeComparisons) {
+        await api.request('/arena/comparison/merge', { method: 'POST' })
+      }
       onSuccess?.()
       useToast(m['auth.success'](), 4000)
     } catch {
@@ -90,6 +94,14 @@
       autocomplete="email"
       required
       class="mb-4!"
+    />
+
+    <Checkbox
+      id="login-merge"
+      class="text-xs!"
+      bind:checked={mergeComparisons}
+      disabled={step === 'code'}
+      label={m['auth.modal.merge']()}
     />
 
     <Checkbox

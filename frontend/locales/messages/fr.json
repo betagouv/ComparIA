@@ -133,7 +133,8 @@
                 "neverOther": "tout autre élément permettant de vous identifier",
                 "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
                 "neverPhone": "des numéros de téléphone"
-            }
+            },
+            "merge": "Fusionner les conversations existantes avec votre compte"
         },
         "settings": {
             "logout": "Se déconnecter",
