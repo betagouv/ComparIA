@@ -102,7 +102,6 @@
     },
     "auth": {
         "discussions": {
-            "prompt": "Connectez-vous pour accéder à votre historique de discussion",
             "signIn": "Se connecter",
             "title": "Discussions"
         },
