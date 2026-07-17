@@ -1,14 +1,22 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { GroupedMessages, RevealArea, VoteModal } from '.'
   import { onDestroy } from 'svelte'
+  import { GroupedMessages, RevealArea, VoteModal } from '.'
 
   let { comparisonId }: { comparisonId: string } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
+
+  $effect(() => {
+    if (!comparator.comparison) {
+      goto(resolve('/arene'))
+    }
+  })
 
   let prompt = $state('')
   let voteReminder = $state(false)
