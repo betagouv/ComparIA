@@ -4,11 +4,15 @@
   import AILogo from '$components/AILogo.svelte'
   import { Link } from '$components/dsfr'
   import { getComparisonsContext } from '$lib/chatService.svelte'
+  import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
-  const { mode = 'desktop', ...props }: { mode: 'desktop' | 'mobile' } & SvelteHTMLElements['nav'] =
-    $props()
+  const {
+    mode = 'desktop',
+    expanded,
+    ...props
+  }: { mode?: 'desktop' | 'mobile'; expanded: boolean } & SvelteHTMLElements['nav'] = $props()
 
   const comparisons = getComparisonsContext()
   const { models } = getModelsContext()
@@ -32,30 +36,37 @@
 {/snippet}
 
 {#if comparisons.length}
-  <nav {...props} class={['comparison-history', props.class]}>
-    <ul class="fr-sidemenu__list">
-      {#each comparisons as comp (comp.id)}
-        {@const href = resolve(`/arene/${comp.id}`)}
-        {@const current = page.url.pathname === href ? 'page' : undefined}
-        <li class={['fr-sidemenu__item', { 'before:content-none!': mode === 'mobile' }]}>
-          <Link
-            {href}
-            aria-current={current}
-            class="fr-sidemenu__link py-1! font-normal! text-sm!"
-            aria-controls={mode === 'mobile' ? 'fr-modal-menu' : undefined}
-          >
-            <span class="max-w-[145px] shrink truncate">{comp.turns[0]?.user_msg.content}</span>
-            <span class="gap-1 ms-auto flex items-center">
-              {@render logo(
-                comp.reveal_data?.a.llm_id,
-                comp.reveal_data?.chosen_llm === 'a'
-              )}/{@render logo(comp.reveal_data?.b.llm_id, comp.reveal_data?.chosen_llm === 'b')}
-            </span>
-          </Link>
-        </li>
-      {/each}
-    </ul>
-  </nav>
+  <div class={['gap-2 lg:min-h-0 flex flex-col', { 'lg:hidden': !expanded }]}>
+    <div class="px-4">
+      <p class="text-sm! mb-0! text-black font-bold">
+        {m['auth.discussions.title']()}
+      </p>
+    </div>
+    <nav {...props} class={['comparison-history lg:overflow-y-auto', props.class]}>
+      <ul class="fr-sidemenu__list">
+        {#each comparisons as comp (comp.id)}
+          {@const href = resolve(`/arene/${comp.id}`)}
+          {@const current = page.url.pathname === href ? 'page' : undefined}
+          <li class={['fr-sidemenu__item', { 'before:content-none!': mode === 'mobile' }]}>
+            <Link
+              {href}
+              aria-current={current}
+              class="fr-sidemenu__link py-1! font-normal! text-sm!"
+              aria-controls={mode === 'mobile' ? 'fr-modal-menu' : undefined}
+            >
+              <span class="max-w-[145px] shrink truncate">{comp.turns[0]?.user_msg.content}</span>
+              <span class="gap-1 ms-auto flex items-center">
+                {@render logo(
+                  comp.reveal_data?.a.llm_id,
+                  comp.reveal_data?.chosen_llm === 'a'
+                )}/{@render logo(comp.reveal_data?.b.llm_id, comp.reveal_data?.chosen_llm === 'b')}
+              </span>
+            </Link>
+          </li>
+        {/each}
+      </ul>
+    </nav>
+  </div>
 {/if}
 
 <style lang="postcss">
