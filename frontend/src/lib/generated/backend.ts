@@ -110,12 +110,6 @@ export interface LLMList {
   } | null;
   currency: CurrencyInfo;
 }
-export interface CurrencyInfo {
-  code: string;
-  rate_from_eur: number;
-  date: string | null;
-  source: "base" | "frankfurter" | "manual";
-}
 /**
  * LLM data used for LLM list, sent to clients.
  * !Warning: make sure there's no secrets.
@@ -124,29 +118,92 @@ export interface APILLMData {
   id?: string;
   created_at?: string;
   updated_at?: string;
-  lab_id: string;
-  license_id: string;
-  endpoint_id: string | null;
-  human_id: string;
-  api_model_id: string | null;
   status: "enabled" | "archived";
   name: string;
+  /**
+   * (legacy id), usually the LLM id specified in 'api_model_id'
+   */
+  human_id: string;
+  /**
+   * Complete identifier used for API calls.
+   */
+  api_model_id: string | null;
+  /**
+   * The LLM's endpoint information, create it first if not already available
+   */
+  endpoint_id: string | null;
+  /**
+   * Apply rate limits (usually for high API costs LLMs).
+   */
   rate_limited: boolean;
+  /**
+   * The lab that developed the LLM, create it first if not already available
+   */
+  lab_id: string;
   release_date: string;
-  knowledge_cutoff: string | null;
-  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na";
-  params: number;
-  active_params: number | null;
-  context_tokens: number | null;
-  quantization: ("q4" | "q8") | null;
-  inputs: ("text" | "image" | "audio" | "video")[];
+  /**
+   * Date after which the LLM no longer has knowledge.
+   */
+  knowledge_cutoff?: string | null;
+  /**
+   * The LLM's license, create it first if not already available
+   */
+  license_id: string;
+  /**
+   * Whether the LLM weights are public.
+   */
   public_weights: boolean;
+  /**
+   * Whether the LLM training data is public.
+   */
   public_training_data: boolean;
+  /**
+   * Whether the LLM training code is public.
+   */
   public_training_code: boolean;
+  /**
+   * Whether the LLM is hostable in the EU.
+   */
   eu_hostable: boolean;
+  /**
+   * LLM architecture, Use `maybe-*` if information is not confirmed.
+   */
+  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na";
+  /**
+   * Total parameters in billions.
+   */
+  params: number;
+  /**
+   * Active parameters in billions (only for MoE LLMs).
+   */
+  active_params: number | null;
+  /**
+   * Size of its context window in tokens.
+   */
+  context_tokens: number | null;
+  /**
+   * Quantization scheme applied (q4, q8, or None for full precision).
+   */
+  quantization: ("q4" | "q8") | null;
+  /**
+   * What kind of media the LLM can have in input.
+   */
+  inputs: ("text" | "image" | "audio" | "video")[];
+  /**
+   * Price per million input tokens in $.
+   */
   price_in: number;
+  /**
+   * Price per million output tokens in $.
+   */
   price_out: number;
+  /**
+   * System message to add in llm call if specified
+   */
   system_prompt: string | null;
+  /**
+   * List of links to display in LLM card.
+   */
   links?: Link[];
   license: LLMLicensePublic;
   lab: LLMLabPublic;
@@ -168,6 +225,9 @@ export interface LLMLicensePublic {
   created_at?: string;
   updated_at?: string;
   kind: "proprietary" | "open-weights" | "open-source";
+  /**
+   * Licence name (e.g. 'Apache 2.0' or 'MIT').
+   */
   name: string;
   reuse: boolean;
   commercial_use: boolean;
@@ -178,7 +238,13 @@ export interface LLMLabPublic {
   created_at?: string;
   updated_at?: string;
   name: string;
+  /**
+   * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
+   */
   logo: string;
+  /**
+   * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
+   */
   origin_country: string;
   [k: string]: unknown;
 }
@@ -262,5 +328,12 @@ export interface PreferencesData {
   incorrect: number;
   instructions_not_followed: number;
   superficial: number;
+  [k: string]: unknown;
+}
+export interface CurrencyInfo {
+  code: string;
+  rate_from_eur: number;
+  date: string | null;
+  source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;
 }
