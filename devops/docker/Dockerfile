@@ -23,13 +23,14 @@ WORKDIR /app
 # Copier le venv et le code
 COPY --from=builder /app/.venv /app/.venv
 COPY pyproject.toml uv.lock ./
+COPY alembic.ini /app/
 COPY controller.py /app/
 COPY backend /app/backend
 COPY utils /app/utils
 COPY templates /app/templates
+COPY data /app/data
 COPY comparia-cli /app/
 
-VOLUME /data
 EXPOSE 80
 
 ARG GIT_COMMIT

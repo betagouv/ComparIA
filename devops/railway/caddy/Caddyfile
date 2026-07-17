@@ -1,0 +1,40 @@
+# Railway reverse proxy for the `next` branch: caddy is the only public service.
+# It routes the FastAPI backend API paths to backend and serves everything else
+# from the SvelteKit frontend, both over Railway's IPv6 private network. Railway
+# terminates TLS at the edge and forwards plain HTTP to :8080.
+{
+	auto_https off
+	admin off
+}
+
+:8080 {
+	# Backend (FastAPI) API paths. The /admin namespace is shared with frontend
+	# *pages*, so the split is deliberate and exact:
+	#   backend  API:  /admin/users*, /admin/settings*, /admin/llms/{data,schemas,
+	#                  llm,endpoint,lab,license}  (singular nouns + data/schemas)
+	#   frontend pages: /admin, /admin/authentification, /admin/personnalisation,
+	#                  /admin/utilisateurs, /admin/llms/{llms,endpoints,labs,licenses}
+	#                  (plural nouns) -> fall through to the frontend below.
+	@backend path \
+ /counter* \
+ /maintenance/status \
+ /models/* \
+ /arena/* \
+ /auth/* \
+ /admin/users* \
+ /admin/settings* \
+ /admin/llms/data \
+ /admin/llms/schemas \
+ /admin/llms/llm /admin/llms/llm/* \
+ /admin/llms/endpoint /admin/llms/endpoint/* \
+ /admin/llms/lab /admin/llms/lab/* \
+ /admin/llms/license /admin/llms/license/*
+	handle @backend {
+		reverse_proxy backend.railway.internal:80
+	}
+
+	# Everything else -> SvelteKit frontend
+	handle {
+		reverse_proxy frontend.railway.internal:3000
+	}
+}
