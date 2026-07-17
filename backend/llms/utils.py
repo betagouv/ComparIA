@@ -22,27 +22,6 @@ from ecologits.utils.range_value import RangeValue, ValueOrRange
 if TYPE_CHECKING:
     from backend.llms.models import APILLMDataBase
 
-# FIXME equivalences legacy?
-# from backend.config import CONSUMPTION_SCALE_FACTOR
-# # Equivalence types for scaled impact comparisons
-# class EquivalenceType(Enum):
-#     PARIS_NYC_FLIGHTS = "paris_nyc_flights"
-#     BAGUETTE_PRODUCTION = "baguette_production"
-#     ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
-#     PACKAGE_DELIVERY = "package_delivery"
-#     MANGO_IMPORT = "mango_import"
-#     POOL_FILING = "pool_filing"
-
-
-# CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
-#     EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
-#     EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
-#     EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
-#     EquivalenceType.PACKAGE_DELIVERY: 0.576,
-#     EquivalenceType.MANGO_IMPORT: 11.655508000000001,
-#     EquivalenceType.POOL_FILING: 7.54,
-# }
-
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
     """
@@ -175,12 +154,6 @@ def get_llm_impact(
     )
 
 
-# FIXME equivalences legacy?
-# class Equivalence(TypedDict):
-# type: EquivalenceType
-#     value: float
-
-
 class Consumption(TypedDict):
     # Token usage
     tokens: int
@@ -191,12 +164,6 @@ class Consumption(TypedDict):
     # Energy metrics
     energy_mwh: int | float
     energy_kwh: int | float
-    # FIXME equivalences legacy?
-    # # Scaled CO2
-    # scaled_co2_kg: int | float
-    # scaled_co2_t: int | float
-    # # Scaled equivalence values
-    # equivalences: list[Equivalence]
 
 
 def get_llm_consumption(
@@ -221,9 +188,6 @@ def get_llm_consumption(
     # Get raw kWh and CO2 kg values for equivalence calculations
     kwh = convert_range_to_value(impact.energy.value)
     co2_kg = convert_range_to_value(impact.gwp.value)
-    # FIXME equivalences legacy?
-    # co2 scaled to population using generative AI
-    # scaled_co2_kg = co2_kg * CONSUMPTION_SCALE_FACTOR
 
     return {
         "tokens": tokens,
@@ -232,15 +196,4 @@ def get_llm_consumption(
         "co2_kg": co2_kg,
         "energy_mwh": kwh * 1000 * 1000,
         "energy_kwh": kwh,
-        # FIXME equivalences legacy?
-        # "scaled_co2_kg": scaled_co2_kg,
-        # "scaled_co2_t": scaled_co2_kg / 1000,
-        # Compute all equivalences
-        # "equivalences": [
-        #     {
-        #         "type": eq_type,
-        #         "value": scaled_co2_kg / CO2_KG_EQUIVALENCE[eq_type],
-        #     }
-        #     for eq_type in list(EquivalenceType)
-        # ],
     }
