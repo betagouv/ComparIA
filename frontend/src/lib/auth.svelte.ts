@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
+import { updateComparisonsContext, type ComparisonsCtx } from '$lib/chatService.svelte'
 import { api } from '$lib/fastapi-client'
 import { createContext } from 'svelte'
 
@@ -41,9 +42,10 @@ export function openSignInModal(): void {
   }
 }
 
-export async function logout(auth: AuthCtx): Promise<void> {
+export async function logout(auth: AuthCtx, comparisons: ComparisonsCtx): Promise<void> {
   try {
     await api.request<void>('/auth/logout', { method: 'POST' })
+    await updateComparisonsContext(comparisons)
   } finally {
     auth.user = null
     if (auth.config?.access_policy === 'sign_in_required') {

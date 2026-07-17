@@ -146,7 +146,7 @@ export const modeInfos: ModeInfos[] = (
 
 // COMPARISON LOGIC
 
-type ComparisonsCtx = Comparison[]
+export type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
@@ -203,6 +203,7 @@ export function initComparisonsContext(data: ComparisonsCtx) {
 
 export async function updateComparisonsContext(comparisons: ComparisonsCtx) {
   const data = await queryComparisons()
+  comparisons.length = 0
   comparisons.push(...data)
 }
 
