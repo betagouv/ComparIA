@@ -206,7 +206,7 @@ async def add_first_text(
     comparison = await create_comparison(
         ComparisonCreate(
             ip=get_ip(request),
-            anonymous_user_hash=anonymous_user_hash,
+            anonymous_user_hash=anonymous_user_hash if not user else None,
             user_id=user.id if user else None,
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
