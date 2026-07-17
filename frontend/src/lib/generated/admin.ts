@@ -24,83 +24,100 @@ export interface AppSettingsPublic {
  * LLM definition.
  *
  * Contains basic LLM information and links to licence, lab and endpoint.
- *
- * Attributes
- * ----------
- * human_id
- *     Readable id (legacy id), usually the id specified in `api_model_id`
- *     `'{labid}/{llmid}'`.
- * api_model_id
- *     Identifier used in API calls.
- * status
- *     Current status:
- *       - 'enabled': callable and displayed in llm list + rankings;
- *       - 'archived': not callable but displayed in llm list + rankings,
- *       - 'disabled': not callable and hidden in llm list + rankings.
- * name
- *     Readable name.
- * rate_limited
- *     Apply rate limits (usually for high API costs LLMs).
- * release_date
- *     Release date.
- * knowledge_cutoff
- *     Date after which the LLM no longer has knowledge.
- * arch
- *     LLM architecture, Use `maybe-*` if information is not confirmed.
- * params
- *     Total parameters in billions.
- * active_params
- *     Active parameters in billions (only for MoE LLMs).
- * context_tokens
- *     Size of its context window in tokens.
- * quantization
- *     Quantization scheme applied (q4, q8, or None for full precision).
- * inputs
- *     What kind of media the LLM can have in input.
- * public_weights
- *     Whether the LLM weights are public.
- * public_training_data
- *     Whether the LLM training data is public.
- * public_training_code
- *     Whether the LLM training code is public.
- * eu_hostable
- *     Whether the LLM is hostable in the EU.
- * price_in
- *     Price per million input tokens in €.
- * price_out
- *     Price per million output tokens in €.
- * system_prompt
- *     System message to add in llm call if specified
- * links
- *     List of links to display in LLM card.
  */
 export interface LLMData {
   id?: string;
   created_at?: string;
   updated_at?: string;
-  lab_id: string;
-  license_id: string;
-  endpoint_id: string | null;
-  human_id: string;
-  api_model_id: string | null;
+  /**
+   * enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.
+   */
   status: "archived" | "disabled" | "enabled";
   name: string;
+  /**
+   * (legacy id), usually the LLM id specified in 'api_model_id'
+   */
+  human_id: string;
+  /**
+   * Complete identifier used for API calls.
+   */
+  api_model_id: string | null;
+  /**
+   * The LLM's endpoint information, create it first if not already available
+   */
+  endpoint_id: string | null;
+  /**
+   * Apply rate limits (usually for high API costs LLMs).
+   */
   rate_limited: boolean;
+  /**
+   * The lab that developed the LLM, create it first if not already available
+   */
+  lab_id: string;
   release_date: string;
-  knowledge_cutoff: string | null;
-  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na";
-  params: number;
-  active_params: number | null;
-  context_tokens: number | null;
-  quantization: ("q4" | "q8") | null;
-  inputs: ("text" | "image" | "audio" | "video")[];
+  /**
+   * Date after which the LLM no longer has knowledge.
+   */
+  knowledge_cutoff?: string | null;
+  /**
+   * The LLM's license, create it first if not already available
+   */
+  license_id: string;
+  /**
+   * Whether the LLM weights are public.
+   */
   public_weights: boolean;
+  /**
+   * Whether the LLM training data is public.
+   */
   public_training_data: boolean;
+  /**
+   * Whether the LLM training code is public.
+   */
   public_training_code: boolean;
+  /**
+   * Whether the LLM is hostable in the EU.
+   */
   eu_hostable: boolean;
+  /**
+   * LLM architecture, Use `maybe-*` if information is not confirmed.
+   */
+  arch: "moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na";
+  /**
+   * Total parameters in billions.
+   */
+  params: number;
+  /**
+   * Active parameters in billions (only for MoE LLMs).
+   */
+  active_params: number | null;
+  /**
+   * Size of its context window in tokens.
+   */
+  context_tokens: number | null;
+  /**
+   * Quantization scheme applied (q4, q8, or None for full precision).
+   */
+  quantization: ("q4" | "q8") | null;
+  /**
+   * What kind of media the LLM can have in input.
+   */
+  inputs: ("text" | "image" | "audio" | "video")[];
+  /**
+   * Price per million input tokens in $.
+   */
   price_in: number;
+  /**
+   * Price per million output tokens in $.
+   */
   price_out: number;
+  /**
+   * System message to add in llm call if specified
+   */
   system_prompt: string | null;
+  /**
+   * List of links to display in LLM card.
+   */
   links?: Link[];
 }
 export interface Link {
@@ -110,70 +127,60 @@ export interface Link {
 }
 /**
  * LLM endpoint configuration for API calls.
- *
- * Attributes
- * ----------
- * name
- *     Readable endpoint name (e.g. 'OpenRouter').
- * api_type
- *     API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).
- * api_base
- *     Base URL for the API endpoint.
- * api_version
- *     API version (optional)
- * api_key
- *     API secret key.
  */
 export interface LLMEndpoint {
   id?: string;
   created_at?: string;
   updated_at?: string;
+  /**
+   * Readable endpoint name (e.g. 'OpenRouter').
+   */
   name: string;
+  /**
+   * API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).
+   */
   api_type: string;
+  /**
+   * Base URL for the API endpoint.
+   */
   api_base?: string | null;
+  /**
+   * API version (optional)
+   */
   api_version?: string | null;
+  /**
+   * if not given, all LLMs depending on this endpoint will be disabled.
+   */
   api_key?: string | null;
 }
 /**
  * LLM lab/organization metadata.
- *
- * Attributes
- * ----------
- * name
- *     Lab name.
- * logo
- *     An icon name from https://lobehub.com/fr/icons or a filename
- *     (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
- * origin_country
- *     Lab's origin country as a 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
  */
 export interface LLMLab {
   id?: string;
   created_at?: string;
   updated_at?: string;
   name: string;
+  /**
+   * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
+   */
   logo: string;
+  /**
+   * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
+   */
   origin_country: string;
 }
 /**
  * LLM licence metadata.
- *
- * Attributes
- * ----------
- * kind
- *     Licence type.
- * name
- *     Licence name (e.g. 'Apache 2.0' or 'MIT').
- * reuse
- *     Whether the licence allows reuse/redistribution.
- * commercial_use
- *     Whether the licence allows commercial use.
  */
 export interface LLMLicense {
   id?: string;
   created_at?: string;
   updated_at?: string;
   kind: "proprietary" | "open-weights" | "open-source";
+  /**
+   * Licence name (e.g. 'Apache 2.0' or 'MIT').
+   */
   name: string;
   reuse: boolean;
   commercial_use: boolean;
@@ -181,7 +188,7 @@ export interface LLMLicense {
 export interface UserPublic {
   id: string;
   email: string;
-  role: string;
+  role: "user" | "admin";
   created_at: string;
   last_seen_at: string;
   source: string;
