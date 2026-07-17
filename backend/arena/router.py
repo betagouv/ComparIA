@@ -13,6 +13,7 @@ from backend.arena.services import (
     add_comparison_turn,
     create_comparison,
     get_user_comparisons,
+    merge_anonymous_comparisons,
     read_comparison,
     set_comparison_revealed,
     update_comparison_error,
@@ -35,7 +36,7 @@ from backend.arena.streaming import (
     stream_comparison_messages,
 )
 from backend.arena.web_search import search_web
-from backend.auth.dependencies import OptionalUser, RequiredAnomymous
+from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
@@ -526,3 +527,12 @@ async def get_comparisons(
     comparisons = await get_user_comparisons(user_id, anonymous_user_hash)
 
     return comparisons
+
+
+@router.post("/comparison/merge")
+async def merge_comparisons(
+    user: RequiredUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+) -> None:
+    await merge_anonymous_comparisons(user.id, anonymous_user_hash)
