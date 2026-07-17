@@ -1,10 +1,11 @@
+import logging
 import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
 from linkup import LinkupSearchTextResult
-from sqlmodel import col, select
+from sqlmodel import and_, col, select, update
 
 from backend.llms.data import get_llms_data
 from utils.database.models import (
@@ -29,6 +30,7 @@ from utils.database.session import get_session
 if TYPE_CHECKING:
     from sqlmodel.ext.asyncio.session import AsyncSession
 
+logger = logging.getLogger("languia")
 
 T = TypeVar("T", bound=Comparison | Turn)
 
@@ -222,3 +224,24 @@ async def get_user_comparisons(
             )
             for comparison in db_comparisons
         ]
+
+
+async def merge_anonymous_comparisons(user_id: uuid.UUID, anonymous_user_hash: str):
+    async with get_session() as session:
+        query = (
+            update(Comparison)
+            .where(
+                and_(
+                    Comparison.anonymous_user_hash == anonymous_user_hash,
+                    Comparison.user_id == None,
+                )
+            )
+            .values({"user_id": user_id, "anonymous_user_hash": None})
+        )
+
+        results = await session.exec(query)
+        await session.commit()
+
+        logger.info(
+            f"Merged {results.rowcount} Comparisons from anonymous '{anonymous_user_hash}' to user {user_id}"
+        )
