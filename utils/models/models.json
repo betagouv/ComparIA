@@ -1042,6 +1042,7 @@
     "models": [
       {
         "db_id": "6bb7c76b-3076-4a95-a4b6-f83e967ec65e",
+        "status": "archived",
         "id": "gemini-3-flash-preview",
         "simple_name": "Gemini 3 Flash",
         "license": "proprietary",
@@ -1584,6 +1585,37 @@
     "origin_country": "CN",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
+      {
+        "db_id": "f4147c47-882f-468c-b0be-68811e4e7d06",
+        "new": true,
+        "id": "qwen3.7-plus",
+        "simple_name": "Qwen 3.7 Plus",
+        "license": "proprietary",
+        "release_date": "06/2026",
+        "arch": "maybe-moe",
+        "params": 500,
+        "reasoning": true,
+        "url": "https://qwen.ai/apiplatform",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3.7-plus"
+        },
+        "desc": "Modèle propriétaire de la famille Qwen 3.7 privilégiant le rapport coût-performances. Il accepte du texte et des images, conserve des capacités de raisonnement, de code et d’usage d’outils, et dispose d’une fenêtre de contexte d’un million de jetons.",
+        "size_desc": "L’éditeur ne publie pas la taille ni l’architecture détaillée de Qwen 3.7 Plus. Il est fourni comme un service propriétaire ; sa consommation matérielle ne peut pas être établie de manière fiable. Sa fenêtre de contexte atteint toutefois un million de jetons.",
+        "fyi": "Qwen 3.7 Plus se distingue de la version Max par son orientation plus économique et par la prise en charge d’images via OpenRouter. L’éditeur met en avant ses usages de compréhension visuelle, de lecture d’écrans, de programmation et d’appels d’outils. Son prix OpenRouter est de 0,32 $ par million de jetons en entrée et 1,28 $ en sortie, contre 1,475 $ et 4,425 $ pour Qwen 3.7 Max.",
+        "public_weights": false,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1000000,
+        "eu_hostable": false,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 0.2775,
+        "price_out": 1.1098
+      },
       {
         "db_id": "a07635a6-e335-426e-9d84-c49777e4ebcc",
         "id": "qwen3.7-max",
@@ -2159,6 +2191,7 @@
       },
       {
         "db_id": "e886fd81-7b61-4539-8ad7-45f4461d3489",
+        "status": "archived",
         "id": "kimi-k2.5",
         "simple_name": "Kimi K2.5",
         "license": "MIT",
@@ -2327,6 +2360,70 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "db_id": "ca8098fb-39c4-40f4-bce2-4fedf063d495",
+        "new": true,
+        "id": "gpt-5.6-terra",
+        "simple_name": "GPT 5.6 Terra",
+        "license": "proprietary",
+        "release_date": "07/2026",
+        "arch": "maybe-moe",
+        "params": 300,
+        "active_params": 94,
+        "reasoning": true,
+        "url": "https://developers.openai.com/api/docs/models/gpt-5.6-terra",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.6-terra"
+        },
+        "desc": "Modèle propriétaire multimodal conçu pour les tâches exigeantes de raisonnement, de programmation et d’utilisation d’outils. Il vise un compromis entre niveau de capacité, vitesse et coût.",
+        "size_desc": "OpenAI ne publie ni le nombre de paramètres ni l’architecture détaillée de GPT 5.6 Terra. Il s’agit d’un très grand système propriétaire destiné à une infrastructure spécialisée. Sa fenêtre de contexte atteint 1 050 000 jetons, ce qui permet d’analyser de très grands corpus ou dépôts de code.",
+        "fyi": "Terra est le palier intermédiaire de la famille GPT 5.6. Il accepte du texte et des images en entrée et peut ajuster l’effort de raisonnement, de `none` à `max`, afin d’arbitrer entre latence, coût et qualité. Ses connaissances s’arrêtent au 16 février 2026. Au-delà de 272 000 jetons en entrée, la tarification augmente.",
+        "public_weights": false,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1050000,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": "2026-02-16T00:00:00",
+        "price_in": 2.1677,
+        "price_out": 13.0061
+      },
+      {
+        "db_id": "c40ace00-70ec-4c57-b826-52744e13e88c",
+        "new": true,
+        "id": "gpt-5.6-luna",
+        "simple_name": "GPT 5.6 Luna",
+        "license": "proprietary",
+        "release_date": "07/2026",
+        "arch": "maybe-moe",
+        "params": 300,
+        "active_params": 94,
+        "reasoning": true,
+        "url": "https://openai.com/index/gpt-5-6/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.6-luna"
+        },
+        "desc": "Version la plus rapide et la moins coûteuse de la famille GPT 5.6, adaptée aux usages à grand volume, aux échanges conversationnels et aux tâches d’agents relativement légères.",
+        "size_desc": "OpenAI ne publie ni le nombre de paramètres ni l’architecture détaillée de GPT 5.6 Luna. Il s’agit d’un système propriétaire optimisé pour l’efficacité. Sa fenêtre de contexte atteint 1 050 000 jetons, ce qui permet de traiter de très longs documents malgré son positionnement économique.",
+        "fyi": "Luna est le palier économique de GPT 5.6. Il accepte du texte et des images en entrée et propose plusieurs niveaux d’effort de raisonnement, jusqu’à `max`. Il convient lorsque le coût ou le débit priment, mais Terra peut être préférable pour les problèmes les plus difficiles. Ses connaissances s’arrêtent au 16 février 2026. Au-delà de 272 000 jetons en entrée, la tarification augmente.",
+        "public_weights": false,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1050000,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": "2026-02-16T00:00:00",
+        "price_in": 0.8671,
+        "price_out": 5.2024
+      },
+      {
         "db_id": "f5d51eed-6981-4677-b334-c748b14bc20c",
         "id": "gpt-5.5",
         "simple_name": "GPT 5.5",
@@ -2391,6 +2488,7 @@
       },
       {
         "db_id": "b8bebab3-d04c-4f5c-8156-174eca74a0d6",
+        "status": "archived",
         "id": "gpt-5.4-mini",
         "simple_name": "GPT 5.4 Mini",
         "license": "proprietary",
@@ -2422,6 +2520,7 @@
       },
       {
         "db_id": "fdc98225-ffc7-4d0c-b017-d6ecb14fbad3",
+        "status": "archived",
         "id": "gpt-5.4-nano",
         "simple_name": "GPT 5.4 Nano",
         "license": "proprietary",
@@ -2896,6 +2995,37 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "db_id": "f4bfd8e1-8a4d-43c7-8038-39d952e13ed9",
+        "id": "mistral-medium-3-5",
+        "simple_name": "Mistral Medium 3.5",
+        "license": "Modified MIT",
+        "release_date": "04/2026",
+        "arch": "dense",
+        "params": 128,
+        "active_params": 128,
+        "reasoning": true,
+        "url": "https://mistral.ai/news/vibe-remote-agents-mistral-medium-3-5/",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "mistralai/mistral-medium-3-5"
+        },
+        "desc": "Modèle multimodal de grande taille conçu pour les tâches complexes de programmation, de raisonnement et d’automatisation. Il peut analyser du texte et des images, appeler plusieurs outils de façon fiable et adapter son effort de raisonnement à la difficulté de la demande.",
+        "size_desc": "Avec 128 milliards de paramètres actifs, ce modèle dense appartient à la catégorie des très grands modèles. Son hébergement nécessite des ressources importantes : l’éditeur indique qu’il peut fonctionner à partir de quatre cartes graphiques puissantes. Sa fenêtre de contexte de 262 144 jetons permet d’analyser de longs documents, de grands dépôts de code ou des conversations étendues.\n\nLe raisonnement est paramétrable : sur les tâches complexes, le modèle peut consacrer davantage de calcul à l’analyse avant de répondre, ce qui peut augmenter le délai, le coût et la consommation énergétique.",
+        "fyi": "Mistral Medium 3.5 réunit dans un même modèle le suivi d’instructions, le raisonnement et la programmation. Il s’agit d’un modèle dense de 128 milliards de paramètres dont les poids sont publiés sous licence Modified MIT, contrairement à son prédécesseur Mistral Medium 3.1 qui était proposé sous forme d’API.\n\nIl accepte du texte et des images. Mistral indique avoir entraîné son encodeur de vision pour prendre en charge des images de tailles et de formats variés. Le modèle est également conçu pour les usages agentiques : appels d’outils, sorties structurées et exécution de tâches en plusieurs étapes.\n\nL’éditeur le présente comme le remplacement de Mistral Medium 3.1 et de Magistral dans Le Chat, ainsi que de Devstral 2 dans son agent de programmation. Ces affirmations sont celles de l’éditeur et ne remplacent pas une évaluation indépendante sur les cas d’usage de ComparIA.",
+        "public_weights": true,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 262144,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 1.3006,
+        "price_out": 6.503
+      },
+      {
         "db_id": "5ffb1c09-ece5-4fbd-a8ae-e350c6ec3c9c",
         "id": "mistral-large-2512",
         "simple_name": "Mistral 3 Large",
@@ -3345,6 +3475,38 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "db_id": "1a0ab3a3-3d5f-49fc-9d92-40e094f050e8",
+        "new": true,
+        "id": "claude-5-sonnet",
+        "simple_name": "Claude Sonnet 5",
+        "license": "proprietary",
+        "release_date": "06/2026",
+        "arch": "maybe-moe",
+        "params": 440,
+        "active_params": 137.5,
+        "reasoning": true,
+        "url": "https://www.anthropic.com/news/claude-sonnet-5",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "anthropic/claude-sonnet-5"
+        },
+        "desc": "Très grand modèle propriétaire multimodal, particulièrement conçu pour le raisonnement, la programmation et les tâches d’agents à plusieurs étapes. Il offre un bon compromis entre performances et coût.",
+        "size_desc": "Anthropic ne publie ni le nombre de paramètres ni l’architecture détaillée de Claude Sonnet 5. Il s’agit d’un très grand système propriétaire nécessitant une infrastructure spécialisée. Sa fenêtre de contexte atteint 1 000 000 de jetons, adaptée à l’analyse de bases de code ou de corpus documentaires volumineux.",
+        "fyi": "Claude Sonnet 5 succède à Sonnet 4.6 et améliore ses capacités de raisonnement, d’utilisation d’outils, de programmation et de travail sur documents. L’effort de raisonnement est réglable selon la complexité de la demande. Anthropic indique que son nouveau tokenizer peut toutefois transformer un même contenu en 1 à 1,35 fois plus de jetons : il faut donc comparer les coûts réels, et non seulement le prix affiché par jeton. Son prix de lancement est temporaire jusqu’au 31 août 2026.",
+        "public_weights": false,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1000000,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 1.7341,
+        "price_out": 8.6707
+      },
+      {
         "db_id": "5c246dab-ab8d-4c52-809e-b35d5dacf288",
         "id": "claude-4-6-sonnet",
         "simple_name": "Claude 4.6 Sonnet",
@@ -3529,6 +3691,7 @@
       },
       {
         "db_id": "fc09ff20-4de4-4667-b678-2e34405482a0",
+        "status": "archived",
         "id": "glm-5.1",
         "simple_name": "GLM 5.1",
         "license": "MIT",
@@ -4147,6 +4310,7 @@
     "models": [
       {
         "db_id": "2c088caf-39d3-4b04-b879-3a45721d4655",
+        "new": true,
         "id": "minimax-m3",
         "simple_name": "MiniMax M3",
         "license": "Modified MIT",
@@ -4178,6 +4342,7 @@
       },
       {
         "db_id": "725d230c-993f-4a98-b752-01aa81d850f6",
+        "status": "archived",
         "id": "minimax-m2.7",
         "simple_name": "MiniMax M2.7",
         "license": "Modified MIT",
@@ -4392,7 +4557,6 @@
         "release_date": "04/2026",
         "arch": "dense",
         "params": 8,
-        "new": true,
         "url": "https://research.ibm.com/blog/granite-4-1-ai-foundation-models",
         "endpoint": {
           "api_type": "openrouter",

@@ -66,7 +66,7 @@ Properties:
 LLM definitions are specified in the `"models"`'s organisation property.
 
 Properties:
-- `new`: bool  *Whether this is a newly added LLM*  
+- `new`: bool  *Whether this LLM was released within the last two months, based on its release date*
 - `status`: `'archived'` | `'missing_data'` | `'disabled'` | `'enabled'` (optional) *This LLM data status*  
 - `id`: str  *Unique LLM identifier (you can choose it or use HF one)*  
 - `simple_name`: str  *Human-readable LLM name*  

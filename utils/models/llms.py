@@ -22,7 +22,7 @@ from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.utils import MarkdownSerializer
 
 descs = {
-    "new": "Whether this is a newly added LLM",
+    "new": "Whether this LLM was released within the last two months, based on its release date",
     "status": "This LLM data status",
     "id": "Unique LLM identifier (you can choose it or use HF one)",
     "simple_name": "Human-readable LLM name",
