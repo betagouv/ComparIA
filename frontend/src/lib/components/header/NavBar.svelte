@@ -103,19 +103,6 @@
   </div>
 {/snippet}
 
-{#snippet discussions(mode: 'desktop' | 'mobile' = 'desktop')}
-  {#if !isAdmin}
-    <div class={['gap-2 lg:min-h-0 flex flex-col', { 'lg:hidden': !expanded }]}>
-      <div class="px-4">
-        <p class="text-sm! mb-0! text-black font-bold">
-          {m['auth.discussions.title']()}
-        </p>
-      </div>
-      <History {mode} class="lg:overflow-y-auto" />
-    </div>
-  {/if}
-{/snippet}
-
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
     <div class="flex items-center justify-between">
@@ -220,7 +207,9 @@
       </ul>
     </nav>
 
-    {@render discussions()}
+    {#if !isAdmin}
+      <History {expanded} />
+    {/if}
 
     <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
       {@render footer()}
@@ -259,7 +248,9 @@
         </ul>
       </nav>
 
-      {@render discussions('mobile')}
+      {#if !isAdmin}
+        <History mode="mobile" expanded={true} />
+      {/if}
 
       <div class="bottom-0 pb-5 p-4 bg-white sticky mt-auto border-t border-[--grey-925-125]">
         {@render footer('mobile')}
