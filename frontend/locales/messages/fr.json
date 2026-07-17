@@ -29,45 +29,45 @@
     },
     "admin": {
         "llms": {
-            "title": "LLMs data configuration",
-            "subTitle": "LLMs, labs, licenses and endpoints."
+            "subTitle": "LLMs, labs, licenses and endpoints.",
+            "title": "LLMs data configuration"
         },
         "nav": {
-            "users": "Utilisateurs",
-            "llms": "LLMs",
+            "authentification": "Authentification",
             "customization": "Personnalisation",
-            "authentification": "Authentification"
+            "llms": "LLMs",
+            "users": "Utilisateurs"
         },
         "panelLink": "Administration",
         "settings": {
-            "subtitle": "Configuration de l'application.",
-            "loading": "Chargement...",
-            "save": "Enregistrer",
-            "saving": "Enregistrement...",
-            "saved": "Paramètres mis à jour",
-            "customization": {
-                "platformName": "Nom de la plateforme",
-                "votesObjective": "Objectif de votes",
-                "logo": {
-                    "label": "Logo",
-                    "chooseFile": "Choisir un fichier",
-                    "reset": "Réinitialiser",
-                    "updated": "Logo mis à jour",
-                    "resetDone": "Logo réinitialisé",
-                    "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum."
-                }
-            },
             "authentification": {
                 "accessPolicy": {
-                    "label": "Mode d'accès",
                     "anonymous": "Connexion facultative (anonymous_first)",
+                    "label": "Mode d'accès",
                     "required": "Connexion obligatoire (sign_in_required)"
                 },
                 "domainAllowlist": {
-                    "label": "Domaines email autorisés",
-                    "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines."
+                    "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines.",
+                    "label": "Domaines email autorisés"
                 }
-            }
+            },
+            "customization": {
+                "logo": {
+                    "chooseFile": "Choisir un fichier",
+                    "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum.",
+                    "label": "Logo",
+                    "reset": "Réinitialiser",
+                    "resetDone": "Logo réinitialisé",
+                    "updated": "Logo mis à jour"
+                },
+                "platformName": "Nom de la plateforme",
+                "votesObjective": "Objectif de votes"
+            },
+            "loading": "Chargement...",
+            "save": "Enregistrer",
+            "saved": "Paramètres mis à jour",
+            "saving": "Enregistrement...",
+            "subtitle": "Configuration de l'application."
         }
     },
     "arenaHome": {
@@ -1700,16 +1700,16 @@
             "title": "Pourquoi votre vote est important ?"
         }
     },
-    "maintenance": {
-        "desc": "compar:IA est actuellement en maintenance. Nous serons de retour très prochainement.",
-        "title": "Site en maintenance"
-    },
     "invite": {
         "accept": "Accepter et continuer",
         "accepting": "Connexion en cours...",
         "backToLogin": "Se connecter autrement",
         "invalid": "Ce lien d'invitation n'est plus valide. Il a peut-être expiré ou déjà été utilisé.",
         "title": "Vous avez été invité·e sur compar:IA"
+    },
+    "maintenance": {
+        "desc": "compar:IA est actuellement en maintenance. Nous serons de retour très prochainement.",
+        "title": "Site en maintenance"
     },
     "models": {
         "arch": {
@@ -2507,7 +2507,6 @@
                 },
                 "conso": "{count}<span {midProps}>mWh</span>",
                 "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimé</span>",
-                "estimate": "Pour les scénarios, cette estimation porte sur la génération de la réponse. Elle ne modélise ni le contexte envoyé au modèle ni les effets éventuels du cache.",
                 "equivalences": {
                     "intro": "Cette énergie correspond environ à :",
                     "led": {
@@ -2531,6 +2530,7 @@
                         "tooltip": "Comparaison avec une heure de streaming vidéo, estimée à 80 Wh. Cette référence inclut la lecture vidéo et les équipements associés ; elle reste indicative."
                     }
                 },
+                "estimate": "Pour les scénarios, cette estimation porte sur la génération de la réponse. Elle ne modélise ni le contexte envoyé au modèle ni les effets éventuels du cache.",
                 "title": "Énergie de génération estimée",
                 "tooltip": "Exprimée en milliwattheures, cette estimation représente l'électricité mobilisée par le modèle pour générer une réponse. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
@@ -2541,6 +2541,12 @@
                     "label": "Détail de la consommation"
                 },
                 "title": "Pourquoi cette consommation ?"
+            },
+            "size": {
+                "count": "milliards param.",
+                "estimated": "(est.)",
+                "label": "taille du modèle",
+                "quantized": "(quantisé)"
             },
             "summary": {
                 "classification": {
@@ -2572,12 +2578,6 @@
                     "xs": "de très petite taille"
                 }
             },
-            "size": {
-                "count": "milliards param.",
-                "estimated": "(est.)",
-                "label": "taille du modèle",
-                "quantized": "(quantisé)"
-            },
             "title": "Bilan",
             "tokens": {
                 "max": "Contexte max : {count}k jetons",
@@ -2585,10 +2585,11 @@
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand.",
                 "used": "{count}<span {midProps}> jetons</span><span {smallProps}> utilisés</span>"
             },
+            "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée.",
             "usage": {
-                "coding": "une session de code agentique (500 k jetons)",
-                "changeLabel": "Changer le scénario de l’estimation",
                 "assumption": "Hypothèse : exécution sans cache. Les éventuelles réductions tarifaires ou énergétiques liées au cache ne sont pas incluses.",
+                "changeLabel": "Changer le scénario de l’estimation",
+                "coding": "une session de code agentique (500 k jetons)",
                 "descriptionCoding": "Exemple de session de code agentique (500 k jetons). Sa taille peut beaucoup varier selon le dépôt et les tâches.",
                 "descriptionDiscussion": "Estimation calculée à partir de cette discussion.",
                 "descriptionDocument": "Projection si ce modèle devait générer un document de 5 pages.",
@@ -2605,8 +2606,7 @@
                 "menuDocument": "Document · 5 pages",
                 "menuResearch": "Recherche approfondie",
                 "research": "une recherche approfondie (310 k jetons)"
-            },
-            "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée."
+            }
         },
         "thanks": {
             "cta": "Accéder au classement",
@@ -2644,7 +2644,6 @@
         }
     },
     "vote": {
-        "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
         "choices": {
             "negative": {
                 "comment": "Précisez ce que vous n’avez pas aimé…",
@@ -2662,6 +2661,7 @@
                 "useful": "Utile"
             }
         },
+        "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
         "importantDesc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois.",
         "title": "Quel modèle d’IA préférez-vous ?",
         "turn": {
