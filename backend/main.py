@@ -12,6 +12,8 @@ from backend.config import settings
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
+from backend.settings.legal import ensure_bootstrap_terms
+from backend.settings.router import router as settings_router
 from backend.utils.countries import get_vote_count
 from utils.database.settings import get_app_settings
 from utils.storage.redis import get_maintenance_mode
@@ -19,6 +21,8 @@ from utils.storage.redis import get_maintenance_mode
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if settings.COMPARIA_DB_URI:
+        await ensure_bootstrap_terms()
     if settings.COMPARIA_DB_URI and settings.ADMIN_EMAILS:
         from utils.database.actions.seed import seed_admins
 
@@ -70,6 +74,7 @@ app.include_router(models_router)
 app.include_router(arena_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(settings_router)
 
 
 @app.get("/counter")

@@ -135,7 +135,15 @@ def increment_blocked_prompts(ip: str) -> None:
         client.incr(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
         client.expire(REDIS_BLOCKED_COUNT_KEY.format(ip=ip), 3600)
     except Exception as e:
-        logger.error(f"[SESSION] Error incrementing blocked count for '{ip}': {e}")
+        logger.error(
+            "Failed to increment blocked prompt count",
+            extra={
+                "extra": {
+                    "event": "guardrail.blocked_count_failed",
+                    "exception_type": type(e).__name__,
+                }
+            },
+        )
 
 
 def is_block_cooldown(ip: str) -> bool:
@@ -149,5 +157,13 @@ def is_block_cooldown(ip: str) -> bool:
         assert not isinstance(counter, Awaitable)
         return bool(counter and int(counter) >= RATELIMIT_BLOCKED_PROMPTS_PER_HOUR)
     except Exception as e:
-        logger.error(f"[SESSION] Error checking block cooldown for '{ip}': {e}")
+        logger.error(
+            "Failed to check blocked prompt cooldown",
+            extra={
+                "extra": {
+                    "event": "guardrail.blocked_cooldown_failed",
+                    "exception_type": type(e).__name__,
+                }
+            },
+        )
         return False

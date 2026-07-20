@@ -18,6 +18,7 @@ class AppSettings(SQLModel, table=True):
     auth_domain_allowlist: Annotated[list[str], Field(sa_type=JSONB)] = []
     votes_objective: int = Field(default=300_000)
     platform_name: str = Field(default="Compar:IA")
+    legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
     updated_at: AutoDatetime

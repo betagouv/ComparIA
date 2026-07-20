@@ -1,7 +1,9 @@
 import uuid
+from datetime import datetime
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
@@ -16,12 +18,26 @@ from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
 from backend.config import settings
+from backend.settings.legal import (
+    DuplicateLegalDocumentError,
+    InvalidEffectiveDateError,
+    LegalPresentation,
+    decode_legal_document,
+    get_active_privacy_policy,
+    get_active_terms,
+    get_legal_presentation,
+    legal_document_public_hash,
+    list_privacy_policies,
+    list_terms,
+    publish_privacy_policy,
+    publish_terms,
+)
 from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
     AppSettingsPublic,
 )
-from utils.database.models.auth import UserPublic, UserRole
+from utils.database.models.auth import LegalDocument, UserPublic, UserRole
 from utils.database.settings import get_app_settings, update_app_settings
 
 router = APIRouter(
@@ -46,8 +62,198 @@ class InviteBody(BaseModel):
     email: EmailStr
 
 
+class AdminLegalDocument(BaseModel):
+    id: uuid.UUID
+    kind: Literal["terms", "privacy_policy"]
+    version: str
+    locale: str
+    content: str
+    content_hash: str
+    published_at: datetime
+    effective_at: datetime
+    retired_at: datetime | None
+    presentation: LegalPresentation | None = None
+
+
+class PublishTermsBody(BaseModel):
+    version: str = Field(min_length=1, max_length=64, pattern=r"^\S(?:.*\S)?$")
+    locale: str = Field(
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    )
+    content: str = Field(min_length=1, max_length=100_000)
+    presentation: LegalPresentation
+    effective_at: datetime | None = None
+    confirm_publication: Literal[True]
+
+
+class PublishPrivacyPolicyBody(BaseModel):
+    version: str = Field(min_length=1, max_length=64, pattern=r"^\S(?:.*\S)?$")
+    locale: str = Field(
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    )
+    content: str = Field(min_length=1, max_length=100_000)
+    effective_at: datetime | None = None
+    confirm_publication: Literal[True]
+
+
+class UpdateLegalPresentationBody(BaseModel):
+    presentation: LegalPresentation
+
+
 _LOGO_MAX_SIZE = 2 * 1024 * 1024
 _LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
+
+
+def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
+    envelope = decode_legal_document(row.content) if row.kind == "terms" else None
+    return AdminLegalDocument(
+        id=row.id,
+        kind=row.kind,
+        version=row.version,
+        locale=row.language,
+        content=envelope.content if envelope else row.content,
+        content_hash=(
+            legal_document_public_hash(row) if envelope else row.content_hash
+        ),
+        published_at=row.published_at,
+        effective_at=row.effective_at,
+        retired_at=row.retired_at,
+        presentation=envelope.presentation if envelope else None,
+    )
+
+
+@router.get("/legal/terms", response_model=list[AdminLegalDocument])
+async def get_terms_publications(
+    locale: str | None = Query(
+        default=None,
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    ),
+) -> list[AdminLegalDocument]:
+    documents = await list_terms(locale)
+    return [_to_admin_legal_document(document) for document in documents]
+
+
+@router.get("/legal/terms/current", response_model=AdminLegalDocument)
+async def get_current_terms(
+    locale: str = Query(
+        default="fr",
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    ),
+) -> AdminLegalDocument:
+    document = await get_active_terms(locale)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active terms are available for this locale",
+        )
+    return _to_admin_legal_document(document)
+
+
+@router.get("/legal/presentation", response_model=LegalPresentation)
+async def get_participation_presentation() -> LegalPresentation:
+    return await get_legal_presentation()
+
+
+@router.put("/legal/presentation", response_model=LegalPresentation)
+async def put_participation_presentation(
+    body: UpdateLegalPresentationBody,
+    current_user: RequiredAdmin,
+) -> LegalPresentation:
+    await update_app_settings(
+        {"legal_presentation": body.presentation.model_dump(mode="json")},
+        updated_by=current_user.id,
+    )
+    return body.presentation
+
+
+@router.post(
+    "/legal/terms",
+    response_model=AdminLegalDocument,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_terms_publication(body: PublishTermsBody) -> AdminLegalDocument:
+    try:
+        document = await publish_terms(
+            version=body.version,
+            language=body.locale,
+            content=body.content,
+            presentation=body.presentation,
+            effective_at=body.effective_at,
+        )
+    except DuplicateLegalDocumentError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=str(exc)
+        ) from exc
+    except (InvalidEffectiveDateError, ValueError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
+    return _to_admin_legal_document(document)
+
+
+@router.get("/legal/privacy-policy", response_model=list[AdminLegalDocument])
+async def get_privacy_policy_publications(
+    locale: str | None = Query(
+        default=None,
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    ),
+) -> list[AdminLegalDocument]:
+    documents = await list_privacy_policies(locale)
+    return [_to_admin_legal_document(document) for document in documents]
+
+
+@router.get("/legal/privacy-policy/current", response_model=AdminLegalDocument)
+async def get_current_privacy_policy(
+    locale: str = Query(
+        default="fr",
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    ),
+) -> AdminLegalDocument:
+    document = await get_active_privacy_policy(locale)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active privacy policy is available for this locale",
+        )
+    return _to_admin_legal_document(document)
+
+
+@router.post(
+    "/legal/privacy-policy",
+    response_model=AdminLegalDocument,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_privacy_policy_publication(
+    body: PublishPrivacyPolicyBody,
+) -> AdminLegalDocument:
+    try:
+        document = await publish_privacy_policy(
+            version=body.version,
+            language=body.locale,
+            content=body.content,
+            effective_at=body.effective_at,
+        )
+    except DuplicateLegalDocumentError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=str(exc)
+        ) from exc
+    except (InvalidEffectiveDateError, ValueError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
+    return _to_admin_legal_document(document)
 
 
 @router.get("/users", response_model=UsersPage)

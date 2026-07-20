@@ -21,7 +21,9 @@
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   const auth = getAuthContext()
-  const comparisons = getComparisonsContext()
+  // Admin navigation never gains an arena context during its lifetime.
+  // svelte-ignore state_referenced_locally
+  const comparisons = isAdmin ? undefined : getComparisonsContext()
   let expanded = $state(true)
 
   const connectionBtnProps = $derived(
@@ -107,13 +109,13 @@
   <div class="gap-2 flex flex-col">
     <div class="flex items-center justify-between">
       {@render renderLink({
-        href: '/arena/settings',
+        href: '/arene/parametres',
         label: m['seo.titles.settings'](),
         icon: 'i-ri-settings-4-line',
         button: true,
         size: 'sm',
         variant: 'tertiary-no-outline',
-        class: 'text-sm! text-grey! -ms-3 pointer-events-none'
+        class: 'text-sm! text-grey! -ms-3'
       })}
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />

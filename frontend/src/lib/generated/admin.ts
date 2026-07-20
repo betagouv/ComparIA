@@ -5,6 +5,71 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface AdminLegalDocument {
+  id: string;
+  kind: "terms" | "privacy_policy";
+  version: string;
+  locale: string;
+  content: string;
+  content_hash: string;
+  published_at: string;
+  effective_at: string;
+  retired_at: string | null;
+  presentation?: LegalPresentation | null;
+}
+export interface LegalPresentation {
+  arena: ArenaLegalPresentation;
+  sign_in: SignInLegalPresentation;
+  [k: string]: unknown;
+}
+export interface ArenaLegalPresentation {
+  title: string;
+  introduction: string;
+  checkbox_label: string;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  links:
+    | [LegalPresentationLink]
+    | [LegalPresentationLink, LegalPresentationLink]
+    | [LegalPresentationLink, LegalPresentationLink, LegalPresentationLink]
+    | [LegalPresentationLink, LegalPresentationLink, LegalPresentationLink, LegalPresentationLink]
+    | [
+        LegalPresentationLink,
+        LegalPresentationLink,
+        LegalPresentationLink,
+        LegalPresentationLink,
+        LegalPresentationLink
+      ];
+  button_label?: string | null;
+  [k: string]: unknown;
+}
+export interface LegalPresentationLink {
+  label: string;
+  href: string;
+  [k: string]: unknown;
+}
+export interface SignInLegalPresentation {
+  checkbox_label: string;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  links:
+    | [LegalPresentationLink]
+    | [LegalPresentationLink, LegalPresentationLink]
+    | [LegalPresentationLink, LegalPresentationLink, LegalPresentationLink]
+    | [LegalPresentationLink, LegalPresentationLink, LegalPresentationLink, LegalPresentationLink]
+    | [
+        LegalPresentationLink,
+        LegalPresentationLink,
+        LegalPresentationLink,
+        LegalPresentationLink,
+        LegalPresentationLink
+      ];
+  [k: string]: unknown;
+}
 export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
   auth_domain_allowlist?: string[] | null;
@@ -184,6 +249,24 @@ export interface LLMLicense {
   name: string;
   reuse: boolean;
   commercial_use: boolean;
+}
+export interface PublishPrivacyPolicyBody {
+  version: string;
+  locale: string;
+  content: string;
+  effective_at?: string | null;
+  confirm_publication: true;
+}
+export interface PublishTermsBody {
+  version: string;
+  locale: string;
+  content: string;
+  presentation: LegalPresentation;
+  effective_at?: string | null;
+  confirm_publication: true;
+}
+export interface UpdateLegalPresentationBody {
+  presentation: LegalPresentation;
 }
 export interface UserPublic {
   id: string;

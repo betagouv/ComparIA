@@ -31,13 +31,17 @@ async def auth_middleware(request: Request, call_next):
 
 
 async def anonymous_middleware(request: Request, call_next):
-    response = await call_next(request)
-
     token = request.cookies.get(ANONYMOUS_SESSION_COOKIE)
     if not token:
+        token = secrets.token_urlsafe(32)
+        request.state.anonymous_session_token = token
+
+    response = await call_next(request)
+
+    if ANONYMOUS_SESSION_COOKIE not in request.cookies:
         response.set_cookie(
             ANONYMOUS_SESSION_COOKIE,
-            secrets.token_urlsafe(32),
+            token,
             httponly=True,
             secure=not settings.LANGUIA_DEBUG,
             samesite="lax",

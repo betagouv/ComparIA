@@ -10,7 +10,6 @@
   let loading = $state(true)
   let saving = $state(false)
   let uploadingLogo = $state(false)
-
   let votesObjective = $state('')
   let platformName = $state('')
   let hasCustomLogo = $state(false)
@@ -20,8 +19,7 @@
     hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : '/orgs/comparia.png'
   )
 
-  async function load() {
-    loading = true
+  onMount(async () => {
     try {
       const data = await api.request<AppSettingsPublic>('/admin/settings')
       votesObjective = String(data.votes_objective)
@@ -30,9 +28,7 @@
     } finally {
       loading = false
     }
-  }
-
-  onMount(load)
+  })
 
   async function save(e: SubmitEvent) {
     e.preventDefault()
@@ -89,32 +85,37 @@
 <PageLayout
   seoTitle={m['admin.nav.customization']()}
   title={m['admin.nav.customization']()}
-  subtitle={m['admin.settings.subtitle']()}
+  subtitle="Identité et objectifs visibles dans l’arène."
 >
   {#if loading}
     <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
-    <form onsubmit={save} class="max-w-[480px]">
+    <form onsubmit={save} class="max-w-[560px]">
+      <div class="fr-callout fr-mb-6v">
+        <h2 class="fr-callout__title">Identité de l’arène</h2>
+        <p class="fr-callout__text">
+          Ces modifications sont réversibles et ne créent pas une nouvelle version des conditions de
+          participation.
+        </p>
+      </div>
+
       <Input
         id="settings-platform-name"
         label={m['admin.settings.customization.platformName']()}
         bind:value={platformName}
-        groupClass="mt-4!"
       />
 
-      <div class="mt-4!">
-        <p class="fr-label mb-2!">{m['admin.settings.customization.logo.label']()}</p>
+      <div class="fr-mt-4v">
+        <p class="fr-label fr-mb-2v">{m['admin.settings.customization.logo.label']()}</p>
         <div class="gap-4 flex items-center">
           <img
             src={logoSrc}
-            alt=""
+            alt="Aperçu du logo de la plateforme"
             class="bg-white h-[48px] border border-[--border-default-grey]"
           />
           <div class="gap-2 flex flex-col">
             <label class="fr-label">
-              <span class="fr-sr-only"
-                >{m['admin.settings.customization.logo.chooseFile']()}</span
-              >
+              <span class="fr-sr-only">{m['admin.settings.customization.logo.chooseFile']()}</span>
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml,image/webp"
@@ -134,7 +135,7 @@
             {/if}
           </div>
         </div>
-        <p class="fr-hint-text mt-1!">{m['admin.settings.customization.logo.hint']()}</p>
+        <p class="fr-hint-text fr-mt-1v">{m['admin.settings.customization.logo.hint']()}</p>
       </div>
 
       <Input
@@ -142,14 +143,16 @@
         type="number"
         min="0"
         label={m['admin.settings.customization.votesObjective']()}
+        help="Objectif affiché dans la jauge de participation."
         bind:value={votesObjective}
-        groupClass="mt-4!"
+        groupClass="fr-mt-4v"
       />
+
       <Button
         type="submit"
         text={saving ? m['admin.settings.saving']() : m['admin.settings.save']()}
         disabled={saving}
-        class="mt-4!"
+        class="fr-mt-4v"
       />
     </form>
   {/if}

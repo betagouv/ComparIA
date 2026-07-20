@@ -21,7 +21,6 @@ class LokiHandler(BaseLokiQueueHandler):
 from rich.logging import RichHandler
 
 from backend.config import settings
-from backend.utils.user import get_ip
 
 
 class JSONFormatter(logging.Formatter):
@@ -49,13 +48,12 @@ class JSONFormatter(logging.Formatter):
         # Extract request context if available
         if hasattr(record, "request") and isinstance(record.request, Request):
             try:
-                log_data["query_params"] = dict(record.request.query_params)
-                log_data["path_params"] = dict(record.request.path_params)
-                # TODO: remove IP? (privacy concern)
-                log_data["ip"] = get_ip(record.request)
-                log_data["comparison_id"] = record.request.headers.get(
-                    "x-comparison-id"
-                )
+                # Request bodies, query strings, cookies, IP addresses and
+                # arbitrary headers may contain personal data. Keep only the
+                # stable route metadata required for operational diagnostics.
+                log_data["method"] = record.request.method
+                route = record.request.scope.get("route")
+                log_data["route"] = getattr(route, "path", None)
 
             except:
                 pass

@@ -20,13 +20,14 @@ from pathlib import Path
 from uuid import UUID
 
 from async_lru import alru_cache
+from sqlalchemy import exists
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import and_, col, select
+from sqlmodel import and_, col, or_, select
 
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import APILLMDataBase
-from utils.database.models import Comparison
+from utils.database.models import AnonymousConsentLog, Comparison, ConsentLog
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
 from utils.database.session import get_session
@@ -40,6 +41,54 @@ from .models import (
 )
 
 logger = logging.getLogger("comparia.dataset")
+
+
+def _participation_acceptance_filter():
+    """Require valid arena terms acceptance before comparison creation.
+
+    The two explicit branches intentionally exclude unknown/legacy ownership.
+    A later acceptance cannot retroactively make an older conversation eligible.
+    Research reuse is an essential declared arena purpose, not optional consent.
+    """
+    authenticated_acceptance = exists().where(
+        and_(
+            ConsentLog.user_id == Comparison.user_id,
+            ConsentLog.purpose == "terms_and_participation",
+            col(ConsentLog.document_id).is_not(None),
+            col(ConsentLog.document_hash).is_not(None),
+            ConsentLog.consented_at <= Comparison.created_at,
+        )
+    )
+    anonymous_acceptance = exists().where(
+        and_(
+            AnonymousConsentLog.anonymous_user_hash == Comparison.anonymous_user_hash,
+            AnonymousConsentLog.purpose == "terms_and_participation",
+            col(AnonymousConsentLog.document_id).is_not(None),
+            col(AnonymousConsentLog.document_hash).is_not(None),
+            AnonymousConsentLog.consented_at <= Comparison.created_at,
+        )
+    )
+    return or_(
+        and_(col(Comparison.user_id).is_not(None), authenticated_acceptance),
+        and_(
+            col(Comparison.user_id).is_(None),
+            col(Comparison.anonymous_user_hash).is_not(None),
+            anonymous_acceptance,
+        ),
+    )
+
+
+def _publication_filter():
+    """Return the fail-closed eligibility filter for every published row."""
+    return and_(
+        col(Comparison.archived) == False,
+        col(Comparison.llm_analyzed) == True,
+        col(Comparison.contains_pii) == False,
+        col(Comparison.contains_spam) == False,
+        col(Comparison.error) == JSONB.NULL,
+        col(Comparison.cohorts).in_((None, "")),
+        _participation_acceptance_filter(),
+    )
 
 
 @alru_cache
@@ -66,18 +115,9 @@ async def count_dataset_rows(datasets: list[Datasets]):
     """Display row counts for each dataset without performing export."""
     try:
         logger.info("Counting rows for each dataset...")
+        public_filter = _publication_filter()
         counts = await get_db_comparisons_counts(
-            {
-                "normal": and_(
-                    col(Comparison.archived) == False,
-                    col(Comparison.llm_analyzed) == True,
-                    col(Comparison.contains_pii) != True,
-                    col(Comparison.contains_spam) != True,
-                    col(Comparison.error) == JSONB.NULL,
-                    col(Comparison.cohorts).in_((None, "")),
-                ),
-                "raw": col(Comparison.id) != None,
-            }
+            {dataset: public_filter for dataset in datasets}
         )
 
         for dataset, count in counts.items():
@@ -227,8 +267,8 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     excluded = bool(
         extra_meta["cohorts"]
         or extra_meta["archived"] is not False
-        or extra_meta["contains_pii"]
-        or extra_meta["contains_spam"]
+        or extra_meta["contains_pii"] is not False
+        or extra_meta["contains_spam"] is not False
         or extra_meta["error"] is not None
         or extra_meta["llm_analyzed"] is not True
     )
@@ -312,7 +352,11 @@ def _reference_rows() -> list[dict]:
 
 
 def _build_exporters(
-    datasets: list[Datasets], repo_prefix: str, export_base_path: Path
+    datasets: list[Datasets],
+    repo_prefix: str,
+    export_base_path: Path,
+    *,
+    include_unsafe_internal_raw: bool = False,
 ) -> dict[Datasets, StreamingDatasetExporter]:
     schema_rows = _reference_rows()
     exporters: dict[Datasets, StreamingDatasetExporter] = {}
@@ -328,13 +372,22 @@ def _build_exporters(
             )
         else:
             exporters[dataset] = StreamingDatasetExporter(
-                repo_name, export_base_path / repo_name, schema_rows=schema_rows
+                repo_name,
+                export_base_path / repo_name,
+                keep=(
+                    (lambda row: True)
+                    if include_unsafe_internal_raw
+                    else (lambda row: not row["excluded"])
+                ),
+                schema_rows=schema_rows,
             )
     return exporters
 
 
 async def stream_to_exporters(
     exporters: dict[Datasets, StreamingDatasetExporter],
+    *,
+    publication_only: bool = True,
 ) -> None:
     """
     Single pass over the DB: turn each Comparison into rows and feed every
@@ -344,7 +397,8 @@ async def stream_to_exporters(
     failed_comparison_ids: list[str] = []
     n_comparisons = 0
 
-    async for db_comp in get_db_comparisons_stream():
+    filters = [_publication_filter()] if publication_only else None
+    async for db_comp in get_db_comparisons_stream(filters):
         try:
             turns = await comparison_to_turns(db_comp)
         except Exception:
@@ -466,9 +520,11 @@ async def process_datasets(
     export_base_path: Path,
     dry_run: bool = False,
     use_cache: bool = False,
+    allow_raw_publication: bool = False,
+    include_unsafe_internal_raw: bool = False,
 ):
     """
-    Process a single dataset: fetch from DB, transform (anonymize, add metadata),
+    Process a single dataset: fetch from DB, validate, filter, add metadata,
     Export to parquet (+ sample tsv/jsonl preview), and push to HF Hub.
 
     Args:
@@ -477,7 +533,23 @@ async def process_datasets(
         dry_run: If True, skip HuggingFace upload
         use_cache: If True and raw parquet exists, regenerate normal from it (skips DB)
     """
-    logger.info(f"Starting processing datasets…")
+    if "raw" in datasets and not dry_run and not allow_raw_publication:
+        raise ValueError(
+            "Raw dataset publication is disabled by default. "
+            "Pass --allow-raw-publication after reviewing the destination and data."
+        )
+    if include_unsafe_internal_raw and (not dry_run or "raw" not in datasets):
+        raise ValueError(
+            "Unsafe raw rows are restricted to an explicit local raw export "
+            "(--dry-run --dataset raw --include-unsafe-internal-raw)."
+        )
+    if use_cache:
+        raise ValueError(
+            "Cached raw exports do not carry verifiable participation acceptance; "
+            "regenerate from the database instead."
+        )
+
+    logger.info("Starting dataset processing")
 
     repo_org, repo_prefix = get_repo_infos()
     raw_parquet_path = (
@@ -505,8 +577,15 @@ async def process_datasets(
                 f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export"
             )
         logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
-        exporters = _build_exporters(datasets, repo_prefix, export_base_path)
-        await stream_to_exporters(exporters)
+        exporters = _build_exporters(
+            datasets,
+            repo_prefix,
+            export_base_path,
+            include_unsafe_internal_raw=include_unsafe_internal_raw,
+        )
+        await stream_to_exporters(
+            exporters, publication_only=not include_unsafe_internal_raw
+        )
 
         for dataset, exporter in exporters.items():
             repo_name = exporter.dataset_name

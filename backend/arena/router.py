@@ -37,6 +37,8 @@ from backend.arena.streaming import (
 )
 from backend.arena.web_search import search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
+from backend.auth.services import has_current_terms_acceptance
+from backend.config import settings
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
@@ -182,9 +184,27 @@ async def add_first_text(
     Raises:
         HTTPException: If rate limiting triggered or validation fails
     """
+    if settings.COMPARIA_DB_URI and not await has_current_terms_acceptance(
+        user_id=user.id if user else None,
+        anonymous_user_hash=anonymous_user_hash,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Vous devez accepter les conditions d’utilisation en vigueur avant de participer.",
+        )
+
     logger.info(
-        f"'/add_first_text' called with: {args.model_dump_json()}",
-        extra={"request": request},
+        "Arena first message received",
+        extra={
+            "request": request,
+            "extra": {
+                "event": "arena.first_message",
+                "mode": args.mode,
+                "web_search": args.web_search,
+                "prompt_chars": len(args.prompt_value),
+                "custom_model_count": len(args.custom_models_selection or []),
+            },
+        },
     )
 
     guardrail = await run_guardrail(args.prompt_value, "prompt_value", request)
@@ -292,8 +312,15 @@ async def add_text(
         HTTPException: If Comparison not found or rate limiting triggered
     """
     logger.info(
-        f"'/add_text' on comparison '{comparison_.id}' called with: {args.model_dump_json()}",
-        extra={"request": request},
+        "Arena follow-up received",
+        extra={
+            "request": request,
+            "extra": {
+                "event": "arena.follow_up",
+                "comparison_id": str(comparison_.id),
+                "prompt_chars": len(args.message),
+            },
+        },
     )
 
     guardrail = await run_guardrail(args.message, "message", request)
@@ -383,8 +410,15 @@ async def retry(
     store_comparison_metadata(comparison.id, is_streaming=True)
 
     logger.info(
-        f"retry with user message: {turn.user_msg.content}",
-        extra={"request": request},
+        "Arena response retry requested",
+        extra={
+            "request": request,
+            "extra": {
+                "event": "arena.retry",
+                "comparison_id": str(comparison.id),
+                "prompt_chars": len(turn.user_msg.content),
+            },
+        },
     )
 
     # Re-stream responses
@@ -433,8 +467,25 @@ async def vote(
         HTTPException: If Comparison not found or forbidden vote attempts.
     """
     logger.info(
-        f"'/vote' on comparison '{comparison.id}' called with: {vote.model_dump_json()}",
-        extra={"request": request},
+        "Arena vote received",
+        extra={
+            "request": request,
+            "extra": {
+                "event": "arena.vote",
+                "comparison_id": str(comparison.id),
+                "vote_kind": type(vote).__name__,
+                "annotation_count": (
+                    len(vote.keyword_annotations)
+                    if isinstance(vote, TurnVoteAnnotate)
+                    else 0
+                ),
+                "custom_annotation_chars": (
+                    len(vote.custom_annotation or "")
+                    if isinstance(vote, TurnVoteAnnotate)
+                    else 0
+                ),
+            },
+        },
     )
 
     turn = next((turn for turn in comparison.turns if turn.id == vote.turn_id), None)

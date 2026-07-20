@@ -71,10 +71,9 @@ def litellm_stream_iter(
     # if debug:
     #     litellm._turn_on_debug()
 
-    # Configure Sentry error tracking if available
-    if settings.SENTRY_DSN:
-        litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
-        litellm.failure_callback.append("sentry")
+    # Do not install LiteLLM's Sentry callbacks. They receive the full request
+    # payload, including user prompts and conversation history. Errors are
+    # captured by the application after its Sentry scrubber has run instead.
 
     # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
@@ -131,8 +130,15 @@ def litellm_stream_iter(
         response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
     except litellm.ContextWindowExceededError as e:
         logger.error(
-            f"context_window_exceeded: {endpoint.model}: {e}",
-            extra={"request": request},
+            "Model context window exceeded",
+            extra={
+                "request": request,
+                "extra": {
+                    "event": "arena.context_window_exceeded",
+                    "model": endpoint.model,
+                    "exception_type": type(e).__name__,
+                },
+            },
         )
         raise ContextTooLongError from e
 
@@ -179,8 +185,15 @@ def litellm_stream_iter(
             elif choice.finish_reason == "length":
                 # Output truncated at max_tokens limit — response is still valid
                 logger.warning(
-                    "output_truncated_at_max_tokens: " + str(chunk),
-                    extra={"request": request},
+                    "Model response truncated at max token limit",
+                    extra={
+                        "request": request,
+                        "extra": {
+                            "event": "arena.output_truncated",
+                            "model": endpoint.model,
+                            "generation_id": chunk.id,
+                        },
+                    },
                 )
                 break
 

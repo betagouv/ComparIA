@@ -1,22 +1,38 @@
 import logging
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from pydantic import BaseModel, EmailStr
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    field_validator,
+)
 
 from backend.arena.captcha import verify_altcha_token
+from backend.auth.dependencies import RequiredAnomymous, RequiredUser
 from backend.auth.email import send_login_code
 from backend.auth.services import (
     _hash,
     accept_invite,
+    erase_user_account,
+    get_anonymous_consent_status,
+    get_consent_status,
     get_invite_token_info,
     get_user_from_token,
+    has_current_terms_acceptance,
+    record_anonymous_consent,
+    record_user_consent,
     request_login_code,
     revoke_all_user_sessions,
     revoke_current_session,
     verify_login_code,
 )
-from backend.config import settings
+from backend.config import ANONYMOUS_SESSION_COOKIE, settings
+from backend.settings.legal import validate_active_terms
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.settings import get_app_settings
 from utils.storage.redis import (
@@ -59,6 +75,52 @@ class InviteAcceptBody(BaseModel):
     token: str
 
 
+class ConsentAssertion(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    terms_version: str = Field(min_length=1, max_length=64)
+    terms_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    accepted_at: datetime
+    locale: str = Field(
+        min_length=2,
+        max_length=16,
+        pattern=r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$",
+    )
+    legal_information_acknowledged: Literal[True] = Field(
+        validation_alias=AliasChoices(
+            "legal_information_acknowledged", "participation_acknowledged"
+        )
+    )
+
+    @field_validator("accepted_at")
+    @classmethod
+    def acceptance_must_be_recent_and_zoned(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("accepted_at must include a timezone")
+        now = datetime.now(timezone.utc)
+        accepted = value.astimezone(timezone.utc)
+        if accepted < now - timedelta(minutes=30) or accepted > now + timedelta(
+            minutes=5
+        ):
+            raise ValueError("accepted_at must reflect the current consent interaction")
+        return accepted
+
+
+async def _validated_terms(assertion: ConsentAssertion):
+    document = await validate_active_terms(
+        assertion.terms_version, assertion.terms_hash, assertion.locale
+    )
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "Les conditions ou les informations de confidentialité ont changé. "
+                "Consultez la version en vigueur avant de continuer."
+            ),
+        )
+    return document
+
+
 @router.get("/config")
 async def get_config() -> AuthConfig:
     app_settings = await get_app_settings()
@@ -91,6 +153,20 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     ok, error = verify_altcha_token(body.altcha_payload)
     if not ok:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+
+    anonymous_token = request.cookies.get(ANONYMOUS_SESSION_COOKIE)
+    if not anonymous_token or not await has_current_terms_acceptance(
+        user_id=None,
+        anonymous_user_hash=_hash(anonymous_token),
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail=(
+                "Vous devez accepter les conditions d’utilisation et prendre "
+                "connaissance de la politique de confidentialité avant de demander "
+                "un code de connexion."
+            ),
+        )
 
     try:
         client = get_redis_client()
@@ -174,6 +250,11 @@ async def email_verify(
         ip=ip,
         user_agent=user_agent,
         visitor_id=visitor_id,
+        anonymous_user_hash=(
+            _hash(request.cookies[ANONYMOUS_SESSION_COOKIE])
+            if request.cookies.get(ANONYMOUS_SESSION_COOKIE)
+            else None
+        ),
     )
     if not token:
         try:
@@ -226,6 +307,11 @@ async def invite_accept(
         ip=ip,
         user_agent=user_agent,
         visitor_id=visitor_id,
+        anonymous_user_hash=(
+            _hash(request.cookies[ANONYMOUS_SESSION_COOKIE])
+            if request.cookies.get(ANONYMOUS_SESSION_COOKIE)
+            else None
+        ),
     )
     if not token:
         raise HTTPException(
@@ -271,3 +357,61 @@ async def logout_all(request: Request, response: Response) -> None:
         if user:
             await revoke_all_user_sessions(user.id)
     response.delete_cookie("auth_session")
+
+
+class AuthenticatedConsentBody(BaseModel):
+    consent: ConsentAssertion
+
+
+@router.post("/consent", status_code=status.HTTP_204_NO_CONTENT)
+async def accept_authenticated_consent(
+    body: AuthenticatedConsentBody, user: RequiredUser, request: Request
+) -> None:
+    document = await _validated_terms(body.consent)
+    await record_user_consent(
+        user.id,
+        body.consent,
+        document,
+        request.cookies.get("auth_session"),
+    )
+
+
+@router.get("/consent")
+async def consent_status(user: RequiredUser) -> dict:
+    return await get_consent_status(user.id)
+
+
+class AccountEraseBody(BaseModel):
+    email: EmailStr
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def erase_account(
+    body: AccountEraseBody,
+    user: RequiredUser,
+    response: Response,
+) -> None:
+    if body.email.lower() != user.email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email confirmation does not match the signed-in account.",
+        )
+    await erase_user_account(user.id)
+    response.delete_cookie("auth_session")
+
+
+class AnonymousConsentBody(BaseModel):
+    consent: ConsentAssertion
+
+
+@router.post("/consent/anonymous", status_code=status.HTTP_204_NO_CONTENT)
+async def accept_anonymous_consent(
+    body: AnonymousConsentBody, anonymous_user_hash: RequiredAnomymous
+) -> None:
+    document = await _validated_terms(body.consent)
+    await record_anonymous_consent(anonymous_user_hash, body.consent, document)
+
+
+@router.get("/consent/anonymous")
+async def anonymous_consent_status(anonymous_user_hash: RequiredAnomymous) -> dict:
+    return await get_anonymous_consent_status(anonymous_user_hash)

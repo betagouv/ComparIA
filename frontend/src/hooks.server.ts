@@ -42,7 +42,7 @@ defineCustomServerStrategy('custom-url', {
 })
 
 export const handleError: HandleServerError = async ({ error, event }) => {
-  if (error instanceof UnauthorizedError) {
+  if (error instanceof UnauthorizedError && error.message === 'auth_required') {
     const path = event.url.pathname
     redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
   }

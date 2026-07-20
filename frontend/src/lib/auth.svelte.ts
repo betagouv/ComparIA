@@ -42,10 +42,10 @@ export function openSignInModal(): void {
   }
 }
 
-export async function logout(auth: AuthCtx, comparisons: ComparisonsCtx): Promise<void> {
+export async function logout(auth: AuthCtx, comparisons?: ComparisonsCtx): Promise<void> {
   try {
     await api.request<void>('/auth/logout', { method: 'POST' })
-    await updateComparisonsContext(comparisons)
+    if (comparisons) await updateComparisonsContext(comparisons)
   } finally {
     auth.user = null
     if (auth.config?.access_policy === 'sign_in_required') {

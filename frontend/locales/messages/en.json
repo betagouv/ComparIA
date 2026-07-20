@@ -29,7 +29,8 @@
             "users": "Users",
             "llms": "LLMs",
             "customization": "Customization",
-            "authentification": "Authentication"
+            "authentification": "Authentication",
+            "termsParticipation": "Legal and journeys"
         },
         "panelLink": "Admin panel",
         "settings": {

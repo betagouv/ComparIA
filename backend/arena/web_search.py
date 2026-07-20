@@ -50,8 +50,17 @@ async def search_web(
 
         return results
 
-    except Exception:
-        logger.exception("Linkup web search failed")
+    except Exception as exc:
+        logger.error(
+            "Linkup web search failed",
+            extra={
+                "extra": {
+                    "event": "web_search.failed",
+                    "provider": "linkup",
+                    "exception_type": type(exc).__name__,
+                }
+            },
+        )
         return None
 
 
@@ -90,7 +99,10 @@ def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
         if not results:
             return None
 
-        logger.info(f"[CACHE] Web search cache hit for prompt: '{prompt}'.")
+        logger.info(
+            "Web search cache hit",
+            extra={"extra": {"event": "web_search.cache_hit"}},
+        )
         return [LinkupSearchTextResult.model_construct(**result) for result in results]
 
     except Exception as e:
@@ -116,7 +128,10 @@ def store_cached_search_results(
             settings.CACHE_TTL,
             json.dumps([result.model_dump() for result in web_search_results]),
         )
-        logger.info(f"[CACHE] Stored web search cache for prompt: '{prompt}'.")
+        logger.info(
+            "Web search result cached",
+            extra={"extra": {"event": "web_search.cache_store"}},
+        )
 
     except Exception as e:
         logger.warning(f"[CACHE] Error storing web search cache: {e}")

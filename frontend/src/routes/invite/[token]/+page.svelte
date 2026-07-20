@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Button, Checkbox, Link } from '$components/dsfr'
+  import { Button, Link } from '$components/dsfr'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -14,7 +14,6 @@
 
   let checkStatus = $state<'loading' | 'valid' | 'invalid'>('loading')
   let email = $state<string>()
-  let consented = $state(false)
   let submitting = $state(false)
   let error = $state<string>()
 
@@ -83,16 +82,9 @@
         <p class="text-sm! mb-6!">{m['invite.invalid']()}</p>
         <Link button href="/login" text={m['invite.backToLogin']()} />
       {:else if checkStatus === 'valid'}
-        <Checkbox
-          id="invite-consent"
-          class="text-xs!"
-          bind:checked={consented}
-          disabled={submitting}
-          label={m['auth.modal.email.consent']()}
-        />
         <Button
           text={submitting ? m['invite.accepting']() : m['invite.accept']()}
-          disabled={!consented || submitting}
+          disabled={submitting}
           onclick={accept}
           class="mt-4 block! w-full!"
         />

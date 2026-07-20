@@ -7,7 +7,7 @@ import type { HandleClientError } from '@sveltejs/kit'
 // onMount registers the redirect/modal handler (e.g. on first navigation),
 // so we don't fall through to the generic error page.
 export const handleError: HandleClientError = ({ error }) => {
-  if (error instanceof UnauthorizedError) {
+  if (error instanceof UnauthorizedError && error.message === 'auth_required') {
     goto(resolve(`/login?redirect=${encodeURIComponent(location.pathname)}`))
     return
   }

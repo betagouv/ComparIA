@@ -1,34 +1,23 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Button, Checkbox, Icon, Link } from '$components/dsfr'
+  import { Accordion, AccordionGroup, Button, Icon, Link } from '$components/dsfr'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
   import * as env from '$env/static/public'
   import { getI18nContext } from '$lib/global.svelte'
-  import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
-  import { externalLinkProps, propsToAttrs, sanitize } from '$lib/utils/commons'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import type { HTMLImgAttributes } from 'svelte/elements'
 
   const locale = getLocale()
   const i18nData = getI18nContext()
-  const acceptTos = useLocalStorage('comparia:tos', false)
-  let tosError = $state<string>()
-
-  let PUBLIC_GIT_COMMIT = $state<string | null>((env as any).PUBLIC_GIT_COMMIT ?? null)
+  const publicEnv = env as unknown as Record<string, string | undefined>
+  let PUBLIC_GIT_COMMIT = $state<string | null>(publicEnv.PUBLIC_GIT_COMMIT ?? null)
 
   if (PUBLIC_GIT_COMMIT) console.log(`Git commit: ${PUBLIC_GIT_COMMIT}`)
 
-  $effect(() => {
-    if (acceptTos.value) tosError = undefined
-  })
-
   function handleRedirect() {
-    if (acceptTos.value) {
-      window.location.href = '/arene/?cgu_acceptees'
-    } else {
-      tosError = m['home.intro.tos.error']()
-    }
+    window.location.href = '/arene/'
   }
 
   const localeOrDefault = $derived(['da', 'sv', 'en', 'fr'].includes(locale) ? locale : 'en')
@@ -158,16 +147,6 @@
             </h1>
             <p>{m['home.intro.desc']()}</p>
           </div>
-
-          <Checkbox
-            bind:checked={acceptTos.value}
-            id="tos-home"
-            label={m['home.intro.tos.accept']({
-              linkProps: propsToAttrs({ href: '/modalites', target: '_blank' })
-            })}
-            help={m['home.intro.tos.help']()}
-            error={tosError}
-          />
         </div>
 
         <Button
