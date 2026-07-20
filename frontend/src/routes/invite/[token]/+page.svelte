@@ -1,14 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
-  import { auth, initAuth } from '$lib/auth.svelte'
+  import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
   const token = $derived(page.params.token)
+  const auth = getAuthContext()
 
   let checkStatus = $state<'loading' | 'valid' | 'invalid'>('loading')
   let email = $state<string>()
@@ -17,7 +19,6 @@
   let error = $state<string>()
 
   onMount(async () => {
-    if (!auth.config) initAuth()
     try {
       const result = await api.request<{ valid: boolean; email: string | null }>(
         `/auth/invite/${token}`
@@ -37,9 +38,10 @@
         method: 'POST',
         body: JSON.stringify({ token })
       })
-      await initAuth()
+      const data = await api.request<{ user: AuthUser | null }>('/auth/me')
+      auth.user = data.user
       useToast(m['auth.success'](), 4000)
-      goto('/arene')
+      goto(resolve('/arene'))
     } catch (err) {
       error = (err as Error).message
       checkStatus = 'invalid'
