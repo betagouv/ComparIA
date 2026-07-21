@@ -3,7 +3,10 @@ import json
 import logging
 import os
 import queue
+import re
 import sys
+import traceback
+import uuid
 from logging.handlers import WatchedFileHandler
 
 from fastapi import Request
@@ -21,27 +24,39 @@ class LokiHandler(BaseLokiQueueHandler):
 from rich.logging import RichHandler
 
 from backend.config import settings
-from backend.utils.user import get_ip
+
+_ERROR_CODE_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
+
+
+def exception_metadata(exc: BaseException) -> dict[str, object]:
+    metadata: dict[str, object] = {
+        "exception_type": type(exc).__name__,
+        "traceback": [
+            {
+                "file": frame.filename,
+                "line": frame.lineno,
+                "function": frame.name,
+            }
+            for frame in traceback.extract_tb(exc.__traceback__)
+        ],
+    }
+    for attribute in ("status_code", "status"):
+        status = getattr(exc, attribute, None)
+        if isinstance(status, int) and 100 <= status <= 599:
+            metadata["status_code"] = status
+            break
+    for attribute in ("code", "error_code"):
+        code = getattr(exc, attribute, None)
+        if isinstance(code, str) and _ERROR_CODE_PATTERN.fullmatch(code):
+            metadata["error_code"] = code
+            break
+    return metadata
 
 
 class JSONFormatter(logging.Formatter):
-    """
-    Custom logging formatter that outputs structured JSON.
-
-    Converts log records to JSON with context information (IP, session, query params).
-    Used for both file and database logging.
-    """
+    """Format logs as JSON with safe request metadata."""
 
     def format(self, record) -> str:
-        """
-        Format a log record as JSON with request context.
-
-        Args:
-            record: LogRecord from Python logging
-
-        Returns:
-            str: JSON-formatted log entry
-        """
         msg = super().format(record)
 
         log_data: dict[str, dict | str | None] = {"message": msg}
@@ -49,15 +64,14 @@ class JSONFormatter(logging.Formatter):
         # Extract request context if available
         if hasattr(record, "request") and isinstance(record.request, Request):
             try:
-                log_data["query_params"] = dict(record.request.query_params)
-                log_data["path_params"] = dict(record.request.path_params)
-                # TODO: remove IP? (privacy concern)
-                log_data["ip"] = get_ip(record.request)
-                log_data["comparison_id"] = record.request.headers.get(
-                    "x-comparison-id"
-                )
+                log_data["method"] = record.request.method
+                route = record.request.scope.get("route")
+                log_data["route"] = getattr(route, "path", None)
+                comparison_id = record.request.headers.get("x-comparison-id")
+                if comparison_id:
+                    log_data["comparison_id"] = str(uuid.UUID(comparison_id))
 
-            except:
+            except (AttributeError, TypeError, ValueError):
                 pass
         # Include extra metadata if provided
         if hasattr(record, "extra"):

@@ -159,9 +159,15 @@ async def bot_response_async(
     # Check for empty responses and raise error (check on data that is not stripped)
     if not llm_msg.content and not llm_msg.reasoning_content:
         logger.error(
-            f"reponse_vide: {llm.id}, message: {llm_msg}",
-            exc_info=True,
-            extra={"request": request},
+            "Empty response received from model",
+            extra={
+                "request": request,
+                "extra": {
+                    "event": "arena.empty_model_response",
+                    "model_id": str(llm.id),
+                    "generation_id": llm_msg.generation_id,
+                },
+            },
         )
         raise EmptyResponseError(
             f"No answer from API '{llm.endpoint.api_model_id}' for model '{llm.id}'"
