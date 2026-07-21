@@ -60,6 +60,7 @@ class AuthConfig(BaseModel):
     homepage_url: str | None
     platform_url: str
     has_custom_logo: bool
+    enabled_locales: list[str]
 
 
 class EmailRequestBody(BaseModel):
@@ -147,6 +148,7 @@ async def get_config() -> AuthConfig:
         homepage_url=app_settings.homepage_url,
         platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
+        enabled_locales=app_settings.enabled_locales,
     )
 
 
