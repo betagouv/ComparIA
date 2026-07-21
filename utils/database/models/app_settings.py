@@ -101,6 +101,7 @@ class AppSettings(SQLModel, table=True):
         "lt",
         "sv",
     ]
+    default_locale: str = Field(default="fr")
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
@@ -117,6 +118,7 @@ class AppSettingsPublic(SQLModel):
     homepage_url: str | None
     has_custom_logo: bool
     enabled_locales: list[str]
+    default_locale: str
     updated_at: str
     updated_by: uuid.UUID | None = None
 
@@ -132,6 +134,7 @@ class AppSettingsPatch(SQLModel):
     secondary_color_dark: str | None = None
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
     enabled_locales: list[str] | None = None
+    default_locale: str | None = None
 
     @field_validator(
         "primary_color_light",
