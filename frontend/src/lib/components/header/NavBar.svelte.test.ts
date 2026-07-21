@@ -35,7 +35,7 @@ vi.mock('$lib/global.svelte', () => ({
 
 describe('NavBar admin', () => {
   it('renders the global legal menu without requiring the arena comparison context', async () => {
-    const { container, getByRole } = render(NavBar, { navLinks: [], isAdmin: true })
+    const { container, getByRole, queryByRole } = render(NavBar, { navLinks: [], isAdmin: true })
 
     expect(container.textContent).not.toContain('admin@example.test')
     expect(getByRole('link', { name: 'Paramètres' })).toBeTruthy()
@@ -47,7 +47,8 @@ describe('NavBar admin', () => {
     expect(getByRole('link', { name: 'Données personnelles et confidentialité' })).toBeTruthy()
     expect(getByRole('link', { name: 'Conditions générales d’utilisation' })).toBeTruthy()
     expect(getByRole('link', { name: 'Accessibilité : non conforme' })).toBeTruthy()
-    expect(getByRole('link', { name: 'Mentions légales' })).toBeTruthy()
+    expect(getByRole('link', { name: 'Écoconception' })).toBeTruthy()
+    expect(queryByRole('link', { name: 'Mentions légales' })).toBeNull()
     expect(mocks.getComparisonsContext).not.toHaveBeenCalled()
   })
 })

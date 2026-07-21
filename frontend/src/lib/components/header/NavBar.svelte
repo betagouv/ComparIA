@@ -173,8 +173,8 @@
         </li>
         <li>
           <Link
-            href={resolve('/mentions-legales')}
-            text="Mentions légales"
+            href={resolve('/ecoconception')}
+            text="Écoconception"
             size="sm"
             onclick={() => (legalMenuOpen = false)}
             onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
