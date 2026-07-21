@@ -29,6 +29,8 @@
         return 'green'
       case 'pending_invite':
         return 'yellow'
+      case 'added_manually':
+        return 'purple'
       default:
         return ''
     }
