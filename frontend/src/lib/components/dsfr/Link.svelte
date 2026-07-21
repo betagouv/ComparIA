@@ -40,9 +40,9 @@
   )
 
   const btnClasses = $derived([
-    `fr-btn fr-btn--${variant}`,
+    `fr-btn fr-btn--${variant} justify-center`,
     {
-      xs: 'fr-btn--sm px-1! py-0!',
+      xs: 'fr-btn--sm py-0!',
       sm: 'fr-btn--sm',
       md: '',
       lg: 'fr-btn--lg px-6!'
@@ -50,10 +50,12 @@
     {
       'cg-link-btn': !native,
       'rounded-lg': !cornered,
-      'justify-center': !iconOnly,
       [`fr-icon-${icon}`]: !!icon,
       [`fr-btn--icon-${iconPos}`]: !!icon && !iconOnly,
-      'max-w-[1.5rem]! min-h-[1.5rem]! h-[1.5rem]!': size === 'xs' && iconOnly
+      'px-0!': size === 'xs' && iconOnly,
+      'px-1!': size === 'xs' && !iconOnly,
+      'min-w-[1.5rem]! w-[1.5rem]! max-w-[1.5rem]! min-h-[1.5rem]! h-[1.5rem]!':
+        size === 'xs' && iconOnly
     }
   ])
 
