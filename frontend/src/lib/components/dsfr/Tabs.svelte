@@ -25,15 +25,16 @@
     tab?: Snippet<[T]>
   } & SvelteHTMLElements['div'] = $props()
 
-  let currentTabId = $state(initialId)
+  const getInitialId = () => initialId
+  let currentTabId = $state(getInitialId())
 
   const items = $derived.by(() =>
     tabs.map((tab) => ({
       props: {
         id: `tab-${tab.id}`,
-        tabindex: tab.id === initialId ? 0 : -1,
+        tabindex: tab.id === currentTabId ? 0 : -1,
         role: 'tab',
-        'aria-selected': tab.id === initialId ? true : false,
+        'aria-selected': tab.id === currentTabId ? true : false,
         'aria-controls': `tab-${tab.id}-panel`,
         class: kind === 'tab' ? 'fr-tabs__tab' : 'fr-nav__link',
         onclick: () => (currentTabId = tab.id)
@@ -75,7 +76,7 @@
       class={[
         'fr-tabs__panel',
         {
-          'fr-tabs__panel--selected': item.id === initialId,
+          'fr-tabs__panel--selected': item.id === currentTabId,
           'px-0! py-5!': noBorders,
           'visibility-none! transition-none!': item.href && item.id !== currentTabId
         },
