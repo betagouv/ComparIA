@@ -12,10 +12,30 @@ import { sequence } from '@sveltejs/kit/hooks'
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
 
-const DEFAULT_LOCALE = env.DEFAULT_LOCALE || ''
+const DEFAULT_LOCALE_CHECK_TTL_MS = 20_000
+
+// Cached per Node process (same rationale as maintenanceCache below): the
+// admin-editable default locale doesn't need to be read from the backend on
+// every single request.
+let defaultLocaleCache: { value: string; checkedAt: number } | null = null
+
+async function getDefaultLocale(): Promise<string> {
+  const now = Date.now()
+  if (!defaultLocaleCache || now - defaultLocaleCache.checkedAt >= DEFAULT_LOCALE_CHECK_TTL_MS) {
+    let value = defaultLocaleCache?.value ?? ''
+    try {
+      ;({ default_locale: value } = await api.request<{ default_locale: string }>('/auth/config'))
+    } catch (error) {
+      // Fail open: fall back to Paraglide's own strategies if the check fails
+      logger.error('Default locale check failed', { error: `${error}` })
+    }
+    defaultLocaleCache = { value, checkedAt: now }
+  }
+  return defaultLocaleCache.value
+}
 
 defineCustomServerStrategy('custom-url', {
-  getLocale: (request) => {
+  getLocale: async (request) => {
     if (!request) return
     const url = new URL(request.url)
     const locale = url.searchParams.get('locale')
@@ -24,18 +44,19 @@ defineCustomServerStrategy('custom-url', {
       return HOST_TO_LOCALE[url.host as keyof typeof HOST_TO_LOCALE]
     } else if (locale) {
       return locale
-    } else if (DEFAULT_LOCALE) {
-      // Only apply DEFAULT_LOCALE if no user cookie is already set.
+    } else {
+      // Only apply the default locale if no user cookie is already set.
       // Paraglide runs custom strategies before built-in ones (including cookie),
-      // so without this check DEFAULT_LOCALE would silently override the user's
-      // locale preference stored in PARAGLIDE_LOCALE.
+      // so without this check it would silently override the user's locale
+      // preference stored in PARAGLIDE_LOCALE.
       const cookieLocale = request.headers
         .get('cookie')
         ?.split('; ')
         .find((c) => c.startsWith('PARAGLIDE_LOCALE='))
         ?.split('=')[1]
       if (!cookieLocale) {
-        return DEFAULT_LOCALE
+        const defaultLocale = await getDefaultLocale()
+        if (defaultLocale) return defaultLocale
       }
     }
   }
