@@ -101,7 +101,6 @@
             <MarkdownEditor
               id="arena-presentation-title"
               label="Titre de la fenêtre"
-              help="Sélectionnez du texte puis utilisez les boutons de mise en forme."
               mode="inline"
               rows={2}
               maxlength={200}
@@ -111,7 +110,6 @@
             <MarkdownEditor
               id="arena-presentation-introduction"
               label="Texte introductif"
-              help="Utilisez la barre d’outils ou saisissez directement du Markdown."
               rows={4}
               maxlength={2000}
               required
@@ -120,7 +118,6 @@
             <MarkdownEditor
               id="arena-presentation-checkbox"
               label="Texte associé à la case obligatoire"
-              help="Les liens juridiques officiels sont également ajoutés automatiquement."
               mode="inline"
               rows={5}
               maxlength={2000}
@@ -130,7 +127,6 @@
             <MarkdownEditor
               id="arena-presentation-button"
               label="Texte du bouton de confirmation"
-              help="Le gras et l’italique sont disponibles ; un bouton ne peut pas contenir de lien."
               mode="inline"
               allowLinks={false}
               rows={2}
@@ -150,7 +146,7 @@
         </div>
       </section>
 
-      <section class="fr-mt-8v pt-8 border-t" aria-labelledby="sign-in-section-title">
+      <section class="fr-mt-8v" aria-labelledby="sign-in-section-title">
         <h3 id="sign-in-section-title" class="fr-h4">À la connexion</h3>
         <p>
           Cette case apparaît avant l’envoi du code de connexion et reste cochée pendant la saisie
@@ -161,7 +157,6 @@
             <MarkdownEditor
               id="sign-in-presentation-checkbox"
               label="Texte associé à la case obligatoire"
-              help="Utilisez un texte court ; les liens juridiques officiels sont ajoutés automatiquement."
               mode="inline"
               rows={5}
               maxlength={2000}
@@ -175,7 +170,7 @@
         </div>
       </section>
 
-      <div class="fr-mt-6v pt-4 flex justify-end border-t">
+      <div class="fr-mt-6v flex justify-end">
         <Button
           type="submit"
           text={saving ? 'Enregistrement…' : 'Enregistrer le parcours'}

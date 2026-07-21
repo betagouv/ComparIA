@@ -40,7 +40,7 @@ describe('Participation journey administration page', () => {
   })
 
   it('opens directly on the editable journey without versions or history', async () => {
-    const { getByRole, queryByText } = render(Page)
+    const { container, getByRole, queryByText } = render(Page)
 
     await waitFor(() => expect(getByRole('heading', { name: 'Modifier le parcours' })).toBeTruthy())
     expect((getByRole('textbox', { name: /Titre de la fenêtre/ }) as HTMLInputElement).value).toBe(
@@ -48,6 +48,10 @@ describe('Participation journey administration page', () => {
     )
     expect(queryByText(/Historique/)).toBeNull()
     expect(queryByText(/version 1\.0/i)).toBeNull()
+    expect(queryByText(/Sélectionnez du texte puis utilisez/)).toBeNull()
+    expect(queryByText(/saisissez directement du Markdown/)).toBeNull()
+    expect(container.querySelector('.fr-hint-text')).toBeNull()
+    expect(container.querySelector('.border-t')).toBeNull()
   })
 
   it('saves the mutable journey without publishing terms', async () => {

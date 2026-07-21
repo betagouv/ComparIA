@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import MarkdownEditor from '$components/admin/MarkdownEditor.svelte'
-  import { Alert, Badge, Button, Input, Select } from '$components/dsfr'
+  import { Badge, Button, Input, Select } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import { CANONICAL_LEGAL_LINKS } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
@@ -123,11 +123,9 @@
             </p>
           </div>
           <div class="gap-2 flex flex-wrap">
-            <a
-              class="fr-btn fr-btn--secondary"
-              href={resolve('/arene/modalites')}
-              target="_blank"
-            >Voir dans l’arène</a>
+            <a class="fr-btn fr-btn--secondary" href={resolve('/arene/modalites')} target="_blank"
+              >Voir dans l’arène</a
+            >
             <Button text="Préparer une nouvelle version" onclick={startDraft} />
           </div>
         </div>
@@ -166,9 +164,6 @@
           <h2 id="terms-document-draft-title" class="fr-h3 fr-mt-2v fr-mb-1v">
             Nouvelles conditions d’utilisation
           </h2>
-          <p class="fr-text--sm">
-            Le parcours de participation actuel sera conservé avec cette nouvelle version.
-          </p>
         </div>
         <Button
           variant="secondary"
@@ -200,7 +195,6 @@
             <MarkdownEditor
               id="terms-document-content"
               label="Contenu des conditions d’utilisation"
-              help="Utilisez la barre d’outils ou saisissez directement du Markdown."
               rows={24}
               maxlength={100000}
               required
@@ -215,9 +209,6 @@
           </aside>
         </div>
       {:else}
-        <Alert title="Publication définitive" variant="warning" class="fr-mb-6v">
-          <p>Une version publiée est conservée dans l’historique et ne peut plus être modifiée.</p>
-        </Alert>
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-6">
             <Input
@@ -233,6 +224,7 @@
             <Select
               id="terms-document-locale"
               label="Langue"
+              help="Langue du document publié."
               options={localeOptions}
               bind:selected={locale}
             />
@@ -243,6 +235,7 @@
           type="datetime-local"
           label="Date d’entrée en vigueur"
           help="Laissez vide pour publier immédiatement."
+          groupClass="fr-mt-4v"
           bind:value={effectiveAt}
         />
         <div class="fr-checkbox-group fr-mt-6v">
@@ -253,7 +246,7 @@
         </div>
       {/if}
 
-      <div class="gap-3 fr-mt-6v pt-4 flex flex-wrap justify-between border-t">
+      <div class="gap-3 fr-mt-6v flex flex-wrap justify-between">
         <div>
           {#if reviewing}
             <Button

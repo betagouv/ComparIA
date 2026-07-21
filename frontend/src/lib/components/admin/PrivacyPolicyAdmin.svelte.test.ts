@@ -21,24 +21,27 @@ describe('Privacy policy administration', () => {
   })
 
   it('publishes a first Markdown policy only after explicit confirmation', async () => {
-    const { getByRole } = render(PrivacyPolicyAdmin)
+    const { container, getByRole, queryByRole, queryByText, getByText } = render(PrivacyPolicyAdmin)
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Aucune politique publiée' })).toBeTruthy()
     )
 
     await fireEvent.click(getByRole('button', { name: 'Créer la politique de confidentialité' }))
+    expect(queryByText(/saisissez directement du Markdown/)).toBeNull()
+    expect(container.querySelector('.fr-hint-text')).toBeNull()
     await fireEvent.input(getByRole('textbox', { name: /Contenu de la politique/ }), {
       target: { value: '# Confidentialité\n\nTexte **important**.' }
     })
-    await fireEvent.click(
-      getByRole('button', { name: 'Continuer vers « Vérifier et publier »' })
-    )
+    await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
+    expect(queryByRole('heading', { name: 'Publication définitive' })).toBeNull()
+    expect(getByText('Langue du document publié.')).toBeTruthy()
+    expect(
+      container.querySelector('#privacy-policy-effective-at')?.closest('.fr-input-group')
+    ).toHaveClass('fr-mt-4v')
     await fireEvent.input(getByRole('textbox', { name: /Référence de la nouvelle version/ }), {
       target: { value: '2026.1' }
     })
-    await fireEvent.click(
-      getByRole('checkbox', { name: /J’ai relu la politique/ })
-    )
+    await fireEvent.click(getByRole('checkbox', { name: /J’ai relu la politique/ }))
     await fireEvent.click(getByRole('button', { name: 'Publier cette politique' }))
 
     await waitFor(() =>

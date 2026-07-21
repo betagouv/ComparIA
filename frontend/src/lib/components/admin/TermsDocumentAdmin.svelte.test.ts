@@ -46,12 +46,28 @@ describe('Terms document administration', () => {
   })
 
   it('edits the document without exposing journey copy fields', async () => {
-    const { getByRole, queryByRole } = render(TermsDocumentAdmin)
+    const { container, getByRole, queryByRole, queryByText } = render(TermsDocumentAdmin)
     await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
     await fireEvent.click(getByRole('button', { name: 'Préparer une nouvelle version' }))
 
     expect(getByRole('textbox', { name: /Contenu des conditions/ })).toBeTruthy()
     expect(queryByRole('textbox', { name: /Titre de la fenêtre/ })).toBeNull()
+    expect(queryByText(/parcours de participation actuel/)).toBeNull()
+    expect(queryByText(/saisissez directement du Markdown/)).toBeNull()
+    expect(container.querySelector('.fr-hint-text')).toBeNull()
+  })
+
+  it('keeps the publication step compact and aligned', async () => {
+    const { container, getByRole, queryByRole, getByText } = render(TermsDocumentAdmin)
+    await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
+    await fireEvent.click(getByRole('button', { name: 'Préparer une nouvelle version' }))
+    await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
+
+    expect(queryByRole('heading', { name: 'Publication définitive' })).toBeNull()
+    expect(getByText('Langue du document publié.')).toBeTruthy()
+    expect(
+      container.querySelector('#terms-document-effective-at')?.closest('.fr-input-group')
+    ).toHaveClass('fr-mt-4v')
   })
 
   it('publishes the new document while preserving the current journey', async () => {
@@ -61,9 +77,7 @@ describe('Terms document administration', () => {
     await fireEvent.input(getByRole('textbox', { name: /Contenu des conditions/ }), {
       target: { value: '# Nouvelles conditions' }
     })
-    await fireEvent.click(
-      getByRole('button', { name: 'Continuer vers « Vérifier et publier »' })
-    )
+    await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
     await fireEvent.input(getByRole('textbox', { name: /Référence de la nouvelle version/ }), {
       target: { value: '2.0' }
     })

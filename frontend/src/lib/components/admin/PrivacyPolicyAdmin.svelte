@@ -121,7 +121,7 @@
     <h2 class="fr-sr-only">Gestion de la politique de confidentialité</h2>
   {/if}
   {#if !standalone}
-    <div class="fr-mb-6v border-t pt-8">
+    <div class="fr-mb-6v pt-8 border-t">
       <h2 id="privacy-policy-title" class="fr-h2 fr-mb-2v">Politique de confidentialité</h2>
       <p>
         Gérez le document qui explique les traitements de données personnelles. Sa publication est
@@ -147,8 +147,8 @@
             <a
               class="fr-btn fr-btn--secondary"
               href={resolve('/arene/donnees-personnelles')}
-              target="_blank"
-            >Voir dans l’arène</a>
+              target="_blank">Voir dans l’arène</a
+            >
             <Button text="Préparer une nouvelle politique" onclick={startDraft} />
           </div>
         </div>
@@ -221,7 +221,6 @@
             <MarkdownEditor
               id="privacy-policy-content"
               label="Contenu de la politique de confidentialité"
-              help="Utilisez la barre d’outils ou saisissez directement du Markdown."
               rows={24}
               maxlength={100000}
               required
@@ -240,9 +239,6 @@
           </aside>
         </div>
       {:else}
-        <Alert title="Publication définitive" variant="warning" class="fr-mb-6v">
-          <p>Une politique publiée est conservée dans l’historique et ne peut plus être modifiée.</p>
-        </Alert>
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-6">
             <Input
@@ -258,6 +254,7 @@
             <Select
               id="privacy-policy-locale"
               label="Langue"
+              help="Langue du document publié."
               options={localeOptions}
               bind:selected={locale}
             />
@@ -268,6 +265,7 @@
           type="datetime-local"
           label="Date d’entrée en vigueur"
           help="Laissez vide pour publier immédiatement."
+          groupClass="fr-mt-4v"
           bind:value={effectiveAt}
         />
         <div class="fr-checkbox-group fr-mt-6v">
@@ -278,7 +276,7 @@
         </div>
       {/if}
 
-      <div class="gap-3 fr-mt-6v pt-4 flex flex-wrap justify-between border-t">
+      <div class="gap-3 fr-mt-6v flex flex-wrap justify-between">
         <div>
           {#if currentStep === 'review'}
             <Button
