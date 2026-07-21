@@ -164,7 +164,7 @@
         </li>
         <li>
           <Link
-            href={resolve('/accessibilite')}
+            href={resolve('/arene/accessibilite')}
             text="Accessibilité : non conforme"
             size="sm"
             onclick={() => (legalMenuOpen = false)}

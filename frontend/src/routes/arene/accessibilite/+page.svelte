@@ -6,8 +6,8 @@
 
 <SeoHead title={m['seo.titles.accessibilite']()} />
 
-<main class="py-10 lg:py-15">
-  <div class="fr-container">
+<section class="py-10 lg:py-15" aria-labelledby="declaration-daccessibilite">
+  <div class="fr-container max-w-[900px]">
     <p>{@html sanitize(m['general.a11y.disclaimer']())}</p>
 
     <!-- <p>À cette fin, beta.gouv.fr met en œuvre la stratégie et les actions suivantes :</p>
@@ -78,4 +78,4 @@
       <li>{m['general.a11y.remedyAdvocateAdress']()}</li>
     </ul>
   </div>
-</main>
+</section>

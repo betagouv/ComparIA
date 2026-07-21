@@ -46,7 +46,9 @@ describe('NavBar admin', () => {
 
     expect(getByRole('link', { name: 'Données personnelles et confidentialité' })).toBeTruthy()
     expect(getByRole('link', { name: 'Conditions générales d’utilisation' })).toBeTruthy()
-    expect(getByRole('link', { name: 'Accessibilité : non conforme' })).toBeTruthy()
+    expect(getByRole('link', { name: 'Accessibilité : non conforme' }).getAttribute('href')).toBe(
+      '/arene/accessibilite'
+    )
     expect(getByRole('link', { name: 'Écoconception' }).getAttribute('href')).toBe(
       '/arene/ecoconception'
     )
