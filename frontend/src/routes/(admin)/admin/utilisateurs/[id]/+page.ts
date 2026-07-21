@@ -3,8 +3,6 @@ import type { UserPublic } from '$lib/generated/admin'
 import type { JSONSchema } from '$lib/utils/form'
 import type { PageLoad } from './$types'
 
-export const ssr = false // auth error on server side
-
 export const load: PageLoad = async ({ params }) => {
   const schema = await api.request<JSONSchema>('/admin/users/schema')
 
