@@ -15,7 +15,7 @@
         <li class="fr-py-3v">
           <h3 class="fr-h5 fr-mb-1v">
             <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
               href={resolve('/admin/conditions-participation')}>Parcours de participation</a
             >
           </h3>
@@ -32,17 +32,16 @@
         <li class="fr-py-3v">
           <h3 class="fr-h5 fr-mb-1v">
             <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
               href={resolve('/admin/legal/conditions')}>Conditions d’utilisation</a
             >
           </h3>
           <p class="fr-text--sm fr-mb-0">Document dont l’acceptation est obligatoire.</p>
-          <hr class="fr-hr" />
         </li>
         <li class="fr-py-3v">
           <h3 class="fr-h5 fr-mb-1v">
             <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
               href={resolve('/admin/legal/confidentialite')}>Politique de confidentialité</a
             >
           </h3>

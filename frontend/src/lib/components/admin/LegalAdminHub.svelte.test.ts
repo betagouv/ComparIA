@@ -8,17 +8,21 @@ describe('Legal administration hub', () => {
 
     expect(getByRole('heading', { name: 'Parcours d’acceptation' })).toBeTruthy()
     expect(getByRole('heading', { name: 'Documents juridiques' })).toBeTruthy()
-    expect(getByRole('link', { name: 'Parcours de participation' }).getAttribute('href')).toBe(
-      '/admin/conditions-participation'
-    )
-    expect(getByRole('link', { name: 'Conditions d’utilisation' }).getAttribute('href')).toBe(
-      '/admin/legal/conditions'
-    )
-    expect(getByRole('link', { name: 'Politique de confidentialité' }).getAttribute('href')).toBe(
-      '/admin/legal/confidentialite'
-    )
+    const links = [
+      getByRole('link', { name: 'Parcours de participation' }),
+      getByRole('link', { name: 'Conditions d’utilisation' }),
+      getByRole('link', { name: 'Politique de confidentialité' })
+    ]
+    expect(links[0].getAttribute('href')).toBe('/admin/conditions-participation')
+    expect(links[1].getAttribute('href')).toBe('/admin/legal/conditions')
+    expect(links[2].getAttribute('href')).toBe('/admin/legal/confidentialite')
+    for (const link of links) {
+      expect(link.classList.contains('bg-none!')).toBe(true)
+      expect(link.classList.contains('no-underline!')).toBe(true)
+    }
     expect(container.querySelector('.fr-card')).toBeNull()
     expect(container.querySelector('.fr-badge')).toBeNull()
+    expect(container.querySelector('hr')).toBeNull()
     expect(container.querySelector('[role="tablist"]')).toBeNull()
   })
 })
