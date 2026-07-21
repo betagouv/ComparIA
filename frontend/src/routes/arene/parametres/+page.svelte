@@ -8,6 +8,7 @@
   import { withdrawLocalConsent } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
+  import { buildUserDataExport } from '$lib/userDataExport'
 
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
@@ -23,21 +24,20 @@
   function exportData() {
     if (!auth.user) return
 
+    const exportedAt = new Date()
     const content = JSON.stringify(
-      {
-        exported_at: new Date().toISOString(),
-        account: { email: auth.user.email },
-        conversations: comparisons
-      },
+      buildUserDataExport(auth.user.email, comparisons, exportedAt),
       null,
       2
     )
-    const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }))
+    const url = URL.createObjectURL(new Blob([content], { type: 'application/json;charset=utf-8' }))
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = `comparia-donnees-${new Date().toISOString().slice(0, 10)}.json`
+    anchor.download = `comparia-donnees-${exportedAt.toISOString().slice(0, 10)}.json`
+    document.body.append(anchor)
     anchor.click()
-    URL.revokeObjectURL(url)
+    anchor.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 0)
   }
 
   async function eraseAccount() {
@@ -113,8 +113,7 @@
 
             <section class="fr-col-12 fr-col-lg-6" aria-labelledby="display-settings-title">
               <h2 id="display-settings-title" class="fr-h4">Préférences</h2>
-              <p class="fr-text--sm text-grey">Adaptez l’affichage à vos préférences.</p>
-              <ThemeSelector />
+              <ThemeSelector variant="select" />
             </section>
           </div>
 
