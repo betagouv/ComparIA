@@ -7,10 +7,14 @@ from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
+    CannotDemoteLastAdminError,
+    EmailAlreadyExistsError,
     cancel_user_invite,
+    create_user,
     delete_user,
+    get_user,
     list_users,
-    set_user_role,
+    update_user,
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
@@ -21,8 +25,9 @@ from utils.database.models.app_settings import (
     AppSettingsPatch,
     AppSettingsPublic,
 )
-from utils.database.models.auth import UserPublic, UserRole
+from utils.database.models.auth import UserPublic, UserUpsert
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.utils import FormJsonSchema
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -36,10 +41,6 @@ class UsersPage(BaseModel):
     total: int
     page: int
     page_size: int
-
-
-class SetRoleBody(BaseModel):
-    role: UserRole
 
 
 class InviteBody(BaseModel):
@@ -60,22 +61,42 @@ async def get_users(
     return UsersPage(items=rows, total=total, page=page, page_size=page_size)
 
 
-@router.patch("/users/{user_id}/role", response_model=UserPublic)
-async def patch_user_role(
-    user_id: uuid.UUID,
-    body: SetRoleBody,
-) -> UserPublic:
-    user = await set_user_role(user_id, body.role)
+@router.get("/users/schema")
+async def get_user_schema():
+    return UserUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+
+@router.post("/users", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
+async def create_user_route(body: UserUpsert) -> UserPublic:
+    try:
+        return await create_user(body)
+    except EmailAlreadyExistsError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered",
+        )
+
+
+@router.get("/users/{user_id}", response_model=UserPublic)
+async def get_user_route(user_id: uuid.UUID) -> UserPublic:
+    user = await get_user(user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return UserPublic(
-        id=user.id,
-        email=user.email,
-        role=user.role,
-        created_at=user.created_at.isoformat(),
-        last_seen_at=user.last_seen_at.isoformat(),
-        source="email_code",
-    )
+    return user
+
+
+@router.put("/users/{user_id}", response_model=UserPublic)
+async def update_user_route(user_id: uuid.UUID, body: UserUpsert) -> UserPublic:
+    try:
+        user = await update_user(user_id, body)
+    except CannotDemoteLastAdminError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot demote the last remaining admin",
+        )
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return user
 
 
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)

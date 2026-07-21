@@ -55,6 +55,8 @@ export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
         } else {
           errors['unexpected'] = e.message
         }
+      } else {
+        useToast((e as Error).message, 6000, 'error')
       }
     }
   }

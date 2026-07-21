@@ -186,10 +186,15 @@ export interface LLMLicense {
   commercial_use: boolean;
 }
 export interface UserPublic {
-  id: string;
+  id?: string;
   email: string;
-  role: "user" | "admin";
+  role?: "user" | "admin";
   created_at: string;
   last_seen_at: string;
   source: string;
+}
+export interface UserUpsert {
+  id?: string;
+  email: string;
+  role?: "user" | "admin";
 }
