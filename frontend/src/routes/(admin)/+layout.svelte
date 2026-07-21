@@ -1,9 +1,14 @@
 <script lang="ts">
   import { page } from '$app/state'
   import NavBar, { type NavLink } from '$components/header/NavBar.svelte'
+  import { initComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
 
   let { children } = $props()
+
+  // NavBar's logout button needs a comparisons context; the admin area never
+  // displays the history itself (NavBar skips it when isAdmin).
+  initComparisonsContext([])
 
   const navLinks: NavLink[] = $derived([
     {
