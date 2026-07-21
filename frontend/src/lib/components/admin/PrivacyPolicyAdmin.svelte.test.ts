@@ -21,12 +21,17 @@ describe('Privacy policy administration', () => {
   })
 
   it('publishes a first Markdown policy only after explicit confirmation', async () => {
-    const { container, getByRole, queryByRole, queryByText } = render(PrivacyPolicyAdmin)
+    const { container, getByRole, getByText, queryByRole, queryByText } = render(PrivacyPolicyAdmin)
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Aucune politique publiée' })).toBeTruthy()
     )
 
     await fireEvent.click(getByRole('button', { name: 'Créer la politique de confidentialité' }))
+    expect(
+      container.querySelector('#privacy-policy-content-label')?.classList.contains('fr-mb-2v')
+    ).toBe(true)
+    expect(getByText('Aperçu').classList.contains('fr-label')).toBe(true)
+    expect(getByText('Aperçu').classList.contains('fr-mb-2v')).toBe(true)
     expect(queryByText(/saisissez directement du Markdown/)).toBeNull()
     expect(container.querySelector('.fr-hint-text')).toBeNull()
     await fireEvent.input(getByRole('textbox', { name: /Contenu de la politique/ }), {
@@ -37,8 +42,11 @@ describe('Privacy policy administration', () => {
     expect(queryByText('Langue du document publié.')).toBeNull()
     expect(getByRole('combobox', { name: 'Langue' })).toBeTruthy()
     expect(
-      container.querySelector('#privacy-policy-effective-at')?.closest('.fr-input-group')
-    ).toHaveClass('fr-mt-4v')
+      container
+        .querySelector('#privacy-policy-effective-at')
+        ?.closest('.fr-input-group')
+        ?.classList.contains('fr-mt-4v')
+    ).toBe(true)
     await fireEvent.input(getByRole('textbox', { name: /Référence de la nouvelle version/ }), {
       target: { value: '2026.1' }
     })

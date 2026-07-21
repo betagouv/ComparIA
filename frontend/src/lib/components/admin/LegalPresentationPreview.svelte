@@ -39,10 +39,9 @@
       id={`preview-${kind}-consent`}
       checked={true}
       disabled
-      label={renderInlineMarkdown(
-        checkboxLabel || 'Le texte associé à la case apparaîtra ici.'
-      )}
+      label={renderInlineMarkdown(checkboxLabel || 'Le texte associé à la case apparaîtra ici.')}
       links={CANONICAL_LEGAL_LINKS}
+      linksClass="bg-none! no-underline!"
     />
 
     {#if kind === 'arena'}

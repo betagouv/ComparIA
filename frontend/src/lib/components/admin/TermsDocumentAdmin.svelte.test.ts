@@ -67,8 +67,11 @@ describe('Terms document administration', () => {
     expect(queryByText('Langue du document publié.')).toBeNull()
     expect(getByRole('combobox', { name: 'Langue' })).toBeTruthy()
     expect(
-      container.querySelector('#terms-document-effective-at')?.closest('.fr-input-group')
-    ).toHaveClass('fr-mt-4v')
+      container
+        .querySelector('#terms-document-effective-at')
+        ?.closest('.fr-input-group')
+        ?.classList.contains('fr-mt-4v')
+    ).toBe(true)
   })
 
   it('publishes the new document while preserving the current journey', async () => {

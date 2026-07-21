@@ -221,6 +221,7 @@
             <MarkdownEditor
               id="privacy-policy-content"
               label="Contenu de la politique de confidentialité"
+              labelClass="fr-mb-2v"
               rows={24}
               maxlength={100000}
               required
@@ -228,7 +229,7 @@
             />
           </div>
           <aside class="fr-col-12 fr-col-lg-5" aria-label="Aperçu de la politique">
-            <p class="fr-text--sm fr-text--bold">Aperçu</p>
+            <p class="fr-label fr-mb-2v">Aperçu</p>
             <div class="fr-p-4w bg-[--background-contrast-grey]">
               {#if content.trim()}
                 <Markdown message={content} sanitize_html header_links />

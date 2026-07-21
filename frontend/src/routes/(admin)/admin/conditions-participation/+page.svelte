@@ -2,7 +2,7 @@
   import { resolve } from '$app/paths'
   import LegalPresentationPreview from '$components/admin/LegalPresentationPreview.svelte'
   import MarkdownEditor from '$components/admin/MarkdownEditor.svelte'
-  import { Alert, Button } from '$components/dsfr'
+  import { Button } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import { CANONICAL_LEGAL_LINKS } from '$lib/consent'
@@ -84,12 +84,6 @@
   {:else}
     <form onsubmit={save} class="max-w-[1200px]" aria-labelledby="journey-form-title">
       <h2 id="journey-form-title" class="fr-h3 fr-mb-2v">Modifier le parcours</h2>
-      <Alert title="Une configuration simple, sans version" class="fr-mb-6v">
-        <p>
-          Les changements sont appliqués dès l’enregistrement. Les liens vers les conditions
-          d’utilisation et la politique de confidentialité sont ajoutés automatiquement.
-        </p>
-      </Alert>
 
       <section aria-labelledby="arena-section-title">
         <h3 id="arena-section-title" class="fr-h4">Avant le premier message</h3>

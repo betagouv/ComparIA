@@ -16,6 +16,7 @@
   let {
     id,
     label,
+    labelClass,
     value = $bindable(''),
     help,
     rows = 6,
@@ -26,6 +27,7 @@
   }: {
     id: string
     label: string
+    labelClass?: string
     value?: string
     help?: string
     rows?: number
@@ -126,7 +128,7 @@
 </script>
 
 <div class="fr-input-group">
-  <label id={`${id}-label`} class="fr-label" for={`${id}-editor`}>
+  <label id={`${id}-label`} class={['fr-label', labelClass]} for={`${id}-editor`}>
     {label}
     {#if help}<span id={`${id}-help`} class="fr-hint-text">{help}</span>{/if}
   </label>

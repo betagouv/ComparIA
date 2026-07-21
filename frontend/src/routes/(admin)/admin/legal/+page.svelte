@@ -57,14 +57,4 @@
       </article>
     </div>
   </div>
-
-  <div class="fr-callout fr-mt-8v max-w-[1100px]">
-    <h2 class="fr-callout__title">Comment ces contenus s’articulent-ils ?</h2>
-    <p class="fr-callout__text">
-      Le parcours affiche les textes courts et renvoie vers les deux documents. Modifier la
-      politique de confidentialité ou le parcours ne force pas une nouvelle acceptation des
-      conditions. Seules les conditions d’utilisation suivent un cycle de publication lié à leur
-      acceptation.
-    </p>
-  </div>
 </PageLayout>

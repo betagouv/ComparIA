@@ -91,14 +91,6 @@
     <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
     <form onsubmit={save} class="max-w-[560px]">
-      <div class="fr-callout fr-mb-6v">
-        <h2 class="fr-callout__title">Identité de l’arène</h2>
-        <p class="fr-callout__text">
-          Ces modifications sont réversibles et ne créent pas une nouvelle version des conditions de
-          participation.
-        </p>
-      </div>
-
       <Input
         id="settings-platform-name"
         label={m['admin.settings.customization.platformName']()}

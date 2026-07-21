@@ -50,8 +50,15 @@ describe('Participation journey administration page', () => {
     expect(queryByText(/version 1\.0/i)).toBeNull()
     expect(queryByText(/Sélectionnez du texte puis utilisez/)).toBeNull()
     expect(queryByText(/saisissez directement du Markdown/)).toBeNull()
+    expect(queryByText(/Une configuration simple, sans version/)).toBeNull()
     expect(container.querySelector('.fr-hint-text')).toBeNull()
     expect(container.querySelector('.border-t')).toBeNull()
+    const previewLinks = container.querySelectorAll('[id$="-consent-links"] a')
+    expect(previewLinks).toHaveLength(4)
+    for (const link of previewLinks) {
+      expect(link.classList.contains('bg-none!')).toBe(true)
+      expect(link.classList.contains('no-underline!')).toBe(true)
+    }
   })
 
   it('saves the mutable journey without publishing terms', async () => {

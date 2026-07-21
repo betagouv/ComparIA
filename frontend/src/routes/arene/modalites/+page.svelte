@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
-  import { Link } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import { getActiveTerms, type ConsentDocument } from '$lib/consent'
@@ -46,15 +44,5 @@
         />
       </div>
     {/if}
-
-    <div class="gap-3 mt-8 flex flex-wrap">
-      <Link button href={resolve('/arene')} text="Retour à l’arène" />
-      <Link
-        button
-        variant="secondary"
-        href={resolve('/arene/donnees-personnelles')}
-        text="Politique de confidentialité"
-      />
-    </div>
   </div>
 </main>
