@@ -30,6 +30,7 @@
             "users": "Brugere",
             "llms": "LLMs",
             "customization": "Tilpasning",
+            "locales": "Sprog",
             "authentification": "Autentificering"
         },
         "panelLink": "Administration",
@@ -39,15 +40,17 @@
             "save": "Gem",
             "saving": "Gemmer...",
             "saved": "Indstillinger opdateret",
+            "locales": {
+                "enabled": {
+                    "label": "Aktiverede sprog"
+                },
+                "default": {
+                    "label": "Standardsprog"
+                }
+            },
             "customization": {
                 "platformName": "Platformens navn",
                 "votesObjective": "Stemmemål",
-                "locales": {
-                    "label": "Aktiverede sprog"
-                },
-                "defaultLocale": {
-                    "label": "Standardsprog"
-                },
                 "logo": {
                     "label": "Logo",
                     "chooseFile": "Vælg en fil",

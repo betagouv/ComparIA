@@ -122,6 +122,7 @@
             "customization": "Personnalisation",
             "legal": "Documents juridiques",
             "llms": "LLMs",
+            "locales": "Langues",
             "suggestions": "Suggestions",
             "users": "Utilisateurs"
         },
@@ -232,16 +233,10 @@
                     "secondaryLight": "Couleur secondaire (thème clair)",
                     "secondaryDark": "Couleur secondaire (thème sombre)"
                 },
-                "defaultLocale": {
-                    "label": "Langue par défaut"
-                },
                 "homepageUrl": {
                     "label": "URL de la page d’accueil",
                     "hint": "Cette adresse est ouverte lorsqu’une personne sélectionne le logo ou le nom de la plateforme. Laissez vide pour utiliser l’accueil local.",
                     "invalid": "Saisissez une URL HTTPS complète."
-                },
-                "locales": {
-                    "label": "Langues activées"
                 },
                 "logo": {
                     "chooseFile": "Choisir un fichier",
@@ -255,6 +250,14 @@
                 "votesObjective": "Objectif de votes"
             },
             "loading": "Chargement...",
+            "locales": {
+                "default": {
+                    "label": "Langue par défaut"
+                },
+                "enabled": {
+                    "label": "Langues activées"
+                }
+            },
             "save": "Enregistrer",
             "saved": "Paramètres mis à jour",
             "saving": "Enregistrement...",

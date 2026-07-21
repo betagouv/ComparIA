@@ -30,6 +30,7 @@
             "users": "Users",
             "llms": "LLMs",
             "customization": "Customization",
+            "locales": "Languages",
             "authentification": "Authentication"
         },
         "panelLink": "Admin panel",
@@ -39,15 +40,17 @@
             "save": "Save",
             "saving": "Saving...",
             "saved": "Settings updated",
+            "locales": {
+                "enabled": {
+                    "label": "Enabled languages"
+                },
+                "default": {
+                    "label": "Default language"
+                }
+            },
             "customization": {
                 "platformName": "Platform name",
                 "votesObjective": "Votes objective",
-                "locales": {
-                    "label": "Enabled languages"
-                },
-                "defaultLocale": {
-                    "label": "Default language"
-                },
                 "logo": {
                     "label": "Logo",
                     "chooseFile": "Choose a file",
