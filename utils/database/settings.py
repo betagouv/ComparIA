@@ -10,6 +10,7 @@ _DEFAULTS = AppSettings(
     auth_access_policy=settings.AUTH_ACCESS_POLICY,
     auth_domain_allowlist=settings.AUTH_DOMAIN_ALLOWLIST,
     votes_objective=settings.VOTES_OBJECTIVE,
+    enabled_locales=["da", "en", "fr", "lt", "sv"],
 )
 
 
