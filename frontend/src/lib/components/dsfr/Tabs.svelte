@@ -25,18 +25,39 @@
     tab?: Snippet<[T]>
   } & SvelteHTMLElements['div'] = $props()
 
-  let currentTabId = $state(initialId)
+  const getInitialId = () => initialId
+  let currentTabId = $state(getInitialId())
+
+  function selectTab(index: number) {
+    const tab = tabs[index]
+    if (!tab) return
+    currentTabId = tab.id
+    queueMicrotask(() => document.getElementById(`tab-${tab.id}`)?.focus())
+  }
+
+  function handleKeydown(event: KeyboardEvent, index: number) {
+    let nextIndex: number | undefined
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
+    if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+    if (event.key === 'Home') nextIndex = 0
+    if (event.key === 'End') nextIndex = tabs.length - 1
+    if (nextIndex === undefined) return
+
+    event.preventDefault()
+    selectTab(nextIndex)
+  }
 
   const items = $derived.by(() =>
-    tabs.map((tab) => ({
+    tabs.map((tab, index) => ({
       props: {
         id: `tab-${tab.id}`,
-        tabindex: tab.id === initialId ? 0 : -1,
+        tabindex: tab.id === currentTabId ? 0 : -1,
         role: 'tab',
-        'aria-selected': tab.id === initialId ? true : false,
+        'aria-selected': tab.id === currentTabId ? true : false,
         'aria-controls': `tab-${tab.id}-panel`,
         class: kind === 'tab' ? 'fr-tabs__tab' : 'fr-nav__link',
-        onclick: () => (currentTabId = tab.id)
+        onclickcapture: () => (currentTabId = tab.id),
+        onkeydowncapture: (event: KeyboardEvent) => handleKeydown(event, index)
       },
       ...tab
     }))
@@ -67,23 +88,22 @@
     {/each}
   </ul>
   {#each tabs as item, i (i)}
-    <div
-      id={`tab-${item.id}-panel`}
-      role="tabpanel"
-      aria-labelledby={`tab-${item.id}`}
-      tabindex="0"
-      class={[
-        'fr-tabs__panel',
-        {
-          'fr-tabs__panel--selected': item.id === initialId,
-          'px-0! py-5!': noBorders,
-          'visibility-none! transition-none!': item.href && item.id !== currentTabId
-        },
-        panelClass
-      ]}
-    >
-      {#if item.content}{item.content}{:else}{@render tab?.(item)}{/if}
-    </div>
+    {#if item.id === currentTabId}
+      <div
+        id={`tab-${item.id}-panel`}
+        role="tabpanel"
+        aria-labelledby={`tab-${item.id}`}
+        tabindex="0"
+        class={[
+          'fr-tabs__panel',
+          'fr-tabs__panel--selected',
+          { 'px-0! py-5!': noBorders },
+          panelClass
+        ]}
+      >
+        {#if item.content}{item.content}{:else}{@render tab?.(item)}{/if}
+      </div>
+    {/if}
   {/each}
 </div>
 

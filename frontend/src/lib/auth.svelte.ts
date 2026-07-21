@@ -15,6 +15,7 @@ export interface AuthConfig {
   smtp_configured: boolean
   domain_allowlist: string[]
   platform_name: string
+  platform_url: string
   has_custom_logo: boolean
 }
 
@@ -42,15 +43,15 @@ export function openSignInModal(): void {
   }
 }
 
-export async function logout(auth: AuthCtx, comparisons: ComparisonsCtx): Promise<void> {
+export async function logout(auth: AuthCtx, comparisons?: ComparisonsCtx): Promise<void> {
   try {
     await api.request<void>('/auth/logout', { method: 'POST' })
-    try {
-      await updateComparisonsContext(comparisons)
-    } catch {
-      // Session is already cleared server-side; querying again can fail
-      // (eg. sign_in_required policy blocks /arena/* without a session).
-      comparisons.length = 0
+    if (comparisons) {
+      try {
+        await updateComparisonsContext(comparisons)
+      } catch {
+        comparisons.length = 0
+      }
     }
   } finally {
     auth.user = null

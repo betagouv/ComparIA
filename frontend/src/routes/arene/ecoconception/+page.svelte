@@ -6,8 +6,8 @@
 
 <SeoHead title={m['seo.titles.rgesn']()} />
 
-<main class="py-10 lg:py-15">
-  <div class="fr-container">
+<section class="py-10 lg:py-15" aria-labelledby="main-title">
+  <div class="fr-container max-w-[900px]">
     <h1 id="main-title" class="mb-8!">{m['general.rgesn.title']()}</h1>
     <p>{m['general.rgesn.desc']()}</p>
 
@@ -124,4 +124,4 @@
       {/each}
     </ul>
   </div>
-</main>
+</section>

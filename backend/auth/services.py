@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Protocol
 
+from sqlalchemy import delete as sa_delete
 from sqlalchemy import update as sa_update
 from sqlmodel import select
 
@@ -521,3 +522,45 @@ async def has_current_terms_acceptance(
         )
         is not None
     )
+
+
+async def erase_user_account(user_id: uuid.UUID) -> None:
+    now = datetime.now()
+    async with get_session() as session:
+        user = await session.get(User, user_id)
+        if not user or user.deleted_at is not None:
+            return
+
+        await session.execute(
+            sa_update(AuthSession)
+            .where(AuthSession.user_id == user_id)
+            .values(revoked_at=now, ip="erased", user_agent=None)
+        )
+        await session.execute(
+            sa_update(ConsentLog)
+            .where(ConsentLog.user_id == user_id)
+            .values(ip="erased")
+        )
+        await session.execute(
+            sa_update(ConsentLog)
+            .where(
+                ConsentLog.user_id == user_id,
+                ConsentLog.purpose == "research_data_sharing",
+                ConsentLog.withdrawn_at.is_(None),
+            )
+            .values(withdrawn_at=now)
+        )
+        await session.execute(
+            sa_update(Comparison)
+            .where(Comparison.user_id == user_id)
+            .values(user_id=None)
+        )
+        await session.execute(sa_delete(LoginCode).where(LoginCode.user_id == user_id))
+        await session.execute(
+            sa_delete(InviteToken).where(InviteToken.user_id == user_id)
+        )
+
+        user.email = f"deleted-{user.id}@deleted.invalid"
+        user.deleted_at = now
+        session.add(user)
+        await session.commit()

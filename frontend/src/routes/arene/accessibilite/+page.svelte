@@ -1,13 +1,30 @@
-<script>
+<script lang="ts">
   import SeoHead from '$components/SEOHead.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+
+  const auth = getAuthContext()
+
+  function getPlatformDomain(value: string) {
+    try {
+      return new URL(value).host
+    } catch {
+      try {
+        return new URL(`https://${value}`).host
+      } catch {
+        return auth.config.platform_name || 'cette plateforme'
+      }
+    }
+  }
+
+  const platformDomain = $derived(getPlatformDomain(auth.config.platform_url))
 </script>
 
 <SeoHead title={m['seo.titles.accessibilite']()} />
 
-<main class="py-10 lg:py-15">
-  <div class="fr-container">
+<section class="py-10 lg:py-15" aria-labelledby="declaration-daccessibilite">
+  <div class="fr-container max-w-[900px]">
     <p>{@html sanitize(m['general.a11y.disclaimer']())}</p>
 
     <!-- <p>À cette fin, beta.gouv.fr met en œuvre la stratégie et les actions suivantes :</p>
@@ -19,10 +36,10 @@
 
     <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
     <!-- <p><em>Établie le 24 avril 2024.</em></p> -->
-    <p>{@html sanitize(m['general.a11y.desc']())}</p>
+    <p>{@html sanitize(m['general.a11y.desc']({ domain: platformDomain }))}</p>
 
     <h2 id="etat-de-conformite">{m['general.a11y.stateTitle']()}</h2>
-    <p>{@html sanitize(m['general.a11y.stateDesc']())}</p>
+    <p>{@html sanitize(m['general.a11y.stateDesc']({ domain: platformDomain }))}</p>
     <ul>
       <li>{m['general.a11y.stateNavigate']()}</li>
       <li>{m['general.a11y.stateScreenReader']()}</li>
@@ -44,7 +61,7 @@
   </ul> -->
 
     <h2 id="amelioration-et-contact">{m['general.a11y.improveTitle']()}</h2>
-    <p>{m['general.a11y.improveDesc']()}</p>
+    <p>{m['general.a11y.improveDesc']({ domain: platformDomain })}</p>
     <ul>
       <li>
         {@html sanitize(
@@ -78,4 +95,4 @@
       <li>{m['general.a11y.remedyAdvocateAdress']()}</li>
     </ul>
   </div>
-</main>
+</section>

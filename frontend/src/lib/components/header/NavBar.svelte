@@ -21,8 +21,16 @@
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   const auth = getAuthContext()
-  const comparisons = getComparisonsContext()
+  // svelte-ignore state_referenced_locally
+  const comparisons = isAdmin ? undefined : getComparisonsContext()
   let expanded = $state(true)
+  let legalMenuOpen = $state(false)
+
+  function handleLegalMenuKeydown(event: KeyboardEvent, mode: 'desktop' | 'mobile') {
+    if (event.key !== 'Escape') return
+    legalMenuOpen = false
+    document.getElementById(`legal-menu-trigger-${mode}`)?.focus()
+  }
 
   const connectionBtnProps = $derived(
     auth.user
@@ -103,54 +111,133 @@
   </div>
 {/snippet}
 
+{#snippet legalMenu(mode: 'desktop' | 'mobile')}
+  <div class="relative">
+    <button
+      id="legal-menu-trigger-{mode}"
+      type="button"
+      aria-label="Informations légales"
+      aria-expanded={legalMenuOpen}
+      aria-controls="legal-menu-{mode}"
+      onclick={() => (legalMenuOpen = !legalMenuOpen)}
+      class={[
+        'text-grey! px-0 py-2 rounded gap-1 flex cursor-pointer items-center text-[13px]! whitespace-nowrap hover:bg-[--background-contrast-grey]',
+        { 'lg:h-6 lg:w-6 lg:justify-center lg:py-0': !expanded }
+      ]}
+    >
+      <Icon icon="i-ri-scales-3-line" block size="sm" />
+      <span class={{ 'lg:sr-only': !expanded }}>Légal</span>
+      <Icon
+        icon="i-ri-arrow-up-s-line"
+        block
+        size="xs"
+        class={['transition-transform', { 'rotate-180': legalMenuOpen, 'lg:hidden': !expanded }]}
+      />
+    </button>
+
+    <nav
+      id="legal-menu-{mode}"
+      aria-label="Informations légales"
+      hidden={!legalMenuOpen}
+      class="lg:absolute lg:bottom-full lg:left-0 lg:w-[290px] lg:mb-2 p-3 bg-white rounded shadow-lg z-100 border border-[--border-default-grey]"
+    >
+      <p class="fr-text--sm font-bold mb-2!">Informations légales</p>
+      <ul class="fr-raw-list gap-2 flex flex-col items-start">
+        <li>
+          <Link
+            href={resolve('/arene/donnees-personnelles')}
+            text="Données personnelles et confidentialité"
+            size="sm"
+            onclick={() => (legalMenuOpen = false)}
+            onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+          />
+        </li>
+        <li>
+          <Link
+            href={resolve('/arene/modalites')}
+            text="Conditions générales d’utilisation"
+            size="sm"
+            onclick={() => (legalMenuOpen = false)}
+            onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+          />
+        </li>
+        <li>
+          <Link
+            href={resolve('/arene/accessibilite')}
+            text="Accessibilité : non conforme"
+            size="sm"
+            onclick={() => (legalMenuOpen = false)}
+            onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+          />
+        </li>
+        <li>
+          <Link
+            href={resolve('/arene/ecoconception')}
+            text="Écoconception"
+            size="sm"
+            onclick={() => (legalMenuOpen = false)}
+            onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+          />
+        </li>
+      </ul>
+    </nav>
+  </div>
+{/snippet}
+
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
-    <div class="flex items-center justify-between">
-      {@render renderLink({
-        href: '/arena/settings',
-        label: m['seo.titles.settings'](),
-        icon: 'i-ri-settings-4-line',
-        button: true,
-        size: 'sm',
-        variant: 'tertiary-no-outline',
-        class: 'text-sm! text-grey! -ms-3 pointer-events-none'
-      })}
-
-      <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
-    </div>
-
     <div
-      class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start md:justify-between flex flex-col"
+      class={[
+        'gap-2 flex items-center justify-between',
+        { 'lg:flex-col lg:justify-center': !expanded }
+      ]}
     >
-      <Button
-        variant="tertiary"
-        size="sm"
-        {...connectionBtnProps}
-        icon={undefined}
-        text={undefined}
-        class={['w-full!', { '-ms-[2px]': !expanded }]}
-      >
-        <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
-          <Icon icon={connectionBtnProps.icon} block size={expanded ? 'sm' : 'md'} />
-          <span class={{ 'lg:sr-only': !expanded }}>{connectionBtnProps.text}</span>
-        </span>
-      </Button>
+      <span class={['text-sm text-grey', { 'lg:sr-only': !expanded }]}>Mon compte</span>
 
-      {#if auth.user}
-        <p
-          class={[
-            'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
-            { 'lg:hidden': !expanded }
-          ]}
+      <div class={['gap-1 flex items-center', { 'lg:gap-2 lg:flex-col': !expanded }]}>
+        <Link
+          href={resolve('/arene/parametres')}
+          button
+          iconOnly
+          size="xs"
+          variant="tertiary-no-outline"
+          aria-label="Paramètres"
+          title="Paramètres"
+          class="px-0! w-[1.5rem]! min-w-[1.5rem]! justify-center"
         >
-          {auth.user.email}
-        </p>
-      {/if}
+          <Icon icon="i-ri-settings-4-line" block size="sm" />
+        </Link>
+
+        <Button
+          variant="tertiary-no-outline"
+          size="xs"
+          iconOnly
+          {...connectionBtnProps}
+          icon={undefined}
+          text={undefined}
+          aria-label={connectionBtnProps.text}
+          title={connectionBtnProps.text}
+          class="px-0! w-[1.5rem]! min-w-[1.5rem]! justify-center"
+        >
+          <Icon icon={connectionBtnProps.icon} block size="sm" />
+        </Button>
+      </div>
     </div>
 
     <!-- {@render helpLink()} -->
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
+
+    <div class={['gap-1 flex items-center justify-between', { 'lg:justify-center': !expanded }]}>
+      {@render legalMenu(mode)}
+      <LanguageSelector
+        id="translate-{mode}"
+        class={[
+          'text-grey! [&_.fr-translate__btn]:text-grey! [&_.fr-translate__btn]:text-[13px]!',
+          { 'lg:hidden': !expanded }
+        ]}
+      />
+    </div>
   </div>
 {/snippet}
 

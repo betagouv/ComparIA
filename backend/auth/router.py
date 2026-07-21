@@ -18,6 +18,7 @@ from backend.auth.email import send_login_code
 from backend.auth.services import (
     _hash,
     accept_invite,
+    erase_user_account,
     get_anonymous_consent_status,
     get_consent_status,
     get_invite_token_info,
@@ -52,6 +53,7 @@ class AuthConfig(BaseModel):
     smtp_configured: bool
     domain_allowlist: list[str]
     platform_name: str
+    platform_url: str
     has_custom_logo: bool
 
 
@@ -129,6 +131,7 @@ async def get_config() -> AuthConfig:
         smtp_configured=bool(settings.SMTP_HOST),
         domain_allowlist=app_settings.auth_domain_allowlist,
         platform_name=app_settings.platform_name,
+        platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
     )
 
@@ -378,6 +381,25 @@ async def accept_authenticated_consent(
 @router.get("/consent")
 async def consent_status(user: RequiredUser) -> dict:
     return await get_consent_status(user.id)
+
+
+class AccountEraseBody(BaseModel):
+    email: EmailStr
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def erase_account(
+    body: AccountEraseBody,
+    user: RequiredUser,
+    response: Response,
+) -> None:
+    if body.email.lower() != user.email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email confirmation does not match the signed-in account.",
+        )
+    await erase_user_account(user.id)
+    response.delete_cookie("auth_session")
 
 
 class AnonymousConsentBody(BaseModel):

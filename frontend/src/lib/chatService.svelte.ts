@@ -149,6 +149,12 @@ export const modeInfos: ModeInfos[] = (
 export type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
+function copyKeywordAnnotations(
+  annotations: APIComparisonTurn['keyword_annotations_a']
+): ComparisonTurnSide['keyword_annotations'] {
+  return [...annotations] as ComparisonTurnSide['keyword_annotations']
+}
+
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
   const status = !turn.llm_msg_a && !turn.llm_msg_b ? 'pending' : 'complete'
   return {
@@ -159,14 +165,14 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
     a: {
       status: !turn.llm_msg_a ? 'pending' : 'complete',
       llm_msg: turn.llm_msg_a,
-      custom_annotation: '',
-      keyword_annotations: []
+      custom_annotation: turn.custom_annotation_a ?? '',
+      keyword_annotations: copyKeywordAnnotations(turn.keyword_annotations_a)
     },
     b: {
       status: !turn.llm_msg_b ? 'pending' : 'complete',
       llm_msg: turn.llm_msg_b,
-      custom_annotation: '',
-      keyword_annotations: []
+      custom_annotation: turn.custom_annotation_b ?? '',
+      keyword_annotations: copyKeywordAnnotations(turn.keyword_annotations_b)
     }
   }
 }
