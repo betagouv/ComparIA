@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { Button, Input } from '$components/dsfr'
+  import { Button, Checkbox, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
+  import { ALL_LOCALES } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { contrastRatio, isHexColor } from '$lib/theme'
@@ -23,6 +24,7 @@
   let secondaryColorLight = $state('')
   let secondaryColorDark = $state('')
   let homepageUrl = $state('')
+  let enabledLocales = $state<Record<string, boolean>>({})
   let loadedValues = $state({
     votesObjective: '',
     platformName: '',
@@ -51,6 +53,9 @@
       secondaryColorLight = data.secondary_color_light
       secondaryColorDark = data.secondary_color_dark
       homepageUrl = data.homepage_url ?? ''
+      enabledLocales = Object.fromEntries(
+        ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales.includes(locale.code)])
+      )
       loadedValues = { ...currentValues(), votesObjective, platformName }
     } finally {
       loading = false
@@ -124,7 +129,10 @@
         primary_color_dark: primaryColorDark.toUpperCase(),
         secondary_color_light: secondaryColorLight.toUpperCase(),
         secondary_color_dark: secondaryColorDark.toUpperCase(),
-        homepage_url: homepageUrl || null
+        homepage_url: homepageUrl || null,
+        enabled_locales: ALL_LOCALES.filter((locale) => enabledLocales[locale.code]).map(
+          (locale) => locale.code
+        )
       }
       const saved = await api.request<AppSettingsPublic>('/admin/settings', {
         method: 'PATCH',
@@ -299,6 +307,17 @@
         bind:value={votesObjective}
         groupClass="mt-4!"
       />
+      <div class="mt-4!">
+        <p class="fr-label mb-2!">{m['admin.settings.customization.locales.label']()}</p>
+        {#each ALL_LOCALES as locale (locale.code)}
+          <Checkbox
+            id="settings-locale-{locale.code}"
+            label={locale.long}
+            bind:checked={enabledLocales[locale.code]}
+          />
+        {/each}
+      </div>
+
       <div class="gap-3 mt-4! flex flex-wrap">
         <Button
           type="submit"
