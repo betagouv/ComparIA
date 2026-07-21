@@ -44,6 +44,9 @@
                 "locales": {
                     "label": "Enabled languages"
                 },
+                "defaultLocale": {
+                    "label": "Default language"
+                },
                 "logo": {
                     "label": "Logo",
                     "chooseFile": "Choose a file",
