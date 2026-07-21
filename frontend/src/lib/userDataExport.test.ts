@@ -1,4 +1,4 @@
-import type { Comparison } from '$lib/chatService.svelte'
+import { queryComparisons, type Comparison } from '$lib/chatService.svelte'
 import { describe, expect, it } from 'vitest'
 import { buildUserDataExport } from './userDataExport'
 
@@ -147,6 +147,57 @@ describe('buildUserDataExport', () => {
 
     const result = buildUserDataExport('personne@example.fr', [hiddenComparison])
 
+    expect(result.conversations[0].models).toBeNull()
+    expect(JSON.stringify(result)).not.toContain('hidden-model')
+  })
+
+  it('exports persisted annotations after comparisons are reloaded from the API', async () => {
+    const apiComparison = {
+      id: 'comparison-reloaded',
+      mode: 'random',
+      custom_models_selection: null,
+      error: null,
+      revealed: false,
+      llm_id_a: 'hidden-model-a',
+      llm_id_b: 'hidden-model-b',
+      turns: [
+        {
+          id: 'turn-reloaded',
+          choice: 'b_better',
+          user_msg: {
+            id: 'user-message-reloaded',
+            content: 'Reloaded prompt',
+            user_content: 'Reloaded prompt'
+          },
+          llm_msg_a: {
+            generation_id: 'generation-a',
+            content: 'Reloaded response A'
+          },
+          keyword_annotations_a: ['incorrect'],
+          custom_annotation_a: 'Contains an error',
+          llm_msg_b: {
+            generation_id: 'generation-b',
+            content: 'Reloaded response B'
+          },
+          keyword_annotations_b: ['useful', 'complete'],
+          custom_annotation_b: null
+        }
+      ]
+    }
+    const reloadedComparisons = await queryComparisons(
+      async () =>
+        new Response(JSON.stringify([apiComparison]), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        })
+    )
+
+    const result = buildUserDataExport('personne@example.fr', reloadedComparisons)
+
+    expect(result.conversations[0].turns[0].vote.annotations).toEqual({
+      a: { keywords: ['incorrect'], comment: 'Contains an error' },
+      b: { keywords: ['useful', 'complete'], comment: null }
+    })
     expect(result.conversations[0].models).toBeNull()
     expect(JSON.stringify(result)).not.toContain('hidden-model')
   })

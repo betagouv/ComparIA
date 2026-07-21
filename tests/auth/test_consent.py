@@ -201,6 +201,45 @@ def test_authentication_session_does_not_infer_consent():
     assert not [value for value in session.added if isinstance(value, ConsentLog)]
 
 
+def test_authentication_session_does_not_merge_anonymous_comparisons():
+    class EmptyResult:
+        def first(self):
+            return None
+
+    class FakeSession:
+        def __init__(self):
+            self.added = []
+            self.executed = []
+
+        def add(self, value):
+            self.added.append(value)
+
+        async def exec(self, _statement):
+            return EmptyResult()
+
+        async def execute(self, statement):
+            self.executed.append(statement)
+
+    session = FakeSession()
+    user = User(email="user@example.com")
+
+    asyncio.run(
+        _create_session(
+            session,
+            user,
+            "127.0.0.1",
+            None,
+            None,
+            anonymous_user_hash="b" * 64,
+        )
+    )
+
+    assert (
+        len([value for value in session.added if isinstance(value, AuthSession)]) == 1
+    )
+    assert session.executed == []
+
+
 def test_explicit_acceptance_records_one_required_purpose():
     class FakeSession:
         def __init__(self):
@@ -317,6 +356,7 @@ def run():
     test_email_code_requires_current_anonymous_acceptance()
     test_public_terms_response_is_privacy_minimal()
     test_authentication_session_does_not_infer_consent()
+    test_authentication_session_does_not_merge_anonymous_comparisons()
     test_explicit_acceptance_records_one_required_purpose()
     test_anonymous_proof_is_linked_without_changing_acceptance_time()
     print("All consent contract cases passed.")

@@ -103,16 +103,6 @@ async def _create_session(
             )
             .values(user_id=user.id)
         )
-    if anonymous_user_hash:
-        await session.execute(
-            sa_update(Comparison)
-            .where(
-                Comparison.anonymous_user_hash == anonymous_user_hash,
-                Comparison.user_id.is_(None),
-            )
-            .values(user_id=user.id)
-        )
-
     return token
 
 

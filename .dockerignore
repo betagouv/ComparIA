@@ -14,6 +14,7 @@ frontend/
 # Log
 *.log
 *.log.*
+data/
 
 # Vite
 .vite
