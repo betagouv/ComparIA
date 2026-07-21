@@ -25,6 +25,13 @@
   // svelte-ignore state_referenced_locally
   const comparisons = isAdmin ? undefined : getComparisonsContext()
   let expanded = $state(true)
+  let legalMenuOpen = $state(false)
+
+  function handleLegalMenuKeydown(event: KeyboardEvent, mode: 'desktop' | 'mobile') {
+    if (event.key !== 'Escape') return
+    legalMenuOpen = false
+    document.getElementById(`legal-menu-trigger-${mode}`)?.focus()
+  }
 
   const connectionBtnProps = $derived(
     auth.user
@@ -107,6 +114,79 @@
 
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
+    <div class="relative">
+      <button
+        id="legal-menu-trigger-{mode}"
+        type="button"
+        aria-expanded={legalMenuOpen}
+        aria-controls="legal-menu-{mode}"
+        onclick={() => (legalMenuOpen = !legalMenuOpen)}
+        class={[
+          'text-sm! text-grey! -ms-3 px-3 py-2 rounded gap-2 flex cursor-pointer list-none items-center hover:bg-[--background-contrast-grey] [&::-webkit-details-marker]:hidden',
+          { 'lg:justify-center': !expanded }
+        ]}
+      >
+        <Icon icon="i-ri-scales-3-line" block size={expanded ? 'sm' : 'md'} />
+        <span class={{ 'lg:sr-only': !expanded }}>Informations légales</span>
+        <Icon
+          icon="i-ri-arrow-up-s-line"
+          block
+          size="sm"
+          class={[
+            'ms-auto transition-transform',
+            { 'rotate-180': legalMenuOpen, 'lg:hidden': !expanded }
+          ]}
+        />
+      </button>
+
+      <nav
+        id="legal-menu-{mode}"
+        aria-label="Informations légales"
+        hidden={!legalMenuOpen}
+        class="lg:absolute lg:bottom-full lg:left-0 lg:w-[290px] lg:mb-2 p-3 bg-white rounded shadow-lg z-100 border border-[--border-default-grey]"
+      >
+        <p class="fr-text--sm font-bold mb-2!">Informations légales</p>
+        <ul class="fr-raw-list gap-2 flex flex-col items-start">
+          <li>
+            <Link
+              href={resolve('/arene/donnees-personnelles')}
+              text="Données personnelles et confidentialité"
+              size="sm"
+              onclick={() => (legalMenuOpen = false)}
+              onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+            />
+          </li>
+          <li>
+            <Link
+              href={resolve('/arene/modalites')}
+              text="Conditions générales d’utilisation"
+              size="sm"
+              onclick={() => (legalMenuOpen = false)}
+              onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+            />
+          </li>
+          <li>
+            <Link
+              href={resolve('/accessibilite')}
+              text="Accessibilité : non conforme"
+              size="sm"
+              onclick={() => (legalMenuOpen = false)}
+              onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+            />
+          </li>
+          <li>
+            <Link
+              href={resolve('/mentions-legales')}
+              text="Mentions légales"
+              size="sm"
+              onclick={() => (legalMenuOpen = false)}
+              onkeydown={(event) => handleLegalMenuKeydown(event, mode)}
+            />
+          </li>
+        </ul>
+      </nav>
+    </div>
+
     <div class="flex items-center justify-between">
       {@render renderLink({
         href: '/arene/parametres',

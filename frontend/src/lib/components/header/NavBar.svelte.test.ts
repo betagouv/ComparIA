@@ -1,4 +1,4 @@
-import { render } from '@testing-library/svelte'
+import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import NavBar from './NavBar.svelte'
 
@@ -34,10 +34,16 @@ vi.mock('$lib/global.svelte', () => ({
 }))
 
 describe('NavBar admin', () => {
-  it('renders without requiring the arena comparison context', () => {
-    const { container } = render(NavBar, { navLinks: [], isAdmin: true })
+  it('renders the global legal menu without requiring the arena comparison context', async () => {
+    const { container, getByRole } = render(NavBar, { navLinks: [], isAdmin: true })
 
     expect(container.textContent).toContain('admin@example.test')
+    await fireEvent.click(getByRole('button', { name: 'Informations légales' }))
+
+    expect(getByRole('link', { name: 'Données personnelles et confidentialité' })).toBeTruthy()
+    expect(getByRole('link', { name: 'Conditions générales d’utilisation' })).toBeTruthy()
+    expect(getByRole('link', { name: 'Accessibilité : non conforme' })).toBeTruthy()
+    expect(getByRole('link', { name: 'Mentions légales' })).toBeTruthy()
     expect(mocks.getComparisonsContext).not.toHaveBeenCalled()
   })
 })
