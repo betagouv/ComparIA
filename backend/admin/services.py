@@ -22,6 +22,10 @@ class CannotDeleteLastAdminError(Exception):
     pass
 
 
+class CannotDemoteLastAdminError(Exception):
+    pass
+
+
 class EmailAlreadyExistsError(Exception):
     pass
 
@@ -122,6 +126,22 @@ async def update_user(user_id: uuid.UUID, data: UserUpsert) -> UserPublic | None
         user = await session.get(User, user_id)
         if not user or user.deleted_at is not None:
             return None
+
+        if user.role == "admin" and data.role != "admin":
+            other_admins = await session.exec(
+                select(func.count()).select_from(
+                    select(User)
+                    .where(
+                        col(User.role) == "admin",
+                        User.deleted_at.is_(None),
+                        User.id != user.id,
+                    )
+                    .subquery()
+                )
+            )
+            if other_admins.one() == 0:
+                raise CannotDemoteLastAdminError()
+
         user.sqlmodel_update(data.model_dump(exclude={"id"}))
         session.add(user)
         await session.commit()

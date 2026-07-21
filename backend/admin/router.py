@@ -7,6 +7,7 @@ from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
+    CannotDemoteLastAdminError,
     EmailAlreadyExistsError,
     cancel_user_invite,
     create_user,
@@ -86,7 +87,13 @@ async def get_user_route(user_id: uuid.UUID) -> UserPublic:
 
 @router.put("/users/{user_id}", response_model=UserPublic)
 async def update_user_route(user_id: uuid.UUID, body: UserUpsert) -> UserPublic:
-    user = await update_user(user_id, body)
+    try:
+        user = await update_user(user_id, body)
+    except CannotDemoteLastAdminError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot demote the last remaining admin",
+        )
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return user
