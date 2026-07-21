@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Checkbox, Input } from '$components/dsfr'
+  import { Button, Checkbox, Input, Select } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
@@ -25,6 +25,7 @@
   let secondaryColorDark = $state('')
   let homepageUrl = $state('')
   let enabledLocales = $state<Record<string, boolean>>({})
+  let defaultLocale = $state('')
   let loadedValues = $state({
     votesObjective: '',
     platformName: '',
@@ -40,6 +41,19 @@
     hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : '/orgs/comparia.png'
   )
   const auth = getAuthContext()
+  const defaultLocaleOptions = $derived(
+    ALL_LOCALES.filter((locale) => enabledLocales[locale.code]).map((locale) => ({
+      value: locale.code,
+      label: locale.long
+    }))
+  )
+
+  $effect(() => {
+    // Keep the selection valid if the admin unchecks the current default locale
+    if (defaultLocaleOptions.length && !defaultLocaleOptions.some((o) => o.value === defaultLocale)) {
+      defaultLocale = defaultLocaleOptions[0].value
+    }
+  })
 
   async function load() {
     loading = true
@@ -56,6 +70,7 @@
       enabledLocales = Object.fromEntries(
         ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales.includes(locale.code)])
       )
+      defaultLocale = data.default_locale
       loadedValues = { ...currentValues(), votesObjective, platformName }
     } finally {
       loading = false
@@ -132,7 +147,8 @@
         homepage_url: homepageUrl || null,
         enabled_locales: ALL_LOCALES.filter((locale) => enabledLocales[locale.code]).map(
           (locale) => locale.code
-        )
+        ),
+        default_locale: defaultLocale
       }
       const saved = await api.request<AppSettingsPublic>('/admin/settings', {
         method: 'PATCH',
@@ -317,6 +333,14 @@
           />
         {/each}
       </div>
+
+      <Select
+        id="settings-default-locale"
+        label={m['admin.settings.customization.defaultLocale.label']()}
+        bind:selected={defaultLocale}
+        options={defaultLocaleOptions}
+        groupClass="mt-4! max-w-[240px]"
+      />
 
       <div class="gap-3 mt-4! flex flex-wrap">
         <Button

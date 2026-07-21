@@ -232,6 +232,9 @@
                     "secondaryLight": "Couleur secondaire (thème clair)",
                     "secondaryDark": "Couleur secondaire (thème sombre)"
                 },
+                "defaultLocale": {
+                    "label": "Langue par défaut"
+                },
                 "homepageUrl": {
                     "label": "URL de la page d’accueil",
                     "hint": "Cette adresse est ouverte lorsqu’une personne sélectionne le logo ou le nom de la plateforme. Laissez vide pour utiliser l’accueil local.",

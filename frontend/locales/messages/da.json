@@ -45,6 +45,9 @@
                 "locales": {
                     "label": "Aktiverede sprog"
                 },
+                "defaultLocale": {
+                    "label": "Standardsprog"
+                },
                 "logo": {
                     "label": "Logo",
                     "chooseFile": "Vælg en fil",
