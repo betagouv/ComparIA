@@ -117,6 +117,7 @@
     <button
       id="legal-menu-trigger-{mode}"
       type="button"
+      aria-label="Informations légales"
       aria-expanded={legalMenuOpen}
       aria-controls="legal-menu-{mode}"
       onclick={() => (legalMenuOpen = !legalMenuOpen)}
@@ -126,7 +127,7 @@
       ]}
     >
       <Icon icon="i-ri-scales-3-line" block size={expanded ? 'sm' : 'md'} />
-      <span class={{ 'lg:sr-only': !expanded }}>Informations légales</span>
+      <span class={{ 'lg:sr-only': !expanded }}>Légal</span>
       <Icon
         icon="i-ri-arrow-up-s-line"
         block

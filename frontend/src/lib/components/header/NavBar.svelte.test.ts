@@ -40,7 +40,9 @@ describe('NavBar admin', () => {
     expect(container.textContent).not.toContain('admin@example.test')
     expect(getByRole('link', { name: 'Paramètres' })).toBeTruthy()
     expect(getByRole('button', { name: 'Se déconnecter' })).toBeTruthy()
-    await fireEvent.click(getByRole('button', { name: 'Informations légales' }))
+    const legalMenuButton = getByRole('button', { name: 'Informations légales' })
+    expect(legalMenuButton).toHaveTextContent('Légal')
+    await fireEvent.click(legalMenuButton)
 
     expect(getByRole('link', { name: 'Données personnelles et confidentialité' })).toBeTruthy()
     expect(getByRole('link', { name: 'Conditions générales d’utilisation' })).toBeTruthy()

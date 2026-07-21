@@ -73,6 +73,7 @@
       role="tabpanel"
       aria-labelledby={`tab-${item.id}`}
       tabindex="0"
+      hidden={item.id !== currentTabId}
       class={[
         'fr-tabs__panel',
         {
