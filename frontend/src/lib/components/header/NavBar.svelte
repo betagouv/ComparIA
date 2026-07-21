@@ -121,7 +121,7 @@
       aria-controls="legal-menu-{mode}"
       onclick={() => (legalMenuOpen = !legalMenuOpen)}
       class={[
-        'text-sm! text-grey! -ms-3 px-3 py-2 rounded gap-2 flex cursor-pointer list-none items-center hover:bg-[--background-contrast-grey] [&::-webkit-details-marker]:hidden',
+        'text-grey! px-0 py-2 rounded gap-1 flex cursor-pointer items-center text-[13px]! whitespace-nowrap hover:bg-[--background-contrast-grey]',
         { 'lg:justify-center': !expanded }
       ]}
     >
@@ -130,11 +130,8 @@
       <Icon
         icon="i-ri-arrow-up-s-line"
         block
-        size="sm"
-        class={[
-          'ms-auto transition-transform',
-          { 'rotate-180': legalMenuOpen, 'lg:hidden': !expanded }
-        ]}
+        size="xs"
+        class={['transition-transform', { 'rotate-180': legalMenuOpen, 'lg:hidden': !expanded }]}
       />
     </button>
 
@@ -225,15 +222,20 @@
       </div>
     </div>
 
-    <div class="flex justify-end">
-      <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
-    </div>
-
     <!-- {@render helpLink()} -->
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
 
-    {@render legalMenu(mode)}
+    <div class={['gap-1 flex items-center justify-between', { 'lg:justify-center': !expanded }]}>
+      {@render legalMenu(mode)}
+      <LanguageSelector
+        id="translate-{mode}"
+        class={[
+          'text-grey! [&_.fr-translate__btn]:text-grey! [&_.fr-translate__btn]:text-[13px]!',
+          { 'lg:hidden': !expanded }
+        ]}
+      />
+    </div>
   </div>
 {/snippet}
 
