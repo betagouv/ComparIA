@@ -94,6 +94,13 @@ class AppSettings(SQLModel, table=True):
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
+    enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = [
+        "da",
+        "en",
+        "fr",
+        "lt",
+        "sv",
+    ]
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
@@ -109,6 +116,7 @@ class AppSettingsPublic(SQLModel):
     secondary_color_dark: str
     homepage_url: str | None
     has_custom_logo: bool
+    enabled_locales: list[str]
     updated_at: str
     updated_by: uuid.UUID | None = None
 
@@ -123,6 +131,7 @@ class AppSettingsPatch(SQLModel):
     secondary_color_light: str | None = None
     secondary_color_dark: str | None = None
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    enabled_locales: list[str] | None = None
 
     @field_validator(
         "primary_color_light",
