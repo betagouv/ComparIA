@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import { getAuthContext } from '$lib/auth.svelte'
   import Dropdown from '$components/Dropdown.svelte'
-  import { LOCALES, type LocaleOption } from '$lib/global.svelte'
+  import { getLocales, type LocaleOption } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
   import type { SvelteHTMLElements } from 'svelte/elements'
@@ -9,6 +10,8 @@
 
   let { id, ...props }: { id: string } & SvelteHTMLElements['nav'] = $props()
 
+  const auth = getAuthContext()
+  const locales = $derived(getLocales(auth.config.enabled_locales))
   const currentLocale = getLocale()
 
   function onLocaleSelect(locale: LocaleOption) {
@@ -26,13 +29,14 @@
 <nav {...props} class={['language-selector fr-translate fr-nav whitespace-nowrap', props.class]}>
   <Dropdown
     id="dropdown-{id}"
-    label={LOCALES.find((locale) => locale.code === currentLocale)!.short}
+    label={locales.find((locale) => locale.code === currentLocale)?.short ??
+      currentLocale.toUpperCase()}
     title={m['actions.selectLanguage']()}
     buttonClass="fr-translate__btn rounded-sm!"
     closeOnSelect
   >
     <ul class="fr-sidemenu__list">
-      {#each LOCALES as locale (locale.code)}
+      {#each locales as locale (locale.code)}
         <li class="fr-sidemenu__item">
           <button
             class="fr-sidemenu__link py-2! font-normal! font-sm!"
