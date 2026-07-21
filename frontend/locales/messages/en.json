@@ -355,11 +355,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "This accessibility statement applies to the website <strong> comparia.beta.gouv.fr </strong> .",
+            "desc": "This accessibility statement applies to the website <strong>{domain}</strong>.",
             "disclaimer": "<strong> compar:IA </strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
             "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "We try to respond within 2 business days.",
-            "improveDesc": "If you are unable to access any content or service, you can contact the manager of beta.gouv.fr to be directed to an accessible alternative or obtain the content in another format.",
+            "improveDesc": "If you are unable to access any content or service, you can contact the manager of {domain} to be directed to an accessible alternative or obtain the content in another format.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Improvement and contact",
             "remedyAdvocate": "Write a message to the <a {linkProps}>Defender of Rights</a>",
@@ -368,7 +368,7 @@
             "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
             "remedyList": "You can :",
             "remedyTitle": "Appeal",
-            "stateDesc": "The comparia.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
+            "stateDesc": "The {domain} website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
             "stateNavigate": "navigate all pages of the site using a keyboard",
             "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
             "stateScreenReader": "view the website with a screen reader.",

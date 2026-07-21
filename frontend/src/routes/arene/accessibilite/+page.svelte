@@ -1,7 +1,11 @@
 <script>
   import SeoHead from '$components/SEOHead.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+
+  const auth = getAuthContext()
+  const platformDomain = $derived(new URL(auth.config.platform_url).host)
 </script>
 
 <SeoHead title={m['seo.titles.accessibilite']()} />
@@ -19,10 +23,10 @@
 
     <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
     <!-- <p><em>Établie le 24 avril 2024.</em></p> -->
-    <p>{@html sanitize(m['general.a11y.desc']())}</p>
+    <p>{@html sanitize(m['general.a11y.desc']({ domain: platformDomain }))}</p>
 
     <h2 id="etat-de-conformite">{m['general.a11y.stateTitle']()}</h2>
-    <p>{@html sanitize(m['general.a11y.stateDesc']())}</p>
+    <p>{@html sanitize(m['general.a11y.stateDesc']({ domain: platformDomain }))}</p>
     <ul>
       <li>{m['general.a11y.stateNavigate']()}</li>
       <li>{m['general.a11y.stateScreenReader']()}</li>
@@ -44,7 +48,7 @@
   </ul> -->
 
     <h2 id="amelioration-et-contact">{m['general.a11y.improveTitle']()}</h2>
-    <p>{m['general.a11y.improveDesc']()}</p>
+    <p>{m['general.a11y.improveDesc']({ domain: platformDomain })}</p>
     <ul>
       <li>
         {@html sanitize(

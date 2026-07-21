@@ -4,6 +4,7 @@ import asyncio
 import contextlib
 import os
 import sys
+from types import SimpleNamespace
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -50,6 +51,25 @@ def test_authentication_contract_is_separate_from_consent():
     )
     assert body.email == "user@example.com"
     assert "consent" not in type(body).model_fields
+
+
+def test_public_config_exposes_the_deployment_url(monkeypatch):
+    async def fake_get_app_settings():
+        return SimpleNamespace(
+            auth_access_policy="anonymous_first",
+            auth_domain_allowlist=[],
+            platform_name="Example arena",
+            logo=None,
+        )
+
+    monkeypatch.setattr(auth_router, "get_app_settings", fake_get_app_settings)
+    monkeypatch.setattr(
+        auth_router.settings, "COMPARIA_APP_URL", "https://arena.example.test"
+    )
+
+    config = asyncio.run(auth_router.get_config())
+
+    assert config.platform_url == "https://arena.example.test"
 
 
 def test_legal_information_acknowledgement_cannot_be_false():

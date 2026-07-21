@@ -14,7 +14,8 @@ vi.mock('$lib/auth.svelte', () => ({
     config: {
       access_policy: 'anonymous_first',
       has_custom_logo: false,
-      platform_name: 'Plateforme de test'
+      platform_name: 'Plateforme de test',
+      platform_url: 'https://example.test'
     }
   }),
   logout: vi.fn()

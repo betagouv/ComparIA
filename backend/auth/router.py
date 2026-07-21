@@ -53,6 +53,7 @@ class AuthConfig(BaseModel):
     smtp_configured: bool
     domain_allowlist: list[str]
     platform_name: str
+    platform_url: str
     has_custom_logo: bool
 
 
@@ -130,6 +131,7 @@ async def get_config() -> AuthConfig:
         smtp_configured=bool(settings.SMTP_HOST),
         domain_allowlist=app_settings.auth_domain_allowlist,
         platform_name=app_settings.platform_name,
+        platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
     )
 
