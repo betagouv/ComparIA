@@ -2,7 +2,7 @@
   import { Link } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
-  import { getComparison } from '$lib/chatService.svelte'
+  import { getComparison, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
 
@@ -13,9 +13,22 @@
   const showInitialPrompt = $derived(!comparator.comparisonId)
 
   const revealed = $derived(comparator.status === 'revealed')
+
+  let tosModal = $state<{
+    runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
+  }>()
+
+  async function runAfterAcceptance(action: () => unknown | Promise<unknown>): Promise<void> {
+    if (!tosModal) return
+    await tosModal.runAfterAcceptance(action)
+  }
+
+  function submitInitialPrompt(args: APIModeAndPromptData): void {
+    void runAfterAcceptance(() => comparator.askFirst(args))
+  }
 </script>
 
-<TOSModal />
+<TOSModal bind:this={tosModal} />
 
 <PageLayout
   seoTitle={m['seo.titles.arene']()}
@@ -42,9 +55,9 @@
     <ViewPrompt
       loading={comparator.loading}
       promptError={comparator.promptError}
-      onPrompt={comparator.askFirst}
+      onPrompt={submitInitialPrompt}
     />
   {:else}
-    <ViewChat comparisonId={comparator.comparisonId!} />
+    <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />
   {/if}
 </PageLayout>

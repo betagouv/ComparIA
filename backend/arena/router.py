@@ -37,12 +37,15 @@ from backend.arena.streaming import (
 )
 from backend.arena.web_search import search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
+from backend.auth.services import get_current_terms_acceptance_version
+from backend.config import settings
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
+    LEGACY_PARTICIPATION_TERMS_VERSION,
     TurnPublic,
     TurnVoteAnnotate,
     TurnVoteChoice,
@@ -182,6 +185,18 @@ async def add_first_text(
     Raises:
         HTTPException: If rate limiting triggered or validation fails
     """
+    participation_terms_version = LEGACY_PARTICIPATION_TERMS_VERSION
+    if settings.COMPARIA_DB_URI:
+        participation_terms_version = await get_current_terms_acceptance_version(
+            user_id=user.id if user else None,
+            anonymous_user_hash=anonymous_user_hash,
+        )
+        if not participation_terms_version:
+            raise HTTPException(
+                status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+                detail="Vous devez accepter les conditions d’utilisation en vigueur avant de participer.",
+            )
+
     logger.info(
         f"'/add_first_text' called with: {args.model_dump_json()}",
         extra={"request": request},
@@ -209,6 +224,7 @@ async def add_first_text(
             ip=get_ip(request),
             anonymous_user_hash=anonymous_user_hash if not user else None,
             user_id=user.id if user else None,
+            participation_terms_version=participation_terms_version,
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
             mode=args.mode,

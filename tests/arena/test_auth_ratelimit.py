@@ -12,17 +12,18 @@ import contextlib
 import os
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
-import utils.database.models  # noqa: F401 needed before importing backend.auth.router
-
-import backend.auth.router as auth_router
-from backend.config import settings
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+import backend.auth.router as auth_router
+import utils.database.models  # noqa: F401 needed before importing backend.auth.router
+from backend.config import settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
 
 
@@ -55,6 +56,10 @@ async def _fake_send_login_code(email, code):
     pass
 
 
+async def _fake_current_acceptance(**_kwargs):
+    return True
+
+
 @contextlib.contextmanager
 def fake_router(verify_login_code=None):
     fake = FakeRedis()
@@ -65,17 +70,27 @@ def fake_router(verify_login_code=None):
         "request_login_code": auth_router.request_login_code,
         "send_login_code": auth_router.send_login_code,
         "verify_login_code": auth_router.verify_login_code,
+        "get_app_settings": auth_router.get_app_settings,
+        "has_current_terms_acceptance": auth_router.has_current_terms_acceptance,
     }
     auth_router.get_redis_client = lambda: fake
     auth_router.verify_altcha_token = lambda payload: (True, None)
     auth_router.request_login_code = _fake_request_login_code
     auth_router.send_login_code = _fake_send_login_code
+
+    async def fake_app_settings():
+        return SimpleNamespace(auth_domain_allowlist=[])
+
+    auth_router.get_app_settings = fake_app_settings
+    auth_router.has_current_terms_acceptance = _fake_current_acceptance
     if verify_login_code is not None:
         auth_router.verify_login_code = verify_login_code
     try:
         app = FastAPI()
         app.include_router(auth_router.router)
-        yield TestClient(app), fake
+        client = TestClient(app)
+        client.cookies.set("anonymous_session", "test-anonymous-session")
+        yield client, fake
     finally:
         for name, func in orig.items():
             setattr(auth_router, name, func)

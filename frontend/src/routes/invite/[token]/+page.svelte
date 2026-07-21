@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
@@ -8,8 +9,8 @@
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
-  const auth = getAuthContext()
   const token = $derived(page.params.token)
+  const auth = getAuthContext()
 
   let checkStatus = $state<'loading' | 'valid' | 'invalid'>('loading')
   let email = $state<string>()
@@ -40,7 +41,7 @@
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
       useToast(m['auth.success'](), 4000)
-      goto('/arene')
+      goto(resolve('/arene'))
     } catch (err) {
       error = (err as Error).message
       checkStatus = 'invalid'

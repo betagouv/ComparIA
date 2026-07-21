@@ -8,7 +8,13 @@
   import { onDestroy } from 'svelte'
   import { GroupedMessages, RevealArea, VoteModal } from '.'
 
-  let { comparisonId }: { comparisonId: string } = $props()
+  let {
+    comparisonId,
+    runAfterAcceptance
+  }: {
+    comparisonId: string
+    runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
+  } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
 
@@ -31,10 +37,12 @@
   )
 
   async function onPromptSubmit() {
-    const success = await comparator.ask(prompt)
-    if (success) {
-      prompt = ''
-    }
+    await runAfterAcceptance(async () => {
+      const success = await comparator.ask(prompt)
+      if (success) {
+        prompt = ''
+      }
+    })
   }
 
   function remindToVote() {

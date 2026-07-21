@@ -273,11 +273,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "See ligipääsetavuse avaldus kehtib veebilehel <strong>baromeeter.ai</strong>.",
+            "desc": "See ligipääsetavuse avaldus kehtib veebilehel <strong>{domain}</strong>.",
             "disclaimer": "<strong>compar:IA</strong> kohustub muutma oma digiteenused ligipääsetavaks vastavalt 11. veebruari 2005. aasta seaduse nr 2005-102 artiklile 47.",
             "improveAdress": "Aadress: DINUM, 20 avenue de Ségur, 75007, Pariis",
             "improveDelay": "Püüame vastata kahe tööpäeva jooksul.",
-            "improveDesc": "Kui te ei pääse sisule või teenusele ligi, võite võtta ühendust beta.gouv.fr vastutava isikuga, kes suunab teid ligipääsetava alternatiivi juurde või hangib sisu teises vormingus.",
+            "improveDesc": "Kui te ei pääse sisule või teenusele ligi, võite võtta ühendust {domain} vastutava isikuga, kes suunab teid ligipääsetava alternatiivi juurde või hangib sisu teises vormingus.",
             "improveMail": "E-post: <a {linkProps}>baromeeter@tartunlp.ai</a>",
             "improveTitle": "Parandused ja kontakt",
             "remedyAdvocate": "Kirjutage sõnum <a {linkProps}>õiguste kaitse asutusele</a>",
@@ -286,7 +286,7 @@
             "remedyDesc": "Seda menetlust tuleb kasutada juhul, kui olete teavitanud veebilehe haldajat ligipääsetavuse puudusest, mis takistab teil juurdepääsu sisule või ühele portaali teenustest, ning te ei ole saanud rahuldavat vastust.",
             "remedyList": "Saad:",
             "remedyTitle": "Vaidlusavalduse esitada",
-            "stateDesc": "Veebileht comparia.beta.gouv.fr ei vasta RGAA 4.1 standardile. Lehekülge <strong>pole veel auditeeritud</strong>. Siiski on lehekülg loodud nii, et see oleks võimalikult suurele kasutajaskonnale ligipääsetav. Seetõttu peaksite saama:",
+            "stateDesc": "Veebileht {domain} ei vasta RGAA 4.1 standardile. Lehekülge <strong>pole veel auditeeritud</strong>. Siiski on lehekülg loodud nii, et see oleks võimalikult suurele kasutajaskonnale ligipääsetav. Seetõttu peaksite saama:",
             "stateNavigate": "Kõikidel lehekülgedel vaid klaviatuuri abil navigeerida",
             "statePrefs": "Lehekülge ilma sisu kaotamata oma eelistustega kohandada (kirjasuurus, ekraani suum, kirjatüübi muutmine jne)",
             "stateScreenReader": "Veebilehte ekraanilugeja abil vaadata.",

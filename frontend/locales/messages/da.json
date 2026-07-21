@@ -355,11 +355,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> ai-arenaen.dk </strong> .",
+            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong>{domain}</strong>.",
             "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
-            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af ai-arenaen.dk for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
+            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af {domain} for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Forbedring og kontakt",
             "remedyAdvocate": "Skriv en besked til <a {linkProps}>Ombudsmanden</a>",
@@ -368,7 +368,7 @@
             "remedyDesc": "Denne procedure skal anvendes i følgende tilfælde: Du har rapporteret en tilgængelighedsfejl til webstedsadministratoren, som forhindrer dig i at få adgang til indhold eller en af portalens tjenester, og du har ikke modtaget et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Klageadgang",
-            "stateDesc": "Hjemmesiden ai-arenaen.dk overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
+            "stateDesc": "Hjemmesiden {domain} overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
             "stateNavigate": "navigere på alle sider på webstedet ved hjælp af et tastatur",
             "statePrefs": "tilpasse siden til dine præferencer (skriftstørrelse, skærmzoom, ændring af typografi osv.) uden tab af indhold",
             "stateScreenReader": "se hjemmesiden med en skærmlæser.",

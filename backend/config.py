@@ -64,8 +64,10 @@ class Settings(BaseSettings):
     # If non-empty, only emails from these domains can request a login code (e.g. ["beta.gouv.fr"])
     AUTH_DOMAIN_ALLOWLIST: list[str] = []
     AUTH_SESSION_LENGTH_DAYS: int = 30
-    # Bumping this value invalidates existing consent logs and forces re-consent
+    # Fallback terms used only when no database is configured.
     AUTH_TERMS_VERSION: str = "1.0"
+    AUTH_TERMS_LANGUAGE: str = "fr"
+    AUTH_TERMS_CONTENT: str = "Conditions générales d’utilisation de Compar:IA."
 
     # Deliberately high: keyed on IP, so a school class behind one shared NAT
     # must never be locked out. The real anti-abuse limit is per-email below.

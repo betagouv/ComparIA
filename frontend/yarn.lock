@@ -2112,6 +2112,11 @@ cookie@^0.6.0:
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.6.0.tgz"
   integrity sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==
 
+core-js@^3.42.0:
+  version "3.49.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.49.0.tgz#8b4d520ac034311fa21aa616f017ada0e0dbbddd"
+  integrity sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==
+
 core-util-is@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz"
@@ -4110,6 +4115,13 @@ text-hex@1.0.x:
   version "1.0.0"
   resolved "https://registry.npmjs.org/text-hex/-/text-hex-1.0.0.tgz"
   integrity sha512-uuVGNWzgJ4yhRaNSiubPY7OjISw4sw4E5Uv0wbjp+OzcbmVU/rsT8ujgcXJhn9ypzsgr5vlzpPqP+MBBKcGvbg==
+
+tiny-markdown-editor@^0.2.31:
+  version "0.2.31"
+  resolved "https://registry.yarnpkg.com/tiny-markdown-editor/-/tiny-markdown-editor-0.2.31.tgz#4ebb9d9309b4363f27e45929a79ef7bcbcd4e21d"
+  integrity sha512-6Feue5sBqTG0xRkdyFbPjyV8xtZfx5PGqtdPHlBrStk4L5RCL/AfCEKg0TUrm5tlz1LVwwfaCawF4Ft68tw8Jg==
+  dependencies:
+    core-js "^3.42.0"
 
 tinybench@^2.9.0:
   version "2.9.0"

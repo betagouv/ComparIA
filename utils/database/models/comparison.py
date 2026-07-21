@@ -43,6 +43,7 @@ ArchivedReason = Literal[
 # - "corrupted_model_stream": reparse LLMMessage content
 
 LLMDataId = Annotated[uuid.UUID, Field(foreign_key="llm_data.id")]
+LEGACY_PARTICIPATION_TERMS_VERSION = "legacy-pre-versioning"
 
 
 class ErrorDetails(BaseModel):
@@ -57,6 +58,7 @@ class ComparisonBase(BaseDBModel):
     visitor_id: str | None = None
     user_id: Annotated[uuid.UUID | None, Field(foreign_key="auth_user.id")] = None
     anonymous_user_hash: str | None = None
+    participation_terms_version: str = LEGACY_PARTICIPATION_TERMS_VERSION
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (

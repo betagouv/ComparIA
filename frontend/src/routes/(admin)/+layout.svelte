@@ -22,6 +22,14 @@
       icon: 'i-ri-fingerprint-line'
     },
     {
+      label: m['admin.nav.termsParticipation'](),
+      href: '/admin/legal',
+      icon: 'i-ri-file-shield-2-line',
+      isCurrent: () =>
+        page.url.pathname.startsWith('/admin/legal') ||
+        page.url.pathname === '/admin/conditions-participation'
+    },
+    {
       label: m['admin.nav.users'](),
       href: '/admin/utilisateurs',
       icon: 'i-ri-user-settings-line'

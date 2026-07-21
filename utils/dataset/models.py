@@ -15,6 +15,7 @@ from utils.database.models import (
     ArchivedReason,
     BotPos,
     ErrorDetails,
+    LEGACY_PARTICIPATION_TERMS_VERSION,
     LLMMessageFinal,
     UserMessageRead,
 )
@@ -42,6 +43,7 @@ class DatasetComparisonBaseMetadata(SQLModel):
     categories: list[str] | None
     languages: list[str] | None
     short_summary: str | None
+    participation_terms_version: str = LEGACY_PARTICIPATION_TERMS_VERSION
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):

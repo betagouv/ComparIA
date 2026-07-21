@@ -12,8 +12,10 @@ from backend.config import settings
 # Import all table models to populate SQLModel.metadata
 from utils.database.models import Comparison, Turn  # noqa: F401
 from utils.database.models.auth import (  # noqa: F401
+    AnonymousConsentLog,
     AuthSession,
     ConsentLog,
+    LegalDocument,
     LoginCode,
     User,
 )

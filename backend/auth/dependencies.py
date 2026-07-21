@@ -37,11 +37,12 @@ async def require_admin(request: Request) -> User:
 
 
 async def require_anonymous(request: Request) -> str:
-    token = request.cookies.get(ANONYMOUS_SESSION_COOKIE)
+    token = request.cookies.get(ANONYMOUS_SESSION_COOKIE) or getattr(
+        request.state, "anonymous_session_token", None
+    )
     if not token:
         raise AnonymousRequiredError()
-    else:
-        return _hash(token)
+    return _hash(token)
 
 
 RequiredAnomymous = Annotated[str, Depends(require_anonymous)]

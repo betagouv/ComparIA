@@ -273,11 +273,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>comparia.beta.gouv.fr</strong>.",
+            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>{domain}</strong>.",
             "disclaimer": "<strong>compar:IA</strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi prøver å svare innen to virkedager.",
-            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av beta.gouv.fr for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
+            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av {domain} for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
             "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Forbedring og kontakt",
             "remedyAdvocate": "Skriv en melding til <a {linkProps}>Défenseur des droits</a>",
@@ -286,7 +286,7 @@
             "remedyDesc": "Denne prosedyren skal brukes i følgende tilfelle: du har rapportert en feil med tilgjengeligheten til ansvarlig for nettstedet som hindrer deg i å få tilgang til innhold eller en av portalens tjenester, og du har ikke mottatt et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Anke",
-            "stateDesc": "Nettstedet comparia.beta.gouv.fr er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
+            "stateDesc": "Nettstedet {domain} er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
             "stateNavigate": "finne fram på alle sidene på nettstedet ved hjelp av et tastatur",
             "statePrefs": "tilpasse nettstedet til dine behov (skriftstørrelse, zoome inn på skjermen, endre typografi osv.) uten tap av innhold",
             "stateScreenReader": "se nettsiden med en skjermleser.",

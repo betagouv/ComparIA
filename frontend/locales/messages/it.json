@@ -274,11 +274,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong>compara.beta.gouv.fr</strong> .",
+            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong>{domain}</strong>.",
             "disclaimer": "<strong>compar:IA</strong> si impegna a rendere accessibili i propri servizi digitali, in conformità all'articolo 47 della legge n. 2005-102 dell'11 febbraio 2005.",
             "improveAdress": "Indirizzo: DINUM, 20 avenue de Ségur 75007 Parigi",
             "improveDelay": "Cerchiamo di rispondere entro 2 giorni lavorativi.",
-            "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di beta.gouv.fr per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
+            "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di {domain} per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Miglioramento e contatto",
             "remedyAdvocate": "Scrivi un messaggio al <a {linkProps}>Difensore dei diritti</a>",
@@ -287,7 +287,7 @@
             "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato al gestore del sito web un problema di accessibilità che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
             "remedyList": "Puoi :",
             "remedyTitle": "Procedura di ricorso",
-            "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
+            "stateDesc": "Il sito web {domain} non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
             "stateNavigate": "naviga tra tutte le pagine del sito utilizzando una tastiera",
             "statePrefs": "adatta il sito alle tue preferenze (dimensione del carattere, zoom dello schermo, modifica della tipografia, ecc.) senza perdita di contenuti",
             "stateScreenReader": "visualizza il sito web con un lettore di schermo.",

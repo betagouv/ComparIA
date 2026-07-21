@@ -292,6 +292,7 @@ def _reference_rows() -> list[dict]:
                 "categories": ["x"],
                 "languages": ["x"],
                 "short_summary": "x",
+                "participation_terms_version": "legacy-pre-versioning",
                 "total_tokens_a": 1,
                 "total_tokens_b": 1,
                 "total_conso_a": 1.0,
@@ -427,6 +428,11 @@ def _write_normal_from_raw_parquet(
         table = pa.Table.from_batches([batch])
         table = table.filter(pc.equal(table.column("excluded"), False))
         table = table.drop(DROP_COLS)
+        if "participation_terms_version" not in table.column_names:
+            table = table.append_column(
+                "participation_terms_version",
+                pa.array(["legacy-pre-versioning"] * len(table)),
+            )
 
         if len(table) == 0:
             continue
