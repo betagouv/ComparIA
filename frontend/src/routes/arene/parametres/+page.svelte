@@ -152,7 +152,7 @@
                 />
               </li>
               <li><Link href={resolve('/accessibilite')} text="Accessibilité" /></li>
-              <li><Link href={resolve('/ecoconception')} text="Écoconception" /></li>
+              <li><Link href={resolve('/arene/ecoconception')} text="Écoconception" /></li>
               <li><Link href="https://github.com/betagouv/ComparIA" text="Code source" /></li>
             </ul>
           </section>

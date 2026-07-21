@@ -14,7 +14,6 @@
       { href: '/modalites', labelKey: 'tos' },
       { href: '/donnees-personnelles', labelKey: 'privacy' },
       { href: '/accessibilite', labelKey: 'accessibility' },
-      { href: '/ecoconception', labelKey: 'rgesn' },
       { href: 'https://github.com/betagouv/languia', labelKey: 'sources' }
     ] as const
   ).map(({ href, labelKey }) => {

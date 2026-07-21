@@ -173,7 +173,7 @@
         </li>
         <li>
           <Link
-            href={resolve('/ecoconception')}
+            href={resolve('/arene/ecoconception')}
             text="Écoconception"
             size="sm"
             onclick={() => (legalMenuOpen = false)}
