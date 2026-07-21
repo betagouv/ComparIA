@@ -37,7 +37,9 @@ describe('NavBar admin', () => {
   it('renders the global legal menu without requiring the arena comparison context', async () => {
     const { container, getByRole } = render(NavBar, { navLinks: [], isAdmin: true })
 
-    expect(container.textContent).toContain('admin@example.test')
+    expect(container.textContent).not.toContain('admin@example.test')
+    expect(getByRole('link', { name: 'Paramètres' })).toBeTruthy()
+    expect(getByRole('button', { name: 'Se déconnecter' })).toBeTruthy()
     await fireEvent.click(getByRole('button', { name: 'Informations légales' }))
 
     expect(getByRole('link', { name: 'Données personnelles et confidentialité' })).toBeTruthy()
