@@ -41,6 +41,9 @@
             "customization": {
                 "platformName": "Platform name",
                 "votesObjective": "Votes objective",
+                "locales": {
+                    "label": "Enabled languages"
+                },
                 "logo": {
                     "label": "Logo",
                     "chooseFile": "Choose a file",

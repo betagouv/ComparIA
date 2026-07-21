@@ -42,6 +42,9 @@
             "customization": {
                 "platformName": "Platformens navn",
                 "votesObjective": "Stemmemål",
+                "locales": {
+                    "label": "Aktiverede sprog"
+                },
                 "logo": {
                     "label": "Logo",
                     "chooseFile": "Vælg en fil",

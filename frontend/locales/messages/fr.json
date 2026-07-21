@@ -237,6 +237,9 @@
                     "hint": "Cette adresse est ouverte lorsqu’une personne sélectionne le logo ou le nom de la plateforme. Laissez vide pour utiliser l’accueil local.",
                     "invalid": "Saisissez une URL HTTPS complète."
                 },
+                "locales": {
+                    "label": "Langues activées"
+                },
                 "logo": {
                     "chooseFile": "Choisir un fichier",
                     "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum.",
