@@ -24,6 +24,7 @@ export interface AuthConfig {
   secondary_color_dark: string
   homepage_url: string | null
   enabled_locales: string[]
+  default_locale: string
 }
 
 type AuthCtx = {
