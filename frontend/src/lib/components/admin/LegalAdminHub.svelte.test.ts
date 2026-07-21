@@ -18,6 +18,7 @@ describe('Legal administration hub', () => {
       '/admin/legal/confidentialite'
     )
     expect(container.querySelector('.fr-card')).toBeNull()
+    expect(container.querySelector('.fr-badge')).toBeNull()
     expect(container.querySelector('[role="tablist"]')).toBeNull()
   })
 })
