@@ -123,10 +123,10 @@
       onclick={() => (legalMenuOpen = !legalMenuOpen)}
       class={[
         'text-grey! px-0 py-2 rounded gap-1 flex cursor-pointer items-center text-[13px]! whitespace-nowrap hover:bg-[--background-contrast-grey]',
-        { 'lg:justify-center': !expanded }
+        { 'lg:h-6 lg:w-6 lg:justify-center lg:py-0': !expanded }
       ]}
     >
-      <Icon icon="i-ri-scales-3-line" block size={expanded ? 'sm' : 'md'} />
+      <Icon icon="i-ri-scales-3-line" block size="sm" />
       <span class={{ 'lg:sr-only': !expanded }}>Légal</span>
       <Icon
         icon="i-ri-arrow-up-s-line"
@@ -195,7 +195,7 @@
     >
       <span class={['text-sm text-grey', { 'lg:sr-only': !expanded }]}>Mon compte</span>
 
-      <div class={['gap-1 flex items-center', { 'lg:flex-col': !expanded }]}>
+      <div class={['gap-1 flex items-center', { 'lg:gap-2 lg:flex-col': !expanded }]}>
         <Link
           href={resolve('/arene/parametres')}
           button
