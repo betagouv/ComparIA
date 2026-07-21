@@ -31,20 +31,20 @@ async def _user_source(session: AsyncSession, user_id: uuid.UUID) -> str:
         select(InviteToken).where(InviteToken.user_id == user_id)
     )
     invites = invites_result.all()
-    used_code = await session.exec(
-        select(LoginCode).where(
-            LoginCode.user_id == user_id,
-            LoginCode.used_at.is_not(None),
-        )
+    codes_result = await session.exec(
+        select(LoginCode).where(LoginCode.user_id == user_id)
     )
+    codes = codes_result.all()
     if any(invite.used_at for invite in invites):
         return "email_invitation"
-    elif used_code.first():
+    elif any(code.used_at for code in codes):
         return "email_code"
     elif invites:
         return "pending_invite"
-    else:
+    elif codes:
         return "unknown"
+    else:
+        return "added_manually"
 
 
 def _to_user_public(user: User, source: str) -> UserPublic:
