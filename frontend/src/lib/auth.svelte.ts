@@ -45,7 +45,13 @@ export function openSignInModal(): void {
 export async function logout(auth: AuthCtx, comparisons: ComparisonsCtx): Promise<void> {
   try {
     await api.request<void>('/auth/logout', { method: 'POST' })
-    await updateComparisonsContext(comparisons)
+    try {
+      await updateComparisonsContext(comparisons)
+    } catch {
+      // Session is already cleared server-side; querying again can fail
+      // (eg. sign_in_required policy blocks /arena/* without a session).
+      comparisons.length = 0
+    }
   } finally {
     auth.user = null
     if (auth.config?.access_policy === 'sign_in_required') {
