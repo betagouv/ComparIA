@@ -11,6 +11,7 @@
     help?: string
     options: Option[]
     hideLabel?: boolean
+    reserveHintSpace?: boolean
     groupClass?: ClassValue
   } & HTMLSelectAttributes
 
@@ -21,6 +22,7 @@
     help,
     options,
     hideLabel = false,
+    reserveHintSpace = false,
     groupClass,
     ...props
   }: SelectProps = $props()
@@ -31,6 +33,8 @@
     {label}
     {#if help}
       <span id={`${id}-help`} class="fr-hint-text">{help}</span>
+    {:else if reserveHintSpace}
+      <span class="fr-hint-text" aria-hidden="true">&nbsp;</span>
     {/if}
   </label>
 

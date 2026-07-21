@@ -21,7 +21,7 @@ describe('Privacy policy administration', () => {
   })
 
   it('publishes a first Markdown policy only after explicit confirmation', async () => {
-    const { container, getByRole, queryByRole, queryByText, getByText } = render(PrivacyPolicyAdmin)
+    const { container, getByRole, queryByRole, queryByText } = render(PrivacyPolicyAdmin)
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Aucune politique publiée' })).toBeTruthy()
     )
@@ -34,7 +34,8 @@ describe('Privacy policy administration', () => {
     })
     await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
     expect(queryByRole('heading', { name: 'Publication définitive' })).toBeNull()
-    expect(getByText('Langue du document publié.')).toBeTruthy()
+    expect(queryByText('Langue du document publié.')).toBeNull()
+    expect(getByRole('combobox', { name: 'Langue' })).toBeTruthy()
     expect(
       container.querySelector('#privacy-policy-effective-at')?.closest('.fr-input-group')
     ).toHaveClass('fr-mt-4v')

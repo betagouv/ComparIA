@@ -254,7 +254,7 @@
             <Select
               id="privacy-policy-locale"
               label="Langue"
-              help="Langue du document publié."
+              reserveHintSpace
               options={localeOptions}
               bind:selected={locale}
             />
