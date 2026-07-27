@@ -292,6 +292,19 @@
             "title": "Paramètres d'affichage"
         }
     },
+    "consent": {
+        "close": "Fermer sans envoyer",
+        "confirm": "Confirmer",
+        "links": {
+            "privacy": "Politique de confidentialité",
+            "terms": "Conditions générales d’utilisation"
+        },
+        "loadFailed": "Les conditions d’utilisation n’ont pas pu être chargées.",
+        "required": "Vous devez accepter les conditions d’utilisation pour continuer",
+        "retry": "Réessayer",
+        "saveFailed": "Votre choix n’a pas pu être enregistré. Vérifiez votre connexion puis réessayez.",
+        "saving": "Enregistrement…"
+    },
     "datasets": {
         "access": {
             "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
