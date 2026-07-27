@@ -14,15 +14,23 @@ def _async_url(url: str) -> str:
     return url
 
 
-engine = create_async_engine(_async_url(settings.COMPARIA_DB_URI))
+engine = (
+    create_async_engine(_async_url(settings.COMPARIA_DB_URI))
+    if settings.COMPARIA_DB_URI
+    else None
+)
 
 
 async def init_db():
+    if engine is None:
+        raise RuntimeError("COMPARIA_DB_URI is not configured")
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
 @asynccontextmanager
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    if engine is None:
+        raise RuntimeError("COMPARIA_DB_URI is not configured")
     async with AsyncSession(engine) as session:
         yield session
