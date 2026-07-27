@@ -25,6 +25,10 @@ from utils.database.models.llms import (  # noqa: F401
     LLMLicense,
 )
 from utils.database.models.messages import LLMMessage, UserMessage  # noqa: F401
+from utils.database.models.suggestion import (  # noqa: F401
+    PromptSuggestion,
+    SuggestionCategory,
+)
 
 config = context.config
 

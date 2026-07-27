@@ -1,53 +1,34 @@
 <script lang="ts">
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import RadioGroupCard from '$components/RadioGroupCard.svelte'
-  import { SUGGESTIONS } from '$lib/generated/suggestions'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { selectRandomFromArray, shuffleArray } from '$lib/utils/commons'
+  import {
+    getPromptSelection,
+    toSuggestionCategoryCards,
+    type SuggestionCategory
+  } from '$lib/suggestions'
+  import { selectRandomFromArray } from '$lib/utils/commons'
 
   let {
-    onPromptSelected
+    onPromptSelected,
+    suggestions
   }: {
     onPromptSelected: (text: string, selectionStart?: number, selectionEnd?: number) => void
+    suggestions: SuggestionCategory[]
   } = $props()
 
   const locale = getLocale()
-  const suggestionsCategories = $derived.by(() => {
-    if (!(locale in SUGGESTIONS)) return []
-    let categories = [...SUGGESTIONS[locale as keyof typeof SUGGESTIONS]]
-    if (locale === 'fr') {
-      const iasummit = categories.splice(
-        categories.findIndex((c) => c.icon === 'iasummit'),
-        1
-      )
-      return [iasummit[0], ...shuffleArray(categories)]
-    }
-    return shuffleArray(categories)
-  })
-  const suggestionsCategoriesCards = $derived(
-    suggestionsCategories.slice(0, 4).map((c) => ({
-      ...c,
-      label: c.description,
-      value: c.title.toLowerCase().replace(/[^a-z]/g, '')
-    }))
-  )
+  const suggestionsCategoriesCards = $derived(toSuggestionCategoryCards(suggestions, locale))
 
   let selected = $state<string>()
 
   // Helper function to dispatch prompt with or without selection
   function dispatchPromptWithSelection(promptText: string, origin: string) {
-    let selectionStart: number | undefined = undefined
-    let selectionEnd: number | undefined = undefined
-    const startIndex = promptText.indexOf('[')
-    const endIndex = promptText.indexOf(']')
+    const selection = getPromptSelection(promptText)
 
-    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
-      selectionStart = startIndex // Include the opening bracket
-      selectionEnd = endIndex + 1 // Include the closing bracket
-    }
-
-    if (selectionStart !== undefined && selectionEnd !== undefined) {
+    if (selection) {
+      const [selectionStart, selectionEnd] = selection
       console.log(
         `[GuidedPromptSuggestions] ${origin}: dispatching promptselected with selection. Text: "${promptText}", Start: ${selectionStart}, End: ${selectionEnd}`
       )
@@ -64,10 +45,10 @@
     if (selected) {
       const categorySuggestions =
         suggestionsCategoriesCards.find((c) => c.value === selected)?.suggestions ?? []
-      const randomPromptText = selectRandomFromArray(categorySuggestions)
+      const randomPrompt = selectRandomFromArray(categorySuggestions)
 
-      if (randomPromptText) {
-        dispatchPromptWithSelection(randomPromptText, 'shufflePrompts')
+      if (randomPrompt) {
+        dispatchPromptWithSelection(randomPrompt.text, 'shufflePrompts')
       } else {
         console.warn(
           `[GuidedPromptSuggestions] No prompts found for the current category: ${selected}.`
@@ -81,10 +62,10 @@
   function handleCardSelect(categoryValue: string) {
     const promptsForCategory =
       suggestionsCategoriesCards.find((c) => c.value === categoryValue)?.suggestions ?? []
-    const randomPromptText = selectRandomFromArray(promptsForCategory)
+    const randomPrompt = selectRandomFromArray(promptsForCategory)
 
-    if (randomPromptText) {
-      dispatchPromptWithSelection(randomPromptText, 'handleCardSelect')
+    if (randomPrompt) {
+      dispatchPromptWithSelection(randomPrompt.text, 'handleCardSelect')
     } else {
       const fallbackText = `Explorer la catégorie : ${categoryValue}`
       console.warn(
