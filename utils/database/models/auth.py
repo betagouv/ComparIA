@@ -1,13 +1,16 @@
 import uuid
 from typing import Annotated, Literal
 
+from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime
+from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime, UtcDatetime
 
 UserId = Annotated[uuid.UUID, Field(foreign_key="auth_user.id")]
 
 UserRole = Literal["user", "admin"]
+LegalDocumentKind = Literal["terms", "privacy_policy"]
+
 
 class UserBase(SQLModel):
     id: ModelId
@@ -75,6 +78,31 @@ class InviteToken(SQLModel, table=True):
     created_at: AutoDatetime
     expires_at: Datetime
     used_at: OptionalDatetime = None
+
+
+class LegalDocument(SQLModel, table=True):
+    """An immutable published legal document.
+
+    A corrected document must be published under a new version, so that the
+    text a user accepted stays retrievable. All timestamps are naive UTC.
+    """
+
+    __tablename__ = "legal_document"
+    __table_args__ = (
+        UniqueConstraint(
+            "kind", "version", "language", name="uq_legal_document_version"
+        ),
+    )
+
+    id: ModelId
+    kind: Annotated[LegalDocumentKind, Field(sa_type=String)]
+    version: str
+    language: str
+    content: str
+    content_hash: str = Field(index=True, min_length=64, max_length=64)
+    published_at: UtcDatetime
+    effective_at: Datetime
+    retired_at: OptionalDatetime = None
 
 
 class ConsentLog(SQLModel, table=True):
