@@ -382,6 +382,10 @@
             "stateTitle": "État de conformité",
             "title": "Déclaration d’accessibilité"
         },
+        "document": {
+            "unavailable": "Ce document n’est pas disponible pour le moment. Merci de réessayer plus tard.",
+            "version": "Version {version}, applicable depuis le {date}."
+        },
         "legal": {
             "a11yDesc": "La conformité aux normes d’accessibilité numérique est un objectif ultérieur mais nous tâchons de rendre ce site accessible à toutes et à tous.",
             "a11yTitle": "Accessibilité",
