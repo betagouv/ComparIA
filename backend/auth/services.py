@@ -24,7 +24,7 @@ from utils.database.models.comparison import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
     Comparison,
 )
-from utils.database.models.utils import utc_now
+from utils.database.models.utils import as_naive_utc, utc_now
 from utils.database.session import get_session
 
 if TYPE_CHECKING:
@@ -368,7 +368,7 @@ async def record_user_consent(
                 terms_version=document.version,
                 document_hash=document.content_hash,
                 language=document.language,
-                client_accepted_at=accepted_at,
+                client_accepted_at=as_naive_utc(accepted_at),
                 ip="not_collected",
             )
         )
@@ -388,7 +388,7 @@ async def record_anonymous_consent(
                 terms_version=document.version,
                 document_hash=document.content_hash,
                 language=document.language,
-                client_accepted_at=accepted_at,
+                client_accepted_at=as_naive_utc(accepted_at),
             )
         )
         await session.commit()
@@ -453,6 +453,9 @@ async def get_current_terms_acceptance_version(
         document = await get_active_legal_document("terms", record.language)
         if document and record.document_id == document.id:
             return document.version
+    # "Is anything published" is answered in the default language only. Retiring
+    # the French terms while another language stays published would open the
+    # gate for everyone. Only French is seeded today.
     if not await get_active_legal_document("terms", DEFAULT_LEGAL_LANGUAGE):
         return LEGACY_PARTICIPATION_TERMS_VERSION
     return None

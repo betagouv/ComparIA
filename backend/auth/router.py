@@ -31,6 +31,7 @@ from backend.config import settings
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models.auth import LegalDocument
+from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
@@ -101,8 +102,7 @@ class ConsentAssertion(BaseModel):
             minutes=5
         ):
             raise ValueError("accepted_at must reflect the current consent interaction")
-        # Naive UTC, like every other legal timestamp.
-        return accepted.replace(tzinfo=None)
+        return as_naive_utc(accepted)
 
 
 class ConsentBody(BaseModel):
