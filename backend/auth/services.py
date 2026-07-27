@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
+from sqlalchemy import delete as sa_delete
 from sqlalchemy import update as sa_update
 from sqlmodel import select
 
@@ -470,3 +471,55 @@ async def has_current_terms_acceptance(
         )
         is not None
     )
+
+
+ERASED_IP = "erased"
+
+
+async def erase_user_account(user_id: uuid.UUID) -> None:
+    """Cut every link between a person and what they left behind.
+
+    The conversations stay, because they are published in the research
+    datasets under the terms accepted when they were held. What goes is
+    everything that points back at someone: the account address, the session
+    trail, and the three identifiers each comparison carries. The acceptance
+    proof survives without its address, since it is the record of a legal
+    obligation rather than a trace of the person.
+    """
+    now = datetime.now()
+    async with get_session() as session:
+        user = await session.get(User, user_id)
+        if not user or user.deleted_at is not None:
+            return
+
+        await session.execute(
+            sa_update(AuthSession)
+            .where(AuthSession.user_id == user_id)
+            .values(revoked_at=now, ip=ERASED_IP, user_agent=None)
+        )
+        await session.execute(
+            sa_update(ConsentLog)
+            .where(ConsentLog.user_id == user_id)
+            .values(ip=ERASED_IP)
+        )
+        await session.execute(
+            sa_update(Comparison)
+            .where(Comparison.user_id == user_id)
+            .values(
+                user_id=None,
+                ip=ERASED_IP,
+                visitor_id=None,
+                anonymous_user_hash=None,
+            )
+        )
+        await session.execute(sa_delete(LoginCode).where(LoginCode.user_id == user_id))
+        await session.execute(
+            sa_delete(InviteToken).where(InviteToken.user_id == user_id)
+        )
+
+        # The row itself stays: the consent logs point at it, and it is what
+        # stops a new sign-in from reviving the erased account.
+        user.email = f"deleted-{user.id}@deleted.invalid"
+        user.deleted_at = now
+        session.add(user)
+        await session.commit()
