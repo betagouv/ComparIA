@@ -15,6 +15,7 @@ from backend.auth.email import send_login_code
 from backend.auth.services import (
     _hash,
     accept_invite,
+    erase_user_account,
     get_anonymous_consent_status,
     get_consent_status,
     get_invite_token_info,
@@ -360,6 +361,25 @@ async def get_me(request: Request) -> dict:
     if not user:
         return {"user": None}
     return {"user": {"email": user.email, "role": user.role}}
+
+
+class AccountEraseBody(BaseModel):
+    email: EmailStr
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def erase_account(
+    body: AccountEraseBody, user: RequiredUser, response: Response
+) -> None:
+    # Retyping the address guards against a stray click, nothing more: the
+    # session cookie is what says who is asking.
+    if body.email.lower() != user.email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email confirmation does not match the signed-in account.",
+        )
+    await erase_user_account(user.id)
+    response.delete_cookie("auth_session")
 
 
 @router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT)
