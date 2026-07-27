@@ -4,7 +4,10 @@
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
   import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { PublicSuggestions } from '$lib/suggestions'
   import { TOSModal, ViewChat, ViewPrompt } from './components'
+
+  let { data }: { data: { suggestions: PublicSuggestions } } = $props()
 
   // Start solving Altcha challenge on page load (runs in background)
   fetchAndSolveSilently()
@@ -43,6 +46,7 @@
       loading={comparator.loading}
       promptError={comparator.promptError}
       onPrompt={comparator.askFirst}
+      suggestions={data.suggestions.categories}
     />
   {:else}
     <ViewChat comparisonId={comparator.comparisonId!} />

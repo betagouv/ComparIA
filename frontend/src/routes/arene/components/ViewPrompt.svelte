@@ -5,6 +5,7 @@
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
+  import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
@@ -15,11 +16,13 @@
   let {
     onPrompt,
     promptError,
-    loading
+    loading,
+    suggestions
   }: {
     onPrompt: (args: APIModeAndPromptData) => void
     promptError?: string
     loading: boolean
+    suggestions: SuggestionCategory[]
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
@@ -186,7 +189,7 @@
       />
     </div>
     <div class="pb-10">
-      <GuidedPromptSuggestions onPromptSelected={handlePromptSelected} />
+      <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
     </div>
   </div>
 </div>
