@@ -1,6 +1,9 @@
 import { fireEvent, render } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import LegalMenu from './LegalMenu.svelte'
+
+// The menu reads its links from the consent module, which pulls in the api client.
+vi.mock('$lib/fastapi-client', () => ({ api: { request: vi.fn() } }))
 
 describe('LegalMenu', () => {
   it('lists the public legal pages', async () => {
@@ -9,11 +12,11 @@ describe('LegalMenu', () => {
     await fireEvent.click(getByRole('button', { name: /Légal/ }))
 
     expect(getByRole('link', { name: 'Politique de confidentialité' }).getAttribute('href')).toBe(
-      '/donnees-personnelles'
+      '/arene/donnees-personnelles'
     )
     expect(
       getByRole('link', { name: 'Conditions générales d’utilisation' }).getAttribute('href')
-    ).toBe('/modalites')
+    ).toBe('/arene/modalites')
     expect(getByRole('link', { name: /Accessibilité/ }).getAttribute('href')).toBe(
       '/arene/accessibilite'
     )

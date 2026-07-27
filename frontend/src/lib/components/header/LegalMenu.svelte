@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
+  import { legalPageLinks } from '$lib/consent'
   import { m } from '$lib/i18n/messages'
-  import { legalPageLinks } from '$lib/legal'
 
   const { id, expanded = true }: { id: string; expanded?: boolean } = $props()
 

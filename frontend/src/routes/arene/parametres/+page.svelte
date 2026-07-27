@@ -4,10 +4,9 @@
   import ThemeSelector from '$components/ThemeSelector.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
-  import { resetConsent } from '$lib/consent'
+  import { legalPageLinks, resetConsent } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
-  import { legalPageLinks } from '$lib/legal'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const auth = getAuthContext()
