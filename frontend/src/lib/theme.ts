@@ -16,10 +16,6 @@ export const DEFAULT_BRAND_COLORS = {
   secondaryDark: '#FFCC00'
 } as const
 
-/**
- * Returns a canonical CSS colour only when it is a six-digit hexadecimal value.
- * This second validation is intentional: the result is inserted in SSR CSS.
- */
 export function safeHexColor(value: string | null | undefined, fallback: string): string {
   return value && HEX_COLOR.test(value) ? value.toUpperCase() : fallback
 }
@@ -73,10 +69,6 @@ function contrastColor(background: string): string {
   return contrastRatio(background, '#FFFFFF') >= 4.5 ? '#FFFFFF' : '#000000'
 }
 
-/**
- * Keeps a recognisable brand hue for text where possible, then moves it towards
- * the foreground extreme only as far as needed to reach AA contrast.
- */
 function textColorWithContrast(color: string, background: string): string {
   if (contrastRatio(color, background) >= 4.5) return color
 
@@ -146,7 +138,6 @@ function cssVariables(tokens: BrandTokens): string {
   ].join(';')
 }
 
-/** CSS injected in the document head during SSR, before the application hydrates. */
 export function createBrandThemeCss(config: BrandThemeConfig | null | undefined): string {
   const light = createBrandTokens(
     safeHexColor(config?.primary_color_light, DEFAULT_BRAND_COLORS.primaryLight),
@@ -161,16 +152,10 @@ export function createBrandThemeCss(config: BrandThemeConfig | null | undefined)
   const lightVariables = cssVariables(light)
   const darkVariables = cssVariables(dark)
 
-  // Repeat :root so these runtime values outrank the static fallback tokens in
-  // app.css even though SvelteKit may append the stylesheet later in <head>.
+  // Higher specificity keeps runtime values above static fallbacks.
   return `:root:root[data-fr-theme="light"]{${lightVariables}}:root:root[data-fr-theme="dark"]{${darkVariables}}:root:root[data-fr-theme="system"]{${lightVariables}}@media (prefers-color-scheme:dark){:root:root[data-fr-theme="system"]{${darkVariables}}}`
 }
 
-/**
- * Svelte treats a regular <style> block as static, so dynamic CSS needs a
- * head HTML node. The CSS is safe here because createBrandThemeCss admits only
- * values produced from strict six-digit hexadecimal colours.
- */
 export function createBrandThemeStyle(config: BrandThemeConfig | null | undefined): string {
   return `<style id="instance-brand-theme">${createBrandThemeCss(config)}</style>`
 }
