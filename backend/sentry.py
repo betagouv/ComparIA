@@ -131,6 +131,7 @@ def init_sentry() -> None:
         send_default_pii=False,
         max_request_body_size="never",
         before_send=scrub_sensitive_event,
+        before_send_transaction=scrub_sensitive_event,
         include_local_variables=False,
     )
     logger.debug(

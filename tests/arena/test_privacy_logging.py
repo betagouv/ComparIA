@@ -9,8 +9,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from fastapi import Request
 
+from backend.config import settings
 from backend.logger import JSONFormatter, exception_metadata
-from backend.sentry import scrub_sensitive_event
+from backend.sentry import init_sentry, scrub_sensitive_event
 from backend.utils.user import get_matomo_tracker_from_cookies
 
 COMPARISON_ID = "59aa09e4-e75d-45f9-8209-586b1d0d237d"
@@ -93,6 +94,19 @@ def test_sentry_scrubber_removes_free_text_and_request_identifiers():
         "status_code": 429,
         "error_code": "rate_limit_exceeded",
     }
+
+
+def test_sentry_scrubs_errors_and_performance_transactions(monkeypatch):
+    options = {}
+    monkeypatch.setattr(settings, "SENTRY_DSN", "https://public@example.test/1")
+    monkeypatch.setattr(
+        "backend.sentry.sentry_sdk.init", lambda **values: options.update(values)
+    )
+
+    init_sentry()
+
+    assert options["before_send"] is scrub_sensitive_event
+    assert options["before_send_transaction"] is scrub_sensitive_event
 
 
 def test_exception_metadata_keeps_safe_traceback_without_error_content():
