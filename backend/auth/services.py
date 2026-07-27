@@ -10,14 +10,21 @@ from sqlalchemy import update as sa_update
 from sqlmodel import select
 
 from backend.config import settings
+from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
 from utils.database.models.auth import (
+    AnonymousConsentLog,
     AuthSession,
     ConsentLog,
     InviteToken,
+    LegalDocument,
     LoginCode,
     User,
 )
-from utils.database.models.comparison import Comparison
+from utils.database.models.comparison import (
+    LEGACY_PARTICIPATION_TERMS_VERSION,
+    Comparison,
+)
+from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 
 if TYPE_CHECKING:
@@ -61,36 +68,34 @@ async def request_login_code(email: str) -> str:
     return code
 
 
-async def _create_session_and_consent(
+async def _create_session(
     session: "AsyncSession",
     user: User,
     ip: str,
     user_agent: str | None,
     visitor_id: str | None,
+    anonymous_user_hash: str | None = None,
 ) -> str:
-    """Create the AuthSession + ConsentLog for a user that just authenticated
-    (login code or invite link), and reattach their anonymous comparisons.
-    Does not commit; caller owns the transaction."""
+    """Create the AuthSession for a user that just authenticated (login code or
+    invite link), carry over the acceptance they gave while anonymous, and
+    reattach their anonymous comparisons. Logging in is not an acceptance in
+    itself. Does not commit; caller owns the transaction."""
     user.last_seen_at = datetime.now()
 
     token = secrets.token_urlsafe(32)
-    session.add(
-        AuthSession(
-            user_id=user.id,
-            token_hash=_hash(token),
-            expires_at=datetime.now()
-            + timedelta(days=settings.AUTH_SESSION_LENGTH_DAYS),
-            ip=ip,
-            user_agent=user_agent,
-        )
+    auth_session = AuthSession(
+        user_id=user.id,
+        token_hash=_hash(token),
+        expires_at=datetime.now() + timedelta(days=settings.AUTH_SESSION_LENGTH_DAYS),
+        ip=ip,
+        user_agent=user_agent,
     )
-    session.add(
-        ConsentLog(
-            user_id=user.id,
-            terms_version=settings.AUTH_TERMS_VERSION,
-            ip=ip,
+    session.add(auth_session)
+
+    if anonymous_user_hash:
+        await _associate_anonymous_acceptance(
+            session, user, auth_session, anonymous_user_hash
         )
-    )
 
     if visitor_id:
         await session.execute(
@@ -105,12 +110,57 @@ async def _create_session_and_consent(
     return token
 
 
+async def _associate_anonymous_acceptance(
+    session: "AsyncSession",
+    user: User,
+    auth_session: AuthSession,
+    anonymous_user_hash: str,
+) -> None:
+    """Copy the visitor's own acceptance onto the account they just signed into,
+    keeping the original acceptance time rather than asking them again."""
+    result = await session.exec(
+        select(AnonymousConsentLog)
+        .where(AnonymousConsentLog.anonymous_user_hash == anonymous_user_hash)
+        .order_by(AnonymousConsentLog.consented_at.desc())
+    )
+    acceptance = result.first()
+    if not acceptance:
+        return
+
+    existing = await session.exec(
+        select(ConsentLog).where(
+            ConsentLog.user_id == user.id,
+            ConsentLog.source_anonymous_consent_id == acceptance.id,
+        )
+    )
+    if existing.first():
+        return
+
+    session.add(
+        ConsentLog(
+            user_id=user.id,
+            auth_session_id=auth_session.id,
+            source_anonymous_consent_id=acceptance.id,
+            terms_version=acceptance.terms_version,
+            document_id=acceptance.document_id,
+            document_hash=acceptance.document_hash,
+            language=acceptance.language,
+            purpose=acceptance.purpose,
+            client_accepted_at=acceptance.client_accepted_at,
+            consented_at=acceptance.consented_at,
+            associated_at=utc_now(),
+            ip="not_collected",
+        )
+    )
+
+
 async def verify_login_code(
     email: str,
     code: str,
     ip: str,
     user_agent: str | None,
     visitor_id: str | None,
+    anonymous_user_hash: str | None = None,
 ) -> str | None:
     async with get_session() as session:
         result = await session.exec(select(User).where(User.email == email))
@@ -132,8 +182,8 @@ async def verify_login_code(
 
         login_code.used_at = datetime.now()
 
-        token = await _create_session_and_consent(
-            session, user, ip, user_agent, visitor_id
+        token = await _create_session(
+            session, user, ip, user_agent, visitor_id, anonymous_user_hash
         )
 
         await session.commit()
@@ -217,6 +267,7 @@ async def accept_invite(
     ip: str,
     user_agent: str | None,
     visitor_id: str | None,
+    anonymous_user_hash: str | None = None,
 ) -> str | None:
     async with get_session() as session:
         result = await session.exec(
@@ -236,8 +287,8 @@ async def accept_invite(
 
         invite.used_at = datetime.now()
 
-        session_token = await _create_session_and_consent(
-            session, user, ip, user_agent, visitor_id
+        session_token = await _create_session(
+            session, user, ip, user_agent, visitor_id, anonymous_user_hash
         )
 
         await session.commit()
@@ -288,3 +339,131 @@ async def revoke_all_user_sessions(user_id: uuid.UUID) -> None:
             .values(revoked_at=datetime.now())
         )
         await session.commit()
+
+
+async def record_user_consent(
+    user_id: uuid.UUID,
+    document: LegalDocument,
+    accepted_at: datetime,
+    auth_session_token: str | None,
+) -> None:
+    async with get_session() as session:
+        auth_session_id = None
+        if auth_session_token:
+            result = await session.exec(
+                select(AuthSession).where(
+                    AuthSession.token_hash == _hash(auth_session_token),
+                    AuthSession.user_id == user_id,
+                    AuthSession.revoked_at.is_(None),
+                )
+            )
+            auth_session = result.first()
+            auth_session_id = auth_session.id if auth_session else None
+
+        session.add(
+            ConsentLog(
+                user_id=user_id,
+                auth_session_id=auth_session_id,
+                document_id=document.id,
+                terms_version=document.version,
+                document_hash=document.content_hash,
+                language=document.language,
+                client_accepted_at=accepted_at,
+                ip="not_collected",
+            )
+        )
+        await session.commit()
+
+
+async def record_anonymous_consent(
+    anonymous_user_hash: str,
+    document: LegalDocument,
+    accepted_at: datetime,
+) -> None:
+    async with get_session() as session:
+        session.add(
+            AnonymousConsentLog(
+                anonymous_user_hash=anonymous_user_hash,
+                document_id=document.id,
+                terms_version=document.version,
+                document_hash=document.content_hash,
+                language=document.language,
+                client_accepted_at=accepted_at,
+            )
+        )
+        await session.commit()
+
+
+async def _latest_terms_consent(
+    user_id: uuid.UUID | None, anonymous_user_hash: str | None
+) -> ConsentLog | AnonymousConsentLog | None:
+    async with get_session() as session:
+        if user_id:
+            # Rows written before versioned documents have no document to
+            # compare against, so they cannot answer either question.
+            result = await session.exec(
+                select(ConsentLog)
+                .where(
+                    ConsentLog.user_id == user_id,
+                    ConsentLog.document_id.is_not(None),
+                )
+                .order_by(ConsentLog.consented_at.desc())
+            )
+        else:
+            result = await session.exec(
+                select(AnonymousConsentLog)
+                .where(AnonymousConsentLog.anonymous_user_hash == anonymous_user_hash)
+                .order_by(AnonymousConsentLog.consented_at.desc())
+            )
+        return result.first()
+
+
+def _terms_status(record: ConsentLog | AnonymousConsentLog | None) -> dict:
+    if not record:
+        return {"terms": None}
+    return {
+        "terms": {
+            "version": record.terms_version,
+            "content_hash": record.document_hash,
+            "locale": record.language,
+            "accepted_at": record.consented_at,
+        }
+    }
+
+
+async def get_consent_status(user_id: uuid.UUID) -> dict:
+    return _terms_status(await _latest_terms_consent(user_id, None))
+
+
+async def get_anonymous_consent_status(anonymous_user_hash: str) -> dict:
+    return _terms_status(await _latest_terms_consent(None, anonymous_user_hash))
+
+
+async def get_current_terms_acceptance_version(
+    *, user_id: uuid.UUID | None, anonymous_user_hash: str
+) -> str | None:
+    """Version of the terms in force that this visitor has accepted, if any.
+
+    Returns the legacy marker when nothing is published: there is then nothing
+    to accept, and gating on it would lock everyone out, including the
+    administrator who has to publish the missing document.
+    """
+    record = await _latest_terms_consent(user_id, anonymous_user_hash)
+    if record:
+        document = await get_active_legal_document("terms", record.language)
+        if document and record.document_id == document.id:
+            return document.version
+    if not await get_active_legal_document("terms", DEFAULT_LEGAL_LANGUAGE):
+        return LEGACY_PARTICIPATION_TERMS_VERSION
+    return None
+
+
+async def has_current_terms_acceptance(
+    *, user_id: uuid.UUID | None, anonymous_user_hash: str
+) -> bool:
+    return (
+        await get_current_terms_acceptance_version(
+            user_id=user_id, anonymous_user_hash=anonymous_user_hash
+        )
+        is not None
+    )

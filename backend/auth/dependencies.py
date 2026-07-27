@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, Request
 
 from backend.auth.services import _hash, get_user_from_token
 from backend.config import ANONYMOUS_SESSION_COOKIE
@@ -36,12 +36,18 @@ async def require_admin(request: Request) -> User:
     return await require_user(request, "admin")
 
 
+def anonymous_session_token(request: Request) -> str | None:
+    """The cookie, or the token the middleware minted for this first request."""
+    return request.cookies.get(ANONYMOUS_SESSION_COOKIE) or getattr(
+        request.state, "anonymous_session_token", None
+    )
+
+
 async def require_anonymous(request: Request) -> str:
-    token = request.cookies.get(ANONYMOUS_SESSION_COOKIE)
+    token = anonymous_session_token(request)
     if not token:
         raise AnonymousRequiredError()
-    else:
-        return _hash(token)
+    return _hash(token)
 
 
 RequiredAnomymous = Annotated[str, Depends(require_anonymous)]
