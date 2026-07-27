@@ -2,14 +2,18 @@ import sanitizeHtml from 'sanitize-html'
 
 export const noop = () => {}
 
-export function sanitize(html: string): string {
-  return sanitizeHtml(html, {
+export function sanitize(html: string, allowLinks = true): string {
+  const options: sanitizeHtml.IOptions = {
     allowedAttributes: {
       span: ['class'],
       a: ['href', 'rel', 'target', 'title', 'class', 'data-fr-opened', 'aria-controls'],
       br: []
     }
-  })
+  }
+  if (!allowLinks) {
+    options.allowedTags = sanitizeHtml.defaults.allowedTags.filter((tag) => tag !== 'a')
+  }
+  return sanitizeHtml(html, options)
 }
 
 export function propsToAttrs(props: Record<string, unknown>): string {
