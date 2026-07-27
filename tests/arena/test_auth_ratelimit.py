@@ -12,6 +12,7 @@ import contextlib
 import os
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -55,6 +56,10 @@ async def _fake_send_login_code(email, code):
     pass
 
 
+async def _fake_get_app_settings():
+    return SimpleNamespace(auth_domain_allowlist=None)
+
+
 @contextlib.contextmanager
 def fake_router(verify_login_code=None):
     fake = FakeRedis()
@@ -65,11 +70,13 @@ def fake_router(verify_login_code=None):
         "request_login_code": auth_router.request_login_code,
         "send_login_code": auth_router.send_login_code,
         "verify_login_code": auth_router.verify_login_code,
+        "get_app_settings": auth_router.get_app_settings,
     }
     auth_router.get_redis_client = lambda: fake
     auth_router.verify_altcha_token = lambda payload: (True, None)
     auth_router.request_login_code = _fake_request_login_code
     auth_router.send_login_code = _fake_send_login_code
+    auth_router.get_app_settings = _fake_get_app_settings
     if verify_login_code is not None:
         auth_router.verify_login_code = verify_login_code
     try:

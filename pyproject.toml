@@ -59,6 +59,7 @@ dev = [
     "types-psycopg2>=2.9.21.20251012",
     "types-requests>=2.32.4.20260107",
     "pydantic-to-typescript>=2.0.0",
+    "pytest>=9.1.1",
 ]
 
 [tool.mypy]
