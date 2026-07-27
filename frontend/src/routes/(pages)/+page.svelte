@@ -163,7 +163,7 @@
             bind:checked={acceptTos.value}
             id="tos-home"
             label={m['home.intro.tos.accept']({
-              linkProps: propsToAttrs({ href: '/modalites', target: '_blank' })
+              linkProps: propsToAttrs({ href: '/arene/modalites', target: '_blank' })
             })}
             help={m['home.intro.tos.help']()}
             error={tosError}
