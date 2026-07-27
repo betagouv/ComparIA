@@ -32,7 +32,6 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
       params.delete('locale')
-      // The query-only navigation intentionally keeps the current route.
       // eslint-disable-next-line svelte/no-navigation-without-resolve
       goto(`?${params}` + page.url.hash)
     }
