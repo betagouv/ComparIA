@@ -17,6 +17,7 @@
         version={data.terms.version}
         effectiveAt={data.terms.effective_at}
         content={data.terms.content}
+        locale={data.terms.locale}
       />
     {:else}
       <p class="fr-alert fr-alert--error" role="alert">{m['general.document.unavailable']()}</p>

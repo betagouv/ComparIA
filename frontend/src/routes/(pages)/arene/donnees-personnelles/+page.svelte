@@ -18,6 +18,7 @@
         version={data.privacyPolicy.version}
         effectiveAt={data.privacyPolicy.effective_at}
         content={data.privacyPolicy.content}
+        locale={data.privacyPolicy.locale}
       />
     {:else}
       <PrivacyPolicyFallback />
