@@ -92,6 +92,8 @@ export type BrandTokens = {
   primaryActive: string
   primaryContrast: string
   primarySoft: string
+  primarySoftHover: string
+  primarySoftActive: string
   primarySoftest: string
   secondary: string
   secondaryText: string
@@ -119,6 +121,8 @@ export function createBrandTokens(
     primaryActive: mix(safePrimary, interactionTarget, 0.24),
     primaryContrast: contrastColor(safePrimary),
     primarySoft: mix(safePrimary, surfaceTarget, 0.84),
+    primarySoftHover: mix(safePrimary, surfaceTarget, 0.76),
+    primarySoftActive: mix(safePrimary, surfaceTarget, 0.68),
     primarySoftest: mix(safePrimary, surfaceTarget, 0.93),
     secondary: safeSecondary,
     secondaryText: textColorWithContrast(safeSecondary, isDark ? '#161616' : '#FFFFFF')
@@ -132,9 +136,15 @@ function cssVariables(tokens: BrandTokens): string {
     `--brand-primary-active:${tokens.primaryActive}`,
     `--brand-primary-contrast:${tokens.primaryContrast}`,
     `--brand-primary-soft:${tokens.primarySoft}`,
+    `--brand-primary-soft-hover:${tokens.primarySoftHover}`,
+    `--brand-primary-soft-active:${tokens.primarySoftActive}`,
     `--brand-primary-softest:${tokens.primarySoftest}`,
     `--brand-secondary:${tokens.secondary}`,
-    `--brand-secondary-text:${tokens.secondaryText}`
+    `--brand-secondary-text:${tokens.secondaryText}`,
+    `--text-active-blue-france:${tokens.primary}`,
+    `--background-open-blue-france:${tokens.primarySoft}`,
+    `--background-open-blue-france-hover:${tokens.primarySoftHover}`,
+    `--background-open-blue-france-active:${tokens.primarySoftActive}`
   ].join(';')
 }
 
