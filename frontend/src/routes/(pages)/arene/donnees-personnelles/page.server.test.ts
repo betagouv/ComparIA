@@ -11,8 +11,8 @@ const document = {
   content_hash: 'hash',
   locale: 'fr',
   content: '# Confidentialité\n\n## Données traitées',
-  published_at: '2026-07-01T00:00:00',
-  effective_at: '2026-07-01T00:00:00'
+  published_at: '2026-07-01T00:00:00Z',
+  effective_at: '2026-07-01T00:00:00Z'
 }
 
 describe('privacy policy page load', () => {
