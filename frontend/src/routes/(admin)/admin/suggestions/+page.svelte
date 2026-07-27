@@ -11,6 +11,7 @@
   import { sortRows, toSearchString } from '$lib/utils/data'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import CategoryIconPicker from './CategoryIconPicker.svelte'
+  import CategoryManager from './CategoryManager.svelte'
   import CategoryTextFields from './CategoryTextFields.svelte'
   import type { PageProps } from './$types'
   import type { PromptSuggestion, SuggestionStatus } from './types'
@@ -84,7 +85,22 @@
     { value: 'i-ri-flask-line', label: m['admin.suggestions.iconScience']() },
     { value: 'i-ri-translate-2', label: m['admin.suggestions.iconTranslation']() },
     { value: 'i-ri-restaurant-line', label: m['admin.suggestions.iconFood']() },
-    { value: 'i-ri-magic-line', label: m['admin.suggestions.iconCreative']() }
+    { value: 'i-ri-magic-line', label: m['admin.suggestions.iconCreative']() },
+    { value: 'i-ri-folder-line', label: m['admin.suggestions.iconFolder']() },
+    { value: 'i-ri-file-text-line', label: m['admin.suggestions.iconWriting']() },
+    { value: 'i-ri-graduation-cap-line', label: m['admin.suggestions.iconLearning']() },
+    { value: 'i-ri-global-line', label: m['admin.suggestions.iconWorld']() },
+    { value: 'i-ri-heart-line', label: m['admin.suggestions.iconWellbeing']() },
+    { value: 'i-ri-leaf-line', label: m['admin.suggestions.iconEnvironment']() },
+    { value: 'i-ri-map-pin-line', label: m['admin.suggestions.iconTravel']() },
+    { value: 'i-ri-music-2-line', label: m['admin.suggestions.iconMusic']() },
+    { value: 'i-ri-palette-line', label: m['admin.suggestions.iconArt']() },
+    { value: 'i-ri-presentation-line', label: m['admin.suggestions.iconPresentation']() },
+    { value: 'i-ri-search-line', label: m['admin.suggestions.iconResearch']() },
+    { value: 'i-ri-settings-4-line', label: m['admin.suggestions.iconSettings']() },
+    { value: 'i-ri-shopping-bag-line', label: m['admin.suggestions.iconShopping']() },
+    { value: 'i-ri-user-line', label: m['admin.suggestions.iconProfile']() },
+    { value: 'i-ri-computer-line', label: m['admin.suggestions.iconTechnology']() }
   ]
   const statusOptions: { value: '' | SuggestionStatus; label: string }[] = [
     { value: '', label: m['admin.suggestions.allStatuses']() },
@@ -335,6 +351,7 @@
 
     {#snippet headerRight()}
       <div class="gap-2 flex flex-wrap justify-end">
+        <CategoryManager {categories} onDeleted={refetch} />
         <Button
           variant="secondary"
           class="gap-2"
@@ -407,7 +424,8 @@
 <Modal
   id="fr-modal-add-suggestion-category"
   titleId="fr-modal-title-add-suggestion-category"
-  headerClass="absolute! top-0 right-6 z-10 p-0!"
+  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
+  contentClass="md:pt-4! mb-6!"
 >
   <h2 id="fr-modal-title-add-suggestion-category" class="fr-modal__title">
     {m['admin.suggestions.addCategory']()}
@@ -444,7 +462,13 @@
         <p class="fr-message fr-message--error">{categoryFormError}</p>
       </div>
     {/if}
-    <div class="mt-4 flex justify-end">
+    <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
+      <Button
+        type="button"
+        text={m['admin.suggestions.cancel']()}
+        variant="secondary"
+        onclick={() => closeModal('fr-modal-add-suggestion-category')}
+      />
       <Button
         type="submit"
         text={m['admin.suggestions.addCategory']()}
@@ -457,25 +481,20 @@
 <Modal
   id="fr-modal-add-suggestion"
   titleId="fr-modal-title-add-suggestion"
-  headerClass="absolute! top-0 right-6 z-10 p-0!"
+  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
+  contentClass="md:pt-4! mb-6!"
 >
   <h2 id="fr-modal-title-add-suggestion" class="fr-modal__title">
     {m['admin.suggestions.add']()}
   </h2>
   <form onsubmit={createSuggestion}>
-    <div class="fr-select-group">
-      <label class="fr-label" for="suggestion-locale">{m['admin.suggestions.locale']()}</label>
-      <select
-        id="suggestion-locale"
-        class="fr-select"
-        bind:value={promptLocale}
-        onchange={() => (promptCategoryId = '')}
-      >
-        {#each promptLocaleOptions as option (option.value)}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select>
-    </div>
+    <Select
+      id="suggestion-locale"
+      label={m['admin.suggestions.locale']()}
+      options={promptLocaleOptions}
+      bind:selected={promptLocale}
+      onchange={() => (promptCategoryId = '')}
+    />
     <Select
       id="suggestion-category"
       label={m['admin.suggestions.category']()}
@@ -502,19 +521,14 @@
         </div>
       {/if}
     </div>
-    <div class="fr-btns-group fr-btns-group--inline-md mt-4">
+    <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
       <Button
         type="button"
         text={m['admin.suggestions.cancel']()}
         variant="secondary"
         onclick={() => closeModal('fr-modal-add-suggestion')}
       />
-      <Button
-        type="submit"
-        text={m['admin.suggestions.add']()}
-        icon="add-line"
-        disabled={formLoading}
-      />
+      <Button type="submit" text={m['admin.suggestions.add']()} disabled={formLoading} />
     </div>
   </form>
 </Modal>
@@ -522,7 +536,8 @@
 <Modal
   id="fr-modal-suggestion-status"
   titleId="fr-modal-title-suggestion-status"
-  headerClass="absolute! top-0 right-6 z-10 p-0!"
+  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
+  contentClass="md:pt-4! mb-6!"
 >
   <h2 id="fr-modal-title-suggestion-status" class="fr-modal__title">
     {suggestionToToggle?.status === 'archived'
@@ -534,7 +549,7 @@
       ? m['admin.suggestions.restoreConfirm']()
       : m['admin.suggestions.archiveConfirm']()}
   </p>
-  <div class="fr-btns-group fr-btns-group--inline-md">
+  <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
     <Button
       text={m['admin.suggestions.cancel']()}
       variant="secondary"

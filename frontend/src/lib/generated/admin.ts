@@ -24,6 +24,7 @@ export interface AdminSuggestionCategory {
   icon: string;
   tooltip?: string | null;
   display_order: number;
+  suggestion_count: number;
 }
 export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;

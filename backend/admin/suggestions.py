@@ -8,10 +8,12 @@ from backend.auth.dependencies import RequiredAdmin
 from backend.suggestions.services import (
     SuggestionAlreadyExistsError,
     SuggestionCategoryAlreadyExistsError,
+    SuggestionCategoryNotEmptyError,
     SuggestionCategoryNotFoundError,
     SuggestionNotFoundError,
     create_suggestion,
     create_suggestion_category,
+    delete_suggestion_category,
     list_admin_suggestions,
     set_suggestion_archived,
 )
@@ -94,6 +96,23 @@ async def add_suggestion_category(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="A category with this title already exists for this locale",
+        )
+
+
+@router.delete("/categories/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_suggestion_category(
+    category_id: uuid.UUID, current_user: RequiredAdmin
+) -> None:
+    try:
+        await delete_suggestion_category(category_id)
+    except SuggestionCategoryNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Category not found"
+        )
+    except SuggestionCategoryNotEmptyError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A category containing suggestions cannot be deleted",
         )
 
 

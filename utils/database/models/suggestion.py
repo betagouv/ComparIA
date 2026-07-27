@@ -145,3 +145,4 @@ class AdminSuggestionCategory(SQLModel):
     icon: str
     tooltip: str | None = None
     display_order: int
+    suggestion_count: int
