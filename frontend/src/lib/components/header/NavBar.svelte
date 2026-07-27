@@ -16,7 +16,7 @@
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
-  import { History, LanguageSelector, VoteGauge } from '.'
+  import { History, LanguageSelector, LegalMenu, VoteGauge } from '.'
 
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
@@ -97,13 +97,13 @@
   <div class="gap-2 flex flex-col">
     <div class="flex items-center justify-between">
       {@render renderLink({
-        href: '/arena/settings',
+        href: '/arene/parametres',
         label: m['seo.titles.settings'](),
         icon: 'i-ri-settings-4-line',
         button: true,
         size: 'sm',
         variant: 'tertiary-no-outline',
-        class: 'text-sm! text-grey! -ms-3 pointer-events-none'
+        class: 'text-sm! text-grey! -ms-3'
       })}
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
@@ -139,6 +139,8 @@
     </div>
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
+
+    <LegalMenu id="legal-menu-{mode}" {expanded} />
   </div>
 {/snippet}
 

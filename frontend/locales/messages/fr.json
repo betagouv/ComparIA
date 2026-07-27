@@ -1870,6 +1870,10 @@
             }
         },
         "homeTitle": "Accueil - compar:IA",
+        "legal": {
+            "label": "Légal",
+            "title": "Informations légales"
+        },
         "logoAlt": "République Française",
         "menu": "Menu",
         "startDiscussion": "Commencer à discuter",
