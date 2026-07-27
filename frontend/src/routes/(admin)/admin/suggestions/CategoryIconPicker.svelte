@@ -30,8 +30,8 @@
     choices={options}
     bind:value
     onChange={onchange}
-    containerClass="grid grid-cols-4 gap-2 sm:grid-cols-8"
-    choiceClass="fr-btn fr-btn--tertiary min-h-12 cursor-pointer justify-center rounded-lg p-2!"
+    containerClass="flex flex-wrap gap-2"
+    choiceClass="fr-btn fr-btn--tertiary size-12! min-w-12! max-w-12! cursor-pointer justify-center rounded-lg p-2!"
   >
     {#snippet option(option, labelProps, input)}
       <label {...labelProps} title={option.label}>

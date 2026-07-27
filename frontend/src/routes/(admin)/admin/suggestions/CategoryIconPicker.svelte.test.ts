@@ -21,6 +21,8 @@ describe('CategoryIconPicker', () => {
     expect((getByRole('radio', { name: 'Discussion' }) as HTMLInputElement).checked).toBe(false)
     expect(container.querySelector('.i-ri-lightbulb-line')).not.toBeNull()
     expect(container.querySelector('.i-ri-question-answer-line')).not.toBeNull()
+    expect(container.querySelector('.flex.flex-wrap')).not.toBeNull()
+    expect(container.querySelector('label')?.className).toContain('size-12')
   })
 
   it('selects an icon and reports the new value', async () => {
