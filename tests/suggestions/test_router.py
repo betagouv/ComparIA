@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -22,6 +24,9 @@ from backend.suggestions.services import (
     SuggestionNotFoundError,
 )
 from utils.database.models.suggestion import (
+    SUGGESTION_CATEGORY_DESCRIPTION_MAX_LENGTH,
+    SUGGESTION_CATEGORY_TITLE_MAX_LENGTH,
+    SUGGESTION_CATEGORY_TOOLTIP_MAX_LENGTH,
     AdminSuggestion,
     AdminSuggestionCategory,
     PublicSuggestion,
@@ -248,6 +253,82 @@ def test_create_category_normalizes_fields(monkeypatch):
     assert received["body"].description == "Comprendre les sciences"
     assert received["body"].icon == "i-ri-flask-line"
     assert received["body"].tooltip == "Exemples pédagogiques"
+
+
+@pytest.mark.parametrize(
+    ("field", "max_length"),
+    [
+        ("title", SUGGESTION_CATEGORY_TITLE_MAX_LENGTH),
+        ("description", SUGGESTION_CATEGORY_DESCRIPTION_MAX_LENGTH),
+        ("tooltip", SUGGESTION_CATEGORY_TOOLTIP_MAX_LENGTH),
+    ],
+)
+def test_create_category_accepts_fields_at_length_limit(monkeypatch, field, max_length):
+    async def fake_admin():
+        return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
+
+    async def fake_create(body):
+        return _category().model_copy(
+            update={
+                "title": body.title,
+                "description": body.description,
+                "tooltip": body.tooltip,
+            }
+        )
+
+    monkeypatch.setattr(admin_suggestions, "create_suggestion_category", fake_create)
+    app = FastAPI()
+    app.include_router(admin_router)
+    app.dependency_overrides[require_admin] = fake_admin
+    payload = {
+        "locale": "fr",
+        "title": "Sciences",
+        "description": "Comprendre les sciences",
+        "icon": "i-ri-flask-line",
+        "tooltip": "Exemples pédagogiques",
+    }
+    payload[field] = "a" * max_length
+
+    response = TestClient(app).post(
+        "/admin/suggestions/categories",
+        json=payload,
+    )
+
+    assert response.status_code == 201
+
+
+@pytest.mark.parametrize(
+    ("field", "max_length"),
+    [
+        ("title", SUGGESTION_CATEGORY_TITLE_MAX_LENGTH),
+        ("description", SUGGESTION_CATEGORY_DESCRIPTION_MAX_LENGTH),
+        ("tooltip", SUGGESTION_CATEGORY_TOOLTIP_MAX_LENGTH),
+    ],
+)
+def test_create_category_rejects_fields_above_length_limit(field, max_length):
+    async def fake_admin():
+        return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
+
+    app = FastAPI()
+    app.include_router(admin_router)
+    app.dependency_overrides[require_admin] = fake_admin
+    payload = {
+        "locale": "fr",
+        "title": "Sciences",
+        "description": "Comprendre les sciences",
+        "icon": "i-ri-flask-line",
+        "tooltip": "Exemples pédagogiques",
+    }
+    payload[field] = "a" * (max_length + 1)
+
+    response = TestClient(app).post(
+        "/admin/suggestions/categories",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["body", field]
+    assert response.json()["detail"][0]["type"] == "string_too_long"
 
 
 def test_create_category_returns_conflict_for_duplicate(monkeypatch):

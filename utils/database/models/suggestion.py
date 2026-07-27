@@ -9,14 +9,28 @@ from sqlmodel import Field, Relationship, SQLModel, String
 from .utils import AutoDatetime, ModelId, OptionalDatetime
 
 SuggestionLocale = Literal["fr", "da", "sv"]
+SUGGESTION_CATEGORY_TITLE_MAX_LENGTH = 100
+SUGGESTION_CATEGORY_DESCRIPTION_MAX_LENGTH = 300
+SUGGESTION_CATEGORY_TOOLTIP_MAX_LENGTH = 300
+
 SuggestionText = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4_000)
 ]
 CategoryTitle = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=SUGGESTION_CATEGORY_TITLE_MAX_LENGTH,
+    ),
 ]
 CategoryDescription = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1_000)
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=SUGGESTION_CATEGORY_DESCRIPTION_MAX_LENGTH,
+    ),
 ]
 CategoryIcon = Annotated[
     str,
@@ -28,7 +42,12 @@ CategoryIcon = Annotated[
     ),
 ]
 CategoryTooltip = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4_000)
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=SUGGESTION_CATEGORY_TOOLTIP_MAX_LENGTH,
+    ),
 ]
 
 

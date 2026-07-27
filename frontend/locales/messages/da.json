@@ -58,6 +58,7 @@
             "categoryTooltip": "Yderligere information",
             "categoryTooltipHint": "Valgfrit. Oplysningen vil være tilgængelig i et værktøjstip.",
             "categoryValidation": "Indtast et navn og en beskrivelse, og vælg et ikon.",
+            "charactersMaximum": "Maksimalt {count} tegn",
             "confirm": "Bekræft",
             "createSuccess": "Forslag tilføjet.",
             "duplicateError": "Dette forslag findes allerede i denne kategori.",
