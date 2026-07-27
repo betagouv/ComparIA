@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
 
 # Variables
 PYTHON := python3
@@ -117,7 +117,13 @@ display-env-da: ## Display env vars loaded from KeePass for DA instance
 # Development with local code
 ###################################
 
-test: test-dataset ## Run all tests
+test: test-backend test-frontend ## Run all tests
+
+test-backend: ## Run the python test suite (no DB required)
+	$(UV) run --group data pytest tests -q
+
+test-frontend: ## Run the frontend unit tests
+	cd frontend && npx vitest run
 
 test-dataset: ## Run dataset export tests (no DB required)
 	$(UV) run --group data python tests/dataset/test_comparison_to_turns.py
