@@ -2,6 +2,7 @@
   import { resolve } from '$app/paths'
   import { Alert, Badge, Button, Input, Select, Textarea } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
+  import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import type { AdminLegalDocument, PublishLegalDocumentBody } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -27,7 +28,7 @@
     kind === 'terms'
       ? {
           endpoint: '/admin/legal/terms',
-          publicPage: resolve('/modalites'),
+          publicPage: resolve(TERMS_PATH),
           title: m['admin.legal.terms.title'](),
           contentLabel: m['admin.legal.terms.contentLabel'](),
           draftTitle: m['admin.legal.terms.draftTitle'](),
@@ -35,7 +36,7 @@
         }
       : {
           endpoint: '/admin/legal/privacy-policy',
-          publicPage: resolve('/donnees-personnelles'),
+          publicPage: resolve(PRIVACY_POLICY_PATH),
           title: m['admin.legal.privacy.title'](),
           contentLabel: m['admin.legal.privacy.contentLabel'](),
           draftTitle: m['admin.legal.privacy.draftTitle'](),
