@@ -12,6 +12,7 @@ from backend.auth.dependencies import (
     anonymous_session_token,
 )
 from backend.auth.email import send_login_code
+from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
     _hash,
     accept_invite,
@@ -361,6 +362,11 @@ async def get_me(request: Request) -> dict:
     if not user:
         return {"user": None}
     return {"user": {"email": user.email, "role": user.role}}
+
+
+@router.get("/me/export")
+async def export_account_data(user: RequiredUser) -> AccountDataExport:
+    return await build_account_export(user)
 
 
 class AccountEraseBody(BaseModel):

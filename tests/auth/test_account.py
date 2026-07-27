@@ -22,12 +22,15 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
+import backend.auth.export as auth_export  # noqa: E402
 import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.auth.dependencies import require_user  # noqa: E402
-from utils.database.models.auth import User  # noqa: E402
+from utils.database.models.auth import ConsentLog, User  # noqa: E402
 from utils.database.models.comparison import Comparison  # noqa: E402
+from utils.database.models.messages import LLMMessage, UserMessage  # noqa: E402
+from utils.database.models.turn import Turn  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -42,16 +45,28 @@ def patched(module, **attributes):
             setattr(module, name, value)
 
 
+class FakeResult:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def all(self):
+        return self.rows
+
+
 class FakeSession:
     """Collects the statements a service runs so a test can replay them."""
 
-    def __init__(self, user=None):
+    def __init__(self, user=None, *results):
         self.user = user
+        self.results = list(results)
         self.statements = []
         self.committed = False
 
     async def get(self, _model, _id):
         return self.user
+
+    async def exec(self, _statement):
+        return FakeResult(self.results.pop(0) if self.results else [])
 
     async def execute(self, statement):
         self.statements.append(statement)
@@ -64,12 +79,12 @@ class FakeSession:
 
 
 @contextlib.contextmanager
-def fake_session(session):
+def fake_session(session, module=auth_services):
     @contextlib.asynccontextmanager
     async def get_session():
         yield session
 
-    with patched(auth_services, get_session=get_session):
+    with patched(module, get_session=get_session):
         yield session
 
 
@@ -105,6 +120,27 @@ def comparison_of(user_id):
         llm_id_a=uuid.uuid4(),
         llm_id_b=uuid.uuid4(),
     )
+
+
+def turn_of(comparison_id):
+    turn = Turn(
+        comparison_id=comparison_id,
+        choice="a_better",
+        keyword_annotations_a=["utile"],
+        custom_annotation_a="la réponse la plus claire",
+    )
+    turn.user_msg = UserMessage(content="Explique la photosynthèse")
+    turn.llm_msg_a = LLMMessage(
+        content="Réponse A",
+        created_at=datetime.now(),
+        responded_at=datetime.now(),
+        updated_at=datetime.now(),
+        generation_id="gen-a",
+        tokens=12,
+        is_cached=False,
+    )
+    turn.llm_msg_b = None
+    return turn
 
 
 def test_public_config_carries_the_deployment_url():
@@ -196,6 +232,61 @@ def test_erasure_needs_the_signed_in_address_and_drops_the_session_cookie():
     assert erased == [user.id]
     assert accepted.status_code == 204
     assert "auth_session" in accepted.headers.get("set-cookie", "")
+
+
+def export_of(user, comparison, consents=(), model_names=()):
+    session = FakeSession(user, [comparison], list(consents), list(model_names))
+    with fake_session(session, auth_export):
+        return asyncio.run(auth_export.build_account_export(user))
+
+
+def test_export_carries_the_conversations_and_the_consent_history():
+    user = User(email="personne@example.org")
+    comparison = comparison_of(user.id)
+    comparison.turns = [turn_of(comparison.id)]
+    consent = ConsentLog(
+        user_id=user.id,
+        terms_version="2026.07",
+        document_hash="a" * 64,
+        language="fr",
+        consented_at=datetime(2026, 7, 1, 9, 30),
+        ip="not_collected",
+    )
+
+    export = export_of(user, comparison, consents=[consent])
+
+    assert export.account.email == "personne@example.org"
+    assert [
+        (record.terms_version, record.document_hash, record.locale, record.accepted_at)
+        for record in export.consents
+    ] == [("2026.07", "a" * 64, "fr", datetime(2026, 7, 1, 9, 30))]
+    conversation = export.conversations[0]
+    assert conversation.accepted_terms_version == comparison.participation_terms_version
+    turn = conversation.turns[0]
+    assert turn.prompt == "Explique la photosynthèse"
+    assert turn.response_a.content == "Réponse A"
+    assert turn.response_b is None
+    assert turn.choice == "a_better"
+    assert turn.keyword_annotations_a == ["utile"]
+
+
+def test_export_names_the_models_only_once_the_comparison_is_revealed():
+    user = User(email="personne@example.org")
+    comparison = comparison_of(user.id)
+    names = [(comparison.llm_id_a, "modele-a"), (comparison.llm_id_b, "modele-b")]
+
+    hidden = export_of(user, comparison, model_names=names)
+    assert (hidden.conversations[0].model_a, hidden.conversations[0].model_b) == (
+        None,
+        None,
+    )
+
+    comparison.revealed = True
+    revealed = export_of(user, comparison, model_names=names)
+    assert (revealed.conversations[0].model_a, revealed.conversations[0].model_b) == (
+        "modele-a",
+        "modele-b",
+    )
 
 
 def test_erasure_is_not_replayed_on_an_already_erased_account():
