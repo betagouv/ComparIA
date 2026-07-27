@@ -1,8 +1,12 @@
+import { isRedirect } from '@sveltejs/kit'
+import { load as donneesPersonnelles } from '../routes/(pages)/(general)/donnees-personnelles/+page.server'
+import { load as modalites } from '../routes/(pages)/(general)/modalites/+page.server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   buildConsentEvidence,
   consentCheckboxLabel,
   hasAcceptedDocument,
+  legalLinks,
   loadConsent,
   reloadConsent,
   resetConsent,
@@ -50,6 +54,16 @@ const acceptance = {
   accepted_at: '2026-07-20T10:00:00.000Z'
 }
 
+function redirectTarget(load: () => void): string {
+  try {
+    load()
+  } catch (error) {
+    if (isRedirect(error)) return error.location
+    throw error
+  }
+  throw new Error('the load did not redirect')
+}
+
 describe('consent', () => {
   beforeEach(() => {
     resetConsent()
@@ -64,6 +78,18 @@ describe('consent', () => {
       locale: document.locale,
       legal_information_acknowledged: true
     })
+  })
+
+  it('links to the published pages, not to the paths that redirect', () => {
+    expect(legalLinks().map((link) => link.href)).toEqual([
+      '/arene/modalites',
+      '/arene/donnees-personnelles'
+    ])
+    // Tied to where the legacy routes send visitors, so moving a document
+    // without moving these links turns red here rather than adding a hop.
+    expect(legalLinks().map((link) => link.href)).toEqual(
+      [modalites, donneesPersonnelles].map(redirectTarget)
+    )
   })
 
   it('renders the checkbox label of the page that asks', () => {
