@@ -2,7 +2,7 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Badge, Button, Icon, Modal, Pagination, Select, Table } from '$components/dsfr'
+  import { Badge, Button, Icon, Modal, Pagination, Select, Table, Tabs } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -50,6 +50,18 @@
   let categoryFormLoading = $state(false)
 
   const categories = $derived(data.suggestions.categories)
+  const categoryTabs = [
+    {
+      id: 'add',
+      label: m['admin.suggestions.addCategory'](),
+      icon: 'i-ri-folder-add-line'
+    },
+    {
+      id: 'manage',
+      label: m['admin.suggestions.manageCategories'](),
+      icon: 'i-ri-folder-settings-line'
+    }
+  ]
   const supportedLocales = ['fr', 'da', 'sv']
   const availableLocales = $derived(
     [...new Set(categories.map((category) => category.locale))].sort()
@@ -190,14 +202,14 @@
     discloseModal('fr-modal-suggestion-status')
   }
 
-  function openAddCategoryModal() {
+  function openCategoriesModal() {
     categoryLocale = 'fr'
     categoryTitle = ''
     categoryDescription = ''
     categoryIcon = 'i-ri-lightbulb-line'
     categoryTooltip = ''
     categoryFormError = undefined
-    discloseModal('fr-modal-add-suggestion-category')
+    discloseModal('fr-modal-suggestion-categories')
   }
 
   function discloseModal(id: string) {
@@ -265,7 +277,7 @@
           tooltip: tooltip || null
         })
       })
-      closeModal('fr-modal-add-suggestion-category')
+      closeModal('fr-modal-suggestion-categories')
       useToast(m['admin.suggestions.categoryCreateSuccess'](), 4000)
       await refetch()
     } catch (error) {
@@ -351,16 +363,15 @@
 
     {#snippet headerRight()}
       <div class="gap-2 flex flex-wrap justify-end">
-        <CategoryManager {categories} onDeleted={refetch} />
         <Button
           variant="secondary"
           class="gap-2"
-          aria-controls="fr-modal-add-suggestion-category"
+          aria-controls="fr-modal-suggestion-categories"
           data-fr-opened="false"
-          onclick={openAddCategoryModal}
+          onclick={openCategoriesModal}
         >
-          <Icon icon="i-ri-folder-add-line" aria-hidden="true" />
-          <span>{m['admin.suggestions.addCategory']()}</span>
+          <Icon icon="i-ri-folder-settings-line" aria-hidden="true" />
+          <span>{m['admin.suggestions.categories']()}</span>
         </Button>
         <Button
           text={m['admin.suggestions.add']()}
@@ -422,60 +433,73 @@
 </PageLayout>
 
 <Modal
-  id="fr-modal-add-suggestion-category"
-  titleId="fr-modal-title-add-suggestion-category"
+  id="fr-modal-suggestion-categories"
+  titleId="fr-modal-title-suggestion-categories"
   headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
   contentClass="md:pt-4! mb-6!"
 >
-  <h2 id="fr-modal-title-add-suggestion-category" class="fr-modal__title">
-    {m['admin.suggestions.addCategory']()}
+  <h2 id="fr-modal-title-suggestion-categories" class="fr-modal__title">
+    {m['admin.suggestions.categories']()}
   </h2>
-  <form onsubmit={createCategory}>
-    <Select
-      id="suggestion-category-locale"
-      label={m['admin.suggestions.locale']()}
-      options={categoryLocaleOptions}
-      bind:selected={categoryLocale}
-      required
-    />
-    <CategoryTextFields
-      bind:title={categoryTitle}
-      bind:description={categoryDescription}
-      bind:tooltip={categoryTooltip}
-      titleLabel={m['admin.suggestions.categoryTitle']()}
-      descriptionLabel={m['admin.suggestions.categoryDescription']()}
-      descriptionHint={m['admin.suggestions.categoryDescriptionHint']()}
-      tooltipLabel={m['admin.suggestions.categoryTooltip']()}
-      tooltipHint={m['admin.suggestions.categoryTooltipHint']()}
-      titleMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 100 })}
-      descriptionMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
-      tooltipMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
-    />
-    <CategoryIconPicker
-      id="suggestion-category-icon"
-      label={m['admin.suggestions.categoryIcon']()}
-      options={categoryIconOptions}
-      bind:value={categoryIcon}
-    />
-    {#if categoryFormError}
-      <div class="fr-messages-group" id="suggestion-category-messages" aria-live="polite">
-        <p class="fr-message fr-message--error">{categoryFormError}</p>
-      </div>
-    {/if}
-    <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
-      <Button
-        type="button"
-        text={m['admin.suggestions.cancel']()}
-        variant="secondary"
-        onclick={() => closeModal('fr-modal-add-suggestion-category')}
-      />
-      <Button
-        type="submit"
-        text={m['admin.suggestions.addCategory']()}
-        disabled={categoryFormLoading}
-      />
-    </div>
-  </form>
+  <Tabs
+    tabs={categoryTabs}
+    label={m['admin.suggestions.categories']()}
+    noBorders
+    panelClass="pb-0!"
+  >
+    {#snippet tab({ id })}
+      {#if id === 'add'}
+        <form onsubmit={createCategory}>
+          <Select
+            id="suggestion-category-locale"
+            label={m['admin.suggestions.locale']()}
+            options={categoryLocaleOptions}
+            bind:selected={categoryLocale}
+            required
+          />
+          <CategoryTextFields
+            bind:title={categoryTitle}
+            bind:description={categoryDescription}
+            bind:tooltip={categoryTooltip}
+            titleLabel={m['admin.suggestions.categoryTitle']()}
+            descriptionLabel={m['admin.suggestions.categoryDescription']()}
+            descriptionHint={m['admin.suggestions.categoryDescriptionHint']()}
+            tooltipLabel={m['admin.suggestions.categoryTooltip']()}
+            tooltipHint={m['admin.suggestions.categoryTooltipHint']()}
+            titleMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 100 })}
+            descriptionMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
+            tooltipMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
+          />
+          <CategoryIconPicker
+            id="suggestion-category-icon"
+            label={m['admin.suggestions.categoryIcon']()}
+            options={categoryIconOptions}
+            bind:value={categoryIcon}
+          />
+          {#if categoryFormError}
+            <div class="fr-messages-group" id="suggestion-category-messages" aria-live="polite">
+              <p class="fr-message fr-message--error">{categoryFormError}</p>
+            </div>
+          {/if}
+          <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
+            <Button
+              type="button"
+              text={m['admin.suggestions.cancel']()}
+              variant="secondary"
+              onclick={() => closeModal('fr-modal-suggestion-categories')}
+            />
+            <Button
+              type="submit"
+              text={m['admin.suggestions.addCategory']()}
+              disabled={categoryFormLoading}
+            />
+          </div>
+        </form>
+      {:else}
+        <CategoryManager {categories} onDeleted={refetch} />
+      {/if}
+    {/snippet}
+  </Tabs>
 </Modal>
 
 <Modal

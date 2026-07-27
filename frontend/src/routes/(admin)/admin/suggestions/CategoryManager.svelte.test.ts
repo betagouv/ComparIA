@@ -35,7 +35,7 @@ describe('CategoryManager', () => {
   })
 
   it('only enables deletion for an empty category', () => {
-    const { getByText } = render(CategoryManager, {
+    const { getByRole, getByText } = render(CategoryManager, {
       categories: [category('Vide', 0), category('Utilisée', 3)],
       onDeleted: vi.fn()
     })
@@ -44,7 +44,8 @@ describe('CategoryManager', () => {
     const usedDeleteButton = getByText('Utilisée').closest('li')?.querySelector('button')
     expect(emptyDeleteButton).not.toHaveAttribute('aria-disabled', 'true')
     expect(usedDeleteButton).toHaveAttribute('aria-disabled', 'true')
-    expect(getByText('3 suggestions — suppression impossible')).toBeTruthy()
+    expect(usedDeleteButton).toHaveAccessibleDescription('3 suggestions — suppression impossible')
+    expect(getByRole('tooltip')).toHaveTextContent('3 suggestions — suppression impossible')
   })
 
   it('asks for confirmation before deleting an empty category', async () => {
