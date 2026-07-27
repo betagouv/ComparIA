@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
   import { Button, Checkbox, Input } from '$components/dsfr'
   import { renderInlineMarkdown } from '$components/markdown/inline'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import MarkdownInline from '$components/markdown/MarkdownInline.svelte'
+  import { legalLinks } from '$lib/consent'
   import { m } from '$lib/i18n/messages'
 
   let {
@@ -19,11 +19,6 @@
     checkboxLabel: string
     buttonLabel?: string
   } = $props()
-
-  const legalLinks = $derived([
-    { label: m['footer.links.tos'](), href: resolve('/modalites') },
-    { label: m['footer.links.privacy'](), href: resolve('/donnees-personnelles') }
-  ])
 </script>
 
 <aside
@@ -54,7 +49,7 @@
       label={renderInlineMarkdown(
         checkboxLabel || m['admin.legal.participation.checkboxPlaceholder']()
       )}
-      links={legalLinks}
+      links={legalLinks()}
       linksClass="bg-none! no-underline!"
     />
 
