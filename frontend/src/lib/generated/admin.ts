@@ -10,12 +10,22 @@ export interface AppSettingsPatch {
   auth_domain_allowlist?: string[] | null;
   votes_objective?: number | null;
   platform_name?: string | null;
+  primary_color_light?: string | null;
+  primary_color_dark?: string | null;
+  secondary_color_light?: string | null;
+  secondary_color_dark?: string | null;
+  homepage_url?: string | null;
 }
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
   auth_domain_allowlist: string[];
   votes_objective: number;
   platform_name: string;
+  primary_color_light: string;
+  primary_color_dark: string;
+  secondary_color_light: string;
+  secondary_color_dark: string;
+  homepage_url: string | null;
   has_custom_logo: boolean;
   updated_at: string;
   updated_by?: string | null;

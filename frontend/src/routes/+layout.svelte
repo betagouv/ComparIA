@@ -10,6 +10,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
+  import { createBrandThemeStyle } from '$lib/theme'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import 'uno.css'
@@ -22,19 +23,25 @@
   }
 
   let { children, data } = $props()
+  // svelte-ignore state_referenced_locally
+  const auth = setAuthContext(data.auth)
+  let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
 
   onMount(() => {
     // Remove locale param to avoid locale changes override problems
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
       params.delete('locale')
+      // The query-only navigation intentionally keeps the current route.
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
       goto(`?${params}` + page.url.hash)
     }
   })
 
+  // svelte-ignore state_referenced_locally
   setVotesContext(data.votes)
+  // svelte-ignore state_referenced_locally
   setModelsContext(data.data)
-  setAuthContext(data.auth)
   setI18nContext()
   setCohortContext()
 
@@ -46,6 +53,10 @@
     }
   }
 </script>
+
+<svelte:head>
+  {@html brandThemeStyle}
+</svelte:head>
 
 <svelte:window on:unhandledrejection={handleError} />
 

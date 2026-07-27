@@ -23,7 +23,7 @@
     },
     {
       icon: 'i-ri-translate-2',
-      class: 'text-orange',
+      class: 'text-secondary-text',
       title: m['product.problem.alignment.english.title'](),
       ps: (['a', 'b', 'c'] as const).map((p) => m[`product.problem.alignment.english.${p}`]())
     },
@@ -41,7 +41,7 @@
 <div class="py-10">
   <div class="gap-6 md:grid-cols-2 xl:grid-cols-4 grid">
     <h2 class="fr-h3 mb-3! leading-11!">
-      {@html sanitize(m['product.problem.title']({ props: 'class="text-orange"' }))}
+      {@html sanitize(m['product.problem.title']({ props: 'class="text-secondary-text"' }))}
     </h2>
 
     {#each diversityCards as card, i (i)}

@@ -4,13 +4,22 @@
 
 :root {
   /* Accessibility override (WCAG AA): replace DSFR violet #6a6af4 with #6464f3
-     to reach 4.5:1 contrast against white text on primary CTAs. */
-  --blue-france-main-525: #6464f3;
-  --text-inverted-blue-france: #ffffff;
+     so primary text reaches 4.5:1 against a white surface. */
+  --brand-primary: #6464f3;
+  --brand-primary-hover: #5858d6;
+  --brand-primary-active: #4c4cb9;
+  --brand-primary-contrast: #ffffff;
+  --brand-primary-soft: #e6e6fd;
+  --brand-primary-softest: #f4f4fe;
+  --brand-secondary: #ff9575;
+  --brand-secondary-text: #ab644e;
+
+  --blue-france-main-525: var(--brand-primary);
+  --text-inverted-blue-france: var(--brand-primary-contrast);
 
   /* CUSTOM DSFR LIKE ADDITION */
-  --cg-blue-france-main-525-hover: #5454e3;
-  --cg-blue-france-main-525-active: #4545d3;
+  --cg-blue-france-main-525-hover: var(--brand-primary-hover);
+  --cg-blue-france-main-525-active: var(--brand-primary-active);
   --outline-color: #0a76f6;
 
   /* CUSTOM */
@@ -19,7 +28,9 @@
   --cg-very-light-blue: #f9fbff;
   --cg-green: #58b77d;
   --cg-purple: #a96afe;
-  --cg-orange: #ff9575;
+  --cg-orange: var(--brand-secondary);
+  --blue-ecume-925-125: var(--brand-primary-soft);
+  --blue-ecume-975-75: var(--brand-primary-softest);
 
   /* xs breakpoint */
   --text-xs: 0.675rem;
@@ -29,8 +40,14 @@
 }
 
 :root[data-fr-theme='dark'] {
-  --blue-france-main-525: #6464f3;
-  --text-inverted-blue-france: #ffffff;
+  --brand-primary: #9898f8;
+  --brand-primary-hover: #a4a4f9;
+  --brand-primary-active: #b1b1fa;
+  --brand-primary-contrast: #000000;
+  --brand-primary-soft: #181828;
+  --brand-primary-softest: #0b0b11;
+  --brand-secondary: #ffcc00;
+  --brand-secondary-text: #ffcc00;
 
   --cg-very-light-grey: #0a0a0b;
   --cg-light-grey: #1c1e22;
