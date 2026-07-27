@@ -72,6 +72,7 @@ const paths = () => mocks.request.mock.calls.map(([path]) => path)
 describe('SignInForm consent', () => {
   beforeEach(() => {
     resetConsent()
+    mocks.authContext.config.access_policy = 'anonymous_first'
     servesTerms()
   })
 
@@ -153,5 +154,13 @@ describe('SignInForm consent', () => {
 
     expect(container.textContent).not.toContain('Comment mes données sont-elles utilisées')
     expect(container.textContent).not.toContain('Les jeux de données compar:IA')
+  })
+
+  it('hides the merge option when authentication is required', async () => {
+    mocks.authContext.config.access_policy = 'sign_in_required'
+    const { container } = render(SignInForm)
+
+    await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
+    expect(container.querySelector('#login-merge')).toBeNull()
   })
 })

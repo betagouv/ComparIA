@@ -428,11 +428,30 @@ def _write_normal_from_raw_parquet(
         table = pa.Table.from_batches([batch])
         table = table.filter(pc.equal(table.column("excluded"), False))
         table = table.drop(DROP_COLS)
-        # Rows cached before the column existed carry no accepted version.
-        if "participation_terms_version" not in table.column_names:
-            table = table.append_column(
-                "participation_terms_version",
-                pa.array([LEGACY_PARTICIPATION_TERMS_VERSION] * len(table)),
+        metadata_index = table.schema.get_field_index("metadata")
+        metadata = table.column(metadata_index)
+        if metadata.type.get_field_index("participation_terms_version") == -1:
+            fields = [
+                *metadata.type,
+                pa.field("participation_terms_version", pa.string()),
+            ]
+            chunks = []
+            for chunk in metadata.chunks:
+                values = [chunk.field(index) for index in range(chunk.type.num_fields)]
+                values.append(
+                    pa.array([LEGACY_PARTICIPATION_TERMS_VERSION] * len(chunk))
+                )
+                chunks.append(
+                    pa.StructArray.from_arrays(
+                        values,
+                        fields=fields,
+                        mask=chunk.is_null(),
+                    )
+                )
+            table = table.set_column(
+                metadata_index,
+                "metadata",
+                pa.chunked_array(chunks, type=pa.struct(fields)),
             )
 
         if len(table) == 0:
