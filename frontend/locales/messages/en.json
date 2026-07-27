@@ -58,6 +58,7 @@
             "categoryTooltip": "Additional information",
             "categoryTooltipHint": "Optional. This information will be available from a tooltip.",
             "categoryValidation": "Enter a name and description, and choose an icon.",
+            "charactersMaximum": "{count} characters maximum",
             "confirm": "Confirm",
             "createSuccess": "Suggestion added.",
             "duplicateError": "This suggestion already exists in this category.",

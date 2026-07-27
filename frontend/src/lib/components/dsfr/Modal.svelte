@@ -8,6 +8,7 @@
     titleId,
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
     contentClass,
+    headerClass,
     onClose,
     children
   }: {
@@ -15,6 +16,7 @@
     titleId: string
     sizeClass?: string
     contentClass?: ClassValue
+    headerClass?: ClassValue
     onClose?: () => void
   } & HTMLDialogAttributes = $props()
 </script>
@@ -31,8 +33,8 @@
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
       <div class={sizeClass}>
-        <div class="fr-modal__body rounded-xl">
-          <div class="fr-modal__header pb-0!">
+        <div class="fr-modal__body rounded-xl relative">
+          <div class={['fr-modal__header pb-0!', headerClass]}>
             <Button
               variant="tertiary-no-outline"
               text={m['words.close']()}

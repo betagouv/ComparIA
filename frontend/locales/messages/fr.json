@@ -64,6 +64,7 @@
             "categoryTooltip": "Information complémentaire",
             "categoryTooltipHint": "Facultatif. Cette information sera accessible depuis une infobulle.",
             "categoryValidation": "Saisissez un nom, une description et choisissez une icône.",
+            "charactersMaximum": "{count} caractères maximum",
             "confirm": "Confirmer",
             "createSuccess": "Suggestion ajoutée.",
             "duplicateError": "Cette suggestion existe déjà dans cette catégorie.",
