@@ -133,6 +133,24 @@
                 }
             },
             "customization": {
+                "discard": "Annuler les modifications",
+                "colors": {
+                    "title": "Couleurs de la plateforme",
+                    "hint": "Utilisez un code couleur hexadécimal au format #RRGGBB.",
+                    "fieldHint": "Format attendu : #RRGGBB.",
+                    "invalid": "Saisissez une couleur au format #RRGGBB.",
+                    "contrastLight": "Choisissez une couleur primaire ayant un contraste d’au moins 4,5:1 avec un fond blanc.",
+                    "contrastDark": "Choisissez une couleur primaire ayant un contraste d’au moins 4,5:1 avec le fond sombre.",
+                    "primaryLight": "Couleur primaire (thème clair)",
+                    "primaryDark": "Couleur primaire (thème sombre)",
+                    "secondaryLight": "Couleur secondaire (thème clair)",
+                    "secondaryDark": "Couleur secondaire (thème sombre)"
+                },
+                "homepageUrl": {
+                    "label": "URL de la page d’accueil",
+                    "hint": "Cette adresse est ouverte lorsqu’une personne sélectionne le logo ou le nom de la plateforme. Laissez vide pour utiliser l’accueil local.",
+                    "invalid": "Saisissez une URL HTTPS complète."
+                },
                 "logo": {
                     "chooseFile": "Choisir un fichier",
                     "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum.",

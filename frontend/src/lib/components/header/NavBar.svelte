@@ -23,6 +23,9 @@
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
   let expanded = $state(true)
+  const homepageLinkProps = $derived({
+    href: auth.config.homepage_url || resolve('/')
+  })
 
   const connectionBtnProps = $derived(
     auth.user
@@ -39,20 +42,6 @@
         }
   )
 </script>
-
-{#snippet helpLink()}
-  <Link
-    href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
-    text={m['header.help.link.content']()}
-    title={m['header.help.link.title']()}
-    icon="pencil-line"
-    button
-    variant="tertiary-no-outline"
-    size="sm"
-    native
-    hideExternalIcon
-  />
-{/snippet}
 
 {#snippet renderLink({
   href,
@@ -94,7 +83,7 @@
       class="h-[35px]"
     />
     <a
-      href={resolve('/')}
+      {...homepageLinkProps}
       title={m['header.homeTitle']()}
       class="font-bold text-lg text-[--text-title-grey]"
     >
@@ -147,8 +136,6 @@
         </p>
       {/if}
     </div>
-
-    <!-- {@render helpLink()} -->
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
   </div>

@@ -16,6 +16,11 @@ export interface AuthConfig {
   domain_allowlist: string[]
   platform_name: string
   has_custom_logo: boolean
+  primary_color_light: string
+  primary_color_dark: string
+  secondary_color_light: string
+  secondary_color_dark: string
+  homepage_url: string | null
 }
 
 type AuthCtx = {
@@ -27,6 +32,7 @@ export const [getAuthContext, baseSetAuthContext] = createContext<AuthCtx>()
 export function setAuthContext(data: AuthCtx) {
   const auth = $state(data)
   baseSetAuthContext(auth)
+  return auth
 }
 
 export function userAllowed(auth: AuthCtx, role?: AuthUser['role']) {

@@ -84,7 +84,7 @@
 
     <section class="cg-border cl-card">
       <h2 class="fr-h6">
-        <Icon icon="i-ri-chat-search-line" size="lg" class="text-orange me-1" />
+        <Icon icon="i-ri-chat-search-line" size="lg" class="text-secondary-text me-1" />
         {m['product.partners.academy.title']()}
       </h2>
 
