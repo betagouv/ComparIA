@@ -6,6 +6,7 @@ Run with pytest, or directly:
 """
 
 import asyncio
+import importlib.util
 import json
 import os
 import sys
@@ -101,6 +102,20 @@ def assert_raises(error_type, action):
 def publish(fake_session, **kwargs):
     with patch.object(legal, "get_session", session_factory(fake_session)):
         return asyncio.run(legal.publish_legal_document(**kwargs))
+
+
+def test_seeded_terms_version_matches_the_migration():
+    """The migration keeps its own literal so it never depends on app code."""
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "utils/database/alembic/versions"
+        / "e4a8c2d9f1b7_add_versioned_legal_documents.py"
+    )
+    spec = importlib.util.spec_from_file_location("legal_documents_migration", path)
+    migration = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migration)
+
+    assert migration.SEED_VERSION == legal.SEEDED_TERMS_VERSION
 
 
 def test_immediate_publication_retires_active_terms():
