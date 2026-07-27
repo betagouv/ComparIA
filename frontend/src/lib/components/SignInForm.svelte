@@ -2,9 +2,19 @@
   import { Button, Checkbox, Input } from '$components/dsfr'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { consumeAltchaToken } from '$lib/captcha.svelte'
+  import {
+    consentCheckboxLabel,
+    legalLinks,
+    loadConsent,
+    reloadConsent,
+    submitConsent,
+    type ConsentDocument
+  } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
+  import { onMount } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
@@ -15,19 +25,62 @@
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
+  const locale = getLocale()
   let step = $state<'email' | 'code'>('email')
   let email = $state('')
   let code = $state('')
-  let consented = $state(false)
   let mergeComparisons = $state(false)
   let loading = $state(false)
   let error = $state<string>()
 
+  let terms = $state<ConsentDocument>()
+  let consentRequired = $state(false)
+  let consented = $state(false)
+  let consentLoading = $state(true)
+  let consentError = $state<string>()
+
+  const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
+
+  async function readConsent(again = false) {
+    consentLoading = true
+    consentError = undefined
+    try {
+      const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
+      terms = snapshot.document
+      consentRequired = !snapshot.accepted
+      consented = snapshot.accepted
+    } catch {
+      terms = undefined
+      consentError = m['consent.loadFailed']()
+    } finally {
+      consentLoading = false
+    }
+  }
+
+  onMount(() => {
+    readConsent()
+  })
+
+  $effect(() => {
+    if (consented && terms) consentError = undefined
+  })
+
   async function requestCode() {
-    console.log('request')
+    if (!terms) {
+      consentError = m['consent.loadFailed']()
+      return
+    }
+    if (consentRequired && !consented) {
+      consentError = m['consent.required']()
+      return
+    }
     loading = true
     error = undefined
     try {
+      if (consentRequired) {
+        await submitConsent(terms, false)
+        consentRequired = false
+      }
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
         method: 'POST',
@@ -104,13 +157,26 @@
       label={m['auth.modal.merge']()}
     />
 
-    <Checkbox
-      id="login-consent"
-      class="text-xs!"
-      bind:checked={consented}
-      disabled={step === 'code'}
-      label={m['auth.modal.email.consent']()}
-    />
+    {#if terms}
+      <Checkbox
+        id="login-consent"
+        class="text-xs!"
+        bind:checked={consented}
+        disabled={loading || step === 'code' || !consentRequired}
+        label={consentLabel}
+        links={legalLinks()}
+        error={consentError}
+      />
+    {:else if consentError}
+      <p class="fr-error-text fr-text--sm" role="alert">{consentError}</p>
+      <Button
+        size="sm"
+        variant="secondary"
+        text={m['consent.retry']()}
+        disabled={consentLoading}
+        onclick={() => readConsent(true)}
+      />
+    {/if}
 
     {#if step === 'code'}
       <Input
@@ -153,7 +219,7 @@
       <Button
         type="submit"
         text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-        disabled={!consented || loading}
+        disabled={loading || consentLoading || !terms}
         class="mt-8 block! w-full!"
       />
     {/if}
