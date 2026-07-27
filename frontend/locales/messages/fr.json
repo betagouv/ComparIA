@@ -214,7 +214,6 @@
                 "verifying": "Vérification..."
             },
             "email": {
-                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/arene/modalites' target='_blank'>conditions générales d'utilisation</a>",
                 "emailLabel": "Email",
                 "submit": "Recevoir le code de connexion",
                 "submitting": "Envoi en cours...",

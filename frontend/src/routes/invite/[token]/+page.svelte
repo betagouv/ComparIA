@@ -3,12 +3,22 @@
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
+  import {
+    consentCheckboxLabel,
+    legalLinks,
+    loadConsent,
+    reloadConsent,
+    submitConsent,
+    type ConsentDocument
+  } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { onMount } from 'svelte'
 
   const auth = getAuthContext()
+  const locale = getLocale()
   const token = $derived(page.params.token)
 
   let checkStatus = $state<'loading' | 'valid' | 'invalid'>('loading')
@@ -17,7 +27,31 @@
   let submitting = $state(false)
   let error = $state<string>()
 
+  let terms = $state<ConsentDocument>()
+  let consentRequired = $state(false)
+  let consentLoading = $state(true)
+  let consentError = $state<string>()
+
+  const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
+
+  async function readConsent(again = false) {
+    consentLoading = true
+    consentError = undefined
+    try {
+      const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
+      terms = snapshot.document
+      consentRequired = !snapshot.accepted
+      consented = snapshot.accepted
+    } catch {
+      terms = undefined
+      consentError = m['consent.loadFailed']()
+    } finally {
+      consentLoading = false
+    }
+  }
+
   onMount(async () => {
+    readConsent()
     try {
       const result = await api.request<{ valid: boolean; email: string | null }>(
         `/auth/invite/${token}`
@@ -29,10 +63,28 @@
     }
   })
 
+  $effect(() => {
+    if (consented && terms) consentError = undefined
+  })
+
   async function accept() {
+    if (!terms) {
+      consentError = m['consent.loadFailed']()
+      return
+    }
+    if (consentRequired && !consented) {
+      consentError = m['consent.required']()
+      return
+    }
     submitting = true
     error = undefined
     try {
+      // Recorded while still anonymous, so accept_invite carries it onto the
+      // new account with the time it was given.
+      if (consentRequired) {
+        await submitConsent(terms, false)
+        consentRequired = false
+      }
       await api.request('/auth/invite/accept', {
         method: 'POST',
         body: JSON.stringify({ token })
@@ -82,16 +134,29 @@
         <p class="text-sm! mb-6!">{m['invite.invalid']()}</p>
         <Link button href="/login" text={m['invite.backToLogin']()} />
       {:else if checkStatus === 'valid'}
-        <Checkbox
-          id="invite-consent"
-          class="text-xs!"
-          bind:checked={consented}
-          disabled={submitting}
-          label={m['auth.modal.email.consent']()}
-        />
+        {#if terms}
+          <Checkbox
+            id="invite-consent"
+            class="text-xs!"
+            bind:checked={consented}
+            disabled={submitting || !consentRequired}
+            label={consentLabel}
+            links={legalLinks()}
+            error={consentError}
+          />
+        {:else if consentError}
+          <p class="fr-error-text fr-text--sm" role="alert">{consentError}</p>
+          <Button
+            size="sm"
+            variant="secondary"
+            text={m['consent.retry']()}
+            disabled={consentLoading}
+            onclick={() => readConsent(true)}
+          />
+        {/if}
         <Button
           text={submitting ? m['invite.accepting']() : m['invite.accept']()}
-          disabled={!consented || submitting}
+          disabled={submitting || consentLoading || !terms}
           onclick={accept}
           class="mt-4 block! w-full!"
         />
