@@ -10,6 +10,8 @@
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
   import { sortRows, toSearchString } from '$lib/utils/data'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
+  import CategoryIconPicker from './CategoryIconPicker.svelte'
+  import CategoryTextFields from './CategoryTextFields.svelte'
   import type { PageProps } from './$types'
   import type { PromptSuggestion, SuggestionStatus } from './types'
 
@@ -306,46 +308,43 @@
     searchLabel={m['words.search']()}
   >
     {#snippet headerLeft()}
-      <fieldset class="fr-fieldset mb-0!">
-        <legend class="fr-fieldset__legend--regular fr-text--sm mb-2!">
-          {m['admin.suggestions.filters']()}
-        </legend>
-        <div class="gap-3 md:flex-row flex flex-col">
-          <Select
-            id="suggestions-status-filter"
-            label={m['admin.suggestions.status']()}
-            options={statusOptions}
-            bind:selected={status}
-            onchange={updateFilters}
-          />
-          <Select
-            id="suggestions-locale-filter"
-            label={m['admin.suggestions.locale']()}
-            options={localeOptions}
-            bind:selected={locale}
-            onchange={updateLocaleFilter}
-          />
-          <Select
-            id="suggestions-category-filter"
-            label={m['admin.suggestions.category']()}
-            options={filterCategoryOptions}
-            bind:selected={categoryId}
-            onchange={updateFilters}
-          />
-        </div>
-      </fieldset>
+      <div class="gap-3 md:flex-row flex flex-col flex-wrap">
+        <Select
+          id="suggestions-status-filter"
+          label={m['admin.suggestions.status']()}
+          options={statusOptions}
+          bind:selected={status}
+          onchange={updateFilters}
+        />
+        <Select
+          id="suggestions-locale-filter"
+          label={m['admin.suggestions.locale']()}
+          options={localeOptions}
+          bind:selected={locale}
+          onchange={updateLocaleFilter}
+        />
+        <Select
+          id="suggestions-category-filter"
+          label={m['admin.suggestions.category']()}
+          options={filterCategoryOptions}
+          bind:selected={categoryId}
+          onchange={updateFilters}
+        />
+      </div>
     {/snippet}
 
     {#snippet headerRight()}
       <div class="gap-2 flex flex-wrap justify-end">
         <Button
-          text={m['admin.suggestions.addCategory']()}
-          icon="folder-add-line"
           variant="secondary"
+          class="gap-2"
           aria-controls="fr-modal-add-suggestion-category"
           data-fr-opened="false"
           onclick={openAddCategoryModal}
-        />
+        >
+          <Icon icon="i-ri-folder-add-line" aria-hidden="true" />
+          <span>{m['admin.suggestions.addCategory']()}</span>
+        </Button>
         <Button
           text={m['admin.suggestions.add']()}
           icon="add-line"
@@ -405,7 +404,11 @@
   </div>
 </PageLayout>
 
-<Modal id="fr-modal-add-suggestion-category" titleId="fr-modal-title-add-suggestion-category">
+<Modal
+  id="fr-modal-add-suggestion-category"
+  titleId="fr-modal-title-add-suggestion-category"
+  headerClass="absolute! top-0 right-6 z-10 p-0!"
+>
   <h2 id="fr-modal-title-add-suggestion-category" class="fr-modal__title">
     {m['admin.suggestions.addCategory']()}
   </h2>
@@ -417,79 +420,45 @@
       bind:selected={categoryLocale}
       required
     />
-    <div class="fr-input-group">
-      <label class="fr-label" for="suggestion-category-title">
-        {m['admin.suggestions.categoryTitle']()}
-      </label>
-      <input
-        id="suggestion-category-title"
-        class="fr-input"
-        bind:value={categoryTitle}
-        required
-        maxlength="255"
-      />
-    </div>
-    <div class="fr-input-group">
-      <label class="fr-label" for="suggestion-category-description">
-        {m['admin.suggestions.categoryDescription']()}
-        <span class="fr-hint-text">{m['admin.suggestions.categoryDescriptionHint']()}</span>
-      </label>
-      <textarea
-        id="suggestion-category-description"
-        class="fr-input"
-        bind:value={categoryDescription}
-        required
-        maxlength="1000"
-      ></textarea>
-    </div>
-    <div class="gap-3 sm:grid-cols-[1fr_auto] sm:items-end grid">
-      <Select
-        id="suggestion-category-icon"
-        label={m['admin.suggestions.categoryIcon']()}
-        options={categoryIconOptions}
-        bind:selected={categoryIcon}
-        required
-      />
-      <div class="pb-4 text-center">
-        <Icon icon={categoryIcon} aria-label={m['admin.suggestions.categoryIconPreview']()} />
-      </div>
-    </div>
-    <div class="fr-input-group">
-      <label class="fr-label" for="suggestion-category-tooltip">
-        {m['admin.suggestions.categoryTooltip']()}
-        <span class="fr-hint-text">{m['admin.suggestions.categoryTooltipHint']()}</span>
-      </label>
-      <textarea
-        id="suggestion-category-tooltip"
-        class="fr-input"
-        bind:value={categoryTooltip}
-        maxlength="4000"
-        aria-describedby="suggestion-category-messages"
-      ></textarea>
-    </div>
+    <CategoryTextFields
+      bind:title={categoryTitle}
+      bind:description={categoryDescription}
+      bind:tooltip={categoryTooltip}
+      titleLabel={m['admin.suggestions.categoryTitle']()}
+      descriptionLabel={m['admin.suggestions.categoryDescription']()}
+      descriptionHint={m['admin.suggestions.categoryDescriptionHint']()}
+      tooltipLabel={m['admin.suggestions.categoryTooltip']()}
+      tooltipHint={m['admin.suggestions.categoryTooltipHint']()}
+      titleMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 100 })}
+      descriptionMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
+      tooltipMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
+    />
+    <CategoryIconPicker
+      id="suggestion-category-icon"
+      label={m['admin.suggestions.categoryIcon']()}
+      options={categoryIconOptions}
+      bind:value={categoryIcon}
+    />
     {#if categoryFormError}
       <div class="fr-messages-group" id="suggestion-category-messages" aria-live="polite">
         <p class="fr-message fr-message--error">{categoryFormError}</p>
       </div>
     {/if}
-    <div class="fr-btns-group fr-btns-group--inline-md mt-4">
-      <Button
-        type="button"
-        text={m['admin.suggestions.cancel']()}
-        variant="secondary"
-        onclick={() => closeModal('fr-modal-add-suggestion-category')}
-      />
+    <div class="mt-4 flex justify-end">
       <Button
         type="submit"
         text={m['admin.suggestions.addCategory']()}
-        icon="folder-add-line"
         disabled={categoryFormLoading}
       />
     </div>
   </form>
 </Modal>
 
-<Modal id="fr-modal-add-suggestion" titleId="fr-modal-title-add-suggestion">
+<Modal
+  id="fr-modal-add-suggestion"
+  titleId="fr-modal-title-add-suggestion"
+  headerClass="absolute! top-0 right-6 z-10 p-0!"
+>
   <h2 id="fr-modal-title-add-suggestion" class="fr-modal__title">
     {m['admin.suggestions.add']()}
   </h2>
@@ -550,7 +519,11 @@
   </form>
 </Modal>
 
-<Modal id="fr-modal-suggestion-status" titleId="fr-modal-title-suggestion-status">
+<Modal
+  id="fr-modal-suggestion-status"
+  titleId="fr-modal-title-suggestion-status"
+  headerClass="absolute! top-0 right-6 z-10 p-0!"
+>
   <h2 id="fr-modal-title-suggestion-status" class="fr-modal__title">
     {suggestionToToggle?.status === 'archived'
       ? m['admin.suggestions.restore']()
