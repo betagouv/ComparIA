@@ -321,7 +321,43 @@
             "merge": "Fusionner les conversations existantes avec votre compte"
         },
         "settings": {
+            "account": {
+                "title": "Mon compte",
+                "email": "Adresse électronique",
+                "signInPrompt": "Connectez-vous pour accéder aux paramètres de votre compte."
+            },
+            "display": {
+                "title": "Préférences"
+            },
+            "erase": {
+                "action": "Supprimer mon compte",
+                "title": "Supprimer mon compte",
+                "intro": "La suppression est définitive. Voici ce qu’elle fait, ni plus ni moins :",
+                "effectAccount": "votre adresse électronique est remplacée par une valeur anonyme et toutes vos sessions sont fermées ;",
+                "effectComparisons": "vos conversations sont détachées du compte, et l’adresse IP, l’identifiant de mesure d’audience et l’identifiant de session anonyme qui y étaient attachés sont effacés ;",
+                "effectContent": "le texte de vos conversations et vos votes sont conservés et restent publiés dans les jeux de données, sans lien avec vous ;",
+                "effectConsent": "la preuve de votre acceptation des conditions est conservée, sans adresse IP, parce que la loi l’exige.",
+                "confirmLabel": "Confirmez votre adresse électronique",
+                "confirmHelp": "Saisissez {email} pour confirmer la suppression.",
+                "mismatch": "Saisissez exactement l’adresse électronique de votre compte.",
+                "failed": "Le compte n’a pas pu être supprimé. Réessayez, ou écrivez-nous pour exercer ce droit.",
+                "pending": "Suppression…"
+            },
+            "export": {
+                "title": "Exporter mes données",
+                "desc": "Téléchargez une copie de votre compte, de vos conversations, de vos votes et de vos acceptations des conditions, au format JSON.",
+                "action": "Exporter mes données",
+                "pending": "Préparation…",
+                "failed": "L’export n’a pas pu être préparé. Réessayez dans un instant."
+            },
+            "links": {
+                "title": "Liens utiles"
+            },
             "logout": "Se déconnecter",
+            "subtitle": "Compte, données et informations sur la plateforme",
+            "tabAbout": "À propos",
+            "tabAccount": "Compte",
+            "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres"
         },
         "success": "Vous êtes connecté !"
@@ -2986,6 +3022,7 @@
         "archived": "Archivé",
         "available": "Disponible",
         "back": "Retour",
+        "cancel": "Annuler",
         "close": "Fermer",
         "deactivated": "Désactivé",
         "forbidden": "interdit",
