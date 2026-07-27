@@ -12,6 +12,7 @@ from backend.config import settings
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
+from backend.suggestions.router import router as suggestions_router
 from backend.utils.countries import get_vote_count
 from utils.database.settings import get_app_settings
 from utils.storage.redis import get_maintenance_mode
@@ -67,6 +68,7 @@ app.add_middleware(
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 app.include_router(models_router)
+app.include_router(suggestions_router)
 app.include_router(arena_router)
 app.include_router(auth_router)
 app.include_router(admin_router)

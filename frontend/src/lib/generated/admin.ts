@@ -5,6 +5,26 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface AdminSuggestion {
+  id: string;
+  text: string;
+  locale: "fr" | "da" | "sv";
+  category_id: string;
+  category_title: string;
+  status: "available" | "archived";
+  created_at: string;
+  updated_at: string;
+}
+export interface AdminSuggestionCategory {
+  id: string;
+  locale: "fr" | "da" | "sv";
+  key: string;
+  title: string;
+  description: string;
+  icon: string;
+  tooltip?: string | null;
+  display_order: number;
+}
 export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
   auth_domain_allowlist?: string[] | null;
@@ -184,6 +204,20 @@ export interface LLMLicense {
   name: string;
   reuse: boolean;
   commercial_use: boolean;
+}
+export interface SuggestionArchiveUpdate {
+  archived: boolean;
+}
+export interface SuggestionCategoryCreate {
+  locale: "fr" | "da" | "sv";
+  title: string;
+  description: string;
+  icon: string;
+  tooltip?: string | null;
+}
+export interface SuggestionCreate {
+  category_id: string;
+  text: string;
 }
 export interface UserPublic {
   id?: string;

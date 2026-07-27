@@ -16,6 +16,7 @@ from backend.admin.services import (
     list_users,
     update_user,
 )
+from backend.admin.suggestions import router as admin_suggestions_router
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
@@ -34,6 +35,7 @@ router = APIRouter(
 )
 
 router.include_router(admin_llms_router)
+router.include_router(admin_suggestions_router)
 
 
 class UsersPage(BaseModel):
