@@ -10,7 +10,6 @@ vi.mock('$lib/auth.svelte', () => ({
 }))
 
 vi.mock('$lib/chatService.svelte', () => ({ getComparisonsContext: () => [] }))
-vi.mock('$lib/consent', () => ({ resetConsent: vi.fn() }))
 vi.mock('$lib/fastapi-client', () => ({
   api: { request: (...args: unknown[]) => request(...args) }
 }))
@@ -30,7 +29,16 @@ describe('Settings page', () => {
     expect(getByRole('heading', { name: 'Liens utiles' })).toBeTruthy()
     expect(
       getByRole('link', { name: 'Conditions générales d’utilisation' }).getAttribute('href')
-    ).toBe('/modalites')
+    ).toBe('/arene/modalites')
+    expect(getByRole('link', { name: 'Politique de confidentialité' }).getAttribute('href')).toBe(
+      '/arene/donnees-personnelles'
+    )
+    expect(getByRole('link', { name: /Accessibilité/ }).getAttribute('href')).toBe(
+      '/arene/accessibilite'
+    )
+    expect(getByRole('link', { name: 'Écoconception' }).getAttribute('href')).toBe(
+      '/arene/ecoconception'
+    )
     expect(queryByRole('button', { name: 'Exporter mes données' })).toBeNull()
   })
 
