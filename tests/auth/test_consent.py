@@ -406,6 +406,73 @@ def test_login_code_requires_a_current_acceptance():
     assert response.status_code == 428
 
 
+def test_invite_acceptance_requires_a_current_acceptance():
+    async def declined(**_kwargs):
+        return False
+
+    async def accept_invite(**_kwargs):
+        raise AssertionError("the invite was spent before the terms were checked")
+
+    with routed(
+        has_current_terms_acceptance=declined, accept_invite=accept_invite
+    ) as test_client:
+        response = test_client.post("/auth/invite/accept", json={"token": "invite"})
+
+    assert response.status_code == 428
+
+
+def test_an_accepted_invite_carries_the_acceptance_of_the_visitor():
+    """The box ticked on the invite page has to follow them onto the account."""
+    accepted = {}
+
+    async def granted(**_kwargs):
+        return True
+
+    async def accept_invite(**kwargs):
+        accepted.update(kwargs)
+        return "session-token"
+
+    with routed(
+        has_current_terms_acceptance=granted, accept_invite=accept_invite
+    ) as test_client:
+        response = test_client.post("/auth/invite/accept", json={"token": "invite"})
+
+    assert response.status_code == 200
+    assert accepted["anonymous_user_hash"] == auth_services._hash("token")
+
+
+def test_the_carried_over_acceptance_answers_for_the_first_message():
+    """Otherwise the arena gate would ask again right after the invite."""
+    acceptance = AnonymousConsentLog(
+        anonymous_user_hash="b" * 64,
+        document_id=DOCUMENT.id,
+        terms_version=DOCUMENT.version,
+        document_hash=DOCUMENT.content_hash,
+        language="fr",
+        client_accepted_at=datetime(2026, 7, 20, 10, 0, 0),
+    )
+    user = User(email="a@b.fr")
+    carried = ConsentLog(
+        user_id=user.id,
+        source_anonymous_consent_id=acceptance.id,
+        document_id=acceptance.document_id,
+        terms_version=acceptance.terms_version,
+        document_hash=acceptance.document_hash,
+        language=acceptance.language,
+        client_accepted_at=acceptance.client_accepted_at,
+        ip="not_collected",
+    )
+
+    with active_terms(DOCUMENT), fake_session(FakeSession([carried])):
+        version = asyncio.run(
+            auth_services.get_current_terms_acceptance_version(
+                user_id=user.id, anonymous_user_hash="b" * 64
+            )
+        )
+
+    assert version == DOCUMENT.version
+
+
 def test_login_code_is_not_blocked_when_nothing_is_published():
     """Otherwise the admin who has to publish the terms cannot sign in either."""
     sent = []

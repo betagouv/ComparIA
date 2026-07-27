@@ -302,6 +302,17 @@ async def invite_status(token: str) -> InviteStatus:
 async def invite_accept(
     body: InviteAcceptBody, request: Request, response: Response
 ) -> dict:
+    # Nothing cheap to run first, unlike the login route, and accept_invite
+    # spends the token, so a refusal has to come before it.
+    anonymous_user_hash = _anonymous_hash(request)
+    if not anonymous_user_hash or not await has_current_terms_acceptance(
+        user_id=None, anonymous_user_hash=anonymous_user_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Accept the terms in force before accepting an invitation.",
+        )
+
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     visitor_id = get_matomo_tracker_from_cookies(request.cookies)
@@ -311,7 +322,7 @@ async def invite_accept(
         ip=ip,
         user_agent=user_agent,
         visitor_id=visitor_id,
-        anonymous_user_hash=_anonymous_hash(request),
+        anonymous_user_hash=anonymous_user_hash,
     )
     if not token:
         raise HTTPException(
