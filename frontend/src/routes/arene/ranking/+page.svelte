@@ -172,7 +172,7 @@
     >
       <span
         aria-hidden="true"
-        class="bg-light-info mb-5 size-16 mx-auto flex items-center justify-center rounded-full"
+        class="bg-light-primary mb-5 size-16 mx-auto flex items-center justify-center rounded-full"
       >
         <Icon icon="trophy-line" size="lg" class="text-primary" />
       </span>
