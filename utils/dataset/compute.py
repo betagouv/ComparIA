@@ -26,7 +26,7 @@ from sqlmodel import and_, col, select
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import APILLMDataBase
-from utils.database.models import Comparison
+from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION, Comparison
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
 from utils.database.session import get_session
@@ -292,6 +292,7 @@ def _reference_rows() -> list[dict]:
                 "categories": ["x"],
                 "languages": ["x"],
                 "short_summary": "x",
+                "participation_terms_version": LEGACY_PARTICIPATION_TERMS_VERSION,
                 "total_tokens_a": 1,
                 "total_tokens_b": 1,
                 "total_conso_a": 1.0,
@@ -427,6 +428,12 @@ def _write_normal_from_raw_parquet(
         table = pa.Table.from_batches([batch])
         table = table.filter(pc.equal(table.column("excluded"), False))
         table = table.drop(DROP_COLS)
+        # Rows cached before the column existed carry no accepted version.
+        if "participation_terms_version" not in table.column_names:
+            table = table.append_column(
+                "participation_terms_version",
+                pa.array([LEGACY_PARTICIPATION_TERMS_VERSION] * len(table)),
+            )
 
         if len(table) == 0:
             continue
