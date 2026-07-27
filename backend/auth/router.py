@@ -56,6 +56,7 @@ class AuthConfig(BaseModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    platform_url: str
     has_custom_logo: bool
 
 
@@ -142,6 +143,7 @@ async def get_config() -> AuthConfig:
         secondary_color_light=app_settings.secondary_color_light,
         secondary_color_dark=app_settings.secondary_color_dark,
         homepage_url=app_settings.homepage_url,
+        platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
     )
 
