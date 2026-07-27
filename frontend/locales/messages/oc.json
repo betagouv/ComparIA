@@ -1,11 +1,27 @@
 {
+    "chatbot": {
+        "agentTrace": {
+            "finalAnswer": "Responsa finala",
+            "intermediate": "Messatge intermediari del modèl",
+            "label": "Veire la traça d’execucion",
+            "query": "Recèrca utilizada : ",
+            "reasoning": "Rasonament partejat pel modèl",
+            "request": "Requèsta de l’utilizaire",
+            "sources": "font(s)",
+            "status": { "empty": "Cap de resultat", "error": "Fracàs", "success": "Capitada" },
+            "technicalDetails": "Afichar los detalhs tecnics",
+            "toolCall": "Apèl de l’aisina",
+            "toolResult": "Responsa de l’aisina"
+        }
+    },
     "arenaHome": {
         "title": "Cossí vos pòdi ajudar uèi ?",
         "webSearch": {
-            "label": "Recèrca web",
+            "label": "Autorizar la recèrca web",
             "enabled": "Recèrca web activada",
             "disabled": "Recèrca web desactivada",
-            "tooltip": "Activatz la recèrca web per permetre als modèls d'utilizar de fonts en linha e de citar d'informacions mai recentas.<br><strong>Sens la recèrca web</strong>, los modèls respondon en se basant sus çò qu'an aprés pendent lor formacion (lors donadas d'entrenament). Pòdon pas verificar las informacions en linha ; doncas, los faches fòrça recents o fòrça especifics pòdon èsser incomplets."
+            "help": "Cada modèl decidís el meteis se far una recèrca es util.",
+            "tooltip": "Autorizatz los modèls a cercar d’informacions en linha e a citar de fonts mai recentas. <strong>Cadun decidís liurament s’utiliza o non aquel aisina</strong> segon vòstre messatge.<br>Se l’autorizatz pas, los modèls respondon sonque a partir de çò qu’an aprés pendent lor formacion e pòdon pas verificar d’informacions en linha."
         },
         "modelSelection": "Seleccion dels modèls",
         "prompt": {

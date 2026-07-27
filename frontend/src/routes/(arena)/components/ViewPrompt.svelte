@@ -168,6 +168,7 @@
           bind:value={webSearch}
           checkedLabel={m['arenaHome.webSearch.enabled']()}
           uncheckedLabel={m['arenaHome.webSearch.disabled']()}
+          help={m['arenaHome.webSearch.help']()}
           hideCheckLabel
           labelPos="right"
           class="font-medium w-full! text-[14px]!"

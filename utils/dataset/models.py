@@ -160,9 +160,15 @@ class DatasetTurn(SQLModel):
             )
         ]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
-            msgs.append(
-                llm_msg.model_dump(include={"role", "content", "reasoning_content"})
+            response = llm_msg.model_dump(
+                include={"role", "content", "reasoning_content"}
             )
+            if llm_msg.web_search_results:
+                response["web_search_results"] = [
+                    result.model_dump(mode="json")
+                    for result in llm_msg.web_search_results
+                ]
+            msgs.append(response)
         return msgs
 
 

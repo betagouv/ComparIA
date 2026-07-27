@@ -1,11 +1,56 @@
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
+from linkup import LinkupSearchTextResult
+from pydantic import BaseModel
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
 from utils.validation import StripAndEmptyAsNone
 
 from ..utils import ModelId, OptionalDatetime
+
+
+class AgentTraceReasoning(BaseModel):
+    type: Literal["reasoning"] = "reasoning"
+    content: str
+
+
+class AgentTraceIntermediateContent(BaseModel):
+    type: Literal["intermediate_content"] = "intermediate_content"
+    content: str
+
+
+class AgentTraceToolCall(BaseModel):
+    type: Literal["tool_call"] = "tool_call"
+    tool_call_id: str
+    name: str
+    arguments_json: str
+    arguments: dict[str, Any] | None = None
+
+
+class AgentTraceToolResult(BaseModel):
+    type: Literal["tool_result"] = "tool_result"
+    tool_call_id: str
+    name: str
+    status: Literal["success", "empty", "error"]
+    duration_ms: int
+    content: str
+    results: list[LinkupSearchTextResult]
+
+
+class AgentTraceFinalAnswer(BaseModel):
+    type: Literal["final_answer"] = "final_answer"
+    content: str
+
+
+AgentTraceEvent = (
+    AgentTraceReasoning
+    | AgentTraceIntermediateContent
+    | AgentTraceToolCall
+    | AgentTraceToolResult
+    | AgentTraceFinalAnswer
+)
 
 
 class LLMMessageBase(SQLModel):
@@ -21,6 +66,10 @@ class LLMMessageBase(SQLModel):
     generation_id: str | None = None
     tokens: int | None = None
     is_cached: bool = False
+    web_search_results: Annotated[
+        list[LinkupSearchTextResult] | None, Field(sa_type=JSONB)
+    ] = None
+    agent_trace: Annotated[list[AgentTraceEvent] | None, Field(sa_type=JSONB)] = None
 
 
 class LLMMessageFinal(LLMMessageBase):

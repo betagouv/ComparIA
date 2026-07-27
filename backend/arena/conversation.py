@@ -95,6 +95,7 @@ async def bot_response_async(
     request: Request | None = None,
     temperature=0.7,
     max_new_tokens=16384,
+    web_search_enabled: bool = False,
 ) -> AsyncGenerator[LLMMessageCreate]:
     """
     Stream a response from a LLM asynchronously.
@@ -119,7 +120,7 @@ async def bot_response_async(
         EmptyResponseError: If the LLM returns empty response
     """
     # Try cache on first turn only
-    if turn_index == 0:
+    if turn_index == 0 and not web_search_enabled:
         cached = get_cached_response(llm.id, turn.user_msg.content)
         if cached:
             logger.info(
@@ -144,12 +145,19 @@ async def bot_response_async(
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         request=request,
+        web_search_enabled=web_search_enabled,
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
-        # Yield complete chat only if there's content to display in current message
-        if llm_msg.content or llm_msg.reasoning_content:
+    async for llm_msg in stream_iter:
+        # Tool results are independently displayable and should reach the UI
+        # before the final answer starts streaming.
+        if (
+            llm_msg.content
+            or llm_msg.reasoning_content
+            or llm_msg.web_search_results
+            or llm_msg.agent_trace
+        ):
             yield llm_msg
 
     duration = (llm_msg.updated_at - llm_msg.created_at).total_seconds()
@@ -178,7 +186,7 @@ async def bot_response_async(
     yield llm_msg
 
     # Store successful response in cache (first turn only)
-    if turn_index == 0:
+    if turn_index == 0 and not web_search_enabled:
         store_cached_response(
             llm.id,
             turn.user_msg.content,

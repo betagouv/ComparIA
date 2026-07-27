@@ -49,11 +49,25 @@
         "webSearch": {
             "disabled": "Webbsökning inaktiverad",
             "enabled": "Webbsökning aktiverad",
-            "label": "Webbsökning",
-            "tooltip": "Aktivera webbsökning för att låta modellerna använda onlinekällor och citera mer aktuell information.<br><strong>Utan webbsökning</strong> svarar modellerna baserat på vad de lärde sig under träning (deras träningsdata). De kan inte verifiera information online, så mycket nya eller specifika fakta kan vara ofullständiga."
+            "help": "Varje modell avgör själv om det är användbart att göra en sökning.",
+            "label": "Tillåt webbsökning",
+            "tooltip": "Tillåt modellerna att söka efter information online och citera nyare källor. <strong>Varje modell väljer själv om den ska använda verktyget</strong> utifrån ditt meddelande.<br>Om du inte tillåter det svarar modellerna endast utifrån vad de lärde sig under träningen och kan inte kontrollera information online."
         }
     },
     "chatbot": {
+        "agentTrace": {
+            "finalAnswer": "Slutligt svar",
+            "intermediate": "Mellanliggande modellmeddelande",
+            "label": "Visa körningsspår",
+            "query": "Använd sökning: ",
+            "reasoning": "Resonemang delat av modellen",
+            "request": "Användarens begäran",
+            "sources": "källa/källor",
+            "status": { "empty": "Inga resultat", "error": "Misslyckades", "success": "Lyckades" },
+            "technicalDetails": "Visa tekniska detaljer",
+            "toolCall": "Verktygsanrop",
+            "toolResult": "Verktygssvar"
+        },
         "continuePrompt": "Fortsätt chatta med AI-modellerna",
         "conversation": "Konversation",
         "errors": {

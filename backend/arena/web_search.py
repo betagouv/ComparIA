@@ -15,7 +15,7 @@ logger = logging.getLogger("languia")
 
 
 async def search_web(
-    content: str, use_cache: bool = True
+    content: str, use_cache: bool = True, raise_on_error: bool = False
 ) -> list[LinkupSearchTextResult] | None:
     """
     Search the web using Linkup.
@@ -51,7 +51,11 @@ async def search_web(
         return results
 
     except Exception:
-        logger.exception("Linkup web search failed")
+        # Do not log exception details: provider errors may echo the query or
+        # request metadata, which can contain sensitive user information.
+        logger.warning("Linkup web search failed")
+        if raise_on_error:
+            raise
         return None
 
 
@@ -90,7 +94,7 @@ def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
         if not results:
             return None
 
-        logger.info(f"[CACHE] Web search cache hit for prompt: '{prompt}'.")
+        logger.info("[CACHE] Web search cache hit.")
         return [LinkupSearchTextResult.model_construct(**result) for result in results]
 
     except Exception as e:
@@ -116,7 +120,7 @@ def store_cached_search_results(
             settings.CACHE_TTL,
             json.dumps([result.model_dump() for result in web_search_results]),
         )
-        logger.info(f"[CACHE] Stored web search cache for prompt: '{prompt}'.")
+        logger.info("[CACHE] Stored web search results.")
 
     except Exception as e:
         logger.warning(f"[CACHE] Error storing web search cache: {e}")

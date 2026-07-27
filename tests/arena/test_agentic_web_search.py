@@ -1,0 +1,823 @@
+"""Focused tests for model-directed Linkup web search."""
+
+import asyncio
+import json
+from datetime import datetime
+from types import SimpleNamespace
+from typing import Any
+from unittest.mock import AsyncMock, patch
+
+import litellm
+from linkup import LinkupSearchTextResult
+from pydantic import BaseModel
+
+from backend.arena import litellm as integration
+from utils.database.models import LLMMessageCreate
+
+
+class UserMessage(BaseModel):
+    role: str = "user"
+    content: str
+
+
+class AsyncChunkStream:
+    def __init__(self, chunks: list[litellm.ModelResponse]) -> None:
+        self._chunks = chunks
+
+    def __aiter__(self):
+        return self._iterate()
+
+    async def _iterate(self):
+        for chunk in self._chunks:
+            yield chunk
+
+
+def _chunk(
+    *,
+    response_id: str,
+    delta: dict[str, Any] | None = None,
+    finish_reason: str | None = None,
+    usage: dict[str, int] | None = None,
+) -> litellm.ModelResponse:
+    choices = (
+        [
+            {
+                "index": 0,
+                "delta": delta or {},
+                "finish_reason": finish_reason,
+            }
+        ]
+        if delta is not None
+        else []
+    )
+    return litellm.ModelResponse(
+        id=response_id,
+        model="test-model",
+        stream=True,
+        choices=choices,
+        usage=usage,
+    )
+
+
+def _llm(model: str = "openrouter/anthropic/claude-sonnet-4.5") -> SimpleNamespace:
+    endpoint = SimpleNamespace(
+        model=model,
+        base_url="https://example.invalid",
+        model_dump=lambda **_: {
+            "model": model,
+            "api_key": "test-key",
+            "base_url": "https://example.invalid",
+            "api_version": None,
+        },
+    )
+    return SimpleNamespace(id="test", litellm_endpoint=endpoint)
+
+
+def test_model_can_search_then_stream_final_answer():
+    asyncio.run(_test_model_can_search_then_stream_final_answer())
+
+
+async def _test_model_can_search_then_stream_final_answer():
+    calls: list[dict[str, Any]] = []
+    responses = [
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="tool-round",
+                    delta={
+                        "role": "assistant",
+                        "reasoning_content": "I need current information.",
+                    },
+                ),
+                _chunk(
+                    response_id="tool-round",
+                    delta={"content": "I will check the web."},
+                ),
+                _chunk(
+                    response_id="tool-round",
+                    delta={
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": "call-1",
+                                "type": "function",
+                                "function": {
+                                    "name": "search_web",
+                                    "arguments": '{"query":"latest public news"}',
+                                },
+                            }
+                        ],
+                    },
+                    finish_reason="tool_calls",
+                ),
+                _chunk(
+                    response_id="tool-round",
+                    delta=None,
+                    usage={
+                        "prompt_tokens": 5,
+                        "completion_tokens": 2,
+                        "total_tokens": 7,
+                    },
+                ),
+            ]
+        ),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="final-round",
+                    delta={
+                        "role": "assistant",
+                        "reasoning_content": "The sources answer the question.",
+                    },
+                ),
+                _chunk(
+                    response_id="final-round",
+                    delta={"content": "Current "},
+                ),
+                _chunk(
+                    response_id="final-round",
+                    delta={"content": "answer."},
+                    finish_reason="stop",
+                ),
+                _chunk(
+                    response_id="final-round",
+                    delta=None,
+                    usage={
+                        "prompt_tokens": 10,
+                        "completion_tokens": 3,
+                        "total_tokens": 13,
+                    },
+                ),
+            ]
+        ),
+    ]
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return responses.pop(0)
+
+    result = LinkupSearchTextResult(
+        type="text",
+        name="Example",
+        url="https://example.com/news",
+        content="Fresh information",
+    )
+
+    async def fake_search(query: str, raise_on_error: bool = False):
+        assert query == "latest public news"
+        assert raise_on_error is True
+        return [result]
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(integration, "search_web", fake_search),
+        patch.object(integration.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        streamed = [
+            (item.content, len(item.web_search_results or []))
+            async for item in integration.litellm_stream_iter(
+                llm=_llm(),
+                messages=[UserMessage(content="What happened?")],
+                msg=message,
+                temperature=0.7,
+                max_new_tokens=100,
+                web_search_enabled=True,
+            )
+        ]
+
+    assert ("", 1) in streamed
+    assert streamed[-1] == ("Current answer.", 1)
+    assert message.tokens == 5
+    assert message.web_search_results == [result]
+    assert [event.type for event in message.agent_trace or []] == [
+        "reasoning",
+        "intermediate_content",
+        "tool_call",
+        "tool_result",
+        "reasoning",
+        "final_answer",
+    ]
+    assert message.agent_trace[2].arguments == {"query": "latest public news"}
+    assert message.agent_trace[3].results == [result]
+    assert message.agent_trace[-1].content == "Current answer."
+    assert calls[0]["tool_choice"] == "auto"
+    assert calls[0]["tools"] == [integration.WEB_SEARCH_TOOL]
+    assert calls[1]["messages"][-1]["role"] == "tool"
+    assert "Fresh information" in calls[1]["messages"][-1]["content"]
+
+
+def test_disabled_search_does_not_expose_tools():
+    asyncio.run(_test_disabled_search_does_not_expose_tools())
+
+
+def test_openrouter_tool_support_uses_provider_capabilities():
+    asyncio.run(_test_openrouter_tool_support_uses_provider_capabilities())
+
+
+async def _test_openrouter_tool_support_uses_provider_capabilities():
+    model = "mistralai/mistral-medium-3.1"
+    with (
+        patch.object(
+            integration.litellm, "supports_function_calling", return_value=False
+        ),
+        patch.object(
+            integration,
+            "_get_openrouter_tool_models",
+            AsyncMock(return_value={model}),
+        ),
+    ):
+        assert await integration._supports_web_search_tools(f"openrouter/{model}")
+
+
+async def _test_disabled_search_does_not_expose_tools():
+    calls: list[dict[str, Any]] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "No search."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with patch.object(integration.litellm, "acompletion", fake_completion):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            web_search_enabled=False,
+        ):
+            pass
+
+    assert message.content == "No search."
+    assert "tools" not in calls[0]
+    assert "tool_choice" not in calls[0]
+
+
+def test_unsupported_model_gracefully_answers_without_tools():
+    asyncio.run(_test_unsupported_model_gracefully_answers_without_tools())
+
+
+async def _test_unsupported_model_gracefully_answers_without_tools():
+    calls: list[dict[str, Any]] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Fallback answer."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(
+            integration.litellm, "supports_function_calling", return_value=False
+        ),
+        patch.object(
+            integration,
+            "_get_openrouter_tool_models",
+            AsyncMock(return_value=set()),
+        ),
+        patch.object(integration.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm("openrouter/provider/unsupported"),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            web_search_enabled=True,
+        ):
+            pass
+
+    assert message.content == "Fallback answer."
+    assert "tools" not in calls[0]
+
+
+def test_enabled_model_can_choose_not_to_search():
+    asyncio.run(_test_enabled_model_can_choose_not_to_search())
+
+
+async def _test_enabled_model_can_choose_not_to_search():
+    calls: list[dict[str, Any]] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Already known."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    async def unexpected_search(*args, **kwargs):
+        raise AssertionError("Search should not run")
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(
+            integration.litellm, "supports_function_calling", return_value=True
+        ),
+        patch.object(integration.settings, "LINKUP_API_KEY", "configured-for-test"),
+        patch.object(integration, "search_web", unexpected_search),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Say hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            web_search_enabled=True,
+        ):
+            pass
+
+    assert message.content == "Already known."
+    assert calls[0]["tool_choice"] == "auto"
+
+
+def test_missing_linkup_key_does_not_expose_tools():
+    asyncio.run(_test_missing_linkup_key_does_not_expose_tools())
+
+
+async def _test_missing_linkup_key_does_not_expose_tools():
+    calls: list[dict[str, Any]] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Fallback."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(integration.settings, "LINKUP_API_KEY", None),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            web_search_enabled=True,
+        ):
+            pass
+
+    assert message.content == "Fallback."
+    assert "tools" not in calls[0]
+
+
+def test_invalid_tool_arguments_return_error_without_search():
+    asyncio.run(_test_invalid_tool_arguments_return_error_without_search())
+
+
+async def _test_invalid_tool_arguments_return_error_without_search():
+    called = False
+
+    async def fake_search(query: str, raise_on_error: bool = False):
+        nonlocal called
+        called = True
+        return []
+
+    with patch.object(integration, "search_web", fake_search):
+        content, results = await integration._execute_web_search_tool(
+            {
+                "id": "call-1",
+                "function": {
+                    "name": integration.WEB_SEARCH_TOOL_NAME,
+                    "arguments": '{"query":""}',
+                },
+            }
+        )
+
+    assert called is False
+    assert results == []
+    assert "Invalid arguments" in content
+
+
+def test_fragmented_streamed_tool_arguments_are_reconstructed():
+    asyncio.run(_test_fragmented_streamed_tool_arguments_are_reconstructed())
+
+
+async def _test_fragmented_streamed_tool_arguments_are_reconstructed():
+    calls: list[dict[str, Any]] = []
+    queries: list[str] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        if len(calls) == 1:
+            return AsyncChunkStream(
+                [
+                    _chunk(
+                        response_id="tool",
+                        delta={
+                            "role": "assistant",
+                            "tool_calls": [
+                                {
+                                    "index": 0,
+                                    "id": "call-1",
+                                    "type": "function",
+                                    "function": {
+                                        "name": "search_web",
+                                        "arguments": '{"query":"latest ',
+                                    },
+                                }
+                            ],
+                        },
+                    ),
+                    _chunk(
+                        response_id="tool",
+                        delta={
+                            "tool_calls": [
+                                {
+                                    "index": 0,
+                                    "function": {"arguments": 'news"}'},
+                                }
+                            ]
+                        },
+                        finish_reason="tool_calls",
+                    ),
+                ]
+            )
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="final",
+                    delta={"role": "assistant", "content": "Done."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    async def fake_search(query: str, raise_on_error: bool = False):
+        queries.append(query)
+        return []
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(
+            integration.litellm, "supports_function_calling", return_value=True
+        ),
+        patch.object(integration.settings, "LINKUP_API_KEY", "test"),
+        patch.object(integration, "search_web", fake_search),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Search")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            web_search_enabled=True,
+        ):
+            pass
+
+    assert queries == ["latest news"]
+    assert message.content == "Done."
+
+
+def test_tool_call_budget_forces_a_final_answer():
+    asyncio.run(_test_tool_call_budget_forces_a_final_answer())
+
+
+async def _test_tool_call_budget_forces_a_final_answer():
+    calls: list[dict[str, Any]] = []
+    search_count = 0
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        if "tools" not in kwargs:
+            return AsyncChunkStream(
+                [
+                    _chunk(
+                        response_id="final",
+                        delta={"role": "assistant", "content": "Budget reached."},
+                        finish_reason="stop",
+                    )
+                ]
+            )
+        call_number = len(calls)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id=f"tool-{call_number}",
+                    delta={
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": f"call-{call_number}",
+                                "type": "function",
+                                "function": {
+                                    "name": "search_web",
+                                    "arguments": f'{{"query":"query {call_number}"}}',
+                                },
+                            }
+                        ],
+                    },
+                    finish_reason="tool_calls",
+                )
+            ]
+        )
+
+    async def fake_search(query: str, raise_on_error: bool = False):
+        nonlocal search_count
+        search_count += 1
+        return []
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(
+            integration.litellm, "supports_function_calling", return_value=True
+        ),
+        patch.object(integration.settings, "LINKUP_API_KEY", "test"),
+        patch.object(integration, "search_web", fake_search),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Keep searching")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            web_search_enabled=True,
+        ):
+            pass
+
+    assert search_count == integration.WEB_SEARCH_MAX_TOOL_CALLS
+    assert len(calls) == integration.WEB_SEARCH_MAX_TOOL_CALLS + 1
+    assert message.content == "Budget reached."
+
+
+def test_search_results_are_safe_and_bounded():
+    results = [
+        LinkupSearchTextResult(
+            type="text",
+            name=f"Result {index}",
+            url=(
+                "javascript:alert(1)" if index == 0 else f"https://example.com/{index}"
+            ),
+            content="x" * (integration.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH + 10),
+        )
+        for index in range(integration.WEB_SEARCH_MAX_RESULTS_PER_CALL + 3)
+    ]
+
+    normalized = integration._normalize_search_results(results)
+
+    assert len(normalized) <= integration.WEB_SEARCH_MAX_RESULTS_PER_CALL - 1
+    assert all(result.url.startswith("https://") for result in normalized)
+    assert sum(len(result.content) for result in normalized) <= (
+        integration.WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH
+    )
+    assert all(
+        len(result.content) <= integration.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH
+        for result in normalized
+    )
+
+
+def test_search_timeout_and_failure_become_tool_errors():
+    asyncio.run(_test_search_timeout_and_failure_become_tool_errors())
+
+
+async def _test_search_timeout_and_failure_become_tool_errors():
+    tool_call = {
+        "function": {
+            "name": integration.WEB_SEARCH_TOOL_NAME,
+            "arguments": '{"query":"news"}',
+        }
+    }
+
+    async def slow_search(*args, **kwargs):
+        await asyncio.sleep(0.02)
+        return []
+
+    with (
+        patch.object(integration, "search_web", slow_search),
+        patch.object(integration, "WEB_SEARCH_TOOL_TIMEOUT_SECONDS", 0.001),
+    ):
+        timeout_content, _ = await integration._execute_web_search_tool(tool_call)
+
+    async def failing_search(*args, **kwargs):
+        raise RuntimeError("provider details must not leak")
+
+    with patch.object(integration, "search_web", failing_search):
+        failure_content, _ = await integration._execute_web_search_tool(tool_call)
+
+    assert "timed out" in timeout_content
+    assert "failed" in failure_content
+    assert "provider details" not in failure_content
+
+
+def test_parallel_scheduler_does_not_cancel_slower_stream():
+    asyncio.run(_test_parallel_scheduler_does_not_cancel_slower_stream())
+
+
+async def _test_parallel_scheduler_does_not_cancel_slower_stream():
+    # Importing the streaming module initializes the database engine, but this
+    # unit test never connects to it.
+    integration.settings.COMPARIA_DB_URI = (
+        integration.settings.COMPARIA_DB_URI
+        or "postgresql://test:test@localhost:5432/test"
+    )
+    from backend.arena import streaming
+
+    turn = SimpleNamespace(
+        user_msg=UserMessage(content="Hello"),
+        llm_msg_a=None,
+        llm_msg_b=None,
+    )
+    comparison = SimpleNamespace(
+        turns=[turn],
+        llm_id_a="model-a",
+        llm_id_b="model-b",
+        system_msg_a=None,
+        system_msg_b=None,
+        mode="random",
+        custom_models_selection=None,
+        web_search_enabled=True,
+    )
+    llms_data = SimpleNamespace(
+        enabled={"model-a": SimpleNamespace(), "model-b": SimpleNamespace()}
+    )
+
+    async def fake_get_llms_data():
+        return llms_data
+
+    async def fake_stream(pos, *args, **kwargs):
+        delays = (0, 0, 0) if pos == "a" else (0.01, 0.01)
+        for index, delay in enumerate(delays):
+            await asyncio.sleep(delay)
+            yield {
+                "type": "chunk",
+                "pos": pos,
+                "llm_msg": LLMMessageCreate(content=f"{pos}-{index}"),
+            }
+        yield {"type": "complete", "pos": pos}
+
+    with (
+        patch.object(streaming, "get_llms_data", fake_get_llms_data),
+        patch.object(streaming, "stream_llm_response", fake_stream),
+    ):
+        events = [
+            event
+            async for event in streaming.stream_comparison_messages(comparison, turn)
+        ]
+
+    b_chunks = [
+        event for event in events if event["type"] == "chunk" and event["pos"] == "b"
+    ]
+    assert len(b_chunks) == 2
+    assert events[-1] == {"type": "complete"}
+
+
+def test_response_cache_is_bypassed_when_tools_are_available():
+    asyncio.run(_test_response_cache_is_bypassed_when_tools_are_available())
+
+
+async def _test_response_cache_is_bypassed_when_tools_are_available():
+    integration.settings.COMPARIA_DB_URI = (
+        integration.settings.COMPARIA_DB_URI
+        or "postgresql://test:test@localhost:5432/test"
+    )
+    from backend.arena import conversation
+
+    async def fake_stream_iter(*, msg, **kwargs):
+        now = datetime.now()
+        msg.created_at = now
+        msg.responded_at = now
+        msg.updated_at = now
+        msg.content = "Fresh answer."
+        msg.tokens = 2
+        msg.generation_id = "fresh"
+        yield msg
+
+    def unexpected_cache_call(*args, **kwargs):
+        raise AssertionError("Response cache must be bypassed when tools are enabled")
+
+    turn = SimpleNamespace(
+        user_msg=UserMessage(content="Current events?"),
+        llm_msg_a=None,
+        llm_msg_b=None,
+    )
+    llm = SimpleNamespace(
+        id="model-a",
+        human_id="model-a",
+        endpoint=SimpleNamespace(api_model_id="model-a"),
+    )
+
+    with (
+        patch.object(conversation, "get_cached_response", unexpected_cache_call),
+        patch.object(conversation, "store_cached_response", unexpected_cache_call),
+        patch.object(conversation, "litellm_stream_iter", fake_stream_iter),
+    ):
+        messages = [
+            message.content
+            async for message in conversation.bot_response_async(
+                pos="a",
+                llm=llm,
+                turn=turn,
+                turn_index=0,
+                messages=[turn.user_msg],
+                web_search_enabled=True,
+            )
+        ]
+
+    assert messages[-1] == "Fresh answer."
+
+
+def test_search_results_are_json_native_at_persistence_boundary():
+    integration.settings.COMPARIA_DB_URI = (
+        integration.settings.COMPARIA_DB_URI
+        or "postgresql://test:test@localhost:5432/test"
+    )
+    from backend.arena.services import _llm_message_for_persistence
+
+    result = LinkupSearchTextResult(
+        type="text",
+        name="Example",
+        url="https://example.com/news",
+        content="Fresh information",
+    )
+    now = datetime.now()
+    db_message = _llm_message_for_persistence(
+        LLMMessageCreate(
+            content="Sourced answer.",
+            created_at=now,
+            responded_at=now,
+            updated_at=now,
+            generation_id="test-generation",
+            tokens=10,
+            web_search_results=[result],
+            agent_trace=[
+                integration.AgentTraceToolCall(
+                    tool_call_id="call-1",
+                    name="search_web",
+                    arguments_json='{"query":"current news"}',
+                    arguments={"query": "current news"},
+                ),
+                integration.AgentTraceToolResult(
+                    tool_call_id="call-1",
+                    name="search_web",
+                    status="success",
+                    duration_ms=25,
+                    content='{"results":[]}',
+                    results=[result],
+                ),
+                integration.AgentTraceFinalAnswer(content="Sourced answer."),
+            ],
+        )
+    )
+
+    assert db_message.web_search_results == [result.model_dump(mode="json")]
+    assert [event["type"] for event in db_message.agent_trace] == [
+        "tool_call",
+        "tool_result",
+        "final_answer",
+    ]
+    json.dumps(db_message.web_search_results)
+    json.dumps(db_message.agent_trace)
+
+
+if __name__ == "__main__":
+    tests = [
+        test_model_can_search_then_stream_final_answer,
+        test_disabled_search_does_not_expose_tools,
+        test_unsupported_model_gracefully_answers_without_tools,
+        test_enabled_model_can_choose_not_to_search,
+        test_missing_linkup_key_does_not_expose_tools,
+        test_invalid_tool_arguments_return_error_without_search,
+        test_fragmented_streamed_tool_arguments_are_reconstructed,
+        test_tool_call_budget_forces_a_final_answer,
+        test_search_results_are_safe_and_bounded,
+        test_search_timeout_and_failure_become_tool_errors,
+        test_parallel_scheduler_does_not_cancel_slower_stream,
+        test_response_cache_is_bypassed_when_tools_are_available,
+        test_search_results_are_json_native_at_persistence_boundary,
+    ]
+    for test in tests:
+        test()
+    print(f"{len(tests)} agentic web search tests passed.")

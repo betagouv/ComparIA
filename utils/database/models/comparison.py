@@ -65,6 +65,7 @@ class ComparisonBase(BaseDBModel):
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
+    web_search_enabled: bool = False
     revealed: bool = False
     revealed_at: OptionalDatetime = None
 
@@ -115,6 +116,7 @@ class ComparisonPublic(SQLModel):
     id: uuid.UUID
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
+    web_search_enabled: bool
     error: ErrorDetails | None
     turns: list[TurnPublic]
     revealed: bool

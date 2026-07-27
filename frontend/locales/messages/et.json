@@ -49,11 +49,25 @@
         "webSearch": {
             "disabled": "Veebiotsing deaktiveeritud",
             "enabled": "Veebiotsing aktiveeritud",
-            "label": "Veebiotsing",
-            "tooltip": "Luba veebiotsing, et mudelid saaksid kasutada veebiallikaid ja viidata ajakohasemale teabele.<br><strong>Ilma veebiotsinguta</strong> vastavad mudelid oma treeningandmete põhjal. Nad ei saa teavet veebist kontrollida, seega väga uued või väga spetsiifilised faktid võivad olla puudulikud."
+            "help": "Iga mudel otsustab ise, kas otsingu tegemine on kasulik.",
+            "label": "Luba veebiotsing",
+            "tooltip": "Luba mudelitel otsida veebist teavet ja viidata uuematele allikatele. <strong>Iga mudel otsustab sinu sõnumi põhjal ise, kas seda tööriista kasutada</strong>.<br>Kui sa seda ei luba, vastavad mudelid ainult treeningu käigus õpitu põhjal ega saa teavet veebist kontrollida."
         }
     },
     "chatbot": {
+        "agentTrace": {
+            "finalAnswer": "Lõplik vastus",
+            "intermediate": "Mudeli vahesõnum",
+            "label": "Vaata täitmisjälge",
+            "query": "Kasutatud otsing: ",
+            "reasoning": "Mudeli jagatud arutluskäik",
+            "request": "Kasutaja päring",
+            "sources": "allikas(t)",
+            "status": { "empty": "Tulemusi pole", "error": "Ebaõnnestus", "success": "Õnnestus" },
+            "technicalDetails": "Kuva tehnilised üksikasjad",
+            "toolCall": "Tööriistakutse",
+            "toolResult": "Tööriista vastus"
+        },
         "continuePrompt": "Jätka nende keelemudelitega vestlemist",
         "conversation": "Vestlus",
         "errors": {

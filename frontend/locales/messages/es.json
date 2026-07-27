@@ -51,11 +51,25 @@
         "webSearch": {
             "disabled": "Búsqueda web desactivada",
             "enabled": "Búsqueda web activada",
-            "label": "Búsqueda web",
-            "tooltip": "Activa la búsqueda web para que los modelos utilicen fuentes en línea y citen información más actualizada.<br><strong>Sin búsqueda web</strong>, los modelos responden basándose en lo que aprendieron durante su entrenamiento (sus datos de entrenamiento). No pueden verificar información en línea, por lo que los datos muy recientes o muy específicos pueden ser incompletos."
+            "help": "Cada modelo decide por sí mismo si resulta útil realizar una búsqueda.",
+            "label": "Permitir la búsqueda web",
+            "tooltip": "Permite que los modelos busquen información en línea y citen fuentes más recientes. <strong>Cada modelo decide libremente si utiliza esta herramienta</strong> según tu mensaje.<br>Si no lo permites, los modelos responden únicamente a partir de lo aprendido durante el entrenamiento y no pueden verificar información en línea."
         }
     },
     "chatbot": {
+        "agentTrace": {
+            "finalAnswer": "Respuesta final",
+            "intermediate": "Mensaje intermedio del modelo",
+            "label": "Ver la traza de ejecución",
+            "query": "Búsqueda utilizada: ",
+            "reasoning": "Razonamiento compartido por el modelo",
+            "request": "Solicitud del usuario",
+            "sources": "fuente(s)",
+            "status": { "empty": "Sin resultados", "error": "Error", "success": "Correcto" },
+            "technicalDetails": "Mostrar detalles técnicos",
+            "toolCall": "Llamada a la herramienta",
+            "toolResult": "Respuesta de la herramienta"
+        },
         "continuePrompt": "Continúa la discusión…",
         "conversation": "Conversación",
         "errors": {

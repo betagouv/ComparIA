@@ -114,6 +114,7 @@ async def stream_llm_response(
     turn_index: int,
     messages: list[AnyMessageRead],
     request: Request | None = None,
+    web_search_enabled: bool = False,
 ) -> AsyncGenerator[AnySSEEventMsg]:
     """
     Stream a single LLM response using Server-Sent Events format.
@@ -133,7 +134,13 @@ async def stream_llm_response(
     try:
         # Stream responses from bot_response_async generator
         async for llm_msg in bot_response_async(
-            pos, llm, turn, turn_index, messages, request
+            pos,
+            llm,
+            turn,
+            turn_index,
+            messages,
+            request,
+            web_search_enabled=web_search_enabled,
         ):
             yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
 
@@ -217,6 +224,7 @@ async def stream_comparison_messages(
                 turn_index,
                 _get_messages(comparison, pos),
                 request,
+                comparison.web_search_enabled,
             )
             for pos in BOT_POS
         }
@@ -224,30 +232,29 @@ async def stream_comparison_messages(
         complete: dict[BotPos, bool] = {"a": False, "b": False}
         # Track timeout swap attempts (max one per position)
         retried: dict[BotPos, bool] = {"a": False, "b": False}
+        pending_by_pos: dict[BotPos, asyncio.Task[AnySSEEventMsg]] = {
+            pos: asyncio.create_task(anext(generator))
+            for pos, generator in generators.items()
+        }
 
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):
-            # Collect pending tasks
-            tasks = [
-                asyncio.create_task(anext(generators[pos]))
-                for pos in BOT_POS
-                if not complete[pos]
-            ]
-
-            if not tasks:
+            if not pending_by_pos:
                 break
 
             # Wait for next chunk from either model
-            completed, pending = await asyncio.wait(
-                tasks, return_when=asyncio.FIRST_COMPLETED
+            completed_tasks, _ = await asyncio.wait(
+                pending_by_pos.values(), return_when=asyncio.FIRST_COMPLETED
             )
 
-            # Cancel pending tasks to avoid concurrent anext() on the same generator
-            for task in pending:
-                task.cancel()
-
             # Process completed chunks
-            for task in completed:
+            for task in completed_tasks:
+                pos = next(
+                    candidate_pos
+                    for candidate_pos, candidate_task in pending_by_pos.items()
+                    if candidate_task is task
+                )
+                del pending_by_pos[pos]
                 try:
                     event = task.result()
                 except ChatError as e:
@@ -279,6 +286,10 @@ async def stream_comparison_messages(
                                 turn_index,
                                 _get_messages(comparison, e.pos),
                                 request,
+                                comparison.web_search_enabled,
+                            )
+                            pending_by_pos[e.pos] = asyncio.create_task(
+                                anext(generators[e.pos])
                             )
                             retried[e.pos] = True
                             yield {"type": "swap", "pos": e.pos}
@@ -286,9 +297,10 @@ async def stream_comparison_messages(
                         # No replacement available, fall through to raise
                     raise
 
-                for pos in BOT_POS:
-                    if event["type"] == "complete":
-                        complete[event["pos"]] = True
+                if event["type"] == "complete":
+                    complete[event["pos"]] = True
+                else:
+                    pending_by_pos[pos] = asyncio.create_task(anext(generators[pos]))
 
                 yield event
 
@@ -314,6 +326,12 @@ async def stream_comparison_messages(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
         yield {"type": "error", "error": str(e)}
+    finally:
+        remaining_tasks = list(locals().get("pending_by_pos", {}).values())
+        for task in remaining_tasks:
+            task.cancel()
+        if remaining_tasks:
+            await asyncio.gather(*remaining_tasks, return_exceptions=True)
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:

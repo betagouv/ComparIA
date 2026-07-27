@@ -69,6 +69,7 @@
           {#if turn.a.llm_msg && turn.b.llm_msg}
             <MessageBot
               id="{turn.id}-a"
+              prompt={turn.user_msg.content}
               turnSide={turn.a}
               bot="a"
               choice={turn.choice}
@@ -78,6 +79,7 @@
 
             <MessageBot
               id="{turn.id}-b"
+              prompt={turn.user_msg.content}
               turnSide={turn.b}
               bot="b"
               choice={turn.choice}

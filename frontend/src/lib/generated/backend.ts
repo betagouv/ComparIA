@@ -9,6 +9,7 @@ export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";
   custom_models_selection: string[] | null;
+  web_search_enabled: boolean;
   error: ErrorDetails | null;
   turns: TurnPublic[];
   revealed: boolean;
@@ -64,6 +65,47 @@ export interface LinkupSearchTextResult {
   favicon?: string;
   [k: string]: unknown;
 }
+export interface AgentTraceReasoning {
+  type?: "reasoning";
+  content: string;
+  [k: string]: unknown;
+}
+export interface AgentTraceIntermediateContent {
+  type?: "intermediate_content";
+  content: string;
+  [k: string]: unknown;
+}
+export interface AgentTraceToolCall {
+  type?: "tool_call";
+  tool_call_id: string;
+  name: string;
+  arguments_json: string;
+  arguments?: {
+    [k: string]: unknown;
+  } | null;
+  [k: string]: unknown;
+}
+export interface AgentTraceToolResult {
+  type?: "tool_result";
+  tool_call_id: string;
+  name: string;
+  status: "success" | "empty" | "error";
+  duration_ms: number;
+  content: string;
+  results: LinkupSearchTextResult[];
+  [k: string]: unknown;
+}
+export interface AgentTraceFinalAnswer {
+  type?: "final_answer";
+  content: string;
+  [k: string]: unknown;
+}
+export type AgentTraceEvent =
+  | AgentTraceReasoning
+  | AgentTraceIntermediateContent
+  | AgentTraceToolCall
+  | AgentTraceToolResult
+  | AgentTraceFinalAnswer;
 export interface LLMMessageCreate {
   id?: string;
   role?: "assistant";
@@ -75,6 +117,8 @@ export interface LLMMessageCreate {
   generation_id?: string | null;
   tokens?: number | null;
   is_cached?: boolean;
+  web_search_results?: LinkupSearchTextResult[] | null;
+  agent_trace?: AgentTraceEvent[] | null;
   [k: string]: unknown;
 }
 export interface RevealData {

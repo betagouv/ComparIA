@@ -11,10 +11,11 @@
   } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
-  import { VoteAnnotate } from '.'
+  import { AgentTrace, VoteAnnotate, WebSearchResults } from '.'
 
   export type MessageBotProps = {
     id: string
+    prompt: string
     turnSide: ComparisonTurnSide
     bot: Bot
     choice: TurnChoice | null
@@ -22,7 +23,15 @@
     onVoteAnnotate: (data: Omit<APIVoteAnnotate, 'turn_id'>) => void
   }
 
-  let { id, turnSide, bot, choice, disabled = false, onVoteAnnotate }: MessageBotProps = $props()
+  let {
+    id,
+    prompt,
+    turnSide,
+    bot,
+    choice,
+    disabled = false,
+    onVoteAnnotate
+  }: MessageBotProps = $props()
 
   const prefKind = $derived.by(() => {
     if (!choice || choice == 'idk') return null
@@ -63,6 +72,11 @@
       role="group"
       aria-label={m[`models.names.${bot}`]()}
     >
+      {#if message.agent_trace?.length}
+        <AgentTrace id="{id}-agent-trace" {prompt} events={message.agent_trace} />
+      {/if}
+
+
       {#if message.reasoning_content?.trim()}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
@@ -91,6 +105,10 @@
             </div>
           </div>
         </section>
+      {/if}
+
+      {#if message.web_search_results?.length}
+        <WebSearchResults id="{id}-web-search-results" results={message.web_search_results} />
       {/if}
 
       <Markdown message={message.content} chatbot />

@@ -101,8 +101,9 @@
         "webSearch": {
             "disabled": "Websøgning deaktiveret",
             "enabled": "Websøgning aktiveret",
-            "label": "Websøgning",
-            "tooltip": "Aktivér websøgning for at lade modellerne bruge onlinekilder og citere mere opdateret information.<br><strong>Uden websøgning</strong> svarer modellerne baseret på det, de lærte under træning (deres træningsdata). De kan ikke verificere information online, så meget nye eller meget specifikke fakta kan være ufuldstændige."
+            "help": "Hver model afgør selv, om det er nyttigt at foretage en søgning.",
+            "label": "Tillad websøgning",
+            "tooltip": "Tillad modellerne at søge efter oplysninger online og citere nyere kilder. <strong>Hver model vælger selv, om den vil bruge værktøjet</strong> ud fra din besked.<br>Hvis du ikke tillader det, svarer modellerne kun ud fra det, de lærte under træningen, og kan ikke kontrollere oplysninger online."
         }
     },
     "auth": {
@@ -181,6 +182,23 @@
         }
     },
     "chatbot": {
+        "agentTrace": {
+            "finalAnswer": "Endeligt svar",
+            "intermediate": "Midlertidig modelbesked",
+            "label": "Se udførelsesspor",
+            "query": "Anvendt søgning: ",
+            "reasoning": "Begrundelse delt af modellen",
+            "request": "Brugeranmodning",
+            "sources": "kilde(r)",
+            "status": {
+                "empty": "Ingen resultater",
+                "error": "Mislykket",
+                "success": "Gennemført"
+            },
+            "technicalDetails": "Vis tekniske detaljer",
+            "toolCall": "Værktøjskald",
+            "toolResult": "Værktøjssvar"
+        },
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
         "conversation": "Chat",
         "errors": {

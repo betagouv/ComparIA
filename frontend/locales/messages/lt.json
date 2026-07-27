@@ -44,11 +44,25 @@
         "webSearch": {
             "disabled": "Paieška internete išjungta",
             "enabled": "Paieška internete įjungta",
-            "label": "Paieška internete",
-            "tooltip": "Įjunkite paiešką internete, kad modeliai galėtų naudoti internetinius šaltinius ir cituoti naujesnę informaciją.<br><strong>Be paieškos internete</strong> modeliai atsako remdamiesi tuo, ką išmoko mokymo metu (savo mokymo duomenimis). Jie negali patikrinti informacijos internete, todėl labai nauji ar labai specifiniai faktai gali būti neišsamūs."
+            "help": "Kiekvienas modelis pats nusprendžia, ar naudinga atlikti paiešką.",
+            "label": "Leisti paiešką internete",
+            "tooltip": "Leiskite modeliams ieškoti informacijos internete ir cituoti naujesnius šaltinius. <strong>Kiekvienas modelis pagal jūsų žinutę pats nusprendžia, ar naudoti šį įrankį</strong>.<br>Jei neleisite, modeliai atsakys tik remdamiesi tuo, ką išmoko mokymo metu, ir negalės patikrinti informacijos internete."
         }
     },
     "chatbot": {
+        "agentTrace": {
+            "finalAnswer": "Galutinis atsakymas",
+            "intermediate": "Tarpinis modelio pranešimas",
+            "label": "Rodyti vykdymo seką",
+            "query": "Naudota paieška: ",
+            "reasoning": "Modelio pateiktas samprotavimas",
+            "request": "Naudotojo užklausa",
+            "sources": "šaltinis (-iai)",
+            "status": { "empty": "Rezultatų nėra", "error": "Nepavyko", "success": "Pavyko" },
+            "technicalDetails": "Rodyti techninę informaciją",
+            "toolCall": "Įrankio iškvietimas",
+            "toolResult": "Įrankio atsakymas"
+        },
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",
         "conversation": "Pokalbis",
         "errors": {

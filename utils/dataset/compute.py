@@ -119,11 +119,16 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # revalidate_instances="never"): no stripping, no constraint checks. The
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
-    return {
+    response = {
         "content": msg.content,
         "reasoning_content": msg.reasoning_content,
         "role": msg.role,
     }
+    if msg.web_search_results:
+        response["web_search_results"] = [
+            result.model_dump(mode="json") for result in msg.web_search_results
+        ]
+    return response
 
 
 async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:

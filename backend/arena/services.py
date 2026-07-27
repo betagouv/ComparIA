@@ -175,13 +175,27 @@ async def add_comparison_turn(
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
 
+def _llm_message_for_persistence(message: LLMMessageCreate) -> LLMMessage:
+    """Build a DB message whose JSONB fields contain JSON-native values."""
+    db_message = LLMMessage.model_validate(message)
+    if message.web_search_results:
+        db_message.web_search_results = [
+            result.model_dump(mode="json") for result in message.web_search_results
+        ]
+    if message.agent_trace:
+        db_message.agent_trace = [
+            event.model_dump(mode="json") for event in message.agent_trace
+        ]
+    return db_message
+
+
 async def update_turn(
     id: uuid.UUID, llm_msg_a: LLMMessageCreate, llm_msg_b: LLMMessageCreate
 ) -> None:
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
-        db_turn.llm_msg_a = LLMMessage.model_validate(llm_msg_a)
-        db_turn.llm_msg_b = LLMMessage.model_validate(llm_msg_b)
+        db_turn.llm_msg_a = _llm_message_for_persistence(llm_msg_a)
+        db_turn.llm_msg_b = _llm_message_for_persistence(llm_msg_b)
         session.add(db_turn)
         await session.commit()
 

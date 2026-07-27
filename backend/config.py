@@ -194,3 +194,8 @@ ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"
+WEB_SEARCH_MAX_TOOL_CALLS = 3
+WEB_SEARCH_MAX_RESULTS_PER_CALL = 8
+WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH = 4_000
+WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH = 12_000
+WEB_SEARCH_TOOL_TIMEOUT_SECONDS = 10
