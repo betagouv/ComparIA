@@ -6,6 +6,7 @@ Run with pytest, or directly:
 """
 
 import asyncio
+import json
 import os
 import sys
 from contextlib import asynccontextmanager, contextmanager
@@ -25,7 +26,10 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.settings.router as settings_router  # noqa: E402
-from backend.admin.router import PublishLegalDocumentBody  # noqa: E402
+from backend.admin.router import (  # noqa: E402
+    PublishLegalDocumentBody,
+    _to_admin_legal_document,
+)
 from backend.settings import legal  # noqa: E402
 from utils.database.models.auth import LegalDocument  # noqa: E402
 from utils.database.models.utils import utc_now  # noqa: E402
@@ -274,16 +278,22 @@ def test_presentation_uses_defaults_when_not_configured():
     assert result == legal.fallback_legal_presentation()
 
 
+def terms_document(**overrides) -> LegalDocument:
+    fields = {
+        "kind": "terms",
+        "version": "1.0",
+        "language": "fr",
+        "content": "Conditions",
+        "content_hash": legal.legal_document_hash("Conditions"),
+        "effective_at": utc_now(),
+    }
+    fields.update(overrides)
+    return LegalDocument(**fields)
+
+
 @contextmanager
-def public_client(presentation=None):
-    document = LegalDocument(
-        kind="terms",
-        version="1.0",
-        language="fr",
-        content="Conditions",
-        content_hash=legal.legal_document_hash("Conditions"),
-        effective_at=utc_now(),
-    )
+def public_client(presentation=None, document=None):
+    document = document or terms_document()
 
     async def active_document(_kind, _language):
         return document
@@ -320,6 +330,35 @@ def test_public_terms_etag_changes_with_the_presentation():
     )
     with public_client(edited) as client:
         assert client.get("/settings/legal/terms").headers["ETag"] != etag
+
+
+def test_public_timestamps_carry_a_utc_offset():
+    """Without the marker a browser reads the value as local time.
+
+    The skew is the size of the host offset, so a document taking effect just
+    after midnight would be shown as the previous day.
+    """
+    stored = datetime(2026, 7, 27, 22, 30)
+    with public_client(document=terms_document(effective_at=stored)) as client:
+        payload = client.get("/settings/legal/terms").json()
+
+    for key in ("published_at", "effective_at"):
+        assert datetime.fromisoformat(payload[key]).utcoffset() == timedelta(0)
+    assert datetime.fromisoformat(payload["effective_at"]) == stored.replace(
+        tzinfo=timezone.utc
+    )
+
+
+def test_admin_timestamps_carry_a_utc_offset():
+    stored = datetime(2026, 7, 27, 22, 30)
+    document = terms_document(effective_at=stored, retired_at=stored)
+    payload = json.loads(_to_admin_legal_document(document).model_dump_json())
+
+    for key in ("published_at", "effective_at", "retired_at"):
+        assert datetime.fromisoformat(payload[key]).utcoffset() == timedelta(0)
+    assert datetime.fromisoformat(payload["retired_at"]) == stored.replace(
+        tzinfo=timezone.utc
+    )
 
 
 if __name__ == "__main__":

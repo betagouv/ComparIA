@@ -1,5 +1,4 @@
 import hashlib
-from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
@@ -8,6 +7,7 @@ from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
     LegalPresentation,
     LocaleQuery,
+    UtcTimestamp,
     get_active_legal_document,
     get_legal_presentation,
 )
@@ -21,8 +21,8 @@ class PublicLegalDocument(BaseModel):
     content_hash: str
     locale: str
     content: str
-    published_at: datetime
-    effective_at: datetime
+    published_at: UtcTimestamp
+    effective_at: UtcTimestamp
 
 
 class PublicTermsDocument(PublicLegalDocument):
