@@ -13,8 +13,8 @@
       { href: '/mentions-legales', labelKey: 'legal' },
       { href: '/arene/modalites', labelKey: 'tos' },
       { href: '/arene/donnees-personnelles', labelKey: 'privacy' },
-      { href: '/accessibilite', labelKey: 'accessibility' },
-      { href: '/ecoconception', labelKey: 'rgesn' },
+      { href: '/arene/accessibilite', labelKey: 'accessibility' },
+      { href: '/arene/ecoconception', labelKey: 'rgesn' },
       { href: 'https://github.com/betagouv/languia', labelKey: 'sources' }
     ] as const
   ).map(({ href, labelKey }) => {
