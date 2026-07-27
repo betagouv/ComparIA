@@ -1,23 +1,36 @@
 import logging
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
+from backend.auth.dependencies import (
+    RequiredAnomymous,
+    RequiredUser,
+    anonymous_session_token,
+)
 from backend.auth.email import send_login_code
 from backend.auth.services import (
     _hash,
     accept_invite,
+    get_anonymous_consent_status,
+    get_consent_status,
     get_invite_token_info,
     get_user_from_token,
+    has_current_terms_acceptance,
+    record_anonymous_consent,
+    record_user_consent,
     request_login_code,
     revoke_all_user_sessions,
     revoke_current_session,
     verify_login_code,
 )
 from backend.config import settings
+from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from utils.database.models.auth import LegalDocument
 from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
@@ -62,6 +75,57 @@ class InviteStatus(BaseModel):
 
 class InviteAcceptBody(BaseModel):
     token: str
+
+
+class ConsentAssertion(BaseModel):
+    """What the visitor says they accepted, checked against the live document."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    terms_version: str = Field(min_length=1, max_length=64)
+    terms_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    accepted_at: datetime
+    locale: str = Field(
+        min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
+    )
+    legal_information_acknowledged: Literal[True]
+
+    @field_validator("accepted_at")
+    @classmethod
+    def acceptance_must_be_recent_and_zoned(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("accepted_at must include a timezone")
+        now = datetime.now(timezone.utc)
+        accepted = value.astimezone(timezone.utc)
+        if accepted < now - timedelta(minutes=30) or accepted > now + timedelta(
+            minutes=5
+        ):
+            raise ValueError("accepted_at must reflect the current consent interaction")
+        # Naive UTC, like every other legal timestamp.
+        return accepted.replace(tzinfo=None)
+
+
+class ConsentBody(BaseModel):
+    consent: ConsentAssertion
+
+
+def _anonymous_hash(request: Request) -> str | None:
+    token = anonymous_session_token(request)
+    return _hash(token) if token else None
+
+
+async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
+    document = await get_active_legal_document("terms", assertion.locale)
+    if (
+        not document
+        or document.version != assertion.terms_version
+        or document.content_hash != assertion.terms_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Terms have changed, read the version in force before continuing.",
+        )
+    return document
 
 
 @router.get("/config")
@@ -137,6 +201,16 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
                 detail="Email domain not allowed.",
             )
 
+    # Checked after the cheap limits so an unaccepted flood is still throttled.
+    anonymous_user_hash = _anonymous_hash(request)
+    if not anonymous_user_hash or not await has_current_terms_acceptance(
+        user_id=None, anonymous_user_hash=anonymous_user_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Accept the terms in force before requesting a login code.",
+        )
+
     code = await request_login_code(body.email)
     try:
         await send_login_code(body.email, code)
@@ -184,6 +258,7 @@ async def email_verify(
         ip=ip,
         user_agent=user_agent,
         visitor_id=visitor_id,
+        anonymous_user_hash=_anonymous_hash(request),
     )
     if not token:
         try:
@@ -236,6 +311,7 @@ async def invite_accept(
         ip=ip,
         user_agent=user_agent,
         visitor_id=visitor_id,
+        anonymous_user_hash=_anonymous_hash(request),
     )
     if not token:
         raise HTTPException(
@@ -281,3 +357,36 @@ async def logout_all(request: Request, response: Response) -> None:
         if user:
             await revoke_all_user_sessions(user.id)
     response.delete_cookie("auth_session")
+
+
+@router.post("/consent", status_code=status.HTTP_204_NO_CONTENT)
+async def accept_consent(
+    body: ConsentBody, user: RequiredUser, request: Request
+) -> None:
+    document = await _validated_terms(body.consent)
+    await record_user_consent(
+        user.id,
+        document,
+        body.consent.accepted_at,
+        request.cookies.get("auth_session"),
+    )
+
+
+@router.get("/consent")
+async def consent_status(user: RequiredUser) -> dict:
+    return await get_consent_status(user.id)
+
+
+@router.post("/consent/anonymous", status_code=status.HTTP_204_NO_CONTENT)
+async def accept_anonymous_consent(
+    body: ConsentBody, anonymous_user_hash: RequiredAnomymous
+) -> None:
+    document = await _validated_terms(body.consent)
+    await record_anonymous_consent(
+        anonymous_user_hash, document, body.consent.accepted_at
+    )
+
+
+@router.get("/consent/anonymous")
+async def anonymous_consent_status(anonymous_user_hash: RequiredAnomymous) -> dict:
+    return await get_anonymous_consent_status(anonymous_user_hash)
