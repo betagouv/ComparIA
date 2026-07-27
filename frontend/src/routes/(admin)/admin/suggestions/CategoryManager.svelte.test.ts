@@ -45,7 +45,9 @@ describe('CategoryManager', () => {
     expect(emptyDeleteButton).not.toHaveAttribute('aria-disabled', 'true')
     expect(usedDeleteButton).toHaveAttribute('aria-disabled', 'true')
     expect(usedDeleteButton).toHaveAccessibleDescription('3 suggestions — suppression impossible')
-    expect(getByRole('tooltip')).toHaveTextContent('3 suggestions — suppression impossible')
+    expect(getByRole('tooltip', { hidden: true })).toHaveTextContent(
+      '3 suggestions — suppression impossible'
+    )
   })
 
   it('asks for confirmation before deleting an empty category', async () => {
