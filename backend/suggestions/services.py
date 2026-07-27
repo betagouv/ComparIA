@@ -38,7 +38,13 @@ class SuggestionCategoryAlreadyExistsError(Exception):
     pass
 
 
-def _to_admin_category(category: SuggestionCategory) -> AdminSuggestionCategory:
+class SuggestionCategoryNotEmptyError(Exception):
+    pass
+
+
+def _to_admin_category(
+    category: SuggestionCategory, *, suggestion_count: int = 0
+) -> AdminSuggestionCategory:
     return AdminSuggestionCategory(
         id=category.id,
         locale=category.locale,
@@ -48,6 +54,7 @@ def _to_admin_category(category: SuggestionCategory) -> AdminSuggestionCategory:
         icon=category.icon,
         tooltip=category.tooltip,
         display_order=category.display_order,
+        suggestion_count=suggestion_count,
     )
 
 
@@ -145,13 +152,25 @@ async def list_admin_suggestions(
                 col(SuggestionCategory.locale), col(SuggestionCategory.display_order)
             )
         )
+        suggestion_counts_result = await session.exec(
+            select(
+                PromptSuggestion.category_id, func.count(PromptSuggestion.id)
+            ).group_by(PromptSuggestion.category_id)
+        )
+        suggestion_counts = dict(suggestion_counts_result.all())
+        categories = categories_result.all()
         return (
             [
                 _to_admin_suggestion(suggestion, category)
                 for suggestion, category in result.all()
             ],
             total,
-            [_to_admin_category(category) for category in categories_result.all()],
+            [
+                _to_admin_category(
+                    category, suggestion_count=suggestion_counts.get(category.id, 0)
+                )
+                for category in categories
+            ],
         )
 
 
@@ -238,6 +257,30 @@ async def create_suggestion_category(
             raise SuggestionCategoryAlreadyExistsError() from error
         await session.refresh(category)
         return _to_admin_category(category)
+
+
+async def delete_suggestion_category(category_id: uuid.UUID) -> None:
+    async with get_session() as session:
+        category = await session.get(SuggestionCategory, category_id)
+        if category is None:
+            raise SuggestionCategoryNotFoundError()
+
+        suggestion_count = (
+            await session.exec(
+                select(func.count(PromptSuggestion.id)).where(
+                    PromptSuggestion.category_id == category_id
+                )
+            )
+        ).one()
+        if suggestion_count:
+            raise SuggestionCategoryNotEmptyError()
+
+        await session.delete(category)
+        try:
+            await session.commit()
+        except IntegrityError as error:
+            await session.rollback()
+            raise SuggestionCategoryNotEmptyError() from error
 
 
 async def set_suggestion_archived(

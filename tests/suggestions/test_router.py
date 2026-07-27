@@ -1,6 +1,8 @@
+import asyncio
 import os
 import sys
 import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -16,11 +18,14 @@ from fastapi.testclient import TestClient
 
 import backend.admin.suggestions as admin_suggestions
 import backend.suggestions.router as suggestions_router
+import backend.suggestions.services as suggestion_services
 from backend.admin.router import router as admin_router
 from backend.auth.dependencies import require_admin
 from backend.suggestions.services import (
     SuggestionAlreadyExistsError,
     SuggestionCategoryAlreadyExistsError,
+    SuggestionCategoryNotEmptyError,
+    SuggestionCategoryNotFoundError,
     SuggestionNotFoundError,
 )
 from utils.database.models.suggestion import (
@@ -44,6 +49,7 @@ def _category() -> AdminSuggestionCategory:
         description="Rédiger un document administratif",
         icon="i-ri-draft-line",
         display_order=0,
+        suggestion_count=0,
     )
 
 
@@ -354,6 +360,134 @@ def test_create_category_returns_conflict_for_duplicate(monkeypatch):
     )
 
     assert response.status_code == 409
+
+
+def test_delete_empty_category(monkeypatch):
+    received = {}
+
+    async def fake_admin():
+        return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
+
+    async def fake_delete(category_id):
+        received["category_id"] = category_id
+
+    monkeypatch.setattr(admin_suggestions, "delete_suggestion_category", fake_delete)
+    app = FastAPI()
+    app.include_router(admin_router)
+    app.dependency_overrides[require_admin] = fake_admin
+
+    response = TestClient(app).delete(f"/admin/suggestions/categories/{_category().id}")
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert received["category_id"] == _category().id
+
+
+def test_delete_category_returns_conflict_when_it_contains_suggestions(monkeypatch):
+    async def fake_admin():
+        return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
+
+    async def fake_delete(category_id):
+        raise SuggestionCategoryNotEmptyError()
+
+    monkeypatch.setattr(admin_suggestions, "delete_suggestion_category", fake_delete)
+    app = FastAPI()
+    app.include_router(admin_router)
+    app.dependency_overrides[require_admin] = fake_admin
+
+    response = TestClient(app).delete(f"/admin/suggestions/categories/{_category().id}")
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == (
+        "A category containing suggestions cannot be deleted"
+    )
+
+
+def test_delete_category_returns_not_found(monkeypatch):
+    async def fake_admin():
+        return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
+
+    async def fake_delete(category_id):
+        raise SuggestionCategoryNotFoundError()
+
+    monkeypatch.setattr(admin_suggestions, "delete_suggestion_category", fake_delete)
+    app = FastAPI()
+    app.include_router(admin_router)
+    app.dependency_overrides[require_admin] = fake_admin
+
+    response = TestClient(app).delete(f"/admin/suggestions/categories/{_category().id}")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Category not found"
+
+
+def test_delete_category_service_refuses_to_delete_non_empty_category(monkeypatch):
+    category = object()
+
+    class CountResult:
+        def one(self):
+            return 1
+
+    class FakeSession:
+        deleted = False
+
+        async def get(self, model, category_id):
+            return category
+
+        async def exec(self, statement):
+            return CountResult()
+
+        async def delete(self, item):
+            self.deleted = True
+
+    session = FakeSession()
+
+    @asynccontextmanager
+    async def fake_get_session():
+        yield session
+
+    monkeypatch.setattr(suggestion_services, "get_session", fake_get_session)
+
+    with pytest.raises(SuggestionCategoryNotEmptyError):
+        asyncio.run(suggestion_services.delete_suggestion_category(_category().id))
+    assert session.deleted is False
+
+
+def test_delete_category_service_deletes_empty_category(monkeypatch):
+    category = object()
+
+    class CountResult:
+        def one(self):
+            return 0
+
+    class FakeSession:
+        deleted = None
+        committed = False
+
+        async def get(self, model, category_id):
+            return category
+
+        async def exec(self, statement):
+            return CountResult()
+
+        async def delete(self, item):
+            self.deleted = item
+
+        async def commit(self):
+            self.committed = True
+
+    session = FakeSession()
+
+    @asynccontextmanager
+    async def fake_get_session():
+        yield session
+
+    monkeypatch.setattr(suggestion_services, "get_session", fake_get_session)
+
+    asyncio.run(suggestion_services.delete_suggestion_category(_category().id))
+
+    assert session.deleted is category
+    assert session.committed is True
 
 
 def test_archive_suggestion_passes_admin_and_handles_missing_suggestion(monkeypatch):
