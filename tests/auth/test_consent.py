@@ -34,6 +34,7 @@ from utils.database.models.auth import (  # noqa: E402
 from utils.database.models.comparison import (  # noqa: E402
     LEGACY_PARTICIPATION_TERMS_VERSION,
 )
+from utils.database.models.utils import utc_now  # noqa: E402
 
 DOCUMENT = LegalDocument(
     kind="terms",
@@ -210,6 +211,23 @@ def test_recorded_times_agree_with_the_browser_acceptance():
     assert abs(log.consented_at - log.client_accepted_at) < timedelta(seconds=5)
     assert log.document_hash == DOCUMENT.content_hash
     assert log.purpose == "terms_and_participation"
+
+
+def test_an_aware_acceptance_time_is_stored_on_the_utc_now_scale():
+    """The router normalises, but a backfill or a second endpoint may not."""
+    session = FakeSession()
+    with fake_session(session):
+        asyncio.run(
+            auth_services.record_anonymous_consent(
+                "b" * 64, DOCUMENT, datetime.now(timezone(timedelta(hours=3)))
+            )
+        )
+
+    log = next(
+        value for value in session.added if isinstance(value, AnonymousConsentLog)
+    )
+    assert log.client_accepted_at.tzinfo is None
+    assert abs(log.client_accepted_at - utc_now()) < timedelta(seconds=5)
 
 
 def test_anonymous_acceptance_records_the_document_it_saw():

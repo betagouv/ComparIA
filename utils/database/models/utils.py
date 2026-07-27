@@ -14,6 +14,18 @@ def utc_now() -> datetime:
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
+def as_naive_utc(value: datetime) -> datetime:
+    """Bring a caller-supplied timestamp onto the same scale as utc_now().
+
+    An aware value handed to the driver is silently converted to the database
+    session's zone and loses its offset, so columns that should agree end up
+    hours apart. Naive values are assumed to be UTC already.
+    """
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(timezone.utc).replace(tzinfo=None)
+
+
 ModelId = Annotated[
     uuid.UUID,
     Field(
