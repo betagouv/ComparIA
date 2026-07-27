@@ -62,10 +62,15 @@ type TermsResponse = {
 
 export type ConsentLink = { label: string; href: string }
 
+// Canonical paths, not the /modalites and /donnees-personnelles redirects: a
+// visitor reading what they are about to accept should not go through a hop.
+export const TERMS_PATH = '/arene/modalites'
+export const PRIVACY_POLICY_PATH = '/arene/donnees-personnelles'
+
 export function legalLinks(): ConsentLink[] {
   return [
-    { label: m['consent.links.terms'](), href: '/modalites' },
-    { label: m['consent.links.privacy'](), href: '/donnees-personnelles' }
+    { label: m['consent.links.terms'](), href: TERMS_PATH },
+    { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH }
   ]
 }
 
