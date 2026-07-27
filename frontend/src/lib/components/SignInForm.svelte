@@ -40,6 +40,7 @@
   let consentError = $state<string>()
 
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
+  const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
 
   async function readConsent(again = false) {
     consentLoading = true
@@ -149,13 +150,15 @@
       class="mb-4!"
     />
 
-    <Checkbox
-      id="login-merge"
-      class="text-xs!"
-      bind:checked={mergeComparisons}
-      disabled={step === 'code'}
-      label={m['auth.modal.merge']()}
-    />
+    {#if canMergeComparisons}
+      <Checkbox
+        id="login-merge"
+        class="text-xs!"
+        bind:checked={mergeComparisons}
+        disabled={step === 'code'}
+        label={m['auth.modal.merge']()}
+      />
+    {/if}
 
     {#if terms}
       <Checkbox

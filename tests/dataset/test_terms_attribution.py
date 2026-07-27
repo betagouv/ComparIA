@@ -55,6 +55,7 @@ def test_rows_from_an_old_raw_cache_receive_the_legacy_marker():
                     "response_id": ["historical-response"],
                     "excluded": [False],
                     "extra_metadata": [{"archived": False}],
+                    "metadata": [{"mode": "random"}],
                 }
             ),
             raw_path,
@@ -63,8 +64,12 @@ def test_rows_from_an_old_raw_cache_receive_the_legacy_marker():
         compute._write_normal_from_raw_parquet(raw_path, "dataset", output)
         exported = pq.read_table(output / "dataset.parquet")
 
-    assert exported.column("participation_terms_version").to_pylist() == [
-        LEGACY_PARTICIPATION_TERMS_VERSION
+    assert "participation_terms_version" not in exported.column_names
+    assert exported.column("metadata").to_pylist() == [
+        {
+            "mode": "random",
+            "participation_terms_version": LEGACY_PARTICIPATION_TERMS_VERSION,
+        }
     ]
 
 
