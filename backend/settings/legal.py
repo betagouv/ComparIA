@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import Query
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, PlainSerializer, field_validator
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
@@ -22,6 +22,15 @@ _LOCALE_QUERY = Query(
 )
 LocaleQuery = Annotated[str, _LOCALE_QUERY]
 OptionalLocaleQuery = Annotated[str | None, _LOCALE_QUERY]
+
+
+def _stamp_utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=timezone.utc)
+
+
+# The columns are naive UTC. Without the marker a browser reads them as local
+# time, which shifts the day a document takes effect around midnight.
+UtcTimestamp = Annotated[datetime, PlainSerializer(_stamp_utc)]
 
 
 class ArenaLegalPresentation(BaseModel):

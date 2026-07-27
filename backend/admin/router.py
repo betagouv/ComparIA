@@ -32,6 +32,7 @@ from backend.settings.legal import (
     LegalPresentation,
     LocaleQuery,
     OptionalLocaleQuery,
+    UtcTimestamp,
     get_active_legal_document,
     get_legal_presentation,
     list_legal_documents,
@@ -76,9 +77,9 @@ class AdminLegalDocument(BaseModel):
     locale: str
     content: str
     content_hash: str
-    published_at: datetime
-    effective_at: datetime
-    retired_at: datetime | None
+    published_at: UtcTimestamp
+    effective_at: UtcTimestamp
+    retired_at: UtcTimestamp | None
 
 
 class PublishLegalDocumentBody(BaseModel):
