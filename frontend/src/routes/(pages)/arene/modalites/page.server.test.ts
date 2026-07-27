@@ -11,8 +11,8 @@ const document = {
   content_hash: 'hash',
   locale: 'fr',
   content: '# Conditions\n\n## Objet',
-  published_at: '2026-07-01T00:00:00',
-  effective_at: '2026-07-01T00:00:00'
+  published_at: '2026-07-01T00:00:00Z',
+  effective_at: '2026-07-01T00:00:00Z'
 }
 
 describe('terms page load', () => {

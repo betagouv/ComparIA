@@ -15,13 +15,15 @@
   // so say it rather than passing the substitution off as a translation.
   const substituted = $derived(locale !== getLocale())
 
-  // Legal timestamps have no offset, so both sides read them as local time and
-  // render the same day.
+  // The date a document takes effect is one fact, not one per reader, so it is
+  // pinned to the zone it is set in. Leaving it to the viewer would also make the
+  // server and the browser disagree around midnight. Same zone as the backoffice.
   const date = $derived(
     new Date(effectiveAt).toLocaleDateString(getLocale(), {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'Europe/Paris'
     })
   )
 </script>
