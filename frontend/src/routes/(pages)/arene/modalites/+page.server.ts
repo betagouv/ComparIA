@@ -1,3 +1,6 @@
+// This page and its privacy policy sibling sit outside src/routes/arene on
+// purpose: they are public documents, so they keep the public layout and stay
+// clear of the arena layout load, which needs a session.
 import { api } from '$lib/fastapi-client'
 import type { PublicLegalDocument } from '$lib/generated/backend'
 import { getLocale } from '$lib/i18n/runtime'

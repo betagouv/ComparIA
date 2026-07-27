@@ -383,6 +383,7 @@
             "title": "Déclaration d’accessibilité"
         },
         "document": {
+            "frenchOnly": "Ce document n’est publié qu’en français pour le moment.",
             "unavailable": "Ce document n’est pas disponible pour le moment. Merci de réessayer plus tard.",
             "version": "Version {version}, applicable depuis le {date}."
         },
