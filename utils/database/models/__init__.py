@@ -18,6 +18,18 @@ from .comparison import (
     ErrorDetails,
 )
 from .messages import *
+from .suggestion import (
+    AdminSuggestion,
+    AdminSuggestionCategory,
+    PromptSuggestion,
+    PublicSuggestion,
+    PublicSuggestionCategory,
+    PublicSuggestionsResponse,
+    SuggestionArchiveUpdate,
+    SuggestionCategory,
+    SuggestionCategoryCreate,
+    SuggestionCreate,
+)
 from .turn import (
     Turn,
     TurnCreate,
