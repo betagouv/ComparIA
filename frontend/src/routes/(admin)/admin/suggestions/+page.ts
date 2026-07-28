@@ -2,8 +2,6 @@ import { api } from '$lib/fastapi-client'
 import type { PageLoad } from './$types'
 import type { SuggestionFilters, SuggestionsPage } from './types'
 
-const pageSize = 25
-
 export const load: PageLoad = async ({ depends, fetch, url }) => {
   const filters: SuggestionFilters = {
     search: url.searchParams.get('search') ?? '',
@@ -13,7 +11,7 @@ export const load: PageLoad = async ({ depends, fetch, url }) => {
   }
   const params = new URLSearchParams({
     page: url.searchParams.get('page') ?? '1',
-    page_size: String(pageSize)
+    page_size: url.searchParams.get('page_size') ?? '25'
   })
 
   for (const [key, value] of Object.entries(filters)) {

@@ -2,7 +2,7 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Badge, Button, Icon, Modal, Pagination, Select, Table } from '$components/dsfr'
+  import { Badge, Button, Icon, Modal, Select, Table } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -10,15 +10,16 @@
   import type { TableCol } from '$lib/utils/data'
   import { toSearchString } from '$lib/utils/data'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
+  import type { PageProps } from './$types'
   import CategoryIconPicker from './CategoryIconPicker.svelte'
   import CategoryManager from './CategoryManager.svelte'
-  import type { PageProps } from './$types'
   import type { PromptSuggestion, SuggestionStatus } from './types'
 
   let { data }: PageProps = $props()
 
   const refetch = () => invalidate('admin:suggestions')
   const baseRoute = '/admin/suggestions'
+  const params = new SvelteURLSearchParams(page.url.searchParams)
 
   // These local controls are deliberately initialized from the SSR-loaded data,
   // then resynchronized below whenever SvelteKit refreshes the page data.
@@ -32,6 +33,7 @@
   let categoryId = $state(data.filters.category_id)
   // svelte-ignore state_referenced_locally
   let currentPage = $state(data.suggestions.page - 1)
+  let pageSize = $derived(data.suggestions.page_size)
 
   let suggestionToToggle = $state<PromptSuggestion | null>(null)
   let actionLoading = $state(false)
@@ -146,11 +148,14 @@
     updateQuery({ page: String(currentPage + 1) })
   })
 
-  function updateQuery(updates: Record<string, string>) {
-    const params = new SvelteURLSearchParams(page.url.searchParams)
+  $effect(() => {
+    if (params.get('page_size') === pageSize.toString()) return
+    updateQuery({ page_size: pageSize, page: 1 })
+  })
 
+  function updateQuery(updates: Record<string, any>) {
     for (const [key, value] of Object.entries(updates)) {
-      if (value) params.set(key, value)
+      if (value) params.set(key, value.toString())
       else params.delete(key)
     }
 
@@ -158,7 +163,7 @@
   }
 
   function updateFilters() {
-    updateQuery({ status, locale, category_id: categoryId, page: '1' })
+    updateQuery({ status, locale, category_id: categoryId, page: 1 })
   }
 
   function updateLocaleFilter() {
@@ -318,6 +323,9 @@
     {cols}
     {rows}
     searchLabel={m['words.search']()}
+    bind:currentPage
+    bind:maxRowsPerPage={pageSize}
+    itemCount={data.suggestions.total}
   >
     {#snippet headerLeft()}
       <div class="gap-3 md:flex-row flex flex-col flex-wrap">
@@ -407,14 +415,6 @@
   {#if data.suggestions.total === 0}
     <p class="fr-text--sm mt-4! text-[--text-mention-grey]">{m['admin.suggestions.empty']()}</p>
   {/if}
-
-  <div class="mt-4 flex justify-center">
-    <Pagination
-      bind:page={currentPage}
-      itemCount={data.suggestions.total}
-      maxItemPerPage={data.suggestions.page_size}
-    />
-  </div>
 </PageLayout>
 
 <Modal
@@ -551,8 +551,7 @@
         bind:value={prompt}
         required
         maxlength="4000"
-        aria-describedby="suggestion-text-messages"
-      ></textarea>
+        aria-describedby="suggestion-text-messages"></textarea>
       {#if formError}
         <div class="fr-messages-group" id="suggestion-text-messages" aria-live="polite">
           <p class="fr-message fr-message--error">{formError}</p>
