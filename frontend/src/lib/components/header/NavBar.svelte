@@ -84,6 +84,7 @@
     />
     <a
       {...homepageLinkProps}
+      rel={auth.config.homepage_url ? 'external' : undefined}
       title={m['header.homeTitle']()}
       class="font-bold text-lg text-[--text-title-grey]"
     >

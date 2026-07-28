@@ -97,9 +97,11 @@
                 <a
                   {...homepageLinkProps}
                   target={homepageTarget}
-                  rel={homepageTarget
-                    ? `noopener${homepageIsExternal ? ' external' : ''}`
-                    : undefined}
+                  rel={homepageIsExternal
+                    ? `external${homepageTarget ? ' noopener' : ''}`
+                    : homepageTarget
+                      ? 'noopener'
+                      : undefined}
                   title={homepageTarget
                     ? m['a11y.externalLink']({ text: m['header.homeTitle']() })
                     : m['header.homeTitle']()}

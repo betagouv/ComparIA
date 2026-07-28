@@ -14,10 +14,23 @@ describe('ColorInput', () => {
     const picker = container.querySelector<HTMLInputElement>('input[type="color"]')
 
     expect(picker?.value).toBe('#6464f3')
-    expect(textInput?.pattern).toBe('#[0-9A-Fa-f]{6}')
     expect(textInput?.checkValidity()).toBe(true)
     await fireEvent.input(textInput!, { target: { value: '#112233' } })
     expect(picker?.value).toBe('#112233')
+  })
+
+  it('lets an incomplete value through so the form can show its own error', async () => {
+    const { container } = render(ColorInput, {
+      id: 'primary-light',
+      label: 'Couleur primaire (thème clair)',
+      hint: 'Format attendu : #RRGGBB.',
+      value: '#6464F3'
+    })
+    const textInput = container.querySelector<HTMLInputElement>('#primary-light-text')
+
+    await fireEvent.input(textInput!, { target: { value: '#12' } })
+
+    expect(textInput?.checkValidity()).toBe(true)
   })
 
   it('connects an explicit validation error to both controls', () => {
