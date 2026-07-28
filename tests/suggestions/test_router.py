@@ -26,6 +26,7 @@ from backend.suggestions.services import (
     SuggestionCategoryAlreadyExistsError,
     SuggestionCategoryNotEmptyError,
     SuggestionCategoryNotFoundError,
+    SuggestionCategoryTitleUnusableError,
     SuggestionNotFoundError,
 )
 from utils.database.models.suggestion import (
@@ -94,6 +95,20 @@ def test_public_suggestions_returns_grouped_categories(monkeypatch):
     assert response.json()["categories"][0]["suggestions"] == [
         {"id": str(_suggestion().id), "text": "Écris une lettre."}
     ]
+
+
+def test_public_suggestions_returns_nothing_for_a_locale_without_content(monkeypatch):
+    async def fail_list(locale):
+        raise AssertionError(f"the service must not be called for {locale}")
+
+    monkeypatch.setattr(suggestions_router, "list_public_suggestions", fail_list)
+    app = FastAPI()
+    app.include_router(suggestions_router.router)
+
+    response = TestClient(app).get("/suggestions?locale=lt")
+
+    assert response.status_code == 200
+    assert response.json() == {"categories": []}
 
 
 def test_admin_suggestions_requires_an_admin():
@@ -360,6 +375,37 @@ def test_create_category_returns_conflict_for_duplicate(monkeypatch):
     )
 
     assert response.status_code == 409
+
+
+def test_create_category_rejects_a_title_without_letters_or_digits(monkeypatch):
+    async def fake_admin():
+        return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
+
+    async def fake_create(*args, **kwargs):
+        raise SuggestionCategoryTitleUnusableError()
+
+    monkeypatch.setattr(admin_suggestions, "create_suggestion_category", fake_create)
+    app = FastAPI()
+    app.include_router(admin_router)
+    app.dependency_overrides[require_admin] = fake_admin
+
+    response = TestClient(app).post(
+        "/admin/suggestions/categories",
+        json={
+            "locale": "fr",
+            "title": "???",
+            "description": "Rédiger un document administratif",
+            "icon": "i-ri-draft-line",
+        },
+    )
+
+    assert response.status_code == 422
+    assert "letter or digit" in response.json()["detail"]
+
+
+def test_category_key_is_empty_for_a_title_without_letters_or_digits():
+    assert suggestion_services._category_key("???") == ""
+    assert suggestion_services._category_key("Idées") == "idees"
 
 
 def test_delete_empty_category(monkeypatch):

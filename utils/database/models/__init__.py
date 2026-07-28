@@ -27,6 +27,7 @@ from .suggestion import (
     PublicSuggestionsResponse,
     SuggestionArchiveUpdate,
     SuggestionCategory,
+    SuggestionCategoryCreate,
     SuggestionCreate,
 )
 from .turn import (
