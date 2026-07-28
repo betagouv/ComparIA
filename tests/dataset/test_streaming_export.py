@@ -313,4 +313,7 @@ def test_temporal_nulls_stream_cleanly():
 
 
 if __name__ == "__main__":
-    run()
+    from tests.dataset.test_comparison_to_turns import patched_llms_data
+
+    with patched_llms_data():
+        run()
