@@ -116,19 +116,10 @@
 
 <style>
   /* Override only light theme blue to purple */
-  :root[data-fr-theme='light'] input[type='checkbox'] + label {
+  input[type='checkbox'] + label {
     --border-action-high-blue-france: var(--blue-france-main-525);
     --border-active-blue-france: var(--blue-france-main-525);
     --background-active-blue-france: var(--blue-france-main-525);
-  }
-
-  /* To avoid flickering at page load */
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] input[type='checkbox'] + label {
-      --border-action-high-blue-france: var(--blue-france-main-525);
-      --border-active-blue-france: var(--blue-france-main-525);
-      --background-active-blue-france: var(--blue-france-main-525);
-    }
   }
 
   input[type='checkbox'] + label::before {

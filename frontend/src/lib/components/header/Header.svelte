@@ -1,6 +1,9 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Link } from '$components/dsfr'
+  import { getAuthContext } from '$lib/auth.svelte'
+  import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { LanguageSelector, Menubar, VoteGauge } from '.'
@@ -22,6 +25,10 @@
   } = $props()
 
   const locale = getLocale()
+  const auth = getAuthContext()
+  const homepageHref = $derived(auth.config.homepage_url || resolve('/'))
+  const homepageIsExternal = $derived(Boolean(auth.config.homepage_url))
+  const homepageTarget = $derived(page.url.pathname.includes('arene') ? '_blank' : undefined)
 </script>
 
 {#snippet helpLink()}
@@ -75,7 +82,9 @@
             class="fr-header__service mx-1! sm:mx-3! sm:w-auto md:px-3! flex w-1/2 grow items-center before:content-none!"
           >
             <img
-              src="/orgs/comparia.png"
+              src={auth.config?.has_custom_logo
+                ? api.getUrl('/auth/config/logo')
+                : '/orgs/comparia.png'}
               aria-hidden="true"
               alt=""
               width="46"
@@ -83,13 +92,22 @@
             />
             <div>
               <p class="fr-header__service-title mb-0! leading-normal!">
+                <!-- eslint-disable svelte/no-navigation-without-resolve -- the homepage URL can be an external address set by an admin -->
                 <a
-                  href="/"
-                  target={page.url.pathname.includes('arene') ? '_blank' : undefined}
-                  title={m['header.homeTitle']()}
+                  href={homepageHref}
+                  target={homepageTarget}
+                  rel={homepageIsExternal
+                    ? `external${homepageTarget ? ' noopener' : ''}`
+                    : homepageTarget
+                      ? 'noopener'
+                      : undefined}
+                  title={homepageTarget
+                    ? m['a11y.externalLink']({ text: m['header.homeTitle']() })
+                    : m['header.homeTitle']()}
                 >
-                  {m['header.title']()}
+                  {auth.config?.platform_name || m['header.title']()}
                 </a>
+                <!-- eslint-enable svelte/no-navigation-without-resolve -->
               </p>
 
               <p

@@ -52,17 +52,8 @@
 </fieldset>
 
 <style lang="postcss">
-  /* Override only light theme blue to purple */
-  :root[data-fr-theme='light'] label {
+  label {
     --border-active-blue-france: var(--blue-france-main-525);
     --text-active-blue-france: var(--blue-france-main-525);
-  }
-
-  /* To avoid flickering at page load */
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] label {
-      --border-active-blue-france: var(--blue-france-main-525);
-      --text-active-blue-france: var(--blue-france-main-525);
-    }
   }
 </style>

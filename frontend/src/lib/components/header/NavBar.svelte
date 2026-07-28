@@ -23,6 +23,7 @@
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
   let expanded = $state(true)
+  const homepageHref = $derived(auth.config.homepage_url || resolve('/'))
 
   const connectionBtnProps = $derived(
     auth.user
@@ -39,20 +40,6 @@
         }
   )
 </script>
-
-{#snippet helpLink()}
-  <Link
-    href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
-    text={m['header.help.link.content']()}
-    title={m['header.help.link.title']()}
-    icon="pencil-line"
-    button
-    variant="tertiary-no-outline"
-    size="sm"
-    native
-    hideExternalIcon
-  />
-{/snippet}
 
 {#snippet renderLink({
   href,
@@ -93,13 +80,16 @@
       alt=""
       class="h-[35px]"
     />
+    <!-- eslint-disable svelte/no-navigation-without-resolve -- the homepage URL can be an external address set by an admin -->
     <a
-      href={resolve('/')}
+      href={homepageHref}
+      rel={auth.config.homepage_url ? 'external' : undefined}
       title={m['header.homeTitle']()}
       class="font-bold text-lg text-[--text-title-grey]"
     >
       {auth.config?.platform_name || m['header.title']()}
     </a>
+    <!-- eslint-enable svelte/no-navigation-without-resolve -->
   </div>
 {/snippet}
 
@@ -147,8 +137,6 @@
         </p>
       {/if}
     </div>
-
-    <!-- {@render helpLink()} -->
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
   </div>

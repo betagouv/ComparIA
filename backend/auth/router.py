@@ -37,6 +37,11 @@ class AuthConfig(BaseModel):
     smtp_configured: bool
     domain_allowlist: list[str]
     platform_name: str
+    primary_color_light: str
+    primary_color_dark: str
+    secondary_color_light: str
+    secondary_color_dark: str
+    homepage_url: str | None
     has_custom_logo: bool
 
 
@@ -68,6 +73,11 @@ async def get_config() -> AuthConfig:
         smtp_configured=bool(settings.SMTP_HOST),
         domain_allowlist=app_settings.auth_domain_allowlist,
         platform_name=app_settings.platform_name,
+        primary_color_light=app_settings.primary_color_light,
+        primary_color_dark=app_settings.primary_color_dark,
+        secondary_color_light=app_settings.secondary_color_light,
+        secondary_color_dark=app_settings.secondary_color_dark,
+        homepage_url=app_settings.homepage_url,
         has_custom_logo=app_settings.logo is not None,
     )
 
