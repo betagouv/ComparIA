@@ -14,12 +14,16 @@ No DB and no pytest required:
     uv run --group data python tests/dataset/test_comparison_to_turns.py
 """
 
+import asyncio
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from utils.database.models import Comparison, Turn
 from utils.database.models.messages import LLMMessage, UserMessage
@@ -36,17 +40,27 @@ LLMS = {
     "model-a": SimpleNamespace(wh_per_million_token=1000.0),
     "model-b": SimpleNamespace(wh_per_million_token=500.0),
 }
-compute.get_raw_llms_data = lambda: LLMS  # patch for both oracle and new code
+
+
+async def _llms_data():
+    return LLMS
+
+
+compute.get_llms_data = _llms_data  # patch, so no DB is needed
+
+
+def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
+    """Sync wrapper, `compute.comparison_to_turns` is a coroutine."""
+    return asyncio.run(compute.comparison_to_turns(db_comparison))
 
 
 # --- oracle: the original implementation, unchanged ------------------------
 
 
 def oracle_comparison_to_turns(db_comparison: Comparison) -> list[dict]:
-    llms = compute.get_raw_llms_data()
     ctx = {
-        "llm_a": llms.get(db_comparison.llm_id_a),
-        "llm_b": llms.get(db_comparison.llm_id_b),
+        "llm_a": LLMS.get(db_comparison.llm_id_a),
+        "llm_b": LLMS.get(db_comparison.llm_id_b),
         "metadata": DatasetComparisonBaseMetadata.model_validate(
             db_comparison
         ).model_dump(),
@@ -407,7 +421,7 @@ def run():
 
     for name, comp in equivalent_cases():
         expected = oracle_comparison_to_turns(comp)
-        actual = compute.comparison_to_turns(comp)
+        actual = comparison_to_turns(comp)
         if actual != expected:
             failures.append(f"[VALUE] {name}")
             for i, (a, e) in enumerate(zip(actual, expected)):
@@ -421,7 +435,7 @@ def run():
 
     for name, comp in skip_cases():
         o, n = _raises(oracle_comparison_to_turns, comp), _raises(
-            compute.comparison_to_turns, comp
+            comparison_to_turns, comp
         )
         if not (o and n):
             failures.append(f"[SKIP oracle={o} new={n}] {name}")
@@ -429,7 +443,7 @@ def run():
             print(f"  ok  skip: {name}")
 
     for name, comp, expected in time_to_vote_value_cases():
-        got = compute.comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
         if got != expected:
             failures.append(f"[TIME_TO_VOTE {name}] got {got!r}, expected {expected!r}")
         else:
@@ -444,22 +458,20 @@ def run():
     print("All equivalence cases passed.")
 
 
-# pytest entry points (if pytest is ever added)
+# pytest entry points
 def test_equivalence():
     for name, comp in equivalent_cases():
-        assert compute.comparison_to_turns(comp) == oracle_comparison_to_turns(
-            comp
-        ), name
+        assert comparison_to_turns(comp) == oracle_comparison_to_turns(comp), name
 
 
 def test_skips():
     for name, comp in skip_cases():
-        assert _raises(compute.comparison_to_turns, comp), name
+        assert _raises(comparison_to_turns, comp), name
 
 
 def test_time_to_vote_values():
     for name, comp, expected in time_to_vote_value_cases():
-        got = compute.comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
         assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
 
 
