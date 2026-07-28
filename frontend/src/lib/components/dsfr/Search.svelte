@@ -33,16 +33,7 @@
 </div>
 
 <style lang="postcss">
-  :root[data-fr-theme='light'] {
-    .fr-input {
-      --border-action-high-blue-france: var(--blue-france-main-525);
-    }
-  }
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] {
-      .fr-input {
-        --border-action-high-blue-france: var(--blue-france-main-525);
-      }
-    }
+  .fr-input {
+    --border-action-high-blue-france: var(--blue-france-main-525);
   }
 </style>
