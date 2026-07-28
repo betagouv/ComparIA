@@ -164,6 +164,7 @@
       formData.append('file', file)
       await api.request('/admin/settings/logo', { method: 'PUT', body: formData, headers: {} })
       hasCustomLogo = true
+      auth.config.has_custom_logo = true
       logoVersion++
       useToast(m['admin.settings.customization.logo.updated'](), 4000)
     } catch (err) {
@@ -179,6 +180,7 @@
     try {
       await api.request('/admin/settings/logo', { method: 'DELETE', headers: {} })
       hasCustomLogo = false
+      auth.config.has_custom_logo = false
       useToast(m['admin.settings.customization.logo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')

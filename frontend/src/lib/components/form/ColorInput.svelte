@@ -51,8 +51,6 @@
       aria-invalid={error ? 'true' : undefined}
       autocomplete="off"
       spellcheck="false"
-      maxlength="7"
-      pattern={'#[0-9A-Fa-f]{6}'}
       placeholder="#6464F3"
       {disabled}
       class="fr-input max-w-[12rem]"
