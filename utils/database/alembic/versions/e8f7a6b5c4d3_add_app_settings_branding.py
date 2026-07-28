@@ -1,7 +1,7 @@
 """add_app_settings_branding
 
 Revision ID: e8f7a6b5c4d3
-Revises: c6a1f3e8d2b7
+Revises: e4f5a6b7c8d9
 Create Date: 2026-07-27 00:00:00.000000
 
 """
@@ -13,7 +13,7 @@ import sqlmodel
 
 # revision identifiers, used by Alembic.
 revision: str = "e8f7a6b5c4d3"
-down_revision: Union[str, Sequence[str], None] = "c6a1f3e8d2b7"
+down_revision: Union[str, Sequence[str], None] = "e4f5a6b7c8d9"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
