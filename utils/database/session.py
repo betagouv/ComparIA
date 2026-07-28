@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
+from functools import lru_cache
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -14,15 +15,24 @@ def _async_url(url: str) -> str:
     return url
 
 
-engine = create_async_engine(_async_url(settings.COMPARIA_DB_URI))
+@lru_cache(maxsize=1)
+def get_engine() -> AsyncEngine:
+    """
+    Built on first use rather than at import time: importing this module, and
+    everything importing it in turn, must not require a database to be
+    configured.
+    """
+    if not settings.COMPARIA_DB_URI:
+        raise RuntimeError("COMPARIA_DB_URI is not set")
+    return create_async_engine(_async_url(settings.COMPARIA_DB_URI))
 
 
 async def init_db():
-    async with engine.begin() as conn:
+    async with get_engine().begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
 @asynccontextmanager
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSession(engine) as session:
+    async with AsyncSession(get_engine()) as session:
         yield session

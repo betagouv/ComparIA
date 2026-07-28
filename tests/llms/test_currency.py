@@ -1,5 +1,9 @@
 import asyncio
+import sys
 from datetime import date
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.llms import currency
 from backend.llms.currency import parse_frankfurter_rate

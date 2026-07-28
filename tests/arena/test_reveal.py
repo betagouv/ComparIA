@@ -4,8 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-os.environ["COMPARIA_DB_URI"] = "postgresql://comparia:comparia@localhost/comparia"
-os.environ["LOG_FORMAT"] = "JSON"
+os.environ.setdefault("LOG_FORMAT", "JSON")
 
 from backend.arena import reveal
 

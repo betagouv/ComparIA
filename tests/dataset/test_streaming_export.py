@@ -14,7 +14,6 @@ captured from the first batch).
     uv run --group data python tests/dataset/test_streaming_export.py
 """
 
-import os
 import sys
 import tempfile
 from datetime import datetime
@@ -23,8 +22,6 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
-os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from utils.dataset.export import StreamingDatasetExporter
 
@@ -316,4 +313,7 @@ def test_temporal_nulls_stream_cleanly():
 
 
 if __name__ == "__main__":
-    run()
+    from tests.dataset.test_comparison_to_turns import patched_llms_data
+
+    with patched_llms_data():
+        run()

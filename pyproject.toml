@@ -62,6 +62,13 @@ dev = [
     "pytest>=9.1.1",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The repository root, so `backend` and `utils` import from any subset of the
+# suite. Without it a partial run only works when a module happening to sort
+# earlier has already patched sys.path.
+pythonpath = ["."]
+
 [tool.mypy]
 exclude = ["utils/ranking_methods"]
 exclude_gitignore = true

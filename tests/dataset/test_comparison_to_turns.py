@@ -15,15 +15,13 @@ No DB and no pytest required:
 """
 
 import asyncio
-import os
+import contextlib
 import sys
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
-os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from utils.database.models import Comparison, Turn
 from utils.database.models.messages import LLMMessage, UserMessage
@@ -46,7 +44,15 @@ async def _llms_data():
     return LLMS
 
 
-compute.get_llms_data = _llms_data  # patch, so no DB is needed
+@contextlib.contextmanager
+def patched_llms_data():
+    """Feeds the fixture above to `compute`, so no DB is needed."""
+    original = compute.get_llms_data
+    compute.get_llms_data = _llms_data
+    try:
+        yield
+    finally:
+        compute.get_llms_data = original
 
 
 def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
@@ -476,4 +482,5 @@ def test_time_to_vote_values():
 
 
 if __name__ == "__main__":
-    run()
+    with patched_llms_data():
+        run()

@@ -9,21 +9,18 @@ Run with pytest, or directly:
 """
 
 import contextlib
-import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
-
-import utils.database.models  # noqa: F401 needed before importing backend.auth.router
-
-import backend.auth.router as auth_router
-from backend.config import settings
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+import backend.auth.router as auth_router
+import utils.database.models  # noqa: F401 needed before importing backend.auth.router
+from backend.config import settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
 
 
