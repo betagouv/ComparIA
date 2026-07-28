@@ -91,6 +91,9 @@ export class UnauthorizedError extends Error {
   }
 }
 
+/** Any error thrown by the client, carrying the HTTP status it came from. */
+export type ApiError = Error & { status?: number }
+
 /**
  * FastAPI client class
  */
@@ -112,23 +115,25 @@ export class FastAPIClient {
     response: Response,
     path: string,
     method: RequestInit['method'] = 'GET'
-  ): Promise<Error> {
+  ): Promise<ApiError> {
     const message = `Error ${response.status} [${method}](${path}): `
     const content = await response.text()
+    let error: Error
     try {
       const detail = JSON.parse(content).detail
       if (response.status === 401 || response.status === 403) {
-        return new UnauthorizedError(detail)
+        error = new UnauthorizedError(detail)
       } else if (response.status === 422) {
-        return new ValidationError(detail)
+        error = new ValidationError(detail)
       } else if (response.status === 429) {
-        return new ValidationError(detail)
+        error = new ValidationError(detail)
       } else {
-        return new InternalError(message + detail)
+        error = new InternalError(message + detail)
       }
     } catch {
-      return new Error(message + content)
+      error = new Error(message + content)
     }
+    return Object.assign(error, { status: response.status })
   }
 
   /**

@@ -4,15 +4,14 @@
   import { page } from '$app/state'
   import { Badge, Button, Icon, Modal, Pagination, Select, Table } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
-  import { api } from '$lib/fastapi-client'
+  import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { OrderingMethod, TableCol } from '$lib/utils/data'
-  import { sortRows, toSearchString } from '$lib/utils/data'
+  import type { TableCol } from '$lib/utils/data'
+  import { toSearchString } from '$lib/utils/data'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import CategoryIconPicker from './CategoryIconPicker.svelte'
   import CategoryManager from './CategoryManager.svelte'
-  import CategoryTextFields from './CategoryTextFields.svelte'
   import type { PageProps } from './$types'
   import type { PromptSuggestion, SuggestionStatus } from './types'
 
@@ -117,20 +116,15 @@
     }))
   )
   type SuggestionColumn = 'text' | 'category_title' | 'locale' | 'status' | 'actions'
+  // Not orderable: the server paginates and returns available suggestions
+  // first, so sorting here would only reorder the current page.
   const cols = [
-    { id: 'text', label: m['admin.suggestions.prompt'](), orderable: true },
-    { id: 'category_title', label: m['admin.suggestions.category'](), orderable: true },
-    { id: 'locale', label: m['admin.suggestions.locale'](), orderable: true },
-    { id: 'status', label: m['admin.suggestions.status'](), orderable: true },
+    { id: 'text', label: m['admin.suggestions.prompt']() },
+    { id: 'category_title', label: m['admin.suggestions.category']() },
+    { id: 'locale', label: m['admin.suggestions.locale']() },
+    { id: 'status', label: m['admin.suggestions.status']() },
     { id: 'actions', label: m['admin.suggestions.actions']() }
   ] satisfies TableCol<SuggestionColumn>[]
-  type ColKey = (typeof cols)[number]['id']
-
-  let orderingCol = $state<ColKey>('text')
-  let orderingMethod = $state<OrderingMethod>('ascending')
-  const sortedRows = $derived(
-    sortRows(rows, cols, { col: orderingCol, method: orderingMethod, search: '' })
-  )
 
   $effect(() => {
     search = data.filters.search
@@ -235,8 +229,8 @@
       useToast(m['admin.suggestions.createSuccess'](), 4000)
       await refetch()
     } catch (error) {
-      const message = (error as Error).message
-      formError = message.includes('409') ? m['admin.suggestions.duplicateError']() : message
+      const { status, message } = error as ApiError
+      formError = status === 409 ? m['admin.suggestions.duplicateError']() : message
     } finally {
       formLoading = false
     }
@@ -269,10 +263,14 @@
       useToast(m['admin.suggestions.categoryCreateSuccess'](), 4000)
       await refetch()
     } catch (error) {
-      const message = (error as Error).message
-      categoryFormError = message.includes('409')
-        ? m['admin.suggestions.categoryDuplicateError']()
-        : message
+      const { status, message } = error as ApiError
+      if (status === 409) {
+        categoryFormError = m['admin.suggestions.categoryDuplicateError']()
+      } else if (status === 422) {
+        categoryFormError = m['admin.suggestions.categoryTitleUnusableError']()
+      } else {
+        categoryFormError = message
+      }
     } finally {
       categoryFormLoading = false
     }
@@ -315,12 +313,10 @@
 >
   <Table
     bind:search
-    bind:orderingMethod
-    bind:orderingCol
     caption={m['admin.suggestions.tableCaption']()}
     hideCaption
     {cols}
-    rows={sortedRows}
+    {rows}
     searchLabel={m['words.search']()}
   >
     {#snippet headerLeft()}
@@ -438,19 +434,61 @@
       bind:selected={categoryLocale}
       required
     />
-    <CategoryTextFields
-      bind:title={categoryTitle}
-      bind:description={categoryDescription}
-      bind:tooltip={categoryTooltip}
-      titleLabel={m['admin.suggestions.categoryTitle']()}
-      descriptionLabel={m['admin.suggestions.categoryDescription']()}
-      descriptionHint={m['admin.suggestions.categoryDescriptionHint']()}
-      tooltipLabel={m['admin.suggestions.categoryTooltip']()}
-      tooltipHint={m['admin.suggestions.categoryTooltipHint']()}
-      titleMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 100 })}
-      descriptionMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
-      tooltipMaximumHint={m['admin.suggestions.charactersMaximum']({ count: 300 })}
-    />
+    <div class="fr-input-group">
+      <label class="fr-label" for="suggestion-category-title">
+        {m['admin.suggestions.categoryTitle']()}
+        <span id="suggestion-category-title-limit" class="fr-hint-text">
+          {m['admin.suggestions.charactersMaximum']({ count: 100 })}
+        </span>
+      </label>
+      <input
+        id="suggestion-category-title"
+        class="fr-input"
+        bind:value={categoryTitle}
+        required
+        maxlength="100"
+        aria-describedby="suggestion-category-title-limit"
+      />
+    </div>
+
+    <div class="fr-input-group">
+      <label class="fr-label" for="suggestion-category-description">
+        {m['admin.suggestions.categoryDescription']()}
+        <span id="suggestion-category-description-hint" class="fr-hint-text">
+          {m['admin.suggestions.categoryDescriptionHint']()}
+        </span>
+        <span id="suggestion-category-description-limit" class="fr-hint-text">
+          {m['admin.suggestions.charactersMaximum']({ count: 300 })}
+        </span>
+      </label>
+      <textarea
+        id="suggestion-category-description"
+        class="fr-input"
+        bind:value={categoryDescription}
+        required
+        maxlength="300"
+        aria-describedby="suggestion-category-description-hint suggestion-category-description-limit"
+      ></textarea>
+    </div>
+
+    <div class="fr-input-group">
+      <label class="fr-label" for="suggestion-category-tooltip">
+        {m['admin.suggestions.categoryTooltip']()}
+        <span id="suggestion-category-tooltip-hint" class="fr-hint-text">
+          {m['admin.suggestions.categoryTooltipHint']()}
+        </span>
+        <span id="suggestion-category-tooltip-limit" class="fr-hint-text">
+          {m['admin.suggestions.charactersMaximum']({ count: 300 })}
+        </span>
+      </label>
+      <textarea
+        id="suggestion-category-tooltip"
+        class="fr-input"
+        bind:value={categoryTooltip}
+        maxlength="300"
+        aria-describedby="suggestion-category-tooltip-hint suggestion-category-tooltip-limit suggestion-category-messages"
+      ></textarea>
+    </div>
     <CategoryIconPicker
       id="suggestion-category-icon"
       label={m['admin.suggestions.categoryIcon']()}
