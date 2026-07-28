@@ -19,20 +19,23 @@
     variant?: 'light' | 'normal'
     groupClass?: ClassValue
   } & HTMLInputAttributes = $props()
+
+  const describedBy = $derived(error ? `input-${id}-messages` : help ? `${id}-help` : undefined)
 </script>
 
 <div class={['fr-input-group', { 'fr-input-group--error': !!error }, groupClass]}>
   <label class="fr-label" for={id}>
     {label}
     {#if help}
-      <span class="fr-hint-text">{help}</span>
+      <span id="{id}-help" class="fr-hint-text">{help}</span>
     {/if}
   </label>
   <input
     {...props}
     bind:value
     {id}
-    aria-describedby="input-{id}-messages"
+    aria-describedby={describedBy}
+    aria-invalid={error ? 'true' : undefined}
     class={['fr-input', { 'bg-white!': variant === 'light' }, props.class]}
   />
   {#if error}
