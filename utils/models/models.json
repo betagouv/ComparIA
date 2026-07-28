@@ -1041,6 +1041,72 @@
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
       {
+        "db_id": "6b39f2ca-da9b-4bcc-9079-1b8583d81f79",
+        "new": true,
+        "id": "gemini-3.6-flash",
+        "simple_name": "Gemini 3.6 Flash",
+        "license": "proprietary",
+        "release_date": "07/2026",
+        "arch": "maybe-moe",
+        "params": 440,
+        "reasoning": true,
+        "url": "https://openrouter.ai/google/gemini-3.6-flash",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3.6-flash"
+        },
+        "desc": "Modèle multimodal rapide de Google, conçu pour la programmation, les flux agentiques et le développement d’applications. Il accepte du texte, des images, de l’audio et de la vidéo, et propose un raisonnement à plusieurs niveaux d’effort.",
+        "size_desc": "Google ne publie pas le nombre de paramètres ni l’architecture détaillée de Gemini 3.6 Flash. Il s’agit d’un système propriétaire de la gamme Flash, optimisé pour concilier vitesse, coût et capacités de raisonnement. Sa fenêtre de contexte atteint 1 048 576 jetons.",
+        "fyi": "Gemini 3.6 Flash est la nouvelle génération du modèle rapide de Google. Il est adapté aux tâches nécessitant un bon débit tout en conservant des capacités de raisonnement et d’utilisation d’outils. OpenRouter indique une sortie maximale de 65 536 jetons et des niveaux de raisonnement minimal, faible, moyen et élevé.",
+        "public_weights": false,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1048576,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image",
+          "audio",
+          "video"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 1.3006,
+        "price_out": 6.503
+      },
+      {
+        "db_id": "35f82401-130c-42f6-8f84-c54c3fa49aaa",
+        "new": true,
+        "id": "gemini-3.5-flash-lite",
+        "simple_name": "Gemini 3.5 Flash Lite",
+        "license": "proprietary",
+        "release_date": "07/2026",
+        "arch": "maybe-moe",
+        "params": 250,
+        "reasoning": true,
+        "url": "https://openrouter.ai/google/gemini-3.5-flash-lite",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "google/gemini-3.5-flash-lite"
+        },
+        "desc": "Version légère et économique de Gemini 3.5 Flash, adaptée aux tâches à grand volume telles que la classification, l’extraction d’information, les assistants ciblés et les sous-agents. Elle accepte du texte, des images, de l’audio et de la vidéo.",
+        "size_desc": "Google ne publie pas le nombre de paramètres ni l’architecture détaillée de Gemini 3.5 Flash Lite. Ce système propriétaire est optimisé pour un bon débit à faible coût, tout en conservant une fenêtre de contexte de 1 048 576 jetons.",
+        "fyi": "Gemini 3.5 Flash Lite propose un raisonnement activé par défaut, avec les niveaux minimal, faible, moyen et élevé. Son niveau minimal est sélectionné par défaut afin de privilégier la rapidité et le coût sur les tâches les plus simples.",
+        "public_weights": false,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1048576,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image",
+          "audio",
+          "video"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 0.2601,
+        "price_out": 2.1677
+      },
+      {
         "db_id": "6bb7c76b-3076-4a95-a4b6-f83e967ec65e",
         "status": "archived",
         "id": "gemini-3-flash-preview",
@@ -2158,6 +2224,38 @@
     "icon_path": "moonshot",
     "origin_country": "CN",
     "models": [
+      {
+        "db_id": "c40d543d-362a-4b90-b324-59fb07594c89",
+        "new": true,
+        "id": "kimi-k3",
+        "simple_name": "Kimi K3",
+        "license": "Kimi K3",
+        "release_date": "07/2026",
+        "arch": "moe",
+        "params": 2800,
+        "active_params": 104,
+        "reasoning": true,
+        "url": "https://openrouter.ai/moonshotai/kimi-k3",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "moonshotai/kimi-k3"
+        },
+        "desc": "Très grand modèle multimodal à poids ouverts, conçu pour le raisonnement, la programmation et les tâches agentiques de longue durée. Il accepte du texte et des images, et dispose d’une fenêtre de contexte d’un million de jetons.",
+        "size_desc": "Kimi K3 utilise une architecture de mélange d’experts totalisant 2 800 milliards de paramètres, dont 104 milliards sont activés pour chaque jeton. Cette approche réduit les calculs par rapport à un modèle dense de même taille, mais son hébergement nécessite toujours une infrastructure spécialisée. Ses poids sont entraînés nativement en quantification MXFP4.",
+        "fyi": "Kimi K3 succède à la famille K2. Son architecture combine Kimi Delta Attention et Gated MLA, avec 896 experts dont 16 sélectionnés par jeton. Le raisonnement est activé par défaut et peut être réglé sur les niveaux faible, élevé ou maximal. Le modèle demande de préserver le contenu de raisonnement et les appels d’outils entre les tours d’une conversation.",
+        "public_weights": true,
+        "public_training_data": false,
+        "public_training_code": false,
+        "context_tokens": 1048576,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 2.6012,
+        "price_out": 13.0061
+      },
       {
         "db_id": "376607c2-0597-4177-8f93-b1157daeb223",
         "id": "kimi-k2.6",
@@ -4244,6 +4342,39 @@
     "icon_path": "swissai.webp",
     "origin_country": "CH",
     "models": [
+      {
+        "db_id": "9658f16b-e719-416a-91c5-30e1328f5430",
+        "new": true,
+        "id": "apertus-v1-5-8b",
+        "simple_name": "Apertus 1.5 8B",
+        "license": "Apache 2.0",
+        "fully_open_source": true,
+        "release_date": "07/2026",
+        "arch": "dense",
+        "params": 8,
+        "reasoning": true,
+        "url": "https://huggingface.co/swiss-ai/Apertus-v1.5-8B",
+        "endpoint": {
+          "api_type": "huggingface",
+          "api_base": "https://router.huggingface.co/v1",
+          "api_model_id": "swiss-ai/Apertus-v1.5-8B:publicai"
+        },
+        "desc": "Modèle suisse multimodal, multilingue et entièrement ouvert, adapté aux tâches de rédaction, de raisonnement, d’analyse d’images et de traitement audio. Il est disponible via l’inférence Hugging Face, fournie par Public AI.",
+        "size_desc": "Avec 8 milliards de paramètres, Apertus 1.5 8B reste suffisamment compact pour être déployé avec une infrastructure modeste. Son contexte de 262 144 jetons permet néanmoins d’analyser de longs documents. Le modèle dense comprend un encodeur de vision et d’audio, et produit du texte.",
+        "fyi": "Apertus 1.5 améliore Apertus 1.0 avec des capacités multimodales natives, un contexte quatre fois plus long et un mode de raisonnement facultatif. Les poids, les données d’entraînement et les recettes d’entraînement sont publiés sous licence Apache 2.0. Via le routeur Hugging Face, le fournisseur Public AI propose actuellement les entrées texte et image.",
+        "public_weights": true,
+        "public_training_data": true,
+        "public_training_code": true,
+        "context_tokens": 262144,
+        "eu_hostable": true,
+        "inputs": [
+          "text",
+          "image"
+        ],
+        "knowledge_cutoff": null,
+        "price_in": 0.0867,
+        "price_out": 0.1734
+      },
       {
         "db_id": "e0f9ab80-e7ed-4c28-b598-b2d80856154c",
         "status": "archived",
