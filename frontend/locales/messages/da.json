@@ -375,6 +375,11 @@
             "stateTitle": "Overholdelsesstatus",
             "title": "Erklæring om tilgængelighed"
         },
+        "document": {
+            "frenchOnly": "Dette dokument er indtil videre kun offentliggjort på fransk.",
+            "unavailable": "Dette dokument er ikke tilgængeligt for øjeblikket. Prøv venligst igen senere.",
+            "version": "Version {version}, gældende fra {date}."
+        },
         "legal": {
             "a11yDesc": "Overholdelse af standarder for digital tilgængelighed er et fremtidigt mål, men vi stræber efter at gøre dette websted tilgængeligt for alle.",
             "a11yTitle": "Tilgængelighed",
