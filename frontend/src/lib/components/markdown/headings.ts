@@ -1,6 +1,12 @@
 const FENCE = /^ {0,3}(`{3,}|~{3,})/
 const ATX = /^ {0,3}(#{1,6})(\s+.*)$/
 const SETEXT = /^ {0,3}(?:=+|-+)\s*$/
+const LEADING_TITLE = /^\s*# +[^\n]*(?:\n+|$)/
+
+/** Pages carry their own h1, so drop the one the document repeats. */
+export function stripLeadingTitle(markdown: string): string {
+  return markdown.replace(LEADING_TITLE, '')
+}
 
 export function normalizeDocumentHeadings(markdown: string): string {
   const output: string[] = []

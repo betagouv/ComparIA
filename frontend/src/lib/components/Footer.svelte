@@ -11,8 +11,8 @@
   const links = (
     [
       { href: '/mentions-legales', labelKey: 'legal' },
-      { href: '/modalites', labelKey: 'tos' },
-      { href: '/donnees-personnelles', labelKey: 'privacy' },
+      { href: '/arene/modalites', labelKey: 'tos' },
+      { href: '/arene/donnees-personnelles', labelKey: 'privacy' },
       { href: '/accessibilite', labelKey: 'accessibility' },
       { href: '/ecoconception', labelKey: 'rgesn' },
       { href: 'https://github.com/betagouv/languia', labelKey: 'sources' }

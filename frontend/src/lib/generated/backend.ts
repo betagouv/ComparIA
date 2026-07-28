@@ -337,3 +337,11 @@ export interface CurrencyInfo {
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;
 }
+export interface PublicLegalDocument {
+  version: string;
+  content_hash: string;
+  locale: string;
+  content: string;
+  published_at: string;
+  effective_at: string;
+}

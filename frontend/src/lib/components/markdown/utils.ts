@@ -5,6 +5,7 @@ import { type Renderer, Marked } from 'marked'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
 import { markedHighlight } from 'marked-highlight'
 import * as Prism from 'prismjs'
+import sanitizeHtml from 'sanitize-html'
 import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-c'
 import 'prismjs/components/prism-cpp'
@@ -317,7 +318,18 @@ const is_external_url = (link: string | null, root = location.href): boolean => 
   }
 }
 
+// Amuchina needs a DOM, so server rendering falls back to sanitize-html. Headings
+// keep their generated id and code blocks their highlighting classes.
+const SSR_OPTIONS: sanitizeHtml.IOptions = {
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    '*': ['id', 'class']
+  }
+}
+
 export function sanitize(source: string): string {
+  if (typeof DOMParser === 'undefined') return sanitizeHtml(source, SSR_OPTIONS)
+
   const amuchina = new Amuchina()
   const node = new DOMParser().parseFromString(source, 'text/html')
   walk_nodes(node.body, 'A', (node) => {

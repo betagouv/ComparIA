@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeDocumentHeadings } from './headings'
+import { normalizeDocumentHeadings, stripLeadingTitle } from './headings'
+
+describe('stripLeadingTitle', () => {
+  it('drops the title the page already displays', () => {
+    expect(stripLeadingTitle('# Conditions\n\n## Objet')).toBe('## Objet')
+  })
+
+  it('leaves a document that starts with a section alone', () => {
+    expect(stripLeadingTitle('## Objet\n\n# Conditions')).toBe('## Objet\n\n# Conditions')
+  })
+})
 
 describe('normalizeDocumentHeadings', () => {
   it('starts document content at heading level two', () => {
