@@ -7,7 +7,7 @@
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { contrastRatio } from '$lib/theme'
+  import { contrastRatio, isHexColor } from '$lib/theme'
   import { onMount } from 'svelte'
 
   let loading = $state(true)
@@ -75,7 +75,7 @@
     for (const [field, value] of Object.entries(currentValues()).filter(
       ([field]) => field !== 'homepageUrl'
     )) {
-      if (!/^#[0-9A-Fa-f]{6}$/.test(value)) nextErrors[field] = hexError
+      if (!isHexColor(value)) nextErrors[field] = hexError
     }
     if (!nextErrors.primaryColorLight && contrastRatio(primaryColorLight, '#FFFFFF') < 4.5) {
       nextErrors.primaryColorLight = m['admin.settings.customization.colors.contrastLight']()

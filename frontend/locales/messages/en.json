@@ -40,24 +40,6 @@
             "saving": "Saving...",
             "saved": "Settings updated",
             "customization": {
-                "discard": "Discard changes",
-                "colors": {
-                    "title": "Platform colours",
-                    "hint": "Use a hexadecimal colour code in the #RRGGBB format.",
-                    "fieldHint": "Expected format: #RRGGBB.",
-                    "invalid": "Enter a colour in the #RRGGBB format.",
-                    "contrastLight": "Choose a primary colour with a contrast ratio of at least 4.5:1 against white.",
-                    "contrastDark": "Choose a primary colour with a contrast ratio of at least 4.5:1 against the dark background.",
-                    "primaryLight": "Primary colour (light theme)",
-                    "primaryDark": "Primary colour (dark theme)",
-                    "secondaryLight": "Secondary colour (light theme)",
-                    "secondaryDark": "Secondary colour (dark theme)"
-                },
-                "homepageUrl": {
-                    "label": "Homepage URL",
-                    "hint": "This address opens when someone selects the platform logo or name. Leave blank to use the local homepage.",
-                    "invalid": "Enter a complete HTTPS URL."
-                },
                 "platformName": "Platform name",
                 "votesObjective": "Votes objective",
                 "logo": {
