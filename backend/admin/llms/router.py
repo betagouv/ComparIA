@@ -1,6 +1,5 @@
 import logging
 from typing import Literal
-from uuid import UUID
 
 from fastapi import APIRouter
 from sqlmodel import SQLModel, select

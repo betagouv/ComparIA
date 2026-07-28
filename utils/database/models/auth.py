@@ -9,6 +9,7 @@ UserId = Annotated[uuid.UUID, Field(foreign_key="auth_user.id")]
 
 UserRole = Literal["user", "admin"]
 
+
 class UserBase(SQLModel):
     id: ModelId
     email: str = Field(unique=True)

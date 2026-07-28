@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, Request
 
 from backend.auth.services import _hash, get_user_from_token
 from backend.config import ANONYMOUS_SESSION_COOKIE
