@@ -26,9 +26,7 @@
 
   const locale = getLocale()
   const auth = getAuthContext()
-  const homepageLinkProps = $derived({
-    href: auth.config.homepage_url || resolve('/')
-  })
+  const homepageHref = $derived(auth.config.homepage_url || resolve('/'))
   const homepageIsExternal = $derived(Boolean(auth.config.homepage_url))
   const homepageTarget = $derived(page.url.pathname.includes('arene') ? '_blank' : undefined)
 </script>
@@ -94,8 +92,9 @@
             />
             <div>
               <p class="fr-header__service-title mb-0! leading-normal!">
+                <!-- eslint-disable svelte/no-navigation-without-resolve -- the homepage URL can be an external address set by an admin -->
                 <a
-                  {...homepageLinkProps}
+                  href={homepageHref}
                   target={homepageTarget}
                   rel={homepageIsExternal
                     ? `external${homepageTarget ? ' noopener' : ''}`
@@ -108,6 +107,7 @@
                 >
                   {auth.config?.platform_name || m['header.title']()}
                 </a>
+                <!-- eslint-enable svelte/no-navigation-without-resolve -->
               </p>
 
               <p

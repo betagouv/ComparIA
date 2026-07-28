@@ -23,9 +23,7 @@
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
   let expanded = $state(true)
-  const homepageLinkProps = $derived({
-    href: auth.config.homepage_url || resolve('/')
-  })
+  const homepageHref = $derived(auth.config.homepage_url || resolve('/'))
 
   const connectionBtnProps = $derived(
     auth.user
@@ -82,14 +80,16 @@
       alt=""
       class="h-[35px]"
     />
+    <!-- eslint-disable svelte/no-navigation-without-resolve -- the homepage URL can be an external address set by an admin -->
     <a
-      {...homepageLinkProps}
+      href={homepageHref}
       rel={auth.config.homepage_url ? 'external' : undefined}
       title={m['header.homeTitle']()}
       class="font-bold text-lg text-[--text-title-grey]"
     >
       {auth.config?.platform_name || m['header.title']()}
     </a>
+    <!-- eslint-enable svelte/no-navigation-without-resolve -->
   </div>
 {/snippet}
 

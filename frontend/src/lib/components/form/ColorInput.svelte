@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isHexColor } from '$lib/theme'
   import type { HTMLInputAttributes } from 'svelte/elements'
 
   let {
@@ -18,8 +19,6 @@
     disabled?: boolean
   } & Omit<HTMLInputAttributes, 'type' | 'value' | 'disabled'> = $props()
 
-  const isValidHex = (color: string) => /^#[0-9A-Fa-f]{6}$/.test(color)
-
   function updateColor(nextValue: string) {
     value = nextValue.toUpperCase()
   }
@@ -35,7 +34,7 @@
       {...props}
       id={`${id}-picker`}
       type="color"
-      value={isValidHex(value) ? value : '#000000'}
+      value={isHexColor(value) ? value : '#000000'}
       aria-label={label}
       aria-describedby={`${id}-messages`}
       {disabled}

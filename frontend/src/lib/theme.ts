@@ -16,8 +16,12 @@ export const DEFAULT_BRAND_COLORS = {
   secondaryDark: '#FFCC00'
 } as const
 
+export function isHexColor(value: string | null | undefined): value is string {
+  return !!value && HEX_COLOR.test(value)
+}
+
 export function safeHexColor(value: string | null | undefined, fallback: string): string {
-  return value && HEX_COLOR.test(value) ? value.toUpperCase() : fallback
+  return isHexColor(value) ? value.toUpperCase() : fallback
 }
 
 function hexToRgb(hex: string): Rgb {
