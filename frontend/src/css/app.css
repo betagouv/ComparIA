@@ -17,11 +17,15 @@
   --brand-secondary-text: #ab644e;
 
   --blue-france-main-525: var(--brand-primary);
+  /* FIXME replace dsfr colors instead */
   --text-inverted-blue-france: var(--brand-primary-contrast);
   --text-active-blue-france: var(--brand-primary);
+  --text-action-high-blue-france: var(--brand-primary);
   --background-open-blue-france: var(--brand-primary-soft);
   --background-open-blue-france-hover: var(--brand-primary-soft-hover);
   --background-open-blue-france-active: var(--brand-primary-soft-active);
+  --background-active-blue-france: var(--brand-primary);
+  --background-action-low-blue-france: var(--brand-primary-soft);
 
   /* CUSTOM DSFR LIKE ADDITION */
   --cg-blue-france-main-525-hover: var(--brand-primary-hover);
@@ -57,9 +61,27 @@
   --brand-secondary: #ffcc00;
   --brand-secondary-text: #ffcc00;
 
+  --blue-france-main-525: var(--brand-primary);
+  /* FIXME replace dsfr colors instead */
+  --text-inverted-blue-france: var(--brand-primary-contrast);
+  --text-active-blue-france: var(--brand-primary);
+  --text-action-high-blue-france: var(--brand-primary);
+  --background-open-blue-france: var(--brand-primary-soft);
+  --background-open-blue-france-hover: var(--brand-primary-soft-hover);
+  --background-open-blue-france-active: var(--brand-primary-soft-active);
+  --background-active-blue-france: var(--brand-primary);
+  --background-action-low-blue-france: var(--brand-primary-soft);
+
+  /* CUSTOM DSFR LIKE ADDITION */
+  --cg-blue-france-main-525-hover: var(--brand-primary-hover);
+  --cg-blue-france-main-525-active: var(--brand-primary-active);
+
+  /* CUSTOM */
   --cg-very-light-grey: #0a0a0b;
   --cg-light-grey: #1c1e22;
   --cg-very-light-blue: #0a0a0b;
+  --blue-ecume-925-125: var(--brand-primary-soft);
+  --blue-ecume-975-75: var(--brand-primary-softest);
 }
 
 @media (min-width: 36em) {

@@ -144,11 +144,7 @@ function cssVariables(tokens: BrandTokens): string {
     `--brand-primary-soft-active:${tokens.primarySoftActive}`,
     `--brand-primary-softest:${tokens.primarySoftest}`,
     `--brand-secondary:${tokens.secondary}`,
-    `--brand-secondary-text:${tokens.secondaryText}`,
-    `--text-active-blue-france:${tokens.primary}`,
-    `--background-open-blue-france:${tokens.primarySoft}`,
-    `--background-open-blue-france-hover:${tokens.primarySoftHover}`,
-    `--background-open-blue-france-active:${tokens.primarySoftActive}`
+    `--brand-secondary-text:${tokens.secondaryText}`
   ].join(';')
 }
 
