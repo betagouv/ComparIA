@@ -10,6 +10,7 @@ from backend.suggestions.services import (
     SuggestionCategoryAlreadyExistsError,
     SuggestionCategoryNotEmptyError,
     SuggestionCategoryNotFoundError,
+    SuggestionCategoryTitleUnusableError,
     SuggestionNotFoundError,
     create_suggestion,
     create_suggestion_category,
@@ -92,6 +93,11 @@ async def add_suggestion_category(
 ) -> AdminSuggestionCategory:
     try:
         return await create_suggestion_category(body)
+    except SuggestionCategoryTitleUnusableError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Category title must contain at least one letter or digit",
+        )
     except SuggestionCategoryAlreadyExistsError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
