@@ -7,6 +7,7 @@ import pytest
 from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
 from backend.admin.router import _to_app_settings_public
