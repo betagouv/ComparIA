@@ -14,6 +14,7 @@ from utils.database.models import Comparison, Turn  # noqa: F401
 from utils.database.models.auth import (  # noqa: F401
     AuthSession,
     ConsentLog,
+    LegalDocument,
     LoginCode,
     User,
 )

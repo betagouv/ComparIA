@@ -1,7 +1,9 @@
 import uuid
+from datetime import datetime
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
@@ -20,12 +22,33 @@ from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
 from backend.config import settings
+from backend.settings.legal import (
+    DEFAULT_LEGAL_LANGUAGE,
+    LEGAL_CONTENT_MAX_LENGTH,
+    LEGAL_LOCALE_PATTERN,
+    LEGAL_VERSION_MAX_LENGTH,
+    DuplicateLegalDocumentError,
+    InvalidEffectiveDateError,
+    LegalPresentation,
+    LocaleQuery,
+    OptionalLocaleQuery,
+    UtcTimestamp,
+    get_active_legal_document,
+    get_legal_presentation,
+    list_legal_documents,
+    publish_legal_document,
+)
 from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
     AppSettingsPublic,
 )
-from utils.database.models.auth import UserPublic, UserUpsert
+from utils.database.models.auth import (
+    LegalDocument,
+    LegalDocumentKind,
+    UserPublic,
+    UserUpsert,
+)
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.utils import FormJsonSchema
 
@@ -47,8 +70,155 @@ class InviteBody(BaseModel):
     email: EmailStr
 
 
+class AdminLegalDocument(BaseModel):
+    id: uuid.UUID
+    kind: LegalDocumentKind
+    version: str
+    locale: str
+    content: str
+    content_hash: str
+    published_at: UtcTimestamp
+    effective_at: UtcTimestamp
+    retired_at: UtcTimestamp | None
+
+
+class PublishLegalDocumentBody(BaseModel):
+    version: str = Field(
+        min_length=1, max_length=LEGAL_VERSION_MAX_LENGTH, pattern=r"^\S(?:.*\S)?$"
+    )
+    locale: str = Field(
+        min_length=2,
+        max_length=16,
+        pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$",
+    )
+    content: str = Field(min_length=1, max_length=LEGAL_CONTENT_MAX_LENGTH)
+    effective_at: datetime | None = None
+    confirm_publication: Literal[True]
+
+
+class UpdateLegalPresentationBody(BaseModel):
+    presentation: LegalPresentation
+
+
 _LOGO_MAX_SIZE = 2 * 1024 * 1024
 _LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
+
+
+def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
+    return AdminLegalDocument(
+        id=row.id,
+        kind=row.kind,
+        version=row.version,
+        locale=row.language,
+        content=row.content,
+        content_hash=row.content_hash,
+        published_at=row.published_at,
+        effective_at=row.effective_at,
+        retired_at=row.retired_at,
+    )
+
+
+async def _current_legal_document(
+    kind: LegalDocumentKind, locale: str
+) -> AdminLegalDocument:
+    document = await get_active_legal_document(kind, locale)
+    if not document:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active document is available for this locale",
+        )
+    return _to_admin_legal_document(document)
+
+
+async def _publish(
+    kind: LegalDocumentKind, body: PublishLegalDocumentBody
+) -> AdminLegalDocument:
+    try:
+        document = await publish_legal_document(
+            kind=kind,
+            version=body.version,
+            language=body.locale,
+            content=body.content,
+            effective_at=body.effective_at,
+        )
+    except DuplicateLegalDocumentError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail=str(exc)
+        ) from exc
+    except (InvalidEffectiveDateError, ValueError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
+    return _to_admin_legal_document(document)
+
+
+@router.get("/legal/terms", response_model=list[AdminLegalDocument])
+async def get_terms_publications(
+    locale: OptionalLocaleQuery = None,
+) -> list[AdminLegalDocument]:
+    documents = await list_legal_documents("terms", locale)
+    return [_to_admin_legal_document(document) for document in documents]
+
+
+@router.get("/legal/terms/current", response_model=AdminLegalDocument)
+async def get_current_terms(
+    locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE,
+) -> AdminLegalDocument:
+    return await _current_legal_document("terms", locale)
+
+
+@router.post(
+    "/legal/terms",
+    response_model=AdminLegalDocument,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_terms_publication(
+    body: PublishLegalDocumentBody,
+) -> AdminLegalDocument:
+    return await _publish("terms", body)
+
+
+@router.get("/legal/privacy-policy", response_model=list[AdminLegalDocument])
+async def get_privacy_policy_publications(
+    locale: OptionalLocaleQuery = None,
+) -> list[AdminLegalDocument]:
+    documents = await list_legal_documents("privacy_policy", locale)
+    return [_to_admin_legal_document(document) for document in documents]
+
+
+@router.get("/legal/privacy-policy/current", response_model=AdminLegalDocument)
+async def get_current_privacy_policy(
+    locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE,
+) -> AdminLegalDocument:
+    return await _current_legal_document("privacy_policy", locale)
+
+
+@router.post(
+    "/legal/privacy-policy",
+    response_model=AdminLegalDocument,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_privacy_policy_publication(
+    body: PublishLegalDocumentBody,
+) -> AdminLegalDocument:
+    return await _publish("privacy_policy", body)
+
+
+@router.get("/legal/presentation", response_model=LegalPresentation)
+async def get_participation_presentation() -> LegalPresentation:
+    return await get_legal_presentation()
+
+
+@router.put("/legal/presentation", response_model=LegalPresentation)
+async def put_participation_presentation(
+    body: UpdateLegalPresentationBody,
+    current_user: RequiredAdmin,
+) -> LegalPresentation:
+    await update_app_settings(
+        {"legal_presentation": body.presentation.model_dump(mode="json")},
+        updated_by=current_user.id,
+    )
+    return body.presentation
 
 
 @router.get("/users", response_model=UsersPage)
