@@ -40,12 +40,14 @@ describe('LegalDocument', () => {
     expect(container.textContent).toContain('28 juillet 2026')
   })
 
-  it('says so when the reader gets the French document instead of a translation', () => {
+  it("says so, in the reader's own language, when they get the French document instead of a translation", () => {
     getLocale.mockReturnValue('da')
 
     const { container } = render(LegalDocument, { ...document, locale: 'fr' })
 
-    expect(container.querySelector('.fr-alert')?.textContent).toContain('français')
+    // Now that a Danish translation exists, the notice renders in Danish
+    // rather than French: it is meant to be understood by the reader.
+    expect(container.querySelector('.fr-alert')?.textContent).toContain('fransk')
   })
 
   it('stays quiet when the document is in the requested language', () => {
