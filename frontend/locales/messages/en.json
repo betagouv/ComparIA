@@ -374,6 +374,11 @@
             "stateTitle": "Compliance Status",
             "title": "Accessibility statement"
         },
+        "document": {
+            "frenchOnly": "This document is only published in French for now.",
+            "unavailable": "This document is not available right now. Please try again later.",
+            "version": "Version {version}, in effect since {date}."
+        },
         "legal": {
             "a11yDesc": "Compliance with digital accessibility standards is a future goal, but we strive to make this site accessible to everyone.",
             "a11yTitle": "Accessibility",
