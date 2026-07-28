@@ -47,7 +47,6 @@ export default defineConfig({
       yellow: 'var(--yellow-tournesol-850-200)',
       green: 'var(--cg-green)',
       purple: 'var(--cg-purple)',
-      orange: 'var(--brand-secondary)',
       red: 'var(--red-marianne-425-625-active)',
       grey: 'var(--grey-425-625)',
       'dark-grey': 'var(--grey-200-850)',
@@ -68,7 +67,7 @@ export default defineConfig({
     {
       'cg-border': 'border-1 border-[--grey-925-125] border-solid rounded-xl',
       'c-bot-disk-a': 'w-[22px] h-[22px] rounded-full bg-purple',
-      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange',
+      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-secondary',
       'text-xxs': 'text-[10px] leading-normal'
     }
   ],
