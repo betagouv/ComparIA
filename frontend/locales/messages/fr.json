@@ -59,6 +59,7 @@
             "categoryDescription": "Description",
             "categoryDescriptionHint": "Cette description est affichée sous le nom de la catégorie dans l’arène.",
             "categoryDuplicateError": "Une catégorie portant ce nom existe déjà pour cette langue.",
+            "categoryTitleUnusableError": "Le nom doit contenir au moins une lettre ou un chiffre.",
             "categoryDeleteConfirm": "Supprimer « {title} » ?",
             "categoryDeleteConflict": "Cette catégorie contient des suggestions et ne peut pas être supprimée.",
             "categoryDeleteError": "La catégorie n’a pas pu être supprimée. Réessayez.",

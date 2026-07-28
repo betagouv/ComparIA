@@ -285,8 +285,14 @@ def upgrade() -> None:
     categories = []
     suggestions = []
     for locale, localized_categories in _seed_data().items():
+        keys = _CATEGORY_KEYS[locale]
+        if len(keys) != len(localized_categories):
+            raise RuntimeError(
+                f"Seed data for {locale} has {len(localized_categories)} categories "
+                f"but {len(keys)} keys are declared"
+            )
         for order, category in enumerate(localized_categories):
-            key = _CATEGORY_KEYS[locale][order]
+            key = keys[order]
             category_id = _seed_id("category", locale, key)
             categories.append(
                 {
