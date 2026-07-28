@@ -28,7 +28,7 @@ jobs:
           enable-cache: true
 
       - name: Run backend tests
-        run: uv run --locked --group data pytest tests -q
+        run: uv run --locked --group dev --group data pytest tests -q
 
   frontend:
     runs-on: ubuntu-latest

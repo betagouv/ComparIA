@@ -120,7 +120,7 @@ display-env-da: ## Display env vars loaded from KeePass for DA instance
 test: test-backend test-frontend ## Run all tests
 
 test-backend: ## Run the python test suite (no DB required)
-	$(UV) run --group data pytest tests -q
+	$(UV) run --group dev --group data pytest tests -q
 
 test-frontend: ## Run the frontend unit tests
 	cd frontend && npx vitest run
