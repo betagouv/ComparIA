@@ -163,7 +163,7 @@
   }
 
   function updateFilters() {
-    updateQuery({ status, locale, category_id: categoryId, page: 1 })
+    updateQuery({ status, language: locale, category_id: categoryId, page: 1 })
   }
 
   function updateLocaleFilter() {

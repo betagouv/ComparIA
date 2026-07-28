@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ depends, fetch, url }) => {
   const filters: SuggestionFilters = {
     search: url.searchParams.get('search') ?? '',
     status: (url.searchParams.get('status') as SuggestionFilters['status']) ?? '',
-    locale: url.searchParams.get('locale') ?? '',
+    locale: url.searchParams.get('language') ?? '',
     category_id: url.searchParams.get('category_id') ?? ''
   }
   const params = new URLSearchParams({
