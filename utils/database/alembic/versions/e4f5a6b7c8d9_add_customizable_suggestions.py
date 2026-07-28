@@ -1,7 +1,7 @@
 """add_customizable_suggestions
 
 Revision ID: e4f5a6b7c8d9
-Revises: c6a1f3e8d2b7
+Revises: e4a8c2d9f1b7
 Create Date: 2026-07-27 00:00:00.000000
 
 """
@@ -19,7 +19,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "e4f5a6b7c8d9"
-down_revision: Union[str, Sequence[str], None] = "c6a1f3e8d2b7"
+down_revision: Union[str, Sequence[str], None] = "e4a8c2d9f1b7"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
