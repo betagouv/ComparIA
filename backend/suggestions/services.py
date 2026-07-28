@@ -1,5 +1,4 @@
 import re
-import time
 import unicodedata
 import uuid
 from datetime import datetime
@@ -22,19 +21,7 @@ from utils.database.models.suggestion import (
     SuggestionLocale,
 )
 from utils.database.session import get_session
-
-PUBLIC_SUGGESTIONS_TTL_SECONDS = 300
-
-# The whole curated corpus is read on every server-side render of the arena page
-# but only changes when an admin edits it, so keep it in memory between reads.
-# Cached per process: a deployment with several workers holds one copy per
-# worker, and an edit made in one worker can take up to the TTL to show up in
-# the others. That is the ceiling we accept to avoid pulling in redis here.
-_public_suggestions_cache: dict[str, tuple[PublicSuggestionsResponse, float]] = {}
-
-
-def _clear_public_suggestions_cache() -> None:
-    _public_suggestions_cache.clear()
+from utils.storage.redis import REDIS_SUGGESTIONS_KEY, invalidate_cache, redis_cache
 
 
 class SuggestionCategoryNotFoundError(Exception):
@@ -92,14 +79,10 @@ def _to_admin_suggestion(
     )
 
 
+@redis_cache(REDIS_SUGGESTIONS_KEY)
 async def list_public_suggestions(
     locale: SuggestionLocale,
 ) -> PublicSuggestionsResponse:
-    now = time.monotonic()
-    cached = _public_suggestions_cache.get(locale)
-    if cached is not None and now - cached[1] < PUBLIC_SUGGESTIONS_TTL_SECONDS:
-        return cached[0]
-
     async with get_session() as session:
         result = await session.exec(
             select(SuggestionCategory, PromptSuggestion)
@@ -130,9 +113,7 @@ async def list_public_suggestions(
             current.suggestions.append(
                 PublicSuggestion(id=suggestion.id, text=suggestion.text)
             )
-        response = PublicSuggestionsResponse(categories=list(categories.values()))
-        _public_suggestions_cache[locale] = (response, now)
-        return response
+        return PublicSuggestionsResponse(categories=list(categories.values()))
 
 
 async def list_admin_suggestions(
@@ -229,7 +210,7 @@ async def create_suggestion(
         except IntegrityError as error:
             await session.rollback()
             raise SuggestionAlreadyExistsError() from error
-        _clear_public_suggestions_cache()
+        invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(suggestion)
         await session.refresh(category)
         return _to_admin_suggestion(suggestion, category)
@@ -284,7 +265,7 @@ async def create_suggestion_category(
         except IntegrityError as error:
             await session.rollback()
             raise SuggestionCategoryAlreadyExistsError() from error
-        _clear_public_suggestions_cache()
+        invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(category)
         return _to_admin_category(category)
 
@@ -311,7 +292,7 @@ async def delete_suggestion_category(category_id: uuid.UUID) -> None:
         except IntegrityError as error:
             await session.rollback()
             raise SuggestionCategoryNotEmptyError() from error
-        _clear_public_suggestions_cache()
+        invalidate_cache(REDIS_SUGGESTIONS_KEY)
 
 
 async def set_suggestion_archived(
@@ -331,7 +312,7 @@ async def set_suggestion_archived(
         suggestion.updated_at = now
         session.add(suggestion)
         await session.commit()
-        _clear_public_suggestions_cache()
+        invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(suggestion)
         await session.refresh(category)
         return _to_admin_suggestion(suggestion, category)

@@ -39,6 +39,7 @@ REDIS_WEB_SEARCH_KEY: Final[str] = (
 REDIS_MAINTENANCE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}maintenance_mode"
 REDIS_LLMS_DATA_CACHE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}llms_data"
 REDIS_APP_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}app_settings"
+REDIS_SUGGESTIONS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}suggestions"
 
 
 @lru_cache
