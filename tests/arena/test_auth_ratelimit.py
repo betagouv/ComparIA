@@ -9,14 +9,11 @@ Run with pytest, or directly:
 """
 
 import contextlib
-import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
-os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 import utils.database.models  # noqa: F401 needed before importing backend.auth.router
 

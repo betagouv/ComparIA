@@ -14,7 +14,6 @@ captured from the first batch).
     uv run --group data python tests/dataset/test_streaming_export.py
 """
 
-import os
 import sys
 import tempfile
 from datetime import datetime
@@ -23,8 +22,6 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-
-os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from utils.dataset.export import StreamingDatasetExporter
 
