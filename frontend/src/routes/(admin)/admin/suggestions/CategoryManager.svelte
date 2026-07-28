@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Icon, Modal } from '$components/dsfr'
-  import { api } from '$lib/fastapi-client'
+  import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { SuggestionCategory } from './types'
@@ -45,10 +45,10 @@
       useToast(m['admin.suggestions.categoryDeleteSuccess'](), 4000)
       await onDeleted()
     } catch (requestError) {
-      const message = (requestError as Error).message
-      error = message.includes('409')
-        ? m['admin.suggestions.categoryDeleteConflict']()
-        : m['admin.suggestions.categoryDeleteError']()
+      error =
+        (requestError as ApiError).status === 409
+          ? m['admin.suggestions.categoryDeleteConflict']()
+          : m['admin.suggestions.categoryDeleteError']()
     } finally {
       deleting = false
     }

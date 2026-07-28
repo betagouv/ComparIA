@@ -2,8 +2,7 @@
   lang="ts"
   generics="T extends { id: string; label: string; href?: string; content?: string, icon?: string }"
 >
-  import { resolve } from '$app/paths'
-  import { untrack, type Snippet } from 'svelte'
+  import type { Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
   import { Icon } from '.'
 
@@ -26,15 +25,15 @@
     tab?: Snippet<[T]>
   } & SvelteHTMLElements['div'] = $props()
 
-  let currentTabId = $state(untrack(() => initialId))
+  let currentTabId = $state(initialId)
 
   const items = $derived.by(() =>
     tabs.map((tab) => ({
       props: {
         id: `tab-${tab.id}`,
-        tabindex: tab.id === currentTabId ? 0 : -1,
+        tabindex: tab.id === initialId ? 0 : -1,
         role: 'tab',
-        'aria-selected': tab.id === currentTabId ? true : false,
+        'aria-selected': tab.id === initialId ? true : false,
         'aria-controls': `tab-${tab.id}-panel`,
         class: kind === 'tab' ? 'fr-tabs__tab' : 'fr-nav__link',
         onclick: () => (currentTabId = tab.id)
@@ -56,7 +55,7 @@
     {#each items as item, i (i)}
       <li role="presentation" class="whitespace-nowrap">
         {#if item.href}
-          <a {...item.props} href={resolve(item.href)}>
+          <a {...item.props} href={item.href}>
             {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
           </a>
         {:else}
@@ -76,7 +75,7 @@
       class={[
         'fr-tabs__panel',
         {
-          'fr-tabs__panel--selected': item.id === currentTabId,
+          'fr-tabs__panel--selected': item.id === initialId,
           'px-0! py-5!': noBorders,
           'visibility-none! transition-none!': item.href && item.id !== currentTabId
         },
