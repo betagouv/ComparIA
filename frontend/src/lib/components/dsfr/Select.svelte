@@ -8,8 +8,10 @@
     id: string
     selected: Value
     label: string
+    help?: string
     options: Option[]
     hideLabel?: boolean
+    reserveHintSpace?: boolean
     groupClass?: ClassValue
   } & HTMLSelectAttributes
 
@@ -17,8 +19,10 @@
     id,
     selected = $bindable(),
     label,
+    help,
     options,
     hideLabel = false,
+    reserveHintSpace = false,
     groupClass,
     ...props
   }: SelectProps = $props()
@@ -27,9 +31,20 @@
 <div class={['fr-select-group', groupClass]}>
   <label class={['fr-label', { 'fr-sr-only': hideLabel }]} for={id}>
     {label}
+    {#if help}
+      <span id="{id}-help" class="fr-hint-text">{help}</span>
+    {:else if reserveHintSpace}
+      <span class="fr-hint-text" aria-hidden="true">&nbsp;</span>
+    {/if}
   </label>
 
-  <select {...props} {id} bind:value={selected} class={['fr-select', props.class]}>
+  <select
+    {...props}
+    {id}
+    bind:value={selected}
+    aria-describedby={help ? `${id}-help` : props['aria-describedby']}
+    class={['fr-select', props.class]}
+  >
     {#each options as option (option.value)}
       <option value={option.value}>{option.label}</option>
     {/each}
