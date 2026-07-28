@@ -50,7 +50,7 @@ jobs:
 
       - name: Run frontend tests
         working-directory: frontend
-        run: npx vitest run
+        run: yarn vitest run
 
       - name: Build frontend
         working-directory: frontend
