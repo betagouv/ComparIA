@@ -15,7 +15,7 @@
       .map((n) => {
         return page === 0 ? n + 1 : page === pageCount - 1 ? n - 1 : n
       })
-      .filter((n) => n < pageCount)
+      .filter((n) => n > -1 && n < pageCount)
   )
 </script>
 
