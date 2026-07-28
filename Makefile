@@ -123,7 +123,7 @@ test-backend: ## Run the python test suite (no DB required)
 	$(UV) run --group dev --group data pytest tests -q
 
 test-frontend: ## Run the frontend unit tests
-	cd frontend && npx vitest run
+	cd frontend && yarn vitest run
 
 test-dataset: ## Run dataset export tests (no DB required)
 	$(UV) run --group data python tests/dataset/test_comparison_to_turns.py
