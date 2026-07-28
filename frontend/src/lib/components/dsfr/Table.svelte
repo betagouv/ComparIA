@@ -10,7 +10,9 @@
     caption: string
     cols: Col[]
     rows: Row[]
-    pagination?: boolean
+    itemCount?: number
+    maxRowsPerPage?: number
+    currentPage?: number
     orderingCol?: Col['id']
     orderingMethod?: OrderingMethod
     search?: string
@@ -26,7 +28,9 @@
     caption,
     cols,
     rows,
-    pagination = false,
+    itemCount,
+    maxRowsPerPage = $bindable(0),
+    currentPage = $bindable(0),
     orderingCol = $bindable(),
     orderingMethod = $bindable(),
     search = $bindable(),
@@ -49,14 +53,13 @@
       orderingMethod = 'descending'
     }
     // Also return to page 1
-    page = 0
+    currentPage = 0
   }
 
-  let page = $state(0)
-  let maxRows = $state(10)
-
   const displayedRows = $derived(
-    pagination ? rows.slice(page * maxRows, page * maxRows + maxRows) : rows
+    !itemCount && maxRowsPerPage
+      ? rows.slice(currentPage * maxRowsPerPage, currentPage * maxRowsPerPage + maxRowsPerPage)
+      : rows
   )
   const maxRowsOptions = [10, 25, 50].map((value) => ({
     value,
@@ -204,11 +207,11 @@
     </div>
   </div>
 
-  {#if pagination}
+  {#if maxRowsPerPage && rows.length}
     <div class="fr-table__footer">
       <div class="fr-table__footer--start">
         <Select
-          bind:selected={maxRows}
+          bind:selected={maxRowsPerPage}
           id="max-row-select"
           options={maxRowsOptions}
           label={m['components.table.linePerPage']()}
@@ -217,7 +220,11 @@
       </div>
 
       <div class="fr-table__footer--middle">
-        <Pagination itemCount={rows.length} bind:page maxItemPerPage={maxRows} />
+        <Pagination
+          itemCount={itemCount ?? rows.length}
+          bind:page={currentPage}
+          maxItemPerPage={maxRowsPerPage}
+        />
       </div>
     </div>
   {/if}
