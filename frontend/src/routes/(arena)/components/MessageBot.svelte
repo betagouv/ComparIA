@@ -10,9 +10,11 @@
     TurnChoice
   } from '$lib/chatService.svelte'
   import { isAdmin } from '$lib/auth.svelte'
+  import type { AgentTraceToolResult } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { AgentTrace, ToolActivity, VoteAnnotate } from '.'
+  import { SvelteMap } from 'svelte/reactivity'
 
   export type MessageBotProps = {
     id: string
@@ -41,15 +43,53 @@
 
   const message = $derived(turnSide.llm_msg!)
 
-  // Set by the backend only when tools were actually offered, so it separates a
-  // model that declined from one that was never given the chance.
-  const toolsWereOffered = $derived(message.agent_stop_reason != null)
+  const trace = $derived(message.agent_trace ?? [])
+  const toolResults = $derived.by(() => {
+    const results = new SvelteMap<string, AgentTraceToolResult>()
+    for (const event of trace) {
+      if (event.type === 'tool_result') results.set(event.tool_call_id, event)
+    }
+    return results
+  })
+  const latestTracedReasoning = $derived.by(() => {
+    let latest = ''
+    for (const event of trace) {
+      if (event.type === 'reasoning') latest = event.content
+    }
+    return latest.trim()
+  })
+  const liveReasoning = $derived.by(() => {
+    const reasoning = message.reasoning_content?.trim() ?? ''
+    return reasoning === latestTracedReasoning ? '' : reasoning
+  })
 
   let annotations = $derived({
     keyword_annotations: turnSide.keyword_annotations,
     custom_annotation: turnSide.custom_annotation
   })
 </script>
+
+{#snippet reasoningBlock(content: string, controlsId: string, inProgress = false)}
+  <details class="reasoning-activity cg-border my-3 rounded-lg bg-white w-full overflow-hidden">
+    <summary
+      class="reasoning-activity-summary gap-2 px-3 py-2 text-sm flex cursor-pointer items-center"
+    >
+      <Icon icon="i-ri-brain-2-line" size="sm" class="text-primary shrink-0" />
+      <span class="text-primary font-medium grow" aria-live={inProgress ? 'polite' : undefined}>
+        {inProgress ? m['chatbot.reasoning.inProgress']() : m['chatbot.reasoning.finished']()}
+      </span>
+      <span class="reasoning-activity-chevron flex shrink-0" aria-hidden="true">
+        <Icon icon="i-ri-arrow-down-s-line" size="sm" />
+      </span>
+    </summary>
+    <div
+      id={controlsId}
+      class="reasoning-activity-content px-3 py-2 text-sm border-t border-[--border-default-grey] text-[--text-mention-grey]"
+    >
+      {@html sanitize(content.split('\n').join('<br>'))}
+    </div>
+  </details>
+{/snippet}
 
 <div class="md:w-full flex w-[80vw] flex-col">
   <div
@@ -64,7 +104,7 @@
   >
     <div class="px-4 py-2 flex items-center">
       <div class="c-bot-disk-{bot}"></div>
-      <h2 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h2>
+      <h3 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h3>
       <Copy value={message.content} />
     </div>
 
@@ -77,47 +117,31 @@
       role="group"
       aria-label={m[`models.names.${bot}`]()}
     >
-      {#if toolsWereOffered || message.agent_trace?.length}
-        <ToolActivity
-          id="{id}-tool-activity"
-          events={message.agent_trace ?? []}
-          finished={turnSide.status !== 'generating'}
-        />
-      {/if}
-
       {#if isAdmin() && message.agent_trace?.length}
         <AgentTrace id="{id}-agent-trace" {prompt} events={message.agent_trace} />
       {/if}
 
+      {#each trace as event, index (`${event.type}-${index}`)}
+        {#if event.type === 'reasoning'}
+          {@render reasoningBlock(event.content, `reasoning-${message.generation_id}-${index}`)}
+        {:else if event.type === 'intermediate_content'}
+          <Markdown message={event.content} chatbot />
+        {:else if event.type === 'tool_call'}
+          <ToolActivity
+            id="{id}-tool-activity-{index}"
+            call={event}
+            result={toolResults.get(event.tool_call_id) ?? null}
+            finished={turnSide.status !== 'generating'}
+          />
+        {/if}
+      {/each}
 
-      {#if message.reasoning_content?.trim()}
-        <section class="fr-accordion mb-8 py-2">
-          <div class="fr-highlight ms-0! ps-0!">
-            <h3 class="fr-accordion__title ms-1!">
-              <button
-                type="button"
-                class="fr-accordion__btn text-primary! bg-transparent!"
-                aria-expanded="true"
-                aria-controls="reasoning-{message.generation_id}"
-              >
-                <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
-                {#if message.content === '' && turnSide.status === 'generating'}
-                  {m['chatbot.reasoning.inProgress']()}
-                {:else}
-                  {m['chatbot.reasoning.finished']()}
-                {/if}
-              </button>
-            </h3>
-            <div
-              id="reasoning-{message.generation_id}"
-              class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
-            >
-              <div class="px-5 py-4">
-                {@html sanitize(message.reasoning_content.split('\n').join('<br>'))}
-              </div>
-            </div>
-          </div>
-        </section>
+      {#if liveReasoning}
+        {@render reasoningBlock(
+          liveReasoning,
+          `reasoning-${message.generation_id}-live`,
+          turnSide.status === 'generating' && !message.content
+        )}
       {/if}
 
       <Markdown message={message.content} chatbot />
@@ -140,3 +164,50 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .reasoning-activity-summary {
+    list-style: none;
+  }
+
+  .reasoning-activity-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .reasoning-activity-chevron {
+    transition: transform 150ms ease-out;
+  }
+
+  .reasoning-activity {
+    interpolate-size: allow-keywords;
+  }
+
+  .reasoning-activity::details-content {
+    block-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      block-size 180ms ease-out,
+      opacity 120ms ease-out,
+      content-visibility 180ms allow-discrete;
+  }
+
+  .reasoning-activity[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+
+  details[open] .reasoning-activity-chevron {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reasoning-activity-chevron {
+      transition: none;
+    }
+
+    .reasoning-activity::details-content {
+      transition: none;
+    }
+  }
+</style>

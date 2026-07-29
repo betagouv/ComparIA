@@ -728,6 +728,8 @@
             "fixed": "Outils fixés pour cette conversation : {tools}",
             "noResult": "Aucun résultat",
             "none": "Aucun outil utilisé",
+            "result": "1 résultat",
+            "results": "{count} résultats",
             "running": "Recherche en cours…",
             "sources": "{count} source(s)"
         },

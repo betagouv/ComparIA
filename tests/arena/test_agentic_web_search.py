@@ -242,6 +242,100 @@ async def _test_model_can_search_then_stream_final_answer():
     assert "Fresh information" in calls[1]["messages"][-1]["content"]
 
 
+def test_reasoning_only_tool_round_is_retried_for_a_final_answer():
+    asyncio.run(_test_reasoning_only_tool_round_is_retried_for_a_final_answer())
+
+
+async def _test_reasoning_only_tool_round_is_retried_for_a_final_answer():
+    """A model cannot finish a tool-assisted turn with private reasoning only."""
+    calls: list[dict[str, Any]] = []
+    responses = [
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="tool-round",
+                    delta={"role": "assistant"},
+                ),
+                _chunk(
+                    response_id="tool-round",
+                    delta={
+                        "tool_calls": [
+                            {
+                                "index": 0,
+                                "id": "call-1",
+                                "type": "function",
+                                "function": {
+                                    "name": "web_search",
+                                    "arguments": '{"query":"Simonas Zilinskas"}',
+                                },
+                            }
+                        ]
+                    },
+                    finish_reason="tool_calls",
+                ),
+            ]
+        ),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="reasoning-only",
+                    delta={
+                        "role": "assistant",
+                        "reasoning_content": "The results suggest an answer.",
+                    },
+                    finish_reason="stop",
+                )
+            ]
+        ),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="forced-final",
+                    delta={"role": "assistant", "content": "Here is the final answer."},
+                    finish_reason="stop",
+                )
+            ]
+        ),
+    ]
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return responses.pop(0)
+
+    result = LinkupSearchTextResult(
+        type="text",
+        name="Profile",
+        url="https://example.com/profile",
+        content="A public profile.",
+    )
+
+    async def fake_search(_query: str, raise_on_error: bool = False):
+        assert raise_on_error is True
+        return [result]
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(web_search, "search_web", fake_search),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Who is Simonas?")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+    assert message.content == "Here is the final answer."
+    assert len(calls) == 3
+    assert "tools" in calls[1]
+    assert "tools" not in calls[2]
+    assert message.agent_stop_reason == "completed"
+
+
 def test_disabled_search_does_not_expose_tools():
     asyncio.run(_test_disabled_search_does_not_expose_tools())
 
@@ -1341,6 +1435,7 @@ async def _test_a_round_over_the_cap_still_runs_what_it_can():
 if __name__ == "__main__":
     tests = [
         test_model_can_search_then_stream_final_answer,
+        test_reasoning_only_tool_round_is_retried_for_a_final_answer,
         test_disabled_search_does_not_expose_tools,
         test_tools_are_offered_whatever_the_provider,
         test_provider_rejection_answers_and_is_remembered,

@@ -359,6 +359,8 @@
             "fixed": "Tools fixed for this conversation: {tools}",
             "noResult": "No result",
             "none": "No tool used",
+            "result": "1 result",
+            "results": "{count} results",
             "running": "Searching…",
             "sources": "{count} source(s)"
         },

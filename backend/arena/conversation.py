@@ -191,7 +191,7 @@ async def bot_response_async(
         f"duration for {llm_msg.generation_id}: {duration}", extra={"request": request}
     )
     # Check for empty responses and raise error (check on data that is not stripped)
-    if not llm_msg.content and not llm_msg.reasoning_content:
+    if not llm_msg.content:
         logger.error(
             f"reponse_vide: {llm.id}, message: {llm_msg}",
             exc_info=True,

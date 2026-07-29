@@ -196,6 +196,8 @@
             "fixed": "Værktøjer låst for denne samtale: {tools}",
             "noResult": "Intet resultat",
             "none": "Intet værktøj brugt",
+            "result": "1 resultat",
+            "results": "{count} resultater",
             "running": "Søger…",
             "sources": "{count} kilde(r)"
         },

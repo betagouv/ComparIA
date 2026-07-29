@@ -68,6 +68,8 @@
             "fixed": "Verktyg låsta för det här samtalet: {tools}",
             "noResult": "Inget resultat",
             "none": "Inget verktyg användes",
+            "result": "1 resultat",
+            "results": "{count} resultat",
             "running": "Söker…",
             "sources": "{count} källa/källor"
         },

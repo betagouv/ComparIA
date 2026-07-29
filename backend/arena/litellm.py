@@ -48,6 +48,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("languia")
 
+
 def _tool_arguments_for_trace(raw_arguments: Any) -> tuple[str, dict[str, Any] | None]:
     """Keep the exact provider arguments plus a parsed object when valid."""
     if isinstance(raw_arguments, str):
@@ -194,6 +195,7 @@ async def litellm_stream_iter(
     msg.agent_trace = []
     tool_call_count = 0
     tool_round_count = 0
+    final_answer_retry_count = 0
     total_tokens = 0
     tools_were_offered = tools_available
     sheds = 0
@@ -314,6 +316,19 @@ async def litellm_stream_iter(
             ]
             if round_reasoning:
                 msg.agent_trace.append(AgentTraceReasoning(content=round_reasoning))
+            round_content = msg.content[len(content_before_call) :]
+            if (
+                not round_content.strip()
+                and not msg.content.strip()
+                and tools_were_offered
+                and final_answer_retry_count == 0
+            ):
+                # Some providers end a tool-assisted round after emitting only
+                # private reasoning. Give them one schema-free request to turn
+                # the gathered evidence into an answer for the visitor.
+                final_answer_retry_count += 1
+                tools_available = False
+                continue
             # The final answer needs no trace event: it stays in msg.content.
             break
 
@@ -370,11 +385,16 @@ async def litellm_stream_iter(
         tool_call_count += len(requested)
 
         pending = [
-            _run_tool_call(
-                tools_by_name.get(tool_name), tool_name, arguments_json, seconds_left
+            (
+                _run_tool_call(
+                    tools_by_name.get(tool_name),
+                    tool_name,
+                    arguments_json,
+                    seconds_left,
+                )
+                if index < allowed
+                else _refuse_tool_call("The tool call limit has been reached.")
             )
-            if index < allowed
-            else _refuse_tool_call("The tool call limit has been reached.")
             for index, (_, tool_name, arguments_json) in enumerate(requested)
         ]
         # Calls emitted together run together: running them in turn would spend

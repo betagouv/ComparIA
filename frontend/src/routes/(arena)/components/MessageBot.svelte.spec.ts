@@ -23,7 +23,7 @@ const props = (llm_msg: Record<string, unknown>) =>
   }) as unknown as ComponentProps<typeof MessageBot>
 
 describe('MessageBot', () => {
-  it('shows what the model searched before the answer it informed', () => {
+  it('interposes intermediate content and tool calls before the final answer', () => {
     render(
       MessageBot,
       props({
@@ -32,6 +32,10 @@ describe('MessageBot', () => {
         content: 'Answer informed by the search.',
         agent_stop_reason: 'completed',
         agent_trace: [
+          {
+            type: 'intermediate_content',
+            content: 'I will verify this first.'
+          },
           {
             type: 'tool_call',
             tool_call_id: 'call-1',
@@ -55,20 +59,54 @@ describe('MessageBot', () => {
                 content: 'Current information'
               }
             ]
+          },
+          {
+            type: 'intermediate_content',
+            content: 'I found a lead and will verify it.'
+          },
+          {
+            type: 'tool_call',
+            tool_call_id: 'call-2',
+            name: 'legal_lookup',
+            label: 'Jurisprudence',
+            arguments_json: '{"subject":"current information"}',
+            arguments: { subject: 'current information' }
+          },
+          {
+            type: 'tool_result',
+            tool_call_id: 'call-2',
+            name: 'legal_lookup',
+            status: 'success',
+            duration_ms: 8,
+            content: 'Verification complete.',
+            results: []
           }
         ]
       })
     )
 
-    const activity = screen.getByText('Recherche web')
+    const preamble = screen.getByText('I will verify this first.')
+    const firstTool = screen.getByText('Recherche web')
+    const middle = screen.getByText('I found a lead and will verify it.')
+    const secondTool = screen.getByText('Jurisprudence')
     const answer = screen.getByText('Answer informed by the search.')
 
-    expect(activity.compareDocumentPosition(answer) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+    expect(preamble.compareDocumentPosition(firstTool) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     )
+    expect(firstTool.compareDocumentPosition(middle) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(middle.compareDocumentPosition(secondTool) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(secondTool.compareDocumentPosition(answer) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(screen.getAllByText(/current information/)).toHaveLength(2)
   })
 
-  it('says a model offered tools chose not to use them', () => {
+  it('does not add a redundant status when a model does not use an offered tool', () => {
     render(
       MessageBot,
       props({
@@ -80,19 +118,29 @@ describe('MessageBot', () => {
       })
     )
 
-    expect(screen.getByText('Aucun outil utilisé')).toBeTruthy()
+    expect(screen.queryByText('Aucun outil utilisé')).toBeNull()
   })
 
-  it('stays silent when no tool was ever offered', () => {
-    render(
+  it('shows reasoning in the same compact expandable design as tool activity', () => {
+    const { container } = render(
       MessageBot,
       props({
         role: 'assistant',
         generation_id: 'generation-a',
-        content: 'Plain answer.'
+        content: 'Final answer.',
+        agent_trace: [
+          {
+            type: 'reasoning',
+            content: 'I should verify this carefully.'
+          }
+        ]
       })
     )
 
-    expect(screen.queryByText('Aucun outil utilisé')).toBeNull()
+    expect(screen.getByText('Raisonnement terminé')).toBeTruthy()
+    expect(container.querySelector('details.reasoning-activity.w-full')).toBeTruthy()
+    expect(container.querySelector('details.reasoning-activity > summary')).toBeTruthy()
+    expect(container.querySelector('.reasoning-activity-content')).toBeTruthy()
+    expect(container.querySelector('.fr-accordion')).toBeNull()
   })
 })

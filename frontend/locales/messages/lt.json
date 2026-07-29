@@ -63,6 +63,8 @@
             "fixed": "Šiam pokalbiui nustatyti įrankiai: {tools}",
             "noResult": "Rezultatų nėra",
             "none": "Nenaudota jokio įrankio",
+            "result": "1 rezultatas",
+            "results": "{count} rezultatai",
             "running": "Ieškoma…",
             "sources": "{count} šaltinis (-iai)"
         },
