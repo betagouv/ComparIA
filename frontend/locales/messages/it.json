@@ -66,6 +66,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Fatto",
             "noResult": "Nessun risultato",
             "none": "Nessuno strumento utilizzato",
             "running": "Ricerca in corso…",

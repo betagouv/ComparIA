@@ -79,6 +79,7 @@ export interface AgentTraceToolCall {
   type?: "tool_call";
   tool_call_id: string;
   name: string;
+  label?: string;
   arguments_json: string;
   arguments?: {
     [k: string]: unknown;
@@ -367,7 +368,6 @@ export interface CurrencyInfo {
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;
 }
-<<<<<<< HEAD
 /**
  * The signed-in user's own ranking, already scored, ordered and numbered.
  *
@@ -413,30 +413,16 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
-=======
+}
+/**
+ * What a visitor is told about a tool.
+ *
+ * Deliberately not derived from ToolBase: the arena serves this without
+ * authentication, and inheriting would hand out the server address and its
+ * credentials the moment either is added to the row.
+ */
 export interface ToolPublic {
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
-  /**
-   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
-   */
   key: string;
-  /**
-   * Name shown to visitors, in French.
-   */
   label: string;
-  /**
-   * One line shown to visitors, in French.
-   */
   description?: string | null;
-  /**
-   * How the tool is carried out.
-   */
-  kind?: "builtin";
-  /**
-   * Disabled tools are never offered to a model nor shown to a visitor.
-   */
-  enabled?: boolean;
->>>>>>> c56cb58e (feat(arene): remplace l'interrupteur de recherche web par un choix d'outils)
 }

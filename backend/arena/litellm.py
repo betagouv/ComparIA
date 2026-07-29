@@ -196,6 +196,7 @@ async def litellm_stream_iter(
     tool_round_count = 0
     total_tokens = 0
     tools_were_offered = tools_available
+    sheds = 0
     # Set the first time we refuse to offer tools again, so that "the model was
     # done" and "we stopped it" stay distinguishable.
     stopped_by: AgentStopReason | None = None
@@ -261,7 +262,12 @@ async def litellm_stream_iter(
                     endpoint.model,
                     extra={"request": request},
                 )
-                stopped_by = "context_exceeded"
+                sheds += 1
+                # One overflow is survivable, so tools stay on offer. A second
+                # means shedding is not keeping up, and the model finishes
+                # without them.
+                if sheds > 1:
+                    stopped_by = "context_exceeded"
                 msg.content = content_before_call
                 msg.reasoning_content = reasoning_before_call
                 continue
@@ -288,6 +294,10 @@ async def litellm_stream_iter(
             )
             remember_tool_rejection(endpoint.model)
             tools_available = False
+            # This model never really had the choice, so no stop reason is
+            # recorded: the interface would otherwise present a refusal by the
+            # provider as a decision by the model.
+            tools_were_offered = False
             msg.content = content_before_call
             msg.reasoning_content = reasoning_before_call
             continue
@@ -338,10 +348,12 @@ async def litellm_stream_iter(
                 function.get("arguments") or "{}"
             )
             requested.append((tool_call_id, tool_name, arguments_json))
+            called = tools_by_name.get(tool_name)
             msg.agent_trace.append(
                 AgentTraceToolCall(
                     tool_call_id=tool_call_id,
                     name=tool_name,
+                    label=called.display_label() if called else tool_name,
                     arguments_json=arguments_json,
                     arguments=parsed_arguments,
                 )

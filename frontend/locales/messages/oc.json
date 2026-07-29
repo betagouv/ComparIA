@@ -1,6 +1,7 @@
 {
     "chatbot": {
         "tools": {
+            "done": "Acabat",
             "noResult": "Cap de resultat",
             "none": "Cap d'aisina pas utilizada",
             "running": "Recèrca en cors…",

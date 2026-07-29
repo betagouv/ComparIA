@@ -66,6 +66,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Ferdig",
             "noResult": "Ingen resultater",
             "none": "Ingen verktøy brukt",
             "running": "Søker…",

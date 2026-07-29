@@ -355,6 +355,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Done",
             "noResult": "No result",
             "none": "No tool used",
             "running": "Searching…",

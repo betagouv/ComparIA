@@ -332,6 +332,9 @@ async def _test_provider_rejection_answers_and_is_remembered():
     assert message.content == "Fallback answer."
     assert "tools" in calls[0]
     assert "tools" not in calls[1]
+    # No stop reason: the model never had the choice, and the interface reads a
+    # recorded reason as "it decided not to use a tool".
+    assert message.agent_stop_reason is None
 
 
 def test_remembered_rejection_skips_the_wasted_request():

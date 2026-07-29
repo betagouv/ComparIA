@@ -92,8 +92,8 @@ def _mirror_web_search_results(llm_msg: LLMMessageCreate) -> None:
     """
     Copy web search sources out of the trace into their own column.
 
-    ponytail: the column duplicates the trace and is kept only so the results
-    accordion and the dataset keep working; drop it with the accordion.
+    The column duplicates the trace and is kept only so the results accordion on
+    older comparisons and the dataset keep working. Drop it with the accordion.
     """
     results = [
         result

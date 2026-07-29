@@ -64,6 +64,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Valmis",
             "noResult": "Tulemusi pole",
             "none": "Ühtegi tööriista ei kasutatud",
             "running": "Otsin…",

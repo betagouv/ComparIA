@@ -9,9 +9,7 @@
     ComparisonTurnSide,
     TurnChoice
   } from '$lib/chatService.svelte'
-  import { page } from '$app/state'
   import { isAdmin } from '$lib/auth.svelte'
-  import type { ToolPublic } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { AgentTrace, ToolActivity, VoteAnnotate } from '.'
@@ -42,10 +40,6 @@
   })
 
   const message = $derived(turnSide.llm_msg!)
-
-  // Loaded once by the arena layout; drilling it through every wrapper buys
-  // nothing.
-  const tools = $derived((page.data.tools ?? []) as ToolPublic[])
 
   // Set by the backend only when tools were actually offered, so it separates a
   // model that declined from one that was never given the chance.
@@ -87,7 +81,6 @@
         <ToolActivity
           id="{id}-tool-activity"
           events={message.agent_trace ?? []}
-          {tools}
           finished={turnSide.status !== 'generating'}
         />
       {/if}

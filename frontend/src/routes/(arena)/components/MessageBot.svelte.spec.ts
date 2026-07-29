@@ -4,11 +4,6 @@ import MessageBot from './MessageBot.svelte'
 import type { ComponentProps } from 'svelte'
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
-vi.mock('$app/state', () => ({
-  page: {
-    data: { tools: [{ key: 'web_search', label: 'Recherche web', description: null }] }
-  }
-}))
 
 const turnSide = (llm_msg: Record<string, unknown>) => ({
   status: 'complete' as const,
@@ -41,6 +36,7 @@ describe('MessageBot', () => {
             type: 'tool_call',
             tool_call_id: 'call-1',
             name: 'web_search',
+            label: 'Recherche web',
             arguments_json: '{"query":"current information"}',
             arguments: { query: 'current information' }
           },

@@ -64,6 +64,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Klart",
             "noResult": "Inget resultat",
             "none": "Inget verktyg användes",
             "running": "Söker…",

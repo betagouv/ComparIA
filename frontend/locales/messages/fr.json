@@ -724,6 +724,7 @@
         "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
         "tools": {
+            "done": "Terminé",
             "noResult": "Aucun résultat",
             "none": "Aucun outil utilisé",
             "running": "Recherche en cours…",

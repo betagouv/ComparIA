@@ -192,6 +192,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Færdig",
             "noResult": "Intet resultat",
             "none": "Intet værktøj brugt",
             "running": "Søger…",

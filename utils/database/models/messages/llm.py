@@ -25,6 +25,9 @@ class AgentTraceToolCall(BaseModel):
     type: Literal["tool_call"] = "tool_call"
     tool_call_id: str
     name: str
+    # Readable name of the tool the visitor selected. One MCP row exposes
+    # several functions, so the interface cannot derive it from `name`.
+    label: str = ""
     arguments_json: str
     arguments: dict[str, Any] | None = None
 

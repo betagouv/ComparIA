@@ -193,7 +193,11 @@ async def resolve_mcp_tools(row: "Tool") -> list[ToolSpec]:
             name = (schema.get("function") or {}).get("name")
             if not name:
                 continue
-            specs.append(ToolSpec(name=name, schema=schema, run=_run(row, name)))
+            specs.append(
+                ToolSpec(
+                    name=name, schema=schema, run=_run(row, name), label=row.label
+                )
+            )
     except Exception as e:
         # Losing a server costs the turn one toolset; letting it throw costs the
         # turn its answer.

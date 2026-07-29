@@ -4,12 +4,11 @@ import ToolActivity from './ToolActivity.svelte'
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 
-const tools = [{ key: 'web_search', label: 'Recherche web', description: 'Chercher sur le web' }]
-
 const searchCall = {
   type: 'tool_call' as const,
   tool_call_id: 'call-1',
   name: 'web_search',
+  label: 'Recherche web',
   arguments_json: '{"query":"prix immobilier Nantes"}',
   arguments: { query: 'prix immobilier Nantes' }
 }
@@ -34,7 +33,7 @@ const searchResult = {
 describe('ToolActivity', () => {
   it('names the tool in French and shows the query the model wrote', () => {
     render(ToolActivity, {
-      props: { id: 'a', events: [searchCall, searchResult], tools, finished: true }
+      props: { id: 'a', events: [searchCall, searchResult], finished: true }
     })
 
     expect(screen.getByText('Recherche web')).toBeTruthy()
@@ -44,7 +43,7 @@ describe('ToolActivity', () => {
 
   it('hides technical detail from visitors', () => {
     const { container } = render(ToolActivity, {
-      props: { id: 'a', events: [searchCall, searchResult], tools, finished: true }
+      props: { id: 'a', events: [searchCall, searchResult], finished: true }
     })
 
     const text = container.textContent ?? ''
@@ -54,14 +53,14 @@ describe('ToolActivity', () => {
   })
 
   it('says the model used no tool, phrased as a choice', () => {
-    render(ToolActivity, { props: { id: 'a', events: [], tools, finished: true } })
+    render(ToolActivity, { props: { id: 'a', events: [], finished: true } })
 
     expect(screen.getByText('Aucun outil utilisé')).toBeTruthy()
   })
 
   it('stays quiet while the model is still answering', () => {
     const { container } = render(ToolActivity, {
-      props: { id: 'a', events: [], tools, finished: false }
+      props: { id: 'a', events: [], finished: false }
     })
 
     expect(container.textContent?.trim()).toBe('')
@@ -69,7 +68,7 @@ describe('ToolActivity', () => {
 
   it('shows the request while the call is still running', () => {
     render(ToolActivity, {
-      props: { id: 'a', events: [searchCall], tools, finished: false }
+      props: { id: 'a', events: [searchCall], finished: false }
     })
 
     expect(screen.getByText('Recherche web')).toBeTruthy()
@@ -94,7 +93,6 @@ describe('ToolActivity', () => {
             ]
           }
         ],
-        tools,
         finished: true
       }
     })

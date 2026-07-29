@@ -59,6 +59,7 @@
     },
     "chatbot": {
         "tools": {
+            "done": "Atlikta",
             "noResult": "Rezultatų nėra",
             "none": "Nenaudota jokio įrankio",
             "running": "Ieškoma…",

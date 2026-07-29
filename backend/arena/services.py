@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from linkup import LinkupSearchTextResult
 from sqlmodel import and_, col, select, update
 
-from backend.arena.tools import model_rejects_tools, resolve_tools
+from backend.arena.tools import model_rejects_tools
 from backend.llms.data import get_llms_data
 from utils.database.models import (
     BOT_POS,
@@ -140,9 +140,10 @@ async def update_comparison_tool_capability(comparison: ComparisonRead) -> None:
     offered this turn. Left untouched (null) when no tool was offered at all,
     so a model with nothing to decline is never mistaken for one that did.
     """
-    # Nothing to record when nothing actually resolved: a selected key that
-    # turned out disabled or unknown offered no schema to either side.
-    if not await resolve_tools(comparison.enabled_tools):
+    # Nothing to record when the visitor selected nothing. Re-resolving here
+    # would repeat the turn's tool discovery, network calls included, and a
+    # server that has since gone down would wrongly read as "no tools offered".
+    if not comparison.enabled_tools:
         return
 
     llms_data = (await get_llms_data()).enabled

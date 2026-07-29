@@ -9,7 +9,7 @@ is the tool's own business.
 import asyncio
 import json
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal
 
 from backend.config import TOOL_REJECTION_TTL
@@ -58,6 +58,12 @@ class ToolSpec:
     schema: dict[str, Any]
     # Takes the raw JSON arguments string emitted by the model.
     run: Callable[[str], Awaitable[ToolResult]]
+    # Shown to visitors. One MCP row exposes several functions under a single
+    # label, so this cannot be derived from the name.
+    label: str = ""
+
+    def display_label(self) -> str:
+        return self.label or self.name
 
 
 def _rejection_key(model: str) -> str:
@@ -158,9 +164,13 @@ async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
         return []
     selected = [tool for tool in await get_enabled_tools() if tool.key in wanted]
 
-    specs = resolve_builtin_tools(
-        [tool.key for tool in selected if tool.kind == "builtin"]
-    )
+    labels = {tool.key: tool.label for tool in selected}
+    specs = [
+        replace(spec, label=labels.get(spec.name, spec.label))
+        for spec in resolve_builtin_tools(
+            [tool.key for tool in selected if tool.kind == "builtin"]
+        )
+    ]
     # Servers are listed side by side: waiting on them in turn would multiply the
     # discovery timeout by the number of rows the visitor picked.
     discovered = await asyncio.gather(

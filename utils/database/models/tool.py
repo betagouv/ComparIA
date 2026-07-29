@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from sqlmodel import Field, String
+from sqlmodel import Field, SQLModel, String
 
 from utils.validation import NonEmptyStr
 
@@ -55,5 +55,15 @@ class ToolUpsert(ToolBase):
     pass
 
 
-class ToolPublic(ToolBase):
-    pass
+class ToolPublic(SQLModel):
+    """
+    What a visitor is told about a tool.
+
+    Deliberately not derived from ToolBase: the arena serves this without
+    authentication, and inheriting would hand out the server address and its
+    credentials the moment either is added to the row.
+    """
+
+    key: str
+    label: str
+    description: str | None = None
