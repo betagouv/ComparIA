@@ -600,6 +600,14 @@
             "title": "Suggestions de prompts"
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
+        "tools": {
+            "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
+            "count": "{count} outils",
+            "label": "Outils",
+            "legend": "Outils",
+            "locked": "Les outils sont fixés pour toute la conversation.",
+            "none": "Aucun outil"
+        },
         "webSearch": {
             "disabled": "Recherche web désactivée",
             "enabled": "Recherche web activée",

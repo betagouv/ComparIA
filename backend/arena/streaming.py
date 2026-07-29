@@ -216,7 +216,7 @@ async def stream_comparison_messages(
     llms_data = (await get_llms_data()).enabled
     # Resolved once for the turn: both models are offered exactly the same set,
     # and a configured tool is looked up once rather than once per model.
-    tools = await resolve_tools(["web_search"] if comparison.web_search_enabled else [])
+    tools = await resolve_tools(comparison.enabled_tools)
 
     try:
         # Create async generators for both models

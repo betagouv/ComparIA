@@ -9,7 +9,7 @@ export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";
   custom_models_selection: string[] | null;
-  web_search_enabled: boolean;
+  enabled_tools: string[];
   error: ErrorDetails | null;
   turns: TurnPublic[];
   revealed: boolean;
@@ -367,6 +367,7 @@ export interface CurrencyInfo {
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;
 }
+<<<<<<< HEAD
 /**
  * The signed-in user's own ranking, already scored, ordered and numbered.
  *
@@ -412,4 +413,30 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
+=======
+export interface ToolPublic {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin";
+  /**
+   * Disabled tools are never offered to a model nor shown to a visitor.
+   */
+  enabled?: boolean;
+>>>>>>> c56cb58e (feat(arene): remplace l'interrupteur de recherche web par un choix d'outils)
 }

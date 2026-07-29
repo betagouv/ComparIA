@@ -1,28 +1,32 @@
 <script lang="ts">
-  import { Button, Toggle, Tooltip } from '$components/dsfr'
+  import { Button } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
+  import type { ToolPublic } from '$lib/generated/backend'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
+  import type { ToolPublic } from '$lib/generated/backend'
   import { sanitize } from '$lib/utils/commons'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import { onMount, tick } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
-  import { GuidedPromptSuggestions, ModelSelector } from '.'
+  import { GuidedPromptSuggestions, ModelSelector, ToolPicker } from '.'
 
   let {
     onPrompt,
     promptError,
     loading,
     suggestions
+    tools
   }: {
     onPrompt: (args: APIModeAndPromptData) => void
     promptError?: string
     loading: boolean
     suggestions: SuggestionCategory[]
+    tools: ToolPublic[]
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
@@ -38,7 +42,7 @@
     }
     return []
   })
-  let webSearch = $state(false)
+  let selectedTools = $state<string[]>([])
 
   const disabled = $derived(prompt == '' || !!promptError || loading)
 
@@ -91,7 +95,7 @@
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
       prompt_value: prompt,
-      web_search: webSearch
+      tools: selectedTools
     })
   }
 
@@ -163,22 +167,7 @@
           {models}
           disabled={loading}
         />
-        <Toggle
-          id="web-search"
-          bind:value={webSearch}
-          checkedLabel={m['arenaHome.webSearch.enabled']()}
-          uncheckedLabel={m['arenaHome.webSearch.disabled']()}
-          help={m['arenaHome.webSearch.help']()}
-          hideCheckLabel
-          labelPos="right"
-          class="font-medium w-full! text-[14px]!"
-          groupClass="grow my-auto"
-        >
-          {m['arenaHome.webSearch.label']()}
-          <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
-            {@html sanitize(m['arenaHome.webSearch.tooltip']())}
-          </Tooltip>
-        </Toggle>
+        <ToolPicker {tools} bind:selected={selectedTools} disabled={loading} />
       </div>
 
       <Button

@@ -14,6 +14,11 @@ from pydantic import BaseModel
 from backend.arena import litellm as integration
 from backend.arena import tools, web_search
 from backend.arena.tools import resolve_builtin_tools
+from utils.database.models import (
+    AgentTraceToolCall,
+    AgentTraceToolResult,
+    LLMMessageCreate,
+)
 
 
 class FakeRedis:
@@ -27,11 +32,6 @@ class FakeRedis:
 
     def setex(self, key: str, ttl: int, value: str) -> None:
         self.store[key] = value
-from utils.database.models import (
-    AgentTraceToolCall,
-    AgentTraceToolResult,
-    LLMMessageCreate,
-)
 
 
 def _web_search_tools():
@@ -785,7 +785,7 @@ async def _test_parallel_scheduler_does_not_cancel_slower_stream():
         system_msg_b=None,
         mode="random",
         custom_models_selection=None,
-        web_search_enabled=True,
+        enabled_tools=["web_search"],
     )
     llms_data = SimpleNamespace(
         enabled={"model-a": SimpleNamespace(), "model-b": SimpleNamespace()}
