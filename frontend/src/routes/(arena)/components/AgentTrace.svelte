@@ -86,9 +86,6 @@
               <pre
                 class="mt-2! mb-0! p-2 max-h-80 text-xs bg-alt-blue-france overflow-auto break-words whitespace-pre-wrap">{event.content}</pre>
             </details>
-          {:else if event.type === 'final_answer'}
-            <h5 class="mb-1! text-sm!">{m['chatbot.agentTrace.finalAnswer']()}</h5>
-            <p class="mb-0! break-words whitespace-pre-wrap">{event.content}</p>
           {/if}
         </li>
       {/each}

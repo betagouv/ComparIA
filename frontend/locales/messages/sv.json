@@ -56,7 +56,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Slutligt svar",
             "intermediate": "Mellanliggande modellmeddelande",
             "label": "Visa körningsspår",
             "query": "Använd sökning: ",

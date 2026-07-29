@@ -156,7 +156,7 @@ class DatasetTurn(SQLModel):
         msgs = [
             self.user_msg.model_dump(
                 include={"role", "content", "user_content"},
-                context={"merge_web_search": True},
+                context={"merge_sources": True},
             )
         ]
         if llm_msg := getattr(self, f"llm_msg_{side}"):

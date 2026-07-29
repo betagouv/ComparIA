@@ -51,7 +51,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Galutinis atsakymas",
             "intermediate": "Tarpinis modelio pranešimas",
             "label": "Rodyti vykdymo seką",
             "query": "Naudota paieška: ",

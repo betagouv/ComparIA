@@ -12,6 +12,7 @@ describe('AgentTrace', () => {
         prompt: 'Quelle est la météo actuelle à Paris ?',
         events: [
           { type: 'reasoning', content: 'Je dois vérifier une information actuelle.' },
+          { type: 'intermediate_content', content: 'Je vais consulter le web.' },
           {
             type: 'tool_call',
             tool_call_id: 'call-1',
@@ -34,8 +35,7 @@ describe('AgentTrace', () => {
                 content: 'Conditions actuelles.'
               }
             ]
-          },
-          { type: 'final_answer', content: 'Voici les conditions actuelles.' }
+          }
         ]
       }
     })
@@ -50,15 +50,15 @@ describe('AgentTrace', () => {
     const request = screen.getByRole('heading', { name: 'Requête utilisateur' })
     const toolCall = screen.getByRole('heading', { name: /Appel de l’outil/ })
     const toolResult = screen.getByRole('heading', { name: /Réponse de l’outil/ })
-    const finalAnswer = screen.getByRole('heading', { name: 'Réponse finale' })
+    const intermediate = screen.getByRole('heading', { name: 'Message intermédiaire du modèle' })
 
-    expect(request.compareDocumentPosition(toolCall) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+    expect(request.compareDocumentPosition(intermediate) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(intermediate.compareDocumentPosition(toolCall) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     )
     expect(toolCall.compareDocumentPosition(toolResult) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING
-    )
-    expect(toolResult.compareDocumentPosition(finalAnswer) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     )
   })

@@ -58,7 +58,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Respuesta final",
             "intermediate": "Mensaje intermedio del modelo",
             "label": "Ver la traza de ejecución",
             "query": "Búsqueda utilizada: ",

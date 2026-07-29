@@ -95,17 +95,11 @@ export interface AgentTraceToolResult {
   results: LinkupSearchTextResult[];
   [k: string]: unknown;
 }
-export interface AgentTraceFinalAnswer {
-  type?: "final_answer";
-  content: string;
-  [k: string]: unknown;
-}
 export type AgentTraceEvent =
   | AgentTraceReasoning
   | AgentTraceIntermediateContent
   | AgentTraceToolCall
-  | AgentTraceToolResult
-  | AgentTraceFinalAnswer;
+  | AgentTraceToolResult;
 export interface LLMMessageCreate {
   id?: string;
   role?: "assistant";

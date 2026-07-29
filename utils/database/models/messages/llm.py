@@ -39,17 +39,11 @@ class AgentTraceToolResult(BaseModel):
     results: list[LinkupSearchTextResult]
 
 
-class AgentTraceFinalAnswer(BaseModel):
-    type: Literal["final_answer"] = "final_answer"
-    content: str
-
-
 AgentTraceEvent = (
     AgentTraceReasoning
     | AgentTraceIntermediateContent
     | AgentTraceToolCall
     | AgentTraceToolResult
-    | AgentTraceFinalAnswer
 )
 
 

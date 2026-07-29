@@ -58,7 +58,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Endelig svar",
             "intermediate": "Midlertidig modellmelding",
             "label": "Se kjøringssporet",
             "query": "Søk som ble brukt: ",

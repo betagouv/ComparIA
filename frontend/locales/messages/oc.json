@@ -1,7 +1,6 @@
 {
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Responsa finala",
             "intermediate": "Messatge intermediari del modèl",
             "label": "Veire la traça d’execucion",
             "query": "Recèrca utilizada : ",

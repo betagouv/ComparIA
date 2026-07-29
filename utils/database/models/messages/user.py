@@ -41,11 +41,11 @@ class UserMessageRead(UserMessageBase):
     @field_serializer("content", mode="plain")
     def override_content(self, content: str, info: FieldSerializationInfo) -> str:
         """
-        If "merge_web_search" in context, embeds web search results in content for litellm.
+        If "merge_sources" in context, embeds the sources this message carries in its content.
         """
         context = info.context if isinstance(info.context, dict) else {}
 
-        if self.web_search_results and context.get("merge_web_search"):
+        if self.web_search_results and context.get("merge_sources"):
             return merge_web_search_with_content(content, self.web_search_results)
 
         return content

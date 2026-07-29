@@ -183,7 +183,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Endeligt svar",
             "intermediate": "Midlertidig modelbesked",
             "label": "Se udførelsesspor",
             "query": "Anvendt søgning: ",

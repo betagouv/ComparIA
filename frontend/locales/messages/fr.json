@@ -697,7 +697,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Réponse finale",
             "intermediate": "Message intermédiaire du modèle",
             "label": "Voir la trace d’exécution",
             "query": "Recherche utilisée : ",

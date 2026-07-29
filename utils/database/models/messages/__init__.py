@@ -1,6 +1,5 @@
 from .llm import (
     AgentTraceEvent,
-    AgentTraceFinalAnswer,
     AgentTraceIntermediateContent,
     AgentTraceReasoning,
     AgentTraceToolCall,

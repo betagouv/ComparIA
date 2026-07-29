@@ -56,7 +56,6 @@
     },
     "chatbot": {
         "agentTrace": {
-            "finalAnswer": "Lõplik vastus",
             "intermediate": "Mudeli vahesõnum",
             "label": "Vaata täitmisjälge",
             "query": "Kasutatud otsing: ",

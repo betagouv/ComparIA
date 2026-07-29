@@ -12,7 +12,28 @@ from linkup import LinkupSearchTextResult
 from pydantic import BaseModel
 
 from backend.arena import litellm as integration
-from utils.database.models import LLMMessageCreate
+from backend.arena import web_search
+from backend.arena.tools import resolve_builtin_tools
+from utils.database.models import (
+    AgentTraceToolCall,
+    AgentTraceToolResult,
+    LLMMessageCreate,
+)
+
+
+def _web_search_tools():
+    """Resolve web search the way the arena does when the user enables it."""
+    return resolve_builtin_tools(["web_search"])
+
+
+def _trace_sources(message: LLMMessageCreate) -> list[LinkupSearchTextResult]:
+    """Sources the message received, as recorded in its trace."""
+    return [
+        result
+        for event in message.agent_trace or []
+        if event.type == "tool_result"
+        for result in event.results
+    ]
 
 
 class UserMessage(BaseModel):
@@ -170,39 +191,37 @@ async def _test_model_can_search_then_stream_final_answer():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(integration, "search_web", fake_search),
-        patch.object(integration.settings, "LINKUP_API_KEY", "configured-for-test"),
+        patch.object(web_search, "search_web", fake_search),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
         streamed = [
-            (item.content, len(item.web_search_results or []))
+            (item.content, len(_trace_sources(item)))
             async for item in integration.litellm_stream_iter(
                 llm=_llm(),
                 messages=[UserMessage(content="What happened?")],
                 msg=message,
                 temperature=0.7,
                 max_new_tokens=100,
-                web_search_enabled=True,
+                tools=_web_search_tools(),
             )
         ]
 
     assert ("", 1) in streamed
     assert streamed[-1] == ("Current answer.", 1)
     assert message.tokens == 5
-    assert message.web_search_results == [result]
+    assert _trace_sources(message) == [result]
     assert [event.type for event in message.agent_trace or []] == [
         "reasoning",
         "intermediate_content",
         "tool_call",
         "tool_result",
         "reasoning",
-        "final_answer",
     ]
     assert message.agent_trace[2].arguments == {"query": "latest public news"}
     assert message.agent_trace[3].results == [result]
-    assert message.agent_trace[-1].content == "Current answer."
     assert calls[0]["tool_choice"] == "auto"
-    assert calls[0]["tools"] == [integration.WEB_SEARCH_TOOL]
+    assert calls[0]["tools"] == [web_search.WEB_SEARCH_TOOL_SCHEMA]
     assert calls[1]["messages"][-1]["role"] == "tool"
     assert "Fresh information" in calls[1]["messages"][-1]["content"]
 
@@ -227,7 +246,7 @@ async def _test_openrouter_tool_support_uses_provider_capabilities():
             AsyncMock(return_value={model}),
         ),
     ):
-        assert await integration._supports_web_search_tools(f"openrouter/{model}")
+        assert await integration._supports_tools(f"openrouter/{model}")
 
 
 async def _test_disabled_search_does_not_expose_tools():
@@ -253,7 +272,7 @@ async def _test_disabled_search_does_not_expose_tools():
             msg=message,
             temperature=0.7,
             max_new_tokens=100,
-            web_search_enabled=False,
+            tools=[],
         ):
             pass
 
@@ -291,7 +310,7 @@ async def _test_unsupported_model_gracefully_answers_without_tools():
             "_get_openrouter_tool_models",
             AsyncMock(return_value=set()),
         ),
-        patch.object(integration.settings, "LINKUP_API_KEY", "configured-for-test"),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -300,7 +319,7 @@ async def _test_unsupported_model_gracefully_answers_without_tools():
             msg=message,
             temperature=0.7,
             max_new_tokens=100,
-            web_search_enabled=True,
+            tools=_web_search_tools(),
         ):
             pass
 
@@ -335,8 +354,8 @@ async def _test_enabled_model_can_choose_not_to_search():
         patch.object(
             integration.litellm, "supports_function_calling", return_value=True
         ),
-        patch.object(integration.settings, "LINKUP_API_KEY", "configured-for-test"),
-        patch.object(integration, "search_web", unexpected_search),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+        patch.object(web_search, "search_web", unexpected_search),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -345,7 +364,7 @@ async def _test_enabled_model_can_choose_not_to_search():
             msg=message,
             temperature=0.7,
             max_new_tokens=100,
-            web_search_enabled=True,
+            tools=_web_search_tools(),
         ):
             pass
 
@@ -374,7 +393,7 @@ async def _test_missing_linkup_key_does_not_expose_tools():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(integration.settings, "LINKUP_API_KEY", None),
+        patch.object(web_search.settings, "LINKUP_API_KEY", None),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -383,7 +402,7 @@ async def _test_missing_linkup_key_does_not_expose_tools():
             msg=message,
             temperature=0.7,
             max_new_tokens=100,
-            web_search_enabled=True,
+            tools=_web_search_tools(),
         ):
             pass
 
@@ -403,20 +422,12 @@ async def _test_invalid_tool_arguments_return_error_without_search():
         called = True
         return []
 
-    with patch.object(integration, "search_web", fake_search):
-        content, results = await integration._execute_web_search_tool(
-            {
-                "id": "call-1",
-                "function": {
-                    "name": integration.WEB_SEARCH_TOOL_NAME,
-                    "arguments": '{"query":""}',
-                },
-            }
-        )
+    with patch.object(web_search, "search_web", fake_search):
+        result = await web_search.execute_web_search('{"query":""}')
 
     assert called is False
-    assert results == []
-    assert "Invalid arguments" in content
+    assert result.results == []
+    assert "Invalid arguments" in result.content
 
 
 def test_fragmented_streamed_tool_arguments_are_reconstructed():
@@ -482,8 +493,8 @@ async def _test_fragmented_streamed_tool_arguments_are_reconstructed():
         patch.object(
             integration.litellm, "supports_function_calling", return_value=True
         ),
-        patch.object(integration.settings, "LINKUP_API_KEY", "test"),
-        patch.object(integration, "search_web", fake_search),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "test"),
+        patch.object(web_search, "search_web", fake_search),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -492,7 +503,7 @@ async def _test_fragmented_streamed_tool_arguments_are_reconstructed():
             msg=message,
             temperature=0.7,
             max_new_tokens=100,
-            web_search_enabled=True,
+            tools=_web_search_tools(),
         ):
             pass
 
@@ -554,8 +565,8 @@ async def _test_tool_call_budget_forces_a_final_answer():
         patch.object(
             integration.litellm, "supports_function_calling", return_value=True
         ),
-        patch.object(integration.settings, "LINKUP_API_KEY", "test"),
-        patch.object(integration, "search_web", fake_search),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "test"),
+        patch.object(web_search, "search_web", fake_search),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -564,12 +575,12 @@ async def _test_tool_call_budget_forces_a_final_answer():
             msg=message,
             temperature=0.7,
             max_new_tokens=100,
-            web_search_enabled=True,
+            tools=_web_search_tools(),
         ):
             pass
 
-    assert search_count == integration.WEB_SEARCH_MAX_TOOL_CALLS
-    assert len(calls) == integration.WEB_SEARCH_MAX_TOOL_CALLS + 1
+    assert search_count == integration.MAX_TOOL_CALLS
+    assert len(calls) == integration.MAX_TOOL_CALLS + 1
     assert message.content == "Budget reached."
 
 
@@ -581,20 +592,20 @@ def test_search_results_are_safe_and_bounded():
             url=(
                 "javascript:alert(1)" if index == 0 else f"https://example.com/{index}"
             ),
-            content="x" * (integration.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH + 10),
+            content="x" * (web_search.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH + 10),
         )
-        for index in range(integration.WEB_SEARCH_MAX_RESULTS_PER_CALL + 3)
+        for index in range(web_search.WEB_SEARCH_MAX_RESULTS_PER_CALL + 3)
     ]
 
-    normalized = integration._normalize_search_results(results)
+    normalized = web_search._normalize_search_results(results)
 
-    assert len(normalized) <= integration.WEB_SEARCH_MAX_RESULTS_PER_CALL - 1
+    assert len(normalized) <= web_search.WEB_SEARCH_MAX_RESULTS_PER_CALL - 1
     assert all(result.url.startswith("https://") for result in normalized)
     assert sum(len(result.content) for result in normalized) <= (
-        integration.WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH
+        web_search.WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH
     )
     assert all(
-        len(result.content) <= integration.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH
+        len(result.content) <= web_search.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH
         for result in normalized
     )
 
@@ -604,28 +615,23 @@ def test_search_timeout_and_failure_become_tool_errors():
 
 
 async def _test_search_timeout_and_failure_become_tool_errors():
-    tool_call = {
-        "function": {
-            "name": integration.WEB_SEARCH_TOOL_NAME,
-            "arguments": '{"query":"news"}',
-        }
-    }
+    arguments_json = '{"query":"news"}'
 
     async def slow_search(*args, **kwargs):
         await asyncio.sleep(0.02)
         return []
 
     with (
-        patch.object(integration, "search_web", slow_search),
-        patch.object(integration, "WEB_SEARCH_TOOL_TIMEOUT_SECONDS", 0.001),
+        patch.object(web_search, "search_web", slow_search),
+        patch.object(web_search, "WEB_SEARCH_TOOL_TIMEOUT_SECONDS", 0.001),
     ):
-        timeout_content, _ = await integration._execute_web_search_tool(tool_call)
+        timeout_content = (await web_search.execute_web_search(arguments_json)).content
 
     async def failing_search(*args, **kwargs):
         raise RuntimeError("provider details must not leak")
 
-    with patch.object(integration, "search_web", failing_search):
-        failure_content, _ = await integration._execute_web_search_tool(tool_call)
+    with patch.object(web_search, "search_web", failing_search):
+        failure_content = (await web_search.execute_web_search(arguments_json)).content
 
     assert "timed out" in timeout_content
     assert "failed" in failure_content
@@ -749,6 +755,74 @@ async def _test_response_cache_is_bypassed_when_tools_are_available():
     assert messages[-1] == "Fresh answer."
 
 
+def test_web_search_sources_reach_their_own_column():
+    asyncio.run(_test_web_search_sources_reach_their_own_column())
+
+
+async def _test_web_search_sources_reach_their_own_column():
+    integration.settings.COMPARIA_DB_URI = (
+        integration.settings.COMPARIA_DB_URI
+        or "postgresql://test:test@localhost:5432/test"
+    )
+    from backend.arena import conversation
+
+    result = LinkupSearchTextResult(
+        type="text",
+        name="Example",
+        url="https://example.com/news",
+        content="Fresh information",
+    )
+
+    async def fake_stream_iter(*, msg, **kwargs):
+        now = datetime.now()
+        msg.created_at = now
+        msg.responded_at = now
+        msg.updated_at = now
+        msg.generation_id = "sourced"
+        msg.tokens = 2
+        msg.agent_trace = [
+            AgentTraceToolResult(
+                tool_call_id="call-1",
+                name=web_search.WEB_SEARCH_TOOL_NAME,
+                status="success",
+                duration_ms=12,
+                content='{"results":[]}',
+                results=[result],
+            )
+        ]
+        yield msg
+        msg.content = "Sourced answer."
+        yield msg
+
+    turn = SimpleNamespace(
+        user_msg=UserMessage(content="Current events?"),
+        llm_msg_a=None,
+        llm_msg_b=None,
+    )
+    llm = SimpleNamespace(
+        id="model-a",
+        human_id="model-a",
+        endpoint=SimpleNamespace(api_model_id="model-a"),
+    )
+
+    with patch.object(conversation, "litellm_stream_iter", fake_stream_iter):
+        streamed = [
+            message.web_search_results
+            async for message in conversation.bot_response_async(
+                pos="a",
+                llm=llm,
+                turn=turn,
+                turn_index=0,
+                messages=[turn.user_msg],
+                web_search_enabled=True,
+            )
+        ]
+
+    # The results accordion reads this column while the answer is still coming.
+    assert streamed[0] == [result]
+    assert streamed[-1] == [result]
+
+
 def test_search_results_are_json_native_at_persistence_boundary():
     integration.settings.COMPARIA_DB_URI = (
         integration.settings.COMPARIA_DB_URI
@@ -773,13 +847,13 @@ def test_search_results_are_json_native_at_persistence_boundary():
             tokens=10,
             web_search_results=[result],
             agent_trace=[
-                integration.AgentTraceToolCall(
+                AgentTraceToolCall(
                     tool_call_id="call-1",
                     name="search_web",
                     arguments_json='{"query":"current news"}',
                     arguments={"query": "current news"},
                 ),
-                integration.AgentTraceToolResult(
+                AgentTraceToolResult(
                     tool_call_id="call-1",
                     name="search_web",
                     status="success",
@@ -787,7 +861,6 @@ def test_search_results_are_json_native_at_persistence_boundary():
                     content='{"results":[]}',
                     results=[result],
                 ),
-                integration.AgentTraceFinalAnswer(content="Sourced answer."),
             ],
         )
     )
@@ -796,7 +869,6 @@ def test_search_results_are_json_native_at_persistence_boundary():
     assert [event["type"] for event in db_message.agent_trace] == [
         "tool_call",
         "tool_result",
-        "final_answer",
     ]
     json.dumps(db_message.web_search_results)
     json.dumps(db_message.agent_trace)
@@ -816,6 +888,7 @@ if __name__ == "__main__":
         test_search_timeout_and_failure_become_tool_errors,
         test_parallel_scheduler_does_not_cancel_slower_stream,
         test_response_cache_is_bypassed_when_tools_are_available,
+        test_web_search_sources_reach_their_own_column,
         test_search_results_are_json_native_at_persistence_boundary,
     ]
     for test in tests:
