@@ -13,6 +13,7 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, AsyncIterator, Awaitable, Callable, cast
 
 from backend.arena.tools import ToolResult, ToolSpec
+from utils.database.models.messages.llm import ToolSource
 from backend.config import (
     MCP_CALL_TIMEOUT_SECONDS,
     MCP_DISCOVERY_TIMEOUT_SECONDS,
@@ -176,6 +177,9 @@ def _run(row: "Tool", name: str) -> Callable[[str], Awaitable[ToolResult]]:
                 {"warning": UNTRUSTED_WARNING, "result": text}, ensure_ascii=False
             ),
             status="success",
+            # Recorded as a source with no address: the trace shows the visitor
+            # what came back, and an MCP server rarely returns links.
+            results=[ToolSource(name=row.label, content=text)],
         )
 
     return run

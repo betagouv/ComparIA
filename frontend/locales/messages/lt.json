@@ -60,6 +60,7 @@
     "chatbot": {
         "tools": {
             "done": "Atlikta",
+            "fixed": "Šiam pokalbiui nustatyti įrankiai: {tools}",
             "noResult": "Rezultatų nėra",
             "none": "Nenaudota jokio įrankio",
             "running": "Ieškoma…",

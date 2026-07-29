@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from linkup import LinkupSearchTextResult
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -32,6 +32,23 @@ class AgentTraceToolCall(BaseModel):
     arguments: dict[str, Any] | None = None
 
 
+class ToolSource(BaseModel):
+    """
+    One piece of evidence a tool handed back.
+
+    Deliberately not Linkup's shape: an MCP server returns text with no address,
+    and the trace has to hold both. Reads back the rows written before this
+    existed, whose extra Linkup fields are simply ignored.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str = ""
+    url: str | None = None
+    content: str = ""
+    favicon: str | None = None
+
+
 class AgentTraceToolResult(BaseModel):
     type: Literal["tool_result"] = "tool_result"
     tool_call_id: str
@@ -39,7 +56,7 @@ class AgentTraceToolResult(BaseModel):
     status: Literal["success", "empty", "error"]
     duration_ms: int
     content: str
-    results: list[LinkupSearchTextResult]
+    results: list[ToolSource] = []
 
 
 AgentTraceEvent = (

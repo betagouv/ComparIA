@@ -93,7 +93,21 @@ export interface AgentTraceToolResult {
   status: "success" | "empty" | "error";
   duration_ms: number;
   content: string;
-  results: LinkupSearchTextResult[];
+  results?: ToolSource[];
+  [k: string]: unknown;
+}
+/**
+ * One piece of evidence a tool handed back.
+ *
+ * Deliberately not Linkup's shape: an MCP server returns text with no address,
+ * and the trace has to hold both. Reads back the rows written before this
+ * existed, whose extra Linkup fields are simply ignored.
+ */
+export interface ToolSource {
+  name?: string;
+  url?: string | null;
+  content?: string;
+  favicon?: string | null;
   [k: string]: unknown;
 }
 export type AgentTraceEvent =

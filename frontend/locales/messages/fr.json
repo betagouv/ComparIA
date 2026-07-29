@@ -725,6 +725,7 @@
         "conversation": "Conversation",
         "tools": {
             "done": "Terminé",
+            "fixed": "Outils fixés pour cette conversation : {tools}",
             "noResult": "Aucun résultat",
             "none": "Aucun outil utilisé",
             "running": "Recherche en cours…",

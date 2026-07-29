@@ -41,9 +41,12 @@
         const call = byId.get(event.tool_call_id)
         if (call) {
           call.ok = event.status === 'success'
-          call.sources = event.results
-            .filter((result) => isSafeWebSource(result.url))
-            .map((result) => ({ url: result.url, name: result.name || result.url }))
+          call.sources = (event.results ?? [])
+            .filter((result) => !!result.url && isSafeWebSource(result.url))
+            .map((result) => ({
+              url: result.url as string,
+              name: result.name || (result.url as string)
+            }))
         }
       }
     }

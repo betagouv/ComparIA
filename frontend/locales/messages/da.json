@@ -193,6 +193,7 @@
     "chatbot": {
         "tools": {
             "done": "Færdig",
+            "fixed": "Værktøjer låst for denne samtale: {tools}",
             "noResult": "Intet resultat",
             "none": "Intet værktøj brugt",
             "running": "Søger…",

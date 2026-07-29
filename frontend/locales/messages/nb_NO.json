@@ -67,6 +67,7 @@
     "chatbot": {
         "tools": {
             "done": "Ferdig",
+            "fixed": "Verktøy låst for denne samtalen: {tools}",
             "noResult": "Ingen resultater",
             "none": "Ingen verktøy brukt",
             "running": "Søker…",

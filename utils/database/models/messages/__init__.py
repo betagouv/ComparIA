@@ -4,6 +4,7 @@ from .llm import (
     AgentTraceReasoning,
     AgentTraceToolCall,
     AgentTraceToolResult,
+    ToolSource,
     LLMMessage,
     LLMMessageCreate,
     LLMMessageFinal,

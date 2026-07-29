@@ -99,6 +99,29 @@ async def _test_unconfigured_tool_yields_nothing():
     assert specs == []
 
 
+def test_public_shape_never_carries_server_credentials():
+    """
+    The arena serves this without authentication.
+
+    Deriving it from the row would publish the server address and its
+    credentials to every visitor the moment either is filled in.
+    """
+    from utils.database.models import ToolPublic
+
+    row = Tool(
+        key="datagouv",
+        label="Données publiques",
+        kind="mcp",
+        url="https://mcp.data.gouv.fr/mcp",
+        auth_header="Authorization: Bearer secret-token",
+        enabled=True,
+    )
+    served = ToolPublic.model_validate(row, from_attributes=True).model_dump()
+
+    assert set(served) == {"key", "label", "description"}
+    assert "secret-token" not in str(served)
+
+
 if __name__ == "__main__":
     tests = [
         test_enabled_row_yields_a_specification,
@@ -106,6 +129,7 @@ if __name__ == "__main__":
         test_unknown_key_is_ignored_rather_than_raising,
         test_selecting_nothing_never_touches_the_database,
         test_unconfigured_tool_yields_nothing,
+        test_public_shape_never_carries_server_credentials,
     ]
     for test in tests:
         test()

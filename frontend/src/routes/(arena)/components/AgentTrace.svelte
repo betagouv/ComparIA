@@ -66,14 +66,14 @@
             </h5>
             <p class="mb-2!">
               {m[`chatbot.agentTrace.status.${event.status}`]()} · {event.duration_ms} ms ·
-              {event.results.length}
+              {(event.results ?? []).length}
               {m['chatbot.agentTrace.sources']()}
             </p>
-            {#if event.results.length}
+            {#if (event.results ?? []).length}
               <ul class="mb-2! ps-4!">
-                {#each event.results as result, resultIndex (`${result.url}-${resultIndex}`)}
+                {#each event.results ?? [] as result, resultIndex (`${result.url}-${resultIndex}`)}
                   <li class="mb-2">
-                    {#if isSafeWebSource(result.url)}
+                    {#if result.url && isSafeWebSource(result.url)}
                       <Link href={result.url} text={result.name || result.url} />
                     {:else}
                       <span>{result.name || result.url}</span>

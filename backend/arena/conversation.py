@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import AsyncGenerator, Literal
 
 from fastapi import Request
+from linkup import LinkupSearchTextResult
 from litellm.litellm_core_utils.token_counter import token_counter
 from pydantic import BaseModel
 
@@ -96,10 +97,15 @@ def _mirror_web_search_results(llm_msg: LLMMessageCreate) -> None:
     older comparisons and the dataset keep working. Drop it with the accordion.
     """
     results = [
-        result
+        LinkupSearchTextResult(
+            type="text",
+            name=source.name,
+            url=source.url or "",
+            content=source.content,
+        )
         for event in llm_msg.agent_trace or []
         if event.type == "tool_result" and event.name == WEB_SEARCH_TOOL_NAME
-        for result in event.results
+        for source in event.results
     ]
     if results:
         llm_msg.web_search_results = results

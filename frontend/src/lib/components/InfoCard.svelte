@@ -125,18 +125,7 @@
   </div>
 
   <svelte:element this={contentTag} class="p-0">
-<<<<<<< HEAD
     {#if content}
-=======
-    {#if badge && size === 'xxs'}
-      <Badge
-        {...badge}
-        tooltip={undefined}
-        size="xs"
-        class="px-1! leading-tight! tracking-normal! max-w-full text-center text-[10px]! [overflow-wrap:anywhere] whitespace-normal!"
-      />
-    {:else if content}
->>>>>>> 10ea04a6 (fix(ui): affine les retours visuels de l’arène)
       {@render innerContent(content, subContent)}
     {:else if size === 'xxs' && (badge ?? contentBadge)}
       <!-- The header row is hidden at this size, so the badge is the value. -->

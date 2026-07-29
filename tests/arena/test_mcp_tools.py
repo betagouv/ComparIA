@@ -223,6 +223,59 @@ def test_authentication_header_is_read_and_malformed_ones_ignored():
     assert mcp_tools._headers("nonsense") is None
 
 
+def test_a_successful_call_records_what_came_back():
+    asyncio.run(_test_a_successful_call_records_what_came_back())
+
+
+async def _test_a_successful_call_records_what_came_back():
+    """
+    The trace holds the result, not just the answer.
+
+    Left empty, the interface tells the visitor a successful call returned
+    nothing.
+    """
+
+    class Block:
+        text = "Trois jeux de données correspondent."
+
+    class Reply:
+        isError = False
+        content = [Block()]
+
+    async def call_openai_tool(session, openai_tool):
+        return Reply()
+
+    with (
+        _with_redis(FakeRedis()),
+        _listing(SERVER_SCHEMAS),
+        _with_enabled([DATAGOUV]),
+        patch.object(mcp_tools, "_session", _fake_session()),
+        patch(
+            "litellm.experimental_mcp_client.call_openai_tool",
+            call_openai_tool,
+        ),
+    ):
+        specs = await tools.resolve_tools([DATAGOUV.key])
+        result = await specs[0].run("{}")
+
+    assert result.status == "success"
+    assert [(source.name, source.content) for source in result.results] == [
+        (DATAGOUV.label, "Trois jeux de données correspondent.")
+    ]
+    assert result.results[0].url is None
+
+
+def _fake_session():
+    """An MCP session that connects to nothing."""
+    from contextlib import asynccontextmanager
+
+    @asynccontextmanager
+    async def session(url, auth_header):
+        yield object()
+
+    return session
+
+
 if __name__ == "__main__":
     tests = [
         test_mcp_row_yields_specifications_like_any_other,
@@ -234,6 +287,7 @@ if __name__ == "__main__":
         test_nonsense_from_a_server_yields_nothing,
         test_a_row_without_an_address_yields_nothing,
         test_authentication_header_is_read_and_malformed_ones_ignored,
+        test_a_successful_call_records_what_came_back,
     ]
     for test in tests:
         test()

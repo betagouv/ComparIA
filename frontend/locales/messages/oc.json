@@ -2,6 +2,7 @@
     "chatbot": {
         "tools": {
             "done": "Acabat",
+            "fixed": "Aisinas fixadas per aquesta conversa : {tools}",
             "noResult": "Cap de resultat",
             "none": "Cap d'aisina pas utilizada",
             "running": "Recèrca en cors…",

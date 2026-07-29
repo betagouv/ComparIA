@@ -39,7 +39,7 @@ def _web_search_tools():
     return resolve_builtin_tools(["web_search"])
 
 
-def _trace_sources(message: LLMMessageCreate) -> list[LinkupSearchTextResult]:
+def _trace_sources(message: LLMMessageCreate) -> list:
     """Sources the message received, as recorded in its trace."""
     return [
         result
@@ -223,7 +223,10 @@ async def _test_model_can_search_then_stream_final_answer():
     assert ("", 1) in streamed
     assert streamed[-1] == ("Current answer.", 1)
     assert message.tokens == 5
-    assert _trace_sources(message) == [result]
+    # The trace holds a tool-agnostic source, not Linkup's own shape.
+    assert [(s.name, s.url, s.content) for s in _trace_sources(message)] == [
+        (result.name, result.url, result.content)
+    ]
     assert [event.type for event in message.agent_trace or []] == [
         "reasoning",
         "intermediate_content",
@@ -232,7 +235,7 @@ async def _test_model_can_search_then_stream_final_answer():
         "reasoning",
     ]
     assert message.agent_trace[2].arguments == {"query": "latest public news"}
-    assert message.agent_trace[3].results == [result]
+    assert [s.url for s in message.agent_trace[3].results] == [result.url]
     assert calls[0]["tool_choice"] == "auto"
     assert calls[0]["tools"] == [web_search.WEB_SEARCH_TOOL_SCHEMA]
     assert calls[1]["messages"][-1]["role"] == "tool"

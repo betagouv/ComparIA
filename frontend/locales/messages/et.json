@@ -65,6 +65,7 @@
     "chatbot": {
         "tools": {
             "done": "Valmis",
+            "fixed": "Selle vestluse tööriistad: {tools}",
             "noResult": "Tulemusi pole",
             "none": "Ühtegi tööriista ei kasutatud",
             "running": "Otsin…",
