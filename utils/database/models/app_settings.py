@@ -72,6 +72,22 @@ def _normalize_homepage_url(value: object) -> str | None:
     return url
 
 
+# Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
+# An instance enables a subset of these. Anything outside the tuple is refused
+# rather than stored, because the frontend has no messages for it and would fall
+# back to the base locale without telling anyone.
+SUPPORTED_LOCALES = ("da", "en", "fr", "lt", "sv")
+
+
+def _check_enabled_locales(value: list[str]) -> list[str]:
+    if not value:
+        raise ValueError("At least one locale must be enabled")
+    unknown = sorted(set(value) - set(SUPPORTED_LOCALES))
+    if unknown:
+        raise ValueError(f"Unsupported locales: {', '.join(unknown)}")
+    return value
+
+
 class AppSettings(SQLModel, table=True):
     """Singleton row (id=1) holding product settings editable from the admin panel."""
 
@@ -94,13 +110,9 @@ class AppSettings(SQLModel, table=True):
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
-    enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = [
-        "da",
-        "en",
-        "fr",
-        "lt",
-        "sv",
-    ]
+    enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
+        SUPPORTED_LOCALES
+    )
     default_locale: str = Field(default="fr")
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
@@ -165,3 +177,15 @@ class AppSettingsPatch(SQLModel):
     @classmethod
     def normalize_homepage_url(cls, value: object) -> str | None:
         return _normalize_homepage_url(value)
+
+    @field_validator("enabled_locales")
+    @classmethod
+    def validate_enabled_locales(cls, value: list[str] | None) -> list[str] | None:
+        return value if value is None else _check_enabled_locales(value)
+
+    @field_validator("default_locale")
+    @classmethod
+    def validate_default_locale(cls, value: str | None) -> str | None:
+        if value is not None and value not in SUPPORTED_LOCALES:
+            raise ValueError(f"Unsupported locale: {value}")
+        return value
