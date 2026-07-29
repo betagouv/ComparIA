@@ -4,9 +4,7 @@ import ToolActivity from './ToolActivity.svelte'
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 
-const tools = [
-  { key: 'web_search', label: 'Recherche web', description: 'Chercher sur le web' }
-]
+const tools = [{ key: 'web_search', label: 'Recherche web', description: 'Chercher sur le web' }]
 
 const searchCall = {
   type: 'tool_call' as const,
@@ -25,7 +23,7 @@ const searchResult = {
   content: '{"results":[]}',
   results: [
     {
-      type: 'text',
+      type: 'text' as const,
       name: 'DVF Nantes',
       url: 'https://example.com/dvf',
       content: 'Prix au mètre carré.'
@@ -88,7 +86,7 @@ describe('ToolActivity', () => {
             ...searchResult,
             results: [
               {
-                type: 'text',
+                type: 'text' as const,
                 name: 'Piège',
                 url: 'javascript:alert(1)',
                 content: ''

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import MessageBot from './MessageBot.svelte'
+import type { ComponentProps } from 'svelte'
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 vi.mock('$app/state', () => ({
@@ -16,14 +17,15 @@ const turnSide = (llm_msg: Record<string, unknown>) => ({
   llm_msg
 })
 
-const props = (llm_msg: Record<string, unknown>) => ({
-  id: 'message-a',
-  prompt: 'Find current information.',
-  bot: 'a' as const,
-  choice: null,
-  onVoteAnnotate: () => undefined,
-  turnSide: turnSide(llm_msg)
-})
+const props = (llm_msg: Record<string, unknown>) =>
+  ({
+    id: 'message-a',
+    prompt: 'Find current information.',
+    bot: 'a' as const,
+    choice: null,
+    onVoteAnnotate: () => undefined,
+    turnSide: turnSide(llm_msg)
+  }) as unknown as ComponentProps<typeof MessageBot>
 
 describe('MessageBot', () => {
   it('shows what the model searched before the answer it informed', () => {

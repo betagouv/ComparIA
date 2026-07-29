@@ -61,7 +61,7 @@
           </p>
         {:else if call.sources.length > 0}
           <details class="ms-5">
-            <summary class="cursor-pointer text-sm text-[--text-mention-grey]">
+            <summary class="text-sm cursor-pointer text-[--text-mention-grey]">
               {m['chatbot.tools.sources']({ count: call.sources.length })}
             </summary>
             <ul class="mt-1! mb-0! ps-4! text-sm">

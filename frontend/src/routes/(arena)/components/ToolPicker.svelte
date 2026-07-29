@@ -24,14 +24,14 @@
 </script>
 
 {#if tools.length > 0}
-  <div class="grow my-auto">
+  <div class="my-auto grow">
     <Button
       variant="tertiary"
       aria-controls={modalId}
       data-fr-opened="false"
       {disabled}
       title={disabled ? m['arenaHome.tools.locked']() : undefined}
-      class="justify-between w-full!"
+      class="w-full! justify-between"
     >
       <span class="gap-2 flex items-center">
         <Icon icon="i-ri-tools-line" size="sm" class="text-primary" />
@@ -44,7 +44,7 @@
   <Modal id={modalId} titleId="{modalId}-title">
     <h2 id="{modalId}-title" class="text-xl!">{m['arenaHome.tools.label']()}</h2>
 
-    <fieldset class="fr-fieldset border-0! p-0! m-0!">
+    <fieldset class="fr-fieldset p-0! m-0! border-0!">
       <legend class="fr-fieldset__legend text-sm! text-[--text-mention-grey]">
         {m['arenaHome.tools.legend']()}
       </legend>
@@ -61,7 +61,7 @@
       {/each}
     </fieldset>
 
-    <p class="fr-text--sm text-[--text-mention-grey] mb-0!">
+    <p class="fr-text--sm mb-0! text-[--text-mention-grey]">
       {m['arenaHome.tools.contract']()}
     </p>
   </Modal>
