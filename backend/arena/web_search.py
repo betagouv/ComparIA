@@ -25,7 +25,9 @@ from utils.storage.redis import REDIS_WEB_SEARCH_KEY, get_redis_client, hash_con
 
 logger = logging.getLogger("languia")
 
-WEB_SEARCH_TOOL_NAME = "search_web"
+# Matches the configured tool key so the interface can look up its French
+# label from the tool the visitor selected.
+WEB_SEARCH_TOOL_NAME = "web_search"
 WEB_SEARCH_TOOL_SCHEMA = {
     "type": "function",
     "function": {
