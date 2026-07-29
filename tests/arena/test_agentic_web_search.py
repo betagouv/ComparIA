@@ -1267,6 +1267,77 @@ async def _test_context_overflow_sheds_tool_rounds_and_still_answers():
     assert not [m for m in sent[-1] if m.get("role") == "tool"]
 
 
+def test_a_round_over_the_cap_still_runs_what_it_can():
+    asyncio.run(_test_a_round_over_the_cap_still_runs_what_it_can())
+
+
+async def _test_a_round_over_the_cap_still_runs_what_it_can():
+    """
+    Only the calls past the cap are refused.
+
+    Refusing the whole round leaves the model with nothing but errors to answer
+    from, and the cliff is invisible: one more call than allowed and every
+    search fails.
+    """
+    executed = 0
+
+    async def spy(_arguments: str) -> tools.ToolResult:
+        nonlocal executed
+        executed += 1
+        return tools.ToolResult(content="{}", status="success")
+
+    over = integration.MAX_TOOL_CALLS + 1
+    responses = [
+        AsyncChunkStream(
+            [
+                _chunk(response_id="r1", delta={"role": "assistant"}),
+                _chunk(
+                    response_id="r1",
+                    delta=_tool_call_delta(
+                        *[(f"call-{i}", "spy", "{}") for i in range(over)]
+                    ),
+                    finish_reason="tool_calls",
+                ),
+            ]
+        ),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="r2",
+                    delta={"role": "assistant", "content": "Answer."},
+                    finish_reason="stop",
+                )
+            ]
+        ),
+    ]
+
+    async def fake_completion(**_kwargs):
+        return responses.pop(0)
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=[_spy_tool("spy", spy)],
+        ):
+            pass
+
+    statuses = [e.status for e in message.agent_trace or [] if e.type == "tool_result"]
+    assert executed == integration.MAX_TOOL_CALLS
+    assert statuses.count("success") == integration.MAX_TOOL_CALLS
+    assert statuses.count("error") == 1
+    # Every call still gets a reply, or the next request would be invalid.
+    assert len(statuses) == over
+    assert message.content == "Answer."
+
+
 if __name__ == "__main__":
     tests = [
         test_model_can_search_then_stream_final_answer,
@@ -1290,6 +1361,7 @@ if __name__ == "__main__":
         test_time_budget_stops_tool_use_and_is_recorded,
         test_finishing_normally_records_completion,
         test_context_overflow_sheds_tool_rounds_and_still_answers,
+        test_a_round_over_the_cap_still_runs_what_it_can,
     ]
     for test in tests:
         test()

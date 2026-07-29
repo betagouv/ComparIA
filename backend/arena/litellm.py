@@ -363,16 +363,19 @@ async def litellm_stream_iter(
         yield msg
 
         seconds_left = deadline - monotonic()
-        over_limit = tool_call_count + len(requested) > MAX_TOOL_CALLS
+        # Refuse only the calls past the cap, never the whole round: a model
+        # asking for one more than it may have still gets the rest of its work
+        # done, instead of a batch of errors and nothing to answer from.
+        allowed = max(0, MAX_TOOL_CALLS - tool_call_count)
         tool_call_count += len(requested)
 
         pending = [
-            _refuse_tool_call("The tool call limit has been reached.")
-            if over_limit
-            else _run_tool_call(
+            _run_tool_call(
                 tools_by_name.get(tool_name), tool_name, arguments_json, seconds_left
             )
-            for _, tool_name, arguments_json in requested
+            if index < allowed
+            else _refuse_tool_call("The tool call limit has been reached.")
+            for index, (_, tool_name, arguments_json) in enumerate(requested)
         ]
         # Calls emitted together run together: running them in turn would spend
         # the whole budget on work that overlaps.
