@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from linkup import LinkupSearchTextResult
 from sqlmodel import and_, col, select, update
 
+from backend.arena.tools import model_rejects_tools, resolve_tools
 from backend.llms.data import get_llms_data
 from utils.database.models import (
     BOT_POS,
@@ -130,6 +131,33 @@ async def update_comparison_error(
         db_comparison = await _get_item(Comparison, comparison.id, session)
         db_comparison.error = error.model_dump() if error else None
         db_comparison.updated_at = datetime.now()
+        await session.commit()
+
+
+async def update_comparison_tool_capability(comparison: ComparisonRead) -> None:
+    """
+    Record, per side, whether the model actually accepted the tools it was
+    offered this turn. Left untouched (null) when no tool was offered at all,
+    so a model with nothing to decline is never mistaken for one that did.
+    """
+    # Nothing to record when nothing actually resolved: a selected key that
+    # turned out disabled or unknown offered no schema to either side.
+    if not await resolve_tools(comparison.enabled_tools):
+        return
+
+    llms_data = (await get_llms_data()).enabled
+
+    async with get_session() as session:
+        db_comparison = await _get_item(Comparison, comparison.id, session)
+        for pos in BOT_POS:
+            model = llms_data[
+                getattr(comparison, f"llm_id_{pos}")
+            ].litellm_endpoint.model
+            setattr(
+                db_comparison, f"tool_capable_{pos}", not model_rejects_tools(model)
+            )
+        db_comparison.updated_at = datetime.now()
+        session.add(db_comparison)
         await session.commit()
 
 

@@ -23,6 +23,7 @@ from backend.arena.services import (
     set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
+    update_comparison_tool_capability,
     update_turn,
     update_turn_vote,
 )
@@ -305,6 +306,7 @@ async def add_first_text(
                     increment_input_chars(anonymous_user_hash, len(args.prompt_value))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
 
         store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -376,6 +378,7 @@ async def add_text(
                     increment_input_chars(anonymous_user_hash, len(args.message))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
 
         store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -459,6 +462,7 @@ async def retry(
                     )
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
 
         store_comparison_metadata(comparison.id, is_streaming=False)
 
