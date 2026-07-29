@@ -35,8 +35,10 @@
     loading = true
     try {
       const data = await api.request<AppSettingsPublic>('/admin/settings')
+      // Unchecking a locale takes it away from visitors already reading in it:
+      // the next request rewrites their PARAGLIDE_LOCALE cookie to the default.
       enabledLocales = Object.fromEntries(
-        ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales.includes(locale.code)])
+        ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales?.includes(locale.code)])
       )
       defaultLocale = data.default_locale
     } finally {
