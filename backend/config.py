@@ -196,7 +196,9 @@ ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 # real limit: the counters below are runaway guards, set high enough that hitting
 # one is a defect rather than ordinary behaviour.
 TOOL_TIME_BUDGET_SECONDS = 60.0
-MAX_TOOL_CALLS = 10
+# Calls in one round run concurrently, so this bounds work rather than waiting;
+# rounds are sequential and the deadline above is what the visitor actually feels.
+MAX_TOOL_CALLS = 15
 MAX_TOOL_ROUNDS = 6
 # How long we remember that an endpoint refused tool schemas
 TOOL_REJECTION_TTL = 86_400  # 24h
