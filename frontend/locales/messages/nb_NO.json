@@ -26,6 +26,14 @@
         "selectLanguage": "Velg språk"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Når de er slått på, tilbys de valgte verktøyene til begge modellene som sammenlignes, og de står fritt til å bruke dem eller ikke.",
+            "count": "{count} verktøy",
+            "label": "Verktøy",
+            "legend": "Verktøy",
+            "locked": "Verktøyene er låst for hele samtalen.",
+            "none": "Ingen verktøy"
+        },
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Hvis du bare velger én, velges den andre tilfeldig",
@@ -57,6 +65,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Ingen resultater",
+            "none": "Ingen verktøy brukt",
+            "running": "Søker…",
+            "sources": "{count} kilde(r)"
+        },
         "agentTrace": {
             "intermediate": "Midlertidig modellmelding",
             "label": "Se kjøringssporet",

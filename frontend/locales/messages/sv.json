@@ -24,6 +24,14 @@
         "selectLanguage": "Välj språk"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "När de är påslagna erbjuds de valda verktygen till båda de jämförda modellerna, som fritt får använda dem eller inte.",
+            "count": "{count} verktyg",
+            "label": "Verktyg",
+            "legend": "Verktyg",
+            "locked": "Verktygen är låsta för hela samtalet.",
+            "none": "Inget verktyg"
+        },
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Om bara en är vald, kommer den andra att väljas slumpmässigt",
@@ -55,6 +63,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Inget resultat",
+            "none": "Inget verktyg användes",
+            "running": "Söker…",
+            "sources": "{count} källa/källor"
+        },
         "agentTrace": {
             "intermediate": "Mellanliggande modellmeddelande",
             "label": "Visa körningsspår",

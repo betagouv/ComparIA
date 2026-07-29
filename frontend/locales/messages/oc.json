@@ -1,5 +1,11 @@
 {
     "chatbot": {
+        "tools": {
+            "noResult": "Cap de resultat",
+            "none": "Cap d'aisina pas utilizada",
+            "running": "Recèrca en cors…",
+            "sources": "{count} font(s)"
+        },
         "agentTrace": {
             "intermediate": "Messatge intermediari del modèl",
             "label": "Veire la traça d’execucion",
@@ -14,6 +20,14 @@
         }
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Un còp activadas, las aisinas seleccionadas son prepausadas als dos modèls comparats, que demòran liures de las utilizar o non.",
+            "count": "{count} aisinas",
+            "label": "Aisinas",
+            "legend": "Aisinas",
+            "locked": "Las aisinas son fixadas per tota la conversa.",
+            "none": "Cap d'aisina"
+        },
         "title": "Cossí vos pòdi ajudar uèi ?",
         "webSearch": {
             "label": "Autorizar la recèrca web",

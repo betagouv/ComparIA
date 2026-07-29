@@ -19,6 +19,14 @@
         "selectLanguage": "Pasirinkite kalbą"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Įjungti įrankiai siūlomi abiem lyginamiems modeliams, kurie gali juos naudoti arba ne.",
+            "count": "{count} įrankiai",
+            "label": "Įrankiai",
+            "legend": "Įrankiai",
+            "locked": "Įrankiai nustatomi visam pokalbiui.",
+            "none": "Jokių įrankių"
+        },
         "compareModels": {
             "count": "{count}/2 modeliai",
             "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
@@ -50,6 +58,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Rezultatų nėra",
+            "none": "Nenaudota jokio įrankio",
+            "running": "Ieškoma…",
+            "sources": "{count} šaltinis (-iai)"
+        },
         "agentTrace": {
             "intermediate": "Tarpinis modelio pranešimas",
             "label": "Rodyti vykdymo seką",

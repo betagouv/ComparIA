@@ -239,6 +239,14 @@
         }
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Once enabled, the selected tools are offered to both compared models, which remain free to use them or not.",
+            "count": "{count} tools",
+            "label": "Tools",
+            "legend": "Tools",
+            "locked": "Tools are fixed for the whole conversation.",
+            "none": "No tool"
+        },
         "compareModels": {
             "count": "{count}/2 models",
             "help": "If you only choose one, the second will be selected randomly",
@@ -346,6 +354,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "No result",
+            "none": "No tool used",
+            "running": "Searching…",
+            "sources": "{count} source(s)"
+        },
         "agentTrace": {
             "intermediate": "Intermediate model message",
             "label": "View execution trace",

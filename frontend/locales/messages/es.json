@@ -26,6 +26,14 @@
         "selectLanguage": "Seleccionar idioma"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Una vez activadas, las herramientas seleccionadas se ofrecen a los dos modelos comparados, que siguen siendo libres de usarlas o no.",
+            "count": "{count} herramientas",
+            "label": "Herramientas",
+            "legend": "Herramientas",
+            "locked": "Las herramientas quedan fijadas para toda la conversación.",
+            "none": "Ninguna herramienta"
+        },
         "compareModels": {
             "count": "{count}/2 modelos",
             "help": "Si elige solo uno, el segundo sera elegido al azar",
@@ -57,6 +65,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Sin resultados",
+            "none": "Ninguna herramienta utilizada",
+            "running": "Buscando…",
+            "sources": "{count} fuente(s)"
+        },
         "agentTrace": {
             "intermediate": "Mensaje intermedio del modelo",
             "label": "Ver la traza de ejecución",

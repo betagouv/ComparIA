@@ -24,6 +24,14 @@
         "selectLanguage": "Vali keel"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Kui need on sisse lülitatud, pakutakse valitud tööriistu mõlemale võrreldavale mudelile, kes võivad neid kasutada või mitte.",
+            "count": "{count} tööriista",
+            "label": "Tööriistad",
+            "legend": "Tööriistad",
+            "locked": "Tööriistad on kogu vestluseks kinnitatud.",
+            "none": "Ühtegi tööriista"
+        },
         "compareModels": {
             "count": "{count}/2 mudelit",
             "help": "Kui valid ainult ühe, valitakse teine juhuslikult",
@@ -55,6 +63,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Tulemusi pole",
+            "none": "Ühtegi tööriista ei kasutatud",
+            "running": "Otsin…",
+            "sources": "{count} allikas(t)"
+        },
         "agentTrace": {
             "intermediate": "Mudeli vahesõnum",
             "label": "Vaata täitmisjälge",

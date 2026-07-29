@@ -77,6 +77,14 @@
         }
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Når de er slået til, tilbydes de valgte værktøjer til begge sammenlignede modeller, som frit kan vælge at bruge dem eller ej.",
+            "count": "{count} værktøjer",
+            "label": "Værktøjer",
+            "legend": "Værktøjer",
+            "locked": "Værktøjerne er låst for hele samtalen.",
+            "none": "Intet værktøj"
+        },
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt",
@@ -183,6 +191,12 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Intet resultat",
+            "none": "Intet værktøj brugt",
+            "running": "Søger…",
+            "sources": "{count} kilde(r)"
+        },
         "agentTrace": {
             "intermediate": "Midlertidig modelbesked",
             "label": "Se udførelsesspor",
