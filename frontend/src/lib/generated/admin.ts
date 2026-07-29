@@ -421,6 +421,34 @@ export interface SignInLegalPresentation {
   checkbox_label: string;
   [k: string]: unknown;
 }
+/**
+ * A tool the arena may offer to models, configured rather than declared.
+ */
+export interface Tool {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin";
+  /**
+   * Disabled tools are never offered to a model nor shown to a visitor.
+   */
+  enabled?: boolean;
+}
 export interface UserPublic {
   id?: string;
   email: string;

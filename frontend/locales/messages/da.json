@@ -32,7 +32,8 @@
             "customization": "Tilpasning",
             "locales": "Sprog",
             "authentification": "Autentificering",
-            "publishing": "Udgivelse"
+            "publishing": "Udgivelse",
+            "tools": "Værktøjer"
         },
         "panelLink": "Administration",
         "settings": {

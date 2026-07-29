@@ -50,6 +50,7 @@ from .suggestion import (
     SuggestionCategoryCreate,
     SuggestionCreate,
 )
+from .tool import Tool, ToolKind, ToolPublic, ToolUpsert
 from .turn import (
     Turn,
     TurnCreate,

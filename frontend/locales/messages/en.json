@@ -122,7 +122,8 @@
             "save": "Save",
             "signLabel": "Kind",
             "subtitle": "Add and manage the tags visitors attach to their vote.",
-            "title": "Vote tags"
+            "title": "Vote tags",
+            "tools": "Tools"
         },
         "panelLink": "Admin panel",
         "settings": {

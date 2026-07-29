@@ -66,6 +66,12 @@
       isCurrent: () => page.url.pathname.includes('/admin/llms')
     },
     {
+      label: m['admin.nav.tools'](),
+      href: '/admin/outils',
+      icon: 'i-ri-tools-line',
+      isCurrent: () => page.url.pathname.includes('/admin/outils')
+    },
+    {
       label: m['actions.returnArena'](),
       href: '/',
       icon: 'i-ri-arrow-left-line'

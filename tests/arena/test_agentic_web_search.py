@@ -805,9 +805,13 @@ async def _test_parallel_scheduler_does_not_cancel_slower_stream():
             }
         yield {"type": "complete", "pos": pos}
 
+    async def no_tools(_keys):
+        return []
+
     with (
         patch.object(streaming, "get_llms_data", fake_get_llms_data),
         patch.object(streaming, "stream_llm_response", fake_stream),
+        patch.object(streaming, "resolve_tools", no_tools),
     ):
         events = [
             event
@@ -860,6 +864,7 @@ async def _test_response_cache_is_bypassed_when_tools_are_available():
         patch.object(conversation, "get_cached_response", unexpected_cache_call),
         patch.object(conversation, "store_cached_response", unexpected_cache_call),
         patch.object(conversation, "litellm_stream_iter", fake_stream_iter),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         messages = [
             message.content
@@ -869,7 +874,7 @@ async def _test_response_cache_is_bypassed_when_tools_are_available():
                 turn=turn,
                 turn_index=0,
                 messages=[turn.user_msg],
-                web_search_enabled=True,
+                tools=_web_search_tools(),
             )
         ]
 
@@ -935,7 +940,7 @@ async def _test_web_search_sources_reach_their_own_column():
                 turn=turn,
                 turn_index=0,
                 messages=[turn.user_msg],
-                web_search_enabled=True,
+                tools=_web_search_tools(),
             )
         ]
 

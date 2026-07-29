@@ -15,6 +15,7 @@ from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
+from backend.arena.tools import ToolSpec, resolve_tools
 from backend.arena.conversation import (
     AnyMessageRead,
     SystemMessageRead,
@@ -114,7 +115,7 @@ async def stream_llm_response(
     turn_index: int,
     messages: list[AnyMessageRead],
     request: Request | None = None,
-    web_search_enabled: bool = False,
+    tools: list[ToolSpec] | None = None,
 ) -> AsyncGenerator[AnySSEEventMsg]:
     """
     Stream a single LLM response using Server-Sent Events format.
@@ -140,7 +141,7 @@ async def stream_llm_response(
             turn_index,
             messages,
             request,
-            web_search_enabled=web_search_enabled,
+            tools=tools,
         ):
             yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
 
@@ -213,6 +214,9 @@ async def stream_comparison_messages(
 
     turn_index = len(comparison.turns) - 1
     llms_data = (await get_llms_data()).enabled
+    # Resolved once for the turn: both models are offered exactly the same set,
+    # and a configured tool is looked up once rather than once per model.
+    tools = await resolve_tools(["web_search"] if comparison.web_search_enabled else [])
 
     try:
         # Create async generators for both models
@@ -224,7 +228,7 @@ async def stream_comparison_messages(
                 turn_index,
                 _get_messages(comparison, pos),
                 request,
-                comparison.web_search_enabled,
+                tools,
             )
             for pos in BOT_POS
         }
@@ -286,7 +290,7 @@ async def stream_comparison_messages(
                                 turn_index,
                                 _get_messages(comparison, e.pos),
                                 request,
-                                comparison.web_search_enabled,
+                                tools,
                             )
                             pending_by_pos[e.pos] = asyncio.create_task(
                                 anext(generators[e.pos])

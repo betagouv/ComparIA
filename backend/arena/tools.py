@@ -9,7 +9,7 @@ is the tool's own business.
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Iterable, Literal
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal
 
 from backend.config import TOOL_REJECTION_TTL
 from utils.storage.redis import (
@@ -17,6 +17,9 @@ from utils.storage.redis import (
     get_redis_client,
     hash_content,
 )
+
+if TYPE_CHECKING:
+    from utils.database.models import Tool
 
 logger = logging.getLogger("languia")
 
@@ -108,3 +111,33 @@ def resolve_builtin_tools(keys: Iterable[str]) -> list[ToolSpec]:
         if spec := build():
             specs.append(spec)
     return specs
+
+
+async def get_enabled_tools() -> list["Tool"]:
+    """Tools an administrator has switched on, in display order."""
+    from sqlmodel import select
+
+    from utils.database.models import Tool
+    from utils.database.session import get_session
+
+    async with get_session() as session:
+        rows = await session.exec(
+            select(Tool).where(Tool.enabled).order_by(Tool.created_at)
+        )
+        return list(rows.all())
+
+
+async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
+    """
+    Turn the tool keys a visitor selected into specifications.
+
+    This is the only place that knows one kind of tool from another. A key that
+    is not enabled, or whose tool is not configured, yields nothing.
+    """
+    wanted = set(keys)
+    if not wanted:
+        return []
+    enabled = await get_enabled_tools()
+    return resolve_builtin_tools(
+        [tool.key for tool in enabled if tool.key in wanted and tool.kind == "builtin"]
+    )

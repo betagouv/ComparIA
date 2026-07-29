@@ -35,3 +35,6 @@ from utils.database.models.vote_tag import (
     VoteTagOrder,
     VoteTagUpdate,
 )
+from utils.database.models.auth import UserPublic
+from utils.database.models.llms import LLMData, LLMEndpoint, LLMLab, LLMLicense
+from utils.database.models.tool import Tool

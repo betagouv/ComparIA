@@ -20,7 +20,7 @@ from backend.arena.cache import (
     store_cached_response,
 )
 from backend.arena.litellm import litellm_stream_iter
-from backend.arena.tools import resolve_builtin_tools
+from backend.arena.tools import ToolSpec
 from backend.arena.web_search import WEB_SEARCH_TOOL_NAME
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
@@ -114,7 +114,7 @@ async def bot_response_async(
     request: Request | None = None,
     temperature=0.7,
     max_new_tokens=16384,
-    web_search_enabled: bool = False,
+    tools: list[ToolSpec] | None = None,
 ) -> AsyncGenerator[LLMMessageCreate]:
     """
     Stream a response from a LLM asynchronously.
@@ -139,7 +139,7 @@ async def bot_response_async(
         EmptyResponseError: If the LLM returns empty response
     """
     # Try cache on first turn only
-    if turn_index == 0 and not web_search_enabled:
+    if turn_index == 0 and not tools:
         cached = get_cached_response(llm.id, turn.user_msg.content)
         if cached:
             logger.info(
@@ -164,7 +164,7 @@ async def bot_response_async(
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         request=request,
-        tools=resolve_builtin_tools(["web_search"] if web_search_enabled else []),
+        tools=tools,
     )
 
     # Process streaming response chunks and update current message
@@ -206,7 +206,7 @@ async def bot_response_async(
     yield llm_msg
 
     # Store successful response in cache (first turn only)
-    if turn_index == 0 and not web_search_enabled:
+    if turn_index == 0 and not tools:
         store_cached_response(
             llm.id,
             turn.user_msg.content,

@@ -117,7 +117,7 @@ display-env-da: ## Display env vars loaded from KeePass for DA instance
 # Development with local code
 ###################################
 
-test: test-backend test-frontend ## Run all tests
+test: test-backend test-frontend test-dataset ## Run all tests
 
 test-backend: ## Run the python test suite (no DB required)
 	$(UV) run --group dev --group data pytest tests -q

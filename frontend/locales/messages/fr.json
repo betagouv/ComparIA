@@ -173,7 +173,8 @@
             "publishing": "Jeux de données",
             "suggestions": "Suggestions",
             "users": "Utilisateurs",
-            "voteTags": "Étiquettes de vote"
+            "voteTags": "Étiquettes de vote",
+            "tools": "Outils"
         },
         "panelLink": "Administration",
         "promptChecks": {
