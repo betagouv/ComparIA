@@ -120,7 +120,7 @@ async def _test_both_kinds_resolve_to_one_uniform_list():
         specs = await tools.resolve_tools(["web_search", "datagouv"])
 
     assert [spec.name for spec in specs] == [
-        "search_web",
+        "web_search",
         "search_datasets",
         "get_dataset",
     ]

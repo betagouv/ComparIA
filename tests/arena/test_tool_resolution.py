@@ -39,7 +39,7 @@ async def _test_enabled_row_yields_a_specification():
     ):
         specs = await tools.resolve_tools(["web_search"])
 
-    assert [spec.name for spec in specs] == ["search_web"]
+    assert [spec.name for spec in specs] == ["web_search"]
 
 
 def test_disabled_row_yields_nothing():

@@ -136,7 +136,7 @@ async def _test_model_can_search_then_stream_final_answer():
                                 "id": "call-1",
                                 "type": "function",
                                 "function": {
-                                    "name": "search_web",
+                                    "name": "web_search",
                                     "arguments": '{"query":"latest public news"}',
                                 },
                             }
@@ -280,7 +280,7 @@ async def _test_tools_are_offered_whatever_the_provider():
             pass
 
     assert message.content == "Answer."
-    assert [tool["function"]["name"] for tool in calls[0]["tools"]] == ["search_web"]
+    assert [tool["function"]["name"] for tool in calls[0]["tools"]] == ["web_search"]
 
 
 def test_provider_rejection_answers_and_is_remembered():
@@ -573,7 +573,7 @@ async def _test_fragmented_streamed_tool_arguments_are_reconstructed():
                                     "id": "call-1",
                                     "type": "function",
                                     "function": {
-                                        "name": "search_web",
+                                        "name": "web_search",
                                         "arguments": '{"query":"latest ',
                                     },
                                 }
@@ -664,7 +664,7 @@ async def _test_tool_call_budget_forces_a_final_answer():
                                 "id": f"call-{call_number}",
                                 "type": "function",
                                 "function": {
-                                    "name": "search_web",
+                                    "name": "web_search",
                                     "arguments": f'{{"query":"query {call_number}"}}',
                                 },
                             }
@@ -975,13 +975,13 @@ def test_search_results_are_json_native_at_persistence_boundary():
             agent_trace=[
                 AgentTraceToolCall(
                     tool_call_id="call-1",
-                    name="search_web",
+                    name="web_search",
                     arguments_json='{"query":"current news"}',
                     arguments={"query": "current news"},
                 ),
                 AgentTraceToolResult(
                     tool_call_id="call-1",
-                    name="search_web",
+                    name="web_search",
                     status="success",
                     duration_ms=25,
                     content='{"results":[]}',
