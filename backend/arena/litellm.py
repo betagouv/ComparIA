@@ -5,17 +5,20 @@ This module streams model responses and executes the tools it is given. It
 knows nothing about what any particular tool does.
 """
 
-import asyncio
 import json
 import logging
 from datetime import datetime
 from time import monotonic
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Union, cast
 
-import httpx
 import litellm
 
-from backend.arena.tools import ToolResult, ToolSpec
+from backend.arena.tools import (
+    ToolResult,
+    ToolSpec,
+    model_rejects_tools,
+    remember_tool_rejection,
+)
 from backend.config import (
     GLOBAL_TIMEOUT,
     MAX_TOOL_CALLS,
@@ -40,85 +43,6 @@ if TYPE_CHECKING:
     from utils.database.models import LLMMessageCreate
 
 logger = logging.getLogger("languia")
-
-OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
-OPENROUTER_TOOL_MODELS_CACHE_SECONDS = 3_600
-
-_openrouter_tool_models: set[str] | None = None
-_openrouter_tool_models_expires_at = 0.0
-_openrouter_tool_models_lock = asyncio.Lock()
-
-
-async def _get_openrouter_tool_models() -> set[str] | None:
-    """Return OpenRouter's current tool-capable model IDs, with a short cache."""
-    global _openrouter_tool_models, _openrouter_tool_models_expires_at
-
-    now = monotonic()
-    if _openrouter_tool_models is not None and _openrouter_tool_models_expires_at > now:
-        return _openrouter_tool_models
-
-    async with _openrouter_tool_models_lock:
-        now = monotonic()
-        if (
-            _openrouter_tool_models is not None
-            and _openrouter_tool_models_expires_at > now
-        ):
-            return _openrouter_tool_models
-
-        try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                response = await client.get(
-                    OPENROUTER_MODELS_URL,
-                    params={"supported_parameters": "tools"},
-                    headers={"Accept": "application/json"},
-                )
-                response.raise_for_status()
-                payload = response.json()
-            data = payload.get("data") if isinstance(payload, dict) else None
-            if not isinstance(data, list):
-                raise ValueError("OpenRouter model response has no data list")
-            tool_models = {
-                item["id"]
-                for item in data
-                if isinstance(item, dict)
-                and isinstance(item.get("id"), str)
-                and "tools" in (item.get("supported_parameters") or [])
-            }
-            if not tool_models:
-                raise ValueError("OpenRouter returned no tool-capable models")
-        except Exception:
-            if _openrouter_tool_models is not None:
-                logger.warning(
-                    "Could not refresh OpenRouter tool capabilities; using stale data"
-                )
-                return _openrouter_tool_models
-            logger.warning("Could not load OpenRouter tool capabilities")
-            return None
-
-        _openrouter_tool_models = tool_models
-        _openrouter_tool_models_expires_at = now + OPENROUTER_TOOL_MODELS_CACHE_SECONDS
-        return tool_models
-
-
-async def _supports_tools(model: str) -> bool:
-    """Return whether tools should be offered for this LiteLLM endpoint."""
-    try:
-        if litellm.supports_function_calling(model=model):
-            return True
-
-        # LiteLLM's static catalogue can lag behind OpenRouter's rapidly
-        # changing model list. OpenRouter documents `supported_parameters=tools`
-        # as the authoritative per-model capability filter.
-        if model.startswith("openrouter/"):
-            tool_models = await _get_openrouter_tool_models()
-            return bool(
-                tool_models and model.removeprefix("openrouter/") in tool_models
-            )
-        return False
-    except Exception:
-        logger.warning("Could not determine tool support for '%s'", model)
-        return False
-
 
 def _tool_arguments_for_trace(raw_arguments: Any) -> tuple[str, dict[str, Any] | None]:
     """Keep the exact provider arguments plus a parsed object when valid."""
@@ -201,10 +125,12 @@ async def litellm_stream_iter(
         base_kwargs["enable_reasoning"] = True
 
     tools_by_name = {tool.name: tool for tool in tools or []}
-    tools_available = bool(tools_by_name) and await _supports_tools(endpoint.model)
+    # Capability is never declared, only discovered: schemas go out unless this
+    # endpoint has already refused them.
+    tools_available = bool(tools_by_name) and not model_rejects_tools(endpoint.model)
     if tools_by_name and not tools_available:
         logger.info(
-            "Tools requested but model '%s' does not support tool calling",
+            "Tools not offered to '%s': it refused them before",
             endpoint.model,
             extra={"request": request},
         )
@@ -262,7 +188,13 @@ async def litellm_stream_iter(
                 extra={"request": request},
             )
             raise ContextTooLongError from exc
-        except litellm.UnsupportedParamsError:
+        except litellm.BadRequestError:
+            # Providers disagree on how they refuse tools: some raise
+            # UnsupportedParamsError, others a plain 400. Retrying without
+            # schemas costs one request and tells us which it was -- an
+            # unrelated 400 simply fails again, and that one reaches the caller.
+            # ContextWindowExceededError is also a BadRequestError; it is caught
+            # above, so it never reaches here.
             if "tools" not in call_kwargs:
                 raise
             logger.info(
@@ -270,6 +202,7 @@ async def litellm_stream_iter(
                 endpoint.model,
                 extra={"request": request},
             )
+            remember_tool_rejection(endpoint.model)
             tools_available = False
             msg.content = content_before_call
             msg.reasoning_content = reasoning_before_call

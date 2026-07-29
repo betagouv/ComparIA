@@ -40,6 +40,9 @@ REDIS_AUTH_VERIFY_FAIL: Final[str] = (
 REDIS_WEB_SEARCH_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}web_search_cache:{{prompt_hash}}"
 )
+REDIS_TOOLS_REJECTED_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}tools_rejected:{{model_hash}}"
+)
 REDIS_MAINTENANCE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}maintenance_mode"
 REDIS_LLMS_DATA_CACHE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}llms_data"
 REDIS_APP_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}app_settings"

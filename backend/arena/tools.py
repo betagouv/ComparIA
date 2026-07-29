@@ -11,6 +11,13 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Iterable, Literal
 
+from backend.config import TOOL_REJECTION_TTL
+from utils.storage.redis import (
+    REDIS_TOOLS_REJECTED_KEY,
+    get_redis_client,
+    hash_content,
+)
+
 logger = logging.getLogger("languia")
 
 ToolStatus = Literal["success", "empty", "error"]
@@ -47,6 +54,34 @@ class ToolSpec:
     schema: dict[str, Any]
     # Takes the raw JSON arguments string emitted by the model.
     run: Callable[[str], Awaitable[ToolResult]]
+
+
+def _rejection_key(model: str) -> str:
+    return REDIS_TOOLS_REJECTED_KEY.format(model_hash=hash_content(model))
+
+
+def model_rejects_tools(model: str) -> bool:
+    """
+    Whether this endpoint is known to refuse tool schemas.
+
+    Capability is learnt by trying, never declared in advance: no static
+    catalogue is accurate across the providers we route to. When the answer is
+    unknown -- including when Redis is unreachable -- we say no and let the
+    request find out.
+    """
+    try:
+        return bool(get_redis_client().get(_rejection_key(model)))
+    except Exception as e:
+        logger.warning("Could not read tool rejection cache: %s", e)
+        return False
+
+
+def remember_tool_rejection(model: str) -> None:
+    """Record that this endpoint refused tool schemas, so we stop paying for it."""
+    try:
+        get_redis_client().setex(_rejection_key(model), TOOL_REJECTION_TTL, "1")
+    except Exception as e:
+        logger.warning("Could not store tool rejection: %s", e)
 
 
 def _builtin_registry() -> dict[str, Callable[[], ToolSpec | None]]:

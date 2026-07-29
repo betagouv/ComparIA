@@ -194,6 +194,8 @@ ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 
 # Tool calls a model may make in a single response, all tools together
 MAX_TOOL_CALLS = 3
+# How long we remember that an endpoint refused tool schemas
+TOOL_REJECTION_TTL = 86_400  # 24h
 
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"

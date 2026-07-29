@@ -12,8 +12,21 @@ from linkup import LinkupSearchTextResult
 from pydantic import BaseModel
 
 from backend.arena import litellm as integration
-from backend.arena import web_search
+from backend.arena import tools, web_search
 from backend.arena.tools import resolve_builtin_tools
+
+
+class FakeRedis:
+    """Stands in for Redis so tests never touch a server."""
+
+    def __init__(self) -> None:
+        self.store: dict[str, str] = {}
+
+    def get(self, key: str) -> str | None:
+        return self.store.get(key)
+
+    def setex(self, key: str, ttl: int, value: str) -> None:
+        self.store[key] = value
 from utils.database.models import (
     AgentTraceToolCall,
     AgentTraceToolResult,
@@ -230,23 +243,176 @@ def test_disabled_search_does_not_expose_tools():
     asyncio.run(_test_disabled_search_does_not_expose_tools())
 
 
-def test_openrouter_tool_support_uses_provider_capabilities():
-    asyncio.run(_test_openrouter_tool_support_uses_provider_capabilities())
+def test_tools_are_offered_whatever_the_provider():
+    asyncio.run(_test_tools_are_offered_whatever_the_provider())
 
 
-async def _test_openrouter_tool_support_uses_provider_capabilities():
-    model = "mistralai/mistral-medium-3.1"
+async def _test_tools_are_offered_whatever_the_provider():
+    """No capability table knows this endpoint; it is offered tools anyway."""
+    calls: list[dict[str, Any]] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Answer."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
     with (
-        patch.object(
-            integration.litellm, "supports_function_calling", return_value=False
-        ),
-        patch.object(
-            integration,
-            "_get_openrouter_tool_models",
-            AsyncMock(return_value={model}),
-        ),
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
-        assert await integration._supports_tools(f"openrouter/{model}")
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm("scaleway/mistral-small"),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+    assert message.content == "Answer."
+    assert [tool["function"]["name"] for tool in calls[0]["tools"]] == ["search_web"]
+
+
+def test_provider_rejection_answers_and_is_remembered():
+    asyncio.run(_test_provider_rejection_answers_and_is_remembered())
+
+
+async def _test_provider_rejection_answers_and_is_remembered():
+    """A provider refusing tools still answers, and the refusal is stored."""
+    calls: list[dict[str, Any]] = []
+    redis = FakeRedis()
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        if "tools" in kwargs:
+            raise litellm.BadRequestError(
+                message="tools is not supported",
+                model="scaleway/mistral-small",
+                llm_provider="scaleway",
+            )
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Fallback answer."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm("scaleway/mistral-small"),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+        # Asserted inside the patch: the rejection lives in Redis.
+        assert tools.model_rejects_tools("scaleway/mistral-small")
+
+    assert message.content == "Fallback answer."
+    assert "tools" in calls[0]
+    assert "tools" not in calls[1]
+
+
+def test_remembered_rejection_skips_the_wasted_request():
+    asyncio.run(_test_remembered_rejection_skips_the_wasted_request())
+
+
+async def _test_remembered_rejection_skips_the_wasted_request():
+    """Once a model is known to refuse tools, it is never offered them again."""
+    calls: list[dict[str, Any]] = []
+    redis = FakeRedis()
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Answer."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        tools.remember_tool_rejection("scaleway/mistral-small")
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm("scaleway/mistral-small"),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+    assert message.content == "Answer."
+    assert len(calls) == 1
+    assert "tools" not in calls[0]
+
+
+def test_unrelated_bad_request_is_not_swallowed():
+    asyncio.run(_test_unrelated_bad_request_is_not_swallowed())
+
+
+async def _test_unrelated_bad_request_is_not_swallowed():
+    """A 400 that has nothing to do with tools still reaches the caller."""
+    redis = FakeRedis()
+
+    async def fake_completion(**kwargs):
+        raise litellm.BadRequestError(
+            message="temperature must be between 0 and 2",
+            model="scaleway/mistral-small",
+            llm_provider="scaleway",
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        raised = False
+        try:
+            async for _ in integration.litellm_stream_iter(
+                llm=_llm("scaleway/mistral-small"),
+                messages=[UserMessage(content="Hello")],
+                msg=message,
+                temperature=0.7,
+                max_new_tokens=100,
+                tools=_web_search_tools(),
+            ):
+                pass
+        except litellm.BadRequestError:
+            raised = True
+
+    assert raised
 
 
 async def _test_disabled_search_does_not_expose_tools():
@@ -279,52 +445,6 @@ async def _test_disabled_search_does_not_expose_tools():
     assert message.content == "No search."
     assert "tools" not in calls[0]
     assert "tool_choice" not in calls[0]
-
-
-def test_unsupported_model_gracefully_answers_without_tools():
-    asyncio.run(_test_unsupported_model_gracefully_answers_without_tools())
-
-
-async def _test_unsupported_model_gracefully_answers_without_tools():
-    calls: list[dict[str, Any]] = []
-
-    async def fake_completion(**kwargs):
-        calls.append(kwargs)
-        return AsyncChunkStream(
-            [
-                _chunk(
-                    response_id="plain",
-                    delta={"role": "assistant", "content": "Fallback answer."},
-                    finish_reason="stop",
-                )
-            ]
-        )
-
-    with (
-        patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(
-            integration.litellm, "supports_function_calling", return_value=False
-        ),
-        patch.object(
-            integration,
-            "_get_openrouter_tool_models",
-            AsyncMock(return_value=set()),
-        ),
-        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
-    ):
-        message = LLMMessageCreate()
-        async for _ in integration.litellm_stream_iter(
-            llm=_llm("openrouter/provider/unsupported"),
-            messages=[UserMessage(content="Hello")],
-            msg=message,
-            temperature=0.7,
-            max_new_tokens=100,
-            tools=_web_search_tools(),
-        ):
-            pass
-
-    assert message.content == "Fallback answer."
-    assert "tools" not in calls[0]
 
 
 def test_enabled_model_can_choose_not_to_search():
@@ -878,7 +998,10 @@ if __name__ == "__main__":
     tests = [
         test_model_can_search_then_stream_final_answer,
         test_disabled_search_does_not_expose_tools,
-        test_unsupported_model_gracefully_answers_without_tools,
+        test_tools_are_offered_whatever_the_provider,
+        test_provider_rejection_answers_and_is_remembered,
+        test_remembered_rejection_skips_the_wasted_request,
+        test_unrelated_bad_request_is_not_swallowed,
         test_enabled_model_can_choose_not_to_search,
         test_missing_linkup_key_does_not_expose_tools,
         test_invalid_tool_arguments_return_error_without_search,
