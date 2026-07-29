@@ -443,7 +443,15 @@ export interface Tool {
   /**
    * How the tool is carried out.
    */
-  kind?: "builtin";
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool needing credentials, one header as 'Name: value'.
+   */
+  auth_header?: string | null;
   /**
    * Disabled tools are never offered to a model nor shown to a visitor.
    */

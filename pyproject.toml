@@ -31,6 +31,7 @@ dependencies = [
     "linkup-sdk>=0.20.0",
     "async-lru>=2.3.0",
     "python-multipart>=0.0.32",
+    "mcp>=1.9,<2",
     "polars>=1.43.2",
 ]
 

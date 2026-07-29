@@ -6,6 +6,7 @@ async callable. What a tool does, and whether its result counts as a success,
 is the tool's own business.
 """
 
+import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
@@ -127,6 +128,22 @@ async def get_enabled_tools() -> list["Tool"]:
         return list(rows.all())
 
 
+def _first_of_each_name(specs: Iterable[ToolSpec]) -> list[ToolSpec]:
+    """
+    Keep one specification per name.
+
+    Two servers may well name a function the same thing, and the loop addresses
+    tools by name alone, so the second one would silently answer for the first.
+    """
+    kept: dict[str, ToolSpec] = {}
+    for spec in specs:
+        if spec.name in kept:
+            logger.warning("Tool name '%s' offered twice; keeping the first", spec.name)
+            continue
+        kept[spec.name] = spec
+    return list(kept.values())
+
+
 async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
     """
     Turn the tool keys a visitor selected into specifications.
@@ -134,10 +151,21 @@ async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
     This is the only place that knows one kind of tool from another. A key that
     is not enabled, or whose tool is not configured, yields nothing.
     """
+    from backend.arena.mcp_tools import resolve_mcp_tools
+
     wanted = set(keys)
     if not wanted:
         return []
-    enabled = await get_enabled_tools()
-    return resolve_builtin_tools(
-        [tool.key for tool in enabled if tool.key in wanted and tool.kind == "builtin"]
+    selected = [tool for tool in await get_enabled_tools() if tool.key in wanted]
+
+    specs = resolve_builtin_tools(
+        [tool.key for tool in selected if tool.kind == "builtin"]
     )
+    # Servers are listed side by side: waiting on them in turn would multiply the
+    # discovery timeout by the number of rows the visitor picked.
+    discovered = await asyncio.gather(
+        *(resolve_mcp_tools(tool) for tool in selected if tool.kind == "mcp")
+    )
+    for server_specs in discovered:
+        specs.extend(server_specs)
+    return _first_of_each_name(specs)

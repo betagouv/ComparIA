@@ -201,6 +201,16 @@ MAX_TOOL_ROUNDS = 6
 # How long we remember that an endpoint refused tool schemas
 TOOL_REJECTION_TTL = 86_400  # 24h
 
+# MCP servers. Listing happens while the visitor waits for a first token, so it
+# gets a much shorter leash than the call itself.
+MCP_DISCOVERY_TIMEOUT_SECONDS = 5
+MCP_CALL_TIMEOUT_SECONDS = 20
+# How long a discovered schema list is used without asking again, and how long it
+# stays usable as a fallback when the server can no longer be reached.
+MCP_SCHEMA_TTL = 900  # 15 min
+MCP_SCHEMA_STALE_TTL = 86_400  # 24h
+MCP_MAX_RESULT_LENGTH = 12_000
+
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"
 WEB_SEARCH_MAX_RESULTS_PER_CALL = 8
