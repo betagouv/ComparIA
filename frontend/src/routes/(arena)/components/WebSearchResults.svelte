@@ -1,18 +1,8 @@
-<script module lang="ts">
-  export function isSafeWebSource(url: string): boolean {
-    try {
-      const protocol = new URL(url).protocol
-      return protocol === 'http:' || protocol === 'https:'
-    } catch {
-      return false
-    }
-  }
-</script>
-
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import type { WebSearchResults } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { isSafeWebSource } from '$lib/utils/commons'
 
   export type WebSearchResultsProps = {
     id: string

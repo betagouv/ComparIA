@@ -132,3 +132,13 @@ export function omit<T extends Record<Key, any>, K extends keyof T>(
 
   return out as Omit<T, K>
 }
+
+/** Only http(s) sources are ever rendered as links: they come from third parties. */
+export function isSafeWebSource(url: string): boolean {
+  try {
+    const protocol = new URL(url).protocol
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
+}

@@ -9,9 +9,12 @@
     ComparisonTurnSide,
     TurnChoice
   } from '$lib/chatService.svelte'
+  import { page } from '$app/state'
+  import { isAdmin } from '$lib/auth.svelte'
+  import type { ToolPublic } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
-  import { AgentTrace, VoteAnnotate, WebSearchResults } from '.'
+  import { AgentTrace, ToolActivity, VoteAnnotate } from '.'
 
   export type MessageBotProps = {
     id: string
@@ -39,6 +42,14 @@
   })
 
   const message = $derived(turnSide.llm_msg!)
+
+  // Loaded once by the arena layout; drilling it through every wrapper buys
+  // nothing.
+  const tools = $derived((page.data.tools ?? []) as ToolPublic[])
+
+  // Set by the backend only when tools were actually offered, so it separates a
+  // model that declined from one that was never given the chance.
+  const toolsWereOffered = $derived(message.agent_stop_reason != null)
 
   let annotations = $derived({
     keyword_annotations: turnSide.keyword_annotations,
@@ -72,7 +83,16 @@
       role="group"
       aria-label={m[`models.names.${bot}`]()}
     >
-      {#if message.agent_trace?.length}
+      {#if toolsWereOffered || message.agent_trace?.length}
+        <ToolActivity
+          id="{id}-tool-activity"
+          events={message.agent_trace ?? []}
+          {tools}
+          finished={turnSide.status !== 'generating'}
+        />
+      {/if}
+
+      {#if isAdmin() && message.agent_trace?.length}
         <AgentTrace id="{id}-agent-trace" {prompt} events={message.agent_trace} />
       {/if}
 
@@ -105,10 +125,6 @@
             </div>
           </div>
         </section>
-      {/if}
-
-      {#if message.web_search_results?.length}
-        <WebSearchResults id="{id}-web-search-results" results={message.web_search_results} />
       {/if}
 
       <Markdown message={message.content} chatbot />

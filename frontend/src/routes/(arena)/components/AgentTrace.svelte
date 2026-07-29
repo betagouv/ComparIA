@@ -2,7 +2,7 @@
   import { Icon, Link } from '$components/dsfr'
   import type { LLMMessageCreate } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
-  import { isSafeWebSource } from './WebSearchResults.svelte'
+  import { isSafeWebSource } from '$lib/utils/commons'
 
   // Derived rather than imported: json2ts inlines this union instead of naming
   // it, so a named alias only survives in the generated file until the next run.

@@ -7,6 +7,7 @@ Create Date: 2026-07-29 00:00:00.000000
 """
 
 import uuid
+from datetime import datetime
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -40,8 +41,8 @@ def upgrade() -> None:
         [
             {
                 "id": uuid.uuid4(),
-                "created_at": sa.func.now(),
-                "updated_at": sa.func.now(),
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
                 "key": "web_search",
                 "label": "Recherche web",
                 "description": "Chercher des informations récentes sur le web.",
