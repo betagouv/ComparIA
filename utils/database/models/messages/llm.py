@@ -46,6 +46,13 @@ AgentTraceEvent = (
     | AgentTraceToolResult
 )
 
+# Why the model stopped using tools. "completed" means it decided it was done;
+# every other value means we cut it off, and the difference matters when reading
+# tool-use behaviour out of the data.
+AgentStopReason = Literal[
+    "completed", "deadline", "call_limit", "round_limit", "context_exceeded"
+]
+
 
 class LLMMessageBase(SQLModel):
     id: ModelId
@@ -64,6 +71,7 @@ class LLMMessageBase(SQLModel):
         list[LinkupSearchTextResult] | None, Field(sa_type=JSONB)
     ] = None
     agent_trace: Annotated[list[AgentTraceEvent] | None, Field(sa_type=JSONB)] = None
+    agent_stop_reason: Annotated[AgentStopReason | None, Field(sa_type=String)] = None
 
 
 class LLMMessageFinal(LLMMessageBase):

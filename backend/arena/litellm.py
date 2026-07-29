@@ -5,6 +5,7 @@ This module streams model responses and executes the tools it is given. It
 knows nothing about what any particular tool does.
 """
 
+import asyncio
 import json
 import logging
 from datetime import datetime
@@ -22,13 +23,16 @@ from backend.arena.tools import (
 from backend.config import (
     GLOBAL_TIMEOUT,
     MAX_TOOL_CALLS,
+    MAX_TOOL_ROUNDS,
     ORDBOGEN_GLOBAL_TIMEOUT,
     ORDBOGEN_STREAM_TIMEOUT,
     STREAM_TIMEOUT,
+    TOOL_TIME_BUDGET_SECONDS,
     settings,
 )
 from backend.errors import ContextTooLongError
 from utils.database.models.messages.llm import (
+    AgentStopReason,
     AgentTraceIntermediateContent,
     AgentTraceReasoning,
     AgentTraceToolCall,
@@ -56,6 +60,57 @@ def _tool_arguments_for_trace(raw_arguments: Any) -> tuple[str, dict[str, Any] |
     if isinstance(raw_arguments, dict):
         return json.dumps(raw_arguments, ensure_ascii=False), raw_arguments
     return json.dumps(raw_arguments, ensure_ascii=False), None
+
+
+async def _refuse_tool_call(message: str) -> tuple[ToolResult, int]:
+    """A reply for a call we decline to run, so the next request stays valid."""
+    return ToolResult.error(message), 0
+
+
+async def _run_tool_call(
+    tool: ToolSpec | None,
+    tool_name: str,
+    arguments_json: str,
+    seconds_left: float,
+) -> tuple[ToolResult, int]:
+    """
+    Run one call and report how long it took.
+
+    Every call gets a result, including the ones we refuse: omitting a reply to
+    a tool call the model made would make the next request invalid.
+    """
+    started_at = monotonic()
+    if tool is None:
+        return ToolResult.error(f"Unknown tool '{tool_name}'."), 0
+    if seconds_left <= 0:
+        return ToolResult.error("The time budget for tools is exhausted."), 0
+    try:
+        async with asyncio.timeout(seconds_left):
+            result = await tool.run(arguments_json)
+    except TimeoutError:
+        result = ToolResult.error("The tool call ran out of time.")
+    except Exception:
+        # A tool that raises is a broken tool, not a broken turn.
+        logger.warning("Tool '%s' raised", tool_name)
+        result = ToolResult.error("The tool failed. Continue without it.")
+    return result, max(0, int((monotonic() - started_at) * 1_000))
+
+
+def _shed_oldest_tool_round(api_messages: list[dict[str, Any]]) -> bool:
+    """
+    Drop the oldest assistant tool request together with its replies.
+
+    A tool reply without its request is invalid, so the pair travels as a unit.
+    Returns whether anything was shed.
+    """
+    for index, message in enumerate(api_messages):
+        if message.get("role") == "assistant" and message.get("tool_calls"):
+            end = index + 1
+            while end < len(api_messages) and api_messages[end].get("role") == "tool":
+                end += 1
+            del api_messages[index:end]
+            return True
+    return False
 
 
 def _message_from_built_response(response: Any) -> dict[str, Any]:
@@ -138,14 +193,30 @@ async def litellm_stream_iter(
     msg.created_at = datetime.now()
     msg.agent_trace = []
     tool_call_count = 0
+    tool_round_count = 0
     total_tokens = 0
+    tools_were_offered = tools_available
+    # Set the first time we refuse to offer tools again, so that "the model was
+    # done" and "we stopped it" stay distinguishable.
+    stopped_by: AgentStopReason | None = None
+    deadline = monotonic() + TOOL_TIME_BUDGET_SECONDS
 
     while True:
+        seconds_left = deadline - monotonic()
+        if tools_available and stopped_by is None:
+            if tool_call_count >= MAX_TOOL_CALLS:
+                stopped_by = "call_limit"
+            elif tool_round_count >= MAX_TOOL_ROUNDS:
+                stopped_by = "round_limit"
+            elif seconds_left <= 0:
+                stopped_by = "deadline"
+
         call_kwargs = {
             **base_kwargs,
             "messages": api_messages,
         }
-        if tools_available and tool_call_count < MAX_TOOL_CALLS:
+        # A model given no schemas cannot ask for a tool, so it has to answer.
+        if tools_available and stopped_by is None:
             call_kwargs["tools"] = [tool.schema for tool in tools_by_name.values()]
             call_kwargs["tool_choice"] = "auto"
 
@@ -181,6 +252,19 @@ async def litellm_stream_iter(
                 if msg.content or msg.reasoning_content:
                     yield msg
         except litellm.ContextWindowExceededError as exc:
+            # Tool results are what usually blew the window. Shedding the oldest
+            # round buys room; only a conversation with no tool traffic left to
+            # shed is genuinely too long for this model.
+            if _shed_oldest_tool_round(api_messages):
+                logger.info(
+                    "context_window_exceeded for '%s'; shed the oldest tool round",
+                    endpoint.model,
+                    extra={"request": request},
+                )
+                stopped_by = "context_exceeded"
+                msg.content = content_before_call
+                msg.reasoning_content = reasoning_before_call
+                continue
             logger.error(
                 "context_window_exceeded: %s: %s",
                 endpoint.model,
@@ -238,6 +322,9 @@ async def litellm_stream_iter(
         yield msg
 
         api_messages.append(assistant_message)
+        tool_round_count += 1
+
+        requested: list[tuple[str, str, str]] = []
         for raw_tool_call in tool_calls:
             tool_call = (
                 raw_tool_call.model_dump(exclude_none=True)
@@ -250,6 +337,7 @@ async def litellm_stream_iter(
             arguments_json, parsed_arguments = _tool_arguments_for_trace(
                 function.get("arguments") or "{}"
             )
+            requested.append((tool_call_id, tool_name, arguments_json))
             msg.agent_trace.append(
                 AgentTraceToolCall(
                     tool_call_id=tool_call_id,
@@ -258,26 +346,35 @@ async def litellm_stream_iter(
                     arguments=parsed_arguments,
                 )
             )
-            # Let the UI display the request while the external call is running.
-            yield msg
+        # Show every request before any of them runs, so the UI reflects what the
+        # model asked for while the external calls are in flight.
+        yield msg
 
-            tool_call_count += 1
-            tool_started_at = monotonic()
-            # Every call gets a reply, even a refusal: omitting one would make
-            # the next request invalid.
-            if tool_call_count > MAX_TOOL_CALLS:
-                result = ToolResult.error("The tool call limit has been reached.")
-            elif (tool := tools_by_name.get(tool_name)) is None:
-                result = ToolResult.error(f"Unknown tool '{tool_name}'.")
-            else:
-                result = await tool.run(arguments_json)
+        seconds_left = deadline - monotonic()
+        over_limit = tool_call_count + len(requested) > MAX_TOOL_CALLS
+        tool_call_count += len(requested)
 
+        pending = [
+            _refuse_tool_call("The tool call limit has been reached.")
+            if over_limit
+            else _run_tool_call(
+                tools_by_name.get(tool_name), tool_name, arguments_json, seconds_left
+            )
+            for _, tool_name, arguments_json in requested
+        ]
+        # Calls emitted together run together: running them in turn would spend
+        # the whole budget on work that overlaps.
+        outcomes = await asyncio.gather(*pending)
+
+        for (tool_call_id, tool_name, _), (result, duration_ms) in zip(
+            requested, outcomes
+        ):
             msg.agent_trace.append(
                 AgentTraceToolResult(
                     tool_call_id=tool_call_id,
                     name=tool_name,
                     status=result.status,
-                    duration_ms=max(0, int((monotonic() - tool_started_at) * 1_000)),
+                    duration_ms=duration_ms,
                     content=result.content,
                     results=result.results,
                 )
@@ -290,9 +387,11 @@ async def litellm_stream_iter(
                     "content": result.content,
                 }
             )
-            # Surface every completed tool result, including empty/error states.
-            yield msg
+        # Surface every completed tool result, including empty/error states.
+        yield msg
 
+    if tools_were_offered:
+        msg.agent_stop_reason = stopped_by or "completed"
     msg.tokens = total_tokens or msg.tokens
     msg.updated_at = datetime.now()
     logger.debug(

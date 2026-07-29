@@ -192,8 +192,12 @@ ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-e
 ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
 ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 
-# Tool calls a model may make in a single response, all tools together
-MAX_TOOL_CALLS = 3
+# Wall-clock seconds a model may spend in tools across one response. This is the
+# real limit: the counters below are runaway guards, set high enough that hitting
+# one is a defect rather than ordinary behaviour.
+TOOL_TIME_BUDGET_SECONDS = 60.0
+MAX_TOOL_CALLS = 10
+MAX_TOOL_ROUNDS = 6
 # How long we remember that an endpoint refused tool schemas
 TOOL_REJECTION_TTL = 86_400  # 24h
 

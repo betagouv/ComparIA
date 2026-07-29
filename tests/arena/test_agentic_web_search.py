@@ -682,9 +682,7 @@ async def _test_tool_call_budget_forces_a_final_answer():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(
-            integration.litellm, "supports_function_calling", return_value=True
-        ),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
         patch.object(web_search.settings, "LINKUP_API_KEY", "test"),
         patch.object(web_search, "search_web", fake_search),
     ):
@@ -699,9 +697,12 @@ async def _test_tool_call_budget_forces_a_final_answer():
         ):
             pass
 
-    assert search_count == integration.MAX_TOOL_CALLS
-    assert len(calls) == integration.MAX_TOOL_CALLS + 1
+    # This model asks for one search per round, so the round guard bites before
+    # the call guard. Either way it is forced to answer, and says which stopped it.
+    assert search_count == integration.MAX_TOOL_ROUNDS
+    assert len(calls) == integration.MAX_TOOL_ROUNDS + 1
     assert message.content == "Budget reached."
+    assert message.agent_stop_reason == "round_limit"
 
 
 def test_search_results_are_safe_and_bounded():
@@ -994,6 +995,267 @@ def test_search_results_are_json_native_at_persistence_boundary():
     json.dumps(db_message.agent_trace)
 
 
+def _tool_call_delta(*calls: tuple[str, str, str]) -> dict[str, Any]:
+    """Build the streamed delta for one or more tool calls."""
+    return {
+        "tool_calls": [
+            {
+                "index": index,
+                "id": call_id,
+                "type": "function",
+                "function": {"name": name, "arguments": arguments},
+            }
+            for index, (call_id, name, arguments) in enumerate(calls)
+        ]
+    }
+
+
+def _spy_tool(name: str, run) -> tools.ToolSpec:
+    return tools.ToolSpec(
+        name=name,
+        schema={
+            "type": "function",
+            "function": {
+                "name": name,
+                "description": "test tool",
+                "parameters": {"type": "object", "properties": {}},
+            },
+        },
+        run=run,
+    )
+
+
+def test_calls_in_one_round_run_concurrently():
+    asyncio.run(_test_calls_in_one_round_run_concurrently())
+
+
+async def _test_calls_in_one_round_run_concurrently():
+    """Three calls emitted together overlap instead of queueing."""
+    in_flight = 0
+    peak = 0
+
+    async def slow(_arguments: str) -> tools.ToolResult:
+        nonlocal in_flight, peak
+        in_flight += 1
+        peak = max(peak, in_flight)
+        await asyncio.sleep(0.05)
+        in_flight -= 1
+        return tools.ToolResult(content="{}", status="success")
+
+    responses = [
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="round-1",
+                    delta={"role": "assistant"},
+                ),
+                _chunk(
+                    response_id="round-1",
+                    delta=_tool_call_delta(
+                        ("call-1", "slow", "{}"),
+                        ("call-2", "slow", "{}"),
+                        ("call-3", "slow", "{}"),
+                    ),
+                    finish_reason="tool_calls",
+                ),
+            ]
+        ),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="final",
+                    delta={"role": "assistant", "content": "Done."},
+                    finish_reason="stop",
+                )
+            ]
+        ),
+    ]
+
+    async def fake_completion(**_kwargs):
+        return responses.pop(0)
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=[_spy_tool("slow", slow)],
+        ):
+            pass
+
+    assert peak == 3, f"expected three overlapping calls, saw {peak}"
+    assert message.content == "Done."
+
+
+def test_time_budget_stops_tool_use_and_is_recorded():
+    asyncio.run(_test_time_budget_stops_tool_use_and_is_recorded())
+
+
+async def _test_time_budget_stops_tool_use_and_is_recorded():
+    """Past the deadline the model is offered no tools and must answer."""
+    calls: list[dict[str, Any]] = []
+
+    async def slow(_arguments: str) -> tools.ToolResult:
+        await asyncio.sleep(0.05)
+        return tools.ToolResult(content="{}", status="success")
+
+    def tool_round(response_id: str, call_id: str):
+        return AsyncChunkStream(
+            [
+                _chunk(response_id=response_id, delta={"role": "assistant"}),
+                _chunk(
+                    response_id=response_id,
+                    delta=_tool_call_delta((call_id, "slow", "{}")),
+                    finish_reason="tool_calls",
+                ),
+            ]
+        )
+
+    responses = [
+        tool_round("round-1", "call-1"),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="final",
+                    delta={"role": "assistant", "content": "Answer without more."},
+                    finish_reason="stop",
+                )
+            ]
+        ),
+    ]
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return responses.pop(0)
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(integration, "TOOL_TIME_BUDGET_SECONDS", 0.01),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=[_spy_tool("slow", slow)],
+        ):
+            pass
+
+    assert message.content == "Answer without more."
+    assert "tools" in calls[0]
+    assert "tools" not in calls[1]
+    assert message.agent_stop_reason == "deadline"
+
+
+def test_finishing_normally_records_completion():
+    asyncio.run(_test_finishing_normally_records_completion())
+
+
+async def _test_finishing_normally_records_completion():
+    """A model that stops on its own is not recorded as cut off."""
+
+    async def fake_completion(**_kwargs):
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "No tool needed."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+    assert message.agent_stop_reason == "completed"
+
+
+def test_context_overflow_sheds_tool_rounds_and_still_answers():
+    asyncio.run(_test_context_overflow_sheds_tool_rounds_and_still_answers())
+
+
+async def _test_context_overflow_sheds_tool_rounds_and_still_answers():
+    """A conversation that outgrows its window answers instead of failing."""
+    sent: list[list[dict[str, Any]]] = []
+
+    async def quick(_arguments: str) -> tools.ToolResult:
+        return tools.ToolResult(content='{"results": []}', status="success")
+
+    state = {"round": 0}
+
+    async def fake_completion(**kwargs):
+        sent.append(kwargs["messages"])
+        state["round"] += 1
+        if state["round"] == 1:
+            return AsyncChunkStream(
+                [
+                    _chunk(response_id="round-1", delta={"role": "assistant"}),
+                    _chunk(
+                        response_id="round-1",
+                        delta=_tool_call_delta(("call-1", "quick", "{}")),
+                        finish_reason="tool_calls",
+                    ),
+                ]
+            )
+        if state["round"] == 2:
+            raise litellm.ContextWindowExceededError(
+                message="too long",
+                model="test-model",
+                llm_provider="test",
+            )
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="final",
+                    delta={"role": "assistant", "content": "Shorter answer."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=[_spy_tool("quick", quick)],
+        ):
+            pass
+
+    assert message.content == "Shorter answer."
+    # The retry carries no tool traffic: the whole round was shed.
+    assert not [m for m in sent[-1] if m.get("role") == "tool"]
+
+
 if __name__ == "__main__":
     tests = [
         test_model_can_search_then_stream_final_answer,
@@ -1013,6 +1275,10 @@ if __name__ == "__main__":
         test_response_cache_is_bypassed_when_tools_are_available,
         test_web_search_sources_reach_their_own_column,
         test_search_results_are_json_native_at_persistence_boundary,
+        test_calls_in_one_round_run_concurrently,
+        test_time_budget_stops_tool_use_and_is_recorded,
+        test_finishing_normally_records_completion,
+        test_context_overflow_sheds_tool_rounds_and_still_answers,
     ]
     for test in tests:
         test()
