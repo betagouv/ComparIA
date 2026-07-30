@@ -23,6 +23,23 @@ const props = (llm_msg: Record<string, unknown>) =>
   }) as unknown as ComponentProps<typeof MessageBot>
 
 describe('MessageBot', () => {
+  it('shares the comparison row equally without letting content set the column width', () => {
+    const { container } = render(
+      MessageBot,
+      props({
+        role: 'assistant',
+        generation_id: 'generation-a',
+        content: 'Final answer.',
+        agent_trace: []
+      })
+    )
+
+    const column = container.firstElementChild
+
+    expect(column?.classList.contains('md:flex-1')).toBe(true)
+    expect(column?.classList.contains('md:min-w-0')).toBe(true)
+  })
+
   it('interposes intermediate content and tool calls before the final answer', () => {
     render(
       MessageBot,

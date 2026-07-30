@@ -32,15 +32,16 @@
   const sources = $derived.by(() => {
     const uniqueSources: { url: string; name: string; favicon: string | null }[] = []
     for (const source of result?.results ?? []) {
+      const url = source.url
       if (
-        source.url &&
-        isSafeWebSource(source.url) &&
-        !uniqueSources.some((candidate) => candidate.url === source.url)
+        url &&
+        isSafeWebSource(url) &&
+        !uniqueSources.some((candidate) => candidate.url === url)
       ) {
         uniqueSources.push({
-          url: source.url,
-          name: source.name || source.url,
-          favicon: getSourceFavicon(source)
+          url,
+          name: source.name || url,
+          favicon: getSourceFavicon({ url, favicon: source.favicon })
         })
       }
     }

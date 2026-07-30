@@ -91,7 +91,7 @@
   </details>
 {/snippet}
 
-<div class="md:w-full flex w-[80vw] flex-col">
+<div class="md:w-full md:min-w-0 md:flex-1 flex w-[80vw] flex-col">
   <div
     class={[
       'message-bot cg-border rounded-lg! bg-white flex h-full flex-col',
