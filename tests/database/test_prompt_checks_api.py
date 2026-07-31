@@ -7,8 +7,6 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from fastapi import HTTPException
-from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
@@ -17,8 +15,8 @@ os.environ["LOG_FORMAT"] = "JSON"
 from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
 from utils.database.models.prompt_check import (
+    DEFAULT_CATEGORIES,
     DEFAULT_MODEL,
-    DEFAULT_THRESHOLDS,
     PromptCheck,
     PromptCheckPatch,
 )
@@ -26,32 +24,27 @@ from utils.database.models.prompt_check import (
 ADMIN_ID = uuid.UUID("11111111-2222-3333-4444-555555555555")
 
 
-class FakeResult:
-    def __init__(self, rows):
-        self._rows = rows
-
-    def all(self):
-        return self._rows
-
-    def first(self):
-        return self._rows[0] if self._rows else None
+def seeded_row() -> PromptCheck:
+    return PromptCheck(
+        id=1,
+        model=DEFAULT_MODEL,
+        categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()},
+        updated_at=datetime(2026, 1, 1),
+    )
 
 
 class FakeSession:
-    """Enough of an async session for the two queries this module runs."""
+    """Enough of an async session for the single row this module reads."""
 
-    def __init__(self, rows):
-        self.rows = rows
+    def __init__(self, row: PromptCheck | None):
+        self.row = row
         self.committed = False
 
-    async def exec(self, query):
-        wanted = _kind_in(query)
-        if wanted is None:
-            return FakeResult(self.rows)
-        return FakeResult([row for row in self.rows if row.kind == wanted])
+    async def get(self, model, key):
+        return self.row
 
     def add(self, row):
-        pass
+        self.row = row
 
     async def commit(self):
         self.committed = True
@@ -60,36 +53,17 @@ class FakeSession:
         pass
 
 
-def _kind_in(query) -> str | None:
-    """Pull the kind out of a `where(kind == ...)` clause, if there is one."""
-    clause = query.whereclause
-    return None if clause is None else clause.right.value
-
-
-def seeded_rows() -> list[PromptCheck]:
-    return [
-        PromptCheck(
-            id=index,
-            kind=kind,
-            mode="log",
-            thresholds=dict(thresholds),
-            model=DEFAULT_MODEL,
-            updated_at=datetime(2026, 1, 1),
-        )
-        for index, (kind, thresholds) in enumerate(DEFAULT_THRESHOLDS.items(), start=1)
-    ]
-
-
 @pytest.fixture
 def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
-    session = FakeSession(seeded_rows())
+    session = FakeSession(seeded_row())
 
     @asynccontextmanager
     async def get_session():
         yield session
 
     monkeypatch.setattr(prompt_checks_module, "get_session", get_session)
-    monkeypatch.setattr(admin_router, "get_consecutive_failures", lambda kind: 0)
+    monkeypatch.setattr(admin_router, "get_consecutive_failures", lambda: 0)
+    monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 0)
     return session
 
 
@@ -102,43 +76,66 @@ def invalidations(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return calls
 
 
-def read_checks(db: FakeSession):
-    async def run():
-        return list(await prompt_checks_module.get_prompt_checks.__wrapped__())
-
-    return asyncio.run(run())
+def read_check(db: FakeSession) -> PromptCheck:
+    return asyncio.run(prompt_checks_module.get_prompt_check.__wrapped__())
 
 
-def test_reads_both_seeded_rows(db: FakeSession) -> None:
-    rows = read_checks(db)
-
-    assert [row.kind for row in rows] == ["content_safety", "pii"]
-    assert [row.mode for row in rows] == ["log", "log"]
-    assert rows[1].thresholds == {"pii": 0.5}
+def full_categories(**overrides: dict) -> dict[str, dict]:
+    categories = {k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
+    categories.update(overrides)
+    return categories
 
 
-def test_admin_listing_reports_health_per_check(
+def test_reads_the_singleton_row(db: FakeSession) -> None:
+    row = read_check(db)
+
+    assert row.model == DEFAULT_MODEL
+    assert set(row.categories) == set(DEFAULT_CATEGORIES)
+    assert row.categories["sexual"] == {"threshold": 0.3, "action": "log"}
+
+
+def test_falls_back_to_the_defaults_before_the_row_exists(db: FakeSession) -> None:
+    db.row = None
+
+    row = read_check(db)
+
+    assert row.categories == DEFAULT_CATEGORIES
+
+
+def test_admin_reading_reports_health(
     db: FakeSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    async def get_prompt_checks():
-        return seeded_rows()
+    async def get_prompt_check():
+        return seeded_row()
 
-    failures = {"content_safety": prompt_checks_module.UNHEALTHY_AFTER_FAILURES}
-    monkeypatch.setattr(admin_router, "get_prompt_checks", get_prompt_checks)
+    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
     monkeypatch.setattr(
-        admin_router, "get_consecutive_failures", lambda kind: failures.get(kind, 0)
+        admin_router,
+        "get_consecutive_failures",
+        lambda: prompt_checks_module.UNHEALTHY_AFTER_FAILURES,
     )
+    monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 12)
 
-    items = asyncio.run(admin_router.list_prompt_checks())
+    status = asyncio.run(admin_router.read_prompt_check())
 
-    assert [(item.kind, item.healthy) for item in items] == [
-        ("content_safety", False),
-        ("pii", True),
-    ]
-    assert (
-        items[0].consecutive_failures == prompt_checks_module.UNHEALTHY_AFTER_FAILURES
-    )
-    assert items[1].consecutive_failures == 0
+    assert status.healthy is False
+    assert status.consecutive_failures == prompt_checks_module.UNHEALTHY_AFTER_FAILURES
+    assert status.warnings_shown == 12
+    assert status.model == DEFAULT_MODEL
+
+
+def test_a_working_check_reads_as_healthy(
+    db: FakeSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    async def get_prompt_check():
+        return seeded_row()
+
+    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+
+    status = asyncio.run(admin_router.read_prompt_check())
+
+    assert status.healthy is True
+    assert status.consecutive_failures == 0
 
 
 def test_missing_failure_key_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -148,7 +145,7 @@ def test_missing_failure_key_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) 
 
     monkeypatch.setattr(prompt_checks_module, "get_redis_client", lambda: Client())
 
-    assert prompt_checks_module.get_consecutive_failures("pii") == 0
+    assert prompt_checks_module.get_consecutive_failures() == 0
 
 
 def test_unreachable_redis_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -157,58 +154,49 @@ def test_unreachable_redis_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) ->
 
     monkeypatch.setattr(prompt_checks_module, "get_redis_client", boom)
 
-    assert prompt_checks_module.get_consecutive_failures("pii") == 0
+    assert prompt_checks_module.get_consecutive_failures() == 0
+    assert prompt_checks_module.get_warnings_shown() == 0
 
 
-def patch_check(kind: str, body: PromptCheckPatch):
+def patch_check(body: PromptCheckPatch):
     class CurrentUser:
         id = ADMIN_ID
 
-    return asyncio.run(admin_router.patch_prompt_check(kind, body, CurrentUser()))
+    return asyncio.run(admin_router.patch_prompt_check(body, CurrentUser()))
 
 
-def test_patching_a_mode(db: FakeSession, invalidations: list[str]) -> None:
-    result = patch_check("content_safety", PromptCheckPatch(mode="block"))
-
-    assert result.kind == "content_safety"
-    assert result.mode == "block"
-    assert result.updated_by == ADMIN_ID
-    assert db.rows[0].mode == "block"
-    assert db.rows[1].mode == "log"
-
-
-def test_patching_thresholds_replaces_them(
+def test_patching_categories_replaces_them(
     db: FakeSession, invalidations: list[str]
 ) -> None:
-    result = patch_check("pii", PromptCheckPatch(thresholds={"pii": 0.8}))
+    categories = full_categories(sexual={"threshold": 0.2, "action": "block"})
 
-    assert result.thresholds == {"pii": 0.8}
-    assert db.rows[1].thresholds == {"pii": 0.8}
+    result = patch_check(PromptCheckPatch(categories=categories))
+
+    assert result.categories["sexual"] == {"threshold": 0.2, "action": "block"}
+    assert result.updated_by == ADMIN_ID
+    assert db.row.categories["sexual"] == {"threshold": 0.2, "action": "block"}
 
 
 def test_unset_fields_are_left_alone(db: FakeSession, invalidations: list[str]) -> None:
-    patch_check("content_safety", PromptCheckPatch(mode="warn"))
+    patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
 
-    assert db.rows[0].thresholds == DEFAULT_THRESHOLDS["content_safety"]
-    assert db.rows[0].model == DEFAULT_MODEL
-
-
-def test_unknown_kind_is_rejected(db: FakeSession, invalidations: list[str]) -> None:
-    with pytest.raises(HTTPException) as raised:
-        patch_check("astrology", PromptCheckPatch(mode="block"))
-
-    assert raised.value.status_code == 404
-    assert not db.committed
-    assert invalidations == []
+    assert db.row.model == "mistral-moderation-2603"
+    assert db.row.categories == DEFAULT_CATEGORIES
 
 
-def test_health_threshold_is_rejected() -> None:
-    with pytest.raises(ValidationError, match="can never block"):
-        PromptCheckPatch(thresholds={"health": 0.5})
+def test_patching_seeds_the_row_when_there_is_none(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    db.row = None
+
+    result = patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
+
+    assert result.model == "mistral-moderation-2603"
+    assert set(result.categories) == set(DEFAULT_CATEGORIES)
 
 
 def test_write_invalidates_the_cache(db: FakeSession, invalidations: list[str]) -> None:
-    patch_check("pii", PromptCheckPatch(mode="block"))
+    patch_check(PromptCheckPatch(model=DEFAULT_MODEL))
 
-    assert invalidations == [prompt_checks_module.REDIS_PROMPT_CHECKS_KEY]
+    assert invalidations == [prompt_checks_module.REDIS_PROMPT_CHECK_KEY]
     assert db.committed

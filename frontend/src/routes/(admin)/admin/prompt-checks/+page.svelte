@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { Alert, Badge, Button, Input, Segmented } from '$components/dsfr'
+  import { Alert, Badge, Button, Input, Select } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'
@@ -8,30 +8,39 @@
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
 
-  type Kind = PromptCheckStatus['kind']
-  type Mode = PromptCheckStatus['mode']
-  type Draft = { mode: Mode; model: string; thresholds: Record<string, string | number> }
+  type Action = 'off' | 'log' | 'warn' | 'block'
+  type CategoryConfig = { threshold: number; action: Action }
+  type DraftRow = { threshold: string | number; action: Action }
+  type Draft = { model: string; categories: Record<string, DraftRow> }
 
   let { data }: PageProps = $props()
 
-  // Rejected by the API rather than ignored, so an admin cannot believe a
-  // threshold has been set on them.
-  const neverBlocking = ['health', 'law', 'financial']
+  // Santé, droit et finance sont le sujet même d'une instance santé ou
+  // juridique. L'API refuse toute action plus forte que le journal sur elles,
+  // donc la page les montre figées plutôt que de laisser croire au contraire.
+  const neverActedOn = ['health', 'law', 'financial']
 
-  const modeOptions: { value: Mode; label: string }[] = [
-    { value: 'off', label: m['admin.promptChecks.mode.off']() },
-    { value: 'log', label: m['admin.promptChecks.mode.log']() },
-    { value: 'warn', label: m['admin.promptChecks.mode.warn']() },
-    { value: 'block', label: m['admin.promptChecks.mode.block']() }
+  // Postgres returns jsonb keys ordered by length then bytes, which would
+  // scatter the frozen rows through the table. Fixed order instead, with them
+  // grouped at the end.
+  const categoryOrder = [
+    'sexual',
+    'selfharm',
+    'hate_and_discrimination',
+    'violence_and_threats',
+    'dangerous',
+    'criminal',
+    'jailbreaking',
+    'pii',
+    ...neverActedOn
   ]
-  const kindLabels: Record<Kind, string> = {
-    content_safety: m['admin.promptChecks.kind.contentSafety'](),
-    pii: m['admin.promptChecks.kind.pii']()
-  }
-  const kindHints: Record<Kind, string> = {
-    content_safety: m['admin.promptChecks.kindHint.contentSafety'](),
-    pii: m['admin.promptChecks.kindHint.pii']()
-  }
+
+  const actionOptions: { value: Action; label: string }[] = [
+    { value: 'off', label: m['admin.promptChecks.actions.off']() },
+    { value: 'log', label: m['admin.promptChecks.actions.log']() },
+    { value: 'warn', label: m['admin.promptChecks.actions.warn']() },
+    { value: 'block', label: m['admin.promptChecks.actions.block']() }
+  ]
   const categoryLabels: Record<string, string> = {
     sexual: m['admin.promptChecks.categories.sexual'](),
     hate_and_discrimination: m['admin.promptChecks.categories.hateAndDiscrimination'](),
@@ -47,68 +56,74 @@
   }
 
   // svelte-ignore state_referenced_locally
-  let drafts = $state<Record<string, Draft>>(toDrafts(data.checks))
-  let saving = $state<Kind | null>(null)
-  let errors = $state<Record<string, Record<string, string>>>({})
+  let draft = $state<Draft>(toDraft(data.check))
+  let saving = $state(false)
+  let errors = $state<Record<string, string>>({})
 
-  // Resynchronized whenever SvelteKit refreshes the page data after a save.
+  // Resynchronisé chaque fois que SvelteKit recharge les données après un enregistrement.
   $effect(() => {
-    drafts = toDrafts(data.checks)
+    draft = toDraft(data.check)
     errors = {}
   })
 
-  function toDrafts(checks: PromptCheckStatus[]): Record<string, Draft> {
-    return Object.fromEntries(
-      checks.map((check) => [
-        check.kind,
-        {
-          mode: check.mode,
-          model: check.model,
-          thresholds: Object.fromEntries(
-            Object.entries(check.thresholds).map(([category, value]) => [category, String(value)])
-          )
-        }
-      ])
-    )
+  const failures = $derived(data.check.consecutive_failures ?? 0)
+  const warningsShown = $derived(data.check.warnings_shown ?? 0)
+  const categories = $derived(categoryOrder.filter((category) => category in data.check.categories))
+
+  function config(check: PromptCheckStatus, category: string): CategoryConfig {
+    return check.categories[category] as unknown as CategoryConfig
+  }
+
+  function toDraft(check: PromptCheckStatus): Draft {
+    return {
+      model: check.model,
+      categories: Object.fromEntries(
+        Object.keys(check.categories).map((category) => {
+          const { threshold, action } = config(check, category)
+          return [category, { threshold: String(threshold), action }]
+        })
+      )
+    }
   }
 
   function categoryLabel(category: string) {
     return categoryLabels[category] ?? category
   }
 
-  async function save(event: SubmitEvent, kind: Kind) {
+  async function save(event: SubmitEvent) {
     event.preventDefault()
-    const draft = drafts[kind]
-    if (!draft) return
 
-    const thresholds: Record<string, number> = {}
+    const categories: Record<string, CategoryConfig> = {}
     const fieldErrors: Record<string, string> = {}
-    for (const [category, value] of Object.entries(draft.thresholds)) {
-      // A number input binds back a number, not the string toDrafts put there.
-      const raw = String(value).trim()
+    for (const [category, row] of Object.entries(draft.categories)) {
+      // Un champ de type number renvoie un nombre, pas la chaîne posée par toDraft.
+      const raw = String(row.threshold).trim()
       const parsed = Number(raw)
       if (raw === '' || Number.isNaN(parsed) || parsed < 0 || parsed > 1) {
-        fieldErrors[category] = m['admin.promptChecks.thresholds.invalid']()
+        fieldErrors[category] = m['admin.promptChecks.threshold.invalid']()
       } else {
-        thresholds[category] = parsed
+        categories[category] = { threshold: parsed, action: row.action }
       }
     }
-    errors = { ...errors, [kind]: fieldErrors }
+    errors = fieldErrors
     if (Object.keys(fieldErrors).length > 0) return
 
-    saving = kind
+    saving = true
     try {
-      const patch: PromptCheckPatch = { mode: draft.mode, model: draft.model, thresholds }
-      await api.request<PromptCheckStatus>(`/admin/prompt-checks/${kind}`, {
+      const patch: PromptCheckPatch = {
+        model: draft.model,
+        categories: categories as unknown as PromptCheckPatch['categories']
+      }
+      await api.request<PromptCheckStatus>('/admin/prompt-check', {
         method: 'PATCH',
         body: JSON.stringify(patch)
       })
       useToast(m['admin.promptChecks.saved'](), 4000)
-      await invalidate('admin:prompt-checks')
+      await invalidate('admin:prompt-check')
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')
     } finally {
-      saving = null
+      saving = false
     }
   }
 </script>
@@ -118,108 +133,158 @@
   title={m['admin.promptChecks.title']()}
   subtitle={m['admin.promptChecks.subtitle']()}
 >
-  <p class="fr-text--sm max-w-[720px] text-[--text-mention-grey]">
-    {m['admin.promptChecks.intro']()}
-  </p>
+  <div class="max-w-[820px]">
+    <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.promptChecks.intro']()}</p>
 
-  {#each data.checks as check (check.kind)}
-    {@const draft = drafts[check.kind]}
-    {@const failures = check.consecutive_failures ?? 0}
-    <section class="mt-8 max-w-[720px]">
-      <h2 class="fr-h4 mb-1!">{kindLabels[check.kind]}</h2>
-      <p class="fr-text--sm text-[--text-mention-grey]">{kindHints[check.kind]}</p>
+    {#if data.check.healthy === false}
+      <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="my-4">
+        <p>{m['admin.promptChecks.health.unhealthyHint']()}</p>
+        <p>{m['admin.promptChecks.health.failures']({ count: failures })}</p>
+      </Alert>
+    {:else}
+      <p class="gap-2 my-4 flex flex-wrap items-center">
+        <Badge size="sm" variant="green" text={m['admin.promptChecks.health.healthy']()} />
+        <span class="fr-text--sm text-[--text-mention-grey]">
+          {failures > 0
+            ? m['admin.promptChecks.health.failures']({ count: failures })
+            : m['admin.promptChecks.health.noFailure']()}
+        </span>
+      </p>
+    {/if}
 
-      {#if check.healthy === false}
-        <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="mb-4">
-          <p>{m['admin.promptChecks.health.unhealthyHint']()}</p>
-          <p>{m['admin.promptChecks.health.failures']({ count: failures })}</p>
-        </Alert>
-      {:else}
-        <p class="gap-2 mb-4 flex flex-wrap items-center">
-          <Badge size="sm" variant="green" text={m['admin.promptChecks.health.healthy']()} />
-          <span class="fr-text--sm text-[--text-mention-grey]">
-            {failures > 0
-              ? m['admin.promptChecks.health.failures']({ count: failures })
-              : m['admin.promptChecks.health.noFailure']()}
-          </span>
-        </p>
-      {/if}
+    {#if warningsShown > 0}
+      <p class="fr-text--sm mb-4 text-[--text-mention-grey]">
+        {warningsShown === 1
+          ? m['admin.promptChecks.warningsShown.countOne']()
+          : m['admin.promptChecks.warningsShown.count']({ count: warningsShown })}
+        <br />
+        {m['admin.promptChecks.warningsShown.hint']()}
+      </p>
+    {/if}
 
-      {#if (check.warnings_shown ?? 0) > 0}
-        <p class="fr-text--sm mb-4 text-[--text-mention-grey]">
-          {check.warnings_shown === 1
-            ? m['admin.promptChecks.warningsShown.countOne']()
-            : m['admin.promptChecks.warningsShown.count']({ count: check.warnings_shown ?? 0 })}
-          <br />
-          {m['admin.promptChecks.warningsShown.hint']()}
-        </p>
-      {/if}
-
-      {#if draft}
-        <form onsubmit={(event) => save(event, check.kind)}>
-          <Segmented
-            id={`prompt-check-${check.kind}-mode`}
-            legend={m['admin.promptChecks.mode.legend']()}
-            options={modeOptions}
-            bind:value={draft.mode}
-          />
-          <p class="fr-hint-text mt-2!">{m['admin.promptChecks.mode.help']()}</p>
-
-          <fieldset class="mt-6! p-0 border-0">
-            <legend class="fr-h6 mb-1!">{m['admin.promptChecks.thresholds.title']()}</legend>
-            <p class="fr-hint-text mt-0!">{m['admin.promptChecks.thresholds.hint']()}</p>
-            <div class="gap-x-6 md:grid-cols-2 grid">
-              {#each Object.keys(draft.thresholds) as category (category)}
-                <Input
-                  id={`prompt-check-${check.kind}-threshold-${category}`}
-                  type="number"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  label={categoryLabel(category)}
-                  bind:value={draft.thresholds[category]}
-                  error={errors[check.kind]?.[category]}
-                  disabled={saving === check.kind}
-                />
-              {/each}
-            </div>
-          </fieldset>
-
-          <div class="mt-6">
-            <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.neverBlock.title']()}</h3>
-            <p class="fr-hint-text mt-0!">{m['admin.promptChecks.neverBlock.hint']()}</p>
-            <ul class="gap-2 p-0 flex list-none flex-wrap">
-              {#each neverBlocking as category (category)}
-                <li>
-                  <Badge
-                    size="sm"
-                    variant="orange"
-                    text={`${categoryLabel(category)} : ${m['admin.promptChecks.neverBlock.badge']()}`}
-                  />
-                </li>
-              {/each}
-            </ul>
-          </div>
-
-          <Input
-            id={`prompt-check-${check.kind}-model`}
-            label={m['admin.promptChecks.model.label']()}
-            help={m['admin.promptChecks.model.hint']()}
-            bind:value={draft.model}
-            disabled={saving === check.kind}
-            groupClass="mt-6!"
-          />
-
-          <Button
-            type="submit"
-            text={saving === check.kind
-              ? m['admin.promptChecks.saving']()
-              : m['admin.promptChecks.save']()}
-            disabled={saving === check.kind}
-            class="mt-4"
-          />
-        </form>
-      {/if}
+    <section class="fr-callout mb-6">
+      <h2 class="fr-callout__title fr-h6">{m['admin.promptChecks.actions.help.title']()}</h2>
+      <ul class="fr-text--sm mb-0 ps-4">
+        <li>{m['admin.promptChecks.actions.help.off']()}</li>
+        <li>{m['admin.promptChecks.actions.help.log']()}</li>
+        <li>{m['admin.promptChecks.actions.help.warn']()}</li>
+        <li>{m['admin.promptChecks.actions.help.block']()}</li>
+      </ul>
     </section>
-  {/each}
+
+    <form onsubmit={save}>
+      <div class="fr-table fr-table--bordered">
+        <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+            <div class="fr-table__content">
+              <table id="prompt-check-categories">
+                <caption class="fr-sr-only">{m['admin.promptChecks.table.caption']()}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{m['admin.promptChecks.columns.category']()}</th>
+                    <th scope="col" class="w-[140px]"
+                      >{m['admin.promptChecks.columns.threshold']()}</th
+                    >
+                    <th scope="col" class="w-[220px]">{m['admin.promptChecks.columns.action']()}</th
+                    >
+                  </tr>
+                </thead>
+                <tbody>
+                  {#each categories as category (category)}
+                    {@const locked = neverActedOn.includes(category)}
+                    <tr id={`prompt-check-row-${category}`}>
+                      <th scope="row" class="font-normal">{categoryLabel(category)}</th>
+                      <td>
+                        {#if locked}
+                          <span aria-hidden="true">—</span>
+                        {:else}
+                          <div
+                            class={[
+                              'fr-input-group mb-0!',
+                              { 'fr-input-group--error': !!errors[category] }
+                            ]}
+                          >
+                            <label
+                              class="fr-label fr-sr-only"
+                              for={`prompt-check-threshold-${category}`}
+                            >
+                              {m['admin.promptChecks.threshold.legend']()} : {categoryLabel(
+                                category
+                              )}
+                            </label>
+                            <input
+                              id={`prompt-check-threshold-${category}`}
+                              class="fr-input max-w-[110px]"
+                              type="number"
+                              min="0"
+                              max="1"
+                              step="0.05"
+                              bind:value={draft.categories[category].threshold}
+                              disabled={saving}
+                              aria-describedby={`prompt-check-threshold-${category}-messages`}
+                            />
+                            {#if errors[category]}
+                              <div
+                                class="fr-messages-group"
+                                id={`prompt-check-threshold-${category}-messages`}
+                                aria-live="polite"
+                              >
+                                <p class="fr-message fr-message--error">{errors[category]}</p>
+                              </div>
+                            {/if}
+                          </div>
+                        {/if}
+                      </td>
+                      <td>
+                        {#if locked}
+                          <Badge
+                            size="sm"
+                            variant="orange"
+                            text={m['admin.promptChecks.actions.never']()}
+                          />
+                        {:else}
+                          <Select
+                            id={`prompt-check-action-${category}`}
+                            label={`${m['admin.promptChecks.actions.legend']()} : ${categoryLabel(category)}`}
+                            hideLabel
+                            options={actionOptions}
+                            bind:selected={draft.categories[category].action}
+                            disabled={saving}
+                            groupClass="mb-0!"
+                          />
+                        {/if}
+                      </td>
+                    </tr>
+                  {/each}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="fr-hint-text mt-2!">{m['admin.promptChecks.threshold.hint']()}</p>
+
+      <div class="mt-6">
+        <h2 class="fr-h6 mb-1!">{m['admin.promptChecks.neverActedOn.title']()}</h2>
+        <p class="fr-hint-text mt-0!">{m['admin.promptChecks.neverActedOn.hint']()}</p>
+      </div>
+
+      <Input
+        id="prompt-check-model"
+        label={m['admin.promptChecks.model.label']()}
+        help={m['admin.promptChecks.model.hint']()}
+        bind:value={draft.model}
+        disabled={saving}
+        groupClass="mt-6!"
+      />
+
+      <Button
+        type="submit"
+        text={saving ? m['admin.promptChecks.saving']() : m['admin.promptChecks.save']()}
+        disabled={saving}
+        class="mt-4"
+      />
+    </form>
+  </div>
 </PageLayout>

@@ -48,19 +48,14 @@ REDIS_VOTE_TAGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}vote_tags"
 REDIS_STATISTICS_SUMMARY_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}statistics:summary:{{period}}"
 )
-REDIS_PROMPT_CHECKS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_checks"
-# Consecutive failures of one prompt check, written by the check runner and read
-# by the admin panel. A check that quietly stops working looks exactly like a
+REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
+# Consecutive failures of the prompt check, written by the runner and read by
+# the admin panel. A check that quietly stops working looks exactly like a
 # check that passes everything, so the count has to be visible.
-REDIS_CHECK_FAILURES_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}prompt_check_failures:{{kind}}"
-)
-# Warnings of one prompt check shown to a user, counted for as long as the
-# check stays in 'warn' mode. Denominator of the 'user_proceeded' flag stored on
+REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
+# Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
 # the turn: without it, only the people who sent anyway leave a trace.
-REDIS_CHECK_WARNINGS_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings:{{kind}}"
-)
+REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"
 # Moderation scores of one prompt, keyed by its text. Lets a user warned about a
 # message send it anyway without paying for a second moderation call. Scores
 # rather than decisions, so a check tightened meanwhile still applies.

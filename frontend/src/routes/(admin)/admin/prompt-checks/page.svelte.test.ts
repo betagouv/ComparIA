@@ -16,93 +16,128 @@ vi.mock('$lib/helpers/useToast.svelte', () => ({
   useToast: vi.fn()
 }))
 
-const contentSafety: PromptCheckStatus = {
-  kind: 'content_safety',
-  mode: 'log',
-  thresholds: { sexual: 0.3, criminal: 0.5 },
-  model: 'mistral-moderation-latest',
-  updated_at: '2026-07-01T10:00:00',
-  consecutive_failures: 0,
-  healthy: true
-}
-const pii: PromptCheckStatus = {
-  kind: 'pii',
-  mode: 'warn',
-  thresholds: { pii: 0.5 },
-  model: 'mistral-moderation-latest',
-  updated_at: '2026-07-01T10:00:00',
-  consecutive_failures: 7,
-  healthy: false
+const categories = {
+  sexual: { threshold: 0.3, action: 'log' },
+  selfharm: { threshold: 0.3, action: 'log' },
+  hate_and_discrimination: { threshold: 0.5, action: 'log' },
+  violence_and_threats: { threshold: 0.5, action: 'log' },
+  dangerous: { threshold: 0.5, action: 'log' },
+  criminal: { threshold: 0.5, action: 'log' },
+  jailbreaking: { threshold: 0.5, action: 'log' },
+  pii: { threshold: 0.5, action: 'warn' },
+  health: { threshold: 0.5, action: 'off' },
+  law: { threshold: 0.5, action: 'off' },
+  financial: { threshold: 0.5, action: 'off' }
 }
 
-const renderPage = (checks: PromptCheckStatus[]) =>
+const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus =>
+  ({
+    model: 'mistral-moderation-latest',
+    categories: { ...categories },
+    updated_at: '2026-07-01T10:00:00',
+    consecutive_failures: 0,
+    healthy: true,
+    warnings_shown: 0,
+    ...overrides
+  }) as unknown as PromptCheckStatus
+
+const renderPage = (status: PromptCheckStatus) =>
   render(Page, {
-    data: { checks } as unknown as PageProps['data'],
+    data: { check: status } as unknown as PageProps['data'],
     params: {} as PageProps['params']
   })
 
-describe('admin prompt checks page', () => {
+describe('admin prompt check page', () => {
   it('saves a threshold the number input handed back as a number', async () => {
     const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockResolvedValue(pii)
+    vi.mocked(api.request).mockResolvedValue(check())
 
-    const { container } = renderPage([pii])
-    const field = container.querySelector<HTMLInputElement>('#prompt-check-pii-threshold-pii')!
+    const { container } = renderPage(check())
+    const field = container.querySelector<HTMLInputElement>('#prompt-check-threshold-pii')!
     field.value = '0.65'
     field.dispatchEvent(new Event('input', { bubbles: true }))
     container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
     await Promise.resolve()
 
     expect(api.request).toHaveBeenCalledWith(
-      '/admin/prompt-checks/pii',
+      '/admin/prompt-check',
       expect.objectContaining({ method: 'PATCH' })
     )
     const body = JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
-    expect(body.thresholds).toEqual({ pii: 0.65 })
+    expect(body.categories.pii).toEqual({ threshold: 0.65, action: 'warn' })
+    expect(Object.keys(body.categories).length).toBe(11)
+    expect(body.model).toBe('mistral-moderation-latest')
   })
 
-  it('offers the four modes per check and preselects the stored one', () => {
-    renderPage([contentSafety, pii])
+  it('offers the four actions per category and preselects the stored one', () => {
+    renderPage(check())
 
-    const modes = [...document.querySelectorAll('#prompt-check-content_safety-mode label')].map(
-      (label) => label.textContent?.trim()
+    const options = [...document.querySelectorAll('#prompt-check-action-sexual option')].map(
+      (option) => option.textContent?.trim()
     )
-    expect(modes).toEqual(['Désactivée', 'Journal', 'Avertissement', 'Blocage'])
+    expect(options).toEqual(['Désactivée', 'Journal', 'Avertissement', 'Blocage'])
 
-    const logged = document.querySelector<HTMLInputElement>('#prompt-check-content_safety-mode-log')
-    const warned = document.querySelector<HTMLInputElement>('#prompt-check-pii-mode-warn')
-    expect(logged?.checked).toBe(true)
-    expect(warned?.checked).toBe(true)
+    const sexual = document.querySelector<HTMLSelectElement>('#prompt-check-action-sexual')
+    const pii = document.querySelector<HTMLSelectElement>('#prompt-check-action-pii')
+    expect(sexual?.value).toBe('log')
+    expect(pii?.value).toBe('warn')
   })
 
   it('bounds every threshold field between 0 and 1', () => {
-    renderPage([contentSafety])
+    renderPage(check())
 
-    const field = document.querySelector<HTMLInputElement>(
-      '#prompt-check-content_safety-threshold-sexual'
-    )
+    const field = document.querySelector<HTMLInputElement>('#prompt-check-threshold-sexual')
     expect(field?.value).toBe('0.3')
     expect(field?.getAttribute('min')).toBe('0')
     expect(field?.getAttribute('max')).toBe('1')
   })
 
-  it('shows the never-blocking categories rather than hiding them', () => {
-    const { getAllByText } = renderPage([contentSafety])
+  it('refuses a threshold outside 0 and 1 rather than sending it', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockClear()
 
-    for (const label of ['Santé', 'Droit', 'Finance']) {
-      expect(getAllByText(`${label} : Jamais bloquante`).length).toBe(1)
-    }
-    expect(
-      document.querySelector('#prompt-check-content_safety-threshold-health')
-    ).not.toBeInTheDocument()
+    const { container, getByText } = renderPage(check())
+    const field = container.querySelector<HTMLInputElement>('#prompt-check-threshold-sexual')!
+    field.value = '1.4'
+    field.dispatchEvent(new Event('input', { bubbles: true }))
+    container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
+    await Promise.resolve()
+
+    expect(api.request).not.toHaveBeenCalled()
+    expect(getByText('Saisissez un nombre entre 0 et 1.')).toBeInTheDocument()
   })
 
-  it('says so when a check has stopped working, and stays quiet when it has not', () => {
-    const { getByText, queryByText } = renderPage([contentSafety, pii])
+  it('shows the never acted on categories as deliberate rather than hiding them', () => {
+    const { getAllByText } = renderPage(check())
+
+    for (const label of ['Santé', 'Droit', 'Finance']) {
+      expect(getAllByText(label).length).toBeGreaterThan(0)
+    }
+    expect(document.querySelector('#prompt-check-row-health .fr-badge')?.textContent?.trim()).toBe(
+      'Jamais'
+    )
+    expect(document.querySelector('#prompt-check-threshold-health')).not.toBeInTheDocument()
+    expect(document.querySelector('#prompt-check-action-health')).not.toBeInTheDocument()
+  })
+
+  it('explains what the four actions do, warning included', () => {
+    const { getByText } = renderPage(check())
+
+    expect(getByText('Ce que font les quatre actions')).toBeInTheDocument()
+    expect(getByText(/La personne peut envoyer quand même/)).toBeInTheDocument()
+  })
+
+  it('says so when the check has stopped working, and stays quiet when it has not', () => {
+    const { getByText, queryByText, unmount } = renderPage(
+      check({ healthy: false, consecutive_failures: 7 })
+    )
 
     expect(getByText('Vérification hors service')).toBeInTheDocument()
     expect(getByText('7 échecs consécutifs')).toBeInTheDocument()
-    expect(getByText('Vérification opérationnelle')).toBeInTheDocument()
+    unmount()
+
+    const healthy = renderPage(check())
+    expect(healthy.getByText('Vérification opérationnelle')).toBeInTheDocument()
     expect(queryByText('0 échecs consécutifs')).not.toBeInTheDocument()
   })
 })

@@ -1,26 +1,24 @@
 """
-Admin-configurable checks run on a user prompt before it reaches the arena.
+The check run on a user prompt before it reaches the arena models.
 
-Two rows, seeded by the migration: `content_safety` and `pii`. Both are served
-by one call to the Mistral moderation API, which scores eleven categories
-between 0 and 1, so the runner calls Mistral once and derives both verdicts.
+One call to the Mistral moderation API scores eleven categories between 0 and 1.
+Each category carries its own threshold and its own action, so an instance can
+block sexual content, warn about personal data and merely log the rest without
+that being three separate systems: it is one request and one configuration.
 
-See .scratch/prompt-checks/spec.md for the benchmark behind the seeded
-thresholds.
+See .scratch/prompt-checks/spec.md for the benchmark behind the seeded values.
 """
 
 import uuid
 from typing import Annotated, Literal
 
 from pydantic import field_validator
-from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
 from .utils import AutoDatetime
 
-PromptCheckKind = Literal["content_safety", "pii"]
-PromptCheckMode = Literal["off", "log", "warn", "block"]
+PromptCheckAction = Literal["off", "log", "warn", "block"]
 
 DEFAULT_MODEL = "mistral-moderation-latest"
 
@@ -41,97 +39,128 @@ MISTRAL_CATEGORIES = (
     "jailbreaking",
 )
 
-# In a sante or juridique arena these categories describe the product, so they
-# must never block. A threshold on any of them is rejected rather than ignored,
-# so an admin cannot believe they have set one.
-NEVER_BLOCK = ("health", "law", "financial")
+# On a sante or juridique instance these categories describe the product, so
+# they may only be observed, never acted on. Asking for warn or block on them is
+# rejected rather than ignored, so an admin cannot believe they set it.
+NEVER_ACTED_ON = ("health", "law", "financial")
 
-# Seeded thresholds. `sexual` and `selfharm` sit below the rest on purpose:
-# Mistral has no minor-specific category and scores an explicit request
-# involving a child at 0.41, so 0.5 misses it.
-DEFAULT_THRESHOLDS: dict[str, dict[str, float]] = {
-    "content_safety": {
-        "sexual": 0.3,
-        "selfharm": 0.3,
-        "hate_and_discrimination": 0.5,
-        "violence_and_threats": 0.5,
-        "dangerous": 0.5,
-        "criminal": 0.5,
-        "jailbreaking": 0.5,
-    },
-    "pii": {"pii": 0.5},
+# Ordered weakest to strongest. The prompt takes the strongest action any
+# triggered category asks for.
+_ACTION_RANK = {"off": 0, "log": 1, "warn": 2, "block": 3}
+
+# Seeded configuration. Everything starts on log: nothing is refused or shown to
+# anyone until an admin has watched the verdicts on real traffic.
+#
+# `sexual` and `selfharm` sit below the rest on purpose. Mistral has no
+# minor-specific category and scores an explicit request involving a child at
+# 0.41, so a 0.5 threshold misses it.
+DEFAULT_CATEGORIES: dict[str, dict] = {
+    "sexual": {"threshold": 0.3, "action": "log"},
+    "selfharm": {"threshold": 0.3, "action": "log"},
+    "hate_and_discrimination": {"threshold": 0.5, "action": "log"},
+    "violence_and_threats": {"threshold": 0.5, "action": "log"},
+    "dangerous": {"threshold": 0.5, "action": "log"},
+    "criminal": {"threshold": 0.5, "action": "log"},
+    "jailbreaking": {"threshold": 0.5, "action": "log"},
+    "pii": {"threshold": 0.5, "action": "log"},
+    "health": {"threshold": 0.5, "action": "off"},
+    "law": {"threshold": 0.5, "action": "off"},
+    "financial": {"threshold": 0.5, "action": "off"},
 }
 
 
-def validate_thresholds(value: object) -> dict[str, float]:
+def validate_categories(value: object) -> dict[str, dict]:
     if not isinstance(value, dict):
-        raise ValueError("Thresholds must be an object")
-    result: dict[str, float] = {}
-    for category, threshold in value.items():
+        raise ValueError("Categories must be an object")
+
+    result: dict[str, dict] = {}
+    for category, config in value.items():
         if category not in MISTRAL_CATEGORIES:
             raise ValueError(f"Unknown category '{category}'")
-        if category in NEVER_BLOCK:
-            raise ValueError(
-                f"Category '{category}' can never block: it is the product in a "
-                "sante or juridique arena"
-            )
-        if not isinstance(threshold, (int, float)) or isinstance(threshold, bool):
+        if not isinstance(config, dict):
+            raise ValueError(f"Category '{category}' must be an object")
+
+        threshold = config.get("threshold")
+        if isinstance(threshold, bool) or not isinstance(threshold, (int, float)):
             raise ValueError(f"Threshold for '{category}' must be a number")
         if not 0 <= threshold <= 1:
             raise ValueError(f"Threshold for '{category}' must be between 0 and 1")
-        result[category] = float(threshold)
+
+        action = config.get("action")
+        if action not in _ACTION_RANK:
+            raise ValueError(f"Unknown action '{action}' for '{category}'")
+        if category in NEVER_ACTED_ON and _ACTION_RANK[action] > _ACTION_RANK["log"]:
+            raise ValueError(
+                f"Category '{category}' can only be observed: it is the product "
+                "on a sante or juridique instance"
+            )
+
+        result[category] = {"threshold": float(threshold), "action": action}
+
+    missing = set(MISTRAL_CATEGORIES) - set(result)
+    if missing:
+        raise ValueError(f"Missing categories: {', '.join(sorted(missing))}")
     return result
 
 
 class PromptCheck(SQLModel, table=True):
-    """One configured check. Exactly two rows exist, seeded by the migration."""
+    """Singleton row (id=1) holding the prompt check configuration."""
 
     __tablename__ = "prompt_check"
 
-    id: int | None = Field(default=None, primary_key=True)
-    kind: str = Field(sa_type=String, unique=True, index=True)
-    mode: str = Field(sa_type=String, default="log")
-    thresholds: Annotated[dict[str, float], Field(sa_type=JSONB)] = {}
+    id: int = Field(default=1, primary_key=True)
     model: str = Field(default=DEFAULT_MODEL)
+    categories: Annotated[dict[str, dict], Field(sa_type=JSONB)] = {}
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
-    def blocking_categories(self, scores: dict[str, float]) -> list[str]:
-        """Categories whose score reaches this check's threshold."""
-        return sorted(
-            category
-            for category, threshold in self.thresholds.items()
-            if scores.get(category, 0.0) >= threshold
-        )
+    def triggered(self, scores: dict[str, float]) -> dict[str, str]:
+        """Categories whose score reaches their threshold, mapped to their action.
+
+        Categories set to `off` never trigger, so a prompt that only scores on
+        those is indistinguishable from a clean one.
+        """
+        return {
+            category: config["action"]
+            for category, config in self.categories.items()
+            if config["action"] != "off"
+            and scores.get(category, 0.0) >= config["threshold"]
+        }
+
+    def action_for(self, scores: dict[str, float]) -> str:
+        """The strongest action any triggered category asks for."""
+        actions = self.triggered(scores).values()
+        return max(actions, key=lambda a: _ACTION_RANK[a], default="off")
+
+    @property
+    def is_enabled(self) -> bool:
+        """False when every category is off, in which case no call is made."""
+        return any(config["action"] != "off" for config in self.categories.values())
 
 
 class PromptCheckPublic(SQLModel):
-    kind: PromptCheckKind
-    mode: PromptCheckMode
-    thresholds: dict[str, float]
     model: str
+    categories: dict[str, dict]
     updated_at: str
     updated_by: uuid.UUID | None = None
 
 
 class PromptCheckStatus(PromptCheckPublic):
-    """A check plus how it is faring. Both checks fail open, so a check that has
-    stopped working looks exactly like a check that passes everything."""
+    """The configuration plus how the check is faring. It fails open, so one
+    that has stopped working looks exactly like one that finds nothing."""
 
     consecutive_failures: int = 0
     healthy: bool = True
-    # Warnings put in front of a user since the check went to 'warn'. The turns
-    # only record the people who sent anyway, so this is what that number is
-    # measured against.
+    # Warnings put in front of someone. The turns only record the people who
+    # sent anyway, so this is what that number is measured against.
     warnings_shown: int = 0
 
 
 class PromptCheckPatch(SQLModel):
-    mode: PromptCheckMode | None = None
-    thresholds: dict[str, float] | None = None
     model: str | None = None
+    categories: dict[str, dict] | None = None
 
-    @field_validator("thresholds", mode="before")
+    @field_validator("categories", mode="before")
     @classmethod
-    def check_thresholds(cls, value: object) -> dict[str, float] | None:
-        return None if value is None else validate_thresholds(value)
+    def check_categories(cls, value: object) -> dict[str, dict] | None:
+        return None if value is None else validate_categories(value)

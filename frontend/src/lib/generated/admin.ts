@@ -249,23 +249,24 @@ export interface LLMLicense {
   commercial_use: boolean;
 }
 export interface PromptCheckPatch {
-  mode?: ("off" | "log" | "warn" | "block") | null;
-  thresholds?: {
-    [k: string]: number;
-  } | null;
   model?: string | null;
+  categories?: {
+    [k: string]: {
+      [k: string]: unknown;
+    };
+  } | null;
 }
 /**
- * A check plus how it is faring. Both checks fail open, so a check that has
- * stopped working looks exactly like a check that passes everything.
+ * The configuration plus how the check is faring. It fails open, so one
+ * that has stopped working looks exactly like one that finds nothing.
  */
 export interface PromptCheckStatus {
-  kind: "content_safety" | "pii";
-  mode: "off" | "log" | "warn" | "block";
-  thresholds: {
-    [k: string]: number;
-  };
   model: string;
+  categories: {
+    [k: string]: {
+      [k: string]: unknown;
+    };
+  };
   updated_at: string;
   updated_by?: string | null;
   consecutive_failures?: number;

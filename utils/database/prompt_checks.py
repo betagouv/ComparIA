@@ -2,15 +2,17 @@ import logging
 import uuid
 from datetime import datetime
 
-from sqlmodel import col, select
-
 from backend.config import settings
-from utils.database.models.prompt_check import DEFAULT_THRESHOLDS, PromptCheck
+from utils.database.models.prompt_check import (
+    DEFAULT_CATEGORIES,
+    DEFAULT_MODEL,
+    PromptCheck,
+)
 from utils.database.session import get_session
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_WARNINGS_KEY,
-    REDIS_PROMPT_CHECKS_KEY,
+    REDIS_PROMPT_CHECK_KEY,
     get_redis_client,
     invalidate_cache,
     redis_cache,
@@ -18,36 +20,34 @@ from utils.storage.redis import (
 
 logger = logging.getLogger("comparia.db")
 
-# Consecutive failures after which the admin panel calls a check unhealthy.
-# Both checks fail open, so nothing else makes an outage visible.
+# Consecutive failures after which the admin panel calls the check unhealthy.
+# It fails open, so nothing else makes an outage visible.
 UNHEALTHY_AFTER_FAILURES = 3
 
 # Used before the migration has run and when there is no database at all, so
 # the admin panel and the arena see the same shape either way.
-_DEFAULTS = [
-    PromptCheck(id=index, kind=kind, mode="log", thresholds=dict(thresholds))
-    for index, (kind, thresholds) in enumerate(DEFAULT_THRESHOLDS.items(), start=1)
-]
+_DEFAULT = PromptCheck(
+    id=1,
+    model=DEFAULT_MODEL,
+    categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()},
+)
 
 
-@redis_cache(REDIS_PROMPT_CHECKS_KEY)
-async def get_prompt_checks() -> list[PromptCheck]:
+@redis_cache(REDIS_PROMPT_CHECK_KEY)
+async def get_prompt_check() -> PromptCheck:
     if not settings.COMPARIA_DB_URI:
-        return _DEFAULTS
+        return _DEFAULT
     async with get_session() as session:
-        query = select(PromptCheck).order_by(col(PromptCheck.id))
-        return list((await session.exec(query)).all()) or _DEFAULTS
+        return await session.get(PromptCheck, 1) or _DEFAULT
 
 
-async def update_prompt_check(
-    kind: str, patch: dict, updated_by: uuid.UUID
-) -> PromptCheck | None:
-    """Write one check. Returns None when 'kind' is not a seeded check."""
+async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck:
     async with get_session() as session:
-        query = select(PromptCheck).where(col(PromptCheck.kind) == kind)
-        row = (await session.exec(query)).first()
+        row = await session.get(PromptCheck, 1)
         if not row:
-            return None
+            row = PromptCheck(
+                id=1, categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
+            )
 
         for key, value in patch.items():
             setattr(row, key, value)
@@ -58,31 +58,23 @@ async def update_prompt_check(
         await session.commit()
         await session.refresh(row)
 
-    invalidate_cache(REDIS_PROMPT_CHECKS_KEY)
+    invalidate_cache(REDIS_PROMPT_CHECK_KEY)
     return row
 
 
-def get_warnings_shown(kind: str) -> int:
-    """How many warnings of one check have been shown, counted by the arena.
-
-    Read defensively: no redis, or no key, means nothing has been shown yet.
-    """
+def _read_counter(key: str, what: str) -> int:
+    """Read defensively: no redis, or no key, means nothing has happened yet."""
     try:
-        value = get_redis_client().get(REDIS_CHECK_WARNINGS_KEY.format(kind=kind))
+        value = get_redis_client().get(key)
         return int(value) if value else 0
     except Exception as e:
-        logger.warning(f"[PROMPT CHECKS] Cannot read warnings shown for '{kind}': {e}")
+        logger.warning(f"[PROMPT CHECK] Cannot read {what}: {e}")
         return 0
 
 
-def get_consecutive_failures(kind: str) -> int:
-    """Consecutive failures of one check, counted by the check runner.
+def get_warnings_shown() -> int:
+    return _read_counter(REDIS_CHECK_WARNINGS_KEY, "warnings shown")
 
-    Read defensively: no redis, or no key, means nothing has failed.
-    """
-    try:
-        value = get_redis_client().get(REDIS_CHECK_FAILURES_KEY.format(kind=kind))
-        return int(value) if value else 0
-    except Exception as e:
-        logger.warning(f"[PROMPT CHECKS] Cannot read failures for '{kind}': {e}")
-        return 0
+
+def get_consecutive_failures() -> int:
+    return _read_counter(REDIS_CHECK_FAILURES_KEY, "consecutive failures")
