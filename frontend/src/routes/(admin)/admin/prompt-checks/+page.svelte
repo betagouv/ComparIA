@@ -6,10 +6,12 @@
   import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { tick } from 'svelte'
   import type { PageProps } from './$types'
   import type { PromptCheckDecision, PromptCheckTry } from './types'
 
   type Action = 'off' | 'log' | 'warn' | 'block'
+  type Saving = 'enabled' | 'model' | 'apiKey' | 'categories'
   type CategoryConfig = { threshold: number; action: Action }
   type DraftRow = { threshold: string | number; action: Action }
   type Draft = { enabled: boolean; model: string; categories: Record<string, DraftRow> }
@@ -97,14 +99,17 @@
 
   // svelte-ignore state_referenced_locally
   let draft = $state<Draft>(toDraft(data.check))
-  let saving = $state(false)
+  let saving = $state<Saving | null>(null)
   let errors = $state<Record<string, string>>({})
 
-  // La clé n'est jamais renvoyée au navigateur : le champ part toujours vide et
-  // n'est envoyé que si quelqu'un y a écrit, sinon un enregistrement ordinaire
-  // effacerait la clé déjà en place.
+  // La clé n'est jamais renvoyée au navigateur. Quand une clé est en place, le
+  // champ laisse la place à des points : de la décoration, pas la valeur, dont
+  // la longueur n'a rien à voir avec celle de la clé.
+  const maskedKey = '•'.repeat(12)
   let apiKey = $state('')
-  let apiKeyTouched = $state(false)
+  // svelte-ignore state_referenced_locally
+  let editingApiKey = $state(!data.check.has_api_key)
+  let apiKeyField = $state<HTMLInputElement | null>(null)
 
   let benchText = $state('')
   let benchRunning = $state(false)
@@ -119,10 +124,11 @@
     draft = toDraft(data.check)
     errors = {}
     apiKey = ''
-    apiKeyTouched = false
+    editingApiKey = !data.check.has_api_key
   })
 
   const failures = $derived(data.check.consecutive_failures ?? 0)
+  const modelChanged = $derived(draft.model.trim() !== data.check.model)
   const categories = $derived(categoryOrder.filter((category) => category in data.check.categories))
 
   const decisionOrder: PromptCheckDecision[] = ['pass', 'logged', 'warned', 'blocked', 'error']
@@ -227,32 +233,64 @@
     }
   }
 
-  async function save(event: SubmitEvent) {
+  /** Chaque enregistrement n'envoie que ses propres champs. */
+  async function patch(kind: Saving, body: PromptCheckPatch) {
+    saving = kind
+    try {
+      await api.request<PromptCheckStatus>('/admin/prompt-check', {
+        method: 'PATCH',
+        body: JSON.stringify(body)
+      })
+      useToast(m['admin.promptChecks.saved'](), 4000)
+      await invalidate('admin:prompt-check')
+      return true
+    } catch (error) {
+      useToast((error as Error).message, 6000, 'error')
+      return false
+    } finally {
+      saving = null
+    }
+  }
+
+  async function saveEnabled() {
+    const wanted = draft.enabled
+    const done = await patch('enabled', { enabled: wanted })
+    // Un interrupteur qui reste sur une position qu'il n'a pas obtenue ment.
+    if (!done) draft.enabled = !wanted
+  }
+
+  async function saveModel(event: SubmitEvent) {
+    event.preventDefault()
+    if (!modelChanged) return
+    await patch('model', { model: draft.model.trim() })
+  }
+
+  async function saveApiKey(event: SubmitEvent) {
+    event.preventDefault()
+    await patch('apiKey', { api_key: apiKey.trim() })
+  }
+
+  async function replaceApiKey() {
+    editingApiKey = true
+    await tick()
+    apiKeyField?.focus()
+  }
+
+  function cancelApiKey() {
+    apiKey = ''
+    editingApiKey = false
+  }
+
+  async function saveCategories(event: SubmitEvent) {
     event.preventDefault()
 
     const { categories, fieldErrors } = readDraft()
     errors = fieldErrors
     if (Object.keys(fieldErrors).length > 0) return
 
-    saving = true
-    try {
-      const patch: PromptCheckPatch = {
-        enabled: draft.enabled,
-        model: draft.model,
-        categories: categories as unknown as PromptCheckPatch['categories']
-      }
-      if (apiKeyTouched) patch.api_key = apiKey.trim()
-      await api.request<PromptCheckStatus>('/admin/prompt-check', {
-        method: 'PATCH',
-        body: JSON.stringify(patch)
-      })
-      useToast(m['admin.promptChecks.saved'](), 4000)
-      await invalidate('admin:prompt-check')
-    } catch (error) {
-      useToast((error as Error).message, 6000, 'error')
-    } finally {
-      saving = false
-    }
+    await patch('categories', {
+      categories: categories as unknown as PromptCheckPatch['categories']
+    })
   }
 </script>
 
@@ -275,77 +313,133 @@
       {/if}
     </section>
 
-    <form onsubmit={save}>
-      <div id="prompt-check-settings" class="settings-panel mb-10 p-4 md:p-5">
-        <h2 class="fr-h6 gap-2 mb-4! text-dark-grey flex items-center">
-          <Icon
-            icon="i-ri-shield-check-line"
-            size="sm"
-            class="text-primary shrink-0"
-            aria-hidden="true"
-          />
-          {m['admin.promptChecks.settings.title']()}
-        </h2>
+    <div id="prompt-check-settings" class="settings-panel mb-10 p-4 md:p-5">
+      <h2 class="fr-h6 gap-2 mb-4! text-dark-grey flex items-center">
+        <Icon
+          icon="i-ri-shield-check-line"
+          size="sm"
+          class="text-primary shrink-0"
+          aria-hidden="true"
+        />
+        {m['admin.promptChecks.settings.title']()}
+      </h2>
 
-        <div class="settings-switch pb-4">
-          <Toggle
-            id="prompt-check-enabled"
-            bind:value={draft.enabled}
-            label={m['admin.promptChecks.settings.enabled']()}
-            hideCheckLabel
-            class="mb-0! pr-13! text-dark-grey font-medium"
-          />
-        </div>
+      <div class="settings-switch pb-4" onchange={saveEnabled}>
+        <Toggle
+          id="prompt-check-enabled"
+          bind:value={draft.enabled}
+          label={m['admin.promptChecks.settings.enabled']()}
+          hideCheckLabel
+          class="mb-0! pr-13! text-dark-grey font-medium"
+        />
+      </div>
 
-        <div class="gap-x-5 gap-y-4 md:grid-cols-2 mt-4 grid items-start">
-          <div>
-            <label
-              class="fr-label mt-0! mb-1! text-sm text-dark-grey font-medium"
-              for="prompt-check-model"
-            >
-              {m['admin.promptChecks.model.label']()}
-            </label>
+      <div class="gap-x-5 gap-y-4 md:grid-cols-2 mt-4 grid items-start">
+        <form id="prompt-check-model-form" onsubmit={saveModel}>
+          <label
+            class="fr-label mt-0! mb-1! text-sm text-dark-grey font-medium"
+            for="prompt-check-model"
+          >
+            {m['admin.promptChecks.model.label']()}
+          </label>
+          <div class="gap-2 flex flex-wrap items-start">
             <input
               id="prompt-check-model"
-              class="fr-input"
+              class="fr-input min-w-[12rem] flex-1"
               bind:value={draft.model}
-              disabled={saving}
+              disabled={saving === 'model'}
+            />
+            <Button
+              id="prompt-check-model-save"
+              type="submit"
+              variant="secondary"
+              text={saving === 'model'
+                ? m['admin.promptChecks.saving']()
+                : m['admin.promptChecks.saveModel']()}
+              disabled={saving === 'model' || !modelChanged}
             />
           </div>
+        </form>
 
-          <div>
-            <div class="gap-2 mb-1 flex flex-wrap items-baseline justify-between">
+        <form id="prompt-check-api-key-form" onsubmit={saveApiKey}>
+          <div class="gap-2 mb-1 flex flex-wrap items-baseline justify-between">
+            {#if editingApiKey}
               <label
                 class="fr-label mt-0! mb-0! text-sm text-dark-grey font-medium"
                 for="prompt-check-api-key"
               >
                 {m['admin.promptChecks.apiKey.label']()}
               </label>
-              <span id="prompt-check-api-key-state" class="text-xs text-grey">
-                {data.check.has_api_key
-                  ? m['admin.promptChecks.apiKey.set']()
-                  : m['admin.promptChecks.apiKey.unset']()}
+            {:else}
+              <span class="fr-label mt-0! mb-0! text-sm text-dark-grey font-medium">
+                {m['admin.promptChecks.apiKey.label']()}
               </span>
+            {/if}
+            <span id="prompt-check-api-key-state" class="text-xs text-grey">
+              {data.check.has_api_key
+                ? m['admin.promptChecks.apiKey.set']()
+                : m['admin.promptChecks.apiKey.unset']()}
+            </span>
+          </div>
+
+          {#if editingApiKey}
+            <div class="gap-2 flex flex-wrap items-start">
+              <input
+                id="prompt-check-api-key"
+                class="fr-input min-w-[12rem] flex-1"
+                type="password"
+                autocomplete="off"
+                placeholder={m['admin.promptChecks.apiKey.placeholder']()}
+                bind:value={apiKey}
+                bind:this={apiKeyField}
+                disabled={saving === 'apiKey'}
+              />
+              <Button
+                id="prompt-check-api-key-save"
+                type="submit"
+                variant="secondary"
+                text={saving === 'apiKey'
+                  ? m['admin.promptChecks.saving']()
+                  : m['admin.promptChecks.saveApiKey']()}
+                disabled={saving === 'apiKey'}
+              />
+              {#if data.check.has_api_key}
+                <Button
+                  id="prompt-check-api-key-cancel"
+                  variant="tertiary"
+                  text={m['admin.promptChecks.apiKey.cancel']()}
+                  onclick={cancelApiKey}
+                  disabled={saving === 'apiKey'}
+                />
+              {/if}
             </div>
-            <input
-              id="prompt-check-api-key"
-              class="fr-input"
-              type="password"
-              autocomplete="off"
-              placeholder={m['admin.promptChecks.apiKey.placeholder']()}
-              bind:value={apiKey}
-              oninput={() => (apiKeyTouched = true)}
-              disabled={saving}
-            />
-            {#if apiKeyTouched && apiKey.trim() === ''}
+            {#if data.check.has_api_key && apiKey.trim() === ''}
               <p id="prompt-check-api-key-clearing" class="mt-2 mb-0! text-xs text-grey">
                 {m['admin.promptChecks.apiKey.willClear']()}
               </p>
             {/if}
-          </div>
-        </div>
+          {:else}
+            <div class="gap-2 flex flex-wrap items-center">
+              <p
+                id="prompt-check-api-key-masked"
+                class="fr-input mb-0! min-w-[12rem] flex-1 tracking-[0.25em] select-none"
+                aria-hidden="true"
+              >
+                {maskedKey}
+              </p>
+              <Button
+                id="prompt-check-api-key-replace"
+                variant="secondary"
+                text={m['admin.promptChecks.apiKey.replace']()}
+                onclick={replaceApiKey}
+              />
+            </div>
+          {/if}
+        </form>
       </div>
+    </div>
 
+    <form id="prompt-check-categories-form" onsubmit={saveCategories}>
       <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.categoriesTitle']()}</h2>
 
       {#if !draft.enabled}
@@ -388,7 +482,6 @@
         aria-label={m['admin.promptChecks.categoriesTitle']()}
       >
         {#each categories as category (category)}
-          {@const action = draft.categories[category].action}
           <li
             id={`prompt-check-row-${category}`}
             class={[
@@ -411,7 +504,7 @@
                     name={`prompt-check-action-${category}`}
                     value={option}
                     bind:group={draft.categories[category].action}
-                    disabled={saving}
+                    disabled={saving === 'categories'}
                   />
                   <label
                     for={`prompt-check-action-${category}-${option}`}
@@ -449,7 +542,7 @@
                     max="1"
                     step="0.05"
                     bind:value={draft.categories[category].threshold}
-                    disabled={saving}
+                    disabled={saving === 'categories'}
                     aria-describedby={`prompt-check-threshold-${category}-messages`}
                   />
                 </div>
@@ -469,9 +562,12 @@
       </ul>
 
       <Button
+        id="prompt-check-categories-save"
         type="submit"
-        text={saving ? m['admin.promptChecks.saving']() : m['admin.promptChecks.save']()}
-        disabled={saving}
+        text={saving === 'categories'
+          ? m['admin.promptChecks.saving']()
+          : m['admin.promptChecks.saveCategories']()}
+        disabled={saving === 'categories'}
         class="mt-4"
       />
     </form>
