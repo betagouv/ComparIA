@@ -10,7 +10,7 @@
 
   type Kind = PromptCheckStatus['kind']
   type Mode = PromptCheckStatus['mode']
-  type Draft = { mode: Mode; model: string; thresholds: Record<string, string> }
+  type Draft = { mode: Mode; model: string; thresholds: Record<string, string | number> }
 
   let { data }: PageProps = $props()
 
@@ -84,8 +84,10 @@
     const thresholds: Record<string, number> = {}
     const fieldErrors: Record<string, string> = {}
     for (const [category, value] of Object.entries(draft.thresholds)) {
-      const parsed = Number(value)
-      if (value.trim() === '' || Number.isNaN(parsed) || parsed < 0 || parsed > 1) {
+      // A number input binds back a number, not the string toDrafts put there.
+      const raw = String(value).trim()
+      const parsed = Number(raw)
+      if (raw === '' || Number.isNaN(parsed) || parsed < 0 || parsed > 1) {
         fieldErrors[category] = m['admin.promptChecks.thresholds.invalid']()
       } else {
         thresholds[category] = parsed
@@ -145,7 +147,9 @@
 
       {#if (check.warnings_shown ?? 0) > 0}
         <p class="fr-text--sm mb-4 text-[--text-mention-grey]">
-          {m['admin.promptChecks.warningsShown.count']({ count: check.warnings_shown ?? 0 })}
+          {check.warnings_shown === 1
+            ? m['admin.promptChecks.warningsShown.countOne']()
+            : m['admin.promptChecks.warningsShown.count']({ count: check.warnings_shown ?? 0 })}
           <br />
           {m['admin.promptChecks.warningsShown.hint']()}
         </p>
