@@ -115,17 +115,18 @@ describe('admin prompt check page', () => {
   })
 
   it('offers the four actions per category and preselects the stored one', () => {
-    renderPage(check())
+    const { container } = renderPage(check())
 
-    const options = [...document.querySelectorAll('#prompt-check-action-sexual option')].map(
-      (option) => option.textContent?.trim()
-    )
-    expect(options).toEqual(['Désactivée', 'Journal', 'Avertissement', 'Blocage'])
+    const labels = [...container.querySelectorAll('#prompt-check-row-sexual .action-pills label')]
+      .map((label) => label.textContent?.trim())
+      .filter(Boolean)
+    expect(labels).toEqual(['Ignorer', 'Surveiller', 'Prévenir', 'Refuser'])
 
-    const sexual = document.querySelector<HTMLSelectElement>('#prompt-check-action-sexual')
-    const pii = document.querySelector<HTMLSelectElement>('#prompt-check-action-pii')
-    expect(sexual?.value).toBe('log')
-    expect(pii?.value).toBe('warn')
+    const checked = (id: string) =>
+      container.querySelector<HTMLInputElement>(`#prompt-check-action-${id}`)?.checked
+    expect(checked('sexual-log')).toBe(true)
+    expect(checked('sexual-block')).toBe(false)
+    expect(checked('pii-warn')).toBe(true)
   })
 
   it('bounds every threshold field between 0 and 1', () => {
@@ -158,17 +159,20 @@ describe('admin prompt check page', () => {
     for (const label of ['Santé', 'Droit', 'Finance']) {
       expect(getAllByText(label).length).toBeGreaterThan(0)
     }
-    const action = document.querySelector<HTMLSelectElement>('#prompt-check-action-health')
-    expect(action).toBeInTheDocument()
-    expect(action?.value).toBe('off')
-    expect(action?.disabled).toBe(false)
+    const off = document.querySelector<HTMLInputElement>('#prompt-check-action-health-off')
+    expect(off).toBeInTheDocument()
+    expect(off?.checked).toBe(true)
+    expect(off?.disabled).toBe(false)
+    expect(
+      document.querySelector('#prompt-check-action-health-block')?.hasAttribute('disabled')
+    ).toBe(false)
     expect(document.querySelector('#prompt-check-threshold-health')).toBeInTheDocument()
   })
 
   it('explains what the four actions do, warning included', () => {
     const { getByText } = renderPage(check())
 
-    expect(getByText('Ce que font les quatre actions')).toBeInTheDocument()
+    expect(getByText('Ce que fait chaque action')).toBeInTheDocument()
     expect(getByText(/La personne peut envoyer quand même/)).toBeInTheDocument()
   })
 
@@ -177,12 +181,12 @@ describe('admin prompt check page', () => {
       check({ healthy: false, consecutive_failures: 7 })
     )
 
-    expect(getByText('Vérification hors service')).toBeInTheDocument()
+    expect(getByText('La vérification ne répond plus')).toBeInTheDocument()
     expect(getByText('7 échecs consécutifs')).toBeInTheDocument()
     unmount()
 
     const healthy = renderPage(check())
-    expect(healthy.getByText('Vérification opérationnelle')).toBeInTheDocument()
+    expect(healthy.getByText('Tout fonctionne')).toBeInTheDocument()
     expect(queryByText('0 échecs consécutifs')).not.toBeInTheDocument()
   })
 
@@ -195,8 +199,8 @@ describe('admin prompt check page', () => {
     const threshold = container.querySelector<HTMLInputElement>('#prompt-check-threshold-pii')!
     threshold.value = '0.65'
     threshold.dispatchEvent(new Event('input', { bubbles: true }))
-    const action = container.querySelector<HTMLSelectElement>('#prompt-check-action-sexual')!
-    action.value = 'block'
+    const action = container.querySelector<HTMLInputElement>('#prompt-check-action-sexual-block')!
+    action.checked = true
     action.dispatchEvent(new Event('change', { bubbles: true }))
 
     await runBench(container, 'un message à vérifier')
@@ -221,7 +225,7 @@ describe('admin prompt check page', () => {
     const { container, getByText } = renderPage(check())
     await runBench(container, 'appelle Jean Dupont au 06 12 34 56 78')
 
-    expect(getByText('Averti')).toBeInTheDocument()
+    expect(getByText('Prévenu')).toBeInTheDocument()
     expect(getByText('Réponse en 210 ms')).toBeInTheDocument()
     expect(container.querySelector('#prompt-check-bench-message')?.textContent?.trim()).toBe(
       'Votre message semble contenir des données personnelles.'
@@ -237,23 +241,26 @@ describe('admin prompt check page', () => {
     const quiet = container.querySelector('#prompt-check-bench-row-criminal')!
     expect(quiet.textContent).toContain('0,410')
     expect(quiet.textContent).toContain('0,500')
-    expect(quiet.textContent).toContain('Non déclenchée')
+    expect(quiet.textContent).toContain('Sous le seuil')
   })
 
   it('renders the counts for the window', () => {
     const { container, getByText } = renderPage(check(), stats())
 
-    expect(getByText('1234 messages vérifiés')).toBeInTheDocument()
-    expect(getByText('Sur les 30 derniers jours.')).toBeInTheDocument()
-    expect(
-      container.querySelector('#prompt-check-stats-decision-blocked')?.textContent?.trim()
-    ).toBe('Bloqué : 4')
-    expect(container.querySelector('#prompt-check-stats-decision-pass')?.textContent?.trim()).toBe(
-      'Laissé passer : 1000'
-    )
-    expect(container.querySelector('#prompt-check-stats-category-pii')?.textContent?.trim()).toBe(
-      'Données personnelles : 22'
-    )
+    expect(container.querySelector('#prompt-check-stats-total')?.textContent?.trim()).toBe('1234')
+    expect(getByText('Activité des 30 derniers jours')).toBeInTheDocument()
+
+    const blocked = container.querySelector('#prompt-check-stats-decision-blocked')?.textContent
+    expect(blocked).toContain('Refusés')
+    expect(blocked).toContain('4')
+
+    const passed = container.querySelector('#prompt-check-stats-decision-pass')?.textContent
+    expect(passed).toContain('Passés sans rien')
+    expect(passed).toContain('1000')
+
+    const pii = container.querySelector('#prompt-check-stats-category-pii')?.textContent
+    expect(pii).toContain('Données personnelles')
+    expect(pii).toContain('22')
     const warnings = container.querySelector('#prompt-check-stats-warnings')?.textContent
     expect(warnings).toContain('30 affichés')
     expect(warnings).toContain('21 envoyés quand même')
