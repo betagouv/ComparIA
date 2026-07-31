@@ -42,6 +42,25 @@ const renderPage = (checks: PromptCheckStatus[]) =>
   })
 
 describe('admin prompt checks page', () => {
+  it('saves a threshold the number input handed back as a number', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockResolvedValue(pii)
+
+    const { container } = renderPage([pii])
+    const field = container.querySelector<HTMLInputElement>('#prompt-check-pii-threshold-pii')!
+    field.value = '0.65'
+    field.dispatchEvent(new Event('input', { bubbles: true }))
+    container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
+    await Promise.resolve()
+
+    expect(api.request).toHaveBeenCalledWith(
+      '/admin/prompt-checks/pii',
+      expect.objectContaining({ method: 'PATCH' })
+    )
+    const body = JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
+    expect(body.thresholds).toEqual({ pii: 0.65 })
+  })
+
   it('offers the four modes per check and preselects the stored one', () => {
     renderPage([contentSafety, pii])
 
