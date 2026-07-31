@@ -52,6 +52,18 @@ from utils.database.models.auth import (
     UserPublic,
     UserUpsert,
 )
+from utils.database.models.prompt_check import (
+    PromptCheck,
+    PromptCheckPatch,
+    PromptCheckStatus,
+)
+from utils.database.prompt_checks import (
+    UNHEALTHY_AFTER_FAILURES,
+    get_consecutive_failures,
+    get_prompt_checks,
+    get_warnings_shown,
+    update_prompt_check,
+)
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.utils import FormJsonSchema
 
@@ -396,3 +408,40 @@ async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
         {"logo": None, "logo_content_type": None}, updated_by=current_user.id
     )
     return _to_app_settings_public(row)
+
+
+def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
+    failures = get_consecutive_failures(row.kind)
+    return PromptCheckStatus(
+        kind=row.kind,
+        mode=row.mode,
+        thresholds=row.thresholds,
+        model=row.model,
+        updated_at=row.updated_at.isoformat(),
+        updated_by=row.updated_by,
+        consecutive_failures=failures,
+        healthy=failures < UNHEALTHY_AFTER_FAILURES,
+        warnings_shown=get_warnings_shown(row.kind),
+    )
+
+
+@router.get("/prompt-checks", response_model=list[PromptCheckStatus])
+async def list_prompt_checks() -> list[PromptCheckStatus]:
+    rows = await get_prompt_checks()
+    return [_to_prompt_check_status(row) for row in rows]
+
+
+@router.patch("/prompt-checks/{kind}", response_model=PromptCheckStatus)
+async def patch_prompt_check(
+    kind: str,
+    body: PromptCheckPatch,
+    current_user: RequiredAdmin,
+) -> PromptCheckStatus:
+    row = await update_prompt_check(
+        kind, body.model_dump(exclude_unset=True), updated_by=current_user.id
+    )
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Unknown check '{kind}'"
+        )
+    return _to_prompt_check_status(row)
