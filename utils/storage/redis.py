@@ -14,6 +14,8 @@ logger = logging.getLogger("languia")
 P = ParamSpec("P")
 RT = TypeVar("RT")
 
+logger = logging.getLogger("comparia.redis")
+
 REDIS_INSTANCE_PREFIX: Final[str] = (
     f"{settings.COMPARIA_INSTANCE_NAME}:" if settings.COMPARIA_INSTANCE_NAME else ""
 )
