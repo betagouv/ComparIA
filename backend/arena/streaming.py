@@ -80,6 +80,13 @@ class SSEEventError(TypedDict):
     error: str
 
 
+class SSEEventWarning(TypedDict):
+    """Only event of the stream when a check asks the user to confirm."""
+
+    type: Literal["warning"]
+    warnings: list[dict[str, str]]
+
+
 AnySSEEventMsg = SSEEventMsgChunk | SSEEventMsgComplete | SSEEventMsgError
 AnySSEEvent = (
     AnySSEEventMsg
@@ -88,6 +95,7 @@ AnySSEEvent = (
     | SSEEventSwap
     | SSEEventComplete
     | SSEEventError
+    | SSEEventWarning
 )
 
 

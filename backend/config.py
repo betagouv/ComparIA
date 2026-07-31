@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     SENTRY_SAMPLE_RATE: float = 0.1
     LINKUP_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
+    MISTRAL_API_KEY: str | None = None
     ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
