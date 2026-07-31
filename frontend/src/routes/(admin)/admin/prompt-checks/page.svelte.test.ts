@@ -3,6 +3,7 @@ import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import type { PageProps } from './$types'
 import Page from './+page.svelte'
+import type { PromptCheckStats, PromptCheckTry } from './types'
 
 vi.mock('$app/navigation', () => ({
   invalidate: vi.fn()
@@ -41,11 +42,55 @@ const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus =>
     ...overrides
   }) as unknown as PromptCheckStatus
 
-const renderPage = (status: PromptCheckStatus) =>
+const tried = (overrides: Partial<PromptCheckTry> = {}): PromptCheckTry => ({
+  decision: 'warned',
+  scores: {
+    sexual: 0.01,
+    selfharm: 0.0,
+    hate_and_discrimination: 0.02,
+    violence_and_threats: 0.0,
+    dangerous: 0.0,
+    criminal: 0.41,
+    jailbreaking: 0.03,
+    pii: 0.99,
+    health: 0.7,
+    law: 0.0,
+    financial: 0.0
+  },
+  triggered: { pii: 'warn' },
+  message: 'Votre message semble contenir des données personnelles.',
+  latency_ms: 210,
+  ...overrides
+})
+
+const stats = (overrides: Partial<PromptCheckStats> = {}): PromptCheckStats => ({
+  days: 30,
+  total: 1234,
+  by_decision: { pass: 1000, logged: 200, warned: 30, blocked: 4, error: 0 },
+  by_category: { pii: 22, criminal: 8 },
+  proceeded: 21,
+  warnings_shown: 30,
+  ...overrides
+})
+
+const renderPage = (status: PromptCheckStatus, pageStats: PromptCheckStats | null = null) =>
   render(Page, {
-    data: { check: status } as unknown as PageProps['data'],
+    data: {
+      check: status,
+      stats: pageStats,
+      statsDays: 30
+    } as unknown as PageProps['data'],
     params: {} as PageProps['params']
   })
+
+const runBench = async (container: HTMLElement, text: string) => {
+  const field = container.querySelector<HTMLTextAreaElement>('#prompt-check-bench-text')!
+  field.value = text
+  field.dispatchEvent(new Event('input', { bubbles: true }))
+  container.querySelector<HTMLButtonElement>('#prompt-check-bench-run')!.click()
+  await Promise.resolve()
+  await Promise.resolve()
+}
 
 describe('admin prompt check page', () => {
   it('saves a threshold the number input handed back as a number', async () => {
@@ -139,5 +184,84 @@ describe('admin prompt check page', () => {
     const healthy = renderPage(check())
     expect(healthy.getByText('Vérification opérationnelle')).toBeInTheDocument()
     expect(queryByText('0 échecs consécutifs')).not.toBeInTheDocument()
+  })
+
+  it('runs the bench against the on-screen rules, not the stored ones', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(tried())
+
+    const { container } = renderPage(check())
+    const threshold = container.querySelector<HTMLInputElement>('#prompt-check-threshold-pii')!
+    threshold.value = '0.65'
+    threshold.dispatchEvent(new Event('input', { bubbles: true }))
+    const action = container.querySelector<HTMLSelectElement>('#prompt-check-action-sexual')!
+    action.value = 'block'
+    action.dispatchEvent(new Event('change', { bubbles: true }))
+
+    await runBench(container, 'un message à vérifier')
+
+    expect(api.request).toHaveBeenCalledWith(
+      '/admin/prompt-check/try',
+      expect.objectContaining({ method: 'POST' })
+    )
+    const body = JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
+    expect(body.text).toBe('un message à vérifier')
+    expect(body.model).toBe('mistral-moderation-latest')
+    expect(body.categories.pii).toEqual({ threshold: 0.65, action: 'warn' })
+    expect(body.categories.sexual).toEqual({ threshold: 0.3, action: 'block' })
+    expect(Object.keys(body.categories).length).toBe(11)
+  })
+
+  it('shows every category score, whether it fired or not', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(tried())
+
+    const { container, getByText } = renderPage(check())
+    await runBench(container, 'appelle Jean Dupont au 06 12 34 56 78')
+
+    expect(getByText('Averti')).toBeInTheDocument()
+    expect(getByText('Réponse en 210 ms')).toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-bench-message')?.textContent?.trim()).toBe(
+      'Votre message semble contenir des données personnelles.'
+    )
+
+    const fired = container.querySelector('#prompt-check-bench-row-pii')!
+    expect(fired.textContent).toContain('0,990')
+    expect(fired.textContent).toContain('0,500')
+    expect(fired.textContent).toContain('Déclenchée')
+
+    // La quasi-atteinte : 0,410 contre un seuil de 0,300 dans le sens inverse,
+    // et surtout une catégorie qui n'a pas tiré reste visible avec sa note.
+    const quiet = container.querySelector('#prompt-check-bench-row-criminal')!
+    expect(quiet.textContent).toContain('0,410')
+    expect(quiet.textContent).toContain('0,500')
+    expect(quiet.textContent).toContain('Non déclenchée')
+  })
+
+  it('renders the counts for the window', () => {
+    const { container, getByText } = renderPage(check(), stats())
+
+    expect(getByText('1234 messages vérifiés')).toBeInTheDocument()
+    expect(getByText('Sur les 30 derniers jours.')).toBeInTheDocument()
+    expect(
+      container.querySelector('#prompt-check-stats-decision-blocked')?.textContent?.trim()
+    ).toBe('Bloqué : 4')
+    expect(container.querySelector('#prompt-check-stats-decision-pass')?.textContent?.trim()).toBe(
+      'Laissé passer : 1000'
+    )
+    expect(container.querySelector('#prompt-check-stats-category-pii')?.textContent?.trim()).toBe(
+      'Données personnelles : 22'
+    )
+    const warnings = container.querySelector('#prompt-check-stats-warnings')?.textContent
+    expect(warnings).toContain('30 affichés')
+    expect(warnings).toContain('21 envoyés quand même')
+  })
+
+  it('stays readable when the counts are missing', () => {
+    const { getByText } = renderPage(check())
+
+    expect(getByText('Les compteurs ne sont pas disponibles pour le moment.')).toBeInTheDocument()
   })
 })
