@@ -3,9 +3,9 @@ import type { PromptCheckStatus } from '$lib/generated/admin'
 import type { PageLoad } from './$types'
 
 export const load: PageLoad = async ({ depends, fetch }) => {
-  const checks = await api.request<PromptCheckStatus[]>('/admin/prompt-checks', { fetch })
+  const check = await api.request<PromptCheckStatus>('/admin/prompt-check', { fetch })
 
-  depends('admin:prompt-checks')
+  depends('admin:prompt-check')
 
-  return { checks }
+  return { check }
 }

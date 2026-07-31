@@ -60,7 +60,7 @@ from utils.database.models.prompt_check import (
 from utils.database.prompt_checks import (
     UNHEALTHY_AFTER_FAILURES,
     get_consecutive_failures,
-    get_prompt_checks,
+    get_prompt_check,
     get_warnings_shown,
     update_prompt_check,
 )
@@ -411,37 +411,29 @@ async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
 
 
 def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
-    failures = get_consecutive_failures(row.kind)
+    failures = get_consecutive_failures()
     return PromptCheckStatus(
-        kind=row.kind,
-        mode=row.mode,
-        thresholds=row.thresholds,
         model=row.model,
+        categories=row.categories,
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
         consecutive_failures=failures,
         healthy=failures < UNHEALTHY_AFTER_FAILURES,
-        warnings_shown=get_warnings_shown(row.kind),
+        warnings_shown=get_warnings_shown(),
     )
 
 
-@router.get("/prompt-checks", response_model=list[PromptCheckStatus])
-async def list_prompt_checks() -> list[PromptCheckStatus]:
-    rows = await get_prompt_checks()
-    return [_to_prompt_check_status(row) for row in rows]
+@router.get("/prompt-check", response_model=PromptCheckStatus)
+async def read_prompt_check() -> PromptCheckStatus:
+    return _to_prompt_check_status(await get_prompt_check())
 
 
-@router.patch("/prompt-checks/{kind}", response_model=PromptCheckStatus)
+@router.patch("/prompt-check", response_model=PromptCheckStatus)
 async def patch_prompt_check(
-    kind: str,
     body: PromptCheckPatch,
     current_user: RequiredAdmin,
 ) -> PromptCheckStatus:
     row = await update_prompt_check(
-        kind, body.model_dump(exclude_unset=True), updated_by=current_user.id
+        body.model_dump(exclude_unset=True), updated_by=current_user.id
     )
-    if not row:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Unknown check '{kind}'"
-        )
     return _to_prompt_check_status(row)

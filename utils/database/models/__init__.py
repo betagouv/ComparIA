@@ -22,8 +22,7 @@ from .comparison import (
 from .messages import *
 from .prompt_check import (
     PromptCheck,
-    PromptCheckKind,
-    PromptCheckMode,
+    PromptCheckAction,
     PromptCheckPatch,
     PromptCheckPublic,
     PromptCheckStatus,

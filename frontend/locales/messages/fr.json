@@ -175,6 +175,21 @@
         },
         "panelLink": "Administration",
         "promptChecks": {
+            "actions": {
+                "block": "Blocage",
+                "help": {
+                    "block": "Blocage : le message est refusé et ne part pas vers les modèles.",
+                    "log": "Journal : le verdict est enregistré, la personne ne voit rien.",
+                    "off": "Désactivée : la catégorie est notée mais son verdict est ignoré.",
+                    "title": "Ce que font les quatre actions",
+                    "warn": "Avertissement : au moment de l'envoi, une fenêtre signale ce qui a été repéré. La personne peut envoyer quand même ou revenir corriger son message. Rien n'est refusé."
+                },
+                "legend": "Action",
+                "log": "Journal",
+                "never": "Jamais",
+                "off": "Désactivée",
+                "warn": "Avertissement"
+            },
             "categories": {
                 "criminal": "Activités criminelles",
                 "dangerous": "Actes dangereux",
@@ -195,41 +210,31 @@
                 "unhealthy": "Vérification hors service",
                 "unhealthyHint": "Les appels à l'API de modération échouent. La vérification laisse passer tous les messages, ce qui ressemble en tout point à une vérification qui ne trouve rien. Contrôlez la clé Mistral et les journaux du serveur."
             },
-            "intro": "Les deux vérifications s'appuient sur un seul appel à l'API de modération de Mistral, qui note chaque catégorie entre 0 et 1. Une catégorie déclenche la vérification dès que sa note atteint le seuil réglé ici.",
-            "kind": {
-                "contentSafety": "Contenus sensibles",
-                "pii": "Données personnelles"
+            "columns": {
+                "action": "Action",
+                "category": "Catégorie",
+                "threshold": "Seuil"
             },
-            "kindHint": {
-                "contentSafety": "Repère les demandes violentes, illégales ou sexuelles, ainsi que les tentatives de contourner les consignes du modèle.",
-                "pii": "Repère les identifiants personnels dans le message : numéro de sécurité sociale, téléphone, IBAN, adresse."
-            },
-            "loading": "Chargement...",
-            "mode": {
-                "block": "Blocage",
-                "help": "Désactivée : la vérification n'est pas exécutée. Journal : le verdict est enregistré, la personne ne voit rien. Avertissement : une fenêtre s'ouvre à l'envoi, la personne peut envoyer quand même ou revenir corriger son message. Blocage : le message est refusé.",
-                "legend": "Mode",
-                "log": "Journal",
-                "off": "Désactivée",
-                "warn": "Avertissement"
-            },
+            "intro": "Un seul appel à l'API de modération de Mistral note chaque catégorie entre 0 et 1. Une catégorie se déclenche dès que sa note atteint son seuil, et le message subit alors l'action la plus forte demandée par les catégories déclenchées.",
             "model": {
                 "hint": "Mistral retire ses versions au fil du temps. Changez ce nom lorsque la version utilisée est annoncée obsolète.",
                 "label": "Modèle de modération"
             },
-            "neverBlock": {
-                "badge": "Jamais bloquante",
-                "hint": "Sur une instance santé ou juridique de compar:IA, ces sujets sont la raison d'être de la plateforme. Aucun seuil ne leur est appliqué et l'API refuse d'en enregistrer un. Cette exclusion est voulue.",
-                "title": "Catégories qui ne bloquent jamais"
+            "neverActedOn": {
+                "hint": "Santé, droit et finance sont laissés de côté sciemment : sur une instance santé ou juridique de compar:IA, ces sujets sont la raison d'être de la plateforme. Ils restent notés et consultables, mais l'API refuse toute action plus forte que le journal.",
+                "title": "Catégories jamais suivies d'effet"
             },
             "save": "Enregistrer",
             "saved": "Vérification mise à jour",
             "saving": "Enregistrement...",
             "subtitle": "Contrôles appliqués au message avant qu'il ne parte vers les modèles.",
-            "thresholds": {
+            "table": {
+                "caption": "Seuil et action par catégorie"
+            },
+            "threshold": {
                 "hint": "Note entre 0 et 1. Plus le seuil est bas, plus la vérification est stricte.",
                 "invalid": "Saisissez un nombre entre 0 et 1.",
-                "title": "Seuils par catégorie"
+                "legend": "Seuil"
             },
             "title": "Vérifications des messages",
             "warningsShown": {

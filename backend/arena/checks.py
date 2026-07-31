@@ -1,13 +1,11 @@
 """
-Prompt checks run before a user message reaches the arena models.
+The check run on a user prompt before it reaches the arena models.
 
-Two checks, `content_safety` and `pii`, configured in the `prompt_check` table
-by an admin. Both are served by a single call to the Mistral moderation API,
-which scores eleven categories between 0 and 1, so the runner calls Mistral once
-and derives both verdicts from the same scores.
-
-Each check has its own mode: `off` (not run), `log` (verdict stored only),
-`warn` (the user is asked to confirm) and `block` (the prompt is refused).
+One call to the Mistral moderation API scores eleven categories between 0 and 1.
+Each category carries its own threshold and its own action, configured in the
+`prompt_check` table by an admin: `off` (never triggers), `log` (verdict stored
+only), `warn` (the user is asked to confirm) and `block` (the prompt is
+refused). A prompt takes the strongest action any triggered category asks for.
 
 Fails open: if Mistral errors or times out, the prompt proceeds. Fail-open is
 NOT fail-silent: failures are logged at error level, sent to Sentry, and counted
@@ -25,7 +23,7 @@ import sentry_sdk
 
 from backend.config import settings
 from utils.database.models.prompt_check import PromptCheck
-from utils.database.prompt_checks import get_prompt_checks
+from utils.database.prompt_checks import get_prompt_check
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_SCORES_KEY,
@@ -60,6 +58,8 @@ PII_MESSAGE = (
     "envoyés peuvent être publiés dans le jeu de données ouvert."
 )
 
+_DECISIONS = {"off": "pass", "log": "logged", "warn": "warned", "block": "blocked"}
+
 
 async def moderate(text: str, model: str) -> dict[str, float]:
     """Score one prompt with the Mistral moderation API."""
@@ -77,27 +77,34 @@ async def moderate(text: str, model: str) -> dict[str, float]:
 
 
 @dataclass
-class CheckVerdict:
-    """Result of one check on one prompt. Persisted on the Turn and logged."""
+class CheckResult:
+    """Verdict on one prompt. Persisted on the Turn and logged."""
 
-    kind: str
-    mode: str
     decision: str  # pass | logged | warned | blocked | error
-    scores: dict[str, float]
     model: str
     latency_ms: int
-    categories: list[str] = field(default_factory=list)
+    scores: dict[str, float] = field(default_factory=dict)
+    triggered: dict[str, str] = field(default_factory=dict)
     message: str | None = None
     user_proceeded: bool = False
 
+    @property
+    def block_message(self) -> str | None:
+        return self.message if self.decision == "blocked" else None
+
+    @property
+    def pending_warning(self) -> bool:
+        """A warning the user has not answered yet, so one to show."""
+        return self.decision == "warned" and not self.user_proceeded
+
     def as_record(self) -> dict:
-        """JSON-serializable form stored under Turn.guardrail[kind]."""
+        """JSON-serializable form stored under Turn.guardrail."""
         record = {
-            "mode": self.mode,
-            "decision": self.decision,
-            "scores": self.scores,
             "model": self.model,
             "latency_ms": self.latency_ms,
+            "decision": self.decision,
+            "scores": self.scores,
+            "triggered": self.triggered,
         }
         if self.decision == "warned":
             # Whether people send anyway is the number that decides if 'warn'
@@ -106,101 +113,53 @@ class CheckVerdict:
         return record
 
 
-@dataclass
-class ChecksResult:
-    """Verdicts of every check that ran on one prompt."""
-
-    verdicts: list[CheckVerdict] = field(default_factory=list)
-
-    @property
-    def block_message(self) -> str | None:
-        for verdict in self.verdicts:
-            if verdict.decision == "blocked":
-                return verdict.message
-        return None
-
-    @property
-    def warnings(self) -> list[CheckVerdict]:
-        return [v for v in self.verdicts if v.decision == "warned"]
-
-    @property
-    def pending_warnings(self) -> list[CheckVerdict]:
-        """Warnings the user has not answered yet, so the ones to show."""
-        return [v for v in self.warnings if not v.user_proceeded]
-
-    def as_record(self) -> dict | None:
-        """Turn.guardrail payload, or None when no check ran."""
-        if not self.verdicts:
-            return None
-        return {verdict.kind: verdict.as_record() for verdict in self.verdicts}
-
-
-def _message_for(kind: str, categories: list[str]) -> str:
-    if kind == "pii":
+def _message_for(categories: set[str]) -> str:
+    if "selfharm" in categories:
+        return SELF_HARM_MESSAGE
+    if categories == {"pii"}:
         return PII_MESSAGE
-    return SELF_HARM_MESSAGE if "selfharm" in categories else GENERIC_MESSAGE
+    return GENERIC_MESSAGE
 
 
 def _verdict(
-    check: PromptCheck, scores: dict[str, float], model: str, latency_ms: int
-) -> CheckVerdict:
-    categories = check.blocking_categories(scores)
-    if not categories:
-        decision = "pass"
-    elif check.mode == "block":
-        decision = "blocked"
-    elif check.mode == "warn":
-        decision = "warned"
-    else:
-        decision = "logged"
+    check: PromptCheck, scores: dict[str, float], latency_ms: int
+) -> CheckResult:
+    triggered = check.triggered(scores)
+    action = check.action_for(scores)
+    decision = _DECISIONS[action]
+    # Only the categories asking for the strongest action explain the decision,
+    # so a category merely logged never picks the message.
+    deciding = {c for c, a in triggered.items() if a == action}
 
-    return CheckVerdict(
-        kind=check.kind,
-        mode=check.mode,
+    return CheckResult(
         decision=decision,
-        # Every category, not just the ones with a threshold. Prompts that hide
-        # in a never-blocking category are the known weakness of this
-        # classifier, and dropping those scores would make them invisible.
-        scores=dict(scores),
-        model=model,
-        latency_ms=latency_ms,
-        categories=categories,
-        message=(
-            _message_for(check.kind, categories)
-            if decision in ("blocked", "warned")
-            else None
-        ),
-    )
-
-
-def _error_verdict(check: PromptCheck, latency_ms: int) -> CheckVerdict:
-    return CheckVerdict(
-        kind=check.kind,
-        mode=check.mode,
-        decision="error",
-        scores={},
         model=check.model,
         latency_ms=latency_ms,
+        # Every category, not just the ones that triggered. Prompts that hide in
+        # a never-acted-on category are the known weakness of this classifier,
+        # and dropping those scores would make them invisible.
+        scores=dict(scores),
+        triggered=triggered,
+        message=(_message_for(deciding) if decision in ("blocked", "warned") else None),
     )
 
 
-def _count_failure(kind: str, failed: bool) -> None:
+def _count_failure(failed: bool) -> None:
     """Track consecutive moderation failures so a dark check stays visible.
 
     Read back by `utils.database.prompt_checks.get_consecutive_failures`.
     """
-    key = REDIS_CHECK_FAILURES_KEY.format(kind=kind)
     try:
         client = get_redis_client()
         if failed:
-            client.incr(key)
+            client.incr(REDIS_CHECK_FAILURES_KEY)
         else:
-            client.delete(key)
+            client.delete(REDIS_CHECK_FAILURES_KEY)
     except Exception as e:
-        logger.error(f"[CHECKS] Error updating failure count for '{kind}': {e}")
+        logger.error(f"[CHECKS] Error updating failure count: {e}")
 
 
-def count_warning_shown(kind: str) -> None:
+def count_warning_shown() -> None:
     """Count one warning put in front of a user.
 
     Read back by `utils.database.prompt_checks.get_warnings_shown`. The turns
@@ -208,9 +167,9 @@ def count_warning_shown(kind: str) -> None:
     that number is measured against.
     """
     try:
-        get_redis_client().incr(REDIS_CHECK_WARNINGS_KEY.format(kind=kind))
+        get_redis_client().incr(REDIS_CHECK_WARNINGS_KEY)
     except Exception as e:
-        logger.error(f"[CHECKS] Error counting warning for '{kind}': {e}")
+        logger.error(f"[CHECKS] Error counting warning: {e}")
 
 
 def _read_cache(text: str) -> dict[str, float] | None:
@@ -244,36 +203,30 @@ def _write_cache(text: str, scores: dict[str, float]) -> None:
         logger.warning(f"[CHECKS] Error caching scores: {e}")
 
 
-async def run_prompt_checks(
+async def run_prompt_check(
     text: str, request: "Request | None" = None, proceed: bool = False
-) -> ChecksResult:
+) -> CheckResult | None:
     """
-    Run every enabled check on a user prompt with one moderation call.
+    Check a user prompt with one moderation call, or None when nothing ran.
 
     The caller refuses the prompt when `result.block_message` is set, asks the
-    user to confirm when `result.pending_warnings` is not empty, and otherwise
+    user to confirm when `result.pending_warning` is true, and otherwise
     persists `result.as_record()` on the turn.
 
     The scores of a prompt that warned are kept for `SCORES_TTL` seconds, so
     the second call made when the user sends it anyway reuses them instead of
-    paying for another moderation call. Verdicts are recomputed from the current
-    rows either way, so an admin who tightens a check while a warning is on
-    screen still gets the new behaviour. `proceed` marks warnings as answered.
+    paying for another moderation call. The verdict is recomputed from the
+    current configuration either way, so an admin who tightens a category while
+    a warning is on screen still gets the new behaviour. `proceed` marks the
+    warning as answered.
     """
     if not settings.MISTRAL_API_KEY:
-        return ChecksResult()
+        return None
 
-    checks = [check for check in await get_prompt_checks() if check.mode != "off"]
-    if not checks:
-        return ChecksResult()
+    check = await get_prompt_check()
+    if not check.is_enabled:
+        return None
 
-    # One call for both checks. If the rows disagree on the model, content
-    # safety wins rather than paying for a second call, and the row order from
-    # the database does not decide it.
-    model = next(
-        (check.model for check in checks if check.kind == "content_safety"),
-        checks[0].model,
-    )
     started = time.monotonic()
     cached = _read_cache(text)
 
@@ -281,32 +234,28 @@ async def run_prompt_checks(
         scores, latency_ms = cached, 0
     else:
         try:
-            scores = await moderate(text, model)
+            scores = await moderate(text, check.model)
         except Exception as e:
             latency_ms = int((time.monotonic() - started) * 1000)
             logger.error(f"prompt_check_failed: {e}", extra={"request": request})
             if settings.SENTRY_DSN:
                 sentry_sdk.capture_exception(e)
-            for check in checks:
-                _count_failure(check.kind, failed=True)
-            return ChecksResult([_error_verdict(check, latency_ms) for check in checks])
+            _count_failure(failed=True)
+            return CheckResult(
+                decision="error", model=check.model, latency_ms=latency_ms
+            )
 
         latency_ms = int((time.monotonic() - started) * 1000)
-        for check in checks:
-            _count_failure(check.kind, failed=False)
+        _count_failure(failed=False)
 
-    result = ChecksResult(
-        [_verdict(check, scores, model, latency_ms) for check in checks]
-    )
+    result = _verdict(check, scores, latency_ms)
 
-    if result.warnings and cached is None:
-        _write_cache(text, scores)
-
-    if proceed:
-        for verdict in result.warnings:
-            verdict.user_proceeded = True
+    if result.decision == "warned":
+        if cached is None:
+            _write_cache(text, scores)
+        result.user_proceeded = proceed
 
     logger.info(
-        f"prompt_check_verdicts: {result.as_record()}", extra={"request": request}
+        f"prompt_check_verdict: {result.as_record()}", extra={"request": request}
     )
     return result
