@@ -52,15 +52,6 @@ class Settings(BaseSettings):
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
-    # Content-safety guardrail (Nemotron via OpenRouter). No-ops without OPENROUTER_API_KEY.
-    # ENABLED runs the check and records the verdict (shadow mode); ENFORCE must
-    # also be on for an egregious prompt to actually be blocked. Ship in shadow
-    # first, watch the verdicts, then turn ENFORCE on.
-    GUARDRAIL_ENABLED: bool = True
-    GUARDRAIL_ENFORCE: bool = False
-    GUARDRAIL_MODEL: str = "openrouter/nvidia/nemotron-3.5-content-safety:free"
-    GUARDRAIL_TIMEOUT: float = 2.5
-
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
@@ -172,11 +163,11 @@ BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 # so users behind a shared NAT (schools, hospitals) each get their own budget.
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
-# Cooldown for IPs that hit the content-safety guardrail too often (abuse /
-# jailbreak probing). Counts only enforced blocks in a rolling window; once an
-# IP crosses the threshold it is cooled down for the rest of the window WITHOUT
-# calling the guardrail (protects OpenRouter quota). Kept generous because gov
-# users share NAT IPs (hospitals, ministries) and must not be locked out.
+# Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
+# probing). Counts only blocks in a rolling window; once an IP crosses the
+# threshold it is cooled down for the rest of the window WITHOUT calling the
+# moderation API (protects the quota). Kept generous because gov users share NAT
+# IPs (hospitals, ministries) and must not be locked out.
 RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
 
 # Character limit for blind mode (comparison without model names)
