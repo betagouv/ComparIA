@@ -5,7 +5,7 @@
   import { getComparison, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
-  import { TOSModal, ViewChat, ViewPrompt } from './components'
+  import { PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
 
   let { data }: PageProps = $props()
 
@@ -31,6 +31,14 @@
 </script>
 
 <TOSModal bind:this={tosModal} />
+
+{#if showInitialPrompt}
+  <PromptWarningModal
+    warnings={comparator.promptWarnings}
+    onProceed={comparator.sendAnyway}
+    onEdit={comparator.dismissWarnings}
+  />
+{/if}
 
 <PageLayout
   seoTitle={m['seo.titles.arene']()}
