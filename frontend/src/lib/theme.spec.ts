@@ -49,11 +49,12 @@ describe('brand theme', () => {
     expect(css).toContain(':root:root[data-fr-theme="dark"]')
     expect(css).toContain(':root:root[data-fr-theme="system"]')
     expect(css).toContain('@media (prefers-color-scheme:dark)')
+    // Only the brand tokens are emitted here. The DSFR names that consume them
+    // are mapped to var(--brand-*) in app.css.
     expect(css).toContain('--brand-primary:#112233')
-    expect(css).toContain('--text-active-blue-france:#112233')
-    expect(css).toContain('--background-open-blue-france:#D9DCDE')
-    expect(css).toContain('--background-open-blue-france-hover:#C6CACE')
-    expect(css).toContain('--background-open-blue-france-active:#B3B8BE')
+    expect(css).toContain('--brand-primary-soft:#D9DCDE')
+    expect(css).toContain('--brand-primary-soft-hover:#C6CACE')
+    expect(css).toContain('--brand-primary-soft-active:#B3B8BE')
     expect(css).not.toMatch(/undefined|null/)
   })
 
