@@ -283,7 +283,9 @@ def test_moderate_parses_the_response():
     )
     settings.MISTRAL_API_KEY = "test-key"
     try:
-        scores = asyncio.run(checks.moderate("06 12 34 56 78", "mistral-moderation-x"))
+        scores = asyncio.run(
+            checks.moderate("06 12 34 56 78", "mistral-moderation-x", "test-key")
+        )
     finally:
         checks.httpx.AsyncClient = orig_client
         settings.MISTRAL_API_KEY = orig_key

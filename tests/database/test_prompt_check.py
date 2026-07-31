@@ -80,12 +80,12 @@ def test_action_for_takes_the_strongest_triggered_action():
     assert check.action_for({}) == "off"
 
 
-def test_is_enabled_only_when_a_category_asks_for_something():
+def test_should_run_only_when_a_category_asks_for_something():
     off = {category: {"threshold": 0.5, "action": "off"} for category in ("pii", "law")}
-    assert make_check(off).is_enabled is False
+    assert make_check(off).should_run is False
 
     on = dict(off, pii={"threshold": 0.5, "action": "log"})
-    assert make_check(on).is_enabled is True
+    assert make_check(on).should_run is True
 
 
 def full_categories(**overrides: dict) -> dict[str, dict]:
@@ -151,3 +151,26 @@ def test_a_patch_may_carry_the_model_alone():
     patch = PromptCheckPatch(model="mistral-moderation-2603")
 
     assert patch.model_dump(exclude_unset=True) == {"model": "mistral-moderation-2603"}
+
+
+def test_the_switch_stops_the_check_whatever_the_categories_say():
+    check = make_check(full_categories(pii={"threshold": 0.5, "action": "block"}))
+    assert check.should_run is True
+
+    check.enabled = False
+    assert check.should_run is False
+
+
+def test_the_public_shape_reports_a_stored_key_without_carrying_it():
+    from utils.database.models.prompt_check import PromptCheckPublic
+
+    assert "api_key" not in PromptCheckPublic.model_fields
+    assert "has_api_key" in PromptCheckPublic.model_fields
+
+
+def test_a_key_can_be_written_but_never_read_back():
+    from utils.database.models.prompt_check import PromptCheckPublic
+
+    patch = PromptCheckPatch(api_key="sk-secret")
+    assert patch.api_key == "sk-secret"
+    assert "api_key" not in PromptCheckPublic.model_fields

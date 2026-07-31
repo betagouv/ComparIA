@@ -30,6 +30,8 @@ def upgrade() -> None:
     prompt_check = op.create_table(
         "prompt_check",
         sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("enabled", sa.Boolean(), nullable=False, server_default=sa.true()),
+        sa.Column("api_key", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
         sa.Column(
             "model",
             sqlmodel.sql.sqltypes.AutoString(),
@@ -50,6 +52,7 @@ def upgrade() -> None:
         [
             {
                 "id": 1,
+                "enabled": True,
                 "model": DEFAULT_MODEL,
                 "categories": DEFAULT_CATEGORIES,
                 "updated_at": datetime.now(),
