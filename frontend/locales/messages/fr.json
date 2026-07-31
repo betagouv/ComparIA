@@ -234,6 +234,7 @@
             "title": "Vérifications des messages",
             "warningsShown": {
                 "count": "{count} avertissements affichés depuis la mise en place",
+                "countOne": "1 avertissement affiché depuis la mise en place",
                 "hint": "Les tours enregistrés ne retiennent que les personnes qui ont envoyé quand même. Ce compteur est ce à quoi les comparer."
             }
         },
