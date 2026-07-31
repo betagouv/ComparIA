@@ -186,7 +186,7 @@ describe('admin prompt check page', () => {
     unmount()
 
     const healthy = renderPage(check())
-    expect(healthy.getByText('Tout fonctionne')).toBeInTheDocument()
+    expect(healthy.queryByText('La vérification ne répond plus')).not.toBeInTheDocument()
     expect(queryByText('0 échecs consécutifs')).not.toBeInTheDocument()
   })
 

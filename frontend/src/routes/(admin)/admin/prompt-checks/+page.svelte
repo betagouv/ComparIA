@@ -66,12 +66,6 @@
     warn: m['admin.promptChecks.actions.help.warn'](),
     block: m['admin.promptChecks.actions.help.block']()
   }
-  const summaryLabels: Record<Action, string> = {
-    off: m['admin.promptChecks.summary.off'](),
-    log: m['admin.promptChecks.summary.log'](),
-    warn: m['admin.promptChecks.summary.warn'](),
-    block: m['admin.promptChecks.summary.block']()
-  }
   const categoryLabels: Record<string, string> = {
     sexual: m['admin.promptChecks.categories.sexual'](),
     hate_and_discrimination: m['admin.promptChecks.categories.hateAndDiscrimination'](),
@@ -122,19 +116,6 @@
 
   const failures = $derived(data.check.consecutive_failures ?? 0)
   const categories = $derived(categoryOrder.filter((category) => category in data.check.categories))
-
-  const summaryTiles = $derived(
-    (['block', 'warn', 'log', 'off'] as Action[]).map((action) => ({
-      action,
-      label: summaryLabels[action],
-      color: actionTone[action].color,
-      icon: actionTone[action].icon,
-      count: categories.filter((category) => draft.categories[category]?.action === action).length
-    }))
-  )
-  const activeCount = $derived(
-    categories.filter((category) => draft.categories[category]?.action !== 'off').length
-  )
 
   const decisionOrder: PromptCheckDecision[] = ['pass', 'logged', 'warned', 'blocked', 'error']
   const stats = $derived(data.stats ?? null)
@@ -274,51 +255,13 @@
   subtitle={m['admin.promptChecks.subtitle']()}
 >
   <div class="gap-10 mx-auto flex max-w-[1120px] flex-col">
-    <section id="prompt-check-summary">
+    <section id="prompt-check-health-band" class="empty:hidden">
       {#if data.check.healthy === false}
         <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="mb-6">
           <p>{m['admin.promptChecks.health.unhealthyHint']()}</p>
           <p>{m['admin.promptChecks.health.failures']({ count: failures })}</p>
         </Alert>
       {/if}
-
-      <div class="gap-3 mb-4 flex flex-wrap items-baseline justify-between">
-        <h2 class="fr-h5 mb-0!">{m['admin.promptChecks.summary.title']()}</h2>
-        {#if data.check.healthy !== false}
-          <p
-            id="prompt-check-health"
-            class="gap-2 mb-0! text-sm text-grey flex flex-wrap items-center"
-          >
-            <span class="gap-1.5 text-dark-grey font-bold flex items-center">
-              {@render statusDot('var(--green-emeraude-main-632)')}
-              {m['admin.promptChecks.health.healthy']()}
-            </span>
-            <span>
-              {failures > 0
-                ? m['admin.promptChecks.health.failures']({ count: failures })
-                : m['admin.promptChecks.health.noFailure']()}
-            </span>
-          </p>
-        {/if}
-      </div>
-
-      <div class="gap-3 sm:grid-cols-4 grid grid-cols-2">
-        {#each summaryTiles as tile (tile.action)}
-          <div id="prompt-check-summary-{tile.action}" class="cg-border bg-white p-3">
-            <p class="gap-1.5 mb-2! text-xs text-grey flex items-center">
-              <Icon icon={tile.icon} size="xs" style="color: {tile.color}" aria-hidden="true" />
-              {tile.label}
-            </p>
-            <p class="mb-0! text-dark-grey font-bold text-[28px] leading-none">{tile.count}</p>
-          </div>
-        {/each}
-      </div>
-
-      {#if activeCount === 0}
-        <p class="mt-3 text-sm text-grey">{m['admin.promptChecks.summary.none']()}</p>
-      {/if}
-
-      <p class="mt-4 text-sm text-grey">{m['admin.promptChecks.intro']()}</p>
     </section>
 
     <form onsubmit={save}>
@@ -349,18 +292,17 @@
 
       <ul
         id="prompt-check-categories"
-        class="gap-2 m-0! p-0! flex list-none flex-col"
-        aria-label={m['admin.promptChecks.summary.list']()}
+        class="m-0! p-0! flex list-none flex-col"
+        aria-label={m['admin.promptChecks.categoriesTitle']()}
       >
         {#each categories as category (category)}
           {@const action = draft.categories[category].action}
           <li
             id={`prompt-check-row-${category}`}
             class={[
-              'cg-border ps-4 gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center p-3 grid',
-              action === 'off' ? 'bg-[--cg-very-light-grey]' : 'bg-white'
+              'gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center px-1 py-3 grid',
+              'border-0 border-b border-solid border-[--border-default-grey] last:border-b-0'
             ]}
-            style="box-shadow: inset 3px 0 0 {actionTone[action].color}"
           >
             <p class="mb-0! text-dark-grey min-w-0 font-medium">{categoryLabel(category)}</p>
 
@@ -434,17 +376,9 @@
         {/each}
       </ul>
 
-      <p class="fr-hint-text mt-3!">{m['admin.promptChecks.threshold.hint']()}</p>
-
-      <div class="mt-6">
-        <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.offByDefault.title']()}</h3>
-        <p class="fr-hint-text mt-0!">{m['admin.promptChecks.offByDefault.hint']()}</p>
-      </div>
-
       <Input
         id="prompt-check-model"
         label={m['admin.promptChecks.model.label']()}
-        help={m['admin.promptChecks.model.hint']()}
         bind:value={draft.model}
         disabled={saving}
         groupClass="mt-6! max-w-[420px]"
@@ -460,9 +394,8 @@
 
     <section id="prompt-check-bench">
       <h2 class="fr-h5 mb-1!">{m['admin.promptChecks.bench.title']()}</h2>
-      <p class="fr-hint-text mt-0! mb-4!">{m['admin.promptChecks.bench.hint']()}</p>
 
-      <div class="gap-6 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] grid items-start">
+      <div class="gap-6 flex flex-col">
         <div>
           <div class={['fr-input-group', { 'fr-input-group--error': !!benchError }]}>
             <label class="fr-label" for="prompt-check-bench-text">
@@ -472,7 +405,7 @@
             <textarea
               id="prompt-check-bench-text"
               class="fr-input"
-              rows="8"
+              rows="4"
               bind:value={benchText}
               disabled={benchRunning}
               aria-describedby="prompt-check-bench-messages"

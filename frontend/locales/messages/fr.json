@@ -190,17 +190,11 @@
                 "warn": "Prévenir"
             },
             "bench": {
-                "title": "Tester un message",
-                "hint": "Le test applique les seuils et les actions affichés ci-dessus, modifications non enregistrées comprises. Rien n'est enregistré et personne d'autre ne voit quoi que ce soit.",
-                "label": "Message à vérifier",
-                "labelHint": "Écrivez ici le message tel qu'une personne l'enverrait.",
-                "run": "Tester",
-                "running": "Test en cours...",
-                "empty": "Écrivez un message avant de lancer le test.",
-                "resultTitle": "Résultat du test",
-                "resultWaiting": "Le résultat s'affichera ici.",
-                "decisionLegend": "Résultat",
-                "latency": "Réponse en {count} ms",
+                "caption": "Note, seuil et résultat par catégorie",
+                "columns": {
+                    "score": "Note",
+                    "verdict": "Résultat"
+                },
                 "decision": {
                     "pass": "Passé sans rien",
                     "logged": "Surveillé",
@@ -208,19 +202,24 @@
                     "blocked": "Refusé",
                     "error": "La vérification n'a pas répondu"
                 },
-                "messageTitle": "Ce que verrait la personne",
+                "decisionLegend": "Résultat",
+                "empty": "Écrivez un message avant de lancer le test.",
+                "ignored": "Non surveillée",
+                "label": "Message à vérifier",
+                "labelHint": "Écrivez ici le message tel qu'une personne l'enverrait.",
+                "latency": "Réponse en {count} ms",
                 "messageNone": "Rien ne lui serait affiché.",
-                "scoresTitle": "Détail par catégorie",
-                "scoresHint": "Chaque barre montre la note obtenue, le trait vertical marque le seuil. Une note juste sous son seuil est la première chose à surveiller.",
-                "caption": "Note, seuil et résultat par catégorie",
-                "columns": {
-                    "score": "Note",
-                    "verdict": "Résultat"
-                },
-                "threshold": "Seuil {value}",
-                "triggered": "Déclenchée",
+                "messageTitle": "Ce que verrait la personne",
                 "notTriggered": "Sous le seuil",
-                "ignored": "Non surveillée"
+                "resultTitle": "Résultat du test",
+                "resultWaiting": "Le résultat s'affichera ici.",
+                "run": "Tester",
+                "running": "Test en cours...",
+                "scoresHint": "Chaque barre montre la note obtenue, le trait vertical marque le seuil. Une note juste sous son seuil est la première chose à surveiller.",
+                "scoresTitle": "Détail par catégorie",
+                "threshold": "Seuil {value}",
+                "title": "Tester un message",
+                "triggered": "Déclenchée"
             },
             "categories": {
                 "criminal": "Activités criminelles",
@@ -235,27 +234,19 @@
                 "sexual": "Contenu sexuel",
                 "violenceAndThreats": "Violence et menaces"
             },
+            "categoriesTitle": "Catégories",
             "columns": {
                 "action": "Action",
                 "category": "Catégorie",
                 "threshold": "Seuil"
             },
-            "categoriesTitle": "Catégories",
             "health": {
                 "failures": "{count} échecs consécutifs",
-                "healthy": "Tout fonctionne",
-                "noFailure": "Aucun échec récent",
                 "unhealthy": "La vérification ne répond plus",
                 "unhealthyHint": "Les appels à l'API de modération échouent. La vérification laisse passer tous les messages, ce qui ressemble en tout point à une vérification qui ne trouve rien. Contrôlez la clé Mistral et les journaux du serveur."
             },
-            "intro": "Un seul appel à l'API de modération de Mistral note chaque catégorie entre 0 et 1. Une catégorie se déclenche dès que sa note atteint son seuil, et le message subit alors l'action la plus forte parmi les catégories déclenchées.",
             "model": {
-                "hint": "Mistral retire ses versions au fil du temps. Changez ce nom lorsque la version utilisée est annoncée obsolète.",
                 "label": "Modèle de modération"
-            },
-            "offByDefault": {
-                "title": "Catégories ignorées au départ",
-                "hint": "Santé, droit et finance partent sur « ignorer ». Sur une instance santé ou juridique de compar:IA, ces sujets sont la raison d'être de la plateforme, et agir dessus reviendrait à refuser les messages attendus. Vous pouvez les surveiller si votre instance le demande."
             },
             "save": "Enregistrer",
             "saved": "Vérification mise à jour",
@@ -280,17 +271,7 @@
                 "warningsTitle": "Avertissements affichés, depuis le début"
             },
             "subtitle": "Quand un message relève de l'une de ces catégories, vous décidez de ce qui arrive à la personne : rien, un avertissement qu'elle peut passer, ou un refus.",
-            "summary": {
-                "block": "Refusent le message",
-                "list": "Seuil et action par catégorie",
-                "log": "Surveillées seulement",
-                "none": "Aucune catégorie n'agit sur les messages pour le moment.",
-                "off": "Ignorées",
-                "title": "Ce qui est actif en ce moment",
-                "warn": "Préviennent la personne"
-            },
             "threshold": {
-                "hint": "Un seuil bas attrape plus de messages, avec plus de fausses alertes. Un seuil haut n'attrape que les cas évidents.",
                 "invalid": "Saisissez un nombre entre 0 et 1.",
                 "legend": "Seuil"
             },
