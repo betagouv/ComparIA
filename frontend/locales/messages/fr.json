@@ -186,7 +186,6 @@
                 },
                 "legend": "Action",
                 "log": "Journal",
-                "never": "Jamais",
                 "off": "Désactivée",
                 "warn": "Avertissement"
             },
@@ -203,6 +202,11 @@
                 "sexual": "Contenu sexuel",
                 "violenceAndThreats": "Violence et menaces"
             },
+            "columns": {
+                "action": "Action",
+                "category": "Catégorie",
+                "threshold": "Seuil"
+            },
             "health": {
                 "failures": "{count} échecs consécutifs",
                 "healthy": "Vérification opérationnelle",
@@ -210,19 +214,14 @@
                 "unhealthy": "Vérification hors service",
                 "unhealthyHint": "Les appels à l'API de modération échouent. La vérification laisse passer tous les messages, ce qui ressemble en tout point à une vérification qui ne trouve rien. Contrôlez la clé Mistral et les journaux du serveur."
             },
-            "columns": {
-                "action": "Action",
-                "category": "Catégorie",
-                "threshold": "Seuil"
-            },
             "intro": "Un seul appel à l'API de modération de Mistral note chaque catégorie entre 0 et 1. Une catégorie se déclenche dès que sa note atteint son seuil, et le message subit alors l'action la plus forte demandée par les catégories déclenchées.",
             "model": {
                 "hint": "Mistral retire ses versions au fil du temps. Changez ce nom lorsque la version utilisée est annoncée obsolète.",
                 "label": "Modèle de modération"
             },
-            "neverActedOn": {
-                "hint": "Santé, droit et finance sont laissés de côté sciemment : sur une instance santé ou juridique de compar:IA, ces sujets sont la raison d'être de la plateforme. Ils restent notés et consultables, mais l'API refuse toute action plus forte que le journal.",
-                "title": "Catégories jamais suivies d'effet"
+            "offByDefault": {
+                "title": "Catégories désactivées au départ",
+                "hint": "Santé, droit et finance partent sur « désactivée ». Sur une instance santé ou juridique de compar:IA, ces sujets sont la raison d'être de la plateforme, et agir dessus reviendrait à refuser les messages attendus. Vous pouvez les activer si votre instance le demande."
             },
             "save": "Enregistrer",
             "saved": "Vérification mise à jour",

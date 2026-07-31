@@ -39,10 +39,11 @@ MISTRAL_CATEGORIES = (
     "jailbreaking",
 )
 
-# On a sante or juridique instance these categories describe the product, so
-# they may only be observed, never acted on. Asking for warn or block on them is
-# rejected rather than ignored, so an admin cannot believe they set it.
-NEVER_ACTED_ON = ("health", "law", "financial")
+# Seeded off rather than forbidden. On a sante or juridique instance these
+# categories describe the product, so acting on them would refuse the very
+# prompts the platform exists for. An admin who knows their instance can still
+# turn them on, and the page says why they start off.
+OFF_BY_DEFAULT = ("health", "law", "financial")
 
 # Ordered weakest to strongest. The prompt takes the strongest action any
 # triggered category asks for.
@@ -89,11 +90,6 @@ def validate_categories(value: object) -> dict[str, dict]:
         action = config.get("action")
         if action not in _ACTION_RANK:
             raise ValueError(f"Unknown action '{action}' for '{category}'")
-        if category in NEVER_ACTED_ON and _ACTION_RANK[action] > _ACTION_RANK["log"]:
-            raise ValueError(
-                f"Category '{category}' can only be observed: it is the product "
-                "on a sante or juridique instance"
-            )
 
         result[category] = {"threshold": float(threshold), "action": action}
 

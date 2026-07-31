@@ -15,10 +15,10 @@
 
   let { data }: PageProps = $props()
 
-  // Santé, droit et finance sont le sujet même d'une instance santé ou
-  // juridique. L'API refuse toute action plus forte que le journal sur elles,
-  // donc la page les montre figées plutôt que de laisser croire au contraire.
-  const neverActedOn = ['health', 'law', 'financial']
+  // Réglées sur « désactivée » au départ plutôt qu'interdites : sur une instance
+  // santé ou juridique, agir sur elles reviendrait à refuser les messages qui
+  // font l'objet de la plateforme.
+  const offByDefault = ['health', 'law', 'financial']
 
   // Postgres returns jsonb keys ordered by length then bytes, which would
   // scatter the frozen rows through the table. Fixed order instead, with them
@@ -32,7 +32,7 @@
     'criminal',
     'jailbreaking',
     'pii',
-    ...neverActedOn
+    ...offByDefault
   ]
 
   const actionOptions: { value: Action; label: string }[] = [
@@ -191,68 +191,53 @@
                 </thead>
                 <tbody>
                   {#each categories as category (category)}
-                    {@const locked = neverActedOn.includes(category)}
                     <tr id={`prompt-check-row-${category}`}>
                       <th scope="row" class="font-normal">{categoryLabel(category)}</th>
                       <td>
-                        {#if locked}
-                          <span aria-hidden="true">—</span>
-                        {:else}
-                          <div
-                            class={[
-                              'fr-input-group mb-0!',
-                              { 'fr-input-group--error': !!errors[category] }
-                            ]}
+                        <div
+                          class={[
+                            'fr-input-group mb-0!',
+                            { 'fr-input-group--error': !!errors[category] }
+                          ]}
+                        >
+                          <label
+                            class="fr-label fr-sr-only"
+                            for={`prompt-check-threshold-${category}`}
                           >
-                            <label
-                              class="fr-label fr-sr-only"
-                              for={`prompt-check-threshold-${category}`}
+                            {m['admin.promptChecks.threshold.legend']()} : {categoryLabel(category)}
+                          </label>
+                          <input
+                            id={`prompt-check-threshold-${category}`}
+                            class="fr-input max-w-[110px]"
+                            type="number"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            bind:value={draft.categories[category].threshold}
+                            disabled={saving}
+                            aria-describedby={`prompt-check-threshold-${category}-messages`}
+                          />
+                          {#if errors[category]}
+                            <div
+                              class="fr-messages-group"
+                              id={`prompt-check-threshold-${category}-messages`}
+                              aria-live="polite"
                             >
-                              {m['admin.promptChecks.threshold.legend']()} : {categoryLabel(
-                                category
-                              )}
-                            </label>
-                            <input
-                              id={`prompt-check-threshold-${category}`}
-                              class="fr-input max-w-[110px]"
-                              type="number"
-                              min="0"
-                              max="1"
-                              step="0.05"
-                              bind:value={draft.categories[category].threshold}
-                              disabled={saving}
-                              aria-describedby={`prompt-check-threshold-${category}-messages`}
-                            />
-                            {#if errors[category]}
-                              <div
-                                class="fr-messages-group"
-                                id={`prompt-check-threshold-${category}-messages`}
-                                aria-live="polite"
-                              >
-                                <p class="fr-message fr-message--error">{errors[category]}</p>
-                              </div>
-                            {/if}
-                          </div>
-                        {/if}
+                              <p class="fr-message fr-message--error">{errors[category]}</p>
+                            </div>
+                          {/if}
+                        </div>
                       </td>
                       <td>
-                        {#if locked}
-                          <Badge
-                            size="sm"
-                            variant="orange"
-                            text={m['admin.promptChecks.actions.never']()}
-                          />
-                        {:else}
-                          <Select
-                            id={`prompt-check-action-${category}`}
-                            label={`${m['admin.promptChecks.actions.legend']()} : ${categoryLabel(category)}`}
-                            hideLabel
-                            options={actionOptions}
-                            bind:selected={draft.categories[category].action}
-                            disabled={saving}
-                            groupClass="mb-0!"
-                          />
-                        {/if}
+                        <Select
+                          id={`prompt-check-action-${category}`}
+                          label={`${m['admin.promptChecks.actions.legend']()} : ${categoryLabel(category)}`}
+                          hideLabel
+                          options={actionOptions}
+                          bind:selected={draft.categories[category].action}
+                          disabled={saving}
+                          groupClass="mb-0!"
+                        />
                       </td>
                     </tr>
                   {/each}
@@ -266,8 +251,8 @@
       <p class="fr-hint-text mt-2!">{m['admin.promptChecks.threshold.hint']()}</p>
 
       <div class="mt-6">
-        <h2 class="fr-h6 mb-1!">{m['admin.promptChecks.neverActedOn.title']()}</h2>
-        <p class="fr-hint-text mt-0!">{m['admin.promptChecks.neverActedOn.hint']()}</p>
+        <h2 class="fr-h6 mb-1!">{m['admin.promptChecks.offByDefault.title']()}</h2>
+        <p class="fr-hint-text mt-0!">{m['admin.promptChecks.offByDefault.hint']()}</p>
       </div>
 
       <Input
