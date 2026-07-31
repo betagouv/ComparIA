@@ -1,9 +1,10 @@
+import time
 import uuid
 from datetime import datetime
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
@@ -20,10 +21,16 @@ from backend.admin.services import (
 )
 from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
+from backend.arena.checks import (
+    moderate,
+    read_cached_scores,
+    verdict,
+    write_cached_scores,
+)
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
-from backend.config import settings
+from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
 from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
     LEGAL_CONTENT_MAX_LENGTH,
@@ -56,11 +63,14 @@ from utils.database.models.prompt_check import (
     PromptCheck,
     PromptCheckPatch,
     PromptCheckStatus,
+    validate_categories,
 )
 from utils.database.prompt_checks import (
+    MAX_STATS_DAYS,
     UNHEALTHY_AFTER_FAILURES,
     get_consecutive_failures,
     get_prompt_check,
+    get_prompt_check_stats,
     get_warnings_shown,
     update_prompt_check,
 )
@@ -437,3 +447,107 @@ async def patch_prompt_check(
         body.model_dump(exclude_unset=True), updated_by=current_user.id
     )
     return _to_prompt_check_status(row)
+
+
+NO_API_KEY_MESSAGE = (
+    "Aucune clé API Mistral n'est configurée : la vérification ne peut pas "
+    "s'exécuter."
+)
+
+
+class PromptCheckTryBody(BaseModel):
+    """A prompt plus, when the admin is trying edits they have not saved, the
+    configuration to judge it against. Both fields fall back to the stored row."""
+
+    text: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
+    categories: dict[str, dict] | None = None
+    model: str | None = Field(default=None, min_length=1, max_length=100)
+
+    @field_validator("categories", mode="before")
+    @classmethod
+    def check_categories(cls, value: object) -> dict[str, dict] | None:
+        return None if value is None else validate_categories(value)
+
+
+class PromptCheckTryResult(BaseModel):
+    decision: str
+    scores: dict[str, float]
+    triggered: dict[str, str]
+    message: str | None
+    latency_ms: int
+
+
+@router.post("/prompt-check/try", response_model=PromptCheckTryResult)
+async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
+    """Judge one prompt without touching anything the arena counts.
+
+    No turn is written, no warning is counted and the failure streak is left
+    alone, so trying a configuration cannot move the numbers the same page
+    reports. Scores are cached on the prompt text, not on the verdict, so
+    trying several thresholds on the same text costs one moderation call.
+    """
+    stored = await get_prompt_check()
+    check = PromptCheck(
+        id=stored.id,
+        model=body.model or stored.model,
+        categories=body.categories or stored.categories,
+    )
+
+    if not settings.MISTRAL_API_KEY:
+        return PromptCheckTryResult(
+            decision="error",
+            scores={},
+            triggered={},
+            message=NO_API_KEY_MESSAGE,
+            latency_ms=0,
+        )
+
+    started = time.monotonic()
+    scores = read_cached_scores(body.text)
+    if scores is None:
+        try:
+            scores = await moderate(body.text, check.model)
+        except Exception as e:
+            return PromptCheckTryResult(
+                decision="error",
+                scores={},
+                triggered={},
+                message=f"L'appel à Mistral a échoué : {e}",
+                latency_ms=int((time.monotonic() - started) * 1000),
+            )
+        latency_ms = int((time.monotonic() - started) * 1000)
+        write_cached_scores(body.text, scores)
+    else:
+        latency_ms = 0
+
+    result = verdict(check, scores, latency_ms)
+    return PromptCheckTryResult(
+        decision=result.decision,
+        scores=result.scores,
+        triggered=result.triggered,
+        message=result.message,
+        latency_ms=result.latency_ms,
+    )
+
+
+class PromptCheckStats(BaseModel):
+    days: int
+    total: int
+    by_decision: dict[str, int]
+    by_category: dict[str, int]
+    proceeded: int
+    warnings_shown: int
+
+
+@router.get("/prompt-check/stats", response_model=PromptCheckStats)
+async def read_prompt_check_stats(
+    days: int = Query(default=30, ge=1, le=MAX_STATS_DAYS),
+) -> PromptCheckStats:
+    """What the check has done over the window.
+
+    `by_category` counts the turns each category triggered on, so one turn can
+    count in several. `proceeded` counts the warned turns the user sent anyway,
+    and `warnings_shown` is the all-time count of warnings put in front of
+    someone, not the count for the window.
+    """
+    return PromptCheckStats(**await get_prompt_check_stats(days))
