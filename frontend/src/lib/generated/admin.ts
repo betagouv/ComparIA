@@ -248,6 +248,30 @@ export interface LLMLicense {
   reuse: boolean;
   commercial_use: boolean;
 }
+export interface PromptCheckPatch {
+  mode?: ("off" | "log" | "warn" | "block") | null;
+  thresholds?: {
+    [k: string]: number;
+  } | null;
+  model?: string | null;
+}
+/**
+ * A check plus how it is faring. Both checks fail open, so a check that has
+ * stopped working looks exactly like a check that passes everything.
+ */
+export interface PromptCheckStatus {
+  kind: "content_safety" | "pii";
+  mode: "off" | "log" | "warn" | "block";
+  thresholds: {
+    [k: string]: number;
+  };
+  model: string;
+  updated_at: string;
+  updated_by?: string | null;
+  consecutive_failures?: number;
+  healthy?: boolean;
+  warnings_shown?: number;
+}
 export interface PublishLegalDocumentBody {
   version: string;
   locale: string;
