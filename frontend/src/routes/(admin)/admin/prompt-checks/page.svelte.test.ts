@@ -107,17 +107,17 @@ describe('admin prompt check page', () => {
     expect(getByText('Saisissez un nombre entre 0 et 1.')).toBeInTheDocument()
   })
 
-  it('shows the never acted on categories as deliberate rather than hiding them', () => {
+  it('lets the product categories be configured, seeded off rather than locked', () => {
     const { getAllByText } = renderPage(check())
 
     for (const label of ['Santé', 'Droit', 'Finance']) {
       expect(getAllByText(label).length).toBeGreaterThan(0)
     }
-    expect(document.querySelector('#prompt-check-row-health .fr-badge')?.textContent?.trim()).toBe(
-      'Jamais'
-    )
-    expect(document.querySelector('#prompt-check-threshold-health')).not.toBeInTheDocument()
-    expect(document.querySelector('#prompt-check-action-health')).not.toBeInTheDocument()
+    const action = document.querySelector<HTMLSelectElement>('#prompt-check-action-health')
+    expect(action).toBeInTheDocument()
+    expect(action?.value).toBe('off')
+    expect(action?.disabled).toBe(false)
+    expect(document.querySelector('#prompt-check-threshold-health')).toBeInTheDocument()
   })
 
   it('explains what the four actions do, warning included', () => {

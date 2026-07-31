@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from utils.database.models.prompt_check import (
     DEFAULT_CATEGORIES,
     MISTRAL_CATEGORIES,
-    NEVER_ACTED_ON,
+    OFF_BY_DEFAULT,
     PromptCheck,
     PromptCheckPatch,
 )
@@ -18,9 +18,11 @@ def test_seeded_categories_are_all_real_categories():
     assert set(DEFAULT_CATEGORIES) == set(MISTRAL_CATEGORIES)
 
 
-def test_seeded_never_acted_on_categories_are_only_observed():
-    for category in NEVER_ACTED_ON:
-        assert DEFAULT_CATEGORIES[category]["action"] in ("off", "log")
+def test_the_product_categories_are_seeded_off():
+    """Off rather than forbidden: acting on them would refuse the very prompts a
+    sante or juridique instance exists for, but an admin can still turn them on."""
+    for category in OFF_BY_DEFAULT:
+        assert DEFAULT_CATEGORIES[category]["action"] == "off"
 
 
 def test_sexual_threshold_catches_the_minor_case():
@@ -92,23 +94,15 @@ def full_categories(**overrides: dict) -> dict[str, dict]:
     return categories
 
 
-@pytest.mark.parametrize("category", NEVER_ACTED_ON)
-@pytest.mark.parametrize("action", ["warn", "block"])
-def test_acting_on_a_product_category_is_rejected(category: str, action: str):
-    with pytest.raises(ValidationError, match="only be observed"):
-        PromptCheckPatch(
-            categories=full_categories(
-                **{category: {"threshold": 0.5, "action": action}}
-            )
-        )
-
-
-@pytest.mark.parametrize("action", ["off", "log"])
-def test_observing_a_product_category_is_allowed(action: str):
+@pytest.mark.parametrize("category", OFF_BY_DEFAULT)
+@pytest.mark.parametrize("action", ["off", "log", "warn", "block"])
+def test_every_action_is_allowed_on_the_product_categories(category: str, action: str):
+    """They are seeded off, not locked. An instance that wants to block on
+    finance is allowed to say so."""
     patch = PromptCheckPatch(
-        categories=full_categories(health={"threshold": 0.5, "action": action})
+        categories=full_categories(**{category: {"threshold": 0.5, "action": action}})
     )
-    assert patch.categories["health"]["action"] == action
+    assert patch.categories[category]["action"] == action
 
 
 def test_unknown_category_is_rejected():
