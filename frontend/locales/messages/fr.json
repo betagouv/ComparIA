@@ -189,6 +189,13 @@
                 "off": "Ignorer",
                 "warn": "Prévenir"
             },
+            "apiKey": {
+                "label": "Clé API",
+                "placeholder": "Nouvelle clé",
+                "set": "Clé enregistrée",
+                "unset": "Aucune clé enregistrée",
+                "willClear": "En enregistrant, la clé stockée sera effacée et la variable d'environnement reprendra la main."
+            },
             "bench": {
                 "caption": "Note, seuil et résultat par catégorie",
                 "columns": {
@@ -251,6 +258,11 @@
             "save": "Enregistrer",
             "saved": "Vérification mise à jour",
             "saving": "Enregistrement...",
+            "settings": {
+                "disabledNotice": "Vérification désactivée : aucun message n'est vérifié, quelles que soient les règles ci-dessous.",
+                "enabled": "Vérification des messages",
+                "title": "Réglages"
+            },
             "stats": {
                 "byCategoryNone": "Aucune catégorie ne s'est déclenchée sur la période.",
                 "byCategoryTitle": "Catégories déclenchées",

@@ -105,7 +105,12 @@ class PromptCheck(SQLModel, table=True):
     __tablename__ = "prompt_check"
 
     id: int = Field(default=1, primary_key=True)
+    enabled: bool = Field(default=True)
     model: str = Field(default=DEFAULT_MODEL)
+    # Overrides MISTRAL_API_KEY when set, so an instance can be configured
+    # without a redeploy. Never leaves the backend: PromptCheckPublic reports
+    # whether one is set, not what it is.
+    api_key: str | None = Field(default=None)
     categories: Annotated[dict[str, dict], Field(sa_type=JSONB)] = {}
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
@@ -129,13 +134,22 @@ class PromptCheck(SQLModel, table=True):
         return max(actions, key=lambda a: _ACTION_RANK[a], default="off")
 
     @property
-    def is_enabled(self) -> bool:
-        """False when every category is off, in which case no call is made."""
-        return any(config["action"] != "off" for config in self.categories.values())
+    def should_run(self) -> bool:
+        """Whether a message is worth a call.
+
+        False when the check is switched off, and also when every category is
+        `off`, since then no score could change anything.
+        """
+        return self.enabled and any(
+            config["action"] != "off" for config in self.categories.values()
+        )
 
 
 class PromptCheckPublic(SQLModel):
+    enabled: bool
     model: str
+    # Whether a key is stored, never the key itself.
+    has_api_key: bool
     categories: dict[str, dict]
     updated_at: str
     updated_by: uuid.UUID | None = None
@@ -153,7 +167,11 @@ class PromptCheckStatus(PromptCheckPublic):
 
 
 class PromptCheckPatch(SQLModel):
+    enabled: bool | None = None
     model: str | None = None
+    # Write-only. An empty string clears the stored key and falls back to the
+    # environment variable.
+    api_key: str | None = None
     categories: dict[str, dict] | None = None
 
     @field_validator("categories", mode="before")

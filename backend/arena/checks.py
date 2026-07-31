@@ -61,12 +61,12 @@ PII_MESSAGE = (
 _DECISIONS = {"off": "pass", "log": "logged", "warn": "warned", "block": "blocked"}
 
 
-async def moderate(text: str, model: str) -> dict[str, float]:
+async def moderate(text: str, model: str, api_key: str) -> dict[str, float]:
     """Score one prompt with the Mistral moderation API."""
     async with httpx.AsyncClient(timeout=MODERATION_TIMEOUT) as client:
         response = await client.post(
             MISTRAL_MODERATION_URL,
-            headers={"Authorization": f"Bearer {settings.MISTRAL_API_KEY}"},
+            headers={"Authorization": f"Bearer {api_key}"},
             json={"model": model, "input": [text]},
         )
         response.raise_for_status()
@@ -222,11 +222,12 @@ async def run_prompt_check(
     a warning is on screen still gets the new behaviour. `proceed` marks the
     warning as answered.
     """
-    if not settings.MISTRAL_API_KEY:
+    check = await get_prompt_check()
+    if not check.should_run:
         return None
 
-    check = await get_prompt_check()
-    if not check.is_enabled:
+    api_key = check.api_key or settings.MISTRAL_API_KEY
+    if not api_key:
         return None
 
     started = time.monotonic()
@@ -236,7 +237,7 @@ async def run_prompt_check(
         scores, latency_ms = cached, 0
     else:
         try:
-            scores = await moderate(text, check.model)
+            scores = await moderate(text, check.model, api_key)
         except Exception as e:
             latency_ms = int((time.monotonic() - started) * 1000)
             logger.error(f"prompt_check_failed: {e}", extra={"request": request})

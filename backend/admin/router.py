@@ -423,6 +423,8 @@ async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
 def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
     failures = get_consecutive_failures()
     return PromptCheckStatus(
+        enabled=row.enabled,
+        has_api_key=bool(row.api_key or settings.MISTRAL_API_KEY),
         model=row.model,
         categories=row.categories,
         updated_at=row.updated_at.isoformat(),
@@ -443,9 +445,12 @@ async def patch_prompt_check(
     body: PromptCheckPatch,
     current_user: RequiredAdmin,
 ) -> PromptCheckStatus:
-    row = await update_prompt_check(
-        body.model_dump(exclude_unset=True), updated_by=current_user.id
-    )
+    patch = body.model_dump(exclude_unset=True)
+    if "api_key" in patch:
+        # Blanking the field clears the stored key and falls back to the
+        # environment variable, rather than storing an empty string.
+        patch["api_key"] = (patch["api_key"] or "").strip() or None
+    row = await update_prompt_check(patch, updated_by=current_user.id)
     return _to_prompt_check_status(row)
 
 
@@ -493,7 +498,10 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
         categories=body.categories or stored.categories,
     )
 
-    if not settings.MISTRAL_API_KEY:
+    # A dry run ignores the on/off switch on purpose: trying a rule before
+    # switching the check on is the main reason this exists.
+    api_key = stored.api_key or settings.MISTRAL_API_KEY
+    if not api_key:
         return PromptCheckTryResult(
             decision="error",
             scores={},
@@ -506,7 +514,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
     scores = read_cached_scores(body.text)
     if scores is None:
         try:
-            scores = await moderate(body.text, check.model)
+            scores = await moderate(body.text, check.model, api_key)
         except Exception as e:
             return PromptCheckTryResult(
                 decision="error",

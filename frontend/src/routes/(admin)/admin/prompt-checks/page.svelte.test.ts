@@ -33,6 +33,8 @@ const categories = {
 
 const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus =>
   ({
+    enabled: true,
+    has_api_key: false,
     model: 'mistral-moderation-latest',
     categories: { ...categories },
     updated_at: '2026-07-01T10:00:00',
@@ -90,6 +92,16 @@ const runBench = async (container: HTMLElement, text: string) => {
   container.querySelector<HTMLButtonElement>('#prompt-check-bench-run')!.click()
   await Promise.resolve()
   await Promise.resolve()
+}
+
+const submit = async (container: HTMLElement) => {
+  container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
+  await Promise.resolve()
+}
+
+const sentBody = async () => {
+  const { api } = await import('$lib/fastapi-client')
+  return JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
 }
 
 describe('admin prompt check page', () => {
@@ -264,6 +276,80 @@ describe('admin prompt check page', () => {
     const warnings = container.querySelector('#prompt-check-stats-warnings')?.textContent
     expect(warnings).toContain('30 affichés')
     expect(warnings).toContain('21 envoyés quand même')
+  })
+
+  it('sends the switch with the rest of the page', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockResolvedValue(check())
+
+    const { container } = renderPage(check())
+    const toggle = container.querySelector<HTMLInputElement>('#prompt-check-enabled')!
+    expect(toggle.checked).toBe(true)
+    toggle.checked = false
+    toggle.dispatchEvent(new Event('change', { bubbles: true }))
+    await submit(container)
+
+    expect((await sentBody()).enabled).toBe(false)
+  })
+
+  it('says nothing is checked while the switch is off, without locking the rules', async () => {
+    const { container, getByText } = renderPage(check({ enabled: false }))
+
+    expect(
+      getByText(/aucun message n'est vérifié, quelles que soient les règles ci-dessous/)
+    ).toBeInTheDocument()
+    expect(
+      container.querySelector<HTMLInputElement>('#prompt-check-action-sexual-block')?.disabled
+    ).toBe(false)
+    expect(
+      container.querySelector<HTMLInputElement>('#prompt-check-threshold-sexual')?.disabled
+    ).toBe(false)
+  })
+
+  it('leaves the stored key alone unless someone types a new one', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockResolvedValue(check({ has_api_key: true }))
+
+    const untouched = renderPage(check({ has_api_key: true }))
+    await submit(untouched.container)
+    expect(await sentBody()).not.toHaveProperty('api_key')
+    untouched.unmount()
+
+    vi.mocked(api.request).mockClear()
+    const { container } = renderPage(check({ has_api_key: true }))
+    const field = container.querySelector<HTMLInputElement>('#prompt-check-api-key')!
+    field.value = 'nouvelle-cle'
+    field.dispatchEvent(new Event('input', { bubbles: true }))
+    await submit(container)
+
+    expect((await sentBody()).api_key).toBe('nouvelle-cle')
+  })
+
+  it('reports a stored key without ever showing it', async () => {
+    const { container } = renderPage(check({ has_api_key: true }))
+
+    expect(container.querySelector('#prompt-check-api-key-state')?.textContent?.trim()).toBe(
+      'Clé enregistrée'
+    )
+    const field = container.querySelector<HTMLInputElement>('#prompt-check-api-key')!
+    expect(field.value).toBe('')
+    expect(field.type).toBe('password')
+    expect(field.getAttribute('autocomplete')).toBe('off')
+
+    // Vidé après avoir été touché : l'enregistrement effacera la clé stockée.
+    field.value = ''
+    field.dispatchEvent(new Event('input', { bubbles: true }))
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(container.querySelector('#prompt-check-api-key-clearing')).toBeInTheDocument()
+  })
+
+  it('says when no key is stored', () => {
+    const { container } = renderPage(check())
+
+    expect(container.querySelector('#prompt-check-api-key-state')?.textContent?.trim()).toBe(
+      'Aucune clé enregistrée'
+    )
   })
 
   it('stays readable when the counts are missing', () => {

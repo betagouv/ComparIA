@@ -78,7 +78,7 @@ def stub_moderate(
 ) -> list[tuple[str, str]]:
     calls: list[tuple[str, str]] = []
 
-    async def moderate(text: str, model: str) -> dict:
+    async def moderate(text: str, model: str, api_key: str) -> dict:
         calls.append((text, model))
         if error:
             raise error

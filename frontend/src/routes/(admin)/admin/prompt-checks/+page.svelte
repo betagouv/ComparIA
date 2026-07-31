@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { Alert, Button, Icon, Input } from '$components/dsfr'
+  import { Alert, Button, Icon, Toggle } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'
@@ -12,7 +12,7 @@
   type Action = 'off' | 'log' | 'warn' | 'block'
   type CategoryConfig = { threshold: number; action: Action }
   type DraftRow = { threshold: string | number; action: Action }
-  type Draft = { model: string; categories: Record<string, DraftRow> }
+  type Draft = { enabled: boolean; model: string; categories: Record<string, DraftRow> }
 
   let { data }: PageProps = $props()
 
@@ -100,6 +100,12 @@
   let saving = $state(false)
   let errors = $state<Record<string, string>>({})
 
+  // La clé n'est jamais renvoyée au navigateur : le champ part toujours vide et
+  // n'est envoyé que si quelqu'un y a écrit, sinon un enregistrement ordinaire
+  // effacerait la clé déjà en place.
+  let apiKey = $state('')
+  let apiKeyTouched = $state(false)
+
   let benchText = $state('')
   let benchRunning = $state(false)
   let benchError = $state('')
@@ -112,6 +118,8 @@
   $effect(() => {
     draft = toDraft(data.check)
     errors = {}
+    apiKey = ''
+    apiKeyTouched = false
   })
 
   const failures = $derived(data.check.consecutive_failures ?? 0)
@@ -148,6 +156,7 @@
 
   function toDraft(check: PromptCheckStatus): Draft {
     return {
+      enabled: check.enabled,
       model: check.model,
       categories: Object.fromEntries(
         Object.keys(check.categories).map((category) => {
@@ -228,9 +237,11 @@
     saving = true
     try {
       const patch: PromptCheckPatch = {
+        enabled: draft.enabled,
         model: draft.model,
         categories: categories as unknown as PromptCheckPatch['categories']
       }
+      if (apiKeyTouched) patch.api_key = apiKey.trim()
       await api.request<PromptCheckStatus>('/admin/prompt-check', {
         method: 'PATCH',
         body: JSON.stringify(patch)
@@ -265,9 +276,90 @@
     </section>
 
     <form onsubmit={save}>
+      <div id="prompt-check-settings" class="settings-panel mb-10 p-4 md:p-5">
+        <h2 class="fr-h6 gap-2 mb-4! text-dark-grey flex items-center">
+          <Icon
+            icon="i-ri-shield-check-line"
+            size="sm"
+            class="text-primary shrink-0"
+            aria-hidden="true"
+          />
+          {m['admin.promptChecks.settings.title']()}
+        </h2>
+
+        <div class="settings-switch pb-4">
+          <Toggle
+            id="prompt-check-enabled"
+            bind:value={draft.enabled}
+            label={m['admin.promptChecks.settings.enabled']()}
+            hideCheckLabel
+            class="mb-0! pr-13! text-dark-grey font-medium"
+          />
+        </div>
+
+        <div class="gap-x-5 gap-y-4 md:grid-cols-2 mt-4 grid items-start">
+          <div>
+            <label
+              class="fr-label mt-0! mb-1! text-sm text-dark-grey font-medium"
+              for="prompt-check-model"
+            >
+              {m['admin.promptChecks.model.label']()}
+            </label>
+            <input
+              id="prompt-check-model"
+              class="fr-input"
+              bind:value={draft.model}
+              disabled={saving}
+            />
+          </div>
+
+          <div>
+            <div class="gap-2 mb-1 flex flex-wrap items-baseline justify-between">
+              <label
+                class="fr-label mt-0! mb-0! text-sm text-dark-grey font-medium"
+                for="prompt-check-api-key"
+              >
+                {m['admin.promptChecks.apiKey.label']()}
+              </label>
+              <span id="prompt-check-api-key-state" class="text-xs text-grey">
+                {data.check.has_api_key
+                  ? m['admin.promptChecks.apiKey.set']()
+                  : m['admin.promptChecks.apiKey.unset']()}
+              </span>
+            </div>
+            <input
+              id="prompt-check-api-key"
+              class="fr-input"
+              type="password"
+              autocomplete="off"
+              placeholder={m['admin.promptChecks.apiKey.placeholder']()}
+              bind:value={apiKey}
+              oninput={() => (apiKeyTouched = true)}
+              disabled={saving}
+            />
+            {#if apiKeyTouched && apiKey.trim() === ''}
+              <p id="prompt-check-api-key-clearing" class="mt-2 mb-0! text-xs text-grey">
+                {m['admin.promptChecks.apiKey.willClear']()}
+              </p>
+            {/if}
+          </div>
+        </div>
+      </div>
+
       <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.categoriesTitle']()}</h2>
 
-      <div class="mb-5 cg-border p-3 md:p-4 bg-[--cg-very-light-grey]">
+      {#if !draft.enabled}
+        <p id="prompt-check-disabled-notice" class="mb-3! text-sm text-grey">
+          {m['admin.promptChecks.settings.disabledNotice']()}
+        </p>
+      {/if}
+
+      <div
+        class={[
+          'mb-5 cg-border p-3 md:p-4 bg-[--cg-very-light-grey]',
+          { 'opacity-60': !draft.enabled }
+        ]}
+      >
         <h3 class="text-sm mb-2! text-dark-grey font-bold">
           {m['admin.promptChecks.actions.help.title']()}
         </h3>
@@ -292,7 +384,7 @@
 
       <ul
         id="prompt-check-categories"
-        class="m-0! p-0! flex list-none flex-col"
+        class={['m-0! p-0! flex list-none flex-col', { 'opacity-60': !draft.enabled }]}
         aria-label={m['admin.promptChecks.categoriesTitle']()}
       >
         {#each categories as category (category)}
@@ -375,14 +467,6 @@
           </li>
         {/each}
       </ul>
-
-      <Input
-        id="prompt-check-model"
-        label={m['admin.promptChecks.model.label']()}
-        bind:value={draft.model}
-        disabled={saving}
-        groupClass="mt-6! max-w-[420px]"
-      />
 
       <Button
         type="submit"
@@ -607,6 +691,37 @@
 </PageLayout>
 
 <style lang="postcss">
+  /* Même traitement que le panneau .iasummit de l'arène : un dégradé de marque
+     très doux, repris ici avec les jetons de thème pour suivre le mode sombre. */
+  .settings-panel {
+    border: 1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent);
+    border-radius: 0.75rem;
+    background: linear-gradient(
+      57deg,
+      color-mix(in srgb, var(--brand-primary) 13%, var(--background-default-grey)) 8.29%,
+      color-mix(in srgb, var(--brand-primary) 5%, var(--background-default-grey)) 36.19%,
+      var(--background-default-grey) 96.89%
+    );
+  }
+
+  :root[data-fr-theme='dark'] .settings-panel {
+    border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+    background: linear-gradient(
+      57deg,
+      color-mix(in srgb, var(--brand-primary) 16%, var(--background-default-grey)) 8.29%,
+      color-mix(in srgb, var(--brand-primary) 7%, var(--background-default-grey)) 36.19%,
+      var(--background-default-grey) 96.89%
+    );
+  }
+
+  .settings-switch {
+    border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  }
+
+  :root[data-fr-theme='dark'] .settings-switch {
+    border-bottom-color: color-mix(in srgb, var(--brand-primary) 26%, transparent);
+  }
+
   .action-pills {
     display: flex;
     flex-wrap: wrap;

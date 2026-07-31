@@ -249,7 +249,9 @@ export interface LLMLicense {
   commercial_use: boolean;
 }
 export interface PromptCheckPatch {
+  enabled?: boolean | null;
   model?: string | null;
+  api_key?: string | null;
   categories?: {
     [k: string]: {
       [k: string]: unknown;
@@ -261,7 +263,9 @@ export interface PromptCheckPatch {
  * that has stopped working looks exactly like one that finds nothing.
  */
 export interface PromptCheckStatus {
+  enabled: boolean;
   model: string;
+  has_api_key: boolean;
   categories: {
     [k: string]: {
       [k: string]: unknown;
