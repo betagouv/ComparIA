@@ -94,9 +94,18 @@ const runBench = async (container: HTMLElement, text: string) => {
   await Promise.resolve()
 }
 
-const submit = async (container: HTMLElement) => {
-  container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
+const submit = async (container: HTMLElement, form: string) => {
+  container
+    .querySelector(`#prompt-check-${form}-form`)!
+    .dispatchEvent(new Event('submit', { bubbles: true }))
   await Promise.resolve()
+}
+
+const type = (container: HTMLElement, selector: string, value: string) => {
+  const field = container.querySelector<HTMLInputElement>(selector)!
+  field.value = value
+  field.dispatchEvent(new Event('input', { bubbles: true }))
+  return field
 }
 
 const sentBody = async () => {
@@ -107,23 +116,48 @@ const sentBody = async () => {
 describe('admin prompt check page', () => {
   it('saves a threshold the number input handed back as a number', async () => {
     const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
     vi.mocked(api.request).mockResolvedValue(check())
 
     const { container } = renderPage(check())
-    const field = container.querySelector<HTMLInputElement>('#prompt-check-threshold-pii')!
-    field.value = '0.65'
-    field.dispatchEvent(new Event('input', { bubbles: true }))
-    container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
-    await Promise.resolve()
+    type(container, '#prompt-check-threshold-pii', '0.65')
+    await submit(container, 'categories')
 
     expect(api.request).toHaveBeenCalledWith(
       '/admin/prompt-check',
       expect.objectContaining({ method: 'PATCH' })
     )
-    const body = JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
+    const body = await sentBody()
     expect(body.categories.pii).toEqual({ threshold: 0.65, action: 'warn' })
     expect(Object.keys(body.categories).length).toBe(11)
-    expect(body.model).toBe('mistral-moderation-latest')
+  })
+
+  it('sends the categories on their own, without the model or the key', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(check())
+
+    const { container } = renderPage(check({ has_api_key: true }))
+    await submit(container, 'categories')
+
+    expect(Object.keys(await sentBody())).toEqual(['categories'])
+  })
+
+  it('sends the model on its own, once it differs from the stored one', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(check())
+
+    const { container } = renderPage(check())
+    const button = container.querySelector<HTMLButtonElement>('#prompt-check-model-save')!
+    expect(button.disabled).toBe(true)
+
+    type(container, '#prompt-check-model', 'mistral-moderation-2411')
+    await Promise.resolve()
+    expect(button.disabled).toBe(false)
+
+    await submit(container, 'model')
+    expect(await sentBody()).toEqual({ model: 'mistral-moderation-2411' })
   })
 
   it('offers the four actions per category and preselects the stored one', () => {
@@ -155,14 +189,24 @@ describe('admin prompt check page', () => {
     vi.mocked(api.request).mockClear()
 
     const { container, getByText } = renderPage(check())
-    const field = container.querySelector<HTMLInputElement>('#prompt-check-threshold-sexual')!
-    field.value = '1.4'
-    field.dispatchEvent(new Event('input', { bubbles: true }))
-    container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true }))
-    await Promise.resolve()
+    type(container, '#prompt-check-threshold-sexual', '1.4')
+    await submit(container, 'categories')
 
     expect(api.request).not.toHaveBeenCalled()
     expect(getByText('Saisissez un nombre entre 0 et 1.')).toBeInTheDocument()
+  })
+
+  it('lets the model be saved even when a threshold is out of bounds', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(check())
+
+    const { container } = renderPage(check())
+    type(container, '#prompt-check-threshold-sexual', '1.4')
+    type(container, '#prompt-check-model', 'mistral-moderation-2411')
+    await submit(container, 'model')
+
+    expect(await sentBody()).toEqual({ model: 'mistral-moderation-2411' })
   })
 
   it('lets the product categories be configured, seeded off rather than locked', () => {
@@ -278,8 +322,9 @@ describe('admin prompt check page', () => {
     expect(warnings).toContain('21 envoyés quand même')
   })
 
-  it('sends the switch with the rest of the page', async () => {
+  it('saves the switch as soon as it is toggled, and nothing else with it', async () => {
     const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
     vi.mocked(api.request).mockResolvedValue(check())
 
     const { container } = renderPage(check())
@@ -287,9 +332,29 @@ describe('admin prompt check page', () => {
     expect(toggle.checked).toBe(true)
     toggle.checked = false
     toggle.dispatchEvent(new Event('change', { bubbles: true }))
-    await submit(container)
+    await Promise.resolve()
 
-    expect((await sentBody()).enabled).toBe(false)
+    expect(api.request).toHaveBeenCalledWith(
+      '/admin/prompt-check',
+      expect.objectContaining({ method: 'PATCH' })
+    )
+    expect(await sentBody()).toEqual({ enabled: false })
+  })
+
+  it('puts the switch back when the save fails', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockRejectedValue(new Error('Le serveur n’a pas répondu'))
+
+    const { container } = renderPage(check())
+    const toggle = container.querySelector<HTMLInputElement>('#prompt-check-enabled')!
+    toggle.checked = false
+    toggle.dispatchEvent(new Event('change', { bubbles: true }))
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(toggle.checked).toBe(true)
   })
 
   it('says nothing is checked while the switch is off, without locking the rules', async () => {
@@ -306,50 +371,58 @@ describe('admin prompt check page', () => {
     ).toBe(false)
   })
 
-  it('leaves the stored key alone unless someone types a new one', async () => {
+  it('sends the key on its own, once it has been replaced', async () => {
     const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
     vi.mocked(api.request).mockResolvedValue(check({ has_api_key: true }))
 
-    const untouched = renderPage(check({ has_api_key: true }))
-    await submit(untouched.container)
-    expect(await sentBody()).not.toHaveProperty('api_key')
-    untouched.unmount()
-
-    vi.mocked(api.request).mockClear()
     const { container } = renderPage(check({ has_api_key: true }))
-    const field = container.querySelector<HTMLInputElement>('#prompt-check-api-key')!
-    field.value = 'nouvelle-cle'
-    field.dispatchEvent(new Event('input', { bubbles: true }))
-    await submit(container)
+    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-replace')!.click()
+    await Promise.resolve()
+    type(container, '#prompt-check-api-key', 'nouvelle-cle')
+    await submit(container, 'api-key')
 
-    expect((await sentBody()).api_key).toBe('nouvelle-cle')
+    expect(await sentBody()).toEqual({ api_key: 'nouvelle-cle' })
   })
 
-  it('reports a stored key without ever showing it', async () => {
+  it('shows a stored key as dots, with no field until replacing is chosen', async () => {
     const { container } = renderPage(check({ has_api_key: true }))
 
     expect(container.querySelector('#prompt-check-api-key-state')?.textContent?.trim()).toBe(
       'Clé enregistrée'
     )
+    const masked = container.querySelector('#prompt-check-api-key-masked')!
+    expect(masked.textContent?.trim()).toBe('••••••••••••')
+    expect(masked.tagName).toBe('P')
+    expect(container.querySelector('#prompt-check-api-key')).not.toBeInTheDocument()
+
+    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-replace')!.click()
+    await Promise.resolve()
+
     const field = container.querySelector<HTMLInputElement>('#prompt-check-api-key')!
     expect(field.value).toBe('')
     expect(field.type).toBe('password')
     expect(field.getAttribute('autocomplete')).toBe('off')
+    expect(container.querySelector('#prompt-check-api-key-masked')).not.toBeInTheDocument()
 
-    // Vidé après avoir été touché : l'enregistrement effacera la clé stockée.
-    field.value = ''
-    field.dispatchEvent(new Event('input', { bubbles: true }))
-    await Promise.resolve()
-    await Promise.resolve()
+    // Champ vide : l'enregistrement effacera la clé stockée.
     expect(container.querySelector('#prompt-check-api-key-clearing')).toBeInTheDocument()
+
+    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-cancel')!.click()
+    await Promise.resolve()
+    expect(container.querySelector('#prompt-check-api-key')).not.toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-api-key-masked')).toBeInTheDocument()
   })
 
-  it('says when no key is stored', () => {
+  it('says when no key is stored and offers the field right away', () => {
     const { container } = renderPage(check())
 
     expect(container.querySelector('#prompt-check-api-key-state')?.textContent?.trim()).toBe(
       'Aucune clé enregistrée'
     )
+    expect(container.querySelector('#prompt-check-api-key')).toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-api-key-masked')).not.toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-api-key-replace')).not.toBeInTheDocument()
   })
 
   it('stays readable when the counts are missing', () => {

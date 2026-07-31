@@ -190,8 +190,10 @@
                 "warn": "Prévenir"
             },
             "apiKey": {
+                "cancel": "Annuler",
                 "label": "Clé API",
                 "placeholder": "Nouvelle clé",
+                "replace": "Remplacer",
                 "set": "Clé enregistrée",
                 "unset": "Aucune clé enregistrée",
                 "willClear": "En enregistrant, la clé stockée sera effacée et la variable d'environnement reprendra la main."
@@ -255,7 +257,9 @@
             "model": {
                 "label": "Modèle de modération"
             },
-            "save": "Enregistrer",
+            "saveApiKey": "Enregistrer la clé",
+            "saveCategories": "Enregistrer les catégories",
+            "saveModel": "Enregistrer le modèle",
             "saved": "Vérification mise à jour",
             "saving": "Enregistrement...",
             "settings": {
