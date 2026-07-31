@@ -121,9 +121,11 @@ def _message_for(categories: set[str]) -> str:
     return GENERIC_MESSAGE
 
 
-def _verdict(
+def verdict(
     check: PromptCheck, scores: dict[str, float], latency_ms: int
 ) -> CheckResult:
+    """Scores plus a configuration to a decision. Writes nothing, so the admin
+    dry run gets the same answer the arena would give without the side effects."""
     triggered = check.triggered(scores)
     action = check.action_for(scores)
     decision = _DECISIONS[action]
@@ -172,7 +174,7 @@ def count_warning_shown() -> None:
         logger.error(f"[CHECKS] Error counting warning: {e}")
 
 
-def _read_cache(text: str) -> dict[str, float] | None:
+def read_cached_scores(text: str) -> dict[str, float] | None:
     """Scores already computed for this exact prompt, if any."""
     try:
         raw = get_redis_client().get(
@@ -192,7 +194,7 @@ def _read_cache(text: str) -> dict[str, float] | None:
         return None
 
 
-def _write_cache(text: str, scores: dict[str, float]) -> None:
+def write_cached_scores(text: str, scores: dict[str, float]) -> None:
     try:
         get_redis_client().setex(
             REDIS_CHECK_SCORES_KEY.format(hash=hash_content(text)),
@@ -228,7 +230,7 @@ async def run_prompt_check(
         return None
 
     started = time.monotonic()
-    cached = _read_cache(text)
+    cached = read_cached_scores(text)
 
     if cached is not None:
         scores, latency_ms = cached, 0
@@ -248,11 +250,11 @@ async def run_prompt_check(
         latency_ms = int((time.monotonic() - started) * 1000)
         _count_failure(failed=False)
 
-    result = _verdict(check, scores, latency_ms)
+    result = verdict(check, scores, latency_ms)
 
     if result.decision == "warned":
         if cached is None:
-            _write_cache(text, scores)
+            write_cached_scores(text, scores)
         result.user_proceeded = proceed
 
     logger.info(
