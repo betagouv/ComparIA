@@ -197,6 +197,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let comparisonId_ = $state<Id>(comparisonId)
   let loading = $state(false)
   let promptError = $state<string>()
+  let promptWarnings = $state<string[]>()
+  // Kept so "send anyway" resends the very same prompt: the backend serves the
+  // verdict it already has for that text instead of moderating it again.
+  let warnedRequest: { url: string; body: Record<string, unknown> } | undefined
 
   const comparison = $derived(
     comparisonId_ ? comparisons.find((c) => c.id === comparisonId_) : null
@@ -214,17 +218,24 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   async function ask(url: string, body: any): Promise<boolean> {
     loading = true
     promptError = undefined
+    promptWarnings = undefined
     if (comparison) {
       comparison.error = undefined
     }
 
     let receivedEvent = false
+    let warned = false
     try {
       const altcha_token = await consumeAltchaToken()
 
       for await (const event of api.stream(url, { ...body, altcha_token })) {
         receivedEvent = true
-        if (event.type === 'init') {
+        if (event.type === 'warning') {
+          warned = true
+          warnedRequest = { url, body }
+          promptWarnings = event.warnings.map((warning) => warning.message)
+          break
+        } else if (event.type === 'init') {
           const id = event.comparison.id.toString()
           comparisons.unshift(parseAPIComparison(event.comparison))
           comparisonId_ = id as Id
@@ -277,7 +288,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       loading = false
     }
 
-    return !comparison?.error && !promptError
+    return !warned && !comparison?.error && !promptError
   }
 
   return {
@@ -301,6 +312,23 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     set promptError(v: string | undefined) {
       promptError = v
+    },
+    get promptWarnings() {
+      return promptWarnings
+    },
+
+    /** User went back to edit: drop the warning, keep the prompt. */
+    dismissWarnings() {
+      promptWarnings = undefined
+      warnedRequest = undefined
+    },
+
+    /** User chose to send anyway: same prompt, cached verdict, no second check. */
+    async sendAnyway() {
+      if (!warnedRequest) return false
+      const { url, body } = warnedRequest
+      warnedRequest = undefined
+      return await ask(url, { ...body, acknowledged_warning: true })
     },
 
     async askFirst(args: APIModeAndPromptData) {

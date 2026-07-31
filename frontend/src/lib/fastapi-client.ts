@@ -57,12 +57,19 @@ export interface SSEErrorEvent {
   error: string
 }
 
+/** Sole event of the stream when a check asks the user to confirm the prompt. */
+export interface SSEWarningEvent {
+  type: 'warning'
+  warnings: { kind: string; message: string }[]
+}
+
 export type SSEEvent =
   | SSEInitEvent
   | SSEUpdateEvent
   | SSECompleteEvent
   | SSEChunkEvent
   | SSEErrorEvent
+  | SSEWarningEvent
 
 export class InternalError extends Error {
   constructor(message: string) {
