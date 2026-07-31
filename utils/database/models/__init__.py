@@ -20,6 +20,14 @@ from .comparison import (
     ErrorDetails,
 )
 from .messages import *
+from .prompt_check import (
+    PromptCheck,
+    PromptCheckKind,
+    PromptCheckMode,
+    PromptCheckPatch,
+    PromptCheckPublic,
+    PromptCheckStatus,
+)
 from .suggestion import (
     AdminSuggestion,
     AdminSuggestionCategory,
