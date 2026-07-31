@@ -189,6 +189,37 @@
                 "off": "Désactivée",
                 "warn": "Avertissement"
             },
+            "bench": {
+                "title": "Essayer les règles",
+                "hint": "L'essai applique les seuils et les actions affichés ci-dessus, y compris les modifications que vous n'avez pas enregistrées. Rien n'est enregistré et personne d'autre ne voit quoi que ce soit.",
+                "label": "Message à vérifier",
+                "labelHint": "Écrivez ici le message tel qu'une personne l'enverrait.",
+                "run": "Lancer l'essai",
+                "running": "Essai en cours...",
+                "empty": "Écrivez un message avant de lancer l'essai.",
+                "resultTitle": "Résultat de l'essai",
+                "decisionLegend": "Verdict",
+                "latency": "Réponse en {count} ms",
+                "decision": {
+                    "pass": "Laissé passer",
+                    "logged": "Noté au journal",
+                    "warned": "Averti",
+                    "blocked": "Bloqué",
+                    "error": "Vérification en échec"
+                },
+                "messageTitle": "Ce que verrait la personne",
+                "messageNone": "Rien ne lui serait affiché.",
+                "scoresTitle": "Note de chaque catégorie",
+                "scoresHint": "Les catégories qui ne se déclenchent pas restent affichées : une note juste sous son seuil est la première chose à surveiller.",
+                "caption": "Note, seuil et verdict par catégorie",
+                "columns": {
+                    "score": "Note",
+                    "verdict": "Verdict"
+                },
+                "triggered": "Déclenchée",
+                "notTriggered": "Non déclenchée",
+                "ignored": "Ignorée"
+            },
             "categories": {
                 "criminal": "Activités criminelles",
                 "dangerous": "Actes dangereux",
@@ -226,6 +257,19 @@
             "save": "Enregistrer",
             "saved": "Vérification mise à jour",
             "saving": "Enregistrement...",
+            "stats": {
+                "byCategoryNone": "Aucune catégorie ne s'est déclenchée sur la période.",
+                "byCategoryTitle": "Catégories déclenchées",
+                "byDecisionTitle": "Par verdict",
+                "proceeded": "{count} envoyés quand même",
+                "title": "Ce que les règles ont fait",
+                "total": "{count} messages vérifiés",
+                "unavailable": "Les compteurs ne sont pas disponibles pour le moment.",
+                "warningsHint": "Ces deux compteurs ne suivent pas la fenêtre ci-dessus : celui des avertissements affichés n'est pas horodaté, donc les deux sont comptés depuis le début.",
+                "warningsShown": "{count} affichés",
+                "warningsTitle": "Avertissements, depuis la mise en place",
+                "window": "Sur les {days} derniers jours."
+            },
             "subtitle": "Contrôles appliqués au message avant qu'il ne parte vers les modèles.",
             "table": {
                 "caption": "Seuil et action par catégorie"
@@ -235,12 +279,7 @@
                 "invalid": "Saisissez un nombre entre 0 et 1.",
                 "legend": "Seuil"
             },
-            "title": "Vérifications des messages",
-            "warningsShown": {
-                "count": "{count} avertissements affichés depuis la mise en place",
-                "countOne": "1 avertissement affiché depuis la mise en place",
-                "hint": "Les tours enregistrés ne retiennent que les personnes qui ont envoyé quand même. Ce compteur est ce à quoi les comparer."
-            }
+            "title": "Vérifications des messages"
         },
         "settings": {
             "authentification": {
