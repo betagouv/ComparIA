@@ -6,7 +6,6 @@ Handles real-time streaming of model responses to the frontend using SSE protoco
 
 import json
 import logging
-import traceback
 from typing import Any, AsyncGenerator, Literal, TypedDict
 
 import litellm
@@ -25,6 +24,7 @@ from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
+from backend.logger import exception_metadata
 from utils.database.models import (
     BOT_POS,
     BotPos,
@@ -131,8 +131,17 @@ async def stream_llm_response(
         yield {"type": "complete", "pos": pos}
 
         logger.info(
-            f"response_modele_{pos} ({llm.id}): {llm_msg.content}",
-            extra={"request": request},
+            "Model response completed",
+            extra={
+                "request": request,
+                "extra": {
+                    "event": "arena.model_response_completed",
+                    "model_id": str(llm.id),
+                    "position": pos,
+                    "response_chars": len(llm_msg.content or ""),
+                    "output_tokens": llm_msg.tokens,
+                },
+            },
         )
 
     except Exception as e:
@@ -140,11 +149,19 @@ async def stream_llm_response(
 
         if settings.SENTRY_DSN:
             # Error is silenced to be sent thru sse message, send it to sentry manually
-            # TODO: only capture model name to sort more easily in sentry
-            sentry_sdk.capture_exception(e)
+            sentry_sdk.capture_exception(
+                e,
+                extras={
+                    "event": "arena.model_response_failed",
+                    "model_id": str(llm.id),
+                    "position": pos,
+                },
+            )
 
         error_reason = (
-            f"error_during_convo: {llm.id}, {llm.endpoint.api_type}, {error_message}"
+            "error_during_convo: "
+            f"model={llm.id}, api_type={llm.endpoint.api_type}, "
+            f"exception={type(e).__name__}"
         )
 
         # TODO ContextLengthError: do not log to controller?
@@ -159,14 +176,17 @@ async def stream_llm_response(
         except:
             pass
 
-        logger.exception(
+        logger.error(
             error_reason,
             extra={
                 "request": request,
-                "error": error_message,
-                "stacktrace": traceback.format_exc(),
+                "extra": {
+                    "event": "arena.model_response_failed",
+                    "model_id": str(llm.id),
+                    "position": pos,
+                    **exception_metadata(e),
+                },
             },
-            exc_info=True,
         )
 
         raise ChatError(
@@ -298,13 +318,27 @@ async def stream_comparison_messages(
         # General error
         if settings.SENTRY_DSN:
             # Error is silenced to be sent thru sse message, send it to sentry manually
-            sentry_sdk.capture_exception(e)
+            sentry_sdk.capture_exception(
+                e,
+                extras={
+                    "event": "arena.comparison_stream_failed",
+                    "comparison_id": str(comparison.id),
+                },
+            )
 
-        await update_comparison_error(comparison, ErrorDetails(message=str(e)))
+        error_message = str(e)
+        await update_comparison_error(comparison, ErrorDetails(message=error_message))
         logger.error(
-            f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
+            "Comparison streaming failed",
+            extra={
+                "extra": {
+                    "event": "arena.comparison_stream_failed",
+                    "comparison_id": str(comparison.id),
+                    **exception_metadata(e),
+                }
+            },
         )
-        yield {"type": "error", "error": str(e)}
+        yield {"type": "error", "error": error_message}
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:

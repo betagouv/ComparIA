@@ -28,6 +28,7 @@ import litellm
 import sentry_sdk
 
 from backend.config import settings
+from backend.logger import exception_metadata
 
 if TYPE_CHECKING:
     from fastapi import Request
@@ -152,9 +153,25 @@ async def check_prompt(
         content = response.choices[0].message.content or ""
     except Exception as e:
         # Fail open, but make it visible: a dark guard must not be silent.
-        logger.error(f"guardrail_check_failed: {e}", extra={"request": request})
+        logger.error(
+            "Guardrail check failed",
+            extra={
+                "request": request,
+                "extra": {
+                    "event": "guardrail.failed",
+                    "model": settings.GUARDRAIL_MODEL,
+                    **exception_metadata(e),
+                },
+            },
+        )
         if settings.SENTRY_DSN:
-            sentry_sdk.capture_exception(e)
+            sentry_sdk.capture_exception(
+                e,
+                extras={
+                    "event": "guardrail.failed",
+                    "model": settings.GUARDRAIL_MODEL,
+                },
+            )
         return GuardrailVerdict(
             safety="error",
             categories=[],

@@ -55,7 +55,6 @@ def get_matomo_tracker_from_cookies(cookies: dict[str, str]) -> str | None:
     # Matomo cookies start with "_pk_id."
     for key, value in cookies.items():
         if key.startswith("_pk_id."):
-            logger.debug(f"Found matomo cookie: {key}: {value}")
             return value
 
     return None
