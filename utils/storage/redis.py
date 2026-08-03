@@ -56,11 +56,14 @@ REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_fai
 # Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
 # the turn: without it, only the people who sent anyway leave a trace.
 REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"
-# Moderation scores of one prompt, keyed by its text. Lets a user warned about a
+# Moderation scores of one prompt, keyed by model and text. Lets a user warned about a
 # message send it anyway without paying for a second moderation call. Scores
 # rather than decisions, so a check tightened meanwhile still applies.
 REDIS_CHECK_SCORES_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{hash}}"
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{model_hash}}:{{prompt_hash}}"
+)
+REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_warning_token:{{token}}"
 )
 
 

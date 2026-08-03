@@ -232,7 +232,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         receivedEvent = true
         if (event.type === 'warning') {
           warned = true
-          warnedRequest = { url, body }
+          warnedRequest = { url, body: { ...body, warning_token: event.warning_token } }
           promptWarnings = event.warnings.map((warning) => warning.message)
           break
         } else if (event.type === 'init') {
@@ -328,7 +328,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       if (!warnedRequest) return false
       const { url, body } = warnedRequest
       warnedRequest = undefined
-      return await ask(url, { ...body, acknowledged_warning: true })
+      return await ask(url, body)
     },
 
     async askFirst(args: APIModeAndPromptData) {

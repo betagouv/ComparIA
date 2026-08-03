@@ -61,6 +61,7 @@ export interface SSEErrorEvent {
 export interface SSEWarningEvent {
   type: 'warning'
   warnings: { kind: string; message: string }[]
+  warning_token: string
 }
 
 export type SSEEvent =

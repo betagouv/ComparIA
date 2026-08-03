@@ -66,7 +66,6 @@ from utils.database.models.prompt_check import (
     validate_categories,
 )
 from utils.database.prompt_checks import (
-    MAX_STATS_DAYS,
     UNHEALTHY_AFTER_FAILURES,
     get_consecutive_failures,
     get_prompt_check,
@@ -488,7 +487,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
 
     No turn is written, no warning is counted and the failure streak is left
     alone, so trying a configuration cannot move the numbers the same page
-    reports. Scores are cached on the prompt text, not on the verdict, so
+    reports. Scores are cached on the model and prompt text, not on the verdict, so
     trying several thresholds on the same text costs one moderation call.
     """
     stored = await get_prompt_check()
@@ -511,7 +510,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
         )
 
     started = time.monotonic()
-    scores = read_cached_scores(body.text)
+    scores = read_cached_scores(body.text, check.model)
     if scores is None:
         try:
             scores = await moderate(body.text, check.model, api_key)
@@ -524,7 +523,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
                 latency_ms=int((time.monotonic() - started) * 1000),
             )
         latency_ms = int((time.monotonic() - started) * 1000)
-        write_cached_scores(body.text, scores)
+        write_cached_scores(body.text, check.model, scores)
     else:
         latency_ms = 0
 
@@ -539,23 +538,23 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
 
 
 class PromptCheckStats(BaseModel):
-    days: int
+    period: str
+    bucket: str
+    historical_total: int
     total: int
     by_decision: dict[str, int]
-    by_category: dict[str, int]
-    proceeded: int
-    warnings_shown: int
+    by_category: dict[str, dict[str, int]]
+    timeline: list[dict]
 
 
 @router.get("/prompt-check/stats", response_model=PromptCheckStats)
 async def read_prompt_check_stats(
-    days: int = Query(default=30, ge=1, le=MAX_STATS_DAYS),
+    period: Literal["all", "7d", "30d", "90d", "365d"] = Query(default="all"),
 ) -> PromptCheckStats:
-    """What the check has done over the window.
+    """Historical total and period-filtered activity.
 
     `by_category` counts the turns each category triggered on, so one turn can
-    count in several. `proceeded` counts the warned turns the user sent anyway,
-    and `warnings_shown` is the all-time count of warnings put in front of
-    someone, not the count for the window.
+    count in several. The timeline uses daily, weekly or monthly buckets based
+    on the selected period.
     """
-    return PromptCheckStats(**await get_prompt_check_stats(days))
+    return PromptCheckStats(**await get_prompt_check_stats(period))

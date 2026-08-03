@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { Alert, Button, Icon, Toggle } from '$components/dsfr'
+  import { Alert, Button, Icon, Select, Toggle } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'
@@ -8,7 +8,9 @@
   import { m } from '$lib/i18n/messages'
   import { tick } from 'svelte'
   import type { PageProps } from './$types'
-  import type { PromptCheckDecision, PromptCheckTry } from './types'
+  import ActivityLineChart from './ActivityLineChart.svelte'
+  import CategoryHistogram from './CategoryHistogram.svelte'
+  import type { PromptCheckDecision, PromptCheckStats, PromptCheckTry } from './types'
 
   type Action = 'off' | 'log' | 'warn' | 'block'
   type Saving = 'enabled' | 'model' | 'apiKey' | 'categories'
@@ -132,12 +134,18 @@
   const categories = $derived(categoryOrder.filter((category) => category in data.check.categories))
 
   const decisionOrder: PromptCheckDecision[] = ['pass', 'logged', 'warned', 'blocked', 'error']
-  const stats = $derived(data.stats ?? null)
-  const statsDays = $derived(data.statsDays ?? stats?.days ?? 30)
-  const statsCategories = $derived(
-    Object.entries(stats?.by_category ?? {}).sort((a, b) => b[1] - a[1])
-  )
-  const statsCategoriesMax = $derived(Math.max(1, ...statsCategories.map(([, count]) => count)))
+  type StatsPeriod = PromptCheckStats['period']
+  // svelte-ignore state_referenced_locally
+  let stats = $state<PromptCheckStats | null>(data.stats ?? null)
+  let statsPeriod = $state<StatsPeriod>('all')
+  let statsLoading = $state(false)
+  const periodOptions: { value: StatsPeriod; label: string }[] = [
+    { value: 'all', label: 'Depuis le début' },
+    { value: '7d', label: '7 derniers jours' },
+    { value: '30d', label: '30 derniers jours' },
+    { value: '90d', label: '90 derniers jours' },
+    { value: '365d', label: '12 derniers mois' }
+  ]
 
   const benchRows = $derived.by(() => {
     const result = benchResult
@@ -185,6 +193,15 @@
 
   function percent(value: number) {
     return Math.min(100, Math.max(0, value * 100))
+  }
+
+  async function loadStats(period: StatsPeriod) {
+    statsLoading = true
+    try {
+      stats = await api.request<PromptCheckStats>(`/admin/prompt-check/stats?period=${period}`)
+    } finally {
+      statsLoading = false
+    }
   }
 
   /** Les réglages tels qu'ils sont à l'écran, modifications non enregistrées comprises. */
@@ -276,11 +293,6 @@
     apiKeyField?.focus()
   }
 
-  function cancelApiKey() {
-    apiKey = ''
-    editingApiKey = false
-  }
-
   async function saveCategories(event: SubmitEvent) {
     event.preventDefault()
 
@@ -303,7 +315,7 @@
   title={m['admin.promptChecks.title']()}
   subtitle={m['admin.promptChecks.subtitle']()}
 >
-  <div class="gap-10 mx-auto flex max-w-[1120px] flex-col">
+  <div class="gap-8 mx-auto flex max-w-[1120px] flex-col">
     <section id="prompt-check-health-band" class="empty:hidden">
       {#if data.check.healthy === false}
         <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="mb-6">
@@ -313,7 +325,7 @@
       {/if}
     </section>
 
-    <div id="prompt-check-settings" class="settings-panel mb-10 p-4 md:p-5">
+    <div id="prompt-check-settings" class="settings-panel p-4 md:p-5">
       <h2 class="fr-h6 gap-2 mb-4! text-dark-grey flex items-center">
         <Icon
           icon="i-ri-shield-check-line"
@@ -401,32 +413,20 @@
                 text={saving === 'apiKey'
                   ? m['admin.promptChecks.saving']()
                   : m['admin.promptChecks.saveApiKey']()}
-                disabled={saving === 'apiKey'}
+                disabled={saving === 'apiKey' || apiKey.trim() === ''}
               />
-              {#if data.check.has_api_key}
-                <Button
-                  id="prompt-check-api-key-cancel"
-                  variant="tertiary"
-                  text={m['admin.promptChecks.apiKey.cancel']()}
-                  onclick={cancelApiKey}
-                  disabled={saving === 'apiKey'}
-                />
-              {/if}
             </div>
-            {#if data.check.has_api_key && apiKey.trim() === ''}
-              <p id="prompt-check-api-key-clearing" class="mt-2 mb-0! text-xs text-grey">
-                {m['admin.promptChecks.apiKey.willClear']()}
-              </p>
-            {/if}
           {:else}
             <div class="gap-2 flex flex-wrap items-center">
-              <p
+              <button
                 id="prompt-check-api-key-masked"
-                class="fr-input mb-0! min-w-[12rem] flex-1 tracking-[0.25em] select-none"
-                aria-hidden="true"
+                type="button"
+                class="fr-input mb-0! min-w-[12rem] flex-1 cursor-text text-left tracking-[0.25em] select-none"
+                aria-label="Remplacer la clé API"
+                onclick={replaceApiKey}
               >
                 {maskedKey}
-              </p>
+              </button>
               <Button
                 id="prompt-check-api-key-replace"
                 variant="secondary"
@@ -705,80 +705,92 @@
     </section>
 
     <section id="prompt-check-stats">
-      <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.stats.title']({ days: statsDays })}</h2>
+      <div class="gap-4 mb-5 flex flex-wrap items-end justify-between">
+        <div>
+          <h2 class="fr-h5 mb-1!">Activité des messages</h2>
+          <p class="text-sm mb-0! text-grey">
+            Suivez les détections et les décisions prises sur la période sélectionnée.
+          </p>
+        </div>
+        <Select
+          id="prompt-check-stats-period"
+          label="Période affichée"
+          bind:selected={statsPeriod}
+          options={periodOptions}
+          groupClass="mb-0! min-w-[220px]"
+          disabled={statsLoading}
+          onchange={() => loadStats(statsPeriod)}
+        />
+      </div>
       {#if !stats}
         <p class="text-sm text-grey">
           {m['admin.promptChecks.stats.unavailable']()}
         </p>
       {:else}
-        <div class="gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] grid items-start">
-          <div>
+        <div class="gap-5 flex flex-col" class:opacity-60={statsLoading} aria-busy={statsLoading}>
+          <div class="cg-border historical-kpi bg-white p-5">
+            <p class="text-xs mb-2! text-grey font-medium tracking-wide uppercase">
+              {periodOptions.find((option) => option.value === statsPeriod)?.label}
+            </p>
             <p id="prompt-check-stats-total" class="mb-1! text-dark-grey text-5xl font-bold">
               {stats.total}
             </p>
-            <p class="mb-4! text-sm text-grey">{m['admin.promptChecks.stats.totalLabel']()}</p>
-
-            <h3 class="text-sm mb-2! text-dark-grey font-bold">
-              {m['admin.promptChecks.stats.byDecisionTitle']()}
-            </h3>
-            <div class="gap-2 sm:grid-cols-3 grid grid-cols-2">
-              {#each decisionOrder as decision (decision)}
-                <div
-                  id={`prompt-check-stats-decision-${decision}`}
-                  class="cg-border bg-white p-2 px-3"
-                >
-                  <p class="gap-1.5 mb-1! text-xs text-grey flex items-center">
-                    {@render statusDot(decisionTone[decision])}
-                    {statsDecisionLabels[decision]}
-                  </p>
-                  <p class="mb-0! text-dark-grey text-xl font-bold leading-none">
-                    {stats.by_decision[decision] ?? 0}
-                  </p>
-                </div>
-              {/each}
-            </div>
+            <p class="mb-0! text-sm text-grey">messages vérifiés sur la période</p>
           </div>
 
-          <div>
-            <h3 class="text-sm mb-2! text-dark-grey font-bold">
-              {m['admin.promptChecks.stats.byCategoryTitle']()}
-            </h3>
-            {#if statsCategories.length === 0}
-              <p class="text-sm text-grey">
-                {m['admin.promptChecks.stats.byCategoryNone']()}
+          <div class="cg-border bg-white p-5">
+            <div class="gap-3 mb-4 flex flex-wrap items-baseline justify-between">
+              <div>
+                <h3 class="fr-h6 mb-1!">Détections dans le temps</h3>
+                <p class="text-sm mb-0! text-grey">
+                  Messages surveillés, prévenus, refusés ou en échec sur la période.
+                </p>
+              </div>
+              <p class="text-sm mb-0! text-grey">
+                <strong class="text-dark-grey">{stats.total}</strong> messages vérifiés
               </p>
-            {:else}
-              <ul class="gap-2 mb-6! m-0! p-0! flex list-none flex-col">
-                {#each statsCategories as [category, count] (category)}
-                  <li
-                    id={`prompt-check-stats-category-${category}`}
-                    class="gap-3 grid grid-cols-[minmax(0,13rem)_minmax(0,1fr)_auto] items-center"
-                  >
-                    <span class="text-sm text-grey">{categoryLabel(category)}</span>
-                    <span
-                      class="rounded-sm h-3 block bg-[--brand-primary-softest]"
-                      aria-hidden="true"
-                    >
-                      <span
-                        class="rounded-r-sm block h-full bg-[--brand-primary]"
-                        style="width: {(count / statsCategoriesMax) * 100}%"
-                      ></span>
-                    </span>
-                    <span class="text-sm text-dark-grey font-bold tabular-nums">{count}</span>
-                  </li>
-                {/each}
-              </ul>
-            {/if}
+            </div>
+            <ActivityLineChart
+              points={stats.timeline}
+              labels={statsDecisionLabels}
+              colors={decisionTone}
+            />
+          </div>
 
-            <h3 class="text-sm mb-1! text-dark-grey font-bold">
-              {m['admin.promptChecks.stats.warningsTitle']()}
-            </h3>
-            <p class="text-sm mb-1!" id="prompt-check-stats-warnings">
-              {m['admin.promptChecks.stats.warningsShown']({ count: stats.warnings_shown })}, {m[
-                'admin.promptChecks.stats.proceeded'
-              ]({ count: stats.proceeded })}
-            </p>
-            <p class="fr-hint-text mt-0!">{m['admin.promptChecks.stats.warningsHint']()}</p>
+          <div class="gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] grid items-start">
+            <div class="cg-border bg-white p-5">
+              <h3 class="fr-h6 mb-3!">{m['admin.promptChecks.stats.byDecisionTitle']()}</h3>
+              <div class="gap-2 sm:grid-cols-2 grid grid-cols-1">
+                {#each decisionOrder as decision (decision)}
+                  <div
+                    id={`prompt-check-stats-decision-${decision}`}
+                    class="result-card p-3 rounded-lg"
+                    style="--result-tone: {decisionTone[decision]}"
+                  >
+                    <p class="gap-2 mb-2! text-xs text-grey flex items-center">
+                      {@render statusDot(decisionTone[decision])}
+                      {statsDecisionLabels[decision]}
+                    </p>
+                    <p class="mb-0! text-dark-grey text-2xl font-bold leading-none">
+                      {stats.by_decision[decision] ?? 0}
+                    </p>
+                  </div>
+                {/each}
+              </div>
+            </div>
+
+            <div class="cg-border bg-white p-5">
+              <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.stats.byCategoryTitle']()}</h3>
+              <p class="text-sm mt-0! mb-4! text-grey">
+                Répartition des détections par catégorie et par résultat.
+              </p>
+              <CategoryHistogram
+                categories={stats.by_category}
+                {categoryLabel}
+                labels={statsDecisionLabels}
+                colors={decisionTone}
+              />
+            </div>
           </div>
         </div>
       {/if}
@@ -787,6 +799,20 @@
 </PageLayout>
 
 <style lang="postcss">
+  .historical-kpi {
+    border-left: 4px solid var(--brand-primary);
+    background: linear-gradient(
+      110deg,
+      color-mix(in srgb, var(--brand-primary) 8%, var(--background-default-grey)),
+      var(--background-default-grey) 65%
+    );
+  }
+
+  .result-card {
+    border: 1px solid color-mix(in srgb, var(--result-tone) 24%, var(--border-default-grey));
+    background: color-mix(in srgb, var(--result-tone) 7%, var(--background-default-grey));
+  }
+
   /* Même traitement que le panneau .iasummit de l'arène : un dégradé de marque
      très doux, repris ici avec les jetons de thème pour suivre le mode sombre. */
   .settings-panel {

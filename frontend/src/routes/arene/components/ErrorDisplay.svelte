@@ -15,9 +15,9 @@
 </script>
 
 <div class={['fr-container', classes]}>
-  <div class="cg-border pe-13 lg:max-w-1/2 gap-4 bg-white p-4 pb-7 m-auto flex">
-    <Icon icon="warning-fill" class="text-error" />
-    <div>
+  <div class="cg-border gap-3 bg-white p-5 m-auto flex max-w-[38rem] items-start">
+    <Icon icon="warning-fill" class="mt-1 text-error shrink-0" />
+    <div class="min-w-0 flex-1">
       {#if error === 'Context too long.'}
         <h6 class="mb-2!">{m['chatbot.errors.tooLong.title']()}</h6>
         <p>
@@ -32,7 +32,7 @@
         </p>
       {/if}
 
-      <div class="gap-5 md:grid-cols-2 grid">
+      <div class="mt-4 flex">
         {#if error === 'Context too long.'}
           <Link
             button
@@ -45,11 +45,11 @@
           />
         {:else}
           <Button
-            icon="checkbox-fill"
+            icon="refresh-line"
             iconPos="right"
             text={m['words.retry']()}
             onclick={() => onRetry()}
-            class="w-full!"
+            variant="secondary"
           />
         {/if}
       </div>

@@ -35,6 +35,11 @@ class FakeRedis:
         value = self.store.get(key)
         return None if value is None else str(value)
 
+    def getdel(self, key):
+        value = self.get(key)
+        self.delete(key)
+        return value
+
     def setex(self, key, ttl, value):
         self.store[key] = value
 
@@ -93,10 +98,20 @@ def config(model="mistral-moderation-latest", **categories):
     return PromptCheck(id=1, model=model, categories=merged)
 
 
-def run(check, scores=None, error=None, text="bonjour", redis=None, proceed=False):
+def run(check, scores=None, error=None, text="bonjour", redis=None, warning_token=None):
     with arena(check, scores, error, redis) as fake:
-        result = asyncio.run(checks.run_prompt_check(text, proceed=proceed))
+        result = asyncio.run(checks.run_prompt_check(text, warning_token=warning_token))
     return result, fake
+
+
+def issued_token(redis, text: str, model: str) -> str:
+    token = f"token-{len(redis.store)}"
+    redis.setex(
+        checks.REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token),
+        checks.SCORES_TTL,
+        json.dumps({"prompt_hash": checks.hash_content(text), "model": model}),
+    )
+    return token
 
 
 def test_everything_off_makes_no_call():
@@ -207,7 +222,8 @@ def test_send_anyway_reuses_the_cached_scores():
     assert len(fake.requests) == 1
     assert result.pending_warning
 
-    result, fake = run(check, scores, redis=redis, proceed=True)
+    token = issued_token(redis, "bonjour", check.model)
+    result, fake = run(check, scores, redis=redis, warning_token=token)
     assert fake.requests == []
     assert result.pending_warning is False
     assert result.as_record()["user_proceeded"] is True
@@ -223,10 +239,61 @@ def test_tightening_a_category_applies_to_a_cached_prompt():
     result, _ = run(config(pii=(0.5, "warn")), scores, redis=redis)
     assert result.pending_warning
 
-    result, fake = run(config(pii=(0.5, "block")), scores, redis=redis, proceed=True)
+    token = issued_token(redis, "bonjour", "mistral-moderation-latest")
+    result, fake = run(
+        config(pii=(0.5, "block")), scores, redis=redis, warning_token=token
+    )
     assert fake.requests == []
     assert result.block_message == checks.PII_MESSAGE
     assert result.as_record()["decision"] == "blocked"
+
+
+def test_forged_warning_token_cannot_skip_warning():
+    redis = FakeRedis()
+    result, fake = run(
+        config(pii=(0.5, "warn")),
+        {"pii": 0.92},
+        redis=redis,
+        warning_token="not-issued-by-the-server",
+    )
+    assert len(fake.requests) == 1
+    assert result.pending_warning
+    assert result.user_proceeded is False
+
+
+def test_warning_token_is_bound_to_prompt_and_model_and_cannot_be_replayed():
+    redis = FakeRedis()
+    check = config(pii=(0.5, "warn"))
+    run(check, {"pii": 0.92}, redis=redis)
+    token = issued_token(redis, "bonjour", check.model)
+
+    edited, _ = run(
+        check, {"pii": 0.92}, text="bonsoir", redis=redis, warning_token=token
+    )
+    assert edited.pending_warning
+
+    replayed, _ = run(check, {"pii": 0.92}, redis=redis, warning_token=token)
+    assert replayed.pending_warning
+
+    other_model = config(model="mistral-moderation-other", pii=(0.5, "warn"))
+    other_token = issued_token(redis, "bonjour", check.model)
+    changed, fake = run(
+        other_model, {"pii": 0.92}, redis=redis, warning_token=other_token
+    )
+    assert len(fake.requests) == 1
+    assert changed.pending_warning
+
+
+def test_cached_scores_are_isolated_by_model():
+    redis = FakeRedis()
+    first = config(model="model-a", pii=(0.5, "warn"))
+    second = config(model="model-b", pii=(0.5, "warn"))
+    run(first, {"pii": 0.92}, redis=redis)
+
+    result, fake = run(second, {"pii": 0.1}, redis=redis)
+    assert len(fake.requests) == 1
+    assert fake.requests[0]["model"] == "model-b"
+    assert result.pending_warning is False
 
 
 def test_editing_the_prompt_runs_the_check_again():

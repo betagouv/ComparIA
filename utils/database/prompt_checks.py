@@ -88,52 +88,73 @@ def get_consecutive_failures() -> int:
 # backend/arena/checks.py, which cannot be imported here: it imports this module.
 DECISIONS = ("pass", "logged", "warned", "blocked", "error")
 
-# A year of turns is already more than any admin reads at once, and the bound
-# keeps the scan from growing without limit.
-MAX_STATS_DAYS = 365
+STATS_PERIODS = {
+    "7d": (7, "day"),
+    "30d": (30, "day"),
+    "90d": (90, "day"),
+    "365d": (365, "week"),
+    "all": (None, "month"),
+}
 
 
-def _prompt_check_turns(since: datetime) -> list:
+def _prompt_check_turns(since: datetime | None = None) -> list:
     """Filters selecting the turns this check wrote, in the window.
 
     Records left by the older Nemotron guardrail have no `decision` key, and
     counting them would mix two different systems into one number.
     """
-    return [
-        col(Turn.created_at) > since,
-        col(Turn.guardrail).has_key("decision"),
-    ]
+    filters = [col(Turn.guardrail).has_key("decision")]
+    if since is not None:
+        filters.insert(0, col(Turn.created_at) >= since)
+    return filters
 
 
-async def get_prompt_check_stats(days: int) -> dict:
-    """What the check has been doing over the last `days` days.
+def _next_bucket(value: datetime, bucket: str) -> datetime:
+    if bucket == "day":
+        return value + timedelta(days=1)
+    if bucket == "week":
+        return value + timedelta(days=7)
+    year = value.year + (1 if value.month == 12 else 0)
+    month = 1 if value.month == 12 else value.month + 1
+    return value.replace(year=year, month=month)
 
-    Every count is bounded by the window except the warning pair. The Redis
-    counter behind `warnings_shown` has no timestamps, so `proceeded` is
-    all-time too: measuring one against the other over different periods would
-    give a ratio that means nothing, and that ratio is the point of the pair.
-    """
-    days = max(1, min(days, MAX_STATS_DAYS))
+
+async def get_prompt_check_stats(period: str = "all") -> dict:
+    """Historical total and period-filtered activity for the admin dashboard."""
+    if period not in STATS_PERIODS:
+        period = "all"
+    days, bucket = STATS_PERIODS[period]
+    now = datetime.now()
+    since = now - timedelta(days=days) if days is not None else None
     stats: dict = {
-        "days": days,
+        "period": period,
+        "bucket": bucket,
+        "historical_total": 0,
         "total": 0,
         "by_decision": {decision: 0 for decision in DECISIONS},
         "by_category": {},
-        "proceeded": 0,
-        "warnings_shown": get_warnings_shown(),
+        "timeline": [],
     }
     if not settings.COMPARIA_DB_URI:
         return stats
 
-    where = _prompt_check_turns(datetime.now() - timedelta(days=days))
+    all_where = _prompt_check_turns()
+    where = _prompt_check_turns(since)
     decision = col(Turn.guardrail)["decision"].astext
     categories = (
-        select(func.jsonb_object_keys(col(Turn.guardrail)["triggered"]).label("name"))
+        select(
+            func.jsonb_object_keys(col(Turn.guardrail)["triggered"]).label("name"),
+            decision.label("decision"),
+        )
         .where(*where)
         .subquery()
     )
+    bucket_start = func.date_trunc(bucket, col(Turn.created_at)).label("bucket")
 
     async with get_session() as session:
+        historical_total = (
+            await session.exec(select(func.count()).where(*all_where))
+        ).one()
         by_decision = (
             await session.exec(
                 select(decision.label("decision"), func.count().label("count"))
@@ -143,24 +164,44 @@ async def get_prompt_check_stats(days: int) -> dict:
         ).all()
         by_category = (
             await session.exec(
-                select(categories.c.name, func.count().label("count")).group_by(
-                    categories.c.name
+                select(
+                    categories.c.name,
+                    categories.c.decision,
+                    func.count().label("count"),
+                ).group_by(
+                    categories.c.name,
+                    categories.c.decision,
                 )
             )
         ).all()
-        proceeded = (
+        timeline = (
             await session.exec(
-                select(func.count()).where(
-                    col(Turn.guardrail).has_key("decision"),
-                    decision == "warned",
-                    col(Turn.guardrail)["user_proceeded"].astext == "true",
-                )
+                select(bucket_start, decision.label("decision"), func.count())
+                .where(*where)
+                .group_by(bucket_start, decision)
+                .order_by(bucket_start)
             )
-        ).one()
+        ).all()
 
+    stats["historical_total"] = historical_total
     for name, count in by_decision:
         stats["by_decision"][name] = count
     stats["total"] = sum(stats["by_decision"].values())
-    stats["by_category"] = {name: count for name, count in by_category}
-    stats["proceeded"] = proceeded
+    for category, name, count in by_category:
+        stats["by_category"].setdefault(
+            category, {decision: 0 for decision in DECISIONS}
+        )[name] = count
+
+    buckets: dict[datetime, dict[str, int]] = {}
+    for start, name, count in timeline:
+        buckets.setdefault(start, {decision: 0 for decision in DECISIONS})[name] = count
+    if buckets:
+        cursor = min(buckets)
+        end = max(buckets)
+        while cursor <= end:
+            counts = buckets.get(cursor, {decision: 0 for decision in DECISIONS})
+            stats["timeline"].append(
+                {"date": cursor.date().isoformat(), "by_decision": counts}
+            )
+            cursor = _next_bucket(cursor, bucket)
     return stats

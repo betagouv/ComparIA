@@ -261,7 +261,6 @@ def stats_session(monkeypatch: pytest.MonkeyPatch):
             yield session
 
         monkeypatch.setattr(prompt_checks_module, "get_session", get_session)
-        monkeypatch.setattr(prompt_checks_module, "get_warnings_shown", lambda: 30)
         return session
 
     return install
@@ -270,13 +269,27 @@ def stats_session(monkeypatch: pytest.MonkeyPatch):
 DECISION_ROWS = [("pass", 1000), ("logged", 200), ("warned", 30), ("blocked", 4)]
 
 
-def test_stats_counts_decisions_categories_and_proceeds(stats_session) -> None:
-    stats_session([DECISION_ROWS, [("pii", 22), ("criminal", 8)], 21])
+def test_stats_returns_historical_total_period_counts_and_timeline(
+    stats_session,
+) -> None:
+    stats_session(
+        [
+            1234,
+            DECISION_ROWS,
+            [("pii", "warned", 22), ("criminal", "blocked", 8)],
+            [
+                (datetime(2026, 1, 2), "warned", 3),
+                (datetime(2026, 1, 2), "blocked", 1),
+            ],
+        ]
+    )
 
-    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats(30))
+    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
     assert stats == {
-        "days": 30,
+        "period": "30d",
+        "bucket": "day",
+        "historical_total": 1234,
         "total": 1234,
         "by_decision": {
             "pass": 1000,
@@ -285,62 +298,75 @@ def test_stats_counts_decisions_categories_and_proceeds(stats_session) -> None:
             "blocked": 4,
             "error": 0,
         },
-        "by_category": {"pii": 22, "criminal": 8},
-        "proceeded": 21,
-        "warnings_shown": 30,
+        "by_category": {
+            "pii": {"pass": 0, "logged": 0, "warned": 22, "blocked": 0, "error": 0},
+            "criminal": {"pass": 0, "logged": 0, "warned": 0, "blocked": 8, "error": 0},
+        },
+        "timeline": [
+            {
+                "date": "2026-01-02",
+                "by_decision": {
+                    "pass": 0,
+                    "logged": 0,
+                    "warned": 3,
+                    "blocked": 1,
+                    "error": 0,
+                },
+            }
+        ],
     }
 
 
 def test_stats_excludes_the_legacy_guardrail_records(stats_session) -> None:
     """Nemotron records have no decision key, so they are not this check's."""
-    session = stats_session([DECISION_ROWS, [], 0])
+    session = stats_session([0, DECISION_ROWS, [], []])
 
-    asyncio.run(prompt_checks_module.get_prompt_check_stats(30))
+    asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
-    assert len(session.queries) == 3
+    assert len(session.queries) == 4
     for sql in session.queries:
         assert "turn.guardrail ? 'decision'" in sql
 
 
-def test_stats_windows_every_count_except_the_warning_pair(stats_session) -> None:
-    """`warnings_shown` is a Redis counter with no timestamps, so `proceeded`
-    is all-time too. Counting one over a window and the other over all time
-    would give a ratio that means nothing."""
-    session = stats_session([DECISION_ROWS, [], 0])
+def test_stats_period_filters_charts_and_cards_but_not_historical_total(
+    stats_session,
+) -> None:
+    session = stats_session([0, DECISION_ROWS, [], []])
 
-    asyncio.run(prompt_checks_module.get_prompt_check_stats(30))
+    asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
-    by_decision, by_category, proceeded = session.queries
-    assert "turn.created_at >" in by_decision
-    assert "turn.created_at >" in by_category
-    assert "turn.created_at >" not in proceeded
-
-
-def test_stats_counts_only_the_warnings_the_user_sent_anyway(stats_session) -> None:
-    session = stats_session([DECISION_ROWS, [], 0])
-
-    asyncio.run(prompt_checks_module.get_prompt_check_stats(30))
-
-    proceeded_sql = session.queries[2]
-    assert "->> 'decision') = 'warned'" in proceeded_sql
-    assert "->> 'user_proceeded') = 'true'" in proceeded_sql
+    historical, by_decision, by_category, timeline = session.queries
+    assert "turn.created_at >=" not in historical
+    assert all(
+        "turn.created_at >=" in sql for sql in (by_decision, by_category, timeline)
+    )
+    assert "date_trunc('day'" in timeline
 
 
-def test_stats_caps_the_window(stats_session) -> None:
-    stats_session([[], [], 0])
+def test_all_period_is_unbounded_and_monthly(stats_session) -> None:
+    session = stats_session([0, [], [], []])
 
-    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats(100_000))
+    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats("all"))
 
-    assert stats["days"] == prompt_checks_module.MAX_STATS_DAYS
+    assert stats["bucket"] == "month"
+    assert all("turn.created_at >=" not in sql for sql in session.queries)
+    assert "date_trunc('month'" in session.queries[3]
+
+
+def test_invalid_stats_period_falls_back_to_all(stats_session) -> None:
+    stats_session([0, [], [], []])
+
+    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats("invalid"))
+
+    assert stats["period"] == "all"
 
 
 def test_stats_without_a_database_are_empty(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(prompt_checks_module.settings, "COMPARIA_DB_URI", "")
-    monkeypatch.setattr(prompt_checks_module, "get_warnings_shown", lambda: 7)
+    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
-    stats = asyncio.run(prompt_checks_module.get_prompt_check_stats(30))
-
+    assert stats["historical_total"] == 0
     assert stats["total"] == 0
     assert stats["by_decision"]["blocked"] == 0
     assert stats["by_category"] == {}
-    assert stats["warnings_shown"] == 7
+    assert stats["timeline"] == []
