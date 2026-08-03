@@ -40,6 +40,11 @@ from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredU
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from backend.vote_tags.services import (
+    UnknownVoteTagError,
+    VoteTagSignMismatchError,
+    check_vote_tags,
+)
 from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
@@ -470,11 +475,24 @@ async def vote(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Already made a choice."
         )
-    if (isinstance(vote, TurnVoteAnnotate)) and turn.choice is None:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Have to make a choice before annotating.",
-        )
+    if isinstance(vote, TurnVoteAnnotate):
+        if turn.choice is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Have to make a choice before annotating.",
+            )
+        try:
+            await check_vote_tags(vote.keyword_annotations, turn.choice, vote.pos)
+        except UnknownVoteTagError as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Unknown vote tag: {error}",
+            ) from error
+        except VoteTagSignMismatchError as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Vote tag does not match the choice: {error}",
+            ) from error
 
     await update_turn_vote(turn.id, vote)
 
