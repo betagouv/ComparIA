@@ -67,7 +67,7 @@ export type ComparisonStatus = ComparisonTurnStatus | 'revealed'
 export interface ComparisonTurnSide {
   status: ComparisonTurnStatus
   llm_msg: AssistantMessage | null
-  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  keyword_annotations: string[]
   custom_annotation: string
 }
 export interface ComparisonTurn extends Pick<APIComparisonTurn, 'id' | 'user_msg' | 'choice'> {
@@ -82,23 +82,8 @@ export interface Comparison extends Omit<APIComparison, 'turns' | 'error'> {
 }
 
 // ANNOTATIONS
-// FIXME get from backend constant
-export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
-export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
-export const PREFS_EMOJIS: Record<APIReactionPref, string> = {
-  useful: '🙌',
-  complete: '💯',
-  creative: '🌀',
-  clear_formatting: '🎨',
-  incorrect: '❌',
-  superficial: '🚩',
-  instructions_not_followed: '🚫'
-}
-export type APIPositivePref = (typeof APIPositivePrefs)[number]
-export type APINegativePref = (typeof APINegativePrefs)[number]
-export type APIReactionPref = APIPositivePref | APINegativePref
 export interface VoteAnnotations {
-  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  keyword_annotations: string[]
   custom_annotation: string
 }
 export interface APIVoteChoice {
@@ -109,7 +94,7 @@ export interface APIVoteChoice {
 export interface APIVoteAnnotate {
   turn_id: string
   pos: Bot
-  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  keyword_annotations: string[]
   custom_annotation: string
 }
 

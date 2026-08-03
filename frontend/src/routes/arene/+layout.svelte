@@ -4,10 +4,12 @@
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
+  import { setVoteTagsContext } from '$lib/voteTags'
 
   let { children, data } = $props()
 
   initComparisonsContext(data.comparisons)
+  setVoteTagsContext(data.voteTags)
   const auth = getAuthContext()
 
   const navLinks = $derived(
