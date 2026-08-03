@@ -38,6 +38,22 @@ export interface AdminSuggestionCategory {
   display_order: number;
   suggestion_count: number;
 }
+export interface AdminVoteTag {
+  id: string;
+  key: string;
+  sign: "positive" | "negative";
+  emoji: string;
+  reserved: boolean;
+  labels: {
+    [k: string]: string;
+  } | null;
+  display_order: number;
+  archived: boolean;
+  usage_count: number;
+}
+export interface AdminVoteTagsResponse {
+  tags: AdminVoteTag[];
+}
 export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
   auth_domain_allowlist?: string[] | null;
@@ -284,4 +300,23 @@ export interface UserUpsert {
   id?: string;
   email: string;
   role?: "user" | "admin";
+}
+export interface VoteTagArchiveUpdate {
+  archived: boolean;
+}
+export interface VoteTagCreate {
+  sign: "positive" | "negative";
+  emoji: string;
+  labels: {
+    [k: string]: string;
+  };
+}
+export interface VoteTagMove {
+  direction: "up" | "down";
+}
+export interface VoteTagUpdate {
+  emoji: string;
+  labels: {
+    [k: string]: string;
+  };
 }

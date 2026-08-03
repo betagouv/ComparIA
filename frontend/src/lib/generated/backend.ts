@@ -337,3 +337,13 @@ export interface PublicLegalDocument {
   published_at: string;
   effective_at: string;
 }
+export interface PublicVoteTag {
+  key: string;
+  sign: "positive" | "negative";
+  emoji: string;
+  reserved: boolean;
+  label?: string | null;
+}
+export interface PublicVoteTagsResponse {
+  tags: PublicVoteTag[];
+}
