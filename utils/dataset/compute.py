@@ -14,6 +14,7 @@ Usage:
 Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
 """
 
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -26,6 +27,7 @@ from sqlmodel import and_, col, select
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import APILLMDataBase
+from backend.vote_tags.services import get_all_vote_tags
 from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION, Comparison
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
@@ -487,6 +489,42 @@ def _write_normal_from_raw_parquet(
     return n_rows
 
 
+VOTE_TAGS_FILENAME = "vote_tags.json"
+
+
+async def write_vote_tags_vocabulary(export_dir: Path) -> None:
+    """
+    Describe the vote tag keys that appear in 'keyword_annotations_a|b'.
+
+    The seven reserved keys mean the same thing on every instance, but an
+    instance can add its own, and those are opaque to anyone reading the
+    published data. Archived tags stay in the file: rows already published
+    still carry them. Reserved tags carry no label here, they are translated
+    in the platform rather than stored.
+    """
+    tags = await get_all_vote_tags()
+    export_dir.mkdir(parents=True, exist_ok=True)
+    (export_dir / VOTE_TAGS_FILENAME).write_text(
+        json.dumps(
+            [
+                {
+                    "key": tag.key,
+                    "sign": tag.sign,
+                    "reserved": tag.reserved,
+                    "archived": tag.archived_at is not None,
+                    "labels": tag.labels,
+                }
+                for tag in tags
+            ],
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info(f"Wrote {len(tags)} vote tags to {export_dir / VOTE_TAGS_FILENAME}")
+
+
 async def process_datasets(
     datasets: list[Datasets],
     export_base_path: Path,
@@ -519,6 +557,7 @@ async def process_datasets(
         _write_normal_from_raw_parquet(
             raw_parquet_path, normal_repo_name, normal_export_dir
         )
+        await write_vote_tags_vocabulary(normal_export_dir)
         if dry_run:
             logger.info(
                 f"[DRY RUN] Skipping HuggingFace upload for '{normal_repo_name}'"
@@ -537,6 +576,7 @@ async def process_datasets(
         for dataset, exporter in exporters.items():
             repo_name = exporter.dataset_name
             repo_path = export_base_path / repo_name
+            await write_vote_tags_vocabulary(repo_path)
             if dry_run:
                 logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{repo_name}'")
             else:
