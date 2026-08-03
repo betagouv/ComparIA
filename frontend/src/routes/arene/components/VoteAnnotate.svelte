@@ -51,17 +51,21 @@
     class="mb-2!"
   />
 
-  <Selector
-    id="{id}-selector"
-    kind="checkbox"
-    bind:value={annotations.keyword_annotations}
-    choices={keywordChoices}
-    multiple
-    {disabled}
-    containerClass="flex flex-wrap gap-1"
-    choiceClass="px-2 py-1 md:px-3 md:py-2 rounded-full lh-none! has-checked:text-primary! text-xs! md:text-[14px]! bg-white"
-    onChange={() => onUpdate(annotations)}
-  />
+  <!-- An instance can turn off a whole side of the taxonomy, which leaves the
+       comment box and no chips to pick from. -->
+  {#if keywordChoices.length}
+    <Selector
+      id="{id}-selector"
+      kind="checkbox"
+      bind:value={annotations.keyword_annotations}
+      choices={keywordChoices}
+      multiple
+      {disabled}
+      containerClass="flex flex-wrap gap-1"
+      choiceClass="px-2 py-1 md:px-3 md:py-2 rounded-full lh-none! has-checked:text-primary! text-xs! md:text-[14px]! bg-white"
+      onChange={() => onUpdate(annotations)}
+    />
+  {/if}
 </form>
 
 <style>
