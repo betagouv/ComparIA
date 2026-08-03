@@ -115,6 +115,13 @@ class AppSettings(SQLModel, table=True):
         default=SECONDARY_COLOR_DARK_DEFAULT, max_length=7
     )
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    # The model that reads whole comparisons before publication and says
+    # whether they hold personal information or spam. It is not the arena's
+    # input guardrail: different check, different provider, its own setting.
+    analysis_endpoint_id: uuid.UUID | None = Field(
+        default=None, foreign_key="llm_endpoint.id"
+    )
+    analysis_model: str | None = Field(default=None, max_length=200)
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
     enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
@@ -135,6 +142,8 @@ class AppSettingsPublic(SQLModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    analysis_endpoint_id: uuid.UUID | None
+    analysis_model: str | None
     has_custom_logo: bool
     enabled_locales: list[str]
     default_locale: str
@@ -154,6 +163,8 @@ class AppSettingsPatch(SQLModel):
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
     enabled_locales: list[str] | None = None
     default_locale: str | None = None
+    analysis_endpoint_id: uuid.UUID | None = None
+    analysis_model: str | None = Field(default=None, max_length=200)
 
     @field_validator(
         "primary_color_light",

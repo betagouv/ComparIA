@@ -60,6 +60,7 @@ from utils.database.models.auth import (
     UserPublic,
     UserUpsert,
 )
+from utils.database.models.llms import LLMEndpoint
 from utils.database.models.prompt_check import (
     PromptCheck,
     PromptCheckPatch,
@@ -74,6 +75,7 @@ from utils.database.prompt_checks import (
     get_warnings_shown,
     update_prompt_check,
 )
+from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.utils import FormJsonSchema
 
@@ -348,6 +350,8 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         secondary_color_light=row.secondary_color_light,
         secondary_color_dark=row.secondary_color_dark,
         homepage_url=row.homepage_url,
+        analysis_endpoint_id=row.analysis_endpoint_id,
+        analysis_model=row.analysis_model,
         has_custom_logo=row.logo is not None,
         enabled_locales=row.enabled_locales,
         default_locale=row.default_locale,
@@ -384,6 +388,13 @@ async def patch_settings(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Default locale must be part of the enabled locales",
             )
+    if body.analysis_endpoint_id:
+        async with get_session() as session:
+            if not await session.get(LLMEndpoint, body.analysis_endpoint_id):
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Unknown LLM endpoint",
+                )
     row = await update_app_settings(
         body.model_dump(exclude_unset=True), updated_by=current_user.id
     )
