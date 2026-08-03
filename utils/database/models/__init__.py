@@ -41,3 +41,11 @@ from .turn import (
     TurnVoteChoice,
 )
 from .utils import BOT_POS, BotPos
+from .vote_tag import (
+    RESERVED_KEYS,
+    VOTE_TAG_SIGNS,
+    PublicVoteTag,
+    PublicVoteTagsResponse,
+    VoteTag,
+    VoteTagSign,
+)
