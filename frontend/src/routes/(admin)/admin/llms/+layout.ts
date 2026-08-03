@@ -1,11 +1,11 @@
 import { api } from '$lib/fastapi-client'
-import type { LLMData, LLMEndpoint, LLMLab, LLMLicense } from '$lib/generated/admin'
+import type { LLMData, LLMEndpointPublic, LLMLab, LLMLicense } from '$lib/generated/admin'
 import type { JSONSchema } from '$lib/utils/form'
 import type { LayoutLoad } from './$types'
 
 export const load: LayoutLoad = async ({ fetch }) => {
   const data = await api.request<{
-    endpoints: LLMEndpoint[]
+    endpoints: LLMEndpointPublic[]
     licenses: LLMLicense[]
     labs: LLMLab[]
     llms: LLMData[]

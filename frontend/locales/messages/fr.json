@@ -113,6 +113,14 @@
                 "title": "Conditions d’utilisation"
             }
         },
+        "endpointKey": {
+            "set": "Clé enregistrée",
+            "unset": "Aucune clé",
+            "hint": "Laissez le champ vide pour conserver la clé actuelle. Saisissez-en une nouvelle pour la remplacer.",
+            "remove": "Retirer la clé",
+            "removeConfirm": "Confirmer le retrait",
+            "removed": "Clé retirée. Les modèles de ce point d'accès ne sont plus servis."
+        },
         "llms": {
             "subTitle": "LLMs, labs, licenses and endpoints.",
             "title": "LLMs data configuration"

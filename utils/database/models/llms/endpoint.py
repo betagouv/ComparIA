@@ -48,4 +48,10 @@ class LLMEndpointUpsert(LLMEndpointPrivate):
 
 
 class LLMEndpointPublic(LLMEndpointBase):
-    pass
+    """What the admin panel is allowed to see: whether a key is set, not the key.
+
+    The panel only ever needed the boolean, and a key that reaches the browser
+    also reaches devtools, the cache and anything that logs the response.
+    """
+
+    has_api_key: bool = False

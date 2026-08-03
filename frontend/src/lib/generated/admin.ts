@@ -217,6 +217,34 @@ export interface LLMEndpoint {
   api_key?: string | null;
 }
 /**
+ * What the admin panel is allowed to see: whether a key is set, not the key.
+ *
+ * The panel only ever needed the boolean, and a key that reaches the browser
+ * also reaches devtools, the cache and anything that logs the response.
+ */
+export interface LLMEndpointPublic {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Readable endpoint name (e.g. 'OpenRouter').
+   */
+  name: string;
+  /**
+   * API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).
+   */
+  api_type: string;
+  /**
+   * Base URL for the API endpoint.
+   */
+  api_base?: string | null;
+  /**
+   * API version (optional)
+   */
+  api_version?: string | null;
+  has_api_key?: boolean;
+}
+/**
  * LLM lab/organization metadata.
  */
 export interface LLMLab {
