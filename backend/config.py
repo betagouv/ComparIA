@@ -31,8 +31,6 @@ class Settings(BaseSettings):
     ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
-    HF_PUSH_DATASET_KEY: str = ""
-    HF_PUSH_DATASET_PATH: str = ""
 
     # Names the deployment (fr, da, a museum one-off, ...). Used as the Redis key
     # namespace and to seed the default locale. Renamed from DEFAULT_COUNTRY_PORTAL,
