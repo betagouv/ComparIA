@@ -45,6 +45,11 @@
       icon: 'i-ri-lightbulb-line'
     },
     {
+      label: m['admin.nav.voteTags'](),
+      href: '/admin/vote-tags',
+      icon: 'i-ri-price-tag-3-line'
+    },
+    {
       label: m['admin.nav.llms'](),
       href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
