@@ -18,6 +18,6 @@ from utils.database.models.vote_tag import (
     AdminVoteTagsResponse,
     VoteTagArchiveUpdate,
     VoteTagCreate,
-    VoteTagMove,
+    VoteTagOrder,
     VoteTagUpdate,
 )

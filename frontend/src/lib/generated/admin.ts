@@ -311,8 +311,14 @@ export interface VoteTagCreate {
     [k: string]: string;
   };
 }
-export interface VoteTagMove {
-  direction: "up" | "down";
+/**
+ * A whole side's order, written in one request. Sending the full list rather
+ * than a step at a time lets a drag across the table cost one round trip, and
+ * rewrites away the gaps deletions leave in 'display_order'.
+ */
+export interface VoteTagOrder {
+  sign: "positive" | "negative";
+  ids: string[];
 }
 export interface VoteTagUpdate {
   emoji: string;
