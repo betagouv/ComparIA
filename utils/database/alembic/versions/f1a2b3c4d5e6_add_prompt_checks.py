@@ -63,7 +63,14 @@ def upgrade() -> None:
     # Turn.guardrail is deliberately left alone. Rows written by the Nemotron
     # guardrail keep its record; new rows get the new one. Both are a single
     # JSON object on the turn, the column is raw-only, and nothing reads it yet.
+    op.create_index(
+        "ix_turn_prompt_check_created_at",
+        "turn",
+        ["created_at"],
+        postgresql_where=sa.text("guardrail ? 'decision'"),
+    )
 
 
 def downgrade() -> None:
+    op.drop_index("ix_turn_prompt_check_created_at", table_name="turn")
     op.drop_table("prompt_check")

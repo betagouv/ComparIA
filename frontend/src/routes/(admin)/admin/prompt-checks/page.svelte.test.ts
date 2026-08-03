@@ -66,12 +66,18 @@ const tried = (overrides: Partial<PromptCheckTry> = {}): PromptCheckTry => ({
 })
 
 const stats = (overrides: Partial<PromptCheckStats> = {}): PromptCheckStats => ({
-  days: 30,
+  period: 'all',
+  bucket: 'month',
+  historical_total: 1234,
   total: 1234,
   by_decision: { pass: 1000, logged: 200, warned: 30, blocked: 4, error: 0 },
-  by_category: { pii: 22, criminal: 8 },
-  proceeded: 21,
-  warnings_shown: 30,
+  by_category: { pii: { warned: 22 }, criminal: { blocked: 8 } },
+  timeline: [
+    {
+      date: '2026-07-01',
+      by_decision: { pass: 1000, logged: 200, warned: 30, blocked: 4, error: 0 }
+    }
+  ],
   ...overrides
 })
 
@@ -79,8 +85,7 @@ const renderPage = (status: PromptCheckStatus, pageStats: PromptCheckStats | nul
   render(Page, {
     data: {
       check: status,
-      stats: pageStats,
-      statsDays: 30
+      stats: pageStats
     } as unknown as PageProps['data'],
     params: {} as PageProps['params']
   })
@@ -300,11 +305,12 @@ describe('admin prompt check page', () => {
     expect(quiet.textContent).toContain('Sous le seuil')
   })
 
-  it('renders the counts for the window', () => {
-    const { container, getByText } = renderPage(check(), stats())
+  it('renders historical activity and period-aligned charts', () => {
+    const { container, getByText } = renderPage(check(), stats({ total: 5 }))
 
-    expect(container.querySelector('#prompt-check-stats-total')?.textContent?.trim()).toBe('1234')
-    expect(getByText('Activité des 30 derniers jours')).toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-stats-total')?.textContent?.trim()).toBe('5')
+    expect(getByText('Activité des messages')).toBeInTheDocument()
+    expect(getByText('Détections dans le temps')).toBeInTheDocument()
 
     const blocked = container.querySelector('#prompt-check-stats-decision-blocked')?.textContent
     expect(blocked).toContain('Refusés')
@@ -317,9 +323,20 @@ describe('admin prompt check page', () => {
     const pii = container.querySelector('#prompt-check-stats-category-pii')?.textContent
     expect(pii).toContain('Données personnelles')
     expect(pii).toContain('22')
-    const warnings = container.querySelector('#prompt-check-stats-warnings')?.textContent
-    expect(warnings).toContain('30 affichés')
-    expect(warnings).toContain('21 envoyés quand même')
+    expect(container.querySelector('#prompt-check-stats-warnings')).not.toBeInTheDocument()
+  })
+
+  it('reloads all period-aligned indicators when the period changes', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(stats({ period: '30d', bucket: 'day' }))
+    const { container } = renderPage(check(), stats())
+    const select = container.querySelector<HTMLSelectElement>('#prompt-check-stats-period')!
+    select.value = '30d'
+    select.dispatchEvent(new Event('change', { bubbles: true }))
+    await Promise.resolve()
+
+    expect(api.request).toHaveBeenCalledWith('/admin/prompt-check/stats?period=30d')
   })
 
   it('saves the switch as soon as it is toggled, and nothing else with it', async () => {
@@ -377,7 +394,7 @@ describe('admin prompt check page', () => {
     vi.mocked(api.request).mockResolvedValue(check({ has_api_key: true }))
 
     const { container } = renderPage(check({ has_api_key: true }))
-    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-replace')!.click()
+    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-masked')!.click()
     await Promise.resolve()
     type(container, '#prompt-check-api-key', 'nouvelle-cle')
     await submit(container, 'api-key')
@@ -393,7 +410,8 @@ describe('admin prompt check page', () => {
     )
     const masked = container.querySelector('#prompt-check-api-key-masked')!
     expect(masked.textContent?.trim()).toBe('••••••••••••')
-    expect(masked.tagName).toBe('P')
+    expect(masked.tagName).toBe('BUTTON')
+    expect(masked).toHaveAttribute('aria-label', 'Remplacer la clé API')
     expect(container.querySelector('#prompt-check-api-key')).not.toBeInTheDocument()
 
     container.querySelector<HTMLButtonElement>('#prompt-check-api-key-replace')!.click()
@@ -405,13 +423,9 @@ describe('admin prompt check page', () => {
     expect(field.getAttribute('autocomplete')).toBe('off')
     expect(container.querySelector('#prompt-check-api-key-masked')).not.toBeInTheDocument()
 
-    // Champ vide : l'enregistrement effacera la clé stockée.
-    expect(container.querySelector('#prompt-check-api-key-clearing')).toBeInTheDocument()
-
-    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-cancel')!.click()
-    await Promise.resolve()
-    expect(container.querySelector('#prompt-check-api-key')).not.toBeInTheDocument()
-    expect(container.querySelector('#prompt-check-api-key-masked')).toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-api-key-clearing')).not.toBeInTheDocument()
+    expect(container.querySelector('#prompt-check-api-key-cancel')).not.toBeInTheDocument()
+    expect(container.querySelector<HTMLButtonElement>('#prompt-check-api-key-save')).toBeDisabled()
   })
 
   it('says when no key is stored and offers the field right away', () => {

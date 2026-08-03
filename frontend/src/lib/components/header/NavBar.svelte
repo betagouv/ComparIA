@@ -144,7 +144,7 @@
 <header
   id="main-header"
   class={[
-    'fr-header lg:max-h-screen shadow-md lg:shadow-none! lg:bg-very-light-primary! lg:b-e-[--grey-925-125] lg:b-e-1 lg:max-w-[250px] flex min-h-full! flex-col filter-none!',
+    'fr-header lg:sticky lg:top-0 lg:h-[100dvh] lg:min-h-[100dvh]! lg:max-h-[100dvh] shadow-md lg:shadow-none! lg:bg-very-light-primary! lg:b-e-[--grey-925-125] lg:b-e-1 lg:max-w-[250px] lg:min-h-full! flex flex-col filter-none!',
     expanded ? 'lg:max-w-[250px]' : 'lg:max-w-[60px]'
   ]}
 >

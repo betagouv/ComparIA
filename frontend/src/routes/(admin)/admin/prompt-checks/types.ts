@@ -18,10 +18,16 @@ export type PromptCheckTry = {
 
 /** Réponse de GET /admin/prompt-check/stats. */
 export type PromptCheckStats = {
-  days: number
+  period: 'all' | '7d' | '30d' | '90d' | '365d'
+  bucket: 'day' | 'week' | 'month'
+  historical_total: number
   total: number
   by_decision: Partial<Record<PromptCheckDecision, number>>
-  by_category: Record<string, number>
-  proceeded: number
-  warnings_shown: number
+  by_category: Record<string, Partial<Record<PromptCheckDecision, number>>>
+  timeline: PromptCheckTimelinePoint[]
+}
+
+export type PromptCheckTimelinePoint = {
+  date: string
+  by_decision: Partial<Record<PromptCheckDecision, number>>
 }

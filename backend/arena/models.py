@@ -27,9 +27,8 @@ class AddFirstTextBody(BaseModel):
     cohorts: str
     altcha_token: str
     web_search: bool = False
-    # Set when the user was warned about this exact prompt and chose to send it
-    # anyway. The verdict is reused from cache, no second moderation call.
-    acknowledged_warning: bool = False
+    # One-time server proof returned with a warning for this exact prompt.
+    warning_token: str | None = None
 
     @field_validator("prompt_value")
     @classmethod
@@ -54,7 +53,7 @@ class AddTextBody(BaseModel):
 
     message: str = PromptField
     altcha_token: str
-    acknowledged_warning: bool = False
+    warning_token: str | None = None
 
     @field_validator("message")
     @classmethod

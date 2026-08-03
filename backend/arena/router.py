@@ -6,7 +6,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
-from backend.arena.checks import CheckResult, count_warning_shown, run_prompt_check
+from backend.arena.checks import (
+    CheckResult,
+    count_warning_shown,
+    issue_warning_token,
+    run_prompt_check,
+)
 from backend.arena.models import AddFirstTextBody, AddTextBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -90,7 +95,7 @@ def assert_not_block_cooldown(request: Request) -> None:
 
 
 async def run_checks(
-    text: str, field: str, request: Request, acknowledged: bool = False
+    text: str, field: str, request: Request, warning_token: str | None = None
 ) -> CheckResult | None:
     """
     Run the prompt check on a user message. Raises a 422 (shaped like a Pydantic
@@ -98,7 +103,7 @@ async def run_checks(
     set to `block` refuses the prompt, otherwise returns the verdict, to warn the
     user about and to persist on the turn.
     """
-    result = await run_prompt_check(text, request, proceed=acknowledged)
+    result = await run_prompt_check(text, request, warning_token=warning_token)
     if result and result.block_message:
         increment_blocked_prompts(get_ip(request))
         raise HTTPException(
@@ -114,17 +119,20 @@ async def run_checks(
     return result
 
 
-def warning_response(result: CheckResult) -> StreamingResponse:
+def warning_response(result: CheckResult, text: str) -> StreamingResponse:
     """
     Stream a single 'warning' event and stop. Nothing is created and no model is
     called: the browser asks the user to confirm, and sends the prompt again with
-    `acknowledged_warning` if they go ahead.
+    the one-time `warning_token` if they go ahead.
     """
     count_warning_shown()
+    token = issue_warning_token(text, result.model)
     warnings = [{"kind": "prompt_check", "message": result.message or ""}]
 
     async def event_stream() -> AsyncGenerator[str]:
-        yield format_sse_event({"type": "warning", "warnings": warnings})
+        yield format_sse_event(
+            {"type": "warning", "warnings": warnings, "warning_token": token}
+        )
 
     return create_sse_response(event_stream())
 
@@ -220,10 +228,10 @@ async def add_first_text(
     )
 
     check = await run_checks(
-        args.prompt_value, "prompt_value", request, args.acknowledged_warning
+        args.prompt_value, "prompt_value", request, args.warning_token
     )
     if check and check.pending_warning:
-        return warning_response(check)
+        return warning_response(check, args.prompt_value)
     guardrail = check.as_record() if check else None
 
     # Select LLMs
@@ -334,11 +342,9 @@ async def add_text(
         extra={"request": request},
     )
 
-    check = await run_checks(
-        args.message, "message", request, args.acknowledged_warning
-    )
+    check = await run_checks(args.message, "message", request, args.warning_token)
     if check and check.pending_warning:
-        return warning_response(check)
+        return warning_response(check, args.message)
     guardrail = check.as_record() if check else None
 
     # Assert last turn has vote

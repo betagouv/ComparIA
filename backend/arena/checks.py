@@ -14,6 +14,7 @@ in Redis so the admin panel can show a check that has quietly stopped working.
 
 import json
 import logging
+import secrets
 import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
@@ -27,6 +28,7 @@ from utils.database.prompt_checks import get_prompt_check
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_SCORES_KEY,
+    REDIS_CHECK_WARNING_TOKEN_KEY,
     REDIS_CHECK_WARNINGS_KEY,
     get_redis_client,
     hash_content,
@@ -174,12 +176,16 @@ def count_warning_shown() -> None:
         logger.error(f"[CHECKS] Error counting warning: {e}")
 
 
-def read_cached_scores(text: str) -> dict[str, float] | None:
+def _scores_cache_key(text: str, model: str) -> str:
+    return REDIS_CHECK_SCORES_KEY.format(
+        model_hash=hash_content(model), prompt_hash=hash_content(text)
+    )
+
+
+def read_cached_scores(text: str, model: str) -> dict[str, float] | None:
     """Scores already computed for this exact prompt, if any."""
     try:
-        raw = get_redis_client().get(
-            REDIS_CHECK_SCORES_KEY.format(hash=hash_content(text))
-        )
+        raw = get_redis_client().get(_scores_cache_key(text, model))
     except Exception as e:
         logger.warning(f"[CHECKS] Error reading cached scores: {e}")
         return None
@@ -194,10 +200,10 @@ def read_cached_scores(text: str) -> dict[str, float] | None:
         return None
 
 
-def write_cached_scores(text: str, scores: dict[str, float]) -> None:
+def write_cached_scores(text: str, model: str, scores: dict[str, float]) -> None:
     try:
         get_redis_client().setex(
-            REDIS_CHECK_SCORES_KEY.format(hash=hash_content(text)),
+            _scores_cache_key(text, model),
             SCORES_TTL,
             json.dumps(scores),
         )
@@ -205,8 +211,41 @@ def write_cached_scores(text: str, scores: dict[str, float]) -> None:
         logger.warning(f"[CHECKS] Error caching scores: {e}")
 
 
+def issue_warning_token(text: str, model: str) -> str:
+    """Return a short-lived, one-time proof that this prompt was warned."""
+    token = secrets.token_urlsafe(32)
+    get_redis_client().setex(
+        REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token),
+        SCORES_TTL,
+        json.dumps({"prompt_hash": hash_content(text), "model": model}),
+    )
+    return token
+
+
+def consume_warning_token(text: str, model: str, token: str | None) -> bool:
+    """Accept an acknowledgement only after a matching server warning."""
+    if not token:
+        return False
+    key = REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token)
+    try:
+        client = get_redis_client()
+        expected = client.getdel(key)
+    except Exception as e:
+        logger.warning(f"[CHECKS] Error consuming warning token: {e}")
+        return False
+    if not expected:
+        return False
+    try:
+        proof = json.loads(str(expected))
+        return secrets.compare_digest(
+            proof["prompt_hash"], hash_content(text)
+        ) and secrets.compare_digest(proof["model"], model)
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 async def run_prompt_check(
-    text: str, request: "Request | None" = None, proceed: bool = False
+    text: str, request: "Request | None" = None, warning_token: str | None = None
 ) -> CheckResult | None:
     """
     Check a user prompt with one moderation call, or None when nothing ran.
@@ -219,8 +258,8 @@ async def run_prompt_check(
     the second call made when the user sends it anyway reuses them instead of
     paying for another moderation call. The verdict is recomputed from the
     current configuration either way, so an admin who tightens a category while
-    a warning is on screen still gets the new behaviour. `proceed` marks the
-    warning as answered.
+    a warning is on screen still gets the new behaviour. A valid one-time
+    `warning_token` marks the warning as answered.
     """
     check = await get_prompt_check()
     if not check.should_run:
@@ -231,7 +270,7 @@ async def run_prompt_check(
         return None
 
     started = time.monotonic()
-    cached = read_cached_scores(text)
+    cached = read_cached_scores(text, check.model)
 
     if cached is not None:
         scores, latency_ms = cached, 0
@@ -251,12 +290,13 @@ async def run_prompt_check(
         latency_ms = int((time.monotonic() - started) * 1000)
         _count_failure(failed=False)
 
+    acknowledged = consume_warning_token(text, check.model, warning_token)
     result = verdict(check, scores, latency_ms)
 
     if result.decision == "warned":
         if cached is None:
-            write_cached_scores(text, scores)
-        result.user_proceeded = proceed
+            write_cached_scores(text, check.model, scores)
+        result.user_proceeded = acknowledged
 
     logger.info(
         f"prompt_check_verdict: {result.as_record()}", extra={"request": request}

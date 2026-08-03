@@ -85,6 +85,7 @@ class SSEEventWarning(TypedDict):
 
     type: Literal["warning"]
     warnings: list[dict[str, str]]
+    warning_token: str
 
 
 AnySSEEventMsg = SSEEventMsgChunk | SSEEventMsgComplete | SSEEventMsgError
