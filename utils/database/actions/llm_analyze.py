@@ -8,13 +8,14 @@ from pydantic import ValidationError
 from sqlalchemy import and_
 from sqlmodel import col
 
-from backend.config import settings
 from utils.database.models.comparison import (
     Comparison,
     ComparisonLLMAnalysisFailedUpdate,
     ComparisonLLMAnalysisUpdate,
 )
+from utils.database.models.llms import LLMEndpoint
 from utils.database.session import get_session
+from utils.database.settings import get_app_settings
 from utils.database.utils import (
     get_db_comparisons_counts,
     get_db_comparisons_stream,
@@ -33,6 +34,38 @@ class LLMAnalysisFailed(Exception):
     pass
 
 
+class AnalysisNotConfigured(Exception):
+    pass
+
+
+async def get_analysis_model() -> tuple[str, str | None, str | None]:
+    """
+    The model analysis runs on, as litellm wants it: 'provider/model', with the
+    endpoint's key and base URL. Configured in the admin panel next to every
+    other model, rather than in this file.
+    """
+    app_settings = await get_app_settings()
+    if not app_settings.analysis_endpoint_id or not app_settings.analysis_model:
+        raise AnalysisNotConfigured(
+            "No analysis model configured. Set one in the admin panel."
+        )
+
+    async with get_session() as session:
+        endpoint = await session.get(LLMEndpoint, app_settings.analysis_endpoint_id)
+    if endpoint is None:
+        raise AnalysisNotConfigured("The configured analysis endpoint is gone.")
+    if not endpoint.api_key:
+        raise AnalysisNotConfigured(
+            f"The '{endpoint.name}' endpoint has no API key, so analysis cannot run."
+        )
+
+    return (
+        f"{endpoint.api_type}/{app_settings.analysis_model}",
+        endpoint.api_base,
+        endpoint.api_key,
+    )
+
+
 async def update_comparison(
     comparison_id: uuid.UUID,
     data: ComparisonLLMAnalysisUpdate | ComparisonLLMAnalysisFailedUpdate,
@@ -49,7 +82,6 @@ async def update_comparison(
 
 
 class Config:
-    MODEL_NAME = "google/gemini-3.1-flash-lite-preview"
     WORKERS = 5
     MAX_RETRIES = 3
     RETRY_DELAY = 1
@@ -127,20 +159,22 @@ class Config:
         Conversation B: {conversation_b}
         """
 
-    def _analyze(self, prompt: str) -> ComparisonLLMAnalysisUpdate:
-        from openai import OpenAI
+    def __init__(self, model: str, api_base: str | None, api_key: str | None):
+        self.model = model
+        self.api_base = api_base
+        self.api_key = api_key
 
-        client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=settings.OPENROUTER_API_KEY,
-        )
+    async def _analyze(self, prompt: str) -> ComparisonLLMAnalysisUpdate:
+        import litellm
 
-        response = client.chat.completions.create(
-            model=self.MODEL_NAME,
+        response = await litellm.acompletion(
+            model=self.model,
+            api_key=self.api_key,
+            base_url=self.api_base,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
         )
-        logger.debug("OpenRouter API response received.")
+        logger.debug(f"'{self.model}' response received.")
 
         try:
             content = response.choices[0].message.content
@@ -168,7 +202,7 @@ class Config:
                 logger.debug(
                     f"Attempt {attempt}/{self.MAX_RETRIES} analyzing Comparison '{comparison.id}'."
                 )
-                data = self._analyze(prompt)
+                data = await self._analyze(prompt)
                 await update_comparison(comparison.id, data)
                 logger.info(
                     f"Succesfully added analysis metadata to Comparison '{comparison.id}', {data}."
@@ -228,7 +262,7 @@ async def analyze_comparisons():
     Will mark analysis as failed if the LLM fails to properly answer the
     prompt, but if any other error occurs, tasks will be cancelled asap.
     """
-    analyzer = Config()
+    analyzer = Config(*await get_analysis_model())
     queue: asyncio.Queue[Comparison | None] = asyncio.Queue()
     workers = [
         asyncio.create_task(worker(analyzer, queue, i)) for i in range(analyzer.WORKERS)
