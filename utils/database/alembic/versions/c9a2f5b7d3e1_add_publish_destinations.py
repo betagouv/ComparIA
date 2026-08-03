@@ -6,6 +6,9 @@ Create Date: 2026-08-03 00:00:00.000000
 
 """
 
+import os
+import uuid
+from datetime import datetime
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -20,7 +23,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.create_table(
+    destination_table = op.create_table(
         "publish_destination",
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("created_at", postgresql.TIMESTAMP(), nullable=False),
@@ -32,6 +35,33 @@ def upgrade() -> None:
         sa.Column("enabled", sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
+
+    # An instance already publishing keeps publishing: its two environment
+    # variables become the destination it would otherwise have to retype. They
+    # are read nowhere else after this migration.
+    repo_path = os.environ.get("HF_PUSH_DATASET_PATH", "").strip()
+    token = os.environ.get("HF_PUSH_DATASET_KEY", "").strip()
+    if repo_path.count("/") == 1 and all(repo_path.split("/")) and token:
+        now = datetime.now()
+        op.bulk_insert(
+            destination_table,
+            [
+                {
+                    "id": uuid.uuid4(),
+                    "created_at": now,
+                    "updated_at": now,
+                    "name": "Hugging Face",
+                    "kind": "huggingface",
+                    "config": {
+                        "kind": "huggingface",
+                        "repo_path": repo_path,
+                        "token": token,
+                    },
+                    "datasets": ["normal", "raw"],
+                    "enabled": True,
+                }
+            ],
+        )
 
 
 def downgrade() -> None:

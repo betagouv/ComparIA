@@ -43,6 +43,7 @@ data = [
     "huggingface_hub>=1.4",
     "google-cloud-aiplatform>=1.75.0",
     "cyclopts>=4.7.0",
+    "minio>=7.2",
 ]
 devops = [
     "cyclopts>=4.7.0",

@@ -1,0 +1,169 @@
+"""
+Send a built dataset to the destinations an instance configured.
+
+The build is the same whatever the destinations are: one directory per
+dataset, named after the dataset and not after any repository. Files are given
+their published names as they are uploaded, so one build serves several
+destinations without being copied.
+"""
+
+import logging
+from pathlib import Path
+
+from sqlmodel import col, select
+
+from utils.database.models.publish import (
+    HuggingFaceConfig,
+    PublishDestination,
+    S3Config,
+)
+from utils.database.session import get_session
+
+from .models import Datasets
+
+logger = logging.getLogger("comparia.dataset")
+
+# Local build directory and file base name, per dataset.
+LOCAL_NAMES: dict[Datasets, str] = {
+    "normal": "comparisons",
+    "raw": "comparisons-raw",
+}
+
+# Files a build produces, as suffixes of the base name.
+_SUFFIXES = (".parquet", "_samples.tsv", "_samples.jsonl")
+
+# Published beside the data under its own name: the vocabulary the
+# keyword_annotations columns refer to.
+_EXTRA_FILES = ("vote_tags.json",)
+
+# Left alone on a Hugging Face repository: they are the repository's own, not
+# ours to publish or to remove.
+_KEEP_ON_HF = {".gitattributes", "README.md"}
+
+
+class DestinationError(Exception):
+    pass
+
+
+async def enabled_destinations() -> list[PublishDestination]:
+    async with get_session() as session:
+        rows = await session.exec(
+            select(PublishDestination)
+            .where(col(PublishDestination.enabled) == True)  # noqa: E712
+            .order_by(col(PublishDestination.created_at))
+        )
+        return list(rows.all())
+
+
+def _built_files(
+    build_dir: Path, dataset: Datasets, published_base: str
+) -> list[tuple[Path, str]]:
+    """The files to send, each with the name it is published under."""
+    base = LOCAL_NAMES[dataset]
+    files = [
+        (build_dir / f"{base}{suffix}", f"{published_base}{suffix}")
+        for suffix in _SUFFIXES
+        if (build_dir / f"{base}{suffix}").exists()
+    ]
+    if not files:
+        raise DestinationError(f"nothing was built for the '{dataset}' dataset")
+    files += [
+        (build_dir / name, name) for name in _EXTRA_FILES if (build_dir / name).exists()
+    ]
+    return files
+
+
+def _hf_repo(config: HuggingFaceConfig, dataset: Datasets) -> str:
+    return config.repo_path + ("-raw" if dataset == "raw" else "")
+
+
+def _push_to_huggingface(
+    config: HuggingFaceConfig, dataset: Datasets, build_dir: Path
+) -> None:
+    from huggingface_hub import CommitOperationAdd, CommitOperationDelete, HfApi
+
+    repo_id = _hf_repo(config, dataset)
+    # The published files keep the repository's own name, the way they were
+    # named when the repository path came from HF_PUSH_DATASET_PATH.
+    published = repo_id.split("/")[-1]
+
+    api = HfApi(token=config.token)
+    api.create_repo(repo_id, repo_type="dataset", exist_ok=True)
+
+    operations: list = [
+        CommitOperationAdd(path_in_repo=name, path_or_fileobj=str(path))
+        for path, name in _built_files(build_dir, dataset, published)
+    ]
+    written = {op.path_in_repo for op in operations}
+    # Whatever else the repository holds is a leftover: a file from an earlier
+    # naming, or one this run no longer produces. Left in place it would keep
+    # publishing comparisons this run held back, which is the whole point of
+    # rebuilding from row zero every time.
+    for stale in api.list_repo_files(repo_id, repo_type="dataset"):
+        if stale not in written and stale not in _KEEP_ON_HF:
+            operations.append(CommitOperationDelete(path_in_repo=stale))
+
+    api.create_commit(
+        repo_id,
+        operations=operations,
+        repo_type="dataset",
+        commit_message=f"Update {dataset} dataset",
+    )
+    logger.info(f"Pushed the '{dataset}' dataset to '{repo_id}'.")
+
+
+def _push_to_s3(config: S3Config, dataset: Datasets, build_dir: Path) -> None:
+    from minio import Minio
+
+    client = Minio(
+        config.endpoint,
+        access_key=config.access_key,
+        secret_key=config.secret_key,
+        secure=config.secure,
+        region=config.region,
+    )
+    base = config.prefix.strip("/")
+    folder = f"{base}/{LOCAL_NAMES[dataset]}" if base else LOCAL_NAMES[dataset]
+
+    written = set()
+    for path, name in _built_files(build_dir, dataset, LOCAL_NAMES[dataset]):
+        key = f"{folder}/{name}"
+        client.fput_object(config.bucket, key, str(path))
+        written.add(key)
+
+    for obj in client.list_objects(config.bucket, prefix=f"{folder}/", recursive=True):
+        if obj.object_name and obj.object_name not in written:
+            client.remove_object(config.bucket, obj.object_name)
+
+    logger.info(f"Uploaded the '{dataset}' dataset to '{config.bucket}/{folder}'.")
+
+
+def publish(
+    destinations: list[PublishDestination], built: dict[Datasets, Path]
+) -> None:
+    """
+    Send every built dataset to every destination that asked for it. One
+    destination failing does not stop the others, and the run still fails.
+    """
+    failures: list[str] = []
+
+    for destination in destinations:
+        config = destination.parsed_config()
+        for dataset, build_dir in built.items():
+            # A destination that asked for a dataset this run did not build
+            # simply does not receive it.
+            if dataset not in destination.datasets:
+                continue
+            try:
+                if isinstance(config, HuggingFaceConfig):
+                    _push_to_huggingface(config, dataset, build_dir)
+                else:
+                    _push_to_s3(config, dataset, build_dir)
+            except Exception as exc:
+                logger.exception(
+                    f"Failed to send the '{dataset}' dataset to '{destination.name}'."
+                )
+                failures.append(f"{destination.name} ({dataset}): {exc}")
+
+    if failures:
+        raise DestinationError("; ".join(failures))
