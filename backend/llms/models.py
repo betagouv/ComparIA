@@ -153,32 +153,24 @@ class PreferencesData(BaseModel):
     Aggregated counts of user ratings for specific quality attributes.
 
     Attributes:
-        positive_prefs_ratio: Percentage of positive preferences (useful, complete, etc.)
+        positive_prefs_ratio: Share of positive tags, null when the model has
+            no tagged votes or the instance has turned off a whole side
         total_prefs: Total number of preference votes received
-        useful/complete/creative/clear_formatting: Count of positive preferences
-        incorrect/superficial/instructions_not_followed: Count of negative preferences
+        counts: Count per vote tag key, including keys no longer offered
     """
 
-    positive_prefs_ratio: float
+    positive_prefs_ratio: float | None
     total_prefs: int
-    # Positive quality indicators
-    useful: int
-    clear_formatting: int
-    complete: int
-    creative: int
-    # Negative quality indicators
-    incorrect: int
-    instructions_not_followed: int
-    superficial: int
+    counts: dict[str, int]
 
     @field_validator("positive_prefs_ratio", mode="before")
     @classmethod
-    def handle_nan_ratio(cls, value: Any) -> float:
-        """Replace NaN values with -1 to prevent JSON serialization errors."""
+    def handle_nan_ratio(cls, value: Any) -> float | None:
+        """A ratio that cannot be computed is absent, not a number."""
         import math
 
         if isinstance(value, float) and math.isnan(value):
-            return -1
+            return None
         return value
 
 
