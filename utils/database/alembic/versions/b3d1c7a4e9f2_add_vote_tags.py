@@ -72,7 +72,6 @@ def upgrade() -> None:
                 "sign": sign,
                 "emoji": emoji,
                 "reserved": True,
-                "labels": None,
                 "display_order": order[sign],
                 "archived_at": None,
                 "archived_by": None,
