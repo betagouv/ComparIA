@@ -17,10 +17,13 @@ from utils.database.models import (
     BotPos,
     ErrorDetails,
     LLMMessageFinal,
+    PublishDataset,
     UserMessageRead,
 )
 
-Datasets = Literal["normal", "raw"]
+# Same two datasets a destination subscribes to, kept in one place so the two
+# lists cannot drift apart.
+Datasets = PublishDataset
 
 
 class DatasetTurnMetadata(SQLModel):
