@@ -1,19 +1,10 @@
+import type { PublicVoteTag, PublicVoteTagsResponse } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { createContext } from 'svelte'
 
-export type VoteTagSign = 'positive' | 'negative'
-
-export type VoteTag = {
-  key: string
-  sign: VoteTagSign
-  emoji: string
-  reserved: boolean
-  label?: string | null
-}
-
-export type PublicVoteTags = {
-  tags: VoteTag[]
-}
+export type VoteTag = PublicVoteTag
+export type VoteTagSign = PublicVoteTag['sign']
+export type PublicVoteTags = PublicVoteTagsResponse
 
 export const emptyVoteTags: PublicVoteTags = { tags: [] }
 
