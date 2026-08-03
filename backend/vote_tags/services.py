@@ -86,6 +86,9 @@ def _label(tag: VoteTag, locale: str) -> str | None:
     # label for them and the frontend reads 'vote.choices.{sign}.{key}'.
     if tag.reserved or not tag.labels:
         return None
+    # FIXME fall back to the instance default locale once app_settings has one
+    # (#601). JSONB does not keep key order, so this picks an arbitrary
+    # language when the asked-for one is missing.
     return tag.labels.get(locale) or next(iter(tag.labels.values()), None)
 
 
