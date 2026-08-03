@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Annotated
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from backend.config import NegativePref, PositivePref, TurnChoice
+from backend.config import TurnChoice
 from utils.validation import StripAndEmptyAsNone
 
 from .messages import (
@@ -22,9 +22,9 @@ if TYPE_CHECKING:
 LLMMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="llm_message.id", unique=True)
 ]
-KeywordAnnotations = Annotated[
-    list[PositivePref] | list[NegativePref], Field(sa_type=JSONB)
-]
+# Vote tag keys. The vocabulary lives in the 'vote_tag' table, so keys are
+# checked against the active tags when a vote comes in, not by this type.
+KeywordAnnotations = Annotated[list[str], Field(sa_type=JSONB)]
 
 
 class TurnBase(BaseDBModel):
@@ -102,9 +102,8 @@ class TurnVoteChoice(SQLModel):
     choice: TurnChoice
 
 
-# TODO assert keywords are positive/negative depending on vote choice
 class TurnVoteAnnotate(SQLModel):
     turn_id: Annotated[uuid.UUID, Field(exclude=True)]
     pos: Annotated[BotPos, Field(exclude=True)]
-    keyword_annotations: list[PositivePref] | list[NegativePref]
+    keyword_annotations: list[str]
     custom_annotation: Annotated[str | None, StripAndEmptyAsNone]
