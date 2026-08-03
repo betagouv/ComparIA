@@ -1,6 +1,7 @@
 import uuid
 from typing import Annotated, Literal, get_args
 
+from pydantic import StringConstraints, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -56,3 +57,64 @@ class PublicVoteTag(SQLModel):
 
 class PublicVoteTagsResponse(SQLModel):
     tags: list[PublicVoteTag]
+
+
+TagEmoji = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=16)
+]
+TagLabel = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)
+]
+
+
+class VoteTagCreate(SQLModel):
+    sign: VoteTagSign
+    emoji: TagEmoji
+    # One entry per language the instance serves. The key is derived from the
+    # first label given, so at least one is required.
+    labels: dict[str, TagLabel]
+
+    @field_validator("labels")
+    @classmethod
+    def at_least_one_label(cls, value: dict[str, str]) -> dict[str, str]:
+        if not value:
+            raise ValueError("a tag needs at least one label")
+        return value
+
+
+class VoteTagUpdate(SQLModel):
+    emoji: TagEmoji
+    labels: dict[str, TagLabel]
+
+    @field_validator("labels")
+    @classmethod
+    def at_least_one_label(cls, value: dict[str, str]) -> dict[str, str]:
+        if not value:
+            raise ValueError("a tag needs at least one label")
+        return value
+
+
+class VoteTagArchiveUpdate(SQLModel):
+    archived: bool
+
+
+class VoteTagMove(SQLModel):
+    direction: Literal["up", "down"]
+
+
+class AdminVoteTag(SQLModel):
+    id: uuid.UUID
+    key: str
+    sign: VoteTagSign
+    emoji: str
+    reserved: bool
+    labels: dict[str, str] | None
+    display_order: int
+    archived: bool
+    # How many votes already carry this key. A tag nobody used can be deleted
+    # outright; once it is in the data, removing it archives instead.
+    usage_count: int
+
+
+class AdminVoteTagsResponse(SQLModel):
+    tags: list[AdminVoteTag]
