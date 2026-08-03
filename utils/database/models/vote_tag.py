@@ -1,7 +1,8 @@
+import unicodedata
 import uuid
 from typing import Annotated, Literal, get_args
 
-from pydantic import StringConstraints, field_validator
+from pydantic import AfterValidator, StringConstraints, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -59,8 +60,24 @@ class PublicVoteTagsResponse(SQLModel):
     tags: list[PublicVoteTag]
 
 
+def _only_emoji(value: str) -> str:
+    """
+    The field is one character wide in the arena, so a word typed into it
+    breaks the chip layout. Emoji sit in the 'So' Unicode category; letters and
+    digits are what people paste in by mistake. 16 characters rather than one
+    because a single emoji can be a sequence of joined code points.
+    """
+    if any(char.isalnum() for char in value) or not any(
+        unicodedata.category(char) == "So" for char in value
+    ):
+        raise ValueError("emoji has to be an emoji")
+    return value
+
+
 TagEmoji = Annotated[
-    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=16)
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=16),
+    AfterValidator(_only_emoji),
 ]
 TagLabel = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)
