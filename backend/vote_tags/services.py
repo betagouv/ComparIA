@@ -53,6 +53,10 @@ class VoteTagInUseError(Exception):
     """Votes already carry this key, so it is archived rather than deleted."""
 
 
+class VoteTagOrderMismatchError(Exception):
+    """An order has to list every tag on the side, and nothing else."""
+
+
 @redis_cache(REDIS_VOTE_TAGS_KEY)
 async def get_active_vote_tags() -> list[VoteTag]:
     """
@@ -294,32 +298,27 @@ async def delete_vote_tag(tag_id: uuid.UUID, *, updated_by: uuid.UUID) -> None:
         invalidate_cache(REDIS_VOTE_TAGS_KEY)
 
 
-async def move_vote_tag(tag_id: uuid.UUID, direction: str) -> list[AdminVoteTag]:
-    """Swap a tag with its neighbour on the same side."""
+async def reorder_vote_tags(
+    sign: VoteTagSign, ids: list[uuid.UUID]
+) -> list[AdminVoteTag]:
+    """
+    Write one side's order from the list the client sends. It has to name every
+    tag on that side exactly once, so a stale page cannot drop a tag another
+    admin added in the meantime.
+    """
     async with get_session() as session:
-        tag = await session.get(VoteTag, tag_id)
-        if tag is None:
-            raise VoteTagNotFoundError()
-
         siblings = list(
-            (
-                await session.exec(
-                    select(VoteTag)
-                    .where(VoteTag.sign == tag.sign)
-                    .order_by(col(VoteTag.display_order))
-                )
-            ).all()
+            (await session.exec(select(VoteTag).where(VoteTag.sign == sign))).all()
         )
-        index = next(i for i, row in enumerate(siblings) if row.id == tag.id)
-        target = index - 1 if direction == "up" else index + 1
-        if 0 <= target < len(siblings):
-            # Rewrite the whole side: display_order can hold gaps or ties from
-            # earlier deletions, so swapping two values is not enough.
-            siblings[index], siblings[target] = siblings[target], siblings[index]
-            for position, row in enumerate(siblings):
-                row.display_order = position
-                session.add(row)
-            await session.commit()
-            invalidate_cache(REDIS_VOTE_TAGS_KEY)
+        by_id = {row.id: row for row in siblings}
+        if len(ids) != len(by_id) or set(ids) != set(by_id):
+            raise VoteTagOrderMismatchError()
+
+        for position, tag_id in enumerate(ids):
+            row = by_id[tag_id]
+            row.display_order = position
+            session.add(row)
+        await session.commit()
+        invalidate_cache(REDIS_VOTE_TAGS_KEY)
 
     return await list_admin_vote_tags()

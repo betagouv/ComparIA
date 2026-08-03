@@ -115,8 +115,15 @@ class VoteTagArchiveUpdate(SQLModel):
     archived: bool
 
 
-class VoteTagMove(SQLModel):
-    direction: Literal["up", "down"]
+class VoteTagOrder(SQLModel):
+    """
+    A whole side's order, written in one request. Sending the full list rather
+    than a step at a time lets a drag across the table cost one round trip, and
+    rewrites away the gaps deletions leave in 'display_order'.
+    """
+
+    sign: VoteTagSign
+    ids: list[uuid.UUID]
 
 
 class AdminVoteTag(SQLModel):

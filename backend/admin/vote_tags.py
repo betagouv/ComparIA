@@ -9,10 +9,11 @@ from backend.vote_tags.services import (
     VoteTagInUseError,
     VoteTagLabelUnusableError,
     VoteTagNotFoundError,
+    VoteTagOrderMismatchError,
     create_vote_tag,
     delete_vote_tag,
     list_admin_vote_tags,
-    move_vote_tag,
+    reorder_vote_tags,
     set_vote_tag_archived,
     update_vote_tag,
 )
@@ -21,7 +22,7 @@ from utils.database.models.vote_tag import (
     AdminVoteTagsResponse,
     VoteTagArchiveUpdate,
     VoteTagCreate,
-    VoteTagMove,
+    VoteTagOrder,
     VoteTagUpdate,
 )
 
@@ -59,6 +60,19 @@ async def add_vote_tag(
         )
 
 
+@router.put("/order", response_model=AdminVoteTagsResponse)
+async def set_vote_tag_order(
+    body: VoteTagOrder, current_user: RequiredAdmin
+) -> AdminVoteTagsResponse:
+    try:
+        return AdminVoteTagsResponse(tags=await reorder_vote_tags(body.sign, body.ids))
+    except VoteTagOrderMismatchError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The order has to list every tag on this side, and nothing else",
+        )
+
+
 @router.put("/{tag_id}", response_model=AdminVoteTag)
 async def edit_vote_tag(
     tag_id: uuid.UUID, body: VoteTagUpdate, current_user: RequiredAdmin
@@ -79,16 +93,6 @@ async def patch_vote_tag(
         return await set_vote_tag_archived(
             tag_id, archived=body.archived, updated_by=current_user.id
         )
-    except VoteTagNotFoundError:
-        raise _NOT_FOUND
-
-
-@router.post("/{tag_id}/move", response_model=AdminVoteTagsResponse)
-async def reorder_vote_tag(
-    tag_id: uuid.UUID, body: VoteTagMove, current_user: RequiredAdmin
-) -> AdminVoteTagsResponse:
-    try:
-        return AdminVoteTagsResponse(tags=await move_vote_tag(tag_id, body.direction))
     except VoteTagNotFoundError:
         raise _NOT_FOUND
 
