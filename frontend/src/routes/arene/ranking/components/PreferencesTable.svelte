@@ -2,17 +2,13 @@
   import AILogo from '$components/AILogo.svelte'
   import { Link, Table, Toggle } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import { APINegativePrefs, APIPositivePrefs, type APIReactionPref } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
+  import { getVoteTagsContext, voteTagColLabel, voteTagsBySign, type VoteTag } from '$lib/voteTags'
 
-  type ColKind =
-    | 'name'
-    | 'positive_prefs_ratio'
-    | 'total_positive_prefs'
-    | 'total_negative_prefs'
-    | APIReactionPref
+  // 'name', 'positive_prefs_ratio', the two totals, or a vote tag key.
+  type ColKind = string
 
   let {
     id,
@@ -30,43 +26,71 @@
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 
-  const cols = (
-    [
-      { id: 'name', orderable: true },
-      {
-        id: 'positive_prefs_ratio',
-        tooltip: m['ranking.preferences.table.tooltips.positive_prefs_ratio'](),
-        orderable: true
-      },
-      { id: 'total_positive_prefs' },
-      { id: 'total_negative_prefs' },
-      ...APIPositivePrefs.map((pref) => ({
-        id: pref,
-        colHeaderClass: 'bg-[--green-emeraude-975-75]!',
-        orderable: true
-      })),
-      ...APINegativePrefs.map((pref) => ({
-        id: pref,
-        colHeaderClass: 'bg-[--warning-950-100]!',
-        orderable: true
-      }))
-    ] as const
-  ).map((col) => ({
-    ...col,
-    label: m[`ranking.preferences.table.cols.${col.id}`]()
-  }))
+  const tags = getVoteTagsContext()
+  const positiveTags = $derived(voteTagsBySign(tags, 'positive'))
+  const negativeTags = $derived(voteTagsBySign(tags, 'negative'))
+  // A model has no positive share to report when the instance turned off a
+  // whole side of the taxonomy, so the column goes with it.
+  const hasRatio = $derived(positiveTags.length > 0 && negativeTags.length > 0)
 
-  let orderingCol = $state(initialOrderCol)
+  const cols = $derived([
+    { id: 'name', label: m['ranking.preferences.table.cols.name'](), orderable: true },
+    ...(hasRatio
+      ? [
+          {
+            id: 'positive_prefs_ratio',
+            label: m['ranking.preferences.table.cols.positive_prefs_ratio'](),
+            tooltip: m['ranking.preferences.table.tooltips.positive_prefs_ratio'](),
+            orderable: true
+          }
+        ]
+      : []),
+    {
+      id: 'total_positive_prefs',
+      label: m['ranking.preferences.table.cols.total_positive_prefs']()
+    },
+    {
+      id: 'total_negative_prefs',
+      label: m['ranking.preferences.table.cols.total_negative_prefs']()
+    },
+    ...positiveTags.map((tag) => ({
+      id: tag.key,
+      label: voteTagColLabel(tag),
+      colHeaderClass: 'bg-[--green-emeraude-975-75]!',
+      orderable: true
+    })),
+    ...negativeTags.map((tag) => ({
+      id: tag.key,
+      label: voteTagColLabel(tag),
+      colHeaderClass: 'bg-[--warning-950-100]!',
+      orderable: true
+    }))
+  ])
+
+  // Falls back to a total when the instance has no positive share to sort on.
+  const defaultOrderCol = $derived(
+    hasRatio
+      ? initialOrderCol
+      : positiveTags.length
+        ? 'total_positive_prefs'
+        : 'total_negative_prefs'
+  )
+
+  let orderingCol = $state<ColKind | undefined>(undefined)
   let orderingMethod = $state(initialOrderMethod)
   let search = $state('')
   let asPercentage = $state(false)
 
   $effect(() => {
     if (orderingCol === undefined) {
-      orderingCol = initialOrderCol
+      orderingCol = defaultOrderCol
       orderingMethod = initialOrderMethod
     }
   })
+
+  function sumCounts(counts: Record<string, number>, forTags: VoteTag[]) {
+    return forTags.reduce((acc, tag) => acc + (counts[tag.key] ?? 0), 0)
+  }
 
   const rows = $derived.by(() => {
     return data.map((model) => ({
@@ -76,8 +100,9 @@
       logo: model.lab.logo,
       organisation: model.lab.name,
       ...model.prefs,
-      total_positive_prefs: APIPositivePrefs.reduce((acc, v) => acc + model.prefs[v], 0),
-      total_negative_prefs: APINegativePrefs.reduce((acc, v) => acc + model.prefs[v], 0),
+      ...model.prefs.counts,
+      total_positive_prefs: sumCounts(model.prefs.counts, positiveTags),
+      total_negative_prefs: sumCounts(model.prefs.counts, negativeTags),
       search: model.search
     }))
   })
@@ -89,7 +114,7 @@
       .filter((m) => (!_search ? true : m.search.includes(_search)))
       .sort((ma, mb) => {
         const [a, b] = orderingMethod === 'ascending' ? [mb, ma] : [ma, mb]
-        return sortIfDefined(a, b, orderingCol)
+        return sortIfDefined(a, b, orderingCol ?? defaultOrderCol)
       })
   })
 </script>
@@ -147,22 +172,26 @@
     {:else if col.id === 'total_positive_prefs' || col.id === 'total_negative_prefs'}
       <strong>{model[col.id]}</strong>
     {:else if col.id === 'positive_prefs_ratio'}
-      {@const size = Math.round(model[col.id] * 100)}
-      <div class="rounded-sm font-bold flex h-[25px] w-full border border-[#cecece] text-[12px]">
-        <div
-          class="rounded-s-sm ps-1 w-[--width] bg-[--green-emeraude-975-75] text-[--green-emeraude-sun-425-moon-753]"
-          style="width: {size}%"
-        >
-          {size}%
+      {#if model.positive_prefs_ratio === null}
+        -
+      {:else}
+        {@const size = Math.round(model.positive_prefs_ratio * 100)}
+        <div class="rounded-sm font-bold flex h-[25px] w-full border border-[#cecece] text-[12px]">
+          <div
+            class="rounded-s-sm ps-1 w-[--width] bg-[--green-emeraude-975-75] text-[--green-emeraude-sun-425-moon-753]"
+            style="width: {size}%"
+          >
+            {size}%
+          </div>
+          <div class="rounded-e-sm ps-1 grow bg-[--warning-950-100] text-[--warning-425-625]">
+            {100 - size}%
+          </div>
         </div>
-        <div class="rounded-e-sm ps-1 grow bg-[--warning-950-100] text-[--warning-425-625]">
-          {Math.round((1 - model[col.id]) * 100)}%
-        </div>
-      </div>
+      {/if}
     {:else if asPercentage}
-      {Math.round((model[col.id] / model.total_prefs) * 100)}%
+      {Math.round(((model.counts[col.id] ?? 0) / model.total_prefs) * 100)}%
     {:else}
-      {model[col.id]}
+      {model.counts[col.id] ?? 0}
     {/if}
   {/snippet}
 </Table>
