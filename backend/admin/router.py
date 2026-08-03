@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
+from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
@@ -83,6 +84,7 @@ router = APIRouter(
 router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
 router.include_router(admin_vote_tags_router)
+router.include_router(admin_publishing_router)
 
 
 class UsersPage(BaseModel):

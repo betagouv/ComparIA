@@ -39,6 +39,10 @@ class HuggingFaceConfig(HuggingFaceConfigPublic):
     token: NonEmptyStr
 
 
+class HuggingFaceConfigInput(HuggingFaceConfigPublic):
+    token: NonEmptyStr | None = None
+
+
 class S3ConfigPublic(SQLModel):
     kind: Literal["s3"] = "s3"
     # Host and optional port, no scheme: what minio expects.
@@ -62,17 +66,56 @@ class S3Config(S3ConfigPublic):
     secret_key: NonEmptyStr
 
 
+class S3ConfigInput(S3ConfigPublic):
+    access_key: NonEmptyStr | None = None
+    secret_key: NonEmptyStr | None = None
+
+
 PublishConfig = Annotated[
     HuggingFaceConfig | S3Config, PydanticField(discriminator="kind")
 ]
 PublishConfigPublic = Annotated[
     HuggingFaceConfigPublic | S3ConfigPublic, PydanticField(discriminator="kind")
 ]
+PublishConfigInput = Annotated[
+    HuggingFaceConfigInput | S3ConfigInput, PydanticField(discriminator="kind")
+]
 
 _CONFIG: TypeAdapter[HuggingFaceConfig | S3Config] = TypeAdapter(PublishConfig)
 _CONFIG_PUBLIC: TypeAdapter[HuggingFaceConfigPublic | S3ConfigPublic] = TypeAdapter(
     PublishConfigPublic
 )
+
+# The fields the admin panel never shows back, so an administrator editing a
+# destination cannot retype them. Left empty, they keep the stored value.
+SECRET_FIELDS: dict[PublishKind, tuple[str, ...]] = {
+    "huggingface": ("token",),
+    "s3": ("access_key", "secret_key"),
+}
+
+
+class MissingSecretError(ValueError):
+    def __init__(self, field: str):
+        self.field = field
+        super().__init__(f"'{field}' is required")
+
+
+def config_to_store(
+    incoming: HuggingFaceConfigInput | S3ConfigInput, stored: dict | None = None
+) -> dict:
+    """
+    The config to write, with the secrets the panel left blank filled in from
+    the row being edited. Nothing is carried over when the kind changes: the
+    new kind's secrets have to be given.
+    """
+    config = incoming.model_dump()
+    keep = stored if stored and stored.get("kind") == incoming.kind else {}
+    for field in SECRET_FIELDS[incoming.kind]:
+        value = config.get(field) or keep.get(field)
+        if not value:
+            raise MissingSecretError(field)
+        config[field] = value
+    return config
 
 
 class PublishDestinationBase(BaseDBModel):
@@ -102,7 +145,7 @@ class PublishDestinationUpsert(SQLModel):
     """
 
     name: NonEmptyStr
-    config: PublishConfig
+    config: PublishConfigInput
     datasets: list[PublishDataset]
     enabled: bool = True
 

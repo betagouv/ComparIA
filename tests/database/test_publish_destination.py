@@ -22,6 +22,10 @@ from utils.database.models import (  # noqa: E402
     PublishDestination,
     PublishDestinationUpsert,
 )
+from utils.database.models.publish import (  # noqa: E402
+    MissingSecretError,
+    config_to_store,
+)
 
 
 def test_kind_comes_from_the_config():
@@ -122,8 +126,51 @@ def test_credentials_stay_in_the_backend():
     assert "secret" not in AdminPublishDestination.from_row(row).model_dump_json()
 
 
+def upsert(config: dict, **kwargs) -> PublishDestinationUpsert:
+    return PublishDestinationUpsert.model_validate(
+        {"name": "x", "datasets": ["normal"], "config": config, **kwargs}
+    )
+
+
+def test_a_blank_secret_keeps_the_stored_one():
+    stored = {"kind": "huggingface", "repo_path": "org/comparia", "token": "secret"}
+    edited = upsert({"kind": "huggingface", "repo_path": "org/other"})
+
+    config = config_to_store(edited.config, stored)
+    assert config["token"] == "secret"
+    assert config["repo_path"] == "org/other"
+
+    replaced = upsert({"kind": "huggingface", "repo_path": "org/other", "token": "new"})
+    assert config_to_store(replaced.config, stored)["token"] == "new"
+
+
+def test_a_secret_is_required_when_there_is_nothing_to_keep():
+    hf = upsert({"kind": "huggingface", "repo_path": "org/comparia"})
+    for stored in (
+        None,
+        # Nothing carries over when the kind changes: an S3 row holds no token.
+        {"kind": "s3", "access_key": "a", "secret_key": "b"},
+    ):
+        try:
+            config_to_store(hf.config, stored)
+        except MissingSecretError as exc:
+            assert exc.field == "token"
+        else:
+            raise AssertionError("expected a missing token")
+
+    s3 = upsert({"kind": "s3", "endpoint": "s3.example.org", "bucket": "b"})
+    try:
+        config_to_store(s3.config, None)
+    except MissingSecretError as exc:
+        assert exc.field == "access_key"
+    else:
+        raise AssertionError("expected a missing access key")
+
+
 if __name__ == "__main__":
     test_kind_comes_from_the_config()
     test_bad_configs_are_refused()
     test_credentials_stay_in_the_backend()
+    test_a_blank_secret_keeps_the_stored_one()
+    test_a_secret_is_required_when_there_is_nothing_to_keep()
     print("ok")
