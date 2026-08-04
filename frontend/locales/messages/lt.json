@@ -220,9 +220,10 @@
     },
     "statistics": {
         "counterLink": "Peržiūrėti platformos statistiką",
-        "eyebrow": "compar:IA skaičiais",
+        "eyebrow": "Statistika",
         "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
         "methodology": "Skaičiai apima nearchyvuotus pokalbius ir yra reguliariai atnaujinami.",
+        "overview": "Apžvalga",
         "metrics": {
             "questions": {
                 "description": "Klausimai, pateikti lyginant dviejų pokalbių DI modelių atsakymus.",
