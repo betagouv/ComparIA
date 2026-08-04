@@ -51,6 +51,8 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.25rem;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 
   .metric-card {
