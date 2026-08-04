@@ -46,7 +46,7 @@
       <Link
         button
         icon="edit-line"
-        href="../arene/?cgu_acceptees"
+        href="../arene/"
         text={m['header.chatbot.newDiscussion']()}
         class="text-nowrap"
       />
