@@ -1,5 +1,6 @@
 <script lang="ts">
   import ThemeSelector from '$components/ThemeSelector.svelte'
+  import { ACCESSIBILITY_PATH, ECODESIGN_PATH, PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
   import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -11,10 +12,10 @@
   const links = (
     [
       { href: '/mentions-legales', labelKey: 'legal' },
-      { href: '/arene/modalites', labelKey: 'tos' },
-      { href: '/arene/donnees-personnelles', labelKey: 'privacy' },
-      { href: '/accessibilite', labelKey: 'accessibility' },
-      { href: '/ecoconception', labelKey: 'rgesn' },
+      { href: TERMS_PATH, labelKey: 'tos' },
+      { href: PRIVACY_POLICY_PATH, labelKey: 'privacy' },
+      { href: ACCESSIBILITY_PATH, labelKey: 'accessibility' },
+      { href: ECODESIGN_PATH, labelKey: 'rgesn' },
       { href: 'https://github.com/betagouv/languia', labelKey: 'sources' }
     ] as const
   ).map(({ href, labelKey }) => {

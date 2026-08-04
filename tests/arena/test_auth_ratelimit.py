@@ -2,7 +2,8 @@
 Unit tests for the email-login rate limits (no network, no real Redis, no DB).
 
 Covers the 600-kids-behind-one-IP property (per-email request cap is isolated
-per email, never shared across a NAT) and the verify brute-force limiter.
+per email, never shared across a NAT), the verify brute-force limiter, and the
+fact that the throttle answers before the consent gate.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_auth_ratelimit.py
@@ -18,12 +19,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
-import utils.database.models  # noqa: F401 needed before importing backend.auth.router
-
-import backend.auth.router as auth_router
-from backend.config import settings
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+import backend.auth.router as auth_router
+import utils.database.models  # noqa: F401 needed before importing backend.auth.router
+from backend.config import ANONYMOUS_SESSION_COOKIE, settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
 
 
@@ -60,8 +61,16 @@ async def _fake_get_app_settings():
     return SimpleNamespace(auth_domain_allowlist=None)
 
 
+async def _fake_current_acceptance(**kwargs):
+    return True
+
+
+async def _fake_missing_acceptance(**kwargs):
+    return False
+
+
 @contextlib.contextmanager
-def fake_router(verify_login_code=None):
+def fake_router(verify_login_code=None, has_current_terms_acceptance=None):
     fake = FakeRedis()
 
     orig = {
@@ -71,18 +80,26 @@ def fake_router(verify_login_code=None):
         "send_login_code": auth_router.send_login_code,
         "verify_login_code": auth_router.verify_login_code,
         "get_app_settings": auth_router.get_app_settings,
+        "has_current_terms_acceptance": auth_router.has_current_terms_acceptance,
     }
     auth_router.get_redis_client = lambda: fake
     auth_router.verify_altcha_token = lambda payload: (True, None)
     auth_router.request_login_code = _fake_request_login_code
     auth_router.send_login_code = _fake_send_login_code
     auth_router.get_app_settings = _fake_get_app_settings
+    auth_router.has_current_terms_acceptance = (
+        has_current_terms_acceptance or _fake_current_acceptance
+    )
     if verify_login_code is not None:
         auth_router.verify_login_code = verify_login_code
     try:
         app = FastAPI()
         app.include_router(auth_router.router)
-        yield TestClient(app), fake
+        client = TestClient(app)
+        # The consent gate reads the anonymous session, and the middleware that
+        # mints it is not mounted here. These tests are about the throttle.
+        client.cookies.set(ANONYMOUS_SESSION_COOKIE, "anonymous-test-token")
+        yield client, fake
     finally:
         for name, func in orig.items():
             setattr(auth_router, name, func)
@@ -124,6 +141,23 @@ def test_per_ip_request_cap_uses_configured_ceiling():
         r = client.post(
             "/auth/email/request",
             json={"email": "student3@school.fr", "altcha_payload": "x"},
+        )
+        assert r.status_code == 429
+
+
+def test_request_cap_answers_before_the_consent_gate():
+    """The gate sits after the throttle on purpose. If it moved ahead of it, a
+    visitor who never accepted could hammer the endpoint uncapped."""
+    with fake_router(has_current_terms_acceptance=_fake_missing_acceptance) as (
+        client,
+        fake,
+    ):
+        key = REDIS_AUTH_EMAIL_REQ.format(ip="testclient")
+        fake.store[key] = settings.AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR
+
+        r = client.post(
+            "/auth/email/request",
+            json={"email": "student4@school.fr", "altcha_payload": "x"},
         )
         assert r.status_code == 429
 
@@ -256,6 +290,7 @@ def test_verify_lockout_is_scoped_per_ip():
 def run():
     test_per_email_request_cap_is_isolated_per_email()
     test_per_ip_request_cap_uses_configured_ceiling()
+    test_request_cap_answers_before_the_consent_gate()
     test_verify_fail_counter_trips_at_max_attempts()
     test_verify_fail_counter_is_isolated_per_email()
     test_successful_verify_clears_fail_counter()

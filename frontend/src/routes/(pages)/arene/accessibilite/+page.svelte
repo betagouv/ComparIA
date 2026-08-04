@@ -1,7 +1,25 @@
-<script>
+<script lang="ts">
+  // This page and its ecodesign sibling sit outside src/routes/arene on
+  // purpose: they are public documents, so they keep the public layout and
+  // stay clear of the arena layout load, which needs a session.
   import SeoHead from '$components/SEOHead.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+
+  const auth = getAuthContext()
+
+  function hostOf(url: string) {
+    try {
+      return new URL(url).host
+    } catch {
+      return undefined
+    }
+  }
+
+  // The declaration has to name the site it covers, and that differs for
+  // every deployment.
+  const domain = $derived(hostOf(auth.config.platform_url) ?? auth.config.platform_name)
 </script>
 
 <SeoHead title={m['seo.titles.accessibilite']()} />
@@ -19,10 +37,10 @@
 
     <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
     <!-- <p><em>Établie le 24 avril 2024.</em></p> -->
-    <p>{@html sanitize(m['general.a11y.desc']())}</p>
+    <p>{@html sanitize(m['general.a11y.desc']({ domain }))}</p>
 
     <h2 id="etat-de-conformite">{m['general.a11y.stateTitle']()}</h2>
-    <p>{@html sanitize(m['general.a11y.stateDesc']())}</p>
+    <p>{@html sanitize(m['general.a11y.stateDesc']({ domain }))}</p>
     <ul>
       <li>{m['general.a11y.stateNavigate']()}</li>
       <li>{m['general.a11y.stateScreenReader']()}</li>
@@ -44,7 +62,7 @@
   </ul> -->
 
     <h2 id="amelioration-et-contact">{m['general.a11y.improveTitle']()}</h2>
-    <p>{m['general.a11y.improveDesc']()}</p>
+    <p>{m['general.a11y.improveDesc']({ domain })}</p>
     <ul>
       <li>
         {@html sanitize(

@@ -1,6 +1,7 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { updateComparisonsContext, type ComparisonsCtx } from '$lib/chatService.svelte'
+import { resetConsent } from '$lib/consent'
 import { api } from '$lib/fastapi-client'
 import { createContext } from 'svelte'
 
@@ -15,6 +16,7 @@ export interface AuthConfig {
   smtp_configured: boolean
   domain_allowlist: string[]
   platform_name: string
+  platform_url: string
   has_custom_logo: boolean
   primary_color_light: string
   primary_color_dark: string
@@ -60,6 +62,9 @@ export async function logout(auth: AuthCtx, comparisons: ComparisonsCtx): Promis
     }
   } finally {
     auth.user = null
+    // The account's acceptance says nothing about the anonymous visitor left
+    // behind, so the next page must ask the server again.
+    resetConsent()
     if (auth.config?.access_policy === 'sign_in_required') {
       goto(resolve('/login'))
     } else {

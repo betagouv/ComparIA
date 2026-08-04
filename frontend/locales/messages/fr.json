@@ -28,6 +28,91 @@
         "selectLanguage": "Sélectionner une langue"
     },
     "admin": {
+        "legal": {
+            "back": "Retour aux documents juridiques",
+            "document": {
+                "backToWriting": "Revenir à la rédaction",
+                "confirm": "J’ai relu le document et je comprends que cette version ne pourra plus être modifiée.",
+                "continue": "Continuer vers « Vérifier et publier »",
+                "create": "Publier une première version",
+                "effectiveAt": "Date d’entrée en vigueur",
+                "effectiveAtHelp": "Laissez vide pour publier immédiatement.",
+                "effectiveSince": "En vigueur depuis le {date}.",
+                "emptyTitle": "Aucune version publiée",
+                "history": "Historique",
+                "historyEmpty": "Aucune ancienne version.",
+                "inForce": "En vigueur",
+                "leave": "Quitter sans publier",
+                "loading": "Chargement du document…",
+                "locale": "Langue",
+                "nextStep": "Étape suivante :",
+                "prepare": "Préparer une nouvelle version",
+                "preview": "Aperçu",
+                "previewEmpty": "L’aperçu apparaîtra ici.",
+                "publicPage": "Voir la page publique",
+                "publish": "Publier cette version",
+                "published": "La nouvelle version a été publiée.",
+                "publishing": "Publication…",
+                "read": "Consulter la version en vigueur",
+                "scheduled": "Publications programmées",
+                "seededDescription": "Les conditions installées à l’initialisation de la plateforme sont encore celles acceptées par les visiteurs. Publiez vos propres conditions d’utilisation.",
+                "seededTitle": "Conditions d’exemple en vigueur",
+                "stepReview": "Vérifier et publier",
+                "stepState": "Étape {current} sur 2",
+                "stepWrite": "Rédiger le document",
+                "unpublished": "Non publiée",
+                "version": "Version {version}",
+                "versionHelp": "Par exemple 2026.2. Cette référence doit être unique.",
+                "versionLabel": "Référence de la nouvelle version",
+                "versionOn": "Version {version} du {date}"
+            },
+            "hub": {
+                "documentsGroup": "Documents juridiques",
+                "journeyDescription": "Textes affichés avant le premier message et lors de la connexion.",
+                "journeyGroup": "Parcours d’acceptation",
+                "journeyLink": "Parcours de participation",
+                "privacyDescription": "Information relative à l’utilisation des données personnelles.",
+                "subtitle": "Chaque contenu dispose de son propre espace de gestion et de publication.",
+                "termsDescription": "Document dont l’acceptation est obligatoire.",
+                "title": "Documents et parcours juridiques"
+            },
+            "markdownHelp": "Mise en forme Markdown acceptée : **gras**, *italique*, [lien](https://exemple.fr).",
+            "participation": {
+                "arenaDescription": "Ce contenu apparaît lorsqu’une personne non connectée tente d’envoyer son premier message.",
+                "arenaTitle": "Avant le premier message",
+                "buttonLabel": "Texte du bouton de confirmation",
+                "buttonPlaceholder": "Continuer",
+                "checkboxLabel": "Texte associé à la case obligatoire",
+                "checkboxPlaceholder": "Le texte associé à la case apparaîtra ici.",
+                "formTitle": "Modifier le parcours",
+                "introduction": "Texte introductif",
+                "introductionPlaceholder": "Le texte introductif apparaîtra ici.",
+                "loading": "Chargement du parcours…",
+                "modalTitle": "Titre de la fenêtre",
+                "preview": "Aperçu utilisateur",
+                "save": "Enregistrer le parcours",
+                "saved": "Le parcours de participation a été enregistré.",
+                "saving": "Enregistrement…",
+                "signInDescription": "Cette case apparaît avant l’envoi du code de connexion et reste cochée pendant la saisie du code.",
+                "signInTitle": "À la connexion",
+                "subtitle": "Configurez les informations présentées avant le premier message et à la connexion.",
+                "title": "Parcours de participation"
+            },
+            "privacy": {
+                "contentLabel": "Contenu de la politique de confidentialité",
+                "draftTitle": "Nouvelle politique de confidentialité",
+                "emptyDescription": "La page publique affiche encore le contenu intégré à l’application. Publiez une première version pour la gérer depuis ce back-office.",
+                "subtitle": "Rédigez et publiez l’information relative aux traitements de données personnelles.",
+                "title": "Politique de confidentialité"
+            },
+            "terms": {
+                "contentLabel": "Contenu des conditions d’utilisation",
+                "draftTitle": "Nouvelles conditions d’utilisation",
+                "emptyDescription": "Publiez les conditions d’utilisation avant d’ouvrir l’arène au public.",
+                "subtitle": "Rédigez, vérifiez et publiez le document accepté pour participer à l’arène.",
+                "title": "Conditions d’utilisation"
+            }
+        },
         "llms": {
             "subTitle": "LLMs, labs, licenses and endpoints.",
             "title": "LLMs data configuration"
@@ -35,6 +120,7 @@
         "nav": {
             "authentification": "Authentification",
             "customization": "Personnalisation",
+            "legal": "Documents juridiques",
             "llms": "LLMs",
             "suggestions": "Suggestions",
             "users": "Utilisateurs"
@@ -214,7 +300,6 @@
                 "verifying": "Vérification..."
             },
             "email": {
-                "consent": "J'ai pris connaissance de l'utilisation de mes données et j'accepte les <a href='/arene/modalites' target='_blank'>conditions générales d'utilisation</a>",
                 "emailLabel": "Email",
                 "submit": "Recevoir le code de connexion",
                 "submitting": "Envoi en cours...",
@@ -236,7 +321,43 @@
             "merge": "Fusionner les conversations existantes avec votre compte"
         },
         "settings": {
+            "account": {
+                "title": "Mon compte",
+                "email": "Adresse électronique",
+                "signInPrompt": "Connectez-vous pour accéder aux paramètres de votre compte."
+            },
+            "display": {
+                "title": "Préférences"
+            },
+            "erase": {
+                "action": "Supprimer mon compte",
+                "title": "Supprimer mon compte",
+                "intro": "La suppression est définitive. Voici ce qu’elle fait, ni plus ni moins :",
+                "effectAccount": "votre adresse électronique est remplacée par une valeur anonyme et toutes vos sessions sont fermées ;",
+                "effectComparisons": "vos conversations sont détachées du compte, et l’adresse IP, l’identifiant de mesure d’audience et l’identifiant de session anonyme qui y étaient attachés sont effacés ;",
+                "effectContent": "le texte de vos conversations et vos votes sont conservés et restent publiés dans les jeux de données, sans lien avec vous ;",
+                "effectConsent": "la preuve de votre acceptation des conditions est conservée, sans adresse IP, parce que la loi l’exige.",
+                "confirmLabel": "Confirmez votre adresse électronique",
+                "confirmHelp": "Saisissez {email} pour confirmer la suppression.",
+                "mismatch": "Saisissez exactement l’adresse électronique de votre compte.",
+                "failed": "Le compte n’a pas pu être supprimé. Réessayez, ou écrivez-nous pour exercer ce droit.",
+                "pending": "Suppression…"
+            },
+            "export": {
+                "title": "Exporter mes données",
+                "desc": "Téléchargez une copie de votre compte, de vos conversations, de vos votes et de vos acceptations des conditions, au format JSON.",
+                "action": "Exporter mes données",
+                "pending": "Préparation…",
+                "failed": "L’export n’a pas pu être préparé. Réessayez dans un instant."
+            },
+            "links": {
+                "title": "Liens utiles"
+            },
             "logout": "Se déconnecter",
+            "subtitle": "Compte, données et informations sur la plateforme",
+            "tabAbout": "À propos",
+            "tabAccount": "Compte",
+            "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres"
         },
         "success": "Vous êtes connecté !"
@@ -291,6 +412,19 @@
             },
             "title": "Paramètres d'affichage"
         }
+    },
+    "consent": {
+        "close": "Fermer sans envoyer",
+        "confirm": "Confirmer",
+        "links": {
+            "privacy": "Politique de confidentialité",
+            "terms": "Conditions générales d’utilisation"
+        },
+        "loadFailed": "Les conditions d’utilisation n’ont pas pu être chargées.",
+        "required": "Vous devez accepter les conditions d’utilisation pour continuer",
+        "retry": "Réessayer",
+        "saveFailed": "Votre choix n’a pas pu être enregistré. Vérifiez votre connexion puis réessayez.",
+        "saving": "Enregistrement…"
     },
     "datasets": {
         "access": {
@@ -461,11 +595,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "Cette déclaration d’accessibilité s’applique au site <strong>comparia.beta.gouv.fr</strong>.",
+            "desc": "Cette déclaration d’accessibilité s’applique au site <strong>{domain}</strong>.",
             "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
-            "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
+            "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de {domain} pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
             "improveMail": "Courriel : <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Amélioration et contact",
             "remedyAdvocate": "Écrire un message au <a {linkProps}>Défenseur des droits</a>",
@@ -474,7 +608,7 @@
             "remedyDesc": "Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.",
             "remedyList": "Vous pouvez :",
             "remedyTitle": "Voie de recours",
-            "stateDesc": "Le site comparia.beta.gouv.fr est non conforme avec le RGAA 4.1. Le site n’a <strong>pas encore été audité</strong>. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir :",
+            "stateDesc": "Le site {domain} est non conforme avec le RGAA 4.1. Le site n’a <strong>pas encore été audité</strong>. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir :",
             "stateNavigate": "naviguer sur toutes les pages du site en utilisant un clavier",
             "statePrefs": "adapter le site à votre préférences (taille de la police, zoom écran, changement de typographie…) sans perte de contenu",
             "stateScreenReader": "consulter le site web avec un lecteur d’écran.",
@@ -1772,6 +1906,10 @@
             }
         },
         "homeTitle": "Accueil - compar:IA",
+        "legal": {
+            "label": "Légal",
+            "title": "Informations légales"
+        },
         "logoAlt": "République Française",
         "menu": "Menu",
         "startDiscussion": "Commencer à discuter",
@@ -2884,6 +3022,7 @@
         "archived": "Archivé",
         "available": "Disponible",
         "back": "Retour",
+        "cancel": "Annuler",
         "close": "Fermer",
         "deactivated": "Désactivé",
         "forbidden": "interdit",

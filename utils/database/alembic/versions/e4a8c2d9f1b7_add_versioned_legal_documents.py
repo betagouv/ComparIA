@@ -24,6 +24,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 # Starter terms so a fresh install is never blocked on an unpublished document.
 SEED_ID = uuid.UUID("6f1b6f6e-8f4a-4c3e-9a2f-2d0d5a1f7b41")
+# Frozen copy of backend.settings.legal.SEEDED_TERMS_VERSION: a migration must
+# keep running whatever the application code becomes. tests/settings/test_legal.py
+# fails if the two drift apart.
 SEED_VERSION = "0-initiale-a-remplacer"
 SEED_CONTENT = """# Conditions générales d’utilisation
 

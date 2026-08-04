@@ -15,6 +15,7 @@ export interface AdminLegalDocument {
   published_at: string;
   effective_at: string;
   retired_at: string | null;
+  seeded: boolean;
 }
 export interface AdminSuggestion {
   id: string;

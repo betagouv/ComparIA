@@ -237,7 +237,6 @@
         : m['words.NA']()
     }
   ])
-
 </script>
 
 <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex h-full flex-col">

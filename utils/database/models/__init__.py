@@ -1,5 +1,6 @@
 from .app_settings import AppSettings, AppSettingsPatch, AppSettingsPublic
 from .auth import (
+    AnonymousConsentLog,
     AuthSession,
     ConsentLog,
     LegalDocument,
@@ -8,6 +9,7 @@ from .auth import (
     UserPublic,
 )
 from .comparison import (
+    LEGACY_PARTICIPATION_TERMS_VERSION,
     ArchivedReason,
     Comparison,
     ComparisonArchiveUpdate,

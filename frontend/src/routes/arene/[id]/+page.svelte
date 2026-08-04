@@ -4,12 +4,22 @@
   import PageLayout from '$components/PageLayout.svelte'
   import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { ViewChat } from '../components'
+  import { TOSModal, ViewChat } from '../components'
 
   const id = $derived(page.params.id)
   const comparator = $derived(getComparison(id))
   const revealed = $derived(comparator.status === 'revealed')
+
+  let tosModal = $state<{
+    runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
+  }>()
+
+  async function runAfterAcceptance(action: () => unknown | Promise<unknown>): Promise<void> {
+    await tosModal?.runAfterAcceptance(action)
+  }
 </script>
+
+<TOSModal bind:this={tosModal} />
 
 <PageLayout
   seoTitle={m['seo.titles.arene']()}
@@ -25,12 +35,12 @@
       <Link
         button
         icon="edit-line"
-        href="../arene/?cgu_acceptees"
+        href="../arene/"
         text={m['header.chatbot.newDiscussion']()}
         class="text-nowrap"
       />
     </div>
   {/snippet}
 
-  <ViewChat comparisonId={comparator.comparisonId!} />
+  <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />
 </PageLayout>
