@@ -2211,6 +2211,15 @@
         }
     },
     "statistics": {
+        "activity": {
+            "conversationsLabel": "Samtaler",
+            "dateLabel": "Dato",
+            "demoLabel": "Demonstrationsdata",
+            "description": "Antal samtaler startet hver dag i løbet af de seneste 14 dage.",
+            "sectionTitle": "Aktivitet",
+            "tableLabel": "Vis data som tabel",
+            "title": "Daglige samtaler"
+        },
         "counterLink": "Se platformens statistik",
         "eyebrow": "Statistik",
         "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",

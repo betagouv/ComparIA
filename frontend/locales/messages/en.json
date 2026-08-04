@@ -2171,6 +2171,15 @@
         }
     },
     "statistics": {
+        "activity": {
+            "conversationsLabel": "Conversations",
+            "dateLabel": "Date",
+            "demoLabel": "Demonstration data",
+            "description": "Number of conversations started each day over the last 14 days.",
+            "sectionTitle": "Activity",
+            "tableLabel": "View data as a table",
+            "title": "Daily conversations"
+        },
         "counterLink": "View platform statistics",
         "eyebrow": "Statistics",
         "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",

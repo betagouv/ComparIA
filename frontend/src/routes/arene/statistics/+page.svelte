@@ -1,10 +1,23 @@
 <script lang="ts">
+  import { dev } from '$app/environment'
   import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import ConversationActivityChart from './ConversationActivityChart.svelte'
 
   const { data } = $props()
   const numberFormatter = new Intl.NumberFormat(getLocale())
+  const demoCounts = [18, 24, 21, 31, 28, 37, 35, 42, 39, 48, 44, 53, 49, 58]
+  const hasActivity = $derived(data.statistics.daily_conversations.some((point) => point.count > 0))
+  const showDemo = $derived(dev && !hasActivity)
+  const activityPoints = $derived(
+    showDemo
+      ? data.statistics.daily_conversations.map((point, index) => ({
+          ...point,
+          count: demoCounts[index] ?? 0
+        }))
+      : data.statistics.daily_conversations
+  )
 
   const metrics = $derived([
     {
@@ -43,6 +56,19 @@
     </dl>
 
     <p class="fr-text--sm mt-8! mb-0! text-grey">{m['statistics.methodology']()}</p>
+
+    <section class="mt-12" aria-labelledby="activity-title">
+      <h2 id="activity-title" class="fr-h4 mb-6!">{m['statistics.activity.sectionTitle']()}</h2>
+      <ConversationActivityChart
+        points={activityPoints}
+        title={m['statistics.activity.title']()}
+        description={m['statistics.activity.description']()}
+        demoLabel={showDemo ? m['statistics.activity.demoLabel']() : undefined}
+        tableLabel={m['statistics.activity.tableLabel']()}
+        dateLabel={m['statistics.activity.dateLabel']()}
+        conversationsLabel={m['statistics.activity.conversationsLabel']()}
+      />
+    </section>
   </section>
 </PageLayout>
 

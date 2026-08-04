@@ -219,6 +219,15 @@
         }
     },
     "statistics": {
+        "activity": {
+            "conversationsLabel": "Pokalbiai",
+            "dateLabel": "Data",
+            "demoLabel": "Demonstraciniai duomenys",
+            "description": "Kasdien pradėtų pokalbių skaičius per pastarąsias 14 dienų.",
+            "sectionTitle": "Aktyvumas",
+            "tableLabel": "Rodyti duomenis lentelėje",
+            "title": "Kasdieniai pokalbiai"
+        },
         "counterLink": "Peržiūrėti platformos statistiką",
         "eyebrow": "Statistika",
         "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
