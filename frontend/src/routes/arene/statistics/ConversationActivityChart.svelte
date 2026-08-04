@@ -56,7 +56,7 @@
     )
 </script>
 
-<figure class="chart-panel bg-white">
+<figure class="chart-panel bg-very-light-primary">
   <figcaption>
     <div class="gap-3 sm:flex-row sm:items-start sm:justify-between flex flex-col">
       <div>
@@ -143,7 +143,8 @@
 <style>
   .chart-panel {
     padding: 1.5rem;
-    border: 1px solid var(--border-default-grey);
+    border: 1px solid var(--border-default-blue-france);
+    border-radius: 1rem;
   }
 
   .chart {
@@ -154,12 +155,14 @@
   }
 
   .grid-line {
-    stroke: var(--border-default-grey);
+    stroke: var(--border-default-blue-france);
+    stroke-opacity: 0.35;
     stroke-dasharray: 4 5;
   }
 
   .axis-line {
-    stroke: var(--border-plain-grey);
+    stroke: var(--border-default-blue-france);
+    stroke-opacity: 0.65;
   }
 
   .axis-label {
