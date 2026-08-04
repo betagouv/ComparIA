@@ -22,7 +22,6 @@
 
   let terms = $state<ConsentDocument>()
   let status = $state<'loading' | 'accepted' | 'required' | 'error'>('loading')
-  let showModal = $state(false)
   let acceptTos = $state(false)
   let savingConsent = $state(false)
   let tosError = $state<string>()
@@ -73,7 +72,6 @@
 
     pendingAction = action
     returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    showModal = true
     await tick()
     getModalController().disclose()
   }
@@ -81,12 +79,19 @@
   async function retry() {
     loaded = readConsent(true)
     await loaded
+    // Accepted in another tab or since the first attempt: nothing left to ask,
+    // close and run what was waiting.
+    if (status !== 'accepted') return
+    getModalController().conceal()
+    const action = pendingAction
+    pendingAction = undefined
+    returnFocus = null
+    await action?.()
   }
 
   async function cancelPendingAction() {
     pendingAction = undefined
     acceptTos = false
-    showModal = false
     getModalController().conceal()
     await tick()
     returnFocus?.focus()
@@ -105,7 +110,6 @@
     try {
       await submitConsent(terms, !!auth.user)
       status = 'accepted'
-      showModal = false
       getModalController().conceal()
       action = pendingAction
       pendingAction = undefined
@@ -120,7 +124,6 @@
   }
 </script>
 
-<button class="hidden" data-fr-opened={showModal} aria-controls="fr-modal-welcome"> Hidden </button>
 <dialog
   bind:this={modal}
   aria-labelledby="fr-modal-title-modal-welcome"
