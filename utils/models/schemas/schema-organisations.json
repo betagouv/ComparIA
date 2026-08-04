@@ -67,7 +67,7 @@
       "properties": {
         "new": {
           "default": false,
-          "description": "Whether this is a newly added LLM",
+          "description": "Whether this LLM was released within the last two months, based on its release date",
           "title": "New",
           "type": "boolean"
         },
