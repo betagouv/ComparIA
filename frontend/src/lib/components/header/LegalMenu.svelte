@@ -22,13 +22,13 @@
     label={m['header.legal.label']()}
     title={m['header.legal.title']()}
     buttonClass={[
-      'legal-menu-btn fr-btn fr-btn--tertiary-no-outline rounded-sm! gap-2 w-full! justify-start',
-      { 'lg:justify-center lg:px-0!': !expanded }
+      'legal-menu-btn fr-btn fr-btn--tertiary-no-outline rounded-sm! gap-2 justify-start',
+      { 'lg:w-full lg:justify-center lg:px-0!': !expanded }
     ]}
     closeOnSelect
   >
     {#snippet buttonLabel(label: string)}
-      <Icon icon="i-ri-scales-3-line" block size="sm" />
+      <Icon icon="i-ri-scales-3-line" block size="xs" />
       <span class={{ 'lg:sr-only': !expanded }}>{label}</span>
       <Icon
         icon="i-ri-arrow-down-s-line"
@@ -64,6 +64,13 @@
       line-height: 1.5rem;
       font-weight: 500;
       color: var(--text-default-grey);
+
+      /* On desktop the translate button compacts, so does this one */
+      @media (min-width: 62em) {
+        min-height: auto;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+      }
 
       &[aria-expanded='true'] {
         color: var(--text-active-blue-france);
