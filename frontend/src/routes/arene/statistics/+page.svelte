@@ -47,8 +47,8 @@
 <style>
   .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .metric-card {
@@ -57,15 +57,15 @@
     grid-template-rows: auto auto;
     column-gap: 1rem;
     align-items: center;
-    min-height: 8.75rem;
-    padding: 1.5rem;
+    min-height: 7.5rem;
+    padding: 1.25rem;
     border: 1px solid var(--border-default-blue-france);
     border-radius: 1rem;
   }
 
   .metric-emoji {
     grid-row: 1 / 3;
-    font-size: 2.5rem;
+    font-size: 2rem;
     line-height: 1;
   }
 
@@ -75,7 +75,7 @@
     align-self: end;
     margin: 0;
     color: var(--text-title-grey);
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-size: 2.5rem;
     font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -87,7 +87,19 @@
     align-self: start;
     margin-top: 0.5rem;
     color: var(--text-title-grey);
-    font-size: 1.125rem;
+    font-size: 1rem;
     line-height: 1.35;
+  }
+
+  @media (min-width: 48em) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 78em) {
+    .metrics-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 </style>
