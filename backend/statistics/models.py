@@ -1,14 +1,35 @@
 from datetime import date
+from typing import Literal
 
 from pydantic import BaseModel
 
+StatisticsPeriod = Literal["7d", "30d", "90d", "all"]
+StatisticsGranularity = Literal["day", "week", "month"]
 
-class DailyConversationCount(BaseModel):
+
+class ActivityPoint(BaseModel):
     date: date
-    count: int
+    prompts: int
+    conversations: int
+
+
+class PreferenceCounts(BaseModel):
+    a_better: int
+    b_better: int
+    both_good: int
+    both_bad: int
+
+
+class PreferencePoint(PreferenceCounts):
+    date: date
 
 
 class StatisticsSummary(BaseModel):
-    questions_count: int
-    votes_count: int
-    daily_conversations: list[DailyConversationCount]
+    period: StatisticsPeriod
+    granularity: StatisticsGranularity
+    prompts_count: int
+    conversations_count: int
+    models_count: int
+    preferences: PreferenceCounts
+    activity: list[ActivityPoint]
+    preference_activity: list[PreferencePoint]

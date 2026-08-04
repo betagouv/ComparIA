@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -16,7 +17,7 @@ class FakeResult:
     def __init__(self, rows):
         self.rows = rows
 
-    def one(self) -> tuple[int, int]:
+    def one(self):
         return self.rows
 
     def all(self):
@@ -26,15 +27,21 @@ class FakeResult:
 class FakeSession:
     def __init__(self) -> None:
         self.statements = []
+        day = datetime(2026, 8, 1)
+        self.results = [
+            (42, 12),
+            9,
+            [(day, 42)],
+            [(day, 12)],
+            [(day, 4, 3, 2, 1)],
+        ]
 
     async def exec(self, statement):
         self.statements.append(statement)
-        if len(self.statements) == 1:
-            return FakeResult((42, 17))
-        return FakeResult([])
+        return FakeResult(self.results[len(self.statements) - 1])
 
 
-def test_get_statistics_summary_reads_both_counts_in_one_query(monkeypatch):
+def test_get_statistics_summary_aggregates_activity_and_preferences(monkeypatch):
     session = FakeSession()
 
     @asynccontextmanager
@@ -48,24 +55,44 @@ def test_get_statistics_summary_reads_both_counts_in_one_query(monkeypatch):
 
     summary = asyncio.run(services.get_statistics_summary())
 
-    assert summary.questions_count == 42
-    assert summary.votes_count == 17
-    assert len(session.statements) == 2
-    assert len(summary.daily_conversations) == 14
-    assert all(point.count == 0 for point in summary.daily_conversations)
+    assert summary.prompts_count == 42
+    assert summary.conversations_count == 12
+    assert summary.models_count == 9
+    assert summary.preferences.model_dump() == {
+        "a_better": 4,
+        "b_better": 3,
+        "both_good": 2,
+        "both_bad": 1,
+    }
+    activity_point = next(
+        point for point in summary.activity if point.date.isoformat() == "2026-08-01"
+    )
+    assert activity_point.prompts == 42
+    assert activity_point.conversations == 12
+    assert len(session.statements) == 5
     redis.setex.assert_called_once()
 
 
-def test_get_statistics_summary_uses_cached_value(monkeypatch):
+def test_get_statistics_summary_uses_period_specific_cached_value(monkeypatch):
     redis = Mock()
-    redis.get.return_value = (
-        '{"questions_count": 12, "votes_count": 5, "daily_conversations": []}'
-    )
+    redis.get.return_value = """{
+        "period":"7d","granularity":"day","prompts_count":12,
+        "conversations_count":5,"models_count":3,
+        "preferences":{"a_better":1,"b_better":1,"both_good":1,"both_bad":1},
+        "activity":[],"preference_activity":[]
+    }"""
     monkeypatch.setattr(services, "get_redis_client", lambda: redis)
 
-    summary = asyncio.run(services.get_statistics_summary())
+    summary = asyncio.run(services.get_statistics_summary("7d"))
 
-    assert summary.questions_count == 12
-    assert summary.votes_count == 5
-    assert summary.daily_conversations == []
+    assert summary.prompts_count == 12
+    assert summary.period == "7d"
+    redis.get.assert_called_once_with("statistics:summary:7d")
     redis.setex.assert_not_called()
+
+
+def test_period_granularity_scales_with_range():
+    assert services._granularity("7d") == "day"
+    assert services._granularity("30d") == "day"
+    assert services._granularity("90d") == "week"
+    assert services._granularity("all") == "month"

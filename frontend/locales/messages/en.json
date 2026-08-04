@@ -2271,25 +2271,40 @@
             "conversationsLabel": "Conversations",
             "dateLabel": "Date",
             "demoLabel": "Demonstration data",
-            "description": "Number of conversations started each day over the last 14 days.",
+            "description": "Changes in submitted prompts and started conversations over the selected period.",
+            "promptsLabel": "Prompts submitted",
             "sectionTitle": "Activity",
             "tableLabel": "View data as a table",
-            "title": "Daily conversations"
+            "title": "Platform activity"
         },
         "counterLink": "View platform statistics",
         "eyebrow": "Statistics",
         "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",
-        "methodology": "These figures include non-archived conversations and are updated regularly.",
+        "filters": {
+            "allTime": "All time",
+            "label": "Period",
+            "ninetyDays": "90 days",
+            "sevenDays": "7 days",
+            "thirtyDays": "30 days"
+        },
+        "methodology": "These figures only include non-archived conversations. Data is aggregated and updated regularly.",
         "overview": "Overview",
         "metrics": {
-            "questions": {
-                "description": "Prompts submitted to compare two conversational AI models.",
-                "label": "Questions asked"
-            },
-            "votes": {
-                "description": "Preferences expressed after comparing the models' answers.",
-                "label": "Votes cast"
-            }
+            "conversations": { "label": "Conversations had" },
+            "models": { "label": "Models tested" },
+            "prompts": { "label": "Prompts submitted" }
+        },
+        "preferences": {
+            "aBetter": "Response A preferred",
+            "bBetter": "Response B preferred",
+            "bothBad": "Both are bad",
+            "bothGood": "Both are good",
+            "chartDescription": "Distribution of the four preference types over time.",
+            "chartTitle": "Preference trends",
+            "numbers": "Numbers",
+            "proportions": "Proportions",
+            "sectionTitle": "Preferences",
+            "total": "{count} preferences expressed"
         },
         "title": "Platform statistics"
     },
