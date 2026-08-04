@@ -103,7 +103,7 @@
         button: true,
         size: 'sm',
         variant: 'tertiary-no-outline',
-        class: 'text-sm! text-grey! -ms-3'
+        class: 'text-sm! text-grey! rounded-sm!'
       })}
 
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
