@@ -2212,9 +2212,10 @@
     },
     "statistics": {
         "counterLink": "Se platformens statistik",
-        "eyebrow": "AI-Arenaen i tal",
+        "eyebrow": "Statistik",
         "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
         "methodology": "Tallene omfatter ikke-arkiverede samtaler og opdateres løbende.",
+        "overview": "Overblik",
         "metrics": {
             "questions": {
                 "description": "Spørgsmål stillet for at sammenligne svar fra to samtale-AI-modeller.",

@@ -1484,9 +1484,10 @@
     },
     "statistics": {
         "counterLink": "Visa plattformens statistik",
-        "eyebrow": "compar:IA i siffror",
+        "eyebrow": "Statistik",
         "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",
         "methodology": "Siffrorna omfattar icke-arkiverade samtal och uppdateras regelbundet.",
+        "overview": "Översikt",
         "metrics": {
             "questions": {
                 "description": "Frågor som ställts för att jämföra svar från två konversationsmodeller.",

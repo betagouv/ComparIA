@@ -30,6 +30,8 @@
   class="bg-very-light-grey min-h-[calc(100vh-var(--second-header-size))]"
 >
   <section class="fr-container py-4! md:py-8!" aria-label={m['statistics.title']()}>
+    <h2 class="fr-h4 mb-6!">{m['statistics.overview']()}</h2>
+
     <dl class="metrics-grid">
       {#each metrics as metric (metric.id)}
         <div class="metric-card bg-very-light-primary">
@@ -48,24 +50,24 @@
   .metrics-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.25rem;
   }
 
   .metric-card {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
-    column-gap: 1rem;
+    column-gap: 0.75rem;
     align-items: center;
-    min-height: 7.5rem;
-    padding: 1.25rem;
+    min-height: 6.5rem;
+    padding: 1rem;
     border: 1px solid var(--border-default-blue-france);
     border-radius: 1rem;
   }
 
   .metric-emoji {
     grid-row: 1 / 3;
-    font-size: 2rem;
+    font-size: 1.75rem;
     line-height: 1;
   }
 
@@ -75,7 +77,7 @@
     align-self: end;
     margin: 0;
     color: var(--text-title-grey);
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -85,9 +87,9 @@
     grid-column: 2;
     grid-row: 2;
     align-self: start;
-    margin-top: 0.5rem;
+    margin-top: 0.35rem;
     color: var(--text-title-grey);
-    font-size: 1rem;
+    font-size: 0.875rem;
     line-height: 1.35;
   }
 
