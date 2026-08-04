@@ -97,7 +97,7 @@
   <div class="gap-2 flex flex-col">
     <div class="flex items-center justify-between">
       {@render renderLink({
-        href: '/arene/parametres',
+        href: '/arene/settings',
         label: m['seo.titles.settings'](),
         icon: 'i-ri-settings-4-line',
         button: true,
