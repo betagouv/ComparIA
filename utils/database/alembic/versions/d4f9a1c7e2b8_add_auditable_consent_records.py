@@ -1,7 +1,7 @@
 """add auditable consent records
 
 Revision ID: d4f9a1c7e2b8
-Revises: e4a8c2d9f1b7
+Revises: e8f7a6b5c4d3
 Create Date: 2026-07-27 10:00:00.000000
 
 """
@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "d4f9a1c7e2b8"
-down_revision: Union[str, Sequence[str], None] = "e4a8c2d9f1b7"
+down_revision: Union[str, Sequence[str], None] = "e8f7a6b5c4d3"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
