@@ -32,10 +32,12 @@ async def lifespan(app: FastAPI):
         from backend import publishing
 
         publishing.start(app)
+        try:
+            yield
+        finally:
+            await publishing.stop(app)
+    else:
         yield
-        await publishing.stop(app)
-        return
-    yield
 
 
 app = FastAPI(lifespan=lifespan)

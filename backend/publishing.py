@@ -8,8 +8,10 @@ process, so a multi-gigabyte parquet build cannot take the memory the arena is
 serving from.
 
 Replicas elect one scheduler between them with a Postgres advisory lock. The
-rest of them do nothing. DATASET_SCHEDULER_ENABLED=false turns it off, which
-lets a larger deployment run this same image as a dedicated scheduler replica.
+rest wait for it, so losing the replica that holds it hands the schedule to a
+neighbour rather than stopping it. DATASET_SCHEDULER_ENABLED=false turns it
+off, which lets a larger deployment run this same image as a dedicated
+scheduler replica.
 """
 
 import asyncio
@@ -17,12 +19,12 @@ import logging
 import os
 import resource
 import sys
-from datetime import datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from backend.config import settings
 from utils.database.models.app_settings import AppSettings
-from utils.database.session import engine
+from utils.database.session import get_engine
 from utils.database.settings import get_app_settings
 from utils.dataset.runs import close_unfinished_run, last_run
 
@@ -34,6 +36,27 @@ ADVISORY_LOCK_KEY = 8_147_231
 # How often the loop looks at the schedule. Small enough that an hour changed
 # in the panel takes effect the same day, large enough to be free.
 TICK_SECONDS = 60
+
+
+def _at_hour(local: datetime, hour: int) -> datetime:
+    """
+    That day at that hour, in the same zone.
+
+    On the day the clocks go forward the hour may not exist, and asking for it
+    gives a moment that is really the hour before or after. The run then fires
+    at the wrong time once a year, or twice on the day they go back. Where the
+    hour is missing we take the next one that exists; where it happens twice we
+    take the first, which 'fold=0' already does.
+    """
+    zone = local.tzinfo
+    for offset in range(3):
+        due = local.replace(
+            hour=(hour + offset) % 24, minute=0, second=0, microsecond=0, fold=0
+        )
+        # An hour the clocks skipped comes back as a different one.
+        if due.astimezone(UTC).astimezone(zone).hour == due.hour:
+            return due
+    return local.replace(hour=hour, minute=0, second=0, microsecond=0, fold=0)
 
 
 def next_run_at(app_settings: AppSettings, after: datetime) -> datetime | None:
@@ -53,26 +76,32 @@ def next_run_at(app_settings: AppSettings, after: datetime) -> datetime | None:
 
     zone = ZoneInfo(app_settings.publish_timezone)
     local = after.astimezone(zone)
-    due = local.replace(
-        hour=app_settings.publish_hour, minute=0, second=0, microsecond=0
-    )
+
+    def due_on(day: date) -> datetime:
+        # The hour is worked out per day, because whether it exists depends on
+        # the day: 02:00 is missing on the morning the clocks go forward and
+        # back the morning after.
+        return _at_hour(datetime.combine(day, time(), tzinfo=zone), hour)
+
+    hour = app_settings.publish_hour
+    day = local.date()
 
     if frequency == "daily":
-        if due <= local:
-            due += timedelta(days=1)
+        if due_on(day) <= local:
+            day += timedelta(days=1)
     elif frequency == "weekly":
-        due += timedelta(days=(7 - due.weekday()) % 7)
-        if due <= local:
-            due += timedelta(days=7)
+        day += timedelta(days=(7 - day.weekday()) % 7)
+        if due_on(day) <= local:
+            day += timedelta(days=7)
     elif frequency == "monthly":
-        due = due.replace(day=1)
-        if due <= local:
+        day = day.replace(day=1)
+        if due_on(day) <= local:
             # The 28th of any month plus four days is always the next month.
-            due = (due.replace(day=28) + timedelta(days=4)).replace(day=1)
+            day = (day.replace(day=28) + timedelta(days=4)).replace(day=1)
     else:
         return None
 
-    return due.astimezone(ZoneInfo("UTC"))
+    return due_on(day).astimezone(UTC)
 
 
 def _child_limits() -> None:
@@ -140,61 +169,83 @@ async def _hold_lock(connection) -> bool:
     return taken
 
 
+async def _release_lock(connection) -> None:
+    """
+    A dying process releases the lock by closing its connection. A dying task
+    does not: its connection goes back to the pool still holding it, and no
+    other replica could ever take the schedule over.
+    """
+    await connection.exec_driver_sql(f"SELECT pg_advisory_unlock({ADVISORY_LOCK_KEY})")
+    await connection.commit()
+
+
 async def scheduler() -> None:
+    engine = get_engine()
     if engine is None:
         return
 
     async with engine.connect() as connection:
-        if not await _hold_lock(connection):
-            logger.info("Another replica holds the publish scheduler")
-            return
+        # Whoever holds the lock is the scheduler. The others keep asking, so
+        # that a replica going down hands the schedule to one of its
+        # neighbours within the minute rather than stopping it until someone
+        # notices and restarts something.
+        while not await _hold_lock(connection):
+            await asyncio.sleep(TICK_SECONDS)
         logger.info("Holding the publish scheduler")
 
-        # A run interrupted by a restart left its row open; nothing else will
-        # ever close it.
-        await close_unfinished_run("The process stopped while the run was going")
+        try:
+            # A run interrupted by a restart left its row open; nothing else
+            # will ever close it.
+            await close_unfinished_run("The process stopped while the run was going")
 
-        # The due time is worked out once per schedule, not once per tick:
-        # next_run_at always answers with a future moment, so recomputing it
-        # every minute would push the run away for ever.
-        schedule: tuple | None = None
-        due: datetime | None = None
+            # The due time is worked out once per schedule, not once per tick:
+            # next_run_at always answers with a future moment, so recomputing
+            # it every minute would push the run away for ever.
+            schedule: tuple | None = None
+            due: datetime | None = None
 
-        while True:
-            await asyncio.sleep(TICK_SECONDS)
-            now = datetime.now(ZoneInfo("UTC"))
-            app_settings = await get_app_settings()
+            while True:
+                await asyncio.sleep(TICK_SECONDS)
+                now = datetime.now(UTC)
+                app_settings = await get_app_settings()
 
-            current = (
-                app_settings.publish_frequency,
-                app_settings.publish_hour,
-                app_settings.publish_timezone,
-            )
-            if current != schedule:
-                schedule = current
-                due = next_run_at(app_settings, now)
-                logger.info(f"Next publish run: {due or 'never, the schedule is off'}")
+                current = (
+                    app_settings.publish_frequency,
+                    app_settings.publish_hour,
+                    app_settings.publish_timezone,
+                )
+                if current != schedule:
+                    schedule = current
+                    due = next_run_at(app_settings, now)
+                    logger.info(
+                        f"Next publish run: {due or 'never, the schedule is off'}"
+                    )
 
-            if due is None or now < due:
-                continue
+                if due is None or now < due:
+                    continue
 
-            run = await last_run()
-            if run is not None and run.finished_at is None:
-                logger.warning("A publish run is already going, skipping this one")
-            else:
-                await run_export()
-            due = next_run_at(app_settings, datetime.now(ZoneInfo("UTC")))
+                run = await last_run()
+                if run is not None and run.finished_at is None:
+                    logger.warning("A publish run is already going, skipping this one")
+                else:
+                    await run_export()
+                due = next_run_at(app_settings, datetime.now(UTC))
+        finally:
+            await _release_lock(connection)
 
 
 def start(app) -> None:
     """Called from the lifespan. Keeps a reference so the task is not collected."""
-    if not settings.DATASET_SCHEDULER_ENABLED or engine is None:
+    if not settings.DATASET_SCHEDULER_ENABLED or get_engine() is None:
         return
     app.state.publish_scheduler = asyncio.create_task(scheduler())
 
 
 async def stop(app) -> None:
-    """Give the lock's connection back rather than leaving it to the collector."""
+    """
+    Stop the loop, and wait for it: cancelling without waiting leaves the
+    lock's connection to the garbage collector, which cannot close it cleanly.
+    """
     task = getattr(app.state, "publish_scheduler", None)
     if task is None:
         return

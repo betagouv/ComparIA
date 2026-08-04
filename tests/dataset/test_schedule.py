@@ -84,6 +84,22 @@ def test_the_next_run_is_always_ahead():
             assert next_run_at(settings(frequency), now) > now
 
 
+def test_an_hour_the_clocks_skip_moves_to_the_next_one():
+    # Paris goes forward on 29 March 2026: 02:00 does not happen that morning.
+    at_two = settings("daily", hour=2)
+    assert local(next_run_at(at_two, utc("2026-03-28T12:00:00"))) == (
+        "2026-03-29T03:00:00+02:00"
+    )
+    # And the morning after, 02:00 is an ordinary hour again.
+    assert local(next_run_at(at_two, utc("2026-03-29T12:00:00"))) == (
+        "2026-03-30T02:00:00+02:00"
+    )
+    # Going back, 02:00 happens twice on 25 October: the first one wins.
+    assert local(next_run_at(at_two, utc("2026-10-24T12:00:00"))) == (
+        "2026-10-25T02:00:00+02:00"
+    )
+
+
 def test_the_hour_is_the_instance_hour_not_the_server_hour():
     tokyo = next_run_at(
         settings("daily", timezone="Asia/Tokyo"), utc("2026-08-04T12:00:00")

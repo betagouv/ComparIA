@@ -5,12 +5,19 @@ from typing import Literal
 
 import cyclopts
 
+from utils.database.session import use_export_engine
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
 
 from .compute import count_dataset_rows, process_datasets
 from .models import Datasets
-from .publish import LOCAL_NAMES, DestinationError, enabled_destinations, publish
+from .publish import (
+    LOCAL_NAMES,
+    DestinationError,
+    NotEnoughDiskError,
+    enabled_destinations,
+    publish,
+)
 from .runs import finish_run, open_dataset_counts, start_run
 
 logger = logging.getLogger("comparia.dataset")
@@ -24,7 +31,7 @@ def check_free_disk(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
     free = shutil.disk_usage(path).free
     if free < FREE_DISK_REQUIRED:
-        raise DestinationError(
+        raise NotEnoughDiskError(
             f"Only {free / 1024**3:.1f} GB free under '{path}', "
             f"{FREE_DISK_REQUIRED / 1024**3:.0f} GB needed for a run."
         )
@@ -61,6 +68,10 @@ async def main(
         instance's last run.
     """
     datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
+
+    # Before the first query: this process reads against a database that is
+    # serving the arena.
+    use_export_engine()
 
     if count:
         return await count_dataset_rows(datasets)

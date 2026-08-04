@@ -6,7 +6,7 @@ from enum import Enum
 
 from pydantic import ValidationError
 from sqlalchemy import and_
-from sqlmodel import col
+from sqlmodel import SQLModel, col
 
 from utils.database.models.comparison import (
     Comparison,
@@ -38,10 +38,18 @@ class AnalysisNotConfigured(Exception):
     pass
 
 
-async def get_analysis_model() -> tuple[str, str | None, str | None]:
+class AnalysisModel(SQLModel):
+    """What litellm needs to call the model analysis runs on."""
+
+    # 'provider/model', the way litellm names a model.
+    model: str
+    api_base: str | None
+    api_key: str
+
+
+async def get_analysis_model() -> AnalysisModel:
     """
-    The model analysis runs on, as litellm wants it: 'provider/model', with the
-    endpoint's key and base URL. Configured in the admin panel next to every
+    The model analysis runs on. Configured in the admin panel next to every
     other model, rather than in this file.
     """
     app_settings = await get_app_settings()
@@ -59,10 +67,10 @@ async def get_analysis_model() -> tuple[str, str | None, str | None]:
             f"The '{endpoint.name}' endpoint has no API key, so analysis cannot run."
         )
 
-    return (
-        f"{endpoint.api_type}/{app_settings.analysis_model}",
-        endpoint.api_base,
-        endpoint.api_key,
+    return AnalysisModel(
+        model=f"{endpoint.api_type}/{app_settings.analysis_model}",
+        api_base=endpoint.api_base,
+        api_key=endpoint.api_key,
     )
 
 
@@ -159,22 +167,20 @@ class Config:
         Conversation B: {conversation_b}
         """
 
-    def __init__(self, model: str, api_base: str | None, api_key: str | None):
-        self.model = model
-        self.api_base = api_base
-        self.api_key = api_key
+    def __init__(self, analysis_model: AnalysisModel):
+        self.analysis_model = analysis_model
 
     async def _analyze(self, prompt: str) -> ComparisonLLMAnalysisUpdate:
         import litellm
 
         response = await litellm.acompletion(
-            model=self.model,
-            api_key=self.api_key,
-            base_url=self.api_base,
+            model=self.analysis_model.model,
+            api_key=self.analysis_model.api_key,
+            base_url=self.analysis_model.api_base,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
         )
-        logger.debug(f"'{self.model}' response received.")
+        logger.debug(f"'{self.analysis_model.model}' response received.")
 
         try:
             content = response.choices[0].message.content
@@ -262,7 +268,7 @@ async def analyze_comparisons():
     Will mark analysis as failed if the LLM fails to properly answer the
     prompt, but if any other error occurs, tasks will be cancelled asap.
     """
-    analyzer = Config(*await get_analysis_model())
+    analyzer = Config(await get_analysis_model())
     queue: asyncio.Queue[Comparison | None] = asyncio.Queue()
     workers = [
         asyncio.create_task(worker(analyzer, queue, i)) for i in range(analyzer.WORKERS)
