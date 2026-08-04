@@ -3040,7 +3040,7 @@
         },
         "counterLink": "Consulter les statistiques de la plateforme",
         "eyebrow": "Statistiques",
-        "intro": "Découvrez comment les conversations et les préférences partagées sur la plateforme contribuent à un jeu de données commun.",
+        "intro": "Découvrez l’activité de la plateforme.",
         "filters": {
             "allTime": "Depuis le début",
             "label": "Période",
