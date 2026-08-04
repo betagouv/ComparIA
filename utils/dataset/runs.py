@@ -9,8 +9,7 @@ child left open, which is what a kill or a crash looks like from outside.
 import logging
 import uuid
 
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import and_, col, desc, select
+from sqlmodel import and_, col, desc, func, or_, select
 
 from utils.database.models import Comparison
 from utils.database.models.publish import PublishRun
@@ -30,8 +29,17 @@ PUBLISHABLE = and_(
     col(Comparison.llm_analyzed) == True,  # noqa: E712
     col(Comparison.contains_pii) != True,  # noqa: E712
     col(Comparison.contains_spam) != True,  # noqa: E712
-    col(Comparison.error) == JSONB.NULL,
-    col(Comparison.cohorts).in_((None, "")),
+    # A comparison that went well stores the JSON value null, not SQL NULL,
+    # and both mean the same thing to the exporter. Comparing the column to
+    # JSONB.NULL asks SQL 'error IS NULL', which no untouched row satisfies:
+    # that counted every comparison ever made as held back.
+    or_(
+        col(Comparison.error).is_(None),
+        func.jsonb_typeof(col(Comparison.error)) == "null",
+    ),
+    # Same trap as the error column: 'cohorts IN (NULL, '')' is never true of
+    # a NULL, which is what an ordinary visitor's comparison holds.
+    or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == ""),
 )
 
 
