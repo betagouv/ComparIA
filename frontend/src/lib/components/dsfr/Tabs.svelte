@@ -32,8 +32,27 @@
 
   let currentTabId = $state(untrack(() => initialId))
 
+  function selectTab(index: number) {
+    const tab = tabs[index]
+    if (!tab) return
+    currentTabId = tab.id
+    document.getElementById(`tab-${tab.id}`)?.focus()
+  }
+
+  function handleKeydown(event: KeyboardEvent, index: number) {
+    let nextIndex: number | undefined
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
+    if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+    if (event.key === 'Home') nextIndex = 0
+    if (event.key === 'End') nextIndex = tabs.length - 1
+    if (nextIndex === undefined) return
+
+    event.preventDefault()
+    selectTab(nextIndex)
+  }
+
   const items = $derived.by(() =>
-    tabs.map((tab) => ({
+    tabs.map((tab, index) => ({
       props: {
         id: `tab-${tab.id}`,
         tabindex: tab.id === currentTabId ? 0 : -1,
@@ -41,7 +60,8 @@
         'aria-selected': tab.id === currentTabId ? true : false,
         'aria-controls': `tab-${tab.id}-panel`,
         class: kind === 'tab' ? 'fr-tabs__tab' : 'fr-nav__link',
-        onclick: () => (currentTabId = tab.id)
+        onclick: () => (currentTabId = tab.id),
+        onkeydown: (event: KeyboardEvent) => handleKeydown(event, index)
       },
       ...tab
     }))
