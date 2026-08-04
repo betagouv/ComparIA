@@ -1,5 +1,6 @@
 import logging
 import shutil
+import uuid
 from pathlib import Path
 from typing import Literal
 
@@ -45,6 +46,7 @@ async def main(
     count: bool = False,
     use_cache: bool = False,
     record: bool = False,
+    destination_id: uuid.UUID | None = None,
 ):
     """
     Export ComparIA datasets from PostgreSQL to the destinations configured in
@@ -66,6 +68,9 @@ async def main(
         Record the run in the database, for the admin panel to read. What the
         scheduler passes; off by hand so a local export does not overwrite the
         instance's last run.
+    destination_id: UUID | None
+        Send only to this destination. Used by per-destination schedules and
+        the manual publish action in the admin panel.
     """
     datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
 
@@ -78,7 +83,9 @@ async def main(
 
     run_id = await start_run() if record else None
     try:
-        built = await _export(datasets, export_base_path, dry_run, use_cache)
+        built = await _export(
+            datasets, export_base_path, dry_run, use_cache, destination_id
+        )
     except Exception as exc:
         if run_id:
             await finish_run(run_id, error=str(exc))
@@ -105,8 +112,11 @@ async def _export(
     export_base_path: Path,
     dry_run: bool,
     use_cache: bool,
+    destination_id: uuid.UUID | None = None,
 ) -> dict[Datasets, Path]:
-    destinations = [] if dry_run else await enabled_destinations()
+    destinations = (
+        [] if dry_run else await enabled_destinations(destination_id=destination_id)
+    )
     if dry_run:
         logger.info("[DRY RUN] Building locally, sending nothing")
     elif not destinations:
@@ -127,6 +137,16 @@ async def _export(
             raise DestinationError(
                 "No enabled destination receives the requested datasets."
             )
+
+    if not dry_run and "normal" in datasets:
+        # The open dataset only accepts comparisons that deterministic linting
+        # classified and the configured reviewer cleared. Both operations are
+        # incremental, so an already prepared comparison is not processed or
+        # billed again on later publications.
+        from utils.database.lint import lint
+
+        logger.info("Preparing comparisons for the open dataset.")
+        await lint(fix=True, with_llm_analyze=True)
 
     check_free_disk(export_base_path)
 

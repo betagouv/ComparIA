@@ -19,6 +19,11 @@ PUBLISH_DATASETS: tuple[PublishDataset, ...] = get_args(PublishDataset)
 
 PublishKind = Literal["huggingface", "s3"]
 
+# How often a destination publishes. The execution time is deliberately fixed;
+# administrators only choose the frequency.
+PublishFrequency = Literal["off", "daily", "weekly", "monthly"]
+PUBLISH_FREQUENCIES: tuple[PublishFrequency, ...] = get_args(PublishFrequency)
+
 # What HF_PUSH_DATASET_PATH had to look like: '{organisation}/{repo_prefix}'.
 _REPO_PATH = re.compile(r"^[\w.-]+/[\w.-]+$")
 
@@ -130,6 +135,7 @@ class PublishDestinationBase(BaseDBModel):
     # raw one, which still holds the flagged comparisons, somewhere private.
     datasets: Annotated[list[str], Field(sa_type=JSONB)]
     enabled: bool = Field(default=True)
+    publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
 
 
 class PublishDestination(PublishDestinationBase, table=True):
@@ -149,6 +155,7 @@ class PublishDestinationUpsert(SQLModel):
     config: PublishConfigInput
     datasets: list[PublishDataset]
     enabled: bool = True
+    publish_frequency: PublishFrequency = "off"
 
     @field_validator("datasets")
     @classmethod
@@ -167,6 +174,8 @@ class AdminPublishDestination(SQLModel):
     config: PublishConfigPublic
     datasets: list[PublishDataset]
     enabled: bool
+    publish_frequency: PublishFrequency
+    next_run_at: datetime | None = None
 
     @classmethod
     def from_row(cls, row: PublishDestination) -> "AdminPublishDestination":
@@ -177,17 +186,12 @@ class AdminPublishDestination(SQLModel):
             config=_CONFIG_PUBLIC.validate_python(row.config),
             datasets=row.datasets,  # type: ignore[arg-type]
             enabled=row.enabled,
+            publish_frequency=row.publish_frequency,
         )
 
 
 class AdminPublishDestinationsResponse(SQLModel):
     destinations: list[AdminPublishDestination]
-
-
-# How often a run fires. A frequency, an hour and a time zone rather than a
-# cron expression: a mistyped cron expression is an export every minute.
-PublishFrequency = Literal["off", "daily", "weekly", "monthly"]
-PUBLISH_FREQUENCIES: tuple[PublishFrequency, ...] = get_args(PublishFrequency)
 
 
 class PublishRun(BaseDBModel, table=True):
@@ -222,9 +226,6 @@ class AdminPublishRun(SQLModel):
 
 
 class AdminPublishStatus(SQLModel):
-    frequency: PublishFrequency
-    hour: int
-    timezone: str
-    # None until a run has been recorded.
-    last_run: AdminPublishRun | None
-    next_run_at: datetime | None
+    # Shared across destinations: a run says what was published, while each
+    # destination owns only its schedule.
+    runs: list[AdminPublishRun]

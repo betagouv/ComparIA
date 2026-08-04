@@ -20,12 +20,12 @@ import os
 import resource
 import sys
 from datetime import UTC, date, datetime, time, timedelta
-from zoneinfo import ZoneInfo
+
+from sqlmodel import col, select
 
 from backend.config import settings
-from utils.database.models.app_settings import AppSettings
-from utils.database.session import get_engine
-from utils.database.settings import get_app_settings
+from utils.database.models.publish import PublishDestination, PublishFrequency
+from utils.database.session import get_engine, get_session
 from utils.dataset.runs import close_unfinished_run, last_run
 
 logger = logging.getLogger("comparia.publishing")
@@ -59,31 +59,29 @@ def _at_hour(local: datetime, hour: int) -> datetime:
     return local.replace(hour=hour, minute=0, second=0, microsecond=0, fold=0)
 
 
-def next_run_at(app_settings: AppSettings, after: datetime) -> datetime | None:
+def next_run_at(frequency: PublishFrequency, after: datetime) -> datetime | None:
     """
     The next moment the run is due, in UTC. Weekly means Monday, monthly means
     the first of the month, both at the configured hour. A frequency, an hour
-    and a time zone rather than a cron expression: a mistyped cron expression
-    is an export every minute.
+    The execution time is fixed at 03:00 UTC so the admin only has one setting
+    to understand: publication frequency.
 
     Nothing catches up. A run missed because the process was down waits for
     the next occurrence rather than firing at boot, when an operator is
     already busy with whatever brought the process down.
     """
-    frequency = app_settings.publish_frequency
     if frequency == "off":
         return None
 
-    zone = ZoneInfo(app_settings.publish_timezone)
-    local = after.astimezone(zone)
+    local = after.astimezone(UTC)
 
     def due_on(day: date) -> datetime:
         # The hour is worked out per day, because whether it exists depends on
         # the day: 02:00 is missing on the morning the clocks go forward and
         # back the morning after.
-        return _at_hour(datetime.combine(day, time(), tzinfo=zone), hour)
+        return _at_hour(datetime.combine(day, time(), tzinfo=UTC), hour)
 
-    hour = app_settings.publish_hour
+    hour = 3
     day = local.date()
 
     if frequency == "daily":
@@ -119,19 +117,16 @@ def _child_limits() -> None:
         pass
 
 
-async def run_export() -> None:
+async def run_export(destination_id=None) -> None:
     """
     Start the export as a child process and watch it. It gets a wall clock
     watchdog: a run that hangs on a destination that never answers must not
     hold the schedule for ever.
     """
-    process = await asyncio.create_subprocess_exec(
-        sys.executable,
-        "-m",
-        "utils.dataset.run",
-        "--record",
-        preexec_fn=_child_limits,
-    )
+    command = [sys.executable, "-m", "utils.dataset.run", "--record"]
+    if destination_id is not None:
+        command.extend(["--destination-id", str(destination_id)])
+    process = await asyncio.create_subprocess_exec(*command, preexec_fn=_child_limits)
     logger.info(f"Publish run started, pid {process.pid}")
 
     try:
@@ -201,35 +196,54 @@ async def scheduler() -> None:
             # The due time is worked out once per schedule, not once per tick:
             # next_run_at always answers with a future moment, so recomputing
             # it every minute would push the run away for ever.
-            schedule: tuple | None = None
-            due: datetime | None = None
+            schedules: dict = {}
 
             while True:
                 await asyncio.sleep(TICK_SECONDS)
                 now = datetime.now(UTC)
-                app_settings = await get_app_settings()
-
-                current = (
-                    app_settings.publish_frequency,
-                    app_settings.publish_hour,
-                    app_settings.publish_timezone,
-                )
-                if current != schedule:
-                    schedule = current
-                    due = next_run_at(app_settings, now)
-                    logger.info(
-                        f"Next publish run: {due or 'never, the schedule is off'}"
+                async with get_session() as session:
+                    rows = await session.exec(
+                        select(PublishDestination).where(
+                            col(PublishDestination.enabled) == True  # noqa: E712
+                        )
                     )
+                    destinations = list(rows.all())
 
-                if due is None or now < due:
-                    continue
+                active_ids = {destination.id for destination in destinations}
+                schedules = {
+                    destination_id: value
+                    for destination_id, value in schedules.items()
+                    if destination_id in active_ids
+                }
 
-                run = await last_run()
-                if run is not None and run.finished_at is None:
-                    logger.warning("A publish run is already going, skipping this one")
-                else:
-                    await run_export()
-                due = next_run_at(app_settings, datetime.now(UTC))
+                for destination in destinations:
+                    current = schedules.get(destination.id)
+                    if current is None or current[0] != destination.publish_frequency:
+                        due = next_run_at(destination.publish_frequency, now)
+                        schedules[destination.id] = (
+                            destination.publish_frequency,
+                            due,
+                        )
+                        logger.info(
+                            f"Next publish run for {destination.name}: "
+                            f"{due or 'never, the schedule is off'}"
+                        )
+
+                for destination in destinations:
+                    frequency, due = schedules[destination.id]
+                    if due is None or now < due:
+                        continue
+                    run = await last_run()
+                    if run is not None and run.finished_at is None:
+                        logger.warning(
+                            "A publish run is already going, skipping this one"
+                        )
+                    else:
+                        await run_export(destination.id)
+                    schedules[destination.id] = (
+                        frequency,
+                        next_run_at(frequency, datetime.now(UTC)),
+                    )
         finally:
             await _release_lock(connection)
 

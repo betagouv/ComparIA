@@ -88,6 +88,15 @@ async def last_run() -> PublishRun | None:
         return rows.first()
 
 
+async def recent_runs(limit: int = 20) -> list[PublishRun]:
+    """Recent publication history, shared by all destinations."""
+    async with get_session() as session:
+        rows = await session.exec(
+            select(PublishRun).order_by(desc(col(PublishRun.started_at))).limit(limit)
+        )
+        return list(rows.all())
+
+
 async def close_unfinished_run(reason: str) -> None:
     """
     A run whose process died left its row open. Nothing else will ever close
