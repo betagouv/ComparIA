@@ -190,7 +190,7 @@ async def add_first_text(
     if not participation_terms_version:
         raise HTTPException(
             status_code=status.HTTP_428_PRECONDITION_REQUIRED,
-            detail="Vous devez accepter les conditions d’utilisation en vigueur avant de participer.",
+            detail="Accept the terms in force before participating.",
         )
 
     logger.info(
