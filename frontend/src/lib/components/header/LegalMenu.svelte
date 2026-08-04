@@ -22,7 +22,7 @@
     label={m['header.legal.label']()}
     title={m['header.legal.title']()}
     buttonClass={[
-      'fr-btn fr-btn--tertiary-no-outline fr-btn--sm rounded-sm! gap-2 w-full! justify-start',
+      'legal-menu-btn fr-btn fr-btn--tertiary-no-outline rounded-sm! gap-2 w-full! justify-start',
       { 'lg:justify-center lg:px-0!': !expanded }
     ]}
     closeOnSelect
@@ -31,7 +31,7 @@
       <Icon icon="i-ri-scales-3-line" block size="sm" />
       <span class={{ 'lg:sr-only': !expanded }}>{label}</span>
       <Icon
-        icon="i-ri-arrow-up-s-line"
+        icon="i-ri-arrow-down-s-line"
         block
         size="xs"
         class={['legal-menu-chevron ms-auto transition-transform', { 'lg:hidden': !expanded }]}
@@ -42,7 +42,7 @@
       {#each links as link (link.href)}
         <li class="fr-sidemenu__item">
           <a
-            class="fr-sidemenu__link py-2! font-normal! font-sm!"
+            class="fr-sidemenu__link py-2! text-sm! font-normal!"
             href={resolveHref(link.href)}
             aria-current={page.url.pathname === link.href ? 'page' : undefined}
           >
@@ -56,6 +56,32 @@
 
 <style lang="postcss">
   .legal-menu {
+    :global(.legal-menu-btn) {
+      /* Same metrics and states as the DSFR translate button */
+      min-height: 2.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      font-weight: 500;
+      color: var(--text-default-grey);
+
+      &[aria-expanded='true'] {
+        color: var(--text-active-blue-france);
+        background-color: var(--background-open-blue-france);
+        --idle: transparent;
+        --hover: var(--background-open-blue-france-hover);
+        --active: var(--background-open-blue-france-active);
+
+        &:hover {
+          background-color: var(--hover-tint);
+        }
+
+        &:active {
+          background-color: var(--active-tint);
+        }
+      }
+    }
+
     :global([aria-expanded='true'] .legal-menu-chevron) {
       transform: rotate(180deg);
     }
