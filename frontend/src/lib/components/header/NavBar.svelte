@@ -242,9 +242,11 @@
         <History mode="mobile" expanded={true} />
       {/if}
 
-      <div class="bottom-0 pb-5 p-4 bg-white sticky mt-auto border-t border-[--grey-925-125]">
+      <div class="mt-auto">
         {@render account()}
-        {@render footer('mobile')}
+        <div class="bottom-0 pb-5 p-4 bg-white sticky border-t border-[--grey-925-125]">
+          {@render footer('mobile')}
+        </div>
       </div>
     </div>
   </dialog>
