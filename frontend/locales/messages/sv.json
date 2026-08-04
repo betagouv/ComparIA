@@ -1487,25 +1487,40 @@
             "conversationsLabel": "Konversationer",
             "dateLabel": "Datum",
             "demoLabel": "Demonstrationsdata",
-            "description": "Antal konversationer som startats varje dag under de senaste 14 dagarna.",
+            "description": "Utveckling av skickade prompter och startade konversationer under vald period.",
+            "promptsLabel": "Skickade prompter",
             "sectionTitle": "Aktivitet",
             "tableLabel": "Visa data som tabell",
-            "title": "Dagliga konversationer"
+            "title": "Plattformsaktivitet"
         },
         "counterLink": "Visa plattformens statistik",
         "eyebrow": "Statistik",
         "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",
-        "methodology": "Siffrorna omfattar icke-arkiverade samtal och uppdateras regelbundet.",
+        "filters": {
+            "allTime": "Sedan start",
+            "label": "Period",
+            "ninetyDays": "90 dagar",
+            "sevenDays": "7 dagar",
+            "thirtyDays": "30 dagar"
+        },
+        "methodology": "Siffrorna omfattar endast icke-arkiverade konversationer. Data aggregeras och uppdateras regelbundet.",
         "overview": "Översikt",
         "metrics": {
-            "questions": {
-                "description": "Frågor som ställts för att jämföra svar från två konversationsmodeller.",
-                "label": "Ställda frågor"
-            },
-            "votes": {
-                "description": "Preferenser som angetts efter jämförelse av modellernas svar.",
-                "label": "Avgivna röster"
-            }
+            "conversations": { "label": "Genomförda konversationer" },
+            "models": { "label": "Testade modeller" },
+            "prompts": { "label": "Skickade prompter" }
+        },
+        "preferences": {
+            "aBetter": "Svar A föredrogs",
+            "bBetter": "Svar B föredrogs",
+            "bothBad": "Båda är dåliga",
+            "bothGood": "Båda är bra",
+            "chartDescription": "Fördelning av de fyra preferenstyperna över tid.",
+            "chartTitle": "Preferensutveckling",
+            "numbers": "Antal",
+            "proportions": "Andelar",
+            "sectionTitle": "Preferenser",
+            "total": "{count} angivna preferenser"
         },
         "title": "Plattformsstatistik"
     },
