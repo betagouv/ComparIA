@@ -218,6 +218,23 @@
             "title": "Atvirumo lygis"
         }
     },
+    "statistics": {
+        "counterLink": "Peržiūrėti platformos statistiką",
+        "eyebrow": "compar:IA skaičiais",
+        "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
+        "methodology": "Skaičiai apima nearchyvuotus pokalbius ir yra reguliariai atnaujinami.",
+        "metrics": {
+            "questions": {
+                "description": "Klausimai, pateikti lyginant dviejų pokalbių DI modelių atsakymus.",
+                "label": "Užduoti klausimai"
+            },
+            "votes": {
+                "description": "Pasirinkimai, pateikti palyginus modelių atsakymus.",
+                "label": "Pateikti balsai"
+            }
+        },
+        "title": "Platformos statistika"
+    },
     "reveal": {
         "impacts": {
             "summary": {

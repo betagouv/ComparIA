@@ -2260,6 +2260,23 @@
             "share": "Mine resultater"
         }
     },
+    "statistics": {
+        "counterLink": "Se platformens statistik",
+        "eyebrow": "AI-Arenaen i tal",
+        "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
+        "methodology": "Tallene omfatter ikke-arkiverede samtaler og opdateres løbende.",
+        "metrics": {
+            "questions": {
+                "description": "Spørgsmål stillet for at sammenligne svar fra to samtale-AI-modeller.",
+                "label": "Stillede spørgsmål"
+            },
+            "votes": {
+                "description": "Præferencer angivet efter sammenligning af modellernes svar.",
+                "label": "Afgivne stemmer"
+            }
+        },
+        "title": "Platformens statistik"
+    },
     "vote": {
         "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "choices": {
