@@ -31,7 +31,8 @@
             "llms": "LLMs",
             "customization": "Tilpasning",
             "locales": "Sprog",
-            "authentification": "Autentificering"
+            "authentification": "Autentificering",
+            "publishing": "Udgivelse"
         },
         "panelLink": "Administration",
         "settings": {

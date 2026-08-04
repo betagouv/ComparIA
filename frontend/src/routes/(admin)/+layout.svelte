@@ -55,6 +55,11 @@
       icon: 'i-ri-shield-check-line'
     },
     {
+      label: m['admin.nav.publishing'](),
+      href: '/admin/publication',
+      icon: 'i-ri-upload-cloud-line'
+    },
+    {
       label: m['admin.nav.llms'](),
       href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
