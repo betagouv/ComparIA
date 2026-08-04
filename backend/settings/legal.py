@@ -14,6 +14,9 @@ from utils.database.session import get_session
 from utils.database.settings import get_app_settings
 
 DEFAULT_LEGAL_LANGUAGE = "fr"
+# Version of the starter terms seeded by the migration, kept here so the
+# back-office can tell administrators they still have to publish real ones.
+SEEDED_TERMS_VERSION = "0-initiale-a-remplacer"
 LEGAL_VERSION_MAX_LENGTH = 64
 LEGAL_CONTENT_MAX_LENGTH = 100_000
 LEGAL_LOCALE_PATTERN = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")

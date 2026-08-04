@@ -28,6 +28,7 @@ from backend.settings.legal import (
     LEGAL_CONTENT_MAX_LENGTH,
     LEGAL_LOCALE_PATTERN,
     LEGAL_VERSION_MAX_LENGTH,
+    SEEDED_TERMS_VERSION,
     DuplicateLegalDocumentError,
     InvalidEffectiveDateError,
     LegalPresentation,
@@ -82,6 +83,7 @@ class AdminLegalDocument(BaseModel):
     published_at: UtcTimestamp
     effective_at: UtcTimestamp
     retired_at: UtcTimestamp | None
+    seeded: bool
 
 
 class PublishLegalDocumentBody(BaseModel):
@@ -117,6 +119,7 @@ def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
         published_at=row.published_at,
         effective_at=row.effective_at,
         retired_at=row.retired_at,
+        seeded=row.kind == "terms" and row.version == SEEDED_TERMS_VERSION,
     )
 
 

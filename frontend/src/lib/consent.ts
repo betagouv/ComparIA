@@ -62,15 +62,29 @@ type TermsResponse = {
 
 export type ConsentLink = { label: string; href: string }
 
-// Canonical paths, not the /modalites and /donnees-personnelles redirects: a
-// visitor reading what they are about to accept should not go through a hop.
+// Canonical paths, not the redirects they replaced: a visitor reading what
+// they are about to accept should not go through a hop. Every legal
+// destination in the app is named here so a page move has one place to land.
 export const TERMS_PATH = '/arene/modalites'
 export const PRIVACY_POLICY_PATH = '/arene/donnees-personnelles'
+export const ACCESSIBILITY_PATH = '/arene/accessibilite'
+export const ECODESIGN_PATH = '/arene/ecoconception'
 
+/** The two documents a visitor accepts, as listed beside the checkbox. */
 export function legalLinks(): ConsentLink[] {
   return [
     { label: m['consent.links.terms'](), href: TERMS_PATH },
     { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH }
+  ]
+}
+
+/** Every public legal page, for the menus that list them all. */
+export function legalPageLinks(): ConsentLink[] {
+  return [
+    { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH },
+    { label: m['consent.links.terms'](), href: TERMS_PATH },
+    { label: m['footer.links.accessibility'](), href: ACCESSIBILITY_PATH },
+    { label: m['footer.links.rgesn'](), href: ECODESIGN_PATH }
   ]
 }
 

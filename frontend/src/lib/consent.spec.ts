@@ -1,5 +1,7 @@
 import { isRedirect } from '@sveltejs/kit'
+import { load as accessibilite } from '../routes/(pages)/(general)/accessibilite/+page.server'
 import { load as donneesPersonnelles } from '../routes/(pages)/(general)/donnees-personnelles/+page.server'
+import { load as ecoconception } from '../routes/(pages)/(general)/ecoconception/+page.server'
 import { load as modalites } from '../routes/(pages)/(general)/modalites/+page.server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -7,6 +9,7 @@ import {
   consentCheckboxLabel,
   hasAcceptedDocument,
   legalLinks,
+  legalPageLinks,
   loadConsent,
   reloadConsent,
   resetConsent,
@@ -89,6 +92,18 @@ describe('consent', () => {
     // without moving these links turns red here rather than adding a hop.
     expect(legalLinks().map((link) => link.href)).toEqual(
       [modalites, donneesPersonnelles].map(redirectTarget)
+    )
+  })
+
+  it('lists every legal page on the same canonical paths', () => {
+    expect(legalPageLinks().map((link) => link.href)).toEqual([
+      '/arene/donnees-personnelles',
+      '/arene/modalites',
+      '/arene/accessibilite',
+      '/arene/ecoconception'
+    ])
+    expect(legalPageLinks().map((link) => link.href)).toEqual(
+      [donneesPersonnelles, modalites, accessibilite, ecoconception].map(redirectTarget)
     )
   })
 

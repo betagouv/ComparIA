@@ -24,4 +24,33 @@ describe('Tabs', () => {
     expect(manageTab).toHaveAttribute('aria-selected', 'true')
     expect(getByRole('tabpanel', { name: 'Gérer' })).toHaveClass('fr-tabs__panel--selected')
   })
+
+  it('moves between tabs with the arrow, home and end keys', async () => {
+    const { getByRole } = render(Tabs, {
+      tabs: [
+        { id: 'account', label: 'Compte', content: 'Contenu du compte' },
+        { id: 'about', label: 'À propos', content: 'Contenu à propos' },
+        { id: 'privacy', label: 'Confidentialité', content: 'Contenu confidentialité' }
+      ],
+      label: 'Rubriques'
+    })
+
+    const account = getByRole('tab', { name: 'Compte' })
+    const about = getByRole('tab', { name: 'À propos' })
+    const privacy = getByRole('tab', { name: 'Confidentialité' })
+
+    account.focus()
+    await fireEvent.keyDown(account, { key: 'ArrowRight' })
+    expect(document.activeElement).toBe(about)
+
+    await fireEvent.keyDown(about, { key: 'End' })
+    expect(document.activeElement).toBe(privacy)
+
+    await fireEvent.keyDown(privacy, { key: 'Home' })
+    expect(document.activeElement).toBe(account)
+
+    await fireEvent.keyDown(account, { key: 'ArrowLeft' })
+    expect(document.activeElement).toBe(privacy)
+    expect(privacy).toHaveAttribute('aria-selected', 'true')
+  })
 })
