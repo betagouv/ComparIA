@@ -22,9 +22,13 @@ def use_export_engine() -> None:
     """
     Ask for the export's engine rather than the arena's, before anything opens
     a connection. The export reads the whole comparison table against a
-    database that is serving traffic: it gets one connection instead of a
+    database that is serving traffic: it gets two connections instead of a
     pool, so it cannot crowd the arena out of Postgres, and a statement
     timeout, so a read that hangs is not left holding vacuum back for ever.
+
+    Two, not one: the long read holds a connection open for the whole run, and
+    looks the models up on another while it goes. One deadlocks the export
+    against itself.
     """
     global _export_client
     if _engine is not None:
@@ -39,7 +43,7 @@ def get_engine() -> AsyncEngine | None:
     if _engine is None:
         options = (
             {
-                "pool_size": 1,
+                "pool_size": 2,
                 "max_overflow": 0,
                 "connect_args": {
                     "options": (
