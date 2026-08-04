@@ -17,11 +17,6 @@
       { href: '/arene', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
       { href: '/arene/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
       { href: '/arene/modeles', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' },
-      {
-        href: '/arene/statistics',
-        label: m['statistics.title'](),
-        icon: 'i-ri-bar-chart-box-line'
-      },
       { href: '/admin', role: 'admin', label: m['admin.panelLink'](), icon: 'i-ri-admin-line' }
     ].filter((link) => userAllowed(auth, link.role))
   )
