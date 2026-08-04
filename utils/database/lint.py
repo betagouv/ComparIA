@@ -18,6 +18,16 @@ from .utils import get_session, reset_archived, set_not_archived
 logger = logging.getLogger("comparia.db")
 
 
+def _string_reason_column(data: pl.DataFrame) -> pl.DataFrame:
+    """Keep summary schemas stable when no archived reason exists."""
+    return data.with_columns(pl.col("archived_reason").cast(pl.String))
+
+
+def _label_total_row(total: pl.DataFrame) -> pl.DataFrame:
+    """Give the aggregate row its display label."""
+    return total.with_columns(pl.lit("TOTAL").alias("archived_reason"))
+
+
 async def log_archived(
     *,
     days: int = 0,
@@ -92,8 +102,8 @@ async def log_archived(
             .filter(pl.col("count") != 0)
         )
 
-        total = archived_reasons.sum()
-        total[0, "archived_reason"] = "TOTAL"
+        archived_reasons = _string_reason_column(archived_reasons)
+        total = _label_total_row(archived_reasons.sum())
         total[0, "total"] = last_items_count if last_n_only else all_items_count
         if compare and days:
             total[0, "last_n_days_total"] = last_items_count

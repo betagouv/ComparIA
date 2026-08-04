@@ -24,6 +24,8 @@ export interface AdminPublishDestination {
   config: HuggingFaceConfigPublic | S3ConfigPublic;
   datasets: ("normal" | "raw")[];
   enabled: boolean;
+  publish_frequency: "off" | "daily" | "weekly" | "monthly";
+  next_run_at?: string | null;
 }
 export interface HuggingFaceConfigPublic {
   kind?: "huggingface";
@@ -51,11 +53,7 @@ export interface AdminPublishRun {
   published: number | null;
 }
 export interface AdminPublishStatus {
-  frequency: "off" | "daily" | "weekly" | "monthly";
-  hour: number;
-  timezone: string;
-  last_run: AdminPublishRun | null;
-  next_run_at: string | null;
+  runs: AdminPublishRun[];
 }
 export interface AdminSuggestion {
   id: string;
@@ -364,6 +362,7 @@ export interface PublishDestinationUpsert {
   config: HuggingFaceConfigInput | S3ConfigInput;
   datasets: ("normal" | "raw")[];
   enabled?: boolean;
+  publish_frequency?: "off" | "daily" | "weekly" | "monthly";
 }
 export interface HuggingFaceConfigInput {
   kind?: "huggingface";

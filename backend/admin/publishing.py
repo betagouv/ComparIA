@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
 
-from backend.publishing import next_run_at
+from backend.publishing import next_run_at, run_export
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,
@@ -17,9 +17,7 @@ from utils.database.models.publish import (
     config_to_store,
 )
 from utils.database.session import get_session
-from utils.database.settings import get_app_settings
-from utils.dataset.publish import DestinationError, check_destination
-from utils.dataset.runs import last_run
+from utils.dataset.runs import last_run, recent_runs
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
 
@@ -33,14 +31,9 @@ def _missing_secret(exc: MissingSecretError) -> HTTPException:
 
 @router.get("/status", response_model=AdminPublishStatus)
 async def get_status() -> AdminPublishStatus:
-    app_settings = await get_app_settings()
-    run = await last_run()
+    runs = await recent_runs()
     return AdminPublishStatus(
-        frequency=app_settings.publish_frequency,
-        hour=app_settings.publish_hour,
-        timezone=app_settings.publish_timezone,
-        last_run=AdminPublishRun.model_validate(run.model_dump()) if run else None,
-        next_run_at=next_run_at(app_settings, datetime.now(UTC)),
+        runs=[AdminPublishRun.model_validate(run.model_dump()) for run in runs],
     )
 
 
@@ -50,9 +43,14 @@ async def get_destinations() -> AdminPublishDestinationsResponse:
         rows = await session.exec(
             select(PublishDestination).order_by(col(PublishDestination.created_at))
         )
-        return AdminPublishDestinationsResponse(
-            destinations=[AdminPublishDestination.from_row(row) for row in rows.all()]
-        )
+        destinations = []
+        for row in rows.all():
+            destination = AdminPublishDestination.from_row(row)
+            destination.next_run_at = next_run_at(
+                row.publish_frequency, datetime.now(UTC)
+            )
+            destinations.append(destination)
+        return AdminPublishDestinationsResponse(destinations=destinations)
 
 
 @router.post(
@@ -73,11 +71,16 @@ async def add_destination(body: PublishDestinationUpsert) -> AdminPublishDestina
             config=config,
             datasets=list(body.datasets),
             enabled=body.enabled,
+            publish_frequency=body.publish_frequency,
         )
         session.add(row)
         await session.commit()
         await session.refresh(row)
-        return AdminPublishDestination.from_row(row)
+        destination = AdminPublishDestination.from_row(row)
+        destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
+        if row.enabled and row.publish_frequency != "off":
+            asyncio.create_task(run_export(row.id))
+        return destination
 
 
 @router.put("/destinations/{destination_id}", response_model=AdminPublishDestination)
@@ -89,6 +92,7 @@ async def update_destination(
         if not row:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+        previous_frequency = row.publish_frequency
         try:
             config = config_to_store(body.config, row.config)
         except MissingSecretError as exc:
@@ -99,32 +103,41 @@ async def update_destination(
         row.config = config
         row.datasets = list(body.datasets)
         row.enabled = body.enabled
+        row.publish_frequency = body.publish_frequency
         session.add(row)
         await session.commit()
         await session.refresh(row)
-        return AdminPublishDestination.from_row(row)
+        destination = AdminPublishDestination.from_row(row)
+        destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
+        if (
+            row.enabled
+            and row.publish_frequency != "off"
+            and row.publish_frequency != previous_frequency
+        ):
+            asyncio.create_task(run_export(row.id))
+        return destination
 
 
 @router.post(
-    "/destinations/{destination_id}/check", status_code=status.HTTP_204_NO_CONTENT
+    "/destinations/{destination_id}/publish", status_code=status.HTTP_202_ACCEPTED
 )
-async def check_destination_route(destination_id: uuid.UUID) -> None:
-    """
-    Write a small file to the destination and delete it, so a token that
-    cannot write is found here rather than in the middle of the night.
-    """
+async def publish_destination_now(destination_id: uuid.UUID) -> None:
     async with get_session() as session:
         row = await session.get(PublishDestination, destination_id)
         if not row:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-        config = row.parsed_config()
-
-    try:
-        await asyncio.to_thread(check_destination, config)
-    except DestinationError as exc:
+        if not row.enabled:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="The destination is disabled",
+            )
+    run = await last_run()
+    if run is not None and run.finished_at is None:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
-        ) from exc
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A publication is already running",
+        )
+    asyncio.create_task(run_export(destination_id))
 
 
 @router.delete("/destinations/{destination_id}", status_code=status.HTTP_204_NO_CONTENT)

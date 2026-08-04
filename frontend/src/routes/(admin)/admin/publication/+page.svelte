@@ -1,6 +1,17 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { Alert, Badge, Button, Checkbox, Icon, Input, Modal, Select, Table, Toggle } from '$components/dsfr'
+  import {
+    Alert,
+    Badge,
+    Button,
+    Checkbox,
+    Icon,
+    Input,
+    Modal,
+    Select,
+    Table,
+    Toggle
+  } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminPublishDestination, AdminPublishStatus } from '$lib/generated/admin'
@@ -16,22 +27,36 @@
 
   type Kind = 'huggingface' | 's3'
   type Dataset = 'normal' | 'raw'
-  type Frequency = AdminPublishStatus['frequency']
+  type Frequency = AdminPublishDestination['publish_frequency']
 
   const destinations = $derived(data.destinations.destinations)
   const status = $derived(data.status)
+  const historyRows = $derived(
+    status.runs.map((run) => ({ ...run, id: run.started_at }))
+  )
 
   const cols = [
     { id: 'name', label: m['admin.publishing.colName']() },
     { id: 'kind', label: m['admin.publishing.colKind']() },
     { id: 'target', label: m['admin.publishing.colTarget']() },
     { id: 'datasets', label: m['admin.publishing.colDatasets']() },
+    { id: 'frequency', label: m['admin.publishing.frequencyLabel']() },
     { id: 'status', label: m['admin.publishing.colStatus']() },
     { id: 'actions', label: m['admin.publishing.colActions']() }
   ] satisfies TableCol[]
 
+  const historyCols = [
+    { id: 'date', label: m['admin.publishing.historyDate']() },
+    { id: 'status', label: m['admin.publishing.historyStatus']() },
+    { id: 'details', label: m['admin.publishing.historyDetails']() },
+    { id: 'result', label: m['admin.publishing.historyResult']() }
+  ] satisfies TableCol[]
+
   let busy = $state(false)
-  let checking = $state<string>()
+  let publishing = $state<string>()
+  let reviewerEndpointId = $state(untrack(() => data.settings.analysis_endpoint_id ?? ''))
+  let reviewerModel = $state(untrack(() => data.settings.analysis_model ?? ''))
+  let reviewerError = $state<string>()
   let formError = $state<string>()
   let editing = $state<AdminPublishDestination>()
   let toDelete = $state<AdminPublishDestination>()
@@ -45,6 +70,7 @@
     ...(wantsRaw ? (['raw'] as Dataset[]) : [])
   ])
   let formEnabled = $state(true)
+  let formFrequency = $state<Frequency>('off')
   let formRepoPath = $state('')
   let formToken = $state('')
   let formEndpoint = $state('')
@@ -54,12 +80,6 @@
   let formSecure = $state(true)
   let formAccessKey = $state('')
   let formSecretKey = $state('')
-
-  // Seeded from what the instance has, and left alone afterwards so an
-  // administrator's half-made choice survives a refetch of the run status.
-  let frequency = $state<Frequency>(untrack(() => data.status.frequency))
-  let hour = $state(untrack(() => String(data.status.hour)))
-  let timezone = $state(untrack(() => data.status.timezone))
 
   function discloseModal(id: string) {
     const element = document.getElementById(id)
@@ -81,6 +101,7 @@
     wantsOpen = true
     wantsRaw = false
     formEnabled = true
+    formFrequency = 'off'
     formRepoPath = ''
     formEndpoint = ''
     formBucket = ''
@@ -101,6 +122,7 @@
     wantsOpen = destination.datasets.includes('normal')
     wantsRaw = destination.datasets.includes('raw')
     formEnabled = destination.enabled
+    formFrequency = destination.publish_frequency
     // The secrets never come back from the API, so their fields start empty
     // and an empty field means 'keep the one already stored'.
     formToken = ''
@@ -165,7 +187,8 @@
       name: formName.trim(),
       config: configPayload(),
       datasets: formDatasets,
-      enabled: formEnabled
+      enabled: formEnabled,
+      publish_frequency: formFrequency
     })
     const target = editing
     const done = await run(
@@ -176,28 +199,50 @@
               body
             })
           : api.request('/admin/publishing/destinations', { method: 'POST', body }),
-      target
-        ? m['admin.publishing.editSuccess']()
-        : m['admin.publishing.createSuccess']()
+      target ? m['admin.publishing.editSuccess']() : m['admin.publishing.createSuccess']()
     )
     if (done) closeModal('fr-modal-destination')
   }
 
-  async function check(destination: AdminPublishDestination) {
-    checking = destination.id
+  async function publishNow(destination: AdminPublishDestination) {
+    publishing = destination.id
     try {
-      await api.request(`/admin/publishing/destinations/${destination.id}/check`, {
+      await api.request(`/admin/publishing/destinations/${destination.id}/publish`, {
         method: 'POST'
       })
-      useToast(m['admin.publishing.checkSuccess'](), 4000)
+      useToast(m['admin.publishing.publishStarted'](), 4000)
+      await refetch()
     } catch (error) {
-      useToast(
-        m['admin.publishing.checkError']({ message: (error as ApiError).message }),
-        8000,
-        'error'
-      )
+      useToast((error as ApiError).message, 8000, 'error')
     } finally {
-      checking = undefined
+      publishing = undefined
+    }
+  }
+
+  async function saveReviewer(event?: SubmitEvent) {
+    event?.preventDefault()
+    reviewerError = undefined
+    const model = reviewerModel.trim()
+    if ((reviewerEndpointId && !model) || (!reviewerEndpointId && model)) {
+      reviewerError = m['admin.publishing.reviewerIncomplete']()
+      return
+    }
+    busy = true
+    try {
+      await api.request('/admin/settings', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          analysis_endpoint_id: reviewerEndpointId || null,
+          analysis_model: model || null
+        })
+      })
+      reviewerModel = model
+      useToast(m['admin.publishing.reviewerSuccess'](), 4000)
+      await refetch()
+    } catch (error) {
+      reviewerError = (error as ApiError).message
+    } finally {
+      busy = false
     }
   }
 
@@ -210,7 +255,8 @@
             name: destination.name,
             config: destination.config,
             datasets: destination.datasets,
-            enabled
+            enabled,
+            publish_frequency: destination.publish_frequency
           })
         }),
       m['admin.publishing.editSuccess']()
@@ -231,20 +277,6 @@
     }
   }
 
-  const saveSchedule = () =>
-    run(
-      () =>
-        api.request('/admin/settings', {
-          method: 'PATCH',
-          body: JSON.stringify({
-            publish_frequency: frequency,
-            publish_hour: Number(hour),
-            publish_timezone: timezone
-          })
-        }),
-      m['admin.publishing.scheduleSuccess']()
-    )
-
   function target(destination: AdminPublishDestination) {
     const config = destination.config as Record<string, unknown>
     if (destination.kind === 'huggingface') return String(config.repo_path ?? '')
@@ -253,34 +285,49 @@
   }
 
   const datasetLabel = (dataset: string) =>
-    dataset === 'raw'
-      ? m['admin.publishing.datasetRaw']()
-      : m['admin.publishing.datasetNormal']()
+    dataset === 'raw' ? m['admin.publishing.datasetRaw']() : m['admin.publishing.datasetNormal']()
+
+  const frequencyLabel = (frequency: Frequency) =>
+    ({
+      off: m['admin.publishing.frequencyOff'](),
+      daily: m['admin.publishing.frequencyDaily'](),
+      weekly: m['admin.publishing.frequencyWeekly'](),
+      monthly: m['admin.publishing.frequencyMonthly']()
+    })[frequency]
 
   function formatDate(value: string | null) {
     if (!value) return ''
     // The API answers in UTC; an administrator reads their own clock.
     const date = new Date(value.endsWith('Z') ? value : `${value}Z`)
-    return date.toLocaleString()
+    return date.toLocaleString('fr-FR')
   }
 
-  const hours = Array.from({ length: 24 }, (_, index) => ({
-    value: String(index),
-    label: `${String(index).padStart(2, '0')}:00`
-  }))
+  function runStatus(run: AdminPublishStatus['runs'][number]) {
+    if (run.finished_at === null) return m['admin.publishing.historyRunning']()
+    return run.succeeded
+      ? m['admin.publishing.historySucceeded']()
+      : m['admin.publishing.historyFailed']()
+  }
 
-  // Whatever the browser is set to, plus whatever the instance already had, so
-  // an administrator is not asked to type a time zone from memory.
-  const timezones = $derived([
-    ...new Set([
-      status.timezone,
-      Intl.DateTimeFormat().resolvedOptions().timeZone,
-      'UTC',
-      'Europe/Paris',
-      'Europe/Copenhagen'
-    ])
-  ])
+  function runDetails(run: AdminPublishStatus['runs'][number]) {
+    if (!run.error) return m['admin.publishing.historyNoError']()
+    if (run.error === 'No rows produced, aborting export') {
+      return m['admin.publishing.historyNoRows']()
+    }
+    return m['admin.publishing.historyTechnicalError']()
+  }
 
+  function runResult(run: AdminPublishStatus['runs'][number]) {
+    if (run.finished_at === null) return m['admin.publishing.historyPending']()
+    if (!run.succeeded) return m['admin.publishing.historyNoDataset']()
+    if (run.published === null || run.held_back === null) {
+      return m['admin.publishing.runCountsUnknown']()
+    }
+    return m['admin.publishing.runCounts']({
+      published: run.published,
+      heldBack: run.held_back
+    })
+  }
 </script>
 
 <PageLayout
@@ -288,6 +335,43 @@
   title={m['admin.publishing.title']()}
   subtitle={m['admin.publishing.subtitle']()}
 >
+  <section class="mb-10">
+    <h2 class="fr-h6 mb-2!">{m['admin.publishing.reviewerTitle']()}</h2>
+    <p class="fr-text--sm text-grey mb-4!">
+      {m['admin.publishing.reviewerHelp']()}
+      {m['admin.publishing.reviewerModelHelp']()}
+    </p>
+
+    <form onsubmit={saveReviewer}>
+      <div class="gap-4 md:grid-cols-2 grid">
+        <Select
+          id="reviewer-endpoint"
+          bind:selected={reviewerEndpointId}
+          label={m['admin.publishing.reviewerEndpointLabel']()}
+          options={[
+            { value: '', label: m['admin.publishing.reviewerEndpointNone']() },
+            ...data.endpoints
+              .filter((endpoint) => endpoint.id)
+              .map((endpoint) => ({ value: endpoint.id!, label: endpoint.name }))
+          ]}
+        />
+        <Input
+          id="reviewer-model"
+          bind:value={reviewerModel}
+          label={m['admin.publishing.reviewerModelLabel']()}
+        />
+      </div>
+
+      {#if reviewerError}
+        <p class="fr-error-text" aria-live="polite">{reviewerError}</p>
+      {/if}
+
+      <div class="flex justify-start">
+        <Button type="submit" text={m['admin.publishing.reviewerSave']()} disabled={busy} />
+      </div>
+    </form>
+  </section>
+
   <section class="mb-10">
     <Table
       caption={m['admin.publishing.destinations']()}
@@ -331,24 +415,32 @@
               />
             {/each}
           </span>
+        {:else if col.id === 'frequency'}
+          <span>
+            {frequencyLabel(row.publish_frequency)}
+            {#if row.next_run_at}
+              <small class="text-grey block">
+                {m['admin.publishing.nextRun']({ date: formatDate(row.next_run_at) })}
+              </small>
+            {/if}
+          </span>
         {:else if col.id === 'status'}
           <Badge
             size="sm"
-            text={row.enabled
-              ? m['admin.publishing.enabled']()
-              : m['admin.publishing.disabled']()}
+            text={row.enabled ? m['admin.publishing.enabled']() : m['admin.publishing.disabled']()}
             variant={row.enabled ? 'green' : ''}
           />
         {:else if col.id === 'actions'}
           <span class="gap-1 flex justify-end">
             <Button
               size="sm"
-              variant="tertiary-no-outline"
-              text={checking === row.id
-                ? m['admin.publishing.checking']()
-                : m['admin.publishing.check']()}
-              disabled={busy || checking === row.id}
-              onclick={() => check(row)}
+              variant="secondary"
+              text={publishing === row.id
+                ? m['admin.publishing.publishing']()
+                : m['admin.publishing.publishNow']()}
+              disabled={busy || publishing === row.id || !row.enabled}
+              aria-label={`${m['admin.publishing.publishNow']()} : ${row.name}`}
+              onclick={() => publishNow(row)}
             />
             <Button
               size="sm"
@@ -367,9 +459,7 @@
               size="sm"
               variant="tertiary-no-outline"
               iconOnly
-              title={row.enabled
-                ? m['admin.publishing.disable']()
-                : m['admin.publishing.enable']()}
+              title={row.enabled ? m['admin.publishing.disable']() : m['admin.publishing.enable']()}
               aria-label={`${row.enabled ? m['admin.publishing.disable']() : m['admin.publishing.enable']()} : ${row.name}`}
               disabled={busy}
               onclick={() => setEnabled(row, !row.enabled)}
@@ -404,77 +494,34 @@
     {/if}
   </section>
 
-  <section class="mb-10">
-    <h2 class="fr-h6">{m['admin.publishing.schedule']()}</h2>
-
-    <div class="gap-4 md:grid-cols-3 grid">
-      <Select
-        id="publish-frequency"
-        bind:selected={frequency}
-        label={m['admin.publishing.frequencyLabel']()}
-        options={[
-          { value: 'off', label: m['admin.publishing.frequencyOff']() },
-          { value: 'daily', label: m['admin.publishing.frequencyDaily']() },
-          { value: 'weekly', label: m['admin.publishing.frequencyWeekly']() },
-          { value: 'monthly', label: m['admin.publishing.frequencyMonthly']() }
-        ]}
-      />
-      <Select
-        id="publish-hour"
-        bind:selected={hour}
-        label={m['admin.publishing.hourLabel']()}
-        options={hours}
-        disabled={frequency === 'off'}
-      />
-      <Select
-        id="publish-timezone"
-        bind:selected={timezone}
-        label={m['admin.publishing.timezoneLabel']()}
-        options={timezones.map((zone) => ({ value: zone, label: zone }))}
-        disabled={frequency === 'off'}
-      />
-    </div>
-
-    <p class="fr-text--sm text-grey">
-      {status.next_run_at
-        ? m['admin.publishing.nextRun']({ date: formatDate(status.next_run_at) })
-        : m['admin.publishing.nextRunNever']()}
-    </p>
-
-    <Button
-      text={m['admin.publishing.save']()}
-      disabled={busy}
-      onclick={saveSchedule}
-    />
-  </section>
-
   <section>
     <h2 class="fr-h6">{m['admin.publishing.lastRun']()}</h2>
 
-    {#if !status.last_run}
+    {#if !status.runs.length}
       <p class="fr-text--sm text-grey">{m['admin.publishing.lastRunNever']()}</p>
     {:else}
-      {@const last = status.last_run}
-      <Alert
-        title={last.finished_at === null
-          ? m['admin.publishing.runRunning']({ date: formatDate(last.started_at) })
-          : last.succeeded
-            ? m['admin.publishing.runSucceeded']({ date: formatDate(last.finished_at) })
-            : m['admin.publishing.runFailed']({ date: formatDate(last.finished_at) })}
-        variant={last.finished_at === null ? 'info' : last.succeeded ? 'success' : 'error'}
+      <Table
+        caption={m['admin.publishing.lastRun']()}
+        hideCaption
+        cols={historyCols}
+        rows={historyRows}
       >
-        {#if last.error}
-          <p class="fr-text--sm">{last.error}</p>
-        {/if}
-        <p class="fr-text--sm mb-0!">
-          {last.published === null || last.held_back === null
-            ? m['admin.publishing.runCountsUnknown']()
-            : m['admin.publishing.runCounts']({
-                published: last.published,
-                heldBack: last.held_back
-              })}
-        </p>
-      </Alert>
+        {#snippet cell(run, col)}
+          {#if col.id === 'date'}
+            {formatDate(run.finished_at ?? run.started_at)}
+          {:else if col.id === 'status'}
+            <Badge
+              size="sm"
+              text={runStatus(run)}
+              variant={run.finished_at === null ? 'blue-ecume' : run.succeeded ? 'green' : 'orange'}
+            />
+          {:else if col.id === 'details'}
+            <span class="fr-text--sm">{runDetails(run)}</span>
+          {:else if col.id === 'result'}
+            <span class="fr-text--sm">{runResult(run)}</span>
+          {/if}
+        {/snippet}
+      </Table>
     {/if}
   </section>
 </PageLayout>
@@ -519,9 +566,7 @@
         bind:value={formToken}
         type="password"
         label={m['admin.publishing.tokenLabel']()}
-        help={editing
-          ? m['admin.publishing.tokenKeep']()
-          : m['admin.publishing.tokenHelp']()}
+        help={editing ? m['admin.publishing.tokenKeep']() : m['admin.publishing.tokenHelp']()}
       />
     {:else}
       <Input
@@ -585,14 +630,23 @@
     </fieldset>
 
     {#if wantsRaw}
-      <Alert
-        title={m['admin.publishing.datasetRaw']()}
-        variant="warning"
-        class="my-4"
-      >
+      <Alert title={m['admin.publishing.datasetRaw']()} variant="warning" class="my-4">
         <p class="fr-text--sm mb-0!">{m['admin.publishing.rawWarning']()}</p>
       </Alert>
     {/if}
+
+    <Select
+      id="destination-publish-frequency"
+      bind:selected={formFrequency}
+      label={m['admin.publishing.frequencyLabel']()}
+      help={formFrequency === 'off' ? undefined : m['admin.publishing.firstRunHelp']()}
+      options={[
+        { value: 'off', label: m['admin.publishing.frequencyOff']() },
+        { value: 'daily', label: m['admin.publishing.frequencyDaily']() },
+        { value: 'weekly', label: m['admin.publishing.frequencyWeekly']() },
+        { value: 'monthly', label: m['admin.publishing.frequencyMonthly']() }
+      ]}
+    />
 
     <Toggle
       id="destination-enabled"

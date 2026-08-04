@@ -41,6 +41,7 @@ def test_kind_comes_from_the_config():
         }
     )
     assert hf.config.kind == "huggingface"
+    assert hf.publish_frequency == "off"
 
     s3 = PublishDestinationUpsert.model_validate(
         {
@@ -57,6 +58,22 @@ def test_kind_comes_from_the_config():
     )
     assert s3.config.kind == "s3"
     assert s3.config.prefix == ""
+
+
+def test_publish_frequency_belongs_to_the_destination():
+    destination = PublishDestinationUpsert.model_validate(
+        {
+            "name": "Scheduled destination",
+            "config": {
+                "kind": "huggingface",
+                "repo_path": "org/comparia",
+                "token": "t",
+            },
+            "datasets": ["normal"],
+            "publish_frequency": "weekly",
+        }
+    )
+    assert destination.publish_frequency == "weekly"
 
 
 def rejects(payload: dict) -> bool:
