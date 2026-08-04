@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run
 
 # Variables
 PYTHON := python3
@@ -207,34 +207,18 @@ i18n-build-news: ## generate news files
 ###################################
 # Dataset utilities
 ###################################
-dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
+dataset-export: ## Export the datasets to the destinations set in the admin panel (requires COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
 	@if [ -z "$$COMPARIA_DB_URI" ]; then \
 		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
-	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
-		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
-		exit 1; \
-	fi
-	@if [ -z "$$HF_PUSH_DATASET_PATH" ]; then \
-		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
-		exit 1; \
-	fi
-	$(UV) run python -m utils.dataset.run fr
+	$(UV) run python -m utils.dataset.run
 
-dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
+dataset-export-dry-run: ## Build the datasets locally and send them nowhere (requires COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
 	@if [ -z "$$COMPARIA_DB_URI" ]; then \
 		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
-	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
-		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
-		exit 1; \
-	fi
-	@if [ -z "$$HF_PUSH_DATASET_PATH" ]; then \
-		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
-		exit 1; \
-	fi
-	$(UV) run python -m utils.dataset.run da
+	$(UV) run python -m utils.dataset.run --dry-run

@@ -204,11 +204,12 @@ class PublishRun(BaseDBModel, table=True):
     # None while the run is going, then whether it finished.
     succeeded: bool | None = None
     error: str | None = None
-    # Comparisons analysis kept out of the open dataset, and the total it chose
-    # from. A share that jumps from two percent to forty is the alarm that the
-    # analysis model, or its configuration, broke.
+    # What the open dataset carried, and what analysis kept out of it. Both are
+    # null for a run that did not rebuild the open dataset. A held-back share
+    # that jumps from two percent to forty is the alarm that the analysis
+    # model, or its configuration, broke.
     held_back: int | None = None
-    comparisons: int | None = None
+    published: int | None = None
 
 
 class AdminPublishRun(SQLModel):
@@ -217,7 +218,7 @@ class AdminPublishRun(SQLModel):
     succeeded: bool | None
     error: str | None
     held_back: int | None
-    comparisons: int | None
+    published: int | None
 
 
 class AdminPublishStatus(SQLModel):

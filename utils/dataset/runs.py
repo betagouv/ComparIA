@@ -56,7 +56,7 @@ async def finish_run(
     run_id: uuid.UUID,
     *,
     error: str | None = None,
-    comparisons: int | None = None,
+    published: int | None = None,
     held_back: int | None = None,
 ) -> None:
     async with get_session() as session:
@@ -66,13 +66,13 @@ async def finish_run(
         run.finished_at = utc_now()
         run.succeeded = error is None
         run.error = error[:_ERROR_MAX] if error else None
-        run.comparisons = comparisons
+        run.published = published
         run.held_back = held_back
         session.add(run)
         await session.commit()
 
 
-async def held_back_counts() -> tuple[int, int]:
+async def open_dataset_counts() -> tuple[int, int]:
     """How many comparisons the open dataset published, and how many it held back."""
     counts = await get_db_comparisons_counts(
         {"published": PUBLISHABLE, "total": col(Comparison.id) != None}  # noqa: E711

@@ -33,12 +33,14 @@ LOCAL_NAMES: dict[Datasets, str] = {
 _SUFFIXES = (".parquet", "_samples.tsv", "_samples.jsonl")
 
 # Published beside the data under its own name: the vocabulary the
-# keyword_annotations columns refer to.
+# keyword_annotations columns refer to. Rewritten every run, so it never needs
+# sweeping.
 _EXTRA_FILES = ("vote_tags.json",)
 
-# Left alone on a Hugging Face repository: they are the repository's own, not
-# ours to publish or to remove.
-_KEEP_ON_HF = {".gitattributes", "README.md"}
+# The only files a run owns. Anything else on a destination belongs to whoever
+# put it there: the dataset card, its images, a LICENSE, the repository's own
+# .gitattributes. A run publishes data, it does not tidy other people's files.
+_DATA_SUFFIXES = (".parquet", ".jsonl", ".tsv")
 
 
 class DestinationError(Exception):
@@ -95,12 +97,11 @@ def _push_to_huggingface(
         for path, name in _built_files(build_dir, dataset, published)
     ]
     written = {op.path_in_repo for op in operations}
-    # Whatever else the repository holds is a leftover: a file from an earlier
-    # naming, or one this run no longer produces. Left in place it would keep
-    # publishing comparisons this run held back, which is the whole point of
-    # rebuilding from row zero every time.
+    # A data file this run did not write is a leftover from an earlier naming.
+    # Left in place it would go on publishing comparisons this run held back,
+    # which is the whole point of rebuilding from row zero every time.
     for stale in api.list_repo_files(repo_id, repo_type="dataset"):
-        if stale not in written and stale not in _KEEP_ON_HF:
+        if stale not in written and stale.endswith(_DATA_SUFFIXES):
             operations.append(CommitOperationDelete(path_in_repo=stale))
 
     api.create_commit(
@@ -132,8 +133,9 @@ def _push_to_s3(config: S3Config, dataset: Datasets, build_dir: Path) -> None:
         written.add(key)
 
     for obj in client.list_objects(config.bucket, prefix=f"{folder}/", recursive=True):
-        if obj.object_name and obj.object_name not in written:
-            client.remove_object(config.bucket, obj.object_name)
+        name = obj.object_name
+        if name and name not in written and name.endswith(_DATA_SUFFIXES):
+            client.remove_object(config.bucket, name)
 
     logger.info(f"Uploaded the '{dataset}' dataset to '{config.bucket}/{folder}'.")
 
