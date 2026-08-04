@@ -43,6 +43,7 @@ REDIS_LLMS_DATA_CACHE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}llms_data"
 REDIS_APP_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}app_settings"
 REDIS_SUGGESTIONS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}suggestions"
 REDIS_VOTE_TAGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}vote_tags"
+REDIS_STATISTICS_SUMMARY_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}statistics:summary"
 
 
 @lru_cache
