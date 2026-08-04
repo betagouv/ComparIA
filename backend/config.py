@@ -56,6 +56,9 @@ class Settings(BaseSettings):
     DATASET_SCHEDULER_ENABLED: bool = True
     DATASET_RUN_TIMEOUT: int = 6 * 3600
     DATASET_MEMORY_LIMIT_GB: int = 8
+    # Generous: the export's single read walks the whole comparison table, and
+    # this is here to end a query that has stopped moving, not a slow one.
+    DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000
 
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session

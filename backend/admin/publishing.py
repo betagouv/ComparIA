@@ -1,6 +1,6 @@
+import asyncio
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
@@ -18,6 +18,7 @@ from utils.database.models.publish import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.dataset.publish import DestinationError, check_destination
 from utils.dataset.runs import last_run
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
@@ -35,11 +36,11 @@ async def get_status() -> AdminPublishStatus:
     app_settings = await get_app_settings()
     run = await last_run()
     return AdminPublishStatus(
-        frequency=app_settings.publish_frequency,  # type: ignore[arg-type]
+        frequency=app_settings.publish_frequency,
         hour=app_settings.publish_hour,
         timezone=app_settings.publish_timezone,
         last_run=AdminPublishRun.model_validate(run.model_dump()) if run else None,
-        next_run_at=next_run_at(app_settings, datetime.now(ZoneInfo("UTC"))),
+        next_run_at=next_run_at(app_settings, datetime.now(UTC)),
     )
 
 
@@ -102,6 +103,28 @@ async def update_destination(
         await session.commit()
         await session.refresh(row)
         return AdminPublishDestination.from_row(row)
+
+
+@router.post(
+    "/destinations/{destination_id}/check", status_code=status.HTTP_204_NO_CONTENT
+)
+async def check_destination_route(destination_id: uuid.UUID) -> None:
+    """
+    Write a small file to the destination and delete it, so a token that
+    cannot write is found here rather than in the middle of the night.
+    """
+    async with get_session() as session:
+        row = await session.get(PublishDestination, destination_id)
+        if not row:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        config = row.parsed_config()
+
+    try:
+        await asyncio.to_thread(check_destination, config)
+    except DestinationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)
+        ) from exc
 
 
 @router.delete("/destinations/{destination_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -59,10 +59,10 @@ def configured() -> AppSettings:
 
 
 def test_the_endpoint_and_the_model_become_one_litellm_model(monkeypatch):
-    model, api_base, api_key = resolve(monkeypatch, configured(), openrouter())
-    assert model == "openrouter/google/gemini-flash"
-    assert api_base is None
-    assert api_key == "sk-or-x"
+    analysis = resolve(monkeypatch, configured(), openrouter())
+    assert analysis.model == "openrouter/google/gemini-flash"
+    assert analysis.api_base is None
+    assert analysis.api_key == "sk-or-x"
 
 
 def refuses(monkeypatch, app_settings, endpoint) -> str:

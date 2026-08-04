@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pydantic import ValidationInfo, field_validator
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, String
 
 from .publish import PublishFrequency
 from .utils import AutoDatetime
@@ -125,7 +125,7 @@ class AppSettings(SQLModel, table=True):
     )
     analysis_model: str | None = Field(default=None, max_length=200)
     # When the publish run fires. 'off' until an instance asks for one.
-    publish_frequency: str = Field(default="off", max_length=20)
+    publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
     publish_hour: int = Field(default=3)
     publish_timezone: str = Field(default="UTC", max_length=64)
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
@@ -150,7 +150,7 @@ class AppSettingsPublic(SQLModel):
     homepage_url: str | None
     analysis_endpoint_id: uuid.UUID | None
     analysis_model: str | None
-    publish_frequency: str
+    publish_frequency: PublishFrequency
     publish_hour: int
     publish_timezone: str
     has_custom_logo: bool
