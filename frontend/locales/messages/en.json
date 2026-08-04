@@ -2170,6 +2170,23 @@
             "share": "My results"
         }
     },
+    "statistics": {
+        "counterLink": "View platform statistics",
+        "eyebrow": "compar:IA in numbers",
+        "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",
+        "methodology": "These figures include non-archived conversations and are updated regularly.",
+        "metrics": {
+            "questions": {
+                "description": "Prompts submitted to compare two conversational AI models.",
+                "label": "Questions asked"
+            },
+            "votes": {
+                "description": "Preferences expressed after comparing the models' answers.",
+                "label": "Votes cast"
+            }
+        },
+        "title": "Platform statistics"
+    },
     "vote": {
         "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {

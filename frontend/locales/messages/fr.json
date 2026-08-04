@@ -2833,6 +2833,23 @@
             "share": "Mon bilan"
         }
     },
+    "statistics": {
+        "counterLink": "Consulter les statistiques de la plateforme",
+        "eyebrow": "compar:IA en chiffres",
+        "intro": "Découvrez comment les conversations et les préférences partagées sur la plateforme contribuent à un jeu de données commun.",
+        "methodology": "Ces chiffres incluent les conversations non archivées et sont mis à jour régulièrement.",
+        "metrics": {
+            "questions": {
+                "description": "Questions posées pour comparer les réponses de deux modèles d’IA conversationnelle.",
+                "label": "Questions posées"
+            },
+            "votes": {
+                "description": "Préférences exprimées après avoir comparé les réponses des modèles.",
+                "label": "Votes exprimés"
+            }
+        },
+        "title": "Statistiques de la plateforme"
+    },
     "vote": {
         "choices": {
             "negative": {
