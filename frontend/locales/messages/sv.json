@@ -1482,6 +1482,23 @@
             "share": "Mina resultat"
         }
     },
+    "statistics": {
+        "counterLink": "Visa plattformens statistik",
+        "eyebrow": "compar:IA i siffror",
+        "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",
+        "methodology": "Siffrorna omfattar icke-arkiverade samtal och uppdateras regelbundet.",
+        "metrics": {
+            "questions": {
+                "description": "Frågor som ställts för att jämföra svar från två konversationsmodeller.",
+                "label": "Ställda frågor"
+            },
+            "votes": {
+                "description": "Preferenser som angetts efter jämförelse av modellernas svar.",
+                "label": "Avgivna röster"
+            }
+        },
+        "title": "Plattformsstatistik"
+    },
     "vote": {
         "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "choices": {
