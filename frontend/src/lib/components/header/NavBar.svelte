@@ -95,7 +95,7 @@
 
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
-    <div class="flex items-center justify-between">
+    <div>
       {@render renderLink({
         href: '/arene/settings',
         label: m['seo.titles.settings'](),
@@ -105,8 +105,6 @@
         variant: 'tertiary-no-outline',
         class: 'text-sm! text-grey! rounded-sm!'
       })}
-
-      <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>
 
     <div
@@ -140,7 +138,12 @@
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
 
-    <LegalMenu id="legal-menu-{mode}" {expanded} />
+    <div class="gap-2 flex items-center">
+      <div class="min-w-0 flex-1">
+        <LegalMenu id="legal-menu-{mode}" {expanded} />
+      </div>
+      <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
+    </div>
   </div>
 {/snippet}
 
