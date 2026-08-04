@@ -93,49 +93,43 @@
   </div>
 {/snippet}
 
+{#snippet account()}
+  {@const { icon: connectionIcon, text: connectionText, ...connectionProps } = connectionBtnProps}
+  <div class="gap-1 pb-3 flex flex-col">
+    {#if auth.user}
+      <p
+        class={[
+          'text-sm mb-0! text-grey px-4 min-w-0 max-w-full [overflow-wrap:anywhere]',
+          { 'lg:hidden': !expanded }
+        ]}
+      >
+        {auth.user.email}
+      </p>
+    {/if}
+
+    {@render renderLink({
+      href: '/arene/settings',
+      label: m['seo.titles.settings'](),
+      icon: 'i-ri-settings-4-line',
+      class: 'text-sm! text-black! fr-sidemenu__link font-normal! py-2! before:content-none!'
+    })}
+
+    <button
+      type="button"
+      {...connectionProps}
+      class={[
+        'text-sm! text-black! fr-sidemenu__link font-normal! py-2! gap-2 flex w-full! items-center before:content-none!',
+        { 'lg:justify-center': !expanded }
+      ]}
+    >
+      <Icon icon={connectionIcon} block size={expanded ? 'sm' : 'md'} />
+      <span class={{ 'lg:sr-only': !expanded }}>{connectionText}</span>
+    </button>
+  </div>
+{/snippet}
+
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
-    <div>
-      {@render renderLink({
-        href: '/arene/settings',
-        label: m['seo.titles.settings'](),
-        icon: 'i-ri-settings-4-line',
-        button: true,
-        size: 'sm',
-        variant: 'tertiary-no-outline',
-        class: 'text-sm! text-grey! rounded-sm!'
-      })}
-    </div>
-
-    <div
-      class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start md:justify-between flex flex-col"
-    >
-      {#if auth.user}
-        <p
-          class={[
-            'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
-            { 'lg:hidden': !expanded }
-          ]}
-        >
-          {auth.user.email}
-        </p>
-      {/if}
-
-      <Button
-        variant="tertiary"
-        size="sm"
-        {...connectionBtnProps}
-        icon={undefined}
-        text={undefined}
-        class={['w-full!', { '-ms-[2px]': !expanded }]}
-      >
-        <span class={['gap-2 flex items-center', { 'lg:w-full lg:justify-center': !expanded }]}>
-          <Icon icon={connectionBtnProps.icon} block size={expanded ? 'sm' : 'md'} />
-          <span class={{ 'lg:sr-only': !expanded }}>{connectionBtnProps.text}</span>
-        </span>
-      </Button>
-    </div>
-
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
 
     <div class="gap-2 flex items-center">
@@ -204,8 +198,11 @@
       <History {expanded} />
     {/if}
 
-    <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5 mt-auto">
-      {@render footer()}
+    <div class="mt-auto">
+      {@render account()}
+      <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5">
+        {@render footer()}
+      </div>
     </div>
   </div>
 
@@ -246,6 +243,7 @@
       {/if}
 
       <div class="bottom-0 pb-5 p-4 bg-white sticky mt-auto border-t border-[--grey-925-125]">
+        {@render account()}
         {@render footer('mobile')}
       </div>
     </div>
