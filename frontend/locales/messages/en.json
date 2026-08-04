@@ -2268,9 +2268,10 @@
     },
     "statistics": {
         "counterLink": "View platform statistics",
-        "eyebrow": "compar:IA in numbers",
+        "eyebrow": "Statistics",
         "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",
         "methodology": "These figures include non-archived conversations and are updated regularly.",
+        "overview": "Overview",
         "metrics": {
             "questions": {
                 "description": "Prompts submitted to compare two conversational AI models.",
