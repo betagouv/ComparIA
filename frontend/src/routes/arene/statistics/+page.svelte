@@ -9,17 +9,15 @@
   const metrics = $derived([
     {
       id: 'questions',
-      icon: 'fr-icon-question-answer-line',
+      emoji: '💬',
       value: data.statistics.questions_count,
-      label: m['statistics.metrics.questions.label'](),
-      description: m['statistics.metrics.questions.description']()
+      label: m['statistics.metrics.questions.label']()
     },
     {
       id: 'votes',
-      icon: 'fr-icon-thumb-up-line',
+      emoji: '🗳️',
       value: data.statistics.votes_count,
-      label: m['statistics.metrics.votes.label'](),
-      description: m['statistics.metrics.votes.description']()
+      label: m['statistics.metrics.votes.label']()
     }
   ])
 </script>
@@ -32,19 +30,12 @@
   class="bg-very-light-grey min-h-[calc(100vh-var(--second-header-size))]"
 >
   <section class="fr-container py-4! md:py-8!" aria-label={m['statistics.title']()}>
-    <dl class="gap-6 md:grid-cols-2 grid">
+    <dl class="metrics-grid">
       {#each metrics as metric (metric.id)}
-        <div class="metric-card cg-border bg-white p-6! md:p-8!">
-          <div class="gap-3 flex items-center">
-            <span class={[metric.icon, 'metric-icon']} aria-hidden="true"></span>
-            <dt class="fr-h5 mb-0!">{metric.label}</dt>
-          </div>
-          <dd class="mt-6! mb-0!">
-            <strong class="metric-value text-primary block">
-              {numberFormatter.format(metric.value)}
-            </strong>
-            <span class="mt-3 text-grey block">{metric.description}</span>
-          </dd>
+        <div class="metric-card bg-very-light-primary">
+          <span class="metric-emoji" aria-hidden="true">{metric.emoji}</span>
+          <dt class="metric-label">{metric.label}</dt>
+          <dd class="metric-value">{numberFormatter.format(metric.value)}</dd>
         </div>
       {/each}
     </dl>
@@ -54,17 +45,49 @@
 </PageLayout>
 
 <style>
-  .metric-card {
-    border-left: 0.5rem solid var(--border-action-high-blue-france);
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: 1.5rem;
   }
 
-  .metric-icon {
-    color: var(--text-action-high-blue-france);
+  .metric-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 1rem;
+    align-items: center;
+    min-height: 8.75rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-default-blue-france);
+    border-radius: 1rem;
+  }
+
+  .metric-emoji {
+    grid-row: 1 / 3;
+    font-size: 2.5rem;
+    line-height: 1;
   }
 
   .metric-value {
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    margin: 0;
+    color: var(--text-title-grey);
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
+  }
+
+  .metric-label {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 0.5rem;
+    color: var(--text-title-grey);
+    font-size: 1.125rem;
+    line-height: 1.35;
   }
 </style>
