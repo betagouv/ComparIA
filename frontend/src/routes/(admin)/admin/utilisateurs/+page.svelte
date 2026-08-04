@@ -106,7 +106,12 @@
   >
     {#snippet headerRight()}
       <div class="gap-2 flex">
-        <Link button variant="secondary" text="Add user" href={resolve('/admin/utilisateurs/create')} />
+        <Link
+          button
+          variant="secondary"
+          text="Add user"
+          href={resolve('/admin/utilisateurs/create')}
+        />
         <Button text="Invite user" aria-controls="fr-modal-invite-user" data-fr-opened="false" />
       </div>
     {/snippet}
