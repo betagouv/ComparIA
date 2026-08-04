@@ -22,8 +22,7 @@ from pathlib import Path
 from uuid import UUID
 
 from async_lru import alru_cache
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import and_, col, select
+from sqlmodel import col, select
 
 from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
@@ -41,6 +40,7 @@ from .models import (
     Datasets,
 )
 from .publish import LOCAL_NAMES
+from .runs import PUBLISHABLE
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -70,17 +70,7 @@ async def count_dataset_rows(datasets: list[Datasets]):
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
-            {
-                "normal": and_(
-                    col(Comparison.archived) == False,
-                    col(Comparison.llm_analyzed) == True,
-                    col(Comparison.contains_pii) != True,
-                    col(Comparison.contains_spam) != True,
-                    col(Comparison.error) == JSONB.NULL,
-                    col(Comparison.cohorts).in_((None, "")),
-                ),
-                "raw": col(Comparison.id) != None,
-            }
+            {"normal": PUBLISHABLE, "raw": col(Comparison.id) != None}
         )
 
         for dataset, count in counts.items():

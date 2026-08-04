@@ -50,6 +50,13 @@ class Settings(BaseSettings):
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
+    # Dataset publishing. The schedule itself lives in the admin panel; these
+    # are the boundaries the run gets on the machine. Off here, a larger
+    # deployment can run this same image as a dedicated scheduler replica.
+    DATASET_SCHEDULER_ENABLED: bool = True
+    DATASET_RUN_TIMEOUT: int = 6 * 3600
+    DATASET_MEMORY_LIMIT_GB: int = 8
+
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []

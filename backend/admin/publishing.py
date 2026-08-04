@@ -1,17 +1,24 @@
 import uuid
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
 
+from backend.publishing import next_run_at
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,
+    AdminPublishRun,
+    AdminPublishStatus,
     MissingSecretError,
     PublishDestination,
     PublishDestinationUpsert,
     config_to_store,
 )
 from utils.database.session import get_session
+from utils.database.settings import get_app_settings
+from utils.dataset.runs import last_run
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
 
@@ -20,6 +27,19 @@ def _missing_secret(exc: MissingSecretError) -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         detail=f"'{exc.field}' is required for this kind of destination",
+    )
+
+
+@router.get("/status", response_model=AdminPublishStatus)
+async def get_status() -> AdminPublishStatus:
+    app_settings = await get_app_settings()
+    run = await last_run()
+    return AdminPublishStatus(
+        frequency=app_settings.publish_frequency,  # type: ignore[arg-type]
+        hour=app_settings.publish_hour,
+        timezone=app_settings.publish_timezone,
+        last_run=AdminPublishRun.model_validate(run.model_dump()) if run else None,
+        next_run_at=next_run_at(app_settings, datetime.now(ZoneInfo("UTC"))),
     )
 
 

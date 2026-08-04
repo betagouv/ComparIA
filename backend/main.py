@@ -27,6 +27,14 @@ async def lifespan(app: FastAPI):
         from utils.database.actions.seed import seed_admins
 
         await seed_admins()
+
+    if settings.COMPARIA_DB_URI:
+        from backend import publishing
+
+        publishing.start(app)
+        yield
+        await publishing.stop(app)
+        return
     yield
 
 
