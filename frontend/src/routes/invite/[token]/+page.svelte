@@ -156,7 +156,7 @@
         {/if}
         <Button
           text={submitting ? m['invite.accepting']() : m['invite.accept']()}
-          disabled={submitting || consentLoading || !terms}
+          disabled={submitting || consentLoading || !terms || (consentRequired && !consented)}
           onclick={accept}
           class="mt-4 block! w-full!"
         />

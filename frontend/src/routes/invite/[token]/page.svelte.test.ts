@@ -81,12 +81,13 @@ describe('invite consent', () => {
     const { container } = render(InvitePage)
     await waitFor(() => expect(container.querySelector('#invite-consent')).not.toBeNull())
 
+    expect(acceptButton(container).disabled).toBe(true)
     await fireEvent.click(acceptButton(container))
 
     expect(paths()).not.toContain('/auth/invite/accept')
-    expect(container.textContent).toContain('Vous devez accepter')
 
     await fireEvent.click(container.querySelector<HTMLInputElement>('#invite-consent')!)
+    expect(acceptButton(container).disabled).toBe(false)
     await fireEvent.click(acceptButton(container))
 
     await waitFor(() => expect(paths()).toContain('/auth/invite/accept'))
@@ -128,6 +129,9 @@ describe('invite consent', () => {
     await fireEvent.click(retry)
 
     await waitFor(() => expect(container.querySelector('#invite-consent')).not.toBeNull())
+    expect(acceptButton(container).disabled).toBe(true)
+
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#invite-consent')!)
     expect(acceptButton(container).disabled).toBe(false)
   })
 
