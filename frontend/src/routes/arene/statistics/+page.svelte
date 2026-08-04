@@ -78,6 +78,7 @@
     justify-self: start;
     width: 100%;
     margin: 0;
+    padding: 0;
     color: var(--text-title-grey);
     font-size: 2rem;
     font-weight: 700;
@@ -93,6 +94,7 @@
     justify-self: start;
     width: 100%;
     margin-top: 0.35rem;
+    padding: 0;
     color: var(--text-title-grey);
     font-size: 0.875rem;
     line-height: 1.35;
