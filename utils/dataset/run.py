@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path
 from typing import Literal
 
@@ -9,9 +10,24 @@ from utils.utils import UTILS_DIR
 
 from .compute import count_dataset_rows, process_datasets
 from .models import Datasets
-from .publish import DestinationError, enabled_destinations, publish
+from .publish import LOCAL_NAMES, DestinationError, enabled_destinations, publish
+from .runs import finish_run, held_back_counts, start_run
 
 logger = logging.getLogger("comparia.dataset")
+
+# A run rebuilds every dataset from row zero, so it needs room for the whole
+# thing twice over. Refusing early beats filling the disk the arena writes to.
+FREE_DISK_REQUIRED = 20 * 1024**3
+
+
+def check_free_disk(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    free = shutil.disk_usage(path).free
+    if free < FREE_DISK_REQUIRED:
+        raise DestinationError(
+            f"Only {free / 1024**3:.1f} GB free under '{path}', "
+            f"{FREE_DISK_REQUIRED / 1024**3:.0f} GB needed for a run."
+        )
 
 
 async def main(
@@ -21,6 +37,7 @@ async def main(
     dry_run: bool = False,
     count: bool = False,
     use_cache: bool = False,
+    record: bool = False,
 ):
     """
     Export ComparIA datasets from PostgreSQL to the destinations configured in
@@ -38,12 +55,43 @@ async def main(
         Display row counts for each dataset without exporting
     use_cache: bool
         Rebuild the normal dataset from an existing raw parquet instead of the DB
+    record: bool
+        Record the run in the database, for the admin panel to read. What the
+        scheduler passes; off by hand so a local export does not overwrite the
+        instance's last run.
     """
     datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
 
     if count:
         return await count_dataset_rows(datasets)
 
+    run_id = await start_run() if record else None
+    try:
+        await _export(datasets, export_base_path, dry_run, use_cache)
+    except Exception as exc:
+        if run_id:
+            await finish_run(run_id, error=str(exc))
+        raise
+    else:
+        if run_id:
+            published, held_back = await held_back_counts()
+            await finish_run(run_id, comparisons=published, held_back=held_back)
+    finally:
+        # The parquet files are the run's, not the instance's: they are what
+        # was just published, and they are large. Only the directories a build
+        # creates go, never the export root itself, which is a directory in
+        # the repository with files of its own.
+        if record:
+            for name in LOCAL_NAMES.values():
+                shutil.rmtree(export_base_path / name, ignore_errors=True)
+
+
+async def _export(
+    datasets: list[Datasets],
+    export_base_path: Path,
+    dry_run: bool,
+    use_cache: bool,
+) -> None:
     destinations = [] if dry_run else await enabled_destinations()
     if dry_run:
         logger.info("[DRY RUN] Building locally, sending nothing")
@@ -65,6 +113,8 @@ async def main(
             raise DestinationError(
                 "No enabled destination receives the requested datasets."
             )
+
+    check_free_disk(export_base_path)
 
     built = await process_datasets(datasets, export_base_path, use_cache=use_cache)
     logger.info("Finished processing all datasets.")

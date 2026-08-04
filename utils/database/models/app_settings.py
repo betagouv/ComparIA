@@ -1,12 +1,14 @@
 import uuid
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import ValidationInfo, field_validator
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
+from .publish import PublishFrequency
 from .utils import AutoDatetime
 
 PRIMARY_COLOR_LIGHT_DEFAULT = "#6464F3"
@@ -122,6 +124,10 @@ class AppSettings(SQLModel, table=True):
         default=None, foreign_key="llm_endpoint.id"
     )
     analysis_model: str | None = Field(default=None, max_length=200)
+    # When the publish run fires. 'off' until an instance asks for one.
+    publish_frequency: str = Field(default="off", max_length=20)
+    publish_hour: int = Field(default=3)
+    publish_timezone: str = Field(default="UTC", max_length=64)
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
     enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
@@ -144,6 +150,9 @@ class AppSettingsPublic(SQLModel):
     homepage_url: str | None
     analysis_endpoint_id: uuid.UUID | None
     analysis_model: str | None
+    publish_frequency: str
+    publish_hour: int
+    publish_timezone: str
     has_custom_logo: bool
     enabled_locales: list[str]
     default_locale: str
@@ -165,6 +174,20 @@ class AppSettingsPatch(SQLModel):
     default_locale: str | None = None
     analysis_endpoint_id: uuid.UUID | None = None
     analysis_model: str | None = Field(default=None, max_length=200)
+    publish_frequency: PublishFrequency | None = None
+    publish_hour: int | None = Field(default=None, ge=0, le=23)
+    publish_timezone: str | None = Field(default=None, max_length=64)
+
+    @field_validator("publish_timezone")
+    @classmethod
+    def known_timezone(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError):
+            raise ValueError(f"Unknown time zone: {value}")
+        return value
 
     @field_validator(
         "primary_color_light",

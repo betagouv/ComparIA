@@ -1,5 +1,6 @@
 import re
 import uuid
+from datetime import datetime
 from typing import Annotated, Literal, get_args
 
 from pydantic import Field as PydanticField
@@ -9,7 +10,7 @@ from sqlmodel import Field, SQLModel, String
 
 from utils.validation import NonEmptyStr
 
-from .utils import BaseDBModel
+from .utils import BaseDBModel, Datetime, OptionalDatetime
 
 # The two datasets a run produces. Code, not configuration: a destination picks
 # which of them it receives, it cannot invent a third.
@@ -181,3 +182,48 @@ class AdminPublishDestination(SQLModel):
 
 class AdminPublishDestinationsResponse(SQLModel):
     destinations: list[AdminPublishDestination]
+
+
+# How often a run fires. A frequency, an hour and a time zone rather than a
+# cron expression: a mistyped cron expression is an export every minute.
+PublishFrequency = Literal["off", "daily", "weekly", "monthly"]
+PUBLISH_FREQUENCIES: tuple[PublishFrequency, ...] = get_args(PublishFrequency)
+
+
+class PublishRun(BaseDBModel, table=True):
+    """
+    One pass over the whole database. An instance only ever looks at the last
+    one, but a row per run costs nothing and answers 'when did this start
+    failing'.
+    """
+
+    __tablename__ = "publish_run"
+
+    started_at: Datetime
+    finished_at: OptionalDatetime = None
+    # None while the run is going, then whether it finished.
+    succeeded: bool | None = None
+    error: str | None = None
+    # Comparisons analysis kept out of the open dataset, and the total it chose
+    # from. A share that jumps from two percent to forty is the alarm that the
+    # analysis model, or its configuration, broke.
+    held_back: int | None = None
+    comparisons: int | None = None
+
+
+class AdminPublishRun(SQLModel):
+    started_at: datetime
+    finished_at: datetime | None
+    succeeded: bool | None
+    error: str | None
+    held_back: int | None
+    comparisons: int | None
+
+
+class AdminPublishStatus(SQLModel):
+    frequency: PublishFrequency
+    hour: int
+    timezone: str
+    # None until a run has been recorded.
+    last_run: AdminPublishRun | None
+    next_run_at: datetime | None
