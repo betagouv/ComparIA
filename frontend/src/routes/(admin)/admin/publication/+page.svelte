@@ -31,9 +31,7 @@
 
   const destinations = $derived(data.destinations.destinations)
   const status = $derived(data.status)
-  const historyRows = $derived(
-    status.runs.map((run) => ({ ...run, id: run.started_at }))
-  )
+  const historyRows = $derived(status.runs.map((run) => ({ ...run, id: run.started_at })))
 
   const cols = [
     { id: 'name', label: m['admin.publishing.colName']() },
@@ -503,6 +501,7 @@
       <Table
         caption={m['admin.publishing.lastRun']()}
         hideCaption
+        class="publication-history-table"
         cols={historyCols}
         rows={historyRows}
       >
@@ -691,3 +690,11 @@
     <Button text={m['admin.publishing.delete']()} disabled={busy} onclick={confirmDelete} />
   </div>
 </Modal>
+
+<style>
+  /* DSFR draws table separators as backgrounds; reinforce them here so the
+     first history row remains separated in horizontally scrollable tables. */
+  :global(.publication-history-table tbody tr:not(:last-child) td) {
+    box-shadow: inset 0 -1px 0 var(--border-contrast-grey);
+  }
+</style>
