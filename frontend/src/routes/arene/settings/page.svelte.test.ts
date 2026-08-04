@@ -16,7 +16,7 @@ vi.mock('$lib/fastapi-client', () => ({
 
 describe('Settings page', () => {
   it('splits the account actions from the legal information', async () => {
-    const { getByRole, getByLabelText, queryByRole } = render(Page)
+    const { container, getByRole, getByLabelText } = render(Page)
 
     expect(getByRole('heading', { level: 1, name: 'Paramètres' })).toBeTruthy()
     expect(getByRole('tab', { name: 'Compte' }).getAttribute('aria-selected')).toBe('true')
@@ -39,7 +39,12 @@ describe('Settings page', () => {
     expect(getByRole('link', { name: 'Écoconception' }).getAttribute('href')).toBe(
       '/arene/ecoconception'
     )
-    expect(queryByRole('button', { name: 'Exporter mes données' })).toBeNull()
+    // Tabs keeps every panel in the DOM and hides the inactive ones through
+    // the DSFR styles, so the selected class is what separates them here.
+    expect(container.querySelector('#tab-about-panel')).toHaveClass('fr-tabs__panel--selected')
+    expect(container.querySelector('#tab-account-panel')).not.toHaveClass(
+      'fr-tabs__panel--selected'
+    )
   })
 
   it('asks the backend for the export rather than building it in the page', async () => {
