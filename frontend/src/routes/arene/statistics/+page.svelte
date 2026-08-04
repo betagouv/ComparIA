@@ -75,22 +75,28 @@
     grid-column: 2;
     grid-row: 1;
     align-self: end;
+    justify-self: start;
+    width: 100%;
     margin: 0;
     color: var(--text-title-grey);
     font-size: 2rem;
     font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
+    text-align: left;
   }
 
   .metric-label {
     grid-column: 2;
     grid-row: 2;
     align-self: start;
+    justify-self: start;
+    width: 100%;
     margin-top: 0.35rem;
     color: var(--text-title-grey);
     font-size: 0.875rem;
     line-height: 1.35;
+    text-align: left;
   }
 
   @media (min-width: 48em) {
