@@ -17,6 +17,46 @@ export interface AdminLegalDocument {
   retired_at: string | null;
   seeded: boolean;
 }
+export interface AdminPublishDestination {
+  id: string;
+  name: string;
+  kind: "huggingface" | "s3";
+  config: HuggingFaceConfigPublic | S3ConfigPublic;
+  datasets: ("normal" | "raw")[];
+  enabled: boolean;
+}
+export interface HuggingFaceConfigPublic {
+  kind?: "huggingface";
+  repo_path: string;
+  [k: string]: unknown;
+}
+export interface S3ConfigPublic {
+  kind?: "s3";
+  endpoint: string;
+  bucket: string;
+  region?: string | null;
+  prefix?: string;
+  secure?: boolean;
+  [k: string]: unknown;
+}
+export interface AdminPublishDestinationsResponse {
+  destinations: AdminPublishDestination[];
+}
+export interface AdminPublishRun {
+  started_at: string;
+  finished_at: string | null;
+  succeeded: boolean | null;
+  error: string | null;
+  held_back: number | null;
+  published: number | null;
+}
+export interface AdminPublishStatus {
+  frequency: "off" | "daily" | "weekly" | "monthly";
+  hour: number;
+  timezone: string;
+  last_run: AdminPublishRun | null;
+  next_run_at: string | null;
+}
 export interface AdminSuggestion {
   id: string;
   text: string;
@@ -66,6 +106,11 @@ export interface AppSettingsPatch {
   homepage_url?: string | null;
   enabled_locales?: string[] | null;
   default_locale?: string | null;
+  analysis_endpoint_id?: string | null;
+  analysis_model?: string | null;
+  publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
+  publish_hour?: number | null;
+  publish_timezone?: string | null;
 }
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
@@ -77,6 +122,11 @@ export interface AppSettingsPublic {
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
+  analysis_endpoint_id: string | null;
+  analysis_model: string | null;
+  publish_frequency: "off" | "daily" | "weekly" | "monthly";
+  publish_hour: number;
+  publish_timezone: string;
   has_custom_logo: boolean;
   enabled_locales: string[];
   default_locale: string;
@@ -304,6 +354,33 @@ export interface PromptCheckStatus {
   consecutive_failures?: number;
   healthy?: boolean;
   warnings_shown?: number;
+}
+/**
+ * 'kind' is not sent: it is read off the config, so a row cannot end up
+ * claiming one kind and holding the other's settings.
+ */
+export interface PublishDestinationUpsert {
+  name: string;
+  config: HuggingFaceConfigInput | S3ConfigInput;
+  datasets: ("normal" | "raw")[];
+  enabled?: boolean;
+}
+export interface HuggingFaceConfigInput {
+  kind?: "huggingface";
+  repo_path: string;
+  token?: string | null;
+  [k: string]: unknown;
+}
+export interface S3ConfigInput {
+  kind?: "s3";
+  endpoint: string;
+  bucket: string;
+  region?: string | null;
+  prefix?: string;
+  secure?: boolean;
+  access_key?: string | null;
+  secret_key?: string | null;
+  [k: string]: unknown;
 }
 export interface PublishLegalDocumentBody {
   version: string;
