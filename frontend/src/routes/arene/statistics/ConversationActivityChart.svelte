@@ -2,11 +2,9 @@
   import { curveMonotoneX, line, scaleLinear, scalePoint } from 'd3'
 
   export type ActivityPoint = { date: string; prompts: number; conversations: number }
-  let { points, title, description, demoLabel, labels } = $props<{
+  let { points, title, labels } = $props<{
     points: ActivityPoint[]
     title: string
-    description: string
-    demoLabel?: string
     labels: { table: string; date: string; prompts: string; conversations: string }
   }>()
 
@@ -52,13 +50,7 @@
 </script>
 
 <figure class="chart-panel bg-very-light-primary">
-  <figcaption class="gap-3 sm:flex-row sm:items-start sm:justify-between flex flex-col">
-    <div>
-      <h3 id="activity-chart-title" class="fr-h5 mb-1!">{title}</h3>
-      <p id="activity-chart-description" class="mb-0! text-grey">{description}</p>
-    </div>
-    {#if demoLabel}<p class="fr-badge fr-badge--sm fr-badge--info mb-0!">{demoLabel}</p>{/if}
-  </figcaption>
+  <figcaption><h3 id="activity-chart-title" class="fr-h5 mb-0!">{title}</h3></figcaption>
   <div class="legend mt-4" aria-hidden="true">
     <span><i class="prompts"></i>{labels.prompts}</span><span
       ><i class="conversations"></i>{labels.conversations}</span
@@ -68,7 +60,7 @@
     <svg
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-labelledby="activity-chart-title activity-chart-description"
+      aria-labelledby="activity-chart-title"
       class="chart"
     >
       {#each yTicks as tick (tick)}
@@ -175,7 +167,7 @@
     stroke-width: 3;
   }
   .prompts-line {
-    stroke: var(--border-action-high-blue-france);
+    stroke: var(--brand-primary);
   }
   .conversations-line {
     stroke: #e1000f;
@@ -185,7 +177,7 @@
     stroke-width: 2;
   }
   .prompts-point {
-    fill: var(--background-action-high-blue-france);
+    fill: var(--brand-primary);
   }
   .conversations-point {
     fill: #e1000f;
@@ -208,7 +200,7 @@
     border-radius: 50%;
   }
   .legend .prompts {
-    background: var(--background-action-high-blue-france);
+    background: var(--brand-primary);
   }
   .legend .conversations {
     background: #e1000f;
