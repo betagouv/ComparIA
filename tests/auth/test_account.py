@@ -151,6 +151,11 @@ def test_public_config_carries_the_deployment_url():
             auth_access_policy="anonymous_first",
             auth_domain_allowlist=[],
             platform_name="Arène de test",
+            primary_color_light="#000091",
+            primary_color_dark="#8585F6",
+            secondary_color_light="#6A6AF4",
+            secondary_color_dark="#CACAFB",
+            homepage_url=None,
             logo=None,
         )
 
