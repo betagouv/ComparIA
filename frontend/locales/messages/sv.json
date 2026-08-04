@@ -1483,6 +1483,15 @@
         }
     },
     "statistics": {
+        "activity": {
+            "conversationsLabel": "Konversationer",
+            "dateLabel": "Datum",
+            "demoLabel": "Demonstrationsdata",
+            "description": "Antal konversationer som startats varje dag under de senaste 14 dagarna.",
+            "sectionTitle": "Aktivitet",
+            "tableLabel": "Visa data som tabell",
+            "title": "Dagliga konversationer"
+        },
         "counterLink": "Visa plattformens statistik",
         "eyebrow": "Statistik",
         "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",

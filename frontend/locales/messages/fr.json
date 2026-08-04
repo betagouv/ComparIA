@@ -3028,6 +3028,15 @@
         }
     },
     "statistics": {
+        "activity": {
+            "conversationsLabel": "Conversations",
+            "dateLabel": "Date",
+            "demoLabel": "Données de démonstration",
+            "description": "Nombre de conversations commencées chaque jour au cours des 14 derniers jours.",
+            "sectionTitle": "Activité",
+            "tableLabel": "Consulter les données sous forme de tableau",
+            "title": "Conversations quotidiennes"
+        },
         "counterLink": "Consulter les statistiques de la plateforme",
         "eyebrow": "Statistiques",
         "intro": "Découvrez comment les conversations et les préférences partagées sur la plateforme contribuent à un jeu de données commun.",

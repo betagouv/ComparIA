@@ -15,12 +15,14 @@ describe('statistics page', () => {
       data: {
         statistics: {
           questions_count: 12345,
-          votes_count: 6789
+          votes_count: 6789,
+          daily_conversations: []
         }
       }
     })
 
     expect(getByRole('heading', { level: 1, name: 'Statistiques de la plateforme' })).toBeTruthy()
+    expect(getByRole('heading', { level: 3, name: 'Conversations quotidiennes' })).toBeTruthy()
     expect(
       [...container.querySelectorAll('.metric-value')].map((item) => item.textContent?.trim())
     ).toEqual(['12 345', '6 789'])
