@@ -131,8 +131,44 @@
         },
         "success": "Du er nu logget ind!",
         "settings": {
-            "title": "Indstillinger",
-            "logout": "Log ud"
+            "account": {
+                "email": "E-mailadresse",
+                "signInPrompt": "Log ind for at få adgang til indstillingerne for din konto.",
+                "title": "Min konto"
+            },
+            "display": {
+                "title": "Præferencer"
+            },
+            "erase": {
+                "action": "Slet min konto",
+                "confirmHelp": "Indtast {email} for at bekræfte sletningen.",
+                "confirmLabel": "Bekræft din e-mailadresse",
+                "effectAccount": "din e-mailadresse erstattes af en anonym værdi, og alle dine sessioner lukkes;",
+                "effectComparisons": "dine samtaler adskilles fra kontoen, og IP-adressen, målings-id’et og det anonyme sessions-id, der var knyttet til dem, slettes;",
+                "effectConsent": "beviset for din accept af vilkårene opbevares uden IP-adresse, fordi loven kræver det.",
+                "effectContent": "teksten i dine samtaler og dine stemmer beholdes og forbliver offentliggjort i datasættene, uden forbindelse til dig;",
+                "failed": "Kontoen kunne ikke slettes. Prøv igen, eller skriv til os for at gøre denne ret gældende.",
+                "intro": "Sletningen er endelig. Her er præcis, hvad den gør – hverken mere eller mindre:",
+                "mismatch": "Indtast præcis e-mailadressen på din konto.",
+                "pending": "Sletter…",
+                "title": "Slet min konto"
+            },
+            "export": {
+                "action": "Eksportér mine data",
+                "desc": "Download en kopi af din konto, dine samtaler, dine stemmer og dine accepter af vilkårene i JSON-format.",
+                "failed": "Eksporten kunne ikke forberedes. Prøv igen om et øjeblik.",
+                "pending": "Forbereder…",
+                "title": "Eksportér mine data"
+            },
+            "links": {
+                "title": "Nyttige links"
+            },
+            "logout": "Log ud",
+            "subtitle": "Konto, data og oplysninger om platformen",
+            "tabAbout": "Om",
+            "tabAccount": "Konto",
+            "tabsLabel": "Indstillingssektioner",
+            "title": "Indstillinger"
         }
     },
     "chatbot": {
@@ -1388,6 +1424,10 @@
             }
         },
         "homeTitle": "Hjem - compar:IA",
+        "legal": {
+            "label": "Juridisk",
+            "title": "Juridiske oplysninger"
+        },
         "logoAlt": "Den Franske Republik",
         "menu": "Menu",
         "startDiscussion": "Start en samtale",

@@ -131,8 +131,44 @@
         },
         "success": "You are signed in!",
         "settings": {
-            "title": "Settings",
-            "logout": "Sign out"
+            "account": {
+                "email": "Email address",
+                "signInPrompt": "Sign in to access your account settings.",
+                "title": "My account"
+            },
+            "display": {
+                "title": "Preferences"
+            },
+            "erase": {
+                "action": "Delete my account",
+                "confirmHelp": "Type {email} to confirm the deletion.",
+                "confirmLabel": "Confirm your email address",
+                "effectAccount": "your email address is replaced with an anonymous value and all your sessions are closed;",
+                "effectComparisons": "your conversations are detached from the account, and the IP address, audience measurement ID and anonymous session ID attached to them are erased;",
+                "effectConsent": "the proof of your acceptance of the terms is kept, without the IP address, because the law requires it.",
+                "effectContent": "the text of your conversations and your votes are kept and remain published in the datasets, with no link back to you;",
+                "failed": "The account could not be deleted. Try again, or write to us to exercise this right.",
+                "intro": "Deletion is permanent. Here is exactly what it does, no more and no less:",
+                "mismatch": "Enter your account’s email address exactly.",
+                "pending": "Deleting…",
+                "title": "Delete my account"
+            },
+            "export": {
+                "action": "Export my data",
+                "desc": "Download a copy of your account, your conversations, your votes and your terms acceptances, in JSON format.",
+                "failed": "The export could not be prepared. Try again in a moment.",
+                "pending": "Preparing…",
+                "title": "Export my data"
+            },
+            "links": {
+                "title": "Useful links"
+            },
+            "logout": "Sign out",
+            "subtitle": "Account, data and platform information",
+            "tabAbout": "About",
+            "tabAccount": "Account",
+            "tabsLabel": "Settings sections",
+            "title": "Settings"
         }
     },
     "chatbot": {
@@ -1348,6 +1384,10 @@
             }
         },
         "homeTitle": "Home - compar:IA",
+        "legal": {
+            "label": "Legal",
+            "title": "Legal information"
+        },
         "logoAlt": "French Republic",
         "menu": "Menu",
         "startDiscussion": "New chat",
