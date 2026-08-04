@@ -321,7 +321,43 @@
             "merge": "Fusionner les conversations existantes avec votre compte"
         },
         "settings": {
+            "account": {
+                "title": "Mon compte",
+                "email": "Adresse électronique",
+                "signInPrompt": "Connectez-vous pour accéder aux paramètres de votre compte."
+            },
+            "display": {
+                "title": "Préférences"
+            },
+            "erase": {
+                "action": "Supprimer mon compte",
+                "title": "Supprimer mon compte",
+                "intro": "La suppression est définitive. Voici ce qu’elle fait, ni plus ni moins :",
+                "effectAccount": "votre adresse électronique est remplacée par une valeur anonyme et toutes vos sessions sont fermées ;",
+                "effectComparisons": "vos conversations sont détachées du compte, et l’adresse IP, l’identifiant de mesure d’audience et l’identifiant de session anonyme qui y étaient attachés sont effacés ;",
+                "effectContent": "le texte de vos conversations et vos votes sont conservés et restent publiés dans les jeux de données, sans lien avec vous ;",
+                "effectConsent": "la preuve de votre acceptation des conditions est conservée, sans adresse IP, parce que la loi l’exige.",
+                "confirmLabel": "Confirmez votre adresse électronique",
+                "confirmHelp": "Saisissez {email} pour confirmer la suppression.",
+                "mismatch": "Saisissez exactement l’adresse électronique de votre compte.",
+                "failed": "Le compte n’a pas pu être supprimé. Réessayez, ou écrivez-nous pour exercer ce droit.",
+                "pending": "Suppression…"
+            },
+            "export": {
+                "title": "Exporter mes données",
+                "desc": "Téléchargez une copie de votre compte, de vos conversations, de vos votes et de vos acceptations des conditions, au format JSON.",
+                "action": "Exporter mes données",
+                "pending": "Préparation…",
+                "failed": "L’export n’a pas pu être préparé. Réessayez dans un instant."
+            },
+            "links": {
+                "title": "Liens utiles"
+            },
             "logout": "Se déconnecter",
+            "subtitle": "Compte, données et informations sur la plateforme",
+            "tabAbout": "À propos",
+            "tabAccount": "Compte",
+            "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres"
         },
         "success": "Vous êtes connecté !"
@@ -559,11 +595,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "Cette déclaration d’accessibilité s’applique au site <strong>comparia.beta.gouv.fr</strong>.",
+            "desc": "Cette déclaration d’accessibilité s’applique au site <strong>{domain}</strong>.",
             "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
-            "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
+            "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de {domain} pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
             "improveMail": "Courriel : <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Amélioration et contact",
             "remedyAdvocate": "Écrire un message au <a {linkProps}>Défenseur des droits</a>",
@@ -572,7 +608,7 @@
             "remedyDesc": "Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.",
             "remedyList": "Vous pouvez :",
             "remedyTitle": "Voie de recours",
-            "stateDesc": "Le site comparia.beta.gouv.fr est non conforme avec le RGAA 4.1. Le site n’a <strong>pas encore été audité</strong>. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir :",
+            "stateDesc": "Le site {domain} est non conforme avec le RGAA 4.1. Le site n’a <strong>pas encore été audité</strong>. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir :",
             "stateNavigate": "naviguer sur toutes les pages du site en utilisant un clavier",
             "statePrefs": "adapter le site à votre préférences (taille de la police, zoom écran, changement de typographie…) sans perte de contenu",
             "stateScreenReader": "consulter le site web avec un lecteur d’écran.",
@@ -1870,6 +1906,10 @@
             }
         },
         "homeTitle": "Accueil - compar:IA",
+        "legal": {
+            "label": "Légal",
+            "title": "Informations légales"
+        },
         "logoAlt": "République Française",
         "menu": "Menu",
         "startDiscussion": "Commencer à discuter",
@@ -2982,6 +3022,7 @@
         "archived": "Archivé",
         "available": "Disponible",
         "back": "Retour",
+        "cancel": "Annuler",
         "close": "Fermer",
         "deactivated": "Désactivé",
         "forbidden": "interdit",

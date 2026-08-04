@@ -1,4 +1,5 @@
 import hashlib
+import logging
 from functools import lru_cache, wraps
 from typing import Callable, Final, ParamSpec, TypeVar
 from uuid import uuid4
@@ -7,6 +8,8 @@ import redis
 from async_lru import alru_cache
 
 from backend.config import settings
+
+logger = logging.getLogger("languia")
 
 P = ParamSpec("P")
 RT = TypeVar("RT")

@@ -12,9 +12,11 @@ from backend.auth.dependencies import (
     anonymous_session_token,
 )
 from backend.auth.email import send_login_code
+from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
     _hash,
     accept_invite,
+    erase_user_account,
     get_anonymous_consent_status,
     get_consent_status,
     get_invite_token_info,
@@ -56,6 +58,7 @@ class AuthConfig(BaseModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    platform_url: str
     has_custom_logo: bool
 
 
@@ -142,6 +145,7 @@ async def get_config() -> AuthConfig:
         secondary_color_light=app_settings.secondary_color_light,
         secondary_color_dark=app_settings.secondary_color_dark,
         homepage_url=app_settings.homepage_url,
+        platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
     )
 
@@ -358,6 +362,30 @@ async def get_me(request: Request) -> dict:
     if not user:
         return {"user": None}
     return {"user": {"email": user.email, "role": user.role}}
+
+
+@router.get("/me/export")
+async def export_account_data(user: RequiredUser) -> AccountDataExport:
+    return await build_account_export(user)
+
+
+class AccountEraseBody(BaseModel):
+    email: EmailStr
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def erase_account(
+    body: AccountEraseBody, user: RequiredUser, response: Response
+) -> None:
+    # Retyping the address guards against a stray click, nothing more: the
+    # session cookie is what says who is asking.
+    if body.email.lower() != user.email.lower():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email confirmation does not match the signed-in account.",
+        )
+    await erase_user_account(user.id)
+    response.delete_cookie("auth_session")
 
 
 @router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT)

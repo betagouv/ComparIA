@@ -16,6 +16,7 @@ export interface AuthConfig {
   smtp_configured: boolean
   domain_allowlist: string[]
   platform_name: string
+  platform_url: string
   has_custom_logo: boolean
   primary_color_light: string
   primary_color_dark: string
