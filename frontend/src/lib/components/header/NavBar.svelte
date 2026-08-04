@@ -110,6 +110,17 @@
     <div
       class="md:flex-row gap-1 lg:flex-col md:items-center lg:items-start md:justify-between flex flex-col"
     >
+      {#if auth.user}
+        <p
+          class={[
+            'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
+            { 'lg:hidden': !expanded }
+          ]}
+        >
+          {auth.user.email}
+        </p>
+      {/if}
+
       <Button
         variant="tertiary"
         size="sm"
@@ -123,17 +134,6 @@
           <span class={{ 'lg:sr-only': !expanded }}>{connectionBtnProps.text}</span>
         </span>
       </Button>
-
-      {#if auth.user}
-        <p
-          class={[
-            'text-sm mb-0! text-grey min-w-0 max-w-full [overflow-wrap:anywhere]',
-            { 'lg:hidden': !expanded }
-          ]}
-        >
-          {auth.user.email}
-        </p>
-      {/if}
     </div>
 
     <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
