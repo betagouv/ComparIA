@@ -3082,25 +3082,46 @@
             "conversationsLabel": "Conversations",
             "dateLabel": "Date",
             "demoLabel": "Données de démonstration",
-            "description": "Nombre de conversations commencées chaque jour au cours des 14 derniers jours.",
+            "description": "Évolution des prompts envoyés et des conversations commencées sur la période sélectionnée.",
+            "promptsLabel": "Prompts envoyés",
             "sectionTitle": "Activité",
             "tableLabel": "Consulter les données sous forme de tableau",
-            "title": "Conversations quotidiennes"
+            "title": "Activité de la plateforme"
         },
         "counterLink": "Consulter les statistiques de la plateforme",
         "eyebrow": "Statistiques",
         "intro": "Découvrez comment les conversations et les préférences partagées sur la plateforme contribuent à un jeu de données commun.",
-        "methodology": "Ces chiffres incluent les conversations non archivées et sont mis à jour régulièrement.",
+        "filters": {
+            "allTime": "Depuis le début",
+            "label": "Période",
+            "ninetyDays": "90 jours",
+            "sevenDays": "7 jours",
+            "thirtyDays": "30 jours"
+        },
+        "methodology": "Ces chiffres incluent uniquement les conversations non archivées. Les données sont agrégées et mises à jour régulièrement.",
         "overview": "Vue d’ensemble",
         "metrics": {
-            "questions": {
-                "description": "Questions posées pour comparer les réponses de deux modèles d’IA conversationnelle.",
-                "label": "Questions posées"
+            "conversations": {
+                "label": "Conversations réalisées"
             },
-            "votes": {
-                "description": "Préférences exprimées après avoir comparé les réponses des modèles.",
-                "label": "Votes exprimés"
+            "models": {
+                "label": "Modèles testés"
+            },
+            "prompts": {
+                "label": "Prompts envoyés"
             }
+        },
+        "preferences": {
+            "aBetter": "Réponse A préférée",
+            "bBetter": "Réponse B préférée",
+            "bothBad": "Les deux sont mauvaises",
+            "bothGood": "Les deux sont bonnes",
+            "chartDescription": "Répartition des quatre types de préférences au fil du temps.",
+            "chartTitle": "Évolution des préférences",
+            "numbers": "Nombres",
+            "proportions": "Proportions",
+            "sectionTitle": "Préférences",
+            "total": "{count} préférences exprimées"
         },
         "title": "Statistiques de la plateforme"
     },

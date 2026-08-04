@@ -223,25 +223,40 @@
             "conversationsLabel": "Pokalbiai",
             "dateLabel": "Data",
             "demoLabel": "Demonstraciniai duomenys",
-            "description": "Kasdien pradėtų pokalbių skaičius per pastarąsias 14 dienų.",
+            "description": "Pateiktų užklausų ir pradėtų pokalbių kaita pasirinktu laikotarpiu.",
+            "promptsLabel": "Pateiktos užklausos",
             "sectionTitle": "Aktyvumas",
             "tableLabel": "Rodyti duomenis lentelėje",
-            "title": "Kasdieniai pokalbiai"
+            "title": "Platformos aktyvumas"
         },
         "counterLink": "Peržiūrėti platformos statistiką",
         "eyebrow": "Statistika",
         "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
-        "methodology": "Skaičiai apima nearchyvuotus pokalbius ir yra reguliariai atnaujinami.",
+        "filters": {
+            "allTime": "Visas laikotarpis",
+            "label": "Laikotarpis",
+            "ninetyDays": "90 dienų",
+            "sevenDays": "7 dienos",
+            "thirtyDays": "30 dienų"
+        },
+        "methodology": "Skaičiai apima tik nearchyvuotus pokalbius. Duomenys agreguojami ir reguliariai atnaujinami.",
         "overview": "Apžvalga",
         "metrics": {
-            "questions": {
-                "description": "Klausimai, pateikti lyginant dviejų pokalbių DI modelių atsakymus.",
-                "label": "Užduoti klausimai"
-            },
-            "votes": {
-                "description": "Pasirinkimai, pateikti palyginus modelių atsakymus.",
-                "label": "Pateikti balsai"
-            }
+            "conversations": { "label": "Įvykę pokalbiai" },
+            "models": { "label": "Išbandyti modeliai" },
+            "prompts": { "label": "Pateiktos užklausos" }
+        },
+        "preferences": {
+            "aBetter": "Pirmenybė atsakymui A",
+            "bBetter": "Pirmenybė atsakymui B",
+            "bothBad": "Abu blogi",
+            "bothGood": "Abu geri",
+            "chartDescription": "Keturių pasirinkimų tipų pasiskirstymas laikui bėgant.",
+            "chartTitle": "Pasirinkimų kaita",
+            "numbers": "Skaičiai",
+            "proportions": "Proporcijos",
+            "sectionTitle": "Pasirinkimai",
+            "total": "Pateikta pasirinkimų: {count}"
         },
         "title": "Platformos statistika"
     },

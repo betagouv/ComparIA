@@ -2265,25 +2265,40 @@
             "conversationsLabel": "Samtaler",
             "dateLabel": "Dato",
             "demoLabel": "Demonstrationsdata",
-            "description": "Antal samtaler startet hver dag i løbet af de seneste 14 dage.",
+            "description": "Udvikling i indsendte prompts og startede samtaler i den valgte periode.",
+            "promptsLabel": "Indsendte prompts",
             "sectionTitle": "Aktivitet",
             "tableLabel": "Vis data som tabel",
-            "title": "Daglige samtaler"
+            "title": "Platformaktivitet"
         },
         "counterLink": "Se platformens statistik",
         "eyebrow": "Statistik",
         "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
-        "methodology": "Tallene omfatter ikke-arkiverede samtaler og opdateres løbende.",
+        "filters": {
+            "allTime": "Hele perioden",
+            "label": "Periode",
+            "ninetyDays": "90 dage",
+            "sevenDays": "7 dage",
+            "thirtyDays": "30 dage"
+        },
+        "methodology": "Tallene omfatter kun ikke-arkiverede samtaler. Data aggregeres og opdateres løbende.",
         "overview": "Overblik",
         "metrics": {
-            "questions": {
-                "description": "Spørgsmål stillet for at sammenligne svar fra to samtale-AI-modeller.",
-                "label": "Stillede spørgsmål"
-            },
-            "votes": {
-                "description": "Præferencer angivet efter sammenligning af modellernes svar.",
-                "label": "Afgivne stemmer"
-            }
+            "conversations": { "label": "Gennemførte samtaler" },
+            "models": { "label": "Testede modeller" },
+            "prompts": { "label": "Indsendte prompts" }
+        },
+        "preferences": {
+            "aBetter": "Svar A foretrukket",
+            "bBetter": "Svar B foretrukket",
+            "bothBad": "Begge er dårlige",
+            "bothGood": "Begge er gode",
+            "chartDescription": "Fordeling af de fire præferencetyper over tid.",
+            "chartTitle": "Udvikling i præferencer",
+            "numbers": "Antal",
+            "proportions": "Andele",
+            "sectionTitle": "Præferencer",
+            "total": "{count} angivne præferencer"
         },
         "title": "Platformens statistik"
     },
