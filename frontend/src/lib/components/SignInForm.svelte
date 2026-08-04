@@ -222,7 +222,7 @@
       <Button
         type="submit"
         text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-        disabled={loading || consentLoading || !terms}
+        disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
         class="mt-8 block! w-full!"
       />
     {/if}

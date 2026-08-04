@@ -84,12 +84,13 @@ describe('SignInForm consent', () => {
       target: { value: 'personne@example.test' }
     })
     const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    expect(submit.disabled).toBe(true)
     await fireEvent.click(submit)
 
     expect(paths()).not.toContain('/auth/email/request')
-    expect(container.textContent).toContain('Vous devez accepter')
 
     await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
+    expect(submit.disabled).toBe(false)
     await fireEvent.click(submit)
 
     await waitFor(() => expect(paths()).toContain('/auth/email/request'))
@@ -135,6 +136,9 @@ describe('SignInForm consent', () => {
     await fireEvent.click(retry)
 
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
+    expect(container.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true)
+
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     expect(container.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
       false
     )
