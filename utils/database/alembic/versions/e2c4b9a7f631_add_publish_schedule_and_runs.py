@@ -55,7 +55,7 @@ def upgrade() -> None:
         sa.Column("succeeded", sa.Boolean(), nullable=True),
         sa.Column("error", sa.String(), nullable=True),
         sa.Column("held_back", sa.Integer(), nullable=True),
-        sa.Column("comparisons", sa.Integer(), nullable=True),
+        sa.Column("published", sa.Integer(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
 

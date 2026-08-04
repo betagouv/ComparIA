@@ -11,7 +11,7 @@ from utils.utils import UTILS_DIR
 from .compute import count_dataset_rows, process_datasets
 from .models import Datasets
 from .publish import LOCAL_NAMES, DestinationError, enabled_destinations, publish
-from .runs import finish_run, held_back_counts, start_run
+from .runs import finish_run, open_dataset_counts, start_run
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -67,15 +67,18 @@ async def main(
 
     run_id = await start_run() if record else None
     try:
-        await _export(datasets, export_base_path, dry_run, use_cache)
+        built = await _export(datasets, export_base_path, dry_run, use_cache)
     except Exception as exc:
         if run_id:
             await finish_run(run_id, error=str(exc))
         raise
     else:
         if run_id:
-            published, held_back = await held_back_counts()
-            await finish_run(run_id, comparisons=published, held_back=held_back)
+            # Only a run that rebuilt the open dataset can say what it holds
+            # back. One that sent the raw dataset alone leaves the figures
+            # blank rather than quoting numbers it did not produce.
+            counts = await open_dataset_counts() if "normal" in built else (None, None)
+            await finish_run(run_id, published=counts[0], held_back=counts[1])
     finally:
         # The parquet files are the run's, not the instance's: they are what
         # was just published, and they are large. Only the directories a build
@@ -91,7 +94,7 @@ async def _export(
     export_base_path: Path,
     dry_run: bool,
     use_cache: bool,
-) -> None:
+) -> dict[Datasets, Path]:
     destinations = [] if dry_run else await enabled_destinations()
     if dry_run:
         logger.info("[DRY RUN] Building locally, sending nothing")
@@ -121,6 +124,8 @@ async def _export(
 
     if destinations:
         publish(destinations, built)
+
+    return built
 
 
 if __name__ == "__main__":
