@@ -2,16 +2,18 @@ import uuid
 from datetime import datetime
 
 from backend.config import settings
-from utils.database.models.app_settings import SUPPORTED_LOCALES, AppSettings
+from utils.database.models.app_settings import DEFAULT_ENABLED_LOCALES, AppSettings
 from utils.database.session import get_session
 from utils.storage.redis import REDIS_APP_SETTINGS_KEY, invalidate_cache, redis_cache
 
 # DEFAULT_COUNTRY_PORTAL names the instance and happens to be a locale code on
 # the fr and da instances. One-off instances name themselves something else, so
 # fall back to fr rather than seeding a locale the frontend can't render.
+# Matched against the enabled set, not the supported one, to keep the default
+# locale inside enabled_locales the way PATCH /admin/settings demands.
 _INSTANCE_LOCALE = (
     settings.DEFAULT_COUNTRY_PORTAL
-    if settings.DEFAULT_COUNTRY_PORTAL in SUPPORTED_LOCALES
+    if settings.DEFAULT_COUNTRY_PORTAL in DEFAULT_ENABLED_LOCALES
     else "fr"
 )
 

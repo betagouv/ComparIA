@@ -18,9 +18,11 @@ down_revision: Union[str, Sequence[str], None] = 'e3a7c5f19b04'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-# Frozen copy of SUPPORTED_LOCALES at the time of this revision. Migrations don't
-# import app code, so this list stays right even after the model's list moves on.
-_SUPPORTED_LOCALES = ('da', 'en', 'fr', 'lt', 'sv')
+# Frozen copy of DEFAULT_ENABLED_LOCALES at the time of this revision. Migrations
+# don't import app code, so this stays right even after the model's list moves on.
+# It is the enabled set rather than the supported one, so the value seeded here is
+# always part of the enabled_locales the previous revision wrote.
+_DEFAULT_ENABLED_LOCALES = ('da', 'en', 'fr')
 
 
 def _instance_locale() -> str:
@@ -28,7 +30,7 @@ def _instance_locale() -> str:
     # env var, which this column replaces. Seed from the backend's own instance
     # name so ai-arenaen.dk doesn't come back up in French after the upgrade.
     portal = os.environ.get('DEFAULT_COUNTRY_PORTAL', 'fr')
-    return portal if portal in _SUPPORTED_LOCALES else 'fr'
+    return portal if portal in _DEFAULT_ENABLED_LOCALES else 'fr'
 
 
 def upgrade() -> None:
