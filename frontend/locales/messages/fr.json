@@ -3056,6 +3056,9 @@
             },
             "prompts": {
                 "label": "Prompts envoyés"
+            },
+            "votes": {
+                "label": "Votes exprimés"
             }
         },
         "title": "Statistiques de la plateforme"

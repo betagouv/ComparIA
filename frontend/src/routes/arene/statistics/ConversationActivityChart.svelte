@@ -1,5 +1,6 @@
 <script lang="ts">
   import { curveMonotoneX, line, scaleLinear, scalePoint } from 'd3'
+  import { getLocale } from '$lib/i18n/runtime'
 
   export type ActivityPoint = { date: string; prompts: number; conversations: number }
   let { points, title, labels, granularity, rangeStart, rangeEnd } = $props<{
@@ -12,6 +13,9 @@
   }>()
 
   const titleId = $props.id()
+  const dateFormatter = $derived(
+    new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short' })
+  )
 
   const width = 960
   const height = 340
@@ -52,19 +56,16 @@
   const formatDate = (value: string) => {
     const start = new Date(`${value}T12:00:00`)
     if (granularity === 'month') {
-      return new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(start)
+      return new Intl.DateTimeFormat(getLocale(), { month: 'long', year: 'numeric' }).format(start)
     }
     if (granularity === 'week') {
       const selectedStart = new Date(`${rangeStart}T12:00:00`)
       const selectedEnd = new Date(`${rangeEnd}T12:00:00`)
       const visibleStart = new Date(Math.max(start.getTime(), selectedStart.getTime()))
       const end = new Date(Math.min(start.getTime() + 6 * 86_400_000, selectedEnd.getTime()))
-      return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).formatRange(
-        visibleStart,
-        end
-      )
+      return dateFormatter.formatRange(visibleStart, end)
     }
-    return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(start)
+    return dateFormatter.format(start)
   }
 </script>
 

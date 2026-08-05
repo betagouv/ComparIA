@@ -21,6 +21,7 @@ describe('statistics page', () => {
           range_end: '2026-01-01',
           prompts_count: 12345,
           conversations_count: 6789,
+          votes_count: 4321,
           models_count: 31,
           activity: [{ date: '2026-01-01', prompts: 42, conversations: 21 }]
         }
@@ -31,7 +32,7 @@ describe('statistics page', () => {
     expect(getByRole('heading', { level: 3, name: 'Activité de la plateforme' })).toBeTruthy()
     expect(
       [...container.querySelectorAll('.metric-value')].map((item) => item.textContent?.trim())
-    ).toEqual([12345, 6789, 31].map((value) => new Intl.NumberFormat('fr').format(value)))
+    ).toEqual([12345, 6789, 4321, 31].map((value) => new Intl.NumberFormat('fr').format(value)))
   })
 
   it('clips weekly labels to the selected period boundaries', () => {
@@ -51,7 +52,7 @@ describe('statistics page', () => {
         conversations: 'Conversations'
       }
     })
-    const formatter = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' })
+    const formatter = new Intl.DateTimeFormat('fr', { day: 'numeric', month: 'short' })
     const expectedFirstRange = formatter.formatRange(
       new Date('2026-05-08T12:00:00'),
       new Date('2026-05-10T12:00:00')

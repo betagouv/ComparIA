@@ -65,6 +65,7 @@ async def get_statistics_summary(
         range_end=today,
         prompts_count=0,
         conversations_count=0,
+        votes_count=0,
         models_count=0,
         activity=[],
     )
@@ -95,7 +96,13 @@ async def get_statistics_summary(
         activity_bucket = _bucket(Turn.created_at, granularity)
         prompt_rows = (
             await session.exec(
-                select(activity_bucket, func.count(col(Turn.id)))
+                select(
+                    activity_bucket,
+                    func.count(col(Turn.id)),
+                    func.count(col(Turn.id)).filter(
+                        col(Turn.choice).is_not(None), Turn.choice != "idk"
+                    ),
+                )
                 .join(Comparison)
                 .where(*turn_filters)
                 .group_by(activity_bucket)
@@ -116,7 +123,10 @@ async def get_statistics_summary(
     def normalize_bucket(value: datetime | date) -> date:
         return value.date() if isinstance(value, datetime) else value
 
-    prompts_by_date = {normalize_bucket(day): count for day, count in prompt_rows}
+    prompts_by_date = {
+        normalize_bucket(day): count for day, count, _votes_count in prompt_rows
+    }
+    votes_count = sum(votes for _day, _prompts, votes in prompt_rows)
     conversations_by_date = {
         normalize_bucket(day): count for day, count in conversation_rows
     }
@@ -154,6 +164,7 @@ async def get_statistics_summary(
         range_end=today,
         prompts_count=sum(point.prompts for point in activity),
         conversations_count=sum(point.conversations for point in activity),
+        votes_count=votes_count,
         models_count=models_count,
         activity=activity,
     )

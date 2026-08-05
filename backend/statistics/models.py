@@ -20,5 +20,6 @@ class StatisticsSummary(BaseModel):
     range_end: date
     prompts_count: int
     conversations_count: int
+    votes_count: int
     models_count: int
     activity: list[ActivityPoint]

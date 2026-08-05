@@ -2289,7 +2289,8 @@
         "metrics": {
             "conversations": { "label": "Conversations had" },
             "models": { "label": "Models tested" },
-            "prompts": { "label": "Prompts submitted" }
+            "prompts": { "label": "Prompts submitted" },
+            "votes": { "label": "Votes cast" }
         },
         "title": "Platform statistics"
     },

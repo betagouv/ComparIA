@@ -1505,7 +1505,8 @@
         "metrics": {
             "conversations": { "label": "Genomförda konversationer" },
             "models": { "label": "Testade modeller" },
-            "prompts": { "label": "Skickade prompter" }
+            "prompts": { "label": "Skickade prompter" },
+            "votes": { "label": "Avgivna röster" }
         },
         "title": "Plattformsstatistik"
     },

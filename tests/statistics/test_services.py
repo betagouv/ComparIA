@@ -31,7 +31,7 @@ class FakeSession:
         day = datetime(2026, 8, 1)
         self.results = [
             9,
-            [(day, 42)],
+            [(day, 42, 17)],
             [(day, 12)],
         ]
 
@@ -56,6 +56,7 @@ def test_get_statistics_summary_aggregates_activity(monkeypatch):
 
     assert summary.prompts_count == 42
     assert summary.conversations_count == 12
+    assert summary.votes_count == 17
     assert summary.models_count == 9
     assert summary.range_end == services.date.today()
     activity_point = next(
@@ -72,7 +73,7 @@ def test_get_statistics_summary_uses_period_specific_cached_value(monkeypatch):
     redis.get.return_value = """{
         "period":"7d","granularity":"day",
         "range_start":"2026-07-29","range_end":"2026-08-04","prompts_count":12,
-        "conversations_count":5,"models_count":3,"activity":[]
+        "conversations_count":5,"votes_count":4,"models_count":3,"activity":[]
     }"""
     monkeypatch.setattr(services, "get_redis_client", lambda: redis)
 
