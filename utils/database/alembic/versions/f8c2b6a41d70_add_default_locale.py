@@ -33,10 +33,10 @@ def _instance_locale() -> str:
     # Refuse to guess when the variable is absent: defaulting to fr here is
     # exactly how the da database would quietly end up in French. Raising rolls
     # the whole upgrade back, since env.py wraps the run in one transaction.
-    portal = os.environ.get('DEFAULT_COUNTRY_PORTAL', '').strip()
+    portal = os.environ.get('COMPARIA_INSTANCE_NAME', '').strip()
     if not portal:
         raise RuntimeError(
-            'DEFAULT_COUNTRY_PORTAL must be set to run this migration, so the '
+            'COMPARIA_INSTANCE_NAME must be set to run this migration, so the '
             "instance's own locale is seeded rather than guessed."
         )
     # A portal that isn't a locale code (a museum or private instance) is a

@@ -14,12 +14,11 @@ logger = logging.getLogger("languia")
 P = ParamSpec("P")
 RT = TypeVar("RT")
 
-# TODO drop DEFAULT_COUNTRY_PORTAL env var + add REDIS_INSTANCE_PREFIX?
 REDIS_INSTANCE_PREFIX: Final[str] = (
-    f"{settings.DEFAULT_COUNTRY_PORTAL}:" if settings.DEFAULT_COUNTRY_PORTAL else ""
+    f"{settings.COMPARIA_INSTANCE_NAME}:" if settings.COMPARIA_INSTANCE_NAME else ""
 )
 
-# Redis keys (all namespaced by instance portal prefix)
+# Redis keys (all namespaced by the instance prefix)
 REDIS_COMPARISON_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}comparison:{{id}}"
 REDIS_USER_CHAR_COUNT: Final[str] = f"{REDIS_INSTANCE_PREFIX}pricey_chars:{{key}}"
 REDIS_BLOCKED_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}guardrail_blocked:{{ip}}"
@@ -76,7 +75,7 @@ def get_maintenance_mode() -> bool:
 
 def maintenance_key_for_instance(instance: str) -> str:
     """Build the maintenance mode key for an arbitrary instance (fr, da, ...),
-    regardless of the current process' own DEFAULT_COUNTRY_PORTAL."""
+    regardless of the current process' own COMPARIA_INSTANCE_NAME."""
     return f"{instance}:maintenance_mode"
 
 
