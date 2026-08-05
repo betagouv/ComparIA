@@ -29,7 +29,18 @@ def _instance_locale() -> str:
     # The da instance used to get its locale from the frontend's DEFAULT_LOCALE
     # env var, which this column replaces. Seed from the backend's own instance
     # name so ai-arenaen.dk doesn't come back up in French after the upgrade.
-    portal = os.environ.get('DEFAULT_COUNTRY_PORTAL', 'fr')
+    #
+    # Refuse to guess when the variable is absent: defaulting to fr here is
+    # exactly how the da database would quietly end up in French. Raising rolls
+    # the whole upgrade back, since env.py wraps the run in one transaction.
+    portal = os.environ.get('DEFAULT_COUNTRY_PORTAL', '').strip()
+    if not portal:
+        raise RuntimeError(
+            'DEFAULT_COUNTRY_PORTAL must be set to run this migration, so the '
+            "instance's own locale is seeded rather than guessed."
+        )
+    # A portal that isn't a locale code (a museum or private instance) is a
+    # deliberate case rather than a mistake: those run in French.
     return portal if portal in _DEFAULT_ENABLED_LOCALES else 'fr'
 
 
