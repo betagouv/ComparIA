@@ -6,7 +6,6 @@ services:
     depends_on:
       - backend-da
     environment:
-      DEFAULT_LOCALE: da
       PUBLIC_LANGUIA_DEBUG: "true"
       PUBLIC_API_LOCAL_URL: "http://backend-da:80"
       PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8002}"
@@ -20,7 +19,7 @@ services:
     environment:
       LOGDIR: /data
       LANGUIA_DEBUG: "true"
-      DEFAULT_COUNTRY_PORTAL: da
+      COMPARIA_INSTANCE_NAME: da
       COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:-postgresql://comparia:comparia@postgres:5432/comparia_da}"
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:

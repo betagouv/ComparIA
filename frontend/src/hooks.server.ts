@@ -1,6 +1,5 @@
 import { env } from '$env/dynamic/private'
 import { api, UnauthorizedError } from '$lib/fastapi-client'
-import { HOST_TO_LOCALE } from '$lib/global.svelte'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
@@ -12,32 +11,67 @@ import { sequence } from '@sveltejs/kit/hooks'
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
 
-const DEFAULT_LOCALE = env.DEFAULT_LOCALE || ''
+const LOCALE_SETTINGS_TTL_MS = 20_000
+
+type LocaleSettings = { enabled_locales: string[]; default_locale: string }
+
+// Cached per Node process (same rationale as maintenanceCache below). The
+// in-flight promise is cached rather than its result, so a cold process fires
+// one request instead of one per concurrent render.
+let localeSettingsCache: { promise: Promise<LocaleSettings>; checkedAt: number } | null = null
+let lastLocaleSettings: LocaleSettings = { enabled_locales: [], default_locale: '' }
+
+function getLocaleSettings(): Promise<LocaleSettings> {
+  const now = Date.now()
+  if (!localeSettingsCache || now - localeSettingsCache.checkedAt >= LOCALE_SETTINGS_TTL_MS) {
+    localeSettingsCache = {
+      checkedAt: now,
+      promise: api
+        .request<Partial<LocaleSettings>>('/auth/config')
+        .then((config) => {
+          lastLocaleSettings = {
+            enabled_locales: config.enabled_locales ?? [],
+            default_locale: config.default_locale ?? ''
+          }
+          return lastLocaleSettings
+        })
+        .catch((error) => {
+          // Fail open: keep serving the last known settings, and let Paraglide's
+          // own strategies decide if we never managed to read any.
+          logger.error('Locale settings fetch failed', { error: `${error}` })
+          return lastLocaleSettings
+        })
+    }
+  }
+  return localeSettingsCache.promise
+}
 
 defineCustomServerStrategy('custom-url', {
-  getLocale: (request) => {
+  // Paraglide runs custom strategies before every built-in one, so this is the
+  // only place that sees all the locale sources at once, and the only place that
+  // can turn one down. It reads PARAGLIDE_LOCALE itself instead of leaving it to
+  // the built-in cookie strategy, because a cookie holding a locale the admin
+  // has since disabled has to be overridden rather than honoured.
+  //
+  // Returning undefined hands over to those built-in strategies, which is what
+  // we want when the backend is unreachable and we have nothing to enforce.
+  getLocale: async (request) => {
     if (!request) return
-    const url = new URL(request.url)
-    const locale = url.searchParams.get('locale')
+    const { enabled_locales, default_locale } = await getLocaleSettings()
+    if (!enabled_locales.length) return
 
-    if (url.host in HOST_TO_LOCALE) {
-      return HOST_TO_LOCALE[url.host as keyof typeof HOST_TO_LOCALE]
-    } else if (locale) {
-      return locale
-    } else if (DEFAULT_LOCALE) {
-      // Only apply DEFAULT_LOCALE if no user cookie is already set.
-      // Paraglide runs custom strategies before built-in ones (including cookie),
-      // so without this check DEFAULT_LOCALE would silently override the user's
-      // locale preference stored in PARAGLIDE_LOCALE.
-      const cookieLocale = request.headers
-        .get('cookie')
-        ?.split('; ')
-        .find((c) => c.startsWith('PARAGLIDE_LOCALE='))
-        ?.split('=')[1]
-      if (!cookieLocale) {
-        return DEFAULT_LOCALE
-      }
+    const cookieLocale = request.headers
+      .get('cookie')
+      ?.split('; ')
+      .find((c) => c.startsWith('PARAGLIDE_LOCALE='))
+      ?.split('=')[1]
+
+    const requested = new URL(request.url).searchParams.get('locale')
+    for (const candidate of [requested, cookieLocale]) {
+      if (candidate && enabled_locales.includes(candidate)) return candidate
     }
+
+    return default_locale || undefined
   }
 })
 

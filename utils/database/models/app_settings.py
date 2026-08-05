@@ -72,6 +72,29 @@ def _normalize_homepage_url(value: object) -> str | None:
     return url
 
 
+# Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
+# An instance enables a subset of these. Anything outside the tuple is refused
+# rather than stored, because the frontend has no messages for it and would fall
+# back to the base locale without telling anyone.
+SUPPORTED_LOCALES = ("da", "en", "fr", "lt", "sv")
+
+# What a new instance starts with, and what the migration backfills onto the
+# existing ones. Narrower than SUPPORTED_LOCALES: lt and sv ship far too few
+# translated messages to be offered unasked, which is why prod carried
+# PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
+# /admin/locales, which is the point of the setting.
+DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
+
+
+def _check_enabled_locales(value: list[str]) -> list[str]:
+    if not value:
+        raise ValueError("At least one locale must be enabled")
+    unknown = sorted(set(value) - set(SUPPORTED_LOCALES))
+    if unknown:
+        raise ValueError(f"Unsupported locales: {', '.join(unknown)}")
+    return value
+
+
 class AppSettings(SQLModel, table=True):
     """Singleton row (id=1) holding product settings editable from the admin panel."""
 
@@ -94,6 +117,10 @@ class AppSettings(SQLModel, table=True):
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
+    enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
+        DEFAULT_ENABLED_LOCALES
+    )
+    default_locale: str = Field(default="fr")
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
@@ -109,6 +136,8 @@ class AppSettingsPublic(SQLModel):
     secondary_color_dark: str
     homepage_url: str | None
     has_custom_logo: bool
+    enabled_locales: list[str]
+    default_locale: str
     updated_at: str
     updated_by: uuid.UUID | None = None
 
@@ -123,6 +152,8 @@ class AppSettingsPatch(SQLModel):
     secondary_color_light: str | None = None
     secondary_color_dark: str | None = None
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    enabled_locales: list[str] | None = None
+    default_locale: str | None = None
 
     @field_validator(
         "primary_color_light",
@@ -153,3 +184,15 @@ class AppSettingsPatch(SQLModel):
     @classmethod
     def normalize_homepage_url(cls, value: object) -> str | None:
         return _normalize_homepage_url(value)
+
+    @field_validator("enabled_locales")
+    @classmethod
+    def validate_enabled_locales(cls, value: list[str] | None) -> list[str] | None:
+        return value if value is None else _check_enabled_locales(value)
+
+    @field_validator("default_locale")
+    @classmethod
+    def validate_default_locale(cls, value: str | None) -> str | None:
+        if value is not None and value not in SUPPORTED_LOCALES:
+            raise ValueError(f"Unsupported locale: {value}")
+        return value

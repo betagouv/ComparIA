@@ -1,34 +1,25 @@
-import { dev } from '$app/environment'
-import { env } from '$env/dynamic/public'
 import { getLocale, type Locale } from '$lib/i18n/runtime'
 import { getContext, setContext } from 'svelte'
 
-const disabledLocaleCodes = env.PUBLIC_DISABLED_LOCALES
-  ? env.PUBLIC_DISABLED_LOCALES.split(',').map((code) => code.trim())
-  : null
+export type LocaleOption = { code: Locale; short: string; long: string }
 
-export type LocaleOption = { code: Locale; short: string; long: string; host: string }
-
-const DEFAULT_HOST = dev ? 'localhost:5173' : 'comparia.beta.gouv.fr'
-export const HOST_TO_LOCALE = dev
-  ? {
-      '127.0.0.1:8080': 'da'
-    }
-  : {
-      'ai-arenaen.dk': 'da',
-      'aiarenaen.dk': 'da'
-    }
-const ALL_LOCALES = [
-  { code: 'da', short: 'DA', long: 'DA - Dansk', host: dev ? '127.0.0.1:8080' : 'ai-arenaen.dk' },
-  { code: 'fr', short: 'FR', long: 'FR - Français', host: DEFAULT_HOST },
-  { code: 'en', short: 'EN', long: 'EN - English', host: DEFAULT_HOST },
-  { code: 'lt', short: 'LT', long: 'LT - Lietuvių', host: DEFAULT_HOST },
-  { code: 'sv', short: 'SV', long: 'SV - Svensk', host: DEFAULT_HOST }
+// Every locale the bundle ships with. Which of them an instance offers is an
+// admin setting (AppSettings.enabled_locales), not a property of the domain:
+// picking a language never moves you to another instance.
+export const ALL_LOCALES = [
+  { code: 'da', short: 'DA', long: 'DA - Dansk' },
+  { code: 'fr', short: 'FR', long: 'FR - Français' },
+  { code: 'en', short: 'EN', long: 'EN - English' },
+  { code: 'lt', short: 'LT', long: 'LT - Lietuvių' },
+  { code: 'sv', short: 'SV', long: 'SV - Svensk' }
 ] satisfies LocaleOption[]
 
-export const LOCALES = ALL_LOCALES.filter((locale) => {
-  return !disabledLocaleCodes?.includes(locale.code)
-})
+// Falls back to the full list so a frontend deployed ahead of its backend still
+// renders a language menu instead of throwing on a missing field.
+export function getLocales(enabledLocales: string[] | undefined): LocaleOption[] {
+  if (!enabledLocales?.length) return ALL_LOCALES
+  return ALL_LOCALES.filter((locale) => enabledLocales.includes(locale.code))
+}
 
 export type VotesData = { count: number; objective: number }
 

@@ -17,6 +17,11 @@
       icon: 'i-ri-palette-line'
     },
     {
+      label: m['admin.nav.locales'](),
+      href: '/admin/locales',
+      icon: 'i-ri-translate-2'
+    },
+    {
       label: m['admin.nav.authentification'](),
       href: '/admin/authentification',
       icon: 'i-ri-fingerprint-line'

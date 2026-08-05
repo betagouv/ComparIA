@@ -48,6 +48,8 @@ export interface AppSettingsPatch {
   secondary_color_light?: string | null;
   secondary_color_dark?: string | null;
   homepage_url?: string | null;
+  enabled_locales?: string[] | null;
+  default_locale?: string | null;
 }
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
@@ -60,6 +62,8 @@ export interface AppSettingsPublic {
   secondary_color_dark: string;
   homepage_url: string | null;
   has_custom_logo: boolean;
+  enabled_locales: string[];
+  default_locale: string;
   updated_at: string;
   updated_by?: string | null;
 }

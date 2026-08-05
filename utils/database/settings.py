@@ -2,14 +2,26 @@ import uuid
 from datetime import datetime
 
 from backend.config import settings
-from utils.database.models.app_settings import AppSettings
+from utils.database.models.app_settings import DEFAULT_ENABLED_LOCALES, AppSettings
 from utils.database.session import get_session
 from utils.storage.redis import REDIS_APP_SETTINGS_KEY, invalidate_cache, redis_cache
+
+# The instance name happens to be a locale code on fr and da. One-off instances
+# name themselves something else, so fall back to fr rather than seeding a
+# locale the frontend can't render.
+# Matched against the enabled set, not the supported one, to keep the default
+# locale inside enabled_locales the way PATCH /admin/settings demands.
+_INSTANCE_LOCALE = (
+    settings.COMPARIA_INSTANCE_NAME
+    if settings.COMPARIA_INSTANCE_NAME in DEFAULT_ENABLED_LOCALES
+    else "fr"
+)
 
 _DEFAULTS = AppSettings(
     auth_access_policy=settings.AUTH_ACCESS_POLICY,
     auth_domain_allowlist=settings.AUTH_DOMAIN_ALLOWLIST,
     votes_objective=settings.VOTES_OBJECTIVE,
+    default_locale=_INSTANCE_LOCALE,
 )
 
 

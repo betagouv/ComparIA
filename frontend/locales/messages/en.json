@@ -29,6 +29,7 @@
             "users": "Users",
             "llms": "LLMs",
             "customization": "Customization",
+            "locales": "Languages",
             "authentification": "Authentication"
         },
         "panelLink": "Admin panel",
@@ -38,6 +39,15 @@
             "save": "Save",
             "saving": "Saving...",
             "saved": "Settings updated",
+            "locales": {
+                "enabled": {
+                    "label": "Enabled languages",
+                    "hint": "Unchecking a language removes it from the menu immediately. Visitors already reading in it switch to the default language on their next page load."
+                },
+                "default": {
+                    "label": "Default language"
+                }
+            },
             "customization": {
                 "platformName": "Platform name",
                 "votesObjective": "Votes objective",

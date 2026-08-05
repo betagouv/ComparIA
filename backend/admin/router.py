@@ -324,6 +324,8 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         secondary_color_dark=row.secondary_color_dark,
         homepage_url=row.homepage_url,
         has_custom_logo=row.logo is not None,
+        enabled_locales=row.enabled_locales,
+        default_locale=row.default_locale,
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
     )
@@ -340,6 +342,23 @@ async def patch_settings(
     body: AppSettingsPatch,
     current_user: RequiredAdmin,
 ) -> AppSettingsPublic:
+    if body.enabled_locales is not None or body.default_locale is not None:
+        current = await get_app_settings()
+        effective_locales = (
+            body.enabled_locales
+            if body.enabled_locales is not None
+            else current.enabled_locales
+        )
+        effective_default = (
+            body.default_locale
+            if body.default_locale is not None
+            else current.default_locale
+        )
+        if effective_default not in effective_locales:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Default locale must be part of the enabled locales",
+            )
     row = await update_app_settings(
         body.model_dump(exclude_unset=True), updated_by=current_user.id
     )

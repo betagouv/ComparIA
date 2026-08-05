@@ -30,6 +30,7 @@
             "users": "Brugere",
             "llms": "LLMs",
             "customization": "Tilpasning",
+            "locales": "Sprog",
             "authentification": "Autentificering"
         },
         "panelLink": "Administration",
@@ -39,6 +40,15 @@
             "save": "Gem",
             "saving": "Gemmer...",
             "saved": "Indstillinger opdateret",
+            "locales": {
+                "enabled": {
+                    "label": "Aktiverede sprog",
+                    "hint": "Fjernes markeringen for et sprog, forsvinder det straks fra menuen. Besøgende, der allerede læser på det sprog, skifter til standardsproget ved næste sideindlæsning."
+                },
+                "default": {
+                    "label": "Standardsprog"
+                }
+            },
             "customization": {
                 "platformName": "Platformens navn",
                 "votesObjective": "Stemmemål",
