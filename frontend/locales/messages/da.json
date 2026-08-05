@@ -42,7 +42,8 @@
             "saved": "Indstillinger opdateret",
             "locales": {
                 "enabled": {
-                    "label": "Aktiverede sprog"
+                    "label": "Aktiverede sprog",
+                    "hint": "Fjernes markeringen for et sprog, forsvinder det straks fra menuen. Besøgende, der allerede læser på det sprog, skifter til standardsproget ved næste sideindlæsning."
                 },
                 "default": {
                     "label": "Standardsprog"

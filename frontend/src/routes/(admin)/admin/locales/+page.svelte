@@ -36,7 +36,7 @@
     try {
       const data = await api.request<AppSettingsPublic>('/admin/settings')
       enabledLocales = Object.fromEntries(
-        ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales.includes(locale.code)])
+        ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales?.includes(locale.code)])
       )
       defaultLocale = data.default_locale
     } finally {
@@ -77,6 +77,7 @@
     <form onsubmit={save} class="max-w-[480px]">
       <div>
         <p class="fr-label mb-2!">{m['admin.settings.locales.enabled.label']()}</p>
+        <p class="fr-hint-text mt-0! mb-2!">{m['admin.settings.locales.enabled.hint']()}</p>
         {#each ALL_LOCALES as locale (locale.code)}
           <Checkbox
             id="settings-locale-{locale.code}"

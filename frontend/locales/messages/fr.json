@@ -255,7 +255,8 @@
                     "label": "Langue par défaut"
                 },
                 "enabled": {
-                    "label": "Langues activées"
+                    "label": "Langues activées",
+                    "hint": "Décocher une langue la retire immédiatement du menu. Les personnes qui la lisaient basculent vers la langue par défaut au prochain chargement."
                 }
             },
             "save": "Enregistrer",
