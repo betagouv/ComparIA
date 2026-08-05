@@ -28,6 +28,12 @@
       label: m['statistics.metrics.conversations.label']()
     },
     {
+      id: 'votes',
+      emoji: '🗳️',
+      value: data.statistics.votes_count,
+      label: m['statistics.metrics.votes.label']()
+    },
+    {
       id: 'models',
       emoji: '🤖',
       value: data.statistics.models_count,

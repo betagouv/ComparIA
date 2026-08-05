@@ -8,6 +8,7 @@ export type StatisticsSummary = {
   range_end: string
   prompts_count: number
   conversations_count: number
+  votes_count: number
   models_count: number
   activity: Array<{ date: string; prompts: number; conversations: number }>
 }

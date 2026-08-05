@@ -2283,7 +2283,8 @@
         "metrics": {
             "conversations": { "label": "Gennemførte samtaler" },
             "models": { "label": "Testede modeller" },
-            "prompts": { "label": "Indsendte prompts" }
+            "prompts": { "label": "Indsendte prompts" },
+            "votes": { "label": "Afgivne stemmer" }
         },
         "title": "Platformens statistik"
     },
