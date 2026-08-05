@@ -41,7 +41,8 @@
             "saved": "Settings updated",
             "locales": {
                 "enabled": {
-                    "label": "Enabled languages"
+                    "label": "Enabled languages",
+                    "hint": "Unchecking a language removes it from the menu immediately. Visitors already reading in it switch to the default language on their next page load."
                 },
                 "default": {
                     "label": "Default language"
