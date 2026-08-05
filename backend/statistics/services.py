@@ -2,17 +2,15 @@ import logging
 from datetime import date, datetime, time, timedelta
 from typing import Awaitable
 
-from sqlmodel import case, col, func, select
+from sqlmodel import col, func, select
 
 from backend.config import settings
 from utils.database.models import Comparison, Turn
 from utils.database.session import get_session
-from utils.storage.redis import get_redis_client
+from utils.storage.redis import REDIS_STATISTICS_SUMMARY_KEY, get_redis_client
 
 from .models import (
     ActivityPoint,
-    PreferenceCounts,
-    PreferencePoint,
     StatisticsGranularity,
     StatisticsPeriod,
     StatisticsSummary,
@@ -47,7 +45,7 @@ async def get_statistics_summary(
 ) -> StatisticsSummary:
     """Return public, aggregate statistics for non-archived comparisons."""
 
-    cache_key = f"statistics:summary:{period}"
+    cache_key = REDIS_STATISTICS_SUMMARY_KEY.format(period=period)
     client = get_redis_client()
     try:
         cached = client.get(cache_key)
@@ -55,7 +53,7 @@ async def get_statistics_summary(
         if cached is not None:
             return StatisticsSummary.model_validate_json(cached)
     except Exception as error:
-        logger.debug("Statistics summary cache miss: %s", error)
+        logger.warning("Could not read cached statistics summary: %s", error)
 
     granularity = _granularity(period)
     start = _period_start(period, date.today())
@@ -65,9 +63,7 @@ async def get_statistics_summary(
         prompts_count=0,
         conversations_count=0,
         models_count=0,
-        preferences=PreferenceCounts(a_better=0, b_better=0, both_good=0, both_bad=0),
         activity=[],
-        preference_activity=[],
     )
     if not settings.COMPARIA_DB_URI:
         logger.warning("Cannot compute statistics: no database configured")
@@ -75,26 +71,12 @@ async def get_statistics_summary(
 
     comparison_filters = [col(Comparison.archived).is_not(True)]
     turn_filters = [col(Comparison.archived).is_not(True)]
-    preference_filters = [col(Comparison.archived).is_not(True)]
     if start:
         start_at = datetime.combine(start, time.min)
         comparison_filters.append(col(Comparison.created_at) >= start_at)
         turn_filters.append(col(Turn.created_at) >= start_at)
-        preference_filters.append(col(Turn.voted_at) >= start_at)
 
     async with get_session() as session:
-        prompts_count, conversations_count = (
-            await session.exec(
-                select(
-                    func.count(func.distinct(Turn.id)),
-                    func.count(func.distinct(Comparison.id)),
-                )
-                .select_from(Comparison)
-                .join(Turn)
-                .where(*turn_filters)
-            )
-        ).one()
-
         model_ids = (
             select(Comparison.llm_id_a.label("model_id"))
             .where(*comparison_filters)
@@ -128,23 +110,6 @@ async def get_statistics_summary(
             )
         ).all()
 
-        preference_bucket = _bucket(Turn.voted_at, granularity)
-        preference_rows = (
-            await session.exec(
-                select(
-                    preference_bucket,
-                    *[
-                        func.sum(case((Turn.choice == choice, 1), else_=0))
-                        for choice in ("a_better", "b_better", "both_good", "both_bad")
-                    ],
-                )
-                .join(Comparison)
-                .where(*preference_filters, Turn.choice != None, Turn.choice != "idk")
-                .group_by(preference_bucket)
-                .order_by(preference_bucket)
-            )
-        ).all()
-
     def normalize_bucket(value: datetime | date) -> date:
         return value.date() if isinstance(value, datetime) else value
 
@@ -152,15 +117,7 @@ async def get_statistics_summary(
     conversations_by_date = {
         normalize_bucket(day): count for day, count in conversation_rows
     }
-    preferences_by_date = {
-        normalize_bucket(day): (a_better, b_better, both_good, both_bad)
-        for day, a_better, b_better, both_good, both_bad in preference_rows
-    }
-    observed_dates = (
-        prompts_by_date.keys()
-        | conversations_by_date.keys()
-        | preferences_by_date.keys()
-    )
+    observed_dates = prompts_by_date.keys() | conversations_by_date.keys()
     if start:
         first_bucket = start
         if granularity == "week":
@@ -187,31 +144,13 @@ async def get_statistics_summary(
         )
         for day in activity_dates
     ]
-    preference_activity = [
-        PreferencePoint(
-            date=day,
-            a_better=preferences_by_date.get(day, (0, 0, 0, 0))[0],
-            b_better=preferences_by_date.get(day, (0, 0, 0, 0))[1],
-            both_good=preferences_by_date.get(day, (0, 0, 0, 0))[2],
-            both_bad=preferences_by_date.get(day, (0, 0, 0, 0))[3],
-        )
-        for day in activity_dates
-    ]
-    preferences = PreferenceCounts(
-        a_better=sum(point.a_better for point in preference_activity),
-        b_better=sum(point.b_better for point in preference_activity),
-        both_good=sum(point.both_good for point in preference_activity),
-        both_bad=sum(point.both_bad for point in preference_activity),
-    )
     summary = StatisticsSummary(
         period=period,
         granularity=granularity,
-        prompts_count=prompts_count,
-        conversations_count=conversations_count,
+        prompts_count=sum(point.prompts for point in activity),
+        conversations_count=sum(point.conversations for point in activity),
         models_count=models_count,
-        preferences=preferences,
         activity=activity,
-        preference_activity=preference_activity,
     )
 
     try:

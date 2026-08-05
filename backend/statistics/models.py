@@ -13,23 +13,10 @@ class ActivityPoint(BaseModel):
     conversations: int
 
 
-class PreferenceCounts(BaseModel):
-    a_better: int
-    b_better: int
-    both_good: int
-    both_bad: int
-
-
-class PreferencePoint(PreferenceCounts):
-    date: date
-
-
 class StatisticsSummary(BaseModel):
     period: StatisticsPeriod
     granularity: StatisticsGranularity
     prompts_count: int
     conversations_count: int
     models_count: int
-    preferences: PreferenceCounts
     activity: list[ActivityPoint]
-    preference_activity: list[PreferencePoint]
