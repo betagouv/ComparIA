@@ -1,7 +1,7 @@
 """add_statistics_query_indexes
 
 Revision ID: f3b8c1d2e4a5
-Revises: e8f7a6b5c4d3
+Revises: b3d1c7a4e9f2
 Create Date: 2026-08-05 00:00:00.000000
 
 """
@@ -13,7 +13,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "f3b8c1d2e4a5"
-down_revision: Union[str, Sequence[str], None] = "e8f7a6b5c4d3"
+down_revision: Union[str, Sequence[str], None] = "b3d1c7a4e9f2"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
