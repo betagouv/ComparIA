@@ -38,6 +38,22 @@ export interface AdminSuggestionCategory {
   display_order: number;
   suggestion_count: number;
 }
+export interface AdminVoteTag {
+  id: string;
+  key: string;
+  sign: "positive" | "negative";
+  emoji: string;
+  reserved: boolean;
+  labels: {
+    [k: string]: string;
+  } | null;
+  display_order: number;
+  archived: boolean;
+  usage_count: number;
+}
+export interface AdminVoteTagsResponse {
+  tags: AdminVoteTag[];
+}
 export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
   auth_domain_allowlist?: string[] | null;
@@ -284,4 +300,29 @@ export interface UserUpsert {
   id?: string;
   email: string;
   role?: "user" | "admin";
+}
+export interface VoteTagArchiveUpdate {
+  archived: boolean;
+}
+export interface VoteTagCreate {
+  sign: "positive" | "negative";
+  emoji: string;
+  labels: {
+    [k: string]: string;
+  };
+}
+/**
+ * A whole side's order, written in one request. Sending the full list rather
+ * than a step at a time lets a drag across the table cost one round trip, and
+ * rewrites away the gaps deletions leave in 'display_order'.
+ */
+export interface VoteTagOrder {
+  sign: "positive" | "negative";
+  ids: string[];
+}
+export interface VoteTagUpdate {
+  emoji: string;
+  labels: {
+    [k: string]: string;
+  };
 }

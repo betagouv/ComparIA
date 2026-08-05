@@ -1,6 +1,8 @@
+import unicodedata
 import uuid
 from typing import Annotated, Literal, get_args
 
+from pydantic import AfterValidator, StringConstraints, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -56,3 +58,87 @@ class PublicVoteTag(SQLModel):
 
 class PublicVoteTagsResponse(SQLModel):
     tags: list[PublicVoteTag]
+
+
+def _only_emoji(value: str) -> str:
+    """
+    The field is one character wide in the arena, so a word typed into it
+    breaks the chip layout. Emoji sit in the 'So' Unicode category; letters and
+    digits are what people paste in by mistake. 16 characters rather than one
+    because a single emoji can be a sequence of joined code points.
+    """
+    if any(char.isalnum() for char in value) or not any(
+        unicodedata.category(char) == "So" for char in value
+    ):
+        raise ValueError("emoji has to be an emoji")
+    return value
+
+
+TagEmoji = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=16),
+    AfterValidator(_only_emoji),
+]
+TagLabel = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)
+]
+
+
+class VoteTagCreate(SQLModel):
+    sign: VoteTagSign
+    emoji: TagEmoji
+    # One entry per language the instance serves. The key is derived from the
+    # first label given, so at least one is required.
+    labels: dict[str, TagLabel]
+
+    @field_validator("labels")
+    @classmethod
+    def at_least_one_label(cls, value: dict[str, str]) -> dict[str, str]:
+        if not value:
+            raise ValueError("a tag needs at least one label")
+        return value
+
+
+class VoteTagUpdate(SQLModel):
+    emoji: TagEmoji
+    labels: dict[str, TagLabel]
+
+    @field_validator("labels")
+    @classmethod
+    def at_least_one_label(cls, value: dict[str, str]) -> dict[str, str]:
+        if not value:
+            raise ValueError("a tag needs at least one label")
+        return value
+
+
+class VoteTagArchiveUpdate(SQLModel):
+    archived: bool
+
+
+class VoteTagOrder(SQLModel):
+    """
+    A whole side's order, written in one request. Sending the full list rather
+    than a step at a time lets a drag across the table cost one round trip, and
+    rewrites away the gaps deletions leave in 'display_order'.
+    """
+
+    sign: VoteTagSign
+    ids: list[uuid.UUID]
+
+
+class AdminVoteTag(SQLModel):
+    id: uuid.UUID
+    key: str
+    sign: VoteTagSign
+    emoji: str
+    reserved: bool
+    labels: dict[str, str] | None
+    display_order: int
+    archived: bool
+    # How many votes already carry this key. A tag nobody used can be deleted
+    # outright; once it is in the data, removing it archives instead.
+    usage_count: int
+
+
+class AdminVoteTagsResponse(SQLModel):
+    tags: list[AdminVoteTag]

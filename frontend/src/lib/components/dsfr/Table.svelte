@@ -3,8 +3,10 @@
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
+  import { browser } from '$app/environment'
   import { onMount, type Snippet } from 'svelte'
-  import type { HTMLTableAttributes } from 'svelte/elements'
+  import { flip } from 'svelte/animate'
+  import type { HTMLAttributes, HTMLTableAttributes } from 'svelte/elements'
 
   type TableProps = {
     caption: string
@@ -21,6 +23,12 @@
     cell: Snippet<[Row, Col]>
     headerLeft?: Snippet
     headerRight?: Snippet
+    // Attributes to put on a row's <tr>, for tables where the row itself is
+    // interactive (drag and drop, for one).
+    rowAttributes?: (row: Row, index: number) => HTMLAttributes<HTMLTableRowElement>
+    // Slide rows to their new place instead of swapping them outright. Only
+    // worth it where the order is the point, as in a reorderable list.
+    animateRows?: boolean
   } & HTMLTableAttributes
 
   let {
@@ -39,9 +47,14 @@
     cell,
     headerLeft,
     headerRight,
+    rowAttributes,
+    animateRows = false,
     class: classes,
     ...props
   }: TableProps = $props()
+
+  const reduceMotion = browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const flipDuration = $derived(animateRows && !reduceMotion ? 200 : 0)
 
   function onOrderingColClick(col: Col) {
     if (orderingCol === col.id) {
@@ -195,7 +208,12 @@
 
           <tbody>
             {#each displayedRows as row, i (row.id)}
-              <tr id={row.id} data-row-key={i}>
+              <tr
+                id={row.id}
+                data-row-key={i}
+                {...rowAttributes?.(row, i)}
+                animate:flip={{ duration: flipDuration }}
+              >
                 {#each cols as col (`${col.id}-${row.id}`)}
                   <td>{@render cell(row, col)}</td>
                 {/each}
