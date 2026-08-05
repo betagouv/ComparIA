@@ -57,6 +57,7 @@ def test_get_statistics_summary_aggregates_activity(monkeypatch):
     assert summary.prompts_count == 42
     assert summary.conversations_count == 12
     assert summary.models_count == 9
+    assert summary.range_end == services.date.today()
     activity_point = next(
         point for point in summary.activity if point.date.isoformat() == "2026-08-01"
     )
@@ -69,7 +70,8 @@ def test_get_statistics_summary_aggregates_activity(monkeypatch):
 def test_get_statistics_summary_uses_period_specific_cached_value(monkeypatch):
     redis = Mock()
     redis.get.return_value = """{
-        "period":"7d","granularity":"day","prompts_count":12,
+        "period":"7d","granularity":"day",
+        "range_start":"2026-07-29","range_end":"2026-08-04","prompts_count":12,
         "conversations_count":5,"models_count":3,"activity":[]
     }"""
     monkeypatch.setattr(services, "get_redis_client", lambda: redis)

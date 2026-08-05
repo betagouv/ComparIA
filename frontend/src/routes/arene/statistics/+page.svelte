@@ -68,6 +68,8 @@
       <ConversationActivityChart
         points={activityPoints}
         granularity={data.statistics.granularity}
+        rangeStart={data.statistics.range_start}
+        rangeEnd={data.statistics.range_end}
         title={m['statistics.activity.title']()}
         labels={{
           table: m['statistics.activity.tableLabel'](),
