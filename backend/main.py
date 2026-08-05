@@ -13,6 +13,7 @@ from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.sentry import init_sentry
 from backend.settings.router import router as settings_router
+from backend.statistics import router as statistics_router
 from backend.suggestions.router import router as suggestions_router
 from backend.utils.countries import get_vote_count
 from backend.vote_tags.router import router as vote_tags_router
@@ -76,6 +77,7 @@ app.include_router(arena_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(settings_router)
+app.include_router(statistics_router)
 
 
 @app.get("/counter")

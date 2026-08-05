@@ -2260,6 +2260,34 @@
             "share": "Mine resultater"
         }
     },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Samtaler",
+            "dateLabel": "Dato",
+            "promptsLabel": "Indsendte prompts",
+            "sectionTitle": "Aktivitet",
+            "tableLabel": "Vis data som tabel",
+            "title": "Platformaktivitet"
+        },
+        "counterLink": "Se platformens statistik",
+        "eyebrow": "Statistik",
+        "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
+        "filters": {
+            "allTime": "Hele perioden",
+            "label": "Periode",
+            "ninetyDays": "90 dage",
+            "sevenDays": "7 dage",
+            "thirtyDays": "30 dage"
+        },
+        "overview": "Overblik",
+        "metrics": {
+            "conversations": { "label": "Gennemførte samtaler" },
+            "models": { "label": "Testede modeller" },
+            "prompts": { "label": "Indsendte prompts" },
+            "votes": { "label": "Afgivne stemmer" }
+        },
+        "title": "Platformens statistik"
+    },
     "vote": {
         "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "choices": {

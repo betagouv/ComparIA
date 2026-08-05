@@ -1482,6 +1482,34 @@
             "share": "Mina resultat"
         }
     },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Konversationer",
+            "dateLabel": "Datum",
+            "promptsLabel": "Skickade prompter",
+            "sectionTitle": "Aktivitet",
+            "tableLabel": "Visa data som tabell",
+            "title": "Plattformsaktivitet"
+        },
+        "counterLink": "Visa plattformens statistik",
+        "eyebrow": "Statistik",
+        "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",
+        "filters": {
+            "allTime": "Sedan start",
+            "label": "Period",
+            "ninetyDays": "90 dagar",
+            "sevenDays": "7 dagar",
+            "thirtyDays": "30 dagar"
+        },
+        "overview": "Översikt",
+        "metrics": {
+            "conversations": { "label": "Genomförda konversationer" },
+            "models": { "label": "Testade modeller" },
+            "prompts": { "label": "Skickade prompter" },
+            "votes": { "label": "Avgivna röster" }
+        },
+        "title": "Plattformsstatistik"
+    },
     "vote": {
         "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "choices": {

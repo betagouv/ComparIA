@@ -3027,6 +3027,42 @@
             "share": "Mon bilan"
         }
     },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Conversations",
+            "dateLabel": "Date",
+            "promptsLabel": "Prompts envoyés",
+            "sectionTitle": "Activité",
+            "tableLabel": "Consulter les données sous forme de tableau",
+            "title": "Activité de la plateforme"
+        },
+        "counterLink": "Consulter les statistiques de la plateforme",
+        "eyebrow": "Statistiques",
+        "intro": "Découvrez l’activité de la plateforme.",
+        "filters": {
+            "allTime": "Depuis le début",
+            "label": "Période",
+            "ninetyDays": "90 jours",
+            "sevenDays": "7 jours",
+            "thirtyDays": "30 jours"
+        },
+        "overview": "Vue d’ensemble",
+        "metrics": {
+            "conversations": {
+                "label": "Conversations réalisées"
+            },
+            "models": {
+                "label": "Modèles testés"
+            },
+            "prompts": {
+                "label": "Prompts envoyés"
+            },
+            "votes": {
+                "label": "Votes exprimés"
+            }
+        },
+        "title": "Statistiques de la plateforme"
+    },
     "vote": {
         "choices": {
             "negative": {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Tooltip } from '$components/dsfr'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
@@ -19,16 +20,19 @@
 
 {#if votes}
   <div {...props} class={['gap-3 text-xs lg:gap-1 flex w-full items-center', props.class]}>
-    <div
-      class="linear-gauge rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
-      style:--gauge-ratio={votes?.ratio}
+    <a
+      href={resolve('/arene/statistics')}
+      class="statistics-link rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
+      aria-label={m['statistics.counterLink']()}
     >
-      <div class="linear-gauge-fill rounded-sm">
-        <span class="vote-count ms-2 font-bold align-middle whitespace-nowrap">
-          {m['header.votes.count']({ count: votes.count })}
-        </span>
+      <div class="linear-gauge rounded-sm" style:--gauge-ratio={votes?.ratio}>
+        <div class="linear-gauge-fill rounded-sm">
+          <span class="vote-count ms-2 font-bold align-middle whitespace-nowrap">
+            {m['header.votes.count']({ count: votes.count })}
+          </span>
+        </div>
       </div>
-    </div>
+    </a>
     <div class="objective font-medium whitespace-pre">
       {m['header.votes.objective']({ count: votes.objective })}&nbsp;<Tooltip
         {id}
@@ -71,6 +75,15 @@
     background: #fff;
     border: 1px solid #cccccc;
     overflow: hidden;
+  }
+
+  .statistics-link {
+    background-image: none;
+  }
+
+  .statistics-link:focus-visible {
+    outline: 2px solid var(--border-action-high-blue-france);
+    outline-offset: 2px;
   }
 
   .objective {

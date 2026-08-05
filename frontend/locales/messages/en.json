@@ -2266,6 +2266,34 @@
             "share": "My results"
         }
     },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Conversations",
+            "dateLabel": "Date",
+            "promptsLabel": "Prompts submitted",
+            "sectionTitle": "Activity",
+            "tableLabel": "View data as a table",
+            "title": "Platform activity"
+        },
+        "counterLink": "View platform statistics",
+        "eyebrow": "Statistics",
+        "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",
+        "filters": {
+            "allTime": "All time",
+            "label": "Period",
+            "ninetyDays": "90 days",
+            "sevenDays": "7 days",
+            "thirtyDays": "30 days"
+        },
+        "overview": "Overview",
+        "metrics": {
+            "conversations": { "label": "Conversations had" },
+            "models": { "label": "Models tested" },
+            "prompts": { "label": "Prompts submitted" },
+            "votes": { "label": "Votes cast" }
+        },
+        "title": "Platform statistics"
+    },
     "vote": {
         "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {

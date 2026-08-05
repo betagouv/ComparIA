@@ -218,6 +218,34 @@
             "title": "Atvirumo lygis"
         }
     },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Pokalbiai",
+            "dateLabel": "Data",
+            "promptsLabel": "Pateiktos užklausos",
+            "sectionTitle": "Aktyvumas",
+            "tableLabel": "Rodyti duomenis lentelėje",
+            "title": "Platformos aktyvumas"
+        },
+        "counterLink": "Peržiūrėti platformos statistiką",
+        "eyebrow": "Statistika",
+        "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
+        "filters": {
+            "allTime": "Visas laikotarpis",
+            "label": "Laikotarpis",
+            "ninetyDays": "90 dienų",
+            "sevenDays": "7 dienos",
+            "thirtyDays": "30 dienų"
+        },
+        "overview": "Apžvalga",
+        "metrics": {
+            "conversations": { "label": "Įvykę pokalbiai" },
+            "models": { "label": "Išbandyti modeliai" },
+            "prompts": { "label": "Pateiktos užklausos" },
+            "votes": { "label": "Pateikti balsai" }
+        },
+        "title": "Platformos statistika"
+    },
     "reveal": {
         "impacts": {
             "summary": {
