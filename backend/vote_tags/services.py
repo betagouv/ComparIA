@@ -9,6 +9,7 @@ from utils.database.models.vote_tag import (
     VoteTagSign,
 )
 from utils.database.session import get_session
+from utils.database.settings import get_app_settings
 from utils.storage.redis import REDIS_VOTE_TAGS_KEY, redis_cache
 
 
@@ -81,15 +82,15 @@ async def check_vote_tags(keys: list[str], choice: TurnChoice, pos: BotPos) -> N
         raise VoteTagSignMismatchError(", ".join(sorted(mismatched)))
 
 
-def _label(tag: VoteTag, locale: str) -> str | None:
+async def _label(tag: VoteTag, locale: str) -> str | None:
     # Reserved tags are translated in the message files, so the API sends no
     # label for them and the frontend reads 'vote.choices.{sign}.{key}'.
     if tag.reserved or not tag.labels:
         return None
-    # FIXME fall back to the instance default locale once app_settings has one
-    # (#601). JSONB does not keep key order, so this picks an arbitrary
-    # language when the asked-for one is missing.
-    return tag.labels.get(locale) or next(iter(tag.labels.values()), None)
+    if locale in tag.labels:
+        return tag.labels[locale]
+    default_locale = (await get_app_settings()).default_locale
+    return tag.labels.get(default_locale) or next(iter(tag.labels.values()), None)
 
 
 async def list_public_vote_tags(locale: str) -> PublicVoteTagsResponse:
@@ -100,7 +101,7 @@ async def list_public_vote_tags(locale: str) -> PublicVoteTagsResponse:
                 sign=tag.sign,
                 emoji=tag.emoji,
                 reserved=tag.reserved,
-                label=_label(tag, locale),
+                label=await _label(tag, locale),
             )
             for tag in await get_active_vote_tags()
         ]
