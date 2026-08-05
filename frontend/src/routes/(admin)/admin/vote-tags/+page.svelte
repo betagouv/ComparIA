@@ -1,10 +1,11 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { Badge, Button, Icon, Input, Modal, Select, Table } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminVoteTag } from '$lib/generated/admin'
-  import { LOCALES } from '$lib/global.svelte'
+  import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
@@ -13,13 +14,15 @@
 
   let { data }: { data: PageData } = $props()
 
+  const auth = getAuthContext()
   const refetch = () => invalidate('admin:vote-tags')
 
   // The default locale mints the published key, so its field comes first and
-  // carries the hint, and its label is the one the lists show.
+  // carries the hint, and its label is the one the lists show. Only the
+  // locales the instance actually serves, same set as the language switcher.
   const defaultLocale = $derived(data.defaultLocale)
   const orderedLocales = $derived(
-    [...LOCALES].sort(
+    getLocales(auth.config.enabled_locales).sort(
       (left, right) =>
         Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
     )
