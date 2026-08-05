@@ -1,7 +1,7 @@
 """add_vote_tags
 
 Revision ID: b3d1c7a4e9f2
-Revises: e8f7a6b5c4d3
+Revises: f8c2b6a41d70
 Create Date: 2026-08-03 00:00:00.000000
 
 """
@@ -16,7 +16,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "b3d1c7a4e9f2"
-down_revision: Union[str, Sequence[str], None] = "e8f7a6b5c4d3"
+down_revision: Union[str, Sequence[str], None] = "f8c2b6a41d70"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
