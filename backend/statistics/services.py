@@ -56,10 +56,13 @@ async def get_statistics_summary(
         logger.warning("Could not read cached statistics summary: %s", error)
 
     granularity = _granularity(period)
-    start = _period_start(period, date.today())
+    today = date.today()
+    start = _period_start(period, today)
     empty = StatisticsSummary(
         period=period,
         granularity=granularity,
+        range_start=start or today.replace(day=1),
+        range_end=today,
         prompts_count=0,
         conversations_count=0,
         models_count=0,
@@ -125,8 +128,8 @@ async def get_statistics_summary(
     elif observed_dates:
         first_bucket = min(observed_dates)
     else:
-        first_bucket = date.today().replace(day=1)
-    last_bucket = date.today()
+        first_bucket = today.replace(day=1)
+    last_bucket = today
     if granularity == "week":
         last_bucket -= timedelta(days=last_bucket.weekday())
     elif granularity == "month":
@@ -147,6 +150,8 @@ async def get_statistics_summary(
     summary = StatisticsSummary(
         period=period,
         granularity=granularity,
+        range_start=start or first_bucket,
+        range_end=today,
         prompts_count=sum(point.prompts for point in activity),
         conversations_count=sum(point.conversations for point in activity),
         models_count=models_count,

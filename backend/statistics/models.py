@@ -16,6 +16,8 @@ class ActivityPoint(BaseModel):
 class StatisticsSummary(BaseModel):
     period: StatisticsPeriod
     granularity: StatisticsGranularity
+    range_start: date
+    range_end: date
     prompts_count: int
     conversations_count: int
     models_count: int

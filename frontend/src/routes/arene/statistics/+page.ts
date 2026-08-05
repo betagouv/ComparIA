@@ -4,6 +4,8 @@ export type StatisticsPeriod = '7d' | '30d' | '90d' | 'all'
 export type StatisticsSummary = {
   period: StatisticsPeriod
   granularity: 'day' | 'week' | 'month'
+  range_start: string
+  range_end: string
   prompts_count: number
   conversations_count: number
   models_count: number

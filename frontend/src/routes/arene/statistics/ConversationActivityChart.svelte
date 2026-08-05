@@ -2,11 +2,13 @@
   import { curveMonotoneX, line, scaleLinear, scalePoint } from 'd3'
 
   export type ActivityPoint = { date: string; prompts: number; conversations: number }
-  let { points, title, labels, granularity } = $props<{
+  let { points, title, labels, granularity, rangeStart, rangeEnd } = $props<{
     points: ActivityPoint[]
     title: string
     labels: { table: string; date: string; prompts: string; conversations: string }
     granularity: 'day' | 'week' | 'month'
+    rangeStart: string
+    rangeEnd: string
   }>()
 
   const titleId = $props.id()
@@ -53,10 +55,12 @@
       return new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(start)
     }
     if (granularity === 'week') {
-      const end = new Date(start)
-      end.setDate(end.getDate() + 6)
+      const selectedStart = new Date(`${rangeStart}T12:00:00`)
+      const selectedEnd = new Date(`${rangeEnd}T12:00:00`)
+      const visibleStart = new Date(Math.max(start.getTime(), selectedStart.getTime()))
+      const end = new Date(Math.min(start.getTime() + 6 * 86_400_000, selectedEnd.getTime()))
       return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).formatRange(
-        start,
+        visibleStart,
         end
       )
     }
@@ -72,12 +76,7 @@
     >
   </div>
   <div class="mt-4 overflow-x-auto">
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      role="img"
-      aria-labelledby={titleId}
-      class="chart"
-    >
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={titleId} class="chart">
       {#each yTicks as tick (tick)}
         <line
           x1={margin.left}
