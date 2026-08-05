@@ -10,21 +10,33 @@ os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
 from utils.database.models.app_settings import (
+    DEFAULT_ENABLED_LOCALES,
     SUPPORTED_LOCALES,
     AppSettings,
     AppSettingsPatch,
 )
 
 
-def test_a_fresh_instance_enables_every_shipped_locale() -> None:
-    assert AppSettings().enabled_locales == list(SUPPORTED_LOCALES)
+def test_a_fresh_instance_only_enables_the_well_translated_locales() -> None:
+    assert AppSettings().enabled_locales == list(DEFAULT_ENABLED_LOCALES)
+
+
+def test_the_thinly_translated_locales_stay_off_until_an_admin_asks() -> None:
+    # They remain patchable, they just aren't served to anyone by default.
+    off_by_default = set(SUPPORTED_LOCALES) - set(DEFAULT_ENABLED_LOCALES)
+
+    assert off_by_default == {"lt", "sv"}
+    assert AppSettingsPatch(enabled_locales=["fr", "lt"]).enabled_locales == [
+        "fr",
+        "lt",
+    ]
 
 
 def test_defaults_are_not_shared_between_instances() -> None:
     first = AppSettings()
     first.enabled_locales.append("xx")
 
-    assert AppSettings().enabled_locales == list(SUPPORTED_LOCALES)
+    assert AppSettings().enabled_locales == list(DEFAULT_ENABLED_LOCALES)
 
 
 @pytest.mark.parametrize("locales", [["fr"], ["da", "en"], list(SUPPORTED_LOCALES)])

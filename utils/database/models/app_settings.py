@@ -78,6 +78,13 @@ def _normalize_homepage_url(value: object) -> str | None:
 # back to the base locale without telling anyone.
 SUPPORTED_LOCALES = ("da", "en", "fr", "lt", "sv")
 
+# What a new instance starts with, and what the migration backfills onto the
+# existing ones. Narrower than SUPPORTED_LOCALES: lt and sv ship far too few
+# translated messages to be offered unasked, which is why prod carried
+# PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
+# /admin/locales, which is the point of the setting.
+DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
+
 
 def _check_enabled_locales(value: list[str]) -> list[str]:
     if not value:
@@ -111,7 +118,7 @@ class AppSettings(SQLModel, table=True):
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
     enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
-        SUPPORTED_LOCALES
+        DEFAULT_ENABLED_LOCALES
     )
     default_locale: str = Field(default="fr")
     updated_at: AutoDatetime
