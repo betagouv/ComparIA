@@ -2,11 +2,14 @@
   import { curveMonotoneX, line, scaleLinear, scalePoint } from 'd3'
 
   export type ActivityPoint = { date: string; prompts: number; conversations: number }
-  let { points, title, labels } = $props<{
+  let { points, title, labels, granularity } = $props<{
     points: ActivityPoint[]
     title: string
     labels: { table: string; date: string; prompts: string; conversations: string }
+    granularity: 'day' | 'week' | 'month'
   }>()
+
+  const titleId = $props.id()
 
   const width = 960
   const height = 340
@@ -43,14 +46,26 @@
       .x((p) => xScale(p.date) ?? 0)
       .y((p) => yScale(p[key]))
       .curve(curveMonotoneX)(points) ?? ''
-  const formatDate = (value: string) =>
-    new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(
-      new Date(`${value}T12:00:00`)
-    )
+  // A bucket date is its first day, so week buckets are shown as the range they cover.
+  const formatDate = (value: string) => {
+    const start = new Date(`${value}T12:00:00`)
+    if (granularity === 'month') {
+      return new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(start)
+    }
+    if (granularity === 'week') {
+      const end = new Date(start)
+      end.setDate(end.getDate() + 6)
+      return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).formatRange(
+        start,
+        end
+      )
+    }
+    return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' }).format(start)
+  }
 </script>
 
 <figure class="chart-panel bg-very-light-primary">
-  <figcaption><h3 id="activity-chart-title" class="fr-h5 mb-0!">{title}</h3></figcaption>
+  <figcaption><h3 id={titleId} class="fr-h5 mb-0!">{title}</h3></figcaption>
   <div class="legend mt-4" aria-hidden="true">
     <span><i class="prompts"></i>{labels.prompts}</span><span
       ><i class="conversations"></i>{labels.conversations}</span
@@ -60,7 +75,7 @@
     <svg
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-labelledby="activity-chart-title"
+      aria-labelledby={titleId}
       class="chart"
     >
       {#each yTicks as tick (tick)}
@@ -170,7 +185,7 @@
     stroke: var(--brand-primary);
   }
   .conversations-line {
-    stroke: #e1000f;
+    stroke: var(--red-marianne-main-472);
   }
   .activity-point {
     stroke: white;
@@ -180,7 +195,7 @@
     fill: var(--brand-primary);
   }
   .conversations-point {
-    fill: #e1000f;
+    fill: var(--red-marianne-main-472);
   }
   .legend {
     display: flex;
@@ -203,7 +218,7 @@
     background: var(--brand-primary);
   }
   .legend .conversations {
-    background: #e1000f;
+    background: var(--red-marianne-main-472);
   }
   @media (max-width: 47.99em) {
     .chart-panel {

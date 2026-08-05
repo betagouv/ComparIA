@@ -1486,8 +1486,6 @@
         "activity": {
             "conversationsLabel": "Konversationer",
             "dateLabel": "Datum",
-            "demoLabel": "Demonstrationsdata",
-            "description": "Utveckling av skickade prompter och startade konversationer under vald period.",
             "promptsLabel": "Skickade prompter",
             "sectionTitle": "Aktivitet",
             "tableLabel": "Visa data som tabell",
@@ -1503,24 +1501,11 @@
             "sevenDays": "7 dagar",
             "thirtyDays": "30 dagar"
         },
-        "methodology": "Siffrorna omfattar endast icke-arkiverade konversationer. Data aggregeras och uppdateras regelbundet.",
         "overview": "Översikt",
         "metrics": {
             "conversations": { "label": "Genomförda konversationer" },
             "models": { "label": "Testade modeller" },
             "prompts": { "label": "Skickade prompter" }
-        },
-        "preferences": {
-            "aBetter": "Svar A föredrogs",
-            "bBetter": "Svar B föredrogs",
-            "bothBad": "Båda är dåliga",
-            "bothGood": "Båda är bra",
-            "chartDescription": "Fördelning av de fyra preferenstyperna över tid.",
-            "chartTitle": "Preferensutveckling",
-            "numbers": "Antal",
-            "proportions": "Andelar",
-            "sectionTitle": "Preferenser",
-            "total": "{count} angivna preferenser"
         },
         "title": "Plattformsstatistik"
     },

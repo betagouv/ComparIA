@@ -2271,8 +2271,6 @@
         "activity": {
             "conversationsLabel": "Conversations",
             "dateLabel": "Date",
-            "demoLabel": "Demonstration data",
-            "description": "Changes in submitted prompts and started conversations over the selected period.",
             "promptsLabel": "Prompts submitted",
             "sectionTitle": "Activity",
             "tableLabel": "View data as a table",
@@ -2288,24 +2286,11 @@
             "sevenDays": "7 days",
             "thirtyDays": "30 days"
         },
-        "methodology": "These figures only include non-archived conversations. Data is aggregated and updated regularly.",
         "overview": "Overview",
         "metrics": {
             "conversations": { "label": "Conversations had" },
             "models": { "label": "Models tested" },
             "prompts": { "label": "Prompts submitted" }
-        },
-        "preferences": {
-            "aBetter": "Response A preferred",
-            "bBetter": "Response B preferred",
-            "bothBad": "Both are bad",
-            "bothGood": "Both are good",
-            "chartDescription": "Distribution of the four preference types over time.",
-            "chartTitle": "Preference trends",
-            "numbers": "Numbers",
-            "proportions": "Proportions",
-            "sectionTitle": "Preferences",
-            "total": "{count} preferences expressed"
         },
         "title": "Platform statistics"
     },
