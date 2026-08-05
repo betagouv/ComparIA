@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { dev } from '$app/environment'
   import { resolve } from '$app/paths'
   import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import ConversationActivityChart from './ConversationActivityChart.svelte'
-  import { SvelteDate } from 'svelte/reactivity'
 
   const { data } = $props()
   const numberFormatter = new Intl.NumberFormat(getLocale())
@@ -15,50 +13,24 @@
     { value: '90d', label: m['statistics.filters.ninetyDays']() },
     { value: 'all', label: m['statistics.filters.allTime']() }
   ]
-  const demoPrompts = [28, 35, 31, 44, 40, 53, 49, 61, 57, 68, 63, 74, 70, 81]
-  const demoConversations = [18, 24, 21, 31, 28, 37, 35, 42, 39, 48, 44, 53, 49, 58]
-  const demoDates = Array.from({ length: 14 }, (_, index) => {
-    const date = new SvelteDate()
-    date.setDate(date.getDate() - (13 - index))
-    return date.toISOString().slice(0, 10)
-  })
-  const showDemo = $derived(
-    dev && !data.statistics.activity.some((point) => point.prompts > 0 || point.conversations > 0)
-  )
-  const demoStart = $derived(data.statistics.period === '7d' ? 7 : 0)
-  const activityPoints = $derived(
-    showDemo
-      ? demoDates.slice(demoStart).map((date, slicedIndex) => {
-          const index = slicedIndex + demoStart
-          return {
-            date,
-            prompts: demoPrompts[index],
-            conversations: demoConversations[index]
-          }
-        })
-      : data.statistics.activity
-  )
+  const activityPoints = $derived(data.statistics.activity)
   const metrics = $derived([
     {
       id: 'prompts',
       emoji: '💬',
-      value: showDemo
-        ? activityPoints.reduce((sum, point) => sum + point.prompts, 0)
-        : data.statistics.prompts_count,
+      value: data.statistics.prompts_count,
       label: m['statistics.metrics.prompts.label']()
     },
     {
       id: 'conversations',
       emoji: '🗣️',
-      value: showDemo
-        ? activityPoints.reduce((sum, point) => sum + point.conversations, 0)
-        : data.statistics.conversations_count,
+      value: data.statistics.conversations_count,
       label: m['statistics.metrics.conversations.label']()
     },
     {
       id: 'models',
       emoji: '🤖',
-      value: showDemo ? 31 : data.statistics.models_count,
+      value: data.statistics.models_count,
       label: m['statistics.metrics.models.label']()
     }
   ])
@@ -95,6 +67,7 @@
       <h2 id="activity-title" class="fr-h4 mb-6!">{m['statistics.activity.sectionTitle']()}</h2>
       <ConversationActivityChart
         points={activityPoints}
+        granularity={data.statistics.granularity}
         title={m['statistics.activity.title']()}
         labels={{
           table: m['statistics.activity.tableLabel'](),

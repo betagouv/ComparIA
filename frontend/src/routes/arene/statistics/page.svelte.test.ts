@@ -19,9 +19,7 @@ describe('statistics page', () => {
           prompts_count: 12345,
           conversations_count: 6789,
           models_count: 31,
-          preferences: { a_better: 4, b_better: 3, both_good: 2, both_bad: 1 },
-          activity: [],
-          preference_activity: []
+          activity: [{ date: '2026-01-01', prompts: 42, conversations: 21 }]
         }
       } as never
     })
@@ -30,6 +28,6 @@ describe('statistics page', () => {
     expect(getByRole('heading', { level: 3, name: 'Activité de la plateforme' })).toBeTruthy()
     expect(
       [...container.querySelectorAll('.metric-value')].map((item) => item.textContent?.trim())
-    ).toEqual(['754', '527', '31'])
+    ).toEqual([12345, 6789, 31].map((value) => new Intl.NumberFormat('fr').format(value)))
   })
 })

@@ -222,8 +222,6 @@
         "activity": {
             "conversationsLabel": "Pokalbiai",
             "dateLabel": "Data",
-            "demoLabel": "Demonstraciniai duomenys",
-            "description": "Pateiktų užklausų ir pradėtų pokalbių kaita pasirinktu laikotarpiu.",
             "promptsLabel": "Pateiktos užklausos",
             "sectionTitle": "Aktyvumas",
             "tableLabel": "Rodyti duomenis lentelėje",
@@ -239,24 +237,11 @@
             "sevenDays": "7 dienos",
             "thirtyDays": "30 dienų"
         },
-        "methodology": "Skaičiai apima tik nearchyvuotus pokalbius. Duomenys agreguojami ir reguliariai atnaujinami.",
         "overview": "Apžvalga",
         "metrics": {
             "conversations": { "label": "Įvykę pokalbiai" },
             "models": { "label": "Išbandyti modeliai" },
             "prompts": { "label": "Pateiktos užklausos" }
-        },
-        "preferences": {
-            "aBetter": "Pirmenybė atsakymui A",
-            "bBetter": "Pirmenybė atsakymui B",
-            "bothBad": "Abu blogi",
-            "bothGood": "Abu geri",
-            "chartDescription": "Keturių pasirinkimų tipų pasiskirstymas laikui bėgant.",
-            "chartTitle": "Pasirinkimų kaita",
-            "numbers": "Skaičiai",
-            "proportions": "Proporcijos",
-            "sectionTitle": "Pasirinkimai",
-            "total": "Pateikta pasirinkimų: {count}"
         },
         "title": "Platformos statistika"
     },

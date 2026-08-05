@@ -3031,8 +3031,6 @@
         "activity": {
             "conversationsLabel": "Conversations",
             "dateLabel": "Date",
-            "demoLabel": "Données de démonstration",
-            "description": "Évolution des prompts envoyés et des conversations commencées sur la période sélectionnée.",
             "promptsLabel": "Prompts envoyés",
             "sectionTitle": "Activité",
             "tableLabel": "Consulter les données sous forme de tableau",
@@ -3048,7 +3046,6 @@
             "sevenDays": "7 jours",
             "thirtyDays": "30 jours"
         },
-        "methodology": "Ces chiffres incluent uniquement les conversations non archivées. Les données sont agrégées et mises à jour régulièrement.",
         "overview": "Vue d’ensemble",
         "metrics": {
             "conversations": {
@@ -3060,18 +3057,6 @@
             "prompts": {
                 "label": "Prompts envoyés"
             }
-        },
-        "preferences": {
-            "aBetter": "Réponse A préférée",
-            "bBetter": "Réponse B préférée",
-            "bothBad": "Les deux sont mauvaises",
-            "bothGood": "Les deux sont bonnes",
-            "chartDescription": "Répartition des quatre types de préférences au fil du temps.",
-            "chartTitle": "Évolution des préférences",
-            "numbers": "Nombres",
-            "proportions": "Proportions",
-            "sectionTitle": "Préférences",
-            "total": "{count} préférences exprimées"
         },
         "title": "Statistiques de la plateforme"
     },
