@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from backend.config import DEFAULT_COUNTRY_PORTAL
+from backend.config import settings
 from backend.llms.data import get_llms_data
 
 templates = Jinja2Templates(directory="templates")
@@ -56,7 +56,7 @@ def get_models_errors() -> list[str]:  # Return type hint
     response_class=HTMLResponse,
 )
 def index(request: Request) -> HTMLResponse:
-    models = get_llms_data(DEFAULT_COUNTRY_PORTAL)
+    models = get_llms_data(settings.COMPARIA_INSTANCE_NAME)
 
     error_count = dict.fromkeys(models.enabled, 0)
     for model_id, _date, _details in models_errors:

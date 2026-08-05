@@ -33,7 +33,12 @@ class Settings(BaseSettings):
     HF_PUSH_DATASET_KEY: str = ""
     HF_PUSH_DATASET_PATH: str = ""
 
-    DEFAULT_COUNTRY_PORTAL: str = "fr"
+    # Names the deployment (fr, da, a museum one-off, ...). Used as the Redis key
+    # namespace and to seed the default locale. Renamed from DEFAULT_COUNTRY_PORTAL,
+    # which described a country portal the project outgrew; the deployment manifests
+    # have to carry the new name, since nothing falls back to the old one. The
+    # values themselves are unchanged, so Redis keys stay put.
+    COMPARIA_INSTANCE_NAME: str = "fr"
 
     # Display currency. Model prices are stored in euros and converted for the UI.
     DISPLAY_CURRENCY: str = "EUR"
