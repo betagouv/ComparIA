@@ -29,14 +29,10 @@ export interface TurnPublic {
   user_msg: UserMessageRead;
   choice: ("both_good" | "both_bad" | "a_better" | "b_better" | "idk") | null;
   llm_msg_a: LLMMessageCreate | null;
-  keyword_annotations_a:
-    | ("useful" | "complete" | "creative" | "clear_formatting")[]
-    | ("incorrect" | "superficial" | "instructions_not_followed")[];
+  keyword_annotations_a: string[];
   custom_annotation_a?: string | null;
   llm_msg_b: LLMMessageCreate | null;
-  keyword_annotations_b:
-    | ("useful" | "complete" | "creative" | "clear_formatting")[]
-    | ("incorrect" | "superficial" | "instructions_not_followed")[];
+  keyword_annotations_b: string[];
   custom_annotation_b?: string | null;
   [k: string]: unknown;
 }
@@ -313,21 +309,17 @@ export interface RankingVariant {
  * Aggregated counts of user ratings for specific quality attributes.
  *
  * Attributes:
- *     positive_prefs_ratio: Percentage of positive preferences (useful, complete, etc.)
+ *     positive_prefs_ratio: Share of positive tags, null when the model has
+ *         no tagged votes or the instance has turned off a whole side
  *     total_prefs: Total number of preference votes received
- *     useful/complete/creative/clear_formatting: Count of positive preferences
- *     incorrect/superficial/instructions_not_followed: Count of negative preferences
+ *     counts: Count per vote tag key, including keys no longer offered
  */
 export interface PreferencesData {
-  positive_prefs_ratio: number;
+  positive_prefs_ratio: number | null;
   total_prefs: number;
-  useful: number;
-  clear_formatting: number;
-  complete: number;
-  creative: number;
-  incorrect: number;
-  instructions_not_followed: number;
-  superficial: number;
+  counts: {
+    [k: string]: number;
+  };
   [k: string]: unknown;
 }
 export interface CurrencyInfo {
@@ -344,4 +336,14 @@ export interface PublicLegalDocument {
   content: string;
   published_at: string;
   effective_at: string;
+}
+export interface PublicVoteTag {
+  key: string;
+  sign: "positive" | "negative";
+  emoji: string;
+  reserved: boolean;
+  label?: string | null;
+}
+export interface PublicVoteTagsResponse {
+  tags: PublicVoteTag[];
 }

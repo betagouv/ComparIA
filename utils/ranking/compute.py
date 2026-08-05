@@ -14,8 +14,9 @@ from uuid import UUID
 
 import numpy as np
 
-from backend.config import ALL_PREFS, NEGATIVE_PREFS, POSITIVE_PREFS
 from backend.llms.models import DatasetData, PreferencesData, RankingVariant
+from backend.vote_tags.services import get_active_vote_tags, get_all_vote_tag_signs
+from utils.database.models.vote_tag import VoteTagSign
 from utils.ranking.bradley_terry import Battle, bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_votes
 from utils.ranking.style_control import (
@@ -82,37 +83,41 @@ def _votes_to_battles(
     )
 
 
-def _aggregate_preferences(votes: list[dict]) -> dict[UUID, PreferencesData]:
-    """Aggregate preference booleans from votes per model."""
-    counts: dict[UUID, dict[str, int]] = defaultdict(lambda: {f: 0 for f in ALL_PREFS})
+def _aggregate_preferences(
+    votes: list[dict],
+    signs: dict[str, VoteTagSign],
+    *,
+    with_ratio: bool,
+) -> dict[UUID, PreferencesData]:
+    """
+    Count vote tags per model.
+
+    'signs' covers archived tags as well as active ones, so a tag withdrawn
+    from the arena keeps counting in the votes already cast.
+    """
+    counts: dict[UUID, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     total: dict[UUID, int] = defaultdict(int)
 
     for v in votes:
         for side in ("a", "b"):
             model = v[f"llm_id_{side}"]
-            for keyword in v[f"keyword_annotations_{side}"]:
+            for key in v[f"keyword_annotations_{side}"]:
                 total[model] += 1
-                counts[model][keyword] += 1
+                counts[model][key] += 1
 
     result = {}
     for model in total:
         c = counts[model]
-        positive_count = sum(c[f] for f in POSITIVE_PREFS)
-        negative_count = sum(c[f] for f in NEGATIVE_PREFS)
-        all_prefs_count = positive_count + negative_count
+        ratio = None
+        if with_ratio:
+            positive = sum(n for key, n in c.items() if signs.get(key) == "positive")
+            negative = sum(n for key, n in c.items() if signs.get(key) == "negative")
+            ratio = positive / (positive + negative) if positive + negative else None
 
         result[model] = PreferencesData(
-            positive_prefs_ratio=(
-                positive_count / all_prefs_count if all_prefs_count > 0 else -1
-            ),
+            positive_prefs_ratio=ratio,
             total_prefs=total[model],
-            useful=c["useful"],
-            complete=c["complete"],
-            creative=c["creative"],
-            clear_formatting=c["clear_formatting"],
-            incorrect=c["incorrect"],
-            superficial=c["superficial"],
-            instructions_not_followed=c["instructions_not_followed"],
+            counts=dict(c),
         )
 
     return result
@@ -182,7 +187,12 @@ def _variant_table(
     return table
 
 
-def _compute_ranking(votes: list[dict]) -> RankingResult:
+def _compute_ranking(
+    votes: list[dict],
+    signs: dict[str, VoteTagSign],
+    *,
+    with_ratio: bool,
+) -> RankingResult:
     """Compute ranking and preferences for a single group of votes/reactions."""
     all_battles, style_a, style_b = _votes_to_battles(votes)
 
@@ -223,7 +233,7 @@ def _compute_ranking(votes: list[dict]) -> RankingResult:
             uncontrolled=RankingVariant(**uncontrolled) if uncontrolled else None,
         )
 
-    preferences = _aggregate_preferences(votes)
+    preferences = _aggregate_preferences(votes, signs, with_ratio=with_ratio)
 
     return RankingResult(
         timestamp=time.time(),
@@ -251,8 +261,15 @@ async def compute_ranking() -> RankingResult | None:
         logger.warning("[Ranking] No votes found, skipping computation")
         return None
 
+    signs = await get_all_vote_tag_signs()
+    # An instance can turn off a whole side of the taxonomy. With one side
+    # gone there is no positive share to report, so the ratio is left out
+    # rather than reported as zero.
+    active_signs = {tag.sign for tag in await get_active_vote_tags()}
+    with_ratio = {"positive", "negative"} <= active_signs
+
     try:
-        ranking = _compute_ranking(all_votes)
+        ranking = _compute_ranking(all_votes, signs, with_ratio=with_ratio)
         elapsed = time.time() - start
         logger.info(f"[Ranking] Updated ranking in {elapsed:.1f}s")
 

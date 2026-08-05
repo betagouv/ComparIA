@@ -148,13 +148,9 @@ STREAM_TIMEOUT = 30
 ORDBOGEN_GLOBAL_TIMEOUT = Timeout(60.0, read=60.0, write=5.0, connect=15.0)
 ORDBOGEN_STREAM_TIMEOUT = 60
 
-# Preferences
-PositivePref = Literal["useful", "complete", "creative", "clear_formatting"]
-POSITIVE_PREFS: tuple[PositivePref, ...] = get_args(PositivePref)
-NegativePref = Literal["incorrect", "superficial", "instructions_not_followed"]
-NEGATIVE_PREFS: tuple[NegativePref, ...] = get_args(NegativePref)
-AllPref = Literal[PositivePref | NegativePref]
-ALL_PREFS: tuple[AllPref, ...] = POSITIVE_PREFS + NEGATIVE_PREFS
+# Vote
+# The tags a voter can attach are in the 'vote_tag' table, not here: an
+# operator edits them without a deploy. See utils/database/models/vote_tag.py.
 TurnChoice = Literal["both_good", "both_bad", "a_better", "b_better", "idk"]
 TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 

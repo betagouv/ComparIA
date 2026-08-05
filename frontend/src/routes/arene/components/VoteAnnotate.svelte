@@ -1,9 +1,9 @@
 <script lang="ts">
   import Selector from '$components/Selector.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import type { APIReactionPref, VoteAnnotations } from '$lib/chatService.svelte'
-  import { APINegativePrefs, APIPositivePrefs, PREFS_EMOJIS } from '$lib/chatService.svelte'
+  import type { VoteAnnotations } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getVoteTagsContext, voteTagLabel, voteTagsBySign } from '$lib/voteTags'
   import { fly } from 'svelte/transition'
 
   export interface VoteAnnotateProps {
@@ -22,25 +22,14 @@
     disabled = false
   }: VoteAnnotateProps = $props()
 
-  const keywords = {
-    positive: {
-      label: m['vote.choices.positive.question'](),
-      icon: 'thumb-up-fill',
-      choices: APIPositivePrefs.map((value) => ({
-        value,
-        label: PREFS_EMOJIS[value] + ' ' + m[`vote.choices.positive.${value}`]()
-      })) as { value: APIReactionPref; label: string }[]
-    },
-    negative: {
-      label: m['vote.choices.negative.question'](),
-      icon: 'thumb-down-fill',
-      choices: APINegativePrefs.map((value) => ({
-        value,
-        label: PREFS_EMOJIS[value] + ' ' + m[`vote.choices.negative.${value}`]()
-      })) as { value: APIReactionPref; label: string }[]
-    }
-  }
-  const keywordChoices = $derived(keywords[kind])
+  const tags = getVoteTagsContext()
+
+  const keywordChoices = $derived(
+    voteTagsBySign(tags, kind).map((tag) => ({
+      value: tag.key,
+      label: tag.emoji + ' ' + voteTagLabel(tag)
+    }))
+  )
 </script>
 
 <form
@@ -62,17 +51,21 @@
     class="mb-2!"
   />
 
-  <Selector
-    id="{id}-selector"
-    kind="checkbox"
-    bind:value={annotations.keyword_annotations}
-    choices={keywordChoices.choices}
-    multiple
-    {disabled}
-    containerClass="flex flex-wrap gap-1"
-    choiceClass="px-2 py-1 md:px-3 md:py-2 rounded-full lh-none! has-checked:text-primary! text-xs! md:text-[14px]! bg-white"
-    onChange={() => onUpdate(annotations)}
-  />
+  <!-- An instance can turn off a whole side of the taxonomy, which leaves the
+       comment box and no chips to pick from. -->
+  {#if keywordChoices.length}
+    <Selector
+      id="{id}-selector"
+      kind="checkbox"
+      bind:value={annotations.keyword_annotations}
+      choices={keywordChoices}
+      multiple
+      {disabled}
+      containerClass="flex flex-wrap gap-1"
+      choiceClass="px-2 py-1 md:px-3 md:py-2 rounded-full lh-none! has-checked:text-primary! text-xs! md:text-[14px]! bg-white"
+      onChange={() => onUpdate(annotations)}
+    />
+  {/if}
 </form>
 
 <style>
