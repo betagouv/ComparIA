@@ -248,6 +248,35 @@ export interface LLMLicense {
   reuse: boolean;
   commercial_use: boolean;
 }
+export interface PromptCheckPatch {
+  enabled?: boolean | null;
+  model?: string | null;
+  api_key?: string | null;
+  categories?: {
+    [k: string]: {
+      [k: string]: unknown;
+    };
+  } | null;
+}
+/**
+ * The configuration plus how the check is faring. It fails open, so one
+ * that has stopped working looks exactly like one that finds nothing.
+ */
+export interface PromptCheckStatus {
+  enabled: boolean;
+  model: string;
+  has_api_key: boolean;
+  categories: {
+    [k: string]: {
+      [k: string]: unknown;
+    };
+  };
+  updated_at: string;
+  updated_by?: string | null;
+  consecutive_failures?: number;
+  healthy?: boolean;
+  warnings_shown?: number;
+}
 export interface PublishLegalDocumentBody {
   version: string;
   locale: string;

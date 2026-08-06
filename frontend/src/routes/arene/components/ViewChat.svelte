@@ -6,7 +6,7 @@
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
-  import { GroupedMessages, RevealArea, VoteModal } from '.'
+  import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
 
   let {
     comparisonId,
@@ -43,6 +43,13 @@
         prompt = ''
       }
     })
+  }
+
+  async function onSendAnyway() {
+    const success = await comparator.sendAnyway()
+    if (success) {
+      prompt = ''
+    }
   }
 
   function remindToVote() {
@@ -156,6 +163,12 @@
 </div>
 
 <VoteModal />
+
+<PromptWarningModal
+  warnings={comparator.promptWarnings}
+  onProceed={onSendAnyway}
+  onEdit={comparator.dismissWarnings}
+/>
 
 <style>
   #send-area {

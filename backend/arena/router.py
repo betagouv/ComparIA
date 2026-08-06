@@ -6,8 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
+from backend.arena.checks import (
+    CheckResult,
+    count_warning_shown,
+    issue_warning_token,
+    run_prompt_check,
+)
 from backend.arena.models import AddFirstTextBody, AddTextBody
-from backend.arena.moderation import GuardrailVerdict, check_prompt
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -89,28 +94,47 @@ def assert_not_block_cooldown(request: Request) -> None:
         )
 
 
-async def run_guardrail(
-    text: str, field: str, request: Request
-) -> GuardrailVerdict | None:
+async def run_checks(
+    text: str, field: str, request: Request, warning_token: str | None = None
+) -> CheckResult | None:
     """
-    Run the content-safety guardrail on a user prompt. Raises a 422 (shaped like
-    a Pydantic validation error so the frontend renders it under the input) when
-    the prompt is blocked, otherwise returns the verdict to persist on the turn.
+    Run the prompt check on a user message. Raises a 422 (shaped like a Pydantic
+    validation error so the frontend renders it under the input) when a category
+    set to `block` refuses the prompt, otherwise returns the verdict, to warn the
+    user about and to persist on the turn.
     """
-    verdict = await check_prompt(text, request)
-    if verdict and verdict.should_block:
+    result = await run_prompt_check(text, request, warning_token=warning_token)
+    if result and result.block_message:
         increment_blocked_prompts(get_ip(request))
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=[
                 {
                     "loc": ["body", field],
-                    "msg": verdict.block_message,
+                    "msg": result.block_message,
                     "type": "value_error",
                 }
             ],
         )
-    return verdict
+    return result
+
+
+def warning_response(result: CheckResult, text: str) -> StreamingResponse:
+    """
+    Stream a single 'warning' event and stop. Nothing is created and no model is
+    called: the browser asks the user to confirm, and sends the prompt again with
+    the one-time `warning_token` if they go ahead.
+    """
+    count_warning_shown()
+    token = issue_warning_token(text, result.model)
+    warnings = [{"kind": "prompt_check", "message": result.message or ""}]
+
+    async def event_stream() -> AsyncGenerator[str]:
+        yield format_sse_event(
+            {"type": "warning", "warnings": warnings, "warning_token": token}
+        )
+
+    return create_sse_response(event_stream())
 
 
 def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
@@ -203,7 +227,12 @@ async def add_first_text(
         extra={"request": request},
     )
 
-    guardrail = await run_guardrail(args.prompt_value, "prompt_value", request)
+    check = await run_checks(
+        args.prompt_value, "prompt_value", request, args.warning_token
+    )
+    if check and check.pending_warning:
+        return warning_response(check, args.prompt_value)
+    guardrail = check.as_record() if check else None
 
     # Select LLMs
     llms_data = await get_llms_data()
@@ -256,7 +285,7 @@ async def add_first_text(
             comparison.id,
             args.prompt_value,
             web_search_results,
-            guardrail=guardrail.as_record() if guardrail else None,
+            guardrail=guardrail,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
@@ -313,7 +342,10 @@ async def add_text(
         extra={"request": request},
     )
 
-    guardrail = await run_guardrail(args.message, "message", request)
+    check = await run_checks(args.message, "message", request, args.warning_token)
+    if check and check.pending_warning:
+        return warning_response(check, args.message)
+    guardrail = check.as_record() if check else None
 
     # Assert last turn has vote
 
@@ -323,7 +355,7 @@ async def add_text(
         comparison, turn = await add_comparison_turn(
             comparison_.id,
             args.message,
-            guardrail=guardrail.as_record() if guardrail else None,
+            guardrail=guardrail,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 

@@ -1,9 +1,10 @@
+import time
 import uuid
 from datetime import datetime
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
 from backend.admin.services import (
@@ -20,10 +21,16 @@ from backend.admin.services import (
 )
 from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
+from backend.arena.checks import (
+    moderate,
+    read_cached_scores,
+    verdict,
+    write_cached_scores,
+)
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
-from backend.config import settings
+from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
 from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
     LEGAL_CONTENT_MAX_LENGTH,
@@ -51,6 +58,20 @@ from utils.database.models.auth import (
     LegalDocumentKind,
     UserPublic,
     UserUpsert,
+)
+from utils.database.models.prompt_check import (
+    PromptCheck,
+    PromptCheckPatch,
+    PromptCheckStatus,
+    validate_categories,
+)
+from utils.database.prompt_checks import (
+    UNHEALTHY_AFTER_FAILURES,
+    get_consecutive_failures,
+    get_prompt_check,
+    get_prompt_check_stats,
+    get_warnings_shown,
+    update_prompt_check,
 )
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.utils import FormJsonSchema
@@ -396,3 +417,144 @@ async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
         {"logo": None, "logo_content_type": None}, updated_by=current_user.id
     )
     return _to_app_settings_public(row)
+
+
+def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
+    failures = get_consecutive_failures()
+    return PromptCheckStatus(
+        enabled=row.enabled,
+        has_api_key=bool(row.api_key or settings.MISTRAL_API_KEY),
+        model=row.model,
+        categories=row.categories,
+        updated_at=row.updated_at.isoformat(),
+        updated_by=row.updated_by,
+        consecutive_failures=failures,
+        healthy=failures < UNHEALTHY_AFTER_FAILURES,
+        warnings_shown=get_warnings_shown(),
+    )
+
+
+@router.get("/prompt-check", response_model=PromptCheckStatus)
+async def read_prompt_check() -> PromptCheckStatus:
+    return _to_prompt_check_status(await get_prompt_check())
+
+
+@router.patch("/prompt-check", response_model=PromptCheckStatus)
+async def patch_prompt_check(
+    body: PromptCheckPatch,
+    current_user: RequiredAdmin,
+) -> PromptCheckStatus:
+    patch = body.model_dump(exclude_unset=True)
+    if "api_key" in patch:
+        # Blanking the field clears the stored key and falls back to the
+        # environment variable, rather than storing an empty string.
+        patch["api_key"] = (patch["api_key"] or "").strip() or None
+    row = await update_prompt_check(patch, updated_by=current_user.id)
+    return _to_prompt_check_status(row)
+
+
+NO_API_KEY_MESSAGE = (
+    "Aucune clé API Mistral n'est configurée : la vérification ne peut pas "
+    "s'exécuter."
+)
+
+
+class PromptCheckTryBody(BaseModel):
+    """A prompt plus, when the admin is trying edits they have not saved, the
+    configuration to judge it against. Both fields fall back to the stored row."""
+
+    text: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
+    categories: dict[str, dict] | None = None
+    model: str | None = Field(default=None, min_length=1, max_length=100)
+
+    @field_validator("categories", mode="before")
+    @classmethod
+    def check_categories(cls, value: object) -> dict[str, dict] | None:
+        return None if value is None else validate_categories(value)
+
+
+class PromptCheckTryResult(BaseModel):
+    decision: str
+    scores: dict[str, float]
+    triggered: dict[str, str]
+    message: str | None
+    latency_ms: int
+
+
+@router.post("/prompt-check/try", response_model=PromptCheckTryResult)
+async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
+    """Judge one prompt without touching anything the arena counts.
+
+    No turn is written, no warning is counted and the failure streak is left
+    alone, so trying a configuration cannot move the numbers the same page
+    reports. Scores are cached on the model and prompt text, not on the verdict, so
+    trying several thresholds on the same text costs one moderation call.
+    """
+    stored = await get_prompt_check()
+    check = PromptCheck(
+        id=stored.id,
+        model=body.model or stored.model,
+        categories=body.categories or stored.categories,
+    )
+
+    # A dry run ignores the on/off switch on purpose: trying a rule before
+    # switching the check on is the main reason this exists.
+    api_key = stored.api_key or settings.MISTRAL_API_KEY
+    if not api_key:
+        return PromptCheckTryResult(
+            decision="error",
+            scores={},
+            triggered={},
+            message=NO_API_KEY_MESSAGE,
+            latency_ms=0,
+        )
+
+    started = time.monotonic()
+    scores = read_cached_scores(body.text, check.model)
+    if scores is None:
+        try:
+            scores = await moderate(body.text, check.model, api_key)
+        except Exception as e:
+            return PromptCheckTryResult(
+                decision="error",
+                scores={},
+                triggered={},
+                message=f"L'appel à Mistral a échoué : {e}",
+                latency_ms=int((time.monotonic() - started) * 1000),
+            )
+        latency_ms = int((time.monotonic() - started) * 1000)
+        write_cached_scores(body.text, check.model, scores)
+    else:
+        latency_ms = 0
+
+    result = verdict(check, scores, latency_ms)
+    return PromptCheckTryResult(
+        decision=result.decision,
+        scores=result.scores,
+        triggered=result.triggered,
+        message=result.message,
+        latency_ms=result.latency_ms,
+    )
+
+
+class PromptCheckStats(BaseModel):
+    period: str
+    bucket: str
+    historical_total: int
+    total: int
+    by_decision: dict[str, int]
+    by_category: dict[str, dict[str, int]]
+    timeline: list[dict]
+
+
+@router.get("/prompt-check/stats", response_model=PromptCheckStats)
+async def read_prompt_check_stats(
+    period: Literal["all", "7d", "30d", "90d", "365d"] = Query(default="all"),
+) -> PromptCheckStats:
+    """Historical total and period-filtered activity.
+
+    `by_category` counts the turns each category triggered on, so one turn can
+    count in several. The timeline uses daily, weekly or monthly buckets based
+    on the selected period.
+    """
+    return PromptCheckStats(**await get_prompt_check_stats(period))

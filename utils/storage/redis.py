@@ -14,6 +14,8 @@ logger = logging.getLogger("languia")
 P = ParamSpec("P")
 RT = TypeVar("RT")
 
+logger = logging.getLogger("comparia.redis")
+
 REDIS_INSTANCE_PREFIX: Final[str] = (
     f"{settings.COMPARIA_INSTANCE_NAME}:" if settings.COMPARIA_INSTANCE_NAME else ""
 )
@@ -45,6 +47,23 @@ REDIS_SUGGESTIONS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}suggestions"
 REDIS_VOTE_TAGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}vote_tags"
 REDIS_STATISTICS_SUMMARY_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}statistics:summary:{{period}}"
+)
+REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
+# Consecutive failures of the prompt check, written by the runner and read by
+# the admin panel. A check that quietly stops working looks exactly like a
+# check that passes everything, so the count has to be visible.
+REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
+# Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
+# the turn: without it, only the people who sent anyway leave a trace.
+REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"
+# Moderation scores of one prompt, keyed by model and text. Lets a user warned about a
+# message send it anyway without paying for a second moderation call. Scores
+# rather than decisions, so a check tightened meanwhile still applies.
+REDIS_CHECK_SCORES_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{model_hash}}:{{prompt_hash}}"
+)
+REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_warning_token:{{token}}"
 )
 
 

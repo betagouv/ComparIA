@@ -50,6 +50,11 @@
       icon: 'i-ri-price-tag-3-line'
     },
     {
+      label: m['admin.nav.promptChecks'](),
+      href: '/admin/prompt-checks',
+      icon: 'i-ri-shield-check-line'
+    },
+    {
       label: m['admin.nav.llms'](),
       href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
@@ -63,10 +68,12 @@
   ])
 </script>
 
-<div class="lg:flex min-h-screen">
+<div
+  class="lg:fixed lg:inset-0 lg:w-full lg:h-[100dvh] lg:overflow-hidden lg:bg-very-light-primary! lg:flex min-h-screen"
+>
   <NavBar {navLinks} isAdmin />
 
-  <main class="lg:max-h-screen lg:overflow-y-auto w-full">
+  <main class="lg:h-[100dvh] lg:overflow-y-auto bg-white w-full">
     {@render children()}
   </main>
 </div>
