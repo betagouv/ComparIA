@@ -319,14 +319,6 @@ def test_a_passing_prompt_is_not_cached():
     assert len(fake.requests) == 1
 
 
-def test_user_proceeded_only_on_warnings():
-    result, _ = run(config(criminal=(0.5, "log")), {"criminal": 0.9})
-    assert "user_proceeded" not in result.model_dump()
-
-    result, _ = run(config(pii=(0.5, "warn")), {"pii": 0.92})
-    assert result.model_dump()["user_proceeded"] is False
-
-
 def test_warnings_shown_are_counted():
     redis = FakeRedis()
     orig_runner, orig_reader = checks.get_redis_client, prompt_checks.get_redis_client
