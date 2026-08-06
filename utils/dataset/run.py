@@ -31,11 +31,13 @@ async def main(
     export_base_path: str
         Directory for local export (default: utils/local_dataset)
     dataset: str
-        Specific dataset to export (comparisons, comparisons_raw). Default: all
+        Dataset variant to export (normal, raw, or all). Default: all
     dry_run: bool
         Skip HuggingFace upload (only export to utils/local_dataset/)
     count: bool
         Display row counts for each dataset without exporting
+    use_cache: bool
+        Rebuild the normal dataset from an existing raw parquet without querying the database
     """
     datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
 

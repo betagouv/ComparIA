@@ -161,8 +161,8 @@ def check_reference_schema(failures):
                 voted_at=datetime(2024, 1, 1, 12, 0, 5),
             )
         ],
-        sys_a=fix.system_msg("s"),
-        sys_b=fix.system_msg("s"),
+        sys_a="s",
+        sys_b="s",
         mode="custom",
         custom_models_selection=["model-a", "model-b"],
         categories=["c"],

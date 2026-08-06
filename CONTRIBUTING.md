@@ -121,12 +121,17 @@ make models-maintenance    # Run model health checks
 
 ## Datasets
 
-**Prerequisites:** `COMPARIA_DB_URI`, `HF_PUSH_DATASET_KEY`, and `HF_PUSH_DATASET_PATH` environment variables configured.
+**Prerequisites:** Configure `COMPARIA_DB_URI` and `HF_PUSH_DATASET_PATH`. An
+`HF_PUSH_DATASET_KEY` with write access is also required for uploads.
 
 ```bash
 make dataset-export        # Export FR datasets to HuggingFace
 make dataset-export-da     # Export DA datasets to HuggingFace
 ```
+
+See [`utils/dataset/README.md`](utils/dataset/README.md) for setup, dry runs,
+exporting individual dataset variants, output files, filtering rules, and cache
+usage.
 
 ---
 

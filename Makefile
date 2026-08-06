@@ -230,7 +230,7 @@ dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_K
 		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
 		exit 1; \
 	fi
-	$(UV) run python -m utils.dataset.run fr
+	DEFAULT_COUNTRY_PORTAL=fr $(UV) run --group data python -m utils.dataset.run
 
 dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
@@ -246,4 +246,4 @@ dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASE
 		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
 		exit 1; \
 	fi
-	$(UV) run python -m utils.dataset.run da
+	DEFAULT_COUNTRY_PORTAL=da $(UV) run --group data python -m utils.dataset.run
