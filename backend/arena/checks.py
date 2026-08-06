@@ -261,7 +261,7 @@ async def run_prompt_check(
         result.user_proceeded = acknowledged
 
     logger.info(
-        f"prompt_check_verdict: {result.model_dump(exclude={"id", "created_at"})}",
+        f"prompt_check_verdict: {result.model_dump(exclude={'id', 'created_at'})}",
         extra={"request": request},
     )
     return result
