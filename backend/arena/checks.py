@@ -16,14 +16,13 @@ import json
 import logging
 import secrets
 import time
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 import httpx
 import sentry_sdk
 
 from backend.config import settings
-from utils.database.models.prompt_check import PromptCheck
+from utils.database.models.prompt_check import PromptCheck, PromptCheckResult
 from utils.database.prompt_checks import get_prompt_check
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
@@ -78,43 +77,6 @@ async def moderate(text: str, model: str, api_key: str) -> dict[str, float]:
     return {category: float(score) for category, score in scores.items()}
 
 
-@dataclass
-class CheckResult:
-    """Verdict on one prompt. Persisted on the Turn and logged."""
-
-    decision: str  # pass | logged | warned | blocked | error
-    model: str
-    latency_ms: int
-    scores: dict[str, float] = field(default_factory=dict)
-    triggered: dict[str, str] = field(default_factory=dict)
-    message: str | None = None
-    user_proceeded: bool = False
-
-    @property
-    def block_message(self) -> str | None:
-        return self.message if self.decision == "blocked" else None
-
-    @property
-    def pending_warning(self) -> bool:
-        """A warning the user has not answered yet, so one to show."""
-        return self.decision == "warned" and not self.user_proceeded
-
-    def as_record(self) -> dict:
-        """JSON-serializable form stored under Turn.guardrail."""
-        record = {
-            "model": self.model,
-            "latency_ms": self.latency_ms,
-            "decision": self.decision,
-            "scores": self.scores,
-            "triggered": self.triggered,
-        }
-        if self.decision == "warned":
-            # Whether people send anyway is the number that decides if 'warn'
-            # earns its place, so it only makes sense on a warning.
-            record["user_proceeded"] = self.user_proceeded
-        return record
-
-
 def _message_for(categories: set[str]) -> str:
     if "selfharm" in categories:
         return SELF_HARM_MESSAGE
@@ -125,7 +87,7 @@ def _message_for(categories: set[str]) -> str:
 
 def verdict(
     check: PromptCheck, scores: dict[str, float], latency_ms: int
-) -> CheckResult:
+) -> PromptCheckResult:
     """Scores plus a configuration to a decision. Writes nothing, so the admin
     dry run gets the same answer the arena would give without the side effects."""
     triggered = check.triggered(scores)
@@ -135,7 +97,7 @@ def verdict(
     # so a category merely logged never picks the message.
     deciding = {c for c, a in triggered.items() if a == action}
 
-    return CheckResult(
+    return PromptCheckResult(
         decision=decision,
         model=check.model,
         latency_ms=latency_ms,
@@ -246,7 +208,7 @@ def consume_warning_token(text: str, model: str, token: str | None) -> bool:
 
 async def run_prompt_check(
     text: str, request: "Request | None" = None, warning_token: str | None = None
-) -> CheckResult | None:
+) -> PromptCheckResult | None:
     """
     Check a user prompt with one moderation call, or None when nothing ran.
 
@@ -283,7 +245,7 @@ async def run_prompt_check(
             if settings.SENTRY_DSN:
                 sentry_sdk.capture_exception(e)
             _count_failure(failed=True)
-            return CheckResult(
+            return PromptCheckResult(
                 decision="error", model=check.model, latency_ms=latency_ms
             )
 
@@ -299,6 +261,7 @@ async def run_prompt_check(
         result.user_proceeded = acknowledged
 
     logger.info(
-        f"prompt_check_verdict: {result.as_record()}", extra={"request": request}
+        f"prompt_check_verdict: {result.model_dump(exclude={'id', 'created_at'})}",
+        extra={"request": request},
     )
     return result

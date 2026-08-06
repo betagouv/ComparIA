@@ -129,7 +129,7 @@ def test_one_call_scores_every_category():
     assert fake.requests[0]["input"] == ["bonjour"]
     assert fake.requests[0]["model"] == "mistral-moderation-latest"
 
-    record = result.as_record()
+    record = result.model_dump()
     assert record["decision"] == "blocked"
     assert record["triggered"] == {"criminal": "block", "pii": "warn"}
     # The never-acted-on categories are still recorded.
@@ -138,10 +138,10 @@ def test_one_call_scores_every_category():
 
 def test_threshold_boundary_triggers_at_equality():
     result, _ = run(config(sexual=(0.3, "block")), {"sexual": 0.3})
-    assert result.as_record()["decision"] == "blocked"
+    assert result.model_dump()["decision"] == "blocked"
 
     result, _ = run(config(sexual=(0.3, "block")), {"sexual": 0.29})
-    assert result.as_record()["decision"] == "pass"
+    assert result.model_dump()["decision"] == "pass"
     assert result.block_message is None
 
 
@@ -167,14 +167,14 @@ def test_a_logged_category_does_not_pick_the_message():
         config(pii=(0.5, "warn"), criminal=(0.5, "log")),
         {"pii": 0.92, "criminal": 0.9},
     )
-    assert result.as_record()["decision"] == "warned"
+    assert result.model_dump()["decision"] == "warned"
     assert result.message is checks.PII_MESSAGE
 
 
 def test_log_records_the_hit_without_blocking():
     result, _ = run(config(criminal=(0.5, "log")), {"criminal": 0.9})
     assert result.block_message is None
-    record = result.as_record()
+    record = result.model_dump()
     assert record["decision"] == "logged"
     assert record["scores"]["criminal"] == 0.9
     assert record["triggered"] == {"criminal": "log"}
@@ -184,7 +184,7 @@ def test_warn_does_not_block():
     result, _ = run(config(criminal=(0.5, "warn")), {"criminal": 0.9})
     assert result.block_message is None
     assert result.pending_warning
-    assert result.as_record()["decision"] == "warned"
+    assert result.model_dump()["decision"] == "warned"
 
 
 def test_error_fails_open():
@@ -192,7 +192,7 @@ def test_error_fails_open():
         config(criminal=(0.5, "block")), error=httpx.TimeoutException("too slow")
     )
     assert result.block_message is None
-    record = result.as_record()
+    record = result.model_dump()
     assert record["decision"] == "error"
     assert record["scores"] == {}
 
@@ -226,8 +226,9 @@ def test_send_anyway_reuses_the_cached_scores():
     result, fake = run(check, scores, redis=redis, warning_token=token)
     assert fake.requests == []
     assert result.pending_warning is False
-    assert result.as_record()["user_proceeded"] is True
-    assert result.as_record()["decision"] == "warned"
+    record = result.model_dump()
+    assert record["user_proceeded"] is True
+    assert record["decision"] == "warned"
 
 
 def test_tightening_a_category_applies_to_a_cached_prompt():
@@ -245,7 +246,7 @@ def test_tightening_a_category_applies_to_a_cached_prompt():
     )
     assert fake.requests == []
     assert result.block_message == checks.PII_MESSAGE
-    assert result.as_record()["decision"] == "blocked"
+    assert result.model_dump()["decision"] == "blocked"
 
 
 def test_forged_warning_token_cannot_skip_warning():
@@ -316,14 +317,6 @@ def test_a_passing_prompt_is_not_cached():
     _, fake = run(check, {"pii": 0.1}, redis=redis)
 
     assert len(fake.requests) == 1
-
-
-def test_user_proceeded_only_on_warnings():
-    result, _ = run(config(criminal=(0.5, "log")), {"criminal": 0.9})
-    assert "user_proceeded" not in result.as_record()
-
-    result, _ = run(config(pii=(0.5, "warn")), {"pii": 0.92})
-    assert result.as_record()["user_proceeded"] is False
 
 
 def test_warnings_shown_are_counted():

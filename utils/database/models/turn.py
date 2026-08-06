@@ -14,6 +14,7 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
+from .prompt_check import PromptCheckResult
 from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 if TYPE_CHECKING:
@@ -33,9 +34,7 @@ class TurnBase(BaseDBModel):
     # Set when the user submits their choice vote (once per turn). Used to
     # measure how long they took to vote after both models finished.
     voted_at: OptionalDatetime = None
-    # One verdict per prompt check that ran on this turn's user prompt, keyed by
-    # kind (see backend/arena/checks.py ChecksResult.as_record). Raw-only: not
-    # exposed in TurnPublic, intended for the -raw dataset, not the public one.
+    # Legacy prompt check format (replaced by "prompt_check_result")
     guardrail: Annotated[dict | None, Field(sa_type=JSONB)] = None
 
     # a
@@ -71,10 +70,17 @@ class Turn(TurnBase, table=True):
             "single_parent": True,
         },
     )
+    # One verdict per prompt check that ran on this turn's user prompt.
+    # Not exposed in TurnPublic, intended for the -raw dataset, not the public one.
+    prompt_check_result: PromptCheckResult | None = Relationship(
+        cascade_delete=True,
+        sa_relationship_kwargs={"uselist": False, "lazy": "joined"},
+    )
 
 
 class TurnCreate(TurnBase):
     user_msg: UserMessage
+    prompt_check_result: PromptCheckResult | None
 
 
 class TurnRead(TurnBase):

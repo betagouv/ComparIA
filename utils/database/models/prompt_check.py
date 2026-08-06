@@ -12,11 +12,11 @@ See .scratch/prompt-checks/spec.md for the benchmark behind the seeded values.
 import uuid
 from typing import Annotated, Literal
 
-from pydantic import field_validator
+from pydantic import computed_field, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
-from .utils import AutoDatetime
+from .utils import AutoDatetime, ModelId
 
 PromptCheckAction = Literal["off", "log", "warn", "block"]
 
@@ -178,3 +178,35 @@ class PromptCheckPatch(SQLModel):
     @classmethod
     def check_categories(cls, value: object) -> dict[str, dict] | None:
         return None if value is None else validate_categories(value)
+
+
+class PromptCheckResult(SQLModel, table=True):
+    """
+    Prompt check result based on prompt checker.
+    Linked to a Turn if not blocked.
+    """
+
+    __tablename__ = "prompt_check_result"
+
+    id: ModelId
+    created_at: AutoDatetime
+    turn_id: uuid.UUID | None = Field(default=None, foreign_key="turn.id", unique=True)
+
+    decision: str  # pass | logged | warned | blocked | error
+    model: str
+    latency_ms: int
+    scores: Annotated[dict[str, float], Field(sa_type=JSONB)] = {}
+    triggered: Annotated[dict[str, str], Field(sa_type=JSONB)] = {}
+    message: str | None = None
+    user_proceeded: bool = False
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def block_message(self) -> str | None:
+        return self.message if self.decision == "blocked" else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def pending_warning(self) -> bool:
+        """A warning the user has not answered yet, so one to show."""
+        return self.decision == "warned" and not self.user_proceeded

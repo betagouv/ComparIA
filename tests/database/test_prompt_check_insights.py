@@ -317,17 +317,6 @@ def test_stats_returns_historical_total_period_counts_and_timeline(
     }
 
 
-def test_stats_excludes_the_legacy_guardrail_records(stats_session) -> None:
-    """Nemotron records have no decision key, so they are not this check's."""
-    session = stats_session([0, DECISION_ROWS, [], []])
-
-    asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
-
-    assert len(session.queries) == 4
-    for sql in session.queries:
-        assert "turn.guardrail ? 'decision'" in sql
-
-
 def test_stats_period_filters_charts_and_cards_but_not_historical_total(
     stats_session,
 ) -> None:
@@ -336,9 +325,10 @@ def test_stats_period_filters_charts_and_cards_but_not_historical_total(
     asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
     historical, by_decision, by_category, timeline = session.queries
-    assert "turn.created_at >=" not in historical
+    assert "prompt_check_result.created_at >=" not in historical
     assert all(
-        "turn.created_at >=" in sql for sql in (by_decision, by_category, timeline)
+        "prompt_check_result.created_at >=" in sql
+        for sql in (by_decision, by_category, timeline)
     )
     assert "date_trunc('day'" in timeline
 

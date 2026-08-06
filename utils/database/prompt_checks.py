@@ -9,8 +9,8 @@ from utils.database.models.prompt_check import (
     DEFAULT_CATEGORIES,
     DEFAULT_MODEL,
     PromptCheck,
+    PromptCheckResult,
 )
-from utils.database.models.turn import Turn
 from utils.database.session import get_session
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
@@ -65,6 +65,15 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
     return row
 
 
+async def save_prompt_check_result(check: PromptCheckResult) -> PromptCheckResult:
+    async with get_session() as session:
+        session.add(check)
+        await session.commit()
+        await session.refresh(check)
+
+    return check
+
+
 def _read_counter(key: str, what: str) -> int:
     """Read defensively: no redis, or no key, means nothing has happened yet."""
     try:
@@ -84,7 +93,7 @@ def get_consecutive_failures() -> int:
 
 
 # Every decision a check can reach, so a quiet week still reports each bucket
-# instead of dropping the ones at zero. Mirrors CheckResult.decision in
+# instead of dropping the ones at zero. Mirrors PromptCheckResult.decision in
 # backend/arena/checks.py, which cannot be imported here: it imports this module.
 DECISIONS = ("pass", "logged", "warned", "blocked", "error")
 
@@ -95,18 +104,6 @@ STATS_PERIODS = {
     "365d": (365, "week"),
     "all": (None, "month"),
 }
-
-
-def _prompt_check_turns(since: datetime | None = None) -> list:
-    """Filters selecting the turns this check wrote, in the window.
-
-    Records left by the older Nemotron guardrail have no `decision` key, and
-    counting them would mix two different systems into one number.
-    """
-    filters = [col(Turn.guardrail).has_key("decision")]
-    if since is not None:
-        filters.insert(0, col(Turn.created_at) >= since)
-    return filters
 
 
 def _next_bucket(value: datetime, bucket: str) -> datetime:
@@ -138,22 +135,23 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
     if not settings.COMPARIA_DB_URI:
         return stats
 
-    all_where = _prompt_check_turns()
-    where = _prompt_check_turns(since)
-    decision = col(Turn.guardrail)["decision"].astext
+    where = [col(PromptCheckResult.created_at) >= since] if since else []
+    decision = col(PromptCheckResult.decision)
     categories = (
         select(
-            func.jsonb_object_keys(col(Turn.guardrail)["triggered"]).label("name"),
+            func.jsonb_object_keys(col(PromptCheckResult.triggered)).label("name"),
             decision.label("decision"),
         )
         .where(*where)
         .subquery()
     )
-    bucket_start = func.date_trunc(bucket, col(Turn.created_at)).label("bucket")
+    bucket_start = func.date_trunc(bucket, col(PromptCheckResult.created_at)).label(
+        "bucket"
+    )
 
     async with get_session() as session:
         historical_total = (
-            await session.exec(select(func.count()).where(*all_where))
+            await session.exec(select(func.count(col(PromptCheckResult.id))))
         ).one()
         by_decision = (
             await session.exec(
