@@ -77,7 +77,7 @@ def arena(active_document):
     async def get_active_legal_document(_kind, _language):
         return active_document
 
-    async def run_guardrail(_text, _field, _request):
+    async def run_checks(_text, _field, _request, _warning_token):
         return None
 
     async def get_llms_data():
@@ -96,7 +96,7 @@ def arena(active_document):
         ):
             with patched(
                 arena_router,
-                run_guardrail=run_guardrail,
+                run_checks=run_checks,
                 get_llms_data=get_llms_data,
                 create_comparison=create_comparison,
             ):
