@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
 from backend.arena.checks import (
-    CheckResult,
+    PromptCheckResult,
     count_warning_shown,
     issue_warning_token,
     run_prompt_check,
@@ -58,6 +58,7 @@ from utils.database.models import (
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
+from utils.database.prompt_checks import save_prompt_check_result
 
 logger = logging.getLogger("languia")
 
@@ -96,7 +97,7 @@ def assert_not_block_cooldown(request: Request) -> None:
 
 async def run_checks(
     text: str, field: str, request: Request, warning_token: str | None = None
-) -> CheckResult | None:
+) -> PromptCheckResult | None:
     """
     Run the prompt check on a user message. Raises a 422 (shaped like a Pydantic
     validation error so the frontend renders it under the input) when a category
@@ -106,6 +107,7 @@ async def run_checks(
     result = await run_prompt_check(text, request, warning_token=warning_token)
     if result and result.block_message:
         increment_blocked_prompts(get_ip(request))
+        result = await save_prompt_check_result(result)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=[
@@ -119,7 +121,7 @@ async def run_checks(
     return result
 
 
-def warning_response(result: CheckResult, text: str) -> StreamingResponse:
+def warning_response(result: PromptCheckResult, text: str) -> StreamingResponse:
     """
     Stream a single 'warning' event and stop. Nothing is created and no model is
     called: the browser asks the user to confirm, and sends the prompt again with
@@ -232,7 +234,7 @@ async def add_first_text(
     )
     if check and check.pending_warning:
         return warning_response(check, args.prompt_value)
-    guardrail = check.as_record() if check else None
+    check = (await save_prompt_check_result(check)) if check else None
 
     # Select LLMs
     llms_data = await get_llms_data()
@@ -285,7 +287,7 @@ async def add_first_text(
             comparison.id,
             args.prompt_value,
             web_search_results,
-            guardrail=guardrail,
+            prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
@@ -345,7 +347,7 @@ async def add_text(
     check = await run_checks(args.message, "message", request, args.warning_token)
     if check and check.pending_warning:
         return warning_response(check, args.message)
-    guardrail = check.as_record() if check else None
+    check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
 
@@ -355,7 +357,7 @@ async def add_text(
         comparison, turn = await add_comparison_turn(
             comparison_.id,
             args.message,
-            guardrail=guardrail,
+            prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 

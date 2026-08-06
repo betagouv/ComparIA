@@ -25,6 +25,7 @@ from utils.database.models import (
     TurnVoteChoice,
     UserMessage,
 )
+from utils.database.models.prompt_check import PromptCheckResult
 from utils.database.session import get_session
 
 if TYPE_CHECKING:
@@ -146,13 +147,13 @@ async def add_comparison_turn(
     comparison_id: uuid.UUID,
     prompt: str,
     web_search_results: list[LinkupSearchTextResult] | None = None,
-    guardrail: dict | None = None,
+    prompt_check_result: PromptCheckResult | None = None,
 ) -> tuple[ComparisonRead, TurnRead]:
     async with get_session() as session:
         db_turn = Turn.model_validate(
             TurnCreate(
                 comparison_id=comparison_id,
-                guardrail=guardrail,
+                prompt_check_result=prompt_check_result,
                 user_msg=UserMessage(
                     content=prompt,
                     web_search_results=(
