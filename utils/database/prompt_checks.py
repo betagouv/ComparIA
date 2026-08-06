@@ -11,7 +11,6 @@ from utils.database.models.prompt_check import (
     PromptCheck,
     PromptCheckResult,
 )
-from utils.database.models.turn import Turn
 from utils.database.session import get_session
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
