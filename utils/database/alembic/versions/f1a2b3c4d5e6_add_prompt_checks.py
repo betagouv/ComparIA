@@ -4,7 +4,7 @@ Creates the prompt_check singleton holding the per-category thresholds and
 actions applied to a user prompt before it reaches the arena models.
 
 Revision ID: f1a2b3c4d5e6
-Revises: e8f7a6b5c4d3
+Revises: f3b8c1d2e4a5
 Create Date: 2026-07-31 00:00:00.000000
 
 """
@@ -21,7 +21,7 @@ from utils.database.models.prompt_check import DEFAULT_CATEGORIES, DEFAULT_MODEL
 
 # revision identifiers, used by Alembic.
 revision: str = "f1a2b3c4d5e6"
-down_revision: Union[str, Sequence[str], None] = "e8f7a6b5c4d3"
+down_revision: Union[str, Sequence[str], None] = "f3b8c1d2e4a5"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
