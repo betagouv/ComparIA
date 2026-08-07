@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Input, Textarea, Toggle } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
-  import { api } from '$lib/fastapi-client'
+  import { api, ValidationError } from '$lib/fastapi-client'
   import type { VoiceSettingsPatch, VoiceSettingsPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
@@ -62,7 +62,12 @@
       apiKey = ''
       useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
-      useToast((err as Error).message, 6000, 'error')
+      // A 422 carries the field message ("At least one model is needed"); the
+      // Error itself only says "Error in form", which helps nobody.
+      // Pydantic prefixes its own message with "Value error, ", which is
+      // noise to an admin reading a toast.
+      const validation = err instanceof ValidationError ? err.errors?.[0]?.msg : undefined
+      useToast(validation?.replace(/^Value error, /, '') ?? (err as Error).message, 6000, 'error')
     } finally {
       saving = false
     }
