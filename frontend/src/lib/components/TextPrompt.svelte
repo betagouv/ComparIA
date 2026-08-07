@@ -96,6 +96,10 @@
   let timer: ReturnType<typeof setInterval> | null = null
   let startedAt = 0
 
+  // The notice explains what happens to a recording, so it has no business
+  // covering the box once one is under way.
+  const showHint = $derived(!!voice?.notice && !recording && !transcribing)
+
   const maxSeconds = $derived(voice?.maxSeconds ?? 60)
   const elapsed = $derived(seconds + '/' + maxSeconds + 's')
 
@@ -162,7 +166,13 @@
     recorder?.stop()
   }
 
-  function toggleRecording() {
+  function toggleRecording(e: MouseEvent) {
+    // DSFR shows a tooltip on focus as well as hover, and a click leaves the
+    // button focused, so the notice would sit there until you clicked away.
+    // `detail` is 0 when the button was activated from the keyboard, where
+    // focus must stay put and the tooltip is the accessible behaviour.
+    if (e.detail > 0) (e.currentTarget as HTMLElement).blur()
+
     if (recording) {
       stop()
       return
@@ -211,11 +221,11 @@
         variant="tertiary-no-outline"
         disabled={transcribing}
         aria-label={recording ? m['voice.stop']() : m['voice.start']()}
-        aria-describedby={voice.notice ? `mic-hint-${id}` : undefined}
+        aria-describedby={showHint ? `mic-hint-${id}` : undefined}
         onclick={toggleRecording}
         class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
       />
-      {#if voice.notice}
+      {#if showHint}
         <!-- The same markup Tooltip.svelte renders, so this reads like every
              other tooltip on the platform. DSFR's own script binds it to the
              button through aria-describedby. -->
