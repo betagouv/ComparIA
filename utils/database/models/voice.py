@@ -95,9 +95,14 @@ class VoiceSettings(SQLModel, table=True):
             ),
         ),
     ] = list(DEFAULT_MODELS)
-    # Overrides OPENROUTER_API_KEY when set, as prompt_check.api_key does.
-    # Never leaves the backend.
-    api_key: str | None = Field(default=None)
+    # The provider that transcribes, reusing the endpoints an operator already
+    # manages for the arena models: one place for a base URL and a key, and
+    # `api_type` already says which request shape to send. Null falls back to
+    # OPENROUTER_API_KEY and OpenRouter's own URL, so an instance that has never
+    # opened the LLM admin can still switch the microphone on.
+    endpoint_id: uuid.UUID | None = Field(
+        default=None, foreign_key="llm_endpoint.id", ondelete="RESTRICT"
+    )
     max_seconds: int = Field(
         default=DEFAULT_MAX_SECONDS,
         ge=5,
@@ -116,25 +121,37 @@ class VoiceSettings(SQLModel, table=True):
         return self.enabled and bool(self.models)
 
 
+class VoiceEndpointChoice(SQLModel):
+    """An endpoint an admin can point voice input at."""
+
+    id: uuid.UUID
+    name: str
+    api_type: str
+    # Without a key the endpoint cannot transcribe, so the panel says so rather
+    # than letting someone pick it and wonder why nothing comes back.
+    has_api_key: bool
+
+
 class VoiceSettingsPublic(SQLModel):
     enabled: bool
     store_audio: bool
     models: list[str]
-    # Whether a key is stored, never the key itself.
+    endpoint_id: uuid.UUID | None = None
+    # Whether a key is reachable, from the endpoint or the environment. Never
+    # the key itself.
     has_api_key: bool
     max_seconds: int
     retention_days: int | None = None
     updated_at: str
     updated_by: uuid.UUID | None = None
+    endpoints: list[VoiceEndpointChoice] = []
 
 
 class VoiceSettingsPatch(SQLModel):
     enabled: bool | None = None
     store_audio: bool | None = None
     models: list[str] | None = None
-    # Write-only. An empty string clears the stored key and falls back to the
-    # environment variable.
-    api_key: str | None = None
+    endpoint_id: uuid.UUID | None = None
     max_seconds: int | None = Field(default=None, ge=5, le=MAX_SECONDS_LIMIT)
     retention_days: int | None = Field(default=None, ge=1)
 

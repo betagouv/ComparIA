@@ -44,11 +44,14 @@ def upgrade() -> None:
             "store_audio", sa.Boolean(), nullable=False, server_default=sa.false()
         ),
         sa.Column("models", postgresql.JSONB(), nullable=False),
-        sa.Column("api_key", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("endpoint_id", sa.Uuid(), nullable=True),
         sa.Column("max_seconds", sa.Integer(), nullable=False, server_default="60"),
         sa.Column("retention_days", sa.Integer(), nullable=True),
         sa.Column("updated_at", postgresql.TIMESTAMP(), nullable=False),
         sa.Column("updated_by", sa.Uuid(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["endpoint_id"], ["llm_endpoint.id"], ondelete="RESTRICT"
+        ),
         sa.ForeignKeyConstraint(["updated_by"], ["auth_user.id"]),
         sa.PrimaryKeyConstraint("id"),
     )

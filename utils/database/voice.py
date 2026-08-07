@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
 
+from sqlmodel import select
+
 from backend.config import settings
+from utils.database.models.llms import LLMEndpoint
 from utils.database.models.voice import (
     DEFAULT_MODELS,
     VoiceRecording,
@@ -25,6 +28,25 @@ async def get_voice_settings() -> VoiceSettings:
         return _DEFAULT
     async with get_session() as session:
         return await session.get(VoiceSettings, 1) or _DEFAULT
+
+
+async def get_voice_endpoint(voice: VoiceSettings) -> LLMEndpoint | None:
+    """The endpoint voice input transcribes through, or None to fall back to
+    the environment. Not cached with the settings: the key lives on the
+    endpoint, and an operator rotating it in the LLM admin must take effect."""
+    if not voice.endpoint_id or not settings.COMPARIA_DB_URI:
+        return None
+    async with get_session() as session:
+        return await session.get(LLMEndpoint, voice.endpoint_id)
+
+
+async def list_voice_endpoints() -> list[LLMEndpoint]:
+    """Every endpoint an admin could point voice input at."""
+    if not settings.COMPARIA_DB_URI:
+        return []
+    async with get_session() as session:
+        result = await session.exec(select(LLMEndpoint).order_by(LLMEndpoint.name))
+        return list(result.all())
 
 
 async def update_voice_settings(patch: dict, updated_by: uuid.UUID) -> VoiceSettings:
