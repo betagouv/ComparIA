@@ -225,6 +225,14 @@
         <span>{elapsed}</span>
       </p>
     {/if}
+    {#if showModel}
+      <!-- Rises out of the box's own bottom edge rather than sitting under the
+           box, so nothing on the page moves for it. It comes before the buttons
+           so they stay on top of it. -->
+      <p class="cl-model-bar text-sm absolute" aria-live="polite">
+        {m['voice.transcribedBy']({ model })}
+      </p>
+    {/if}
     {#if voice}
       <Button
         icon={recording ? 'stop-circle-line' : 'mic-line'}
@@ -235,7 +243,13 @@
         aria-label={recording ? m['voice.stop']() : m['voice.start']()}
         aria-describedby={showHint ? `mic-hint-${id}` : undefined}
         onclick={toggleRecording}
-        class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
+        class={[
+          'cl-mic bottom-3 absolute',
+          submitBtn ? 'right-14' : 'right-3',
+          // The bar swallows the button on its way up. White keeps the mic
+          // readable instead of leaving a grey icon on a blue field.
+          { 'cl-mic-on-bar': showModel }
+        ]}
       />
       {#if showHint}
         <!-- The same markup Tooltip.svelte renders, so this reads like every
@@ -263,16 +277,6 @@
       />
     {/if}
   </div>
-  {#if showModel}
-    <!-- The box leaves its bottom edge square for this. The bar grows out of
-         that edge, says who wrote the text, and gets out of the way. -->
-    <p
-      class={['cl-model-bar text-sm', size === 'sm' ? 'rounded-b-sm' : 'rounded-b-xl']}
-      aria-live="polite"
-    >
-      {m['voice.transcribedBy']({ model })}
-    </p>
-  {/if}
   <div class="fr-messages-group" id="messages-{id}" aria-live="polite">
     {#if error}
       <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
@@ -318,26 +322,50 @@
     color: var(--text-title-blue-france);
   }
 
-  /* Flush against the box, no gap: it reads as the input's own bottom border
-     grown thick enough to hold a sentence. */
+  /* The input's own bottom border, grown up the box until it holds a sentence.
+     Same colour as the send button, so it reads as part of the box. */
   .cl-model-bar {
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
     margin: 0;
-    padding: 0.25rem 0.75rem;
+    /* Up to the top of the microphone, which sits 0.75rem off the bottom and
+       stands 2rem tall. Short of that and the icon straddles the edge. */
+    height: 2.75rem;
+    max-height: 100%;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0.75rem 0.375rem;
     font-weight: 700;
     color: var(--text-inverted-blue-france);
     background-color: var(--blue-france-main-525);
-    animation: cl-model-bar-in 0.2s ease-out;
+    animation: cl-model-bar-rise 0.25s ease-out;
   }
 
-  @keyframes cl-model-bar-in {
+  @keyframes cl-model-bar-rise {
     from {
-      opacity: 0;
+      height: 0.125rem;
     }
   }
 
+  /* Global like .cl-mic above: the class rides on a child component. */
+  :global(.cl-mic-on-bar) {
+    color: var(--text-inverted-blue-france) !important;
+    transition: color 0.25s ease-out;
+  }
+
+  /* DSFR's hover pad is a light grey, which on the blue reads as a smudge
+     around the icon rather than as a button. */
+  :global(.cl-mic-on-bar:hover) {
+    color: var(--text-inverted-blue-france) !important;
+    background-color: rgb(255 255 255 / 0.16) !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .cl-model-bar {
+    .cl-model-bar,
+    :global(.cl-mic-on-bar) {
       animation: none;
+      transition: none;
     }
   }
 
