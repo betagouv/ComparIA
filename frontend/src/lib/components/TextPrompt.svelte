@@ -229,7 +229,7 @@
       <!-- Rises out of the box's own bottom edge rather than sitting under the
            box, so nothing on the page moves for it. It comes before the buttons
            so they stay on top of it. -->
-      <p class="cl-model-bar text-sm absolute" aria-live="polite">
+      <p class="cl-model-bar text-xs absolute" aria-live="polite">
         {m['voice.transcribedBy']({ model })}
       </p>
     {/if}
@@ -243,13 +243,7 @@
         aria-label={recording ? m['voice.stop']() : m['voice.start']()}
         aria-describedby={showHint ? `mic-hint-${id}` : undefined}
         onclick={toggleRecording}
-        class={[
-          'cl-mic bottom-3 absolute',
-          submitBtn ? 'right-14' : 'right-3',
-          // The bar swallows the button on its way up. White keeps the mic
-          // readable instead of leaving a grey icon on a blue field.
-          { 'cl-mic-on-bar': showModel }
-        ]}
+        class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
       />
       {#if showHint}
         <!-- The same markup Tooltip.svelte renders, so this reads like every
@@ -329,15 +323,13 @@
     right: 1px;
     bottom: 1px;
     margin: 0;
-    /* Over the microphone's glyph, not over its whole button. The button is
-       2rem tall and sits 0.75rem off the bottom, but the icon inside it is
-       1rem, so the last 0.5rem of the button is transparent padding and the
-       bar can stop short of it without clipping anything. */
-    height: 2.25rem;
+    /* Stops under the microphone's glyph, which starts 1.25rem off the bottom.
+       The icon keeps its own colour and the bar stays a bar. */
+    height: 1.25rem;
     max-height: 100%;
     display: flex;
     align-items: flex-end;
-    padding: 0 0.75rem 0.375rem;
+    padding: 0 0.75rem 0.125rem;
     font-weight: 700;
     color: var(--text-inverted-blue-france);
     background-color: var(--blue-france-main-525);
@@ -350,24 +342,9 @@
     }
   }
 
-  /* Global like .cl-mic above: the class rides on a child component. */
-  :global(.cl-mic-on-bar) {
-    color: var(--text-inverted-blue-france) !important;
-    transition: color 0.25s ease-out;
-  }
-
-  /* DSFR's hover pad is a light grey, which on the blue reads as a smudge
-     around the icon rather than as a button. */
-  :global(.cl-mic-on-bar:hover) {
-    color: var(--text-inverted-blue-france) !important;
-    background-color: rgb(255 255 255 / 0.16) !important;
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .cl-model-bar,
-    :global(.cl-mic-on-bar) {
+    .cl-model-bar {
       animation: none;
-      transition: none;
     }
   }
 
