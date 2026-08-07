@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { getAuthContext } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import { noop } from '$lib/utils/commons'
-  import { canRecord, useVoiceRecorder } from '$lib/voice.svelte'
+  import type { VoiceInput } from '$lib/voice.svelte'
   import type { Attachment } from 'svelte/attachments'
   import { Button } from './dsfr'
 
@@ -12,12 +11,9 @@
     value: string
     hideLabel?: boolean
     submitBtn?: boolean
-    /** Offer a microphone. Off by default: the vote annotation box shares this
-     * component and dictating a comment is not what it is for. */
-    mic?: boolean
-    /** Recordings whose transcription is still in the box, handed to the API on
-     * send so the audio can be compared with what the user actually sent. */
-    recordingIds?: string[]
+    /** Offer a microphone. Absent on the vote annotation box, which shares this
+     * component and is not what dictation is for. */
+    voice?: VoiceInput
     /** Wraps recording in the terms gate. A voice is captured here, which is a
      * heavier consent than sending text. */
     gate?: (action: () => unknown) => unknown
@@ -42,8 +38,7 @@
     value = $bindable(),
     submitBtn = false,
     submitDisabled = false,
-    mic = false,
-    recordingIds = $bindable([]),
+    voice,
     gate = (action: () => unknown) => action(),
     size = 'sm',
     hideLabel = false,
@@ -92,33 +87,90 @@
     size === 'sm' ? 'rounded-t-sm! rounded-s-sm!' : 'rounded-t-xl! rounded-s-xl!'
   )
 
-  const auth = getAuthContext()
-  const showMic = $derived(mic && !!auth.config?.voice_enabled && canRecord())
+  let recording = $state(false)
+  let transcribing = $state(false)
+  let seconds = $state(0)
 
-  const recorder = useVoiceRecorder({
-    maxSeconds: auth.config?.voice_max_seconds ?? 60,
-    onText: (text, recordingId) => {
+  let recorder: MediaRecorder | null = null
+  let timer: ReturnType<typeof setInterval> | null = null
+  let startedAt = 0
+
+  const maxSeconds = $derived(voice?.maxSeconds ?? 60)
+  const elapsed = $derived(seconds + '/' + maxSeconds + 's')
+
+  function releaseTracks() {
+    recorder?.stream.getTracks().forEach((track) => track.stop())
+    recorder = null
+  }
+
+  async function transcribe(audio: Blob, durationMs: number) {
+    transcribing = true
+    try {
+      const text = await voice?.transcribe(audio, durationMs)
+      if (!text) {
+        error = m['voice.failed']()
+        return
+      }
       value = value ? `${value.trimEnd()} ${text}` : text
-      if (recordingId) recordingIds = [...recordingIds, recordingId]
       el?.focus()
       el?.setSelectionRange(value.length, value.length)
-    },
-    onError: (key) => {
-      error = key === 'voice.denied' ? m['voice.denied']() : m['voice.failed']()
+    } catch (e) {
+      console.error(e)
+      error = m['voice.failed']()
+    } finally {
+      transcribing = false
     }
-  })
+  }
 
-  const recording = $derived(recorder.recording)
+  async function start() {
+    let stream: MediaStream
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    } catch (e) {
+      console.error(e)
+      error = m['voice.denied']()
+      return
+    }
 
-  const maxSeconds = $derived(auth.config?.voice_max_seconds ?? 60)
-  const elapsed = $derived(recorder.seconds + '/' + maxSeconds + 's')
+    const chunks: Blob[] = []
+    recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+    recorder.ondataavailable = (e) => chunks.push(e.data)
+    recorder.onstop = () => {
+      const durationMs = Date.now() - startedAt
+      releaseTracks()
+      transcribe(new Blob(chunks, { type: 'audio/webm' }), durationMs)
+    }
+
+    startedAt = Date.now()
+    seconds = 0
+    recording = true
+    recorder.start()
+
+    timer = setInterval(() => {
+      seconds = Math.floor((Date.now() - startedAt) / 1000)
+      // Stops itself rather than letting someone hold a paid endpoint open,
+      // and keeps every recording clear of the provider's own cut-off.
+      if (seconds >= maxSeconds) stop()
+    }, 250)
+  }
+
+  function stop() {
+    if (timer) clearInterval(timer)
+    timer = null
+    recording = false
+    recorder?.stop()
+  }
 
   function toggleRecording() {
+    if (recording) {
+      stop()
+      return
+    }
     // Recording and the error state both paint the box red and both speak into
     // the same live region, so an old error clears before one starts and the
     // two are never on at once.
-    if (!recorder.recording) error = undefined
-    gate(() => recorder.toggle())
+    error = undefined
+    gate(start)
   }
 </script>
 
@@ -150,13 +202,13 @@
         <span>{elapsed}</span>
       </p>
     {/if}
-    {#if showMic}
+    {#if voice}
       <Button
         icon={recording ? 'stop-circle-line' : 'mic-line'}
         iconOnly
         {size}
         variant="secondary"
-        disabled={recorder.transcribing}
+        disabled={transcribing}
         text={recording ? m['voice.stop']() : m['voice.start']()}
         onclick={toggleRecording}
         class={['bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
@@ -179,12 +231,12 @@
       <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
     {:else if recording}
       <p class="fr-message">{m['voice.recording']()}</p>
-    {:else if recorder.transcribing}
+    {:else if transcribing}
       <p class="fr-message">{m['voice.transcribing']()}</p>
     {/if}
   </div>
-  {#if showMic && auth.config?.voice_stores_audio}
-    <p class="fr-hint-text">{m['voice.storageNotice']()}</p>
+  {#if voice?.notice}
+    <p class="fr-hint-text">{voice.notice}</p>
   {/if}
 </div>
 

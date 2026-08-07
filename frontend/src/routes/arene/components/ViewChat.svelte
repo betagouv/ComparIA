@@ -5,6 +5,7 @@
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { useVoiceInput } from '$lib/voice.svelte'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
 
@@ -25,7 +26,7 @@
   })
 
   let prompt = $state('')
-  let recordingIds = $state<string[]>([])
+  const voice = useVoiceInput(m['voice.storageNotice']())
   let voteReminder = $state(false)
   let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
 
@@ -39,10 +40,10 @@
 
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
-      const success = await comparator.ask(prompt, recordingIds)
+      const success = await comparator.ask(prompt, voice.recordingIds)
       if (success) {
         prompt = ''
-        recordingIds = []
+        voice.clear()
       }
     })
   }
@@ -140,8 +141,7 @@
         size="md"
         rows={3}
         maxRows={4}
-        mic
-        bind:recordingIds
+        voice={voice.input}
         gate={runAfterAcceptance}
         onSubmit={onPromptSubmit}
         onSubmitBlocked={remindToVote}
