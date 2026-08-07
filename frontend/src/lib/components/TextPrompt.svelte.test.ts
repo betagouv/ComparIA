@@ -105,10 +105,10 @@ describe('TextPrompt', () => {
     await fireEvent.click(mic)
     await fireEvent.click(getByRole('button', { name: "Arrêter l'enregistrement" }))
 
-    await waitFor(() => expect(queryByText('Transcrit par speech/one.')).not.toBeNull())
+    await waitFor(() => expect(queryByText('Transcrit par one')).not.toBeNull())
 
     // The name belongs to the text. Clear the box and it has nothing left to name.
     await fireEvent.input(getByTestId('textbox'), { target: { value: '' } })
-    expect(queryByText('Transcrit par speech/one.')).toBeNull()
+    expect(queryByText('Transcrit par one')).toBeNull()
   })
 })

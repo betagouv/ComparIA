@@ -106,6 +106,9 @@
   const MODEL_BAR_MS = 5000
 
   const showModel = $derived(!!model && !!value && !recording && !transcribing)
+  // The vendor prefix is for the admin who edits the pool. On a chip beside the
+  // microphone, "voxtral-mini-transcribe" is the part that says anything.
+  const shortModel = $derived(model.split('/').pop())
 
   const maxSeconds = $derived(voice?.maxSeconds ?? 60)
   const elapsed = $derived(seconds + '/' + maxSeconds + 's')
@@ -226,11 +229,13 @@
       </p>
     {/if}
     {#if showModel}
-      <!-- Rises out of the box's own bottom edge rather than sitting under the
-           box, so nothing on the page moves for it. It comes before the buttons
-           so they stay on top of it. -->
-      <p class="cl-model-bar text-xs absolute" aria-live="polite">
-        {m['voice.transcribedBy']({ model })}
+      <!-- Slides out of the microphone, on the microphone's own line, into the
+           empty space to its left. Nothing on the page moves for it. -->
+      <p
+        class={['cl-model-chip bottom-3 text-xs absolute', submitBtn ? 'right-23' : 'right-12']}
+        aria-live="polite"
+      >
+        {m['voice.transcribedBy']({ model: shortModel })}
       </p>
     {/if}
     {#if voice}
@@ -316,34 +321,32 @@
     color: var(--text-title-blue-france);
   }
 
-  /* The input's own bottom border, grown up the box until it holds a sentence.
-     Same colour as the send button, so it reads as part of the box. */
-  .cl-model-bar {
-    left: 1px;
-    right: 1px;
-    bottom: 1px;
+  /* Same colour as the send button, so the chip reads as the box's own. */
+  .cl-model-chip {
     margin: 0;
-    /* Stops under the microphone's glyph, which starts 1.25rem off the bottom.
-       The icon keeps its own colour and the bar stays a bar. */
-    height: 1.25rem;
-    max-height: 100%;
     display: flex;
-    align-items: flex-end;
-    padding: 0 0.75rem 0.125rem;
+    align-items: center;
+    height: 2rem;
+    padding: 0 0.625rem;
+    border-radius: 1rem;
+    white-space: nowrap;
     font-weight: 700;
     color: var(--text-inverted-blue-france);
     background-color: var(--blue-france-main-525);
-    animation: cl-model-bar-rise 0.25s ease-out;
+    animation: cl-model-chip-out 0.25s ease-out;
   }
 
-  @keyframes cl-model-bar-rise {
+  /* Out of the microphone rather than into place from nowhere: the button is
+     what produced the text, so the name comes from under it. */
+  @keyframes cl-model-chip-out {
     from {
-      height: 0.125rem;
+      opacity: 0;
+      transform: translateX(1.5rem) scale(0.8);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cl-model-bar {
+    .cl-model-chip {
       animation: none;
     }
   }
