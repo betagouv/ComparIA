@@ -55,6 +55,11 @@
       icon: 'i-ri-shield-check-line'
     },
     {
+      label: m['admin.nav.voice'](),
+      href: '/admin/voice',
+      icon: 'i-ri-mic-line'
+    },
+    {
       label: m['admin.nav.llms'](),
       href: '/admin/llms/llms',
       icon: 'i-ri-ai-agent-line',
