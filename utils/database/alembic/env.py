@@ -33,6 +33,10 @@ from utils.database.models.suggestion import (  # noqa: F401
     PromptSuggestion,
     SuggestionCategory,
 )
+from utils.database.models.voice import (  # noqa: F401
+    VoiceRecording,
+    VoiceSettings,
+)
 
 config = context.config
 
