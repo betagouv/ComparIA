@@ -330,6 +330,24 @@ export interface UserUpsert {
   email: string;
   role?: "user" | "admin";
 }
+export interface VoiceSettingsPatch {
+  enabled?: boolean | null;
+  store_audio?: boolean | null;
+  models?: string[] | null;
+  api_key?: string | null;
+  max_seconds?: number | null;
+  retention_days?: number | null;
+}
+export interface VoiceSettingsPublic {
+  enabled: boolean;
+  store_audio: boolean;
+  models: string[];
+  has_api_key: boolean;
+  max_seconds: number;
+  retention_days?: number | null;
+  updated_at: string;
+  updated_by?: string | null;
+}
 export interface VoteTagArchiveUpdate {
   archived: boolean;
 }
