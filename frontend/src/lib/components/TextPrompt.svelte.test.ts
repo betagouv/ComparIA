@@ -46,17 +46,22 @@ describe('TextPrompt', () => {
     })
 
     const mic = getByRole('button', { name: 'Dicter le message' })
-    expect(mic.getAttribute('title')).toBe('Votre enregistrement est conservé.')
+    const hint = getByRole('tooltip')
+    expect(hint.textContent).toBe('Votre enregistrement est conservé.')
+    expect(mic.getAttribute('aria-describedby')).toBe(hint.id)
   })
 
   it('carries no notice when nothing is kept', () => {
-    const { getByRole } = render(TextPrompt, {
+    const { getByRole, queryByRole } = render(TextPrompt, {
       id: 'prompt',
       label: 'Prompt',
       value: '',
       voice: { maxSeconds: 60, notice: '', transcribe: async () => '' }
     })
 
-    expect(getByRole('button', { name: 'Dicter le message' }).getAttribute('title')).toBeNull()
+    expect(queryByRole('tooltip')).toBeNull()
+    expect(
+      getByRole('button', { name: 'Dicter le message' }).getAttribute('aria-describedby')
+    ).toBeNull()
   })
 })

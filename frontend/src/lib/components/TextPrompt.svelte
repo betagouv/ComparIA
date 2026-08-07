@@ -203,17 +203,24 @@
       </p>
     {/if}
     {#if voice}
-      <Button
-        icon={recording ? 'stop-circle-line' : 'mic-line'}
-        iconOnly
-        size="sm"
-        variant="tertiary-no-outline"
-        disabled={transcribing}
-        aria-label={recording ? m['voice.stop']() : m['voice.start']()}
-        title={voice.notice || undefined}
-        onclick={toggleRecording}
-        class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
-      />
+      <div class={['cl-mic-wrap bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}>
+        {#if voice.notice}
+          <!-- Shown on hover and on keyboard focus. A native `title` is too
+               slow to appear and never shows on a touch screen. -->
+          <span class="cl-mic-hint" id="mic-hint-{id}" role="tooltip">{voice.notice}</span>
+        {/if}
+        <Button
+          icon={recording ? 'stop-circle-line' : 'mic-line'}
+          iconOnly
+          size="sm"
+          variant="tertiary-no-outline"
+          disabled={transcribing}
+          aria-label={recording ? m['voice.stop']() : m['voice.start']()}
+          aria-describedby={voice.notice ? `mic-hint-${id}` : undefined}
+          onclick={toggleRecording}
+          class="cl-mic"
+        />
+      </div>
     {/if}
     {#if submitBtn}
       <Button
@@ -260,6 +267,37 @@
 
   :global(.cl-mic:hover) {
     color: var(--text-title-blue-france);
+  }
+
+  .cl-mic-hint {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 0.5rem;
+    width: max-content;
+    max-width: 15rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    background-color: var(--background-action-high-blue-france);
+    color: var(--text-inverted-blue-france);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: left;
+    /* Hidden from sight but not from assistive tech, which reads it through
+       aria-describedby whether or not a pointer ever hovers. */
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.15s,
+      visibility 0.15s;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .cl-mic-wrap:hover .cl-mic-hint,
+  .cl-mic-wrap:focus-within .cl-mic-hint {
+    opacity: 1;
+    visibility: visible;
   }
 
   .cl-recording-badge {
