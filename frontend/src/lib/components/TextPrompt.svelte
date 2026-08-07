@@ -263,7 +263,9 @@
     {#if error}
       <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
     {:else if recording}
-      <p class="fr-message">{m['voice.recording']()}</p>
+      <!-- The red box and the ticking counter say this on screen. The sentence
+           stays for the live region, which is all a screen reader has. -->
+      <p class="fr-message sr-only">{m['voice.recording']()}</p>
     {:else if transcribing}
       <p class="fr-message">{m['voice.transcribing']()}</p>
     {:else if showModel}
