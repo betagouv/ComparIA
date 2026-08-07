@@ -54,6 +54,11 @@ def test_bad_pools_are_refused():
     assert rejects(["a/one", 3])
 
 
+def test_no_endpoint_means_fall_back_to_the_environment():
+    """An instance that never opened the LLM admin can still run the mic."""
+    assert VoiceSettings().endpoint_id is None
+
+
 def test_patch_only_carries_what_was_set():
     patch = VoiceSettingsPatch(enabled=True).model_dump(exclude_unset=True)
     assert patch == {"enabled": True}

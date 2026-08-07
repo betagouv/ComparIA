@@ -18,6 +18,7 @@ import httpx
 
 import backend.arena.transcribe as transcribe
 from backend.config import settings
+from utils.database.models.llms import LLMEndpoint
 from utils.database.models.voice import VoiceSettings
 
 AUDIO = b"fake-webm-bytes"
@@ -30,25 +31,39 @@ class FakeProvider:
         self.text = text
         self.error = error
         self.requests: list[dict] = []
+        self.urls: list[str] = []
+        self.raw: list[bytes] = []
 
     def handler(self, request: httpx.Request) -> httpx.Response:
-        self.requests.append(json.loads(request.content))
+        self.urls.append(str(request.url))
+        self.raw.append(request.content)
+        content_type = request.headers.get("content-type", "")
+        # Multipart is not worth parsing here: the tests that use it check the
+        # url and that the audio went out at all.
+        self.requests.append(
+            json.loads(request.content) if "json" in content_type else {}
+        )
         if self.error:
             raise self.error
         return httpx.Response(200, json={"text": self.text})
 
 
 @contextlib.contextmanager
-def arena(voice, text="bonjour docteur", error=None):
+def arena(voice, text="bonjour docteur", error=None, endpoint=None):
     fake = FakeProvider(text, error)
     saved: list[object] = []
+    originals = {
+        name: getattr(transcribe, name)
+        for name in ("get_voice_settings", "get_voice_endpoint", "save_recording")
+    }
     orig_client = transcribe.httpx.AsyncClient
-    orig_load = transcribe.get_voice_settings
-    orig_save = transcribe.save_recording
     orig_key = settings.OPENROUTER_API_KEY
 
     async def get_voice_settings():
         return voice
+
+    async def get_voice_endpoint(_voice):
+        return endpoint
 
     async def save_recording(recording):
         saved.append(recording)
@@ -58,14 +73,15 @@ def arena(voice, text="bonjour docteur", error=None):
         transport=httpx.MockTransport(fake.handler), **kwargs
     )
     transcribe.get_voice_settings = get_voice_settings
+    transcribe.get_voice_endpoint = get_voice_endpoint
     transcribe.save_recording = save_recording
     settings.OPENROUTER_API_KEY = "test-key"
     try:
         yield fake, saved
     finally:
         transcribe.httpx.AsyncClient = orig_client
-        transcribe.get_voice_settings = orig_load
-        transcribe.save_recording = orig_save
+        for name, value in originals.items():
+            setattr(transcribe, name, value)
         settings.OPENROUTER_API_KEY = orig_key
 
 
@@ -75,8 +91,8 @@ def config(**kwargs):
     return VoiceSettings(id=1, **kwargs)
 
 
-def run(voice, text="bonjour docteur", error=None, locale="fr"):
-    with arena(voice, text, error) as (fake, saved):
+def run(voice, text="bonjour docteur", error=None, locale="fr", endpoint=None):
+    with arena(voice, text, error, endpoint) as (fake, saved):
         try:
             result = asyncio.run(transcribe.run_transcription(AUDIO, 4200, locale))
         except transcribe.TranscriptionError as e:
@@ -141,6 +157,43 @@ def test_model_is_drawn_from_the_whole_pool():
     voice = config(models=["speech/one", "speech/two", "speech/three"])
     picked = {transcribe.pick_model(voice) for _ in range(200)}
     assert picked == set(voice.models)
+
+
+def test_an_endpoint_supplies_the_url_the_key_and_the_shape():
+    """An OpenAI-compatible endpoint gets the file as multipart, not base64."""
+    endpoint = LLMEndpoint(
+        name="Albert",
+        api_type="openai",
+        api_base="https://albert.example.org/v1/",
+        api_key="albert-key",
+    )
+    (text, _), fake, _ = run(config(), endpoint=endpoint)
+
+    assert text == "bonjour docteur"
+    assert fake.urls[0] == "https://albert.example.org/v1/audio/transcriptions"
+    # The audio itself, not a base64 rendering of it.
+    assert AUDIO in fake.raw[0]
+    assert b"speech/one" in fake.raw[0]
+
+
+def test_an_openrouter_endpoint_keeps_the_base64_shape():
+    endpoint = LLMEndpoint(
+        name="OpenRouter", api_type="openrouter", api_key="router-key"
+    )
+    _, fake, _ = run(config(), endpoint=endpoint)
+
+    assert fake.urls[0] == "https://openrouter.ai/api/v1/audio/transcriptions"
+    assert base64.b64decode(fake.requests[0]["input_audio"]["data"]) == AUDIO
+
+
+def test_an_endpoint_that_cannot_transcribe_is_refused():
+    endpoint = LLMEndpoint(
+        name="Hugging Face", api_type="huggingface", api_key="hf-key"
+    )
+    result, fake, _ = run(config(), endpoint=endpoint)
+
+    assert isinstance(result, transcribe.TranscriptionError)
+    assert fake.requests == []
 
 
 def test_no_api_key_makes_no_call():
