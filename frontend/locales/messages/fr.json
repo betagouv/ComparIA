@@ -3190,6 +3190,15 @@
         },
         "title": "Statistiques de la plateforme"
     },
+    "voice": {
+        "denied": "Le micro n'est pas accessible. Autorisez-le dans votre navigateur pour dicter votre message.",
+        "failed": "La transcription a échoué. Réessayez ou saisissez votre message.",
+        "recording": "Enregistrement en cours.",
+        "start": "Dicter le message",
+        "stop": "Arrêter l'enregistrement",
+        "storageNotice": "Votre enregistrement est conservé pour améliorer la transcription.",
+        "transcribing": "Transcription en cours..."
+    },
     "vote": {
         "choices": {
             "negative": {

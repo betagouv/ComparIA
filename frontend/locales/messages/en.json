@@ -2294,6 +2294,15 @@
         },
         "title": "Platform statistics"
     },
+    "voice": {
+        "denied": "The microphone is not available. Allow it in your browser to dictate your message.",
+        "failed": "Transcription failed. Try again or type your message.",
+        "recording": "Recording.",
+        "start": "Dictate the message",
+        "stop": "Stop recording",
+        "storageNotice": "Your recording is kept to improve transcription.",
+        "transcribing": "Transcribing..."
+    },
     "vote": {
         "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {
