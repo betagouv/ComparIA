@@ -329,9 +329,11 @@
     right: 1px;
     bottom: 1px;
     margin: 0;
-    /* Up to the top of the microphone, which sits 0.75rem off the bottom and
-       stands 2rem tall. Short of that and the icon straddles the edge. */
-    height: 2.75rem;
+    /* Over the microphone's glyph, not over its whole button. The button is
+       2rem tall and sits 0.75rem off the bottom, but the icon inside it is
+       1rem, so the last 0.5rem of the button is transparent padding and the
+       bar can stop short of it without clipping anything. */
+    height: 2.25rem;
     max-height: 100%;
     display: flex;
     align-items: flex-end;
