@@ -3228,6 +3228,7 @@
         "start": "Dicter le message",
         "stop": "Arrêter l'enregistrement",
         "storageNotice": "Votre enregistrement est conservé pour améliorer la transcription.",
+        "transcribedBy": "Transcrit par {model}.",
         "transcribing": "Transcription en cours..."
     },
     "vote": {

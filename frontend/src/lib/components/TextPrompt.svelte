@@ -91,6 +91,7 @@
   let recording = $state(false)
   let transcribing = $state(false)
   let seconds = $state(0)
+  let model = $state('')
 
   let recorder: MediaRecorder | null = null
   let timer: ReturnType<typeof setInterval> | null = null
@@ -99,6 +100,10 @@
   // The notice explains what happens to a recording, so it has no business
   // covering the box once one is under way.
   const showHint = $derived(!!voice?.notice && !recording && !transcribing)
+
+  // Stays through the editing, which is when someone wonders who wrote this,
+  // and goes once the box is empty again because the text it named is gone.
+  const showModel = $derived(!!model && !!value && !recording && !transcribing)
 
   const maxSeconds = $derived(voice?.maxSeconds ?? 60)
   const elapsed = $derived(seconds + '/' + maxSeconds + 's')
@@ -111,11 +116,13 @@
   async function transcribe(audio: Blob, durationMs: number) {
     transcribing = true
     try {
-      const text = await voice?.transcribe(audio, durationMs)
-      if (!text) {
+      const result = await voice?.transcribe(audio, durationMs)
+      if (!result?.text) {
         error = m['voice.failed']()
         return
       }
+      const { text } = result
+      model = result.model
       value = value ? `${value.trimEnd()} ${text}` : text
       el?.focus()
       el?.setSelectionRange(value.length, value.length)
@@ -148,6 +155,7 @@
 
     startedAt = Date.now()
     seconds = 0
+    model = ''
     recording = true
     recorder.start()
 
@@ -258,6 +266,8 @@
       <p class="fr-message">{m['voice.recording']()}</p>
     {:else if transcribing}
       <p class="fr-message">{m['voice.transcribing']()}</p>
+    {:else if showModel}
+      <p class="fr-message">{m['voice.transcribedBy']({ model })}</p>
     {/if}
   </div>
 </div>

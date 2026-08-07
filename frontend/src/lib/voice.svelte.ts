@@ -5,6 +5,8 @@ import { getLocale } from '$lib/i18n/runtime'
 
 export type TranscribeResponse = {
   text: string
+  // The model drawn from the pool for this recording, named to the user.
+  model: string
   // Null when the instance keeps nothing, so there is no id to send on.
   recording_id: string | null
 }
@@ -15,7 +17,7 @@ export type VoiceInput = {
   maxSeconds: number
   /** Told to the user while recordings are kept. Empty when they are not. */
   notice: string
-  transcribe: (audio: Blob, durationMs: number) => Promise<string>
+  transcribe: (audio: Blob, durationMs: number) => Promise<{ text: string; model: string }>
 }
 
 /** Whether this browser can record at all. Checked before showing the button:
@@ -61,7 +63,7 @@ export function useVoiceInput(notice: string) {
               headers: {}
             })
             if (result.recording_id) recordingIds.push(result.recording_id)
-            return result.text
+            return { text: result.text, model: result.model }
           }
         }
       : undefined
