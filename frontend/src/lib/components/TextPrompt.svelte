@@ -206,12 +206,13 @@
       <Button
         icon={recording ? 'stop-circle-line' : 'mic-line'}
         iconOnly
-        {size}
-        variant="secondary"
+        size="sm"
+        variant="tertiary-no-outline"
         disabled={transcribing}
         text={recording ? m['voice.stop']() : m['voice.start']()}
+        title={voice.notice || undefined}
         onclick={toggleRecording}
-        class={['bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
+        class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
       />
     {/if}
     {#if submitBtn}
@@ -235,9 +236,6 @@
       <p class="fr-message">{m['voice.transcribing']()}</p>
     {/if}
   </div>
-  {#if voice?.notice}
-    <p class="fr-hint-text">{voice.notice}</p>
-  {/if}
 </div>
 
 <style lang="postcss">
@@ -250,6 +248,18 @@
   .cl-recording {
     --border-plain-grey: var(--red-marianne-425-625);
     background-color: var(--red-marianne-975-75) !important;
+  }
+
+  /* Quieter and smaller than the send button next to it: dictating is an
+     alternative to typing, not the thing the box is for. */
+  :global(.cl-mic) {
+    color: var(--text-mention-grey);
+    padding: 0.25rem !important;
+    min-height: 2rem !important;
+  }
+
+  :global(.cl-mic:hover) {
+    color: var(--text-title-blue-france);
   }
 
   .cl-recording-badge {

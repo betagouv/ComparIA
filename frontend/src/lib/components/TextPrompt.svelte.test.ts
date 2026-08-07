@@ -33,8 +33,8 @@ describe('TextPrompt', () => {
     expect(queryByRole('button', { name: 'Dicter le message' })).toBeNull()
   })
 
-  it('offers a microphone and the storage notice when given one', () => {
-    const { getByRole, getByText } = render(TextPrompt, {
+  it('carries the storage notice on the microphone itself', () => {
+    const { getByRole } = render(TextPrompt, {
       id: 'prompt',
       label: 'Prompt',
       value: '',
@@ -45,18 +45,18 @@ describe('TextPrompt', () => {
       }
     })
 
-    expect(getByRole('button', { name: 'Dicter le message' })).toBeTruthy()
-    expect(getByText('Votre enregistrement est conservé.')).toBeTruthy()
+    const mic = getByRole('button', { name: 'Dicter le message' })
+    expect(mic.getAttribute('title')).toBe('Votre enregistrement est conservé.')
   })
 
-  it('keeps the storage notice off when nothing is kept', () => {
-    const { queryByText } = render(TextPrompt, {
+  it('carries no notice when nothing is kept', () => {
+    const { getByRole } = render(TextPrompt, {
       id: 'prompt',
       label: 'Prompt',
       value: '',
       voice: { maxSeconds: 60, notice: '', transcribe: async () => '' }
     })
 
-    expect(queryByText(/enregistrement/)).toBeNull()
+    expect(getByRole('button', { name: 'Dicter le message' }).getAttribute('title')).toBeNull()
   })
 })
