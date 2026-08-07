@@ -111,14 +111,14 @@ async def run_transcription(
     duration_ms: int,
     locale: str,
     request: "Request | None" = None,
-) -> tuple[str, VoiceRecording | None]:
+) -> tuple[str, str, VoiceRecording | None]:
     """
     Transcribe a recording, and keep it when the instance says to.
 
-    Returns the text and the stored row, or None in place of the row when
-    `store_audio` is off, in which case nothing about this recording is written
-    down: the text goes back to the browser and lives there until the user sends
-    it, indistinguishable from something typed.
+    Returns the text, the model that produced it, and the stored row, or None in
+    place of the row when `store_audio` is off, in which case nothing about this
+    recording is written down: the text goes back to the browser and lives there
+    until the user sends it, indistinguishable from something typed.
     """
     voice = await get_voice_settings()
     if not voice.should_run:
@@ -149,7 +149,7 @@ async def run_transcription(
     )
 
     if not voice.store_audio:
-        return text, None
+        return text, model, None
 
     recording = await save_recording(
         VoiceRecording(
@@ -162,4 +162,4 @@ async def run_transcription(
             latency_ms=latency_ms,
         )
     )
-    return text, recording
+    return text, model, recording

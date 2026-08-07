@@ -26,6 +26,9 @@ RecordingIdsField: list[UUID] = Field(default_factory=list, max_length=20)
 
 class TranscribeResponse(BaseModel):
     text: str
+    # Named to the user under the box. The pool rotates, so whoever is fixing a
+    # bad transcription gets to see which model wrote it.
+    model: str
     # None when the instance keeps nothing, so the browser has no id to send on.
     recording_id: UUID | None = None
 

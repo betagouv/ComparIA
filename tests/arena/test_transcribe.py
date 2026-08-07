@@ -114,8 +114,10 @@ def test_empty_pool_makes_no_call():
 
 
 def test_audio_is_sent_as_webm_with_the_locale():
-    (text, recording), fake, _ = run(config(), locale="da")
+    (text, model, recording), fake, _ = run(config(), locale="da")
     assert text == "bonjour docteur"
+    # Named to the user even when nothing is stored.
+    assert model == "speech/one"
     assert recording is None
 
     sent = fake.requests[0]
@@ -126,13 +128,13 @@ def test_audio_is_sent_as_webm_with_the_locale():
 
 
 def test_nothing_is_stored_when_store_audio_is_off():
-    (_, recording), _, saved = run(config(store_audio=False))
+    (_, _, recording), _, saved = run(config(store_audio=False))
     assert recording is None
     assert saved == []
 
 
 def test_storing_keeps_the_audio_and_which_model_ran():
-    (_, recording), _, saved = run(config(store_audio=True), text="deux mots")
+    (_, _, recording), _, saved = run(config(store_audio=True), text="deux mots")
 
     assert len(saved) == 1
     assert recording is saved[0]
@@ -167,7 +169,7 @@ def test_an_endpoint_supplies_the_url_the_key_and_the_shape():
         api_base="https://albert.example.org/v1/",
         api_key="albert-key",
     )
-    (text, _), fake, _ = run(config(), endpoint=endpoint)
+    (text, _, _), fake, _ = run(config(), endpoint=endpoint)
 
     assert text == "bonjour docteur"
     assert fake.urls[0] == "https://albert.example.org/v1/audio/transcriptions"

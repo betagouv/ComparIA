@@ -254,7 +254,7 @@ async def transcribe_prompt(
         locale = "fr"
 
     try:
-        text, recording = await run_transcription(
+        text, model, recording = await run_transcription(
             content, max(duration_ms, 0), locale, request
         )
     except TranscriptionError:
@@ -263,7 +263,7 @@ async def transcribe_prompt(
         )
 
     return TranscribeResponse(
-        text=text, recording_id=recording.id if recording else None
+        text=text, model=model, recording_id=recording.id if recording else None
     )
 
 
