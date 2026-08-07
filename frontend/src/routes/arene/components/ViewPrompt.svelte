@@ -17,13 +17,17 @@
     onPrompt,
     promptError,
     loading,
-    suggestions
+    suggestions,
+    runAfterAcceptance
   }: {
     onPrompt: (args: APIModeAndPromptData) => void
     promptError?: string
     loading: boolean
     suggestions: SuggestionCategory[]
+    runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
   } = $props()
+
+  let recordingIds = $state<string[]>([])
 
   let promptEl = $state<HTMLTextAreaElement>()
 
@@ -91,7 +95,8 @@
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
       prompt_value: prompt,
-      web_search: webSearch
+      web_search: webSearch,
+      recording_ids: recordingIds
     })
   }
 
@@ -152,6 +157,9 @@
           submitDisabled={disabled}
           hideLabel
           rows={4}
+          mic
+          bind:recordingIds
+          gate={runAfterAcceptance}
           onSubmit={() => onPromptSubmit()}
         />
       </div>

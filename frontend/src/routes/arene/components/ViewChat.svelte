@@ -25,6 +25,7 @@
   })
 
   let prompt = $state('')
+  let recordingIds = $state<string[]>([])
   let voteReminder = $state(false)
   let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
 
@@ -38,9 +39,10 @@
 
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
-      const success = await comparator.ask(prompt)
+      const success = await comparator.ask(prompt, recordingIds)
       if (success) {
         prompt = ''
+        recordingIds = []
       }
     })
   }
@@ -138,6 +140,9 @@
         size="md"
         rows={3}
         maxRows={4}
+        mic
+        bind:recordingIds
+        gate={runAfterAcceptance}
         onSubmit={onPromptSubmit}
         onSubmitBlocked={remindToVote}
         onFocus={() => window.scrollTo(0, document.body.scrollHeight)}

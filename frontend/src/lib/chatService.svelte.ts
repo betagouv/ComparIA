@@ -26,6 +26,8 @@ export interface APIModeAndPromptData {
   mode: Mode
   custom_models_selection: string[]
   web_search: boolean
+  // Recordings whose transcription is still in the prompt box.
+  recording_ids: string[]
 }
 
 export type ModeInfos = {
@@ -346,13 +348,17 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         mode: args.mode,
         custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
         web_search: args.web_search,
+        recording_ids: args.recording_ids,
         cohorts
       })
     },
 
-    async ask(text: string) {
+    async ask(text: string, recording_ids: string[] = []) {
       if (!comparison?.turns.every((turn) => !!turn.choice)) return
-      return await ask(`/arena/add_text/${comparisonId_}`, { message: text })
+      return await ask(`/arena/add_text/${comparisonId_}`, {
+        message: text,
+        recording_ids
+      })
     },
 
     async retry() {
