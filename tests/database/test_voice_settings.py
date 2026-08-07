@@ -10,6 +10,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from pydantic import ValidationError as PydanticValidationError
+
 from utils.database.models.voice import (
     DEFAULT_MODELS,
     VoiceSettings,
@@ -53,18 +55,29 @@ def test_bad_pools_are_refused():
 
 
 def test_patch_only_carries_what_was_set():
-    patch = VoiceSettingsPatch(enabled=True).validated()
+    patch = VoiceSettingsPatch(enabled=True).model_dump(exclude_unset=True)
     assert patch == {"enabled": True}
 
 
 def test_patch_validates_the_pool():
-    assert VoiceSettingsPatch(models=[" x/y "]).validated() == {"models": ["x/y"]}
-    try:
-        VoiceSettingsPatch(models=[]).validated()
-        raised = False
-    except ValueError:
-        raised = True
-    assert raised
+    assert VoiceSettingsPatch(models=[" x/y "]).models == ["x/y"]
+
+
+def test_a_bad_pool_is_refused_as_a_validation_error():
+    """A ValueError raised outside pydantic reaches the client as a 500.
+
+    The admin panel needs the field back with a message, so this has to be a
+    field validator rather than a check run in the route.
+    """
+    for bad in ([], ["a/b", "a/b"], ["a/b", "  "]):
+        try:
+            VoiceSettingsPatch(models=bad)
+            raised = None
+        except PydanticValidationError:
+            raised = "validation"
+        except ValueError:
+            raised = "plain"
+        assert raised == "validation", bad
 
 
 def test_max_seconds_is_bounded():

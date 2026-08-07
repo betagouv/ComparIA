@@ -15,6 +15,7 @@ records a prompt like any other. See docs/adr/0004-voice-input-transcription.md.
 import uuid
 from typing import Annotated
 
+from pydantic import field_validator
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
@@ -137,11 +138,10 @@ class VoiceSettingsPatch(SQLModel):
     max_seconds: int | None = Field(default=None, ge=5, le=MAX_SECONDS_LIMIT)
     retention_days: int | None = Field(default=None, ge=1)
 
-    def validated(self) -> dict:
-        patch = self.model_dump(exclude_unset=True)
-        if patch.get("models") is not None:
-            patch["models"] = validate_models(patch["models"])
-        return patch
+    @field_validator("models", mode="before")
+    @classmethod
+    def check_models(cls, value: object) -> list[str] | None:
+        return None if value is None else validate_models(value)
 
 
 class VoiceRecording(SQLModel, table=True):

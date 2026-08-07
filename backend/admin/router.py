@@ -463,7 +463,7 @@ async def patch_voice_settings(
     body: VoiceSettingsPatch,
     current_user: RequiredAdmin,
 ) -> VoiceSettingsPublic:
-    patch = body.validated()
+    patch = body.model_dump(exclude_unset=True)
     if "api_key" in patch:
         # Blanking the field clears the stored key and falls back to the
         # environment variable, rather than storing an empty string.
