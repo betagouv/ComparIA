@@ -209,7 +209,7 @@
         size="sm"
         variant="tertiary-no-outline"
         disabled={transcribing}
-        text={recording ? m['voice.stop']() : m['voice.start']()}
+        aria-label={recording ? m['voice.stop']() : m['voice.start']()}
         title={voice.notice || undefined}
         onclick={toggleRecording}
         class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
