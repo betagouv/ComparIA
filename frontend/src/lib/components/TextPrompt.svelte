@@ -108,7 +108,7 @@
   const showModel = $derived(!!model && !!value && !recording && !transcribing)
   // The vendor prefix is for the admin who edits the pool. On a chip beside the
   // microphone, "voxtral-mini-transcribe" is the part that says anything.
-  const shortModel = $derived(model.split('/').pop())
+  const shortModel = $derived(model.slice(model.lastIndexOf('/') + 1))
 
   const maxSeconds = $derived(voice?.maxSeconds ?? 60)
   const elapsed = $derived(seconds + '/' + maxSeconds + 's')
