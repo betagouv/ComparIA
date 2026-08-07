@@ -27,14 +27,14 @@ from utils.database.models.voice import (
     VoiceRecording,
     VoiceSettings,
 )
-from utils.database.voice import get_voice_settings, save_recording
+from utils.database.voice import get_voice_endpoint, get_voice_settings, save_recording
 
 if TYPE_CHECKING:
     from fastapi import Request
 
 logger = logging.getLogger("languia")
 
-TRANSCRIPTION_URL: Final[str] = "https://openrouter.ai/api/v1/audio/transcriptions"
+OPENROUTER_API_BASE: Final[str] = "https://openrouter.ai/api/v1"
 # Upstream providers cut a transcription off at 60 seconds of processing, so
 # waiting longer than that only holds a worker open on a request already lost.
 TRANSCRIPTION_TIMEOUT: Final[float] = 60.0
@@ -48,21 +48,54 @@ class TranscriptionError(RuntimeError):
     """Raised when no text came back, whatever the reason."""
 
 
-async def transcribe(audio: bytes, model: str, api_key: str, language: str) -> str:
-    """Send one recording to OpenRouter and return the text it produced."""
+async def transcribe(
+    audio: bytes,
+    model: str,
+    api_key: str,
+    language: str,
+    api_base: str = OPENROUTER_API_BASE,
+    api_type: str = "openrouter",
+) -> str:
+    """Send one recording to a provider and return the text it produced.
+
+    Two shapes, which is what `llm_endpoint.api_type` already distinguishes:
+    OpenRouter takes base64 in a JSON body, an OpenAI-compatible API takes the
+    file as multipart. Anything else has not been tried and is refused rather
+    than guessed at.
+    """
+    if api_type not in ("openrouter", "openai"):
+        raise TranscriptionError(f"Endpoint type '{api_type}' cannot transcribe")
+
+    url = f"{api_base.rstrip('/')}/audio/transcriptions"
+    headers = {"Authorization": f"Bearer {api_key}"}
+
     async with httpx.AsyncClient(timeout=TRANSCRIPTION_TIMEOUT) as client:
-        response = await client.post(
-            TRANSCRIPTION_URL,
-            headers={"Authorization": f"Bearer {api_key}"},
-            json={
-                "model": model,
-                "input_audio": {
-                    "data": base64.b64encode(audio).decode(),
-                    "format": AUDIO_FORMAT,
+        if api_type == "openrouter":
+            response = await client.post(
+                url,
+                headers=headers,
+                json={
+                    "model": model,
+                    "input_audio": {
+                        "data": base64.b64encode(audio).decode(),
+                        "format": AUDIO_FORMAT,
+                    },
+                    "language": language,
                 },
-                "language": language,
-            },
-        )
+            )
+        else:
+            response = await client.post(
+                url,
+                headers=headers,
+                data={"model": model, "language": language},
+                files={
+                    "file": (
+                        f"recording.{AUDIO_FORMAT}",
+                        audio,
+                        AUDIO_CONTENT_TYPE,
+                    )
+                },
+            )
         response.raise_for_status()
         payload = response.json()
 
@@ -91,14 +124,18 @@ async def run_transcription(
     if not voice.should_run:
         raise TranscriptionError("Voice input is disabled")
 
-    api_key = voice.api_key or settings.OPENROUTER_API_KEY
+    endpoint = await get_voice_endpoint(voice)
+    api_key = (endpoint.api_key if endpoint else None) or settings.OPENROUTER_API_KEY
     if not api_key:
         raise TranscriptionError("No API key configured")
+
+    api_base = (endpoint.api_base if endpoint else None) or OPENROUTER_API_BASE
+    api_type = endpoint.api_type if endpoint else "openrouter"
 
     model = pick_model(voice)
     started = time.monotonic()
     try:
-        text = await transcribe(audio, model, api_key, locale)
+        text = await transcribe(audio, model, api_key, locale, api_base, api_type)
     except Exception as e:
         logger.error(f"transcription_failed: {model}: {e}", extra={"request": request})
         if settings.SENTRY_DSN:
