@@ -65,6 +65,11 @@ from utils.database.models.prompt_check import (
     PromptCheckStatus,
     validate_categories,
 )
+from utils.database.models.voice import (
+    VoiceSettings,
+    VoiceSettingsPatch,
+    VoiceSettingsPublic,
+)
 from utils.database.prompt_checks import (
     UNHEALTHY_AFTER_FAILURES,
     get_consecutive_failures,
@@ -74,6 +79,7 @@ from utils.database.prompt_checks import (
     update_prompt_check,
 )
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.database.voice import get_voice_settings, update_voice_settings
 from utils.utils import FormJsonSchema
 
 router = APIRouter(
@@ -432,6 +438,38 @@ def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
         healthy=failures < UNHEALTHY_AFTER_FAILURES,
         warnings_shown=get_warnings_shown(),
     )
+
+
+def _to_voice_settings_public(row: VoiceSettings) -> VoiceSettingsPublic:
+    return VoiceSettingsPublic(
+        enabled=row.enabled,
+        store_audio=row.store_audio,
+        models=row.models,
+        has_api_key=bool(row.api_key or settings.OPENROUTER_API_KEY),
+        max_seconds=row.max_seconds,
+        retention_days=row.retention_days,
+        updated_at=row.updated_at.isoformat(),
+        updated_by=row.updated_by,
+    )
+
+
+@router.get("/voice", response_model=VoiceSettingsPublic)
+async def read_voice_settings() -> VoiceSettingsPublic:
+    return _to_voice_settings_public(await get_voice_settings())
+
+
+@router.patch("/voice", response_model=VoiceSettingsPublic)
+async def patch_voice_settings(
+    body: VoiceSettingsPatch,
+    current_user: RequiredAdmin,
+) -> VoiceSettingsPublic:
+    patch = body.validated()
+    if "api_key" in patch:
+        # Blanking the field clears the stored key and falls back to the
+        # environment variable, rather than storing an empty string.
+        patch["api_key"] = (patch["api_key"] or "").strip() or None
+    row = await update_voice_settings(patch, updated_by=current_user.id)
+    return _to_voice_settings_public(row)
 
 
 @router.get("/prompt-check", response_model=PromptCheckStatus)
