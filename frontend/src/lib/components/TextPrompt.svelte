@@ -95,14 +95,16 @@
 
   let recorder: MediaRecorder | null = null
   let timer: ReturnType<typeof setInterval> | null = null
+  let modelTimer: ReturnType<typeof setTimeout> | null = null
   let startedAt = 0
 
   // The notice explains what happens to a recording, so it has no business
   // covering the box once one is under way.
   const showHint = $derived(!!voice?.notice && !recording && !transcribing)
 
-  // Stays through the editing, which is when someone wonders who wrote this,
-  // and goes once the box is empty again because the text it named is gone.
+  // Long enough to read, short enough that the box goes back to being a box.
+  const MODEL_BAR_MS = 5000
+
   const showModel = $derived(!!model && !!value && !recording && !transcribing)
 
   const maxSeconds = $derived(voice?.maxSeconds ?? 60)
@@ -123,6 +125,8 @@
       }
       const { text } = result
       model = result.model
+      if (modelTimer) clearTimeout(modelTimer)
+      modelTimer = setTimeout(() => (model = ''), MODEL_BAR_MS)
       value = value ? `${value.trimEnd()} ${text}` : text
       el?.focus()
       el?.setSelectionRange(value.length, value.length)
@@ -259,6 +263,16 @@
       />
     {/if}
   </div>
+  {#if showModel}
+    <!-- The box leaves its bottom edge square for this. The bar grows out of
+         that edge, says who wrote the text, and gets out of the way. -->
+    <p
+      class={['cl-model-bar text-sm', size === 'sm' ? 'rounded-b-sm' : 'rounded-b-xl']}
+      aria-live="polite"
+    >
+      {m['voice.transcribedBy']({ model })}
+    </p>
+  {/if}
   <div class="fr-messages-group" id="messages-{id}" aria-live="polite">
     {#if error}
       <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
@@ -268,8 +282,6 @@
       <p class="fr-message sr-only">{m['voice.recording']()}</p>
     {:else if transcribing}
       <p class="fr-message">{m['voice.transcribing']()}</p>
-    {:else if showModel}
-      <p class="fr-message">{m['voice.transcribedBy']({ model })}</p>
     {/if}
   </div>
 </div>
@@ -304,6 +316,29 @@
 
   :global(.cl-mic:hover) {
     color: var(--text-title-blue-france);
+  }
+
+  /* Flush against the box, no gap: it reads as the input's own bottom border
+     grown thick enough to hold a sentence. */
+  .cl-model-bar {
+    margin: 0;
+    padding: 0.25rem 0.75rem;
+    font-weight: 700;
+    color: var(--text-inverted-blue-france);
+    background-color: var(--blue-france-main-525);
+    animation: cl-model-bar-in 0.2s ease-out;
+  }
+
+  @keyframes cl-model-bar-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cl-model-bar {
+      animation: none;
+    }
   }
 
   .cl-recording-badge {
