@@ -1,8 +1,12 @@
 <script lang="ts">
-  import { Button, Input, Textarea, Toggle } from '$components/dsfr'
+  import { Button, Input, Select, Textarea, Toggle } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, ValidationError } from '$lib/fastapi-client'
-  import type { VoiceSettingsPatch, VoiceSettingsPublic } from '$lib/generated/admin'
+  import type {
+    VoiceEndpointChoice,
+    VoiceSettingsPatch,
+    VoiceSettingsPublic
+  } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
@@ -14,7 +18,8 @@
   let storeAudio = $state(false)
   // One model per line, which is how an admin reads a list of ten ids.
   let models = $state('')
-  let apiKey = $state('')
+  let endpointId = $state('')
+  let endpoints = $state<VoiceEndpointChoice[]>([])
   let hasApiKey = $state(false)
   let maxSeconds = $state('60')
   let retentionDays = $state('')
@@ -26,6 +31,8 @@
       enabled = data.enabled
       storeAudio = data.store_audio
       models = data.models.join('\n')
+      endpointId = data.endpoint_id ?? ''
+      endpoints = data.endpoints ?? []
       hasApiKey = data.has_api_key
       maxSeconds = String(data.max_seconds)
       retentionDays = data.retention_days ? String(data.retention_days) : ''
@@ -33,6 +40,18 @@
       loading = false
     }
   }
+
+  // An endpoint with no key cannot transcribe, so the panel says which is which
+  // rather than letting someone pick one and wonder why nothing comes back.
+  const endpointOptions = $derived([
+    { value: '', label: m['admin.voice.endpoint.fromEnv']() },
+    ...endpoints.map((e) => ({
+      value: e.id,
+      label: e.has_api_key
+        ? `${e.name} (${e.api_type})`
+        : m['admin.voice.endpoint.without']({ name: e.name })
+    }))
+  ])
 
   onMount(load)
 
@@ -47,19 +66,19 @@
           .split('\n')
           .map((model) => model.trim())
           .filter(Boolean),
+        // Empty means no endpoint chosen, which falls back to the environment.
+        endpoint_id: endpointId || null,
         max_seconds: Number(maxSeconds),
         retention_days: retentionDays ? Number(retentionDays) : null
       }
-      // Left out unless the admin typed something, so saving the page does not
-      // clear a stored key by sending an empty field back.
-      if (apiKey) patch.api_key = apiKey
 
       const data = await api.request<VoiceSettingsPublic>('/admin/voice', {
         method: 'PATCH',
         body: JSON.stringify(patch)
       })
+      endpointId = data.endpoint_id ?? ''
+      endpoints = data.endpoints ?? []
       hasApiKey = data.has_api_key
-      apiKey = ''
       useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
       // A 422 carries the field message ("At least one model is needed"); the
@@ -119,12 +138,13 @@
         groupClass="max-w-[240px]"
       />
 
-      <Input
-        id="voice-api-key"
-        type="password"
-        label={m['admin.voice.apiKey.label']()}
-        help={hasApiKey ? m['admin.voice.apiKey.set']() : m['admin.voice.apiKey.hint']()}
-        bind:value={apiKey}
+      <Select
+        id="voice-endpoint"
+        label={m['admin.voice.endpoint.label']()}
+        help={hasApiKey ? m['admin.voice.endpoint.hint']() : m['admin.voice.endpoint.noKey']()}
+        bind:selected={endpointId}
+        options={endpointOptions}
+        groupClass="max-w-[360px]"
       />
 
       <Button

@@ -334,7 +334,7 @@ export interface VoiceSettingsPatch {
   enabled?: boolean | null;
   store_audio?: boolean | null;
   models?: string[] | null;
-  api_key?: string | null;
+  endpoint_id?: string | null;
   max_seconds?: number | null;
   retention_days?: number | null;
 }
@@ -342,11 +342,23 @@ export interface VoiceSettingsPublic {
   enabled: boolean;
   store_audio: boolean;
   models: string[];
+  endpoint_id?: string | null;
   has_api_key: boolean;
   max_seconds: number;
   retention_days?: number | null;
   updated_at: string;
   updated_by?: string | null;
+  endpoints?: VoiceEndpointChoice[];
+}
+/**
+ * An endpoint an admin can point voice input at.
+ */
+export interface VoiceEndpointChoice {
+  id: string;
+  name: string;
+  api_type: string;
+  has_api_key: boolean;
+  [k: string]: unknown;
 }
 export interface VoteTagArchiveUpdate {
   archived: boolean;

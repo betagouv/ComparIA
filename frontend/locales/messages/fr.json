@@ -130,14 +130,16 @@
             "voteTags": "Étiquettes de vote"
         },
         "voice": {
-            "apiKey": {
-                "hint": "Laissez vide pour utiliser la variable d'environnement OPENROUTER_API_KEY.",
-                "label": "Clé API OpenRouter",
-                "set": "Une clé est enregistrée. Saisissez-en une nouvelle pour la remplacer."
-            },
             "enabled": {
                 "hint": "Affiche un micro dans le champ de saisie. Les visiteurs dictent leur message au lieu de l'écrire.",
                 "label": "Activer le micro"
+            },
+            "endpoint": {
+                "fromEnv": "Aucun : utiliser la variable d'environnement OPENROUTER_API_KEY",
+                "hint": "Le fournisseur qui transcrit. Les points d'accès se gèrent dans « LLMs ».",
+                "label": "Point d'accès",
+                "noKey": "Aucune clé n'est accessible : la transcription ne peut pas s'exécuter.",
+                "without": "{name} (sans clé)"
             },
             "maxSeconds": {
                 "hint": "L'enregistrement s'arrête tout seul au bout de ce délai.",
