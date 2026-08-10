@@ -5,6 +5,7 @@
   import type { VoiceInput } from '$lib/voice.svelte'
   import type { Attachment } from 'svelte/attachments'
   import { onDestroy } from 'svelte'
+  import { cubicOut } from 'svelte/easing'
   import { Button } from './dsfr'
 
   export type TextAreaProps = {
@@ -110,6 +111,19 @@
   // The vendor prefix is for the admin who edits the pool. On a chip beside the
   // microphone, "voxtral-mini-transcribe" is the part that says anything.
   const shortModel = $derived(model.slice(model.lastIndexOf('/') + 1))
+
+  /** Grows out of the microphone, and shrinks back into it when the name has
+   * been on screen long enough. Written as a transition rather than a keyframe
+   * so that leaving is the same movement as arriving, played backwards. */
+  function outOfMic(_node: Element, { duration = 250 }: { duration?: number } = {}) {
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    return {
+      duration: still ? 0 : duration,
+      easing: cubicOut,
+      css: (t: number) =>
+        `opacity: ${t}; transform: translateX(${(1 - t) * 1.5}rem) scale(${0.8 + t * 0.2})`
+    }
+  }
 
   // The button that started the recording is the thing waiting on the provider,
   // so it spins rather than a line of text appearing under the box.
@@ -257,6 +271,7 @@
       <p
         class={['cl-model-chip bottom-3 text-xs absolute', submitBtn ? 'right-23' : 'right-12']}
         aria-live="polite"
+        transition:outOfMic
       >
         {m['voice.transcribedBy']({ model: shortModel })}
       </p>
@@ -398,22 +413,6 @@
     font-weight: 700;
     color: var(--text-inverted-blue-france);
     background-color: var(--blue-france-main-525);
-    animation: cl-model-chip-out 0.25s ease-out;
-  }
-
-  /* Out of the microphone rather than into place from nowhere: the button is
-     what produced the text, so the name comes from under it. */
-  @keyframes cl-model-chip-out {
-    from {
-      opacity: 0;
-      transform: translateX(1.5rem) scale(0.8);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cl-model-chip {
-      animation: none;
-    }
   }
 
   /* Same height as the buttons it shares the line with, so it sits on their

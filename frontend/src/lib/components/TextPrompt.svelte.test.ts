@@ -107,8 +107,9 @@ describe('TextPrompt', () => {
 
     await waitFor(() => expect(queryByText('Transcrit par one')).not.toBeNull())
 
-    // The name belongs to the text. Clear the box and it has nothing left to name.
+    // The name belongs to the text. Clear the box and it has nothing left to
+    // name, once it has finished shrinking back into the microphone.
     await fireEvent.input(getByTestId('textbox'), { target: { value: '' } })
-    expect(queryByText('Transcrit par one')).toBeNull()
+    await waitFor(() => expect(queryByText('Transcrit par one')).toBeNull())
   })
 })
