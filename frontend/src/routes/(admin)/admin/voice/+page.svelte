@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Input, Select, Textarea, Toggle } from '$components/dsfr'
+  import { Button, Input, Select, Textarea, Toggle, Tooltip } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, ValidationError } from '$lib/fastapi-client'
   import type {
@@ -102,50 +102,85 @@
     <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
     <form onsubmit={save} class="max-w-[480px]">
-      <Toggle id="voice-enabled" label={m['admin.voice.enabled.label']()} bind:value={enabled} />
-      <p class="fr-hint-text mt-0! mb-4!">{m['admin.voice.enabled.hint']()}</p>
+      <div class="mb-4 gap-2 flex items-center">
+        <Toggle
+          id="voice-enabled"
+          label={m['admin.voice.enabled.label']()}
+          bind:value={enabled}
+          groupClass="flex-1"
+          class="mb-0! pr-13!"
+        />
+        <Tooltip id="voice-enabled-help" text={m['admin.voice.enabled.hint']()} />
+      </div>
 
-      <Toggle
-        id="voice-store-audio"
-        label={m['admin.voice.storeAudio.label']()}
-        bind:value={storeAudio}
-      />
-      <p class="fr-hint-text mt-0! mb-4!">{m['admin.voice.storeAudio.hint']()}</p>
+      <div class="mb-4 gap-2 flex items-center">
+        <Toggle
+          id="voice-store-audio"
+          label={m['admin.voice.storeAudio.label']()}
+          bind:value={storeAudio}
+          groupClass="flex-1"
+          class="mb-0! pr-13!"
+        />
+        <Tooltip id="voice-store-audio-help" text={m['admin.voice.storeAudio.hint']()} />
+      </div>
 
-      <Textarea
-        id="voice-models"
-        label={m['admin.voice.models.label']()}
-        help={m['admin.voice.models.hint']()}
-        bind:value={models}
-        rows={6}
-      />
+      <div class="gap-2 flex items-start">
+        <Textarea
+          id="voice-models"
+          label={m['admin.voice.models.label']()}
+          bind:value={models}
+          rows={6}
+          groupClass="flex-1"
+        />
+        <Tooltip id="voice-models-help" text={m['admin.voice.models.hint']()} class="mt-1" />
+      </div>
 
-      <Input
-        id="voice-max-seconds"
-        type="number"
-        label={m['admin.voice.maxSeconds.label']()}
-        help={m['admin.voice.maxSeconds.hint']()}
-        bind:value={maxSeconds}
-        groupClass="max-w-[240px]"
-      />
+      <div class="gap-2 flex items-start">
+        <Input
+          id="voice-max-seconds"
+          type="number"
+          label={m['admin.voice.maxSeconds.label']()}
+          bind:value={maxSeconds}
+          groupClass="w-[240px]"
+        />
+        <Tooltip
+          id="voice-max-seconds-help"
+          text={m['admin.voice.maxSeconds.hint']()}
+          class="mt-1"
+        />
+      </div>
 
-      <Input
-        id="voice-retention-days"
-        type="number"
-        label={m['admin.voice.retentionDays.label']()}
-        help={m['admin.voice.retentionDays.hint']()}
-        bind:value={retentionDays}
-        groupClass="max-w-[240px]"
-      />
+      <div class="gap-2 flex items-start">
+        <Input
+          id="voice-retention-days"
+          type="number"
+          label={m['admin.voice.retentionDays.label']()}
+          bind:value={retentionDays}
+          groupClass="w-[240px]"
+        />
+        <Tooltip
+          id="voice-retention-days-help"
+          text={m['admin.voice.retentionDays.hint']()}
+          class="mt-1"
+        />
+      </div>
 
-      <Select
-        id="voice-endpoint"
-        label={m['admin.voice.endpoint.label']()}
-        help={hasApiKey ? m['admin.voice.endpoint.hint']() : m['admin.voice.endpoint.noKey']()}
-        bind:selected={endpointId}
-        options={endpointOptions}
-        groupClass="max-w-[360px]"
-      />
+      <div class="gap-2 flex items-start">
+        <Select
+          id="voice-endpoint"
+          label={m['admin.voice.endpoint.label']()}
+          bind:selected={endpointId}
+          options={endpointOptions}
+          groupClass="w-[360px]"
+        />
+        <Tooltip id="voice-endpoint-help" text={m['admin.voice.endpoint.hint']()} class="mt-1" />
+      </div>
+
+      {#if !hasApiKey}
+        <!-- Not a hint. Without a key nothing transcribes, so it stays on screen
+             rather than waiting behind a question mark. -->
+        <p class="fr-message fr-message--error mb-4!">{m['admin.voice.endpoint.noKey']()}</p>
+      {/if}
 
       <Button
         type="submit"
