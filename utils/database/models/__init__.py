@@ -48,6 +48,12 @@ from .turn import (
     TurnVoteChoice,
 )
 from .utils import BOT_POS, BotPos
+from .voice import (
+    VoiceRecording,
+    VoiceSettings,
+    VoiceSettingsPatch,
+    VoiceSettingsPublic,
+)
 from .vote_tag import (
     RESERVED_KEYS,
     VOTE_TAG_SIGNS,

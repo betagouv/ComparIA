@@ -17,6 +17,9 @@
     groupClass?: string
     checkLabelClass?: string
     children?: Snippet
+    /** Sits beside the label text. Block toggles only, since on an inline one
+     * the switch is the label itself and a link cannot live inside it. */
+    tooltip?: Snippet
   }
 
   let {
@@ -33,6 +36,7 @@
     groupClass,
     checkLabelClass,
     children,
+    tooltip,
     ...props
   }: ToggleProps & SvelteHTMLElements['label'] = $props()
 </script>
@@ -53,8 +57,11 @@
     aria-describedby="toggle-hint-{id}"
   />
   {#if !inline}
-    <div aria-hidden="true" class={['fr-label w-full', props.class]}>
-      {#if label}{label}{:else}{@render children?.()}{/if}
+    <div class="gap-2 flex w-full items-center">
+      <div aria-hidden="true" class={['fr-label', props.class]}>
+        {#if label}{label}{:else}{@render children?.()}{/if}
+      </div>
+      {@render tooltip?.()}
     </div>
   {/if}
   <label

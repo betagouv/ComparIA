@@ -7,6 +7,7 @@
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
+  import { useVoiceInput } from '$lib/voice.svelte'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import { onMount, tick } from 'svelte'
@@ -17,13 +18,17 @@
     onPrompt,
     promptError,
     loading,
-    suggestions
+    suggestions,
+    runAfterAcceptance
   }: {
     onPrompt: (args: APIModeAndPromptData) => void
     promptError?: string
     loading: boolean
     suggestions: SuggestionCategory[]
+    runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
   } = $props()
+
+  const voice = useVoiceInput(m['voice.storageNotice']())
 
   let promptEl = $state<HTMLTextAreaElement>()
 
@@ -91,7 +96,8 @@
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
       prompt_value: prompt,
-      web_search: webSearch
+      web_search: webSearch,
+      recording_ids: voice.recordingIds
     })
   }
 
@@ -152,6 +158,8 @@
           submitDisabled={disabled}
           hideLabel
           rows={4}
+          voice={voice.input}
+          gate={runAfterAcceptance}
           onSubmit={() => onPromptSubmit()}
         />
       </div>

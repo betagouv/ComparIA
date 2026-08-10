@@ -126,7 +126,38 @@
             "promptChecks": "Vérifications",
             "suggestions": "Suggestions",
             "users": "Utilisateurs",
+            "voice": "Micro",
             "voteTags": "Étiquettes de vote"
+        },
+        "voice": {
+            "enabled": {
+                "hint": "Affiche un micro dans le champ de saisie. Les visiteurs dictent leur message au lieu de l'écrire.",
+                "label": "Activer le micro"
+            },
+            "endpoint": {
+                "fromEnv": "Aucun : utiliser la variable d'environnement OPENROUTER_API_KEY",
+                "hint": "Le fournisseur qui transcrit. Les points d'accès se gèrent dans « LLMs ».",
+                "label": "Point d'accès",
+                "noKey": "Aucune clé n'est accessible : la transcription ne peut pas s'exécuter.",
+                "without": "{name} (sans clé)"
+            },
+            "maxSeconds": {
+                "hint": "L'enregistrement s'arrête tout seul au bout de ce délai.",
+                "label": "Durée maximale (secondes)"
+            },
+            "models": {
+                "hint": "Un identifiant OpenRouter par ligne. Un modèle est tiré au hasard à chaque enregistrement.",
+                "label": "Modèles de transcription"
+            },
+            "retentionDays": {
+                "hint": "Vide : conservation sans limite. Aucune purge automatique n'est encore en place.",
+                "label": "Conservation (jours)"
+            },
+            "storeAudio": {
+                "hint": "Conserve l'audio, la transcription et le modèle qui l'a produite, pour mesurer la qualité des modèles. Désactivé, rien n'est enregistré et la rotation des modèles n'apprend rien : un seul modèle suffit alors. Prévenez les visiteurs dans vos conditions d'utilisation.",
+                "label": "Conserver les enregistrements"
+            },
+            "subtitle": "Le micro proposé dans le champ de saisie de l'arène."
         },
         "voteTags": {
             "active": "Active",
@@ -3189,6 +3220,16 @@
             }
         },
         "title": "Statistiques de la plateforme"
+    },
+    "voice": {
+        "denied": "Le micro n'est pas accessible. Autorisez-le dans votre navigateur pour dicter votre message.",
+        "failed": "La transcription a échoué. Réessayez ou saisissez votre message.",
+        "recording": "Enregistrement en cours.",
+        "start": "Dicter le message",
+        "stop": "Arrêter l'enregistrement",
+        "storageNotice": "Votre enregistrement est conservé pour améliorer la transcription.",
+        "transcribedBy": "Transcrit par {model}",
+        "transcribing": "Transcription en cours..."
     },
     "vote": {
         "choices": {

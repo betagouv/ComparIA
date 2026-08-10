@@ -25,6 +25,9 @@ export interface AuthConfig {
   homepage_url: string | null
   enabled_locales: string[]
   default_locale: string
+  voice_enabled: boolean
+  voice_stores_audio: boolean
+  voice_max_seconds: number
 }
 
 type AuthCtx = {

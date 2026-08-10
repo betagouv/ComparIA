@@ -31,6 +31,7 @@ from utils.database.models.auth import ConsentLog, User  # noqa: E402
 from utils.database.models.comparison import Comparison  # noqa: E402
 from utils.database.models.messages import LLMMessage, UserMessage  # noqa: E402
 from utils.database.models.turn import Turn  # noqa: E402
+from utils.database.models.voice import VoiceSettings  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -161,7 +162,14 @@ def test_public_config_carries_the_deployment_url():
             default_locale="fr",
         )
 
-    with patched(auth_router, get_app_settings=get_app_settings):
+    async def get_voice_settings():
+        return VoiceSettings()
+
+    with patched(
+        auth_router,
+        get_app_settings=get_app_settings,
+        get_voice_settings=get_voice_settings,
+    ):
         with patched(
             auth_router.settings, COMPARIA_APP_URL="https://arene.example.test"
         ):

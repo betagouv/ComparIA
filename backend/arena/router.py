@@ -2,17 +2,26 @@ import logging
 from typing import Annotated, AsyncGenerator
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import StreamingResponse
 
-from backend.arena.captcha import generate_challenge
+from backend.arena.captcha import generate_challenge, verify_altcha_token
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
     issue_warning_token,
     run_prompt_check,
 )
-from backend.arena.models import AddFirstTextBody, AddTextBody
+from backend.arena.models import AddFirstTextBody, AddTextBody, TranscribeResponse
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -40,6 +49,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
+from backend.arena.transcribe import TranscriptionError, run_transcription
 from backend.arena.web_search import search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
@@ -58,7 +68,10 @@ from utils.database.models import (
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
+from utils.database.models.app_settings import SUPPORTED_LOCALES
+from utils.database.models.voice import AUDIO_CONTENT_TYPE, MAX_AUDIO_BYTES
 from utils.database.prompt_checks import save_prompt_check_result
+from utils.database.voice import attach_recordings
 
 logger = logging.getLogger("languia")
 
@@ -183,6 +196,77 @@ async def get_challenge() -> dict:
     return generate_challenge()
 
 
+@router.post("/transcribe", dependencies=[Depends(assert_not_rate_limited)])
+async def transcribe_prompt(
+    user: OptionalUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+    audio: Annotated[UploadFile, File()],
+    altcha_token: Annotated[str, Form()],
+    duration_ms: Annotated[int, Form()],
+    locale: Annotated[str, Form()] = "fr",
+) -> TranscribeResponse:
+    """
+    Transcribe one recording and hand the text back to the browser.
+
+    Nothing is sent to the arena here. The text lands in the prompt box, the
+    user corrects it, and the prompt check runs when they send it, like anything
+    typed. Behind the same terms gate as sending, because this is the moment a
+    voice is captured.
+    """
+    participation_terms_version = await get_current_terms_acceptance_version(
+        user_id=user.id if user else None,
+        anonymous_user_hash=anonymous_user_hash,
+    )
+    if not participation_terms_version:
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Accept the terms in force before participating.",
+        )
+
+    ok, error = verify_altcha_token(altcha_token)
+    if not ok:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Vérification anti-robot échouée : {error}",
+        )
+
+    if not (audio.content_type or "").startswith(AUDIO_CONTENT_TYPE):
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="unsupported_audio_format",
+        )
+
+    # Read one byte past the limit rather than trusting content-length, which
+    # the client sets.
+    content = await audio.read(MAX_AUDIO_BYTES + 1)
+    if len(content) > MAX_AUDIO_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="audio_too_large",
+        )
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="empty_audio"
+        )
+
+    if locale not in SUPPORTED_LOCALES:
+        locale = "fr"
+
+    try:
+        text, model, recording = await run_transcription(
+            content, max(duration_ms, 0), locale, request
+        )
+    except TranscriptionError:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail="transcription_failed"
+        )
+
+    return TranscribeResponse(
+        text=text, model=model, recording_id=recording.id if recording else None
+    )
+
+
 @router.post(
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
@@ -289,6 +373,7 @@ async def add_first_text(
             web_search_results,
             prompt_check_result=check,
         )
+        await attach_recordings(args.recording_ids, turn.id)
         store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
@@ -359,6 +444,7 @@ async def add_text(
             args.message,
             prompt_check_result=check,
         )
+        await attach_recordings(args.recording_ids, turn.id)
         store_comparison_metadata(comparison.id, is_streaming=True)
 
         yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})

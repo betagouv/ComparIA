@@ -20,6 +20,7 @@ from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
 )
+from utils.database.models.voice import VoiceSettings
 
 
 def test_branding_defaults_match_the_accessible_light_and_dark_palette() -> None:
@@ -138,7 +139,11 @@ def test_public_auth_config_includes_branding_fields(
     async def get_settings() -> AppSettings:
         return row
 
+    async def get_voice() -> VoiceSettings:
+        return VoiceSettings()
+
     monkeypatch.setattr(auth_router, "get_app_settings", get_settings)
+    monkeypatch.setattr(auth_router, "get_voice_settings", get_voice)
 
     config = asyncio.run(auth_router.get_config())
 

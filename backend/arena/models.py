@@ -2,6 +2,8 @@
 Data validation models using Pydantic.
 """
 
+from uuid import UUID
+
 from pydantic import BaseModel, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
@@ -16,6 +18,20 @@ from backend.config import (
 # Request/Response models for FastAPI endpoints
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
+# Recordings whose transcription is still in the prompt box. Sent so the stored
+# audio can be pointed at the turn its text ended up in, which is what makes the
+# raw transcription comparable to what the user finally sent.
+RecordingIdsField: list[UUID] = Field(default_factory=list, max_length=20)
+
+
+class TranscribeResponse(BaseModel):
+    text: str
+    # Named to the user under the box. The pool rotates, so whoever is fixing a
+    # bad transcription gets to see which model wrote it.
+    model: str
+    # None when the instance keeps nothing, so the browser has no id to send on.
+    recording_id: UUID | None = None
+
 
 class AddFirstTextBody(BaseModel):
     """Request body for add_first_text endpoint."""
@@ -29,6 +45,7 @@ class AddFirstTextBody(BaseModel):
     web_search: bool = False
     # One-time server proof returned with a warning for this exact prompt.
     warning_token: str | None = None
+    recording_ids: list[UUID] = RecordingIdsField
 
     @field_validator("prompt_value")
     @classmethod
@@ -54,6 +71,7 @@ class AddTextBody(BaseModel):
     message: str = PromptField
     altcha_token: str
     warning_token: str | None = None
+    recording_ids: list[UUID] = RecordingIdsField
 
     @field_validator("message")
     @classmethod

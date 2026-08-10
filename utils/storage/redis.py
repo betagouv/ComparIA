@@ -49,6 +49,7 @@ REDIS_STATISTICS_SUMMARY_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}statistics:summary:{{period}}"
 )
 REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
+REDIS_VOICE_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}voice_settings"
 # Consecutive failures of the prompt check, written by the runner and read by
 # the admin panel. A check that quietly stops working looks exactly like a
 # check that passes everything, so the count has to be visible.

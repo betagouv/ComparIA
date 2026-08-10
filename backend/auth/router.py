@@ -35,6 +35,7 @@ from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models.auth import LegalDocument
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
+from utils.database.voice import get_voice_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
@@ -62,6 +63,11 @@ class AuthConfig(BaseModel):
     has_custom_logo: bool
     enabled_locales: list[str]
     default_locale: str
+    # Voice input. `voice_stores_audio` decides whether the prompt box says the
+    # recording is kept, so it must not be reported unless it is true.
+    voice_enabled: bool
+    voice_stores_audio: bool
+    voice_max_seconds: int
 
 
 class EmailRequestBody(BaseModel):
@@ -136,6 +142,7 @@ async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
 @router.get("/config")
 async def get_config() -> AuthConfig:
     app_settings = await get_app_settings()
+    voice = await get_voice_settings()
     return AuthConfig(
         access_policy=app_settings.auth_access_policy,
         methods=["email_code"],
@@ -151,6 +158,9 @@ async def get_config() -> AuthConfig:
         has_custom_logo=app_settings.logo is not None,
         enabled_locales=app_settings.enabled_locales,
         default_locale=app_settings.default_locale,
+        voice_enabled=voice.should_run,
+        voice_stores_audio=voice.should_run and voice.store_audio,
+        voice_max_seconds=voice.max_seconds,
     )
 
 

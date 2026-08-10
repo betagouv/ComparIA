@@ -2,6 +2,7 @@
   lang="ts"
   generics="Value extends number | string, Option extends { value: Value, label: string }"
 >
+  import type { Snippet } from 'svelte'
   import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements'
 
   type SelectProps = {
@@ -13,6 +14,8 @@
     hideLabel?: boolean
     reserveHintSpace?: boolean
     groupClass?: ClassValue
+    /** Sits beside the label text. Use for a hint too long to leave on screen. */
+    tooltip?: Snippet
   } & HTMLSelectAttributes
 
   let {
@@ -24,11 +27,12 @@
     hideLabel = false,
     reserveHintSpace = false,
     groupClass,
+    tooltip,
     ...props
   }: SelectProps = $props()
 </script>
 
-<div class={['fr-select-group', groupClass]}>
+{#snippet labelEl()}
   <label class={['fr-label', { 'fr-sr-only': hideLabel }]} for={id}>
     {label}
     {#if help}
@@ -37,6 +41,17 @@
       <span class="fr-hint-text" aria-hidden="true">&nbsp;</span>
     {/if}
   </label>
+{/snippet}
+
+<div class={['fr-select-group', groupClass]}>
+  {#if tooltip}
+    <div class="gap-2 flex items-center">
+      {@render labelEl()}
+      {@render tooltip()}
+    </div>
+  {:else}
+    {@render labelEl()}
+  {/if}
 
   <select
     {...props}
