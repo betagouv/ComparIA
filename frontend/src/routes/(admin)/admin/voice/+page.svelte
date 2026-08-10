@@ -102,79 +102,76 @@
     <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
     <form onsubmit={save} class="max-w-[480px]">
-      <div class="mb-4 gap-2 flex items-center">
-        <Toggle
-          id="voice-enabled"
-          label={m['admin.voice.enabled.label']()}
-          bind:value={enabled}
-          groupClass="flex-1"
-          class="mb-0! pr-13!"
-        />
-        <Tooltip id="voice-enabled-help" text={m['admin.voice.enabled.hint']()} />
-      </div>
+      <Toggle
+        id="voice-enabled"
+        label={m['admin.voice.enabled.label']()}
+        bind:value={enabled}
+        inline={false}
+        groupClass="mb-4"
+      >
+        {#snippet tooltip()}
+          <Tooltip id="voice-enabled-help" text={m['admin.voice.enabled.hint']()} />
+        {/snippet}
+      </Toggle>
 
-      <div class="mb-4 gap-2 flex items-center">
-        <Toggle
-          id="voice-store-audio"
-          label={m['admin.voice.storeAudio.label']()}
-          bind:value={storeAudio}
-          groupClass="flex-1"
-          class="mb-0! pr-13!"
-        />
-        <Tooltip id="voice-store-audio-help" text={m['admin.voice.storeAudio.hint']()} />
-      </div>
+      <Toggle
+        id="voice-store-audio"
+        label={m['admin.voice.storeAudio.label']()}
+        bind:value={storeAudio}
+        inline={false}
+        groupClass="mb-4"
+      >
+        {#snippet tooltip()}
+          <Tooltip id="voice-store-audio-help" text={m['admin.voice.storeAudio.hint']()} />
+        {/snippet}
+      </Toggle>
 
-      <div class="gap-2 flex items-start">
-        <Textarea
-          id="voice-models"
-          label={m['admin.voice.models.label']()}
-          bind:value={models}
-          rows={6}
-          groupClass="flex-1"
-        />
-        <Tooltip id="voice-models-help" text={m['admin.voice.models.hint']()} class="mt-1" />
-      </div>
+      <Textarea
+        id="voice-models"
+        label={m['admin.voice.models.label']()}
+        bind:value={models}
+        rows={6}
+      >
+        {#snippet tooltip()}
+          <Tooltip id="voice-models-help" text={m['admin.voice.models.hint']()} />
+        {/snippet}
+      </Textarea>
 
-      <div class="gap-2 flex items-start">
-        <Input
-          id="voice-max-seconds"
-          type="number"
-          label={m['admin.voice.maxSeconds.label']()}
-          bind:value={maxSeconds}
-          groupClass="w-[240px]"
-        />
-        <Tooltip
-          id="voice-max-seconds-help"
-          text={m['admin.voice.maxSeconds.hint']()}
-          class="mt-1"
-        />
-      </div>
+      <Input
+        id="voice-max-seconds"
+        type="number"
+        label={m['admin.voice.maxSeconds.label']()}
+        bind:value={maxSeconds}
+        groupClass="w-[240px]"
+      >
+        {#snippet tooltip()}
+          <Tooltip id="voice-max-seconds-help" text={m['admin.voice.maxSeconds.hint']()} />
+        {/snippet}
+      </Input>
 
-      <div class="gap-2 flex items-start">
-        <Input
-          id="voice-retention-days"
-          type="number"
-          label={m['admin.voice.retentionDays.label']()}
-          bind:value={retentionDays}
-          groupClass="w-[240px]"
-        />
-        <Tooltip
-          id="voice-retention-days-help"
-          text={m['admin.voice.retentionDays.hint']()}
-          class="mt-1"
-        />
-      </div>
+      <Input
+        id="voice-retention-days"
+        type="number"
+        label={m['admin.voice.retentionDays.label']()}
+        bind:value={retentionDays}
+        groupClass="w-[240px]"
+      >
+        {#snippet tooltip()}
+          <Tooltip id="voice-retention-days-help" text={m['admin.voice.retentionDays.hint']()} />
+        {/snippet}
+      </Input>
 
-      <div class="gap-2 flex items-start">
-        <Select
-          id="voice-endpoint"
-          label={m['admin.voice.endpoint.label']()}
-          bind:selected={endpointId}
-          options={endpointOptions}
-          groupClass="w-[360px]"
-        />
-        <Tooltip id="voice-endpoint-help" text={m['admin.voice.endpoint.hint']()} class="mt-1" />
-      </div>
+      <Select
+        id="voice-endpoint"
+        label={m['admin.voice.endpoint.label']()}
+        bind:selected={endpointId}
+        options={endpointOptions}
+        groupClass="w-[360px]"
+      >
+        {#snippet tooltip()}
+          <Tooltip id="voice-endpoint-help" text={m['admin.voice.endpoint.hint']()} />
+        {/snippet}
+      </Select>
 
       {#if !hasApiKey}
         <!-- Not a hint. Without a key nothing transcribes, so it stays on screen
