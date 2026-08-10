@@ -228,7 +228,7 @@
       class={[
         roundedClass,
         'fr-input cg-border bg-white! text-sm! md:text-base md:min-h-10! rounded-b-none! border-solid!',
-        { 'cl-recording': recording }
+        { 'cl-recording': recording, 'cl-reserve-controls': !!voice }
       ]}
       {...nativeTextAreaProps}
       aria-describedby="messages-{id}"
@@ -239,14 +239,21 @@
       onfocus={onFocus}
     ></textarea>
     {#if recording}
-      <p class="cl-recording-badge right-3 top-3 gap-2 text-sm absolute flex items-center">
+      <!-- On the microphone's line rather than over the text. The box is three
+           rows in a conversation, and a counter in the corner lands on a word. -->
+      <p
+        class={[
+          'cl-recording-badge bottom-3 gap-2 text-sm absolute flex items-center',
+          submitBtn ? 'right-23' : 'right-12'
+        ]}
+      >
         <span class="cl-recording-dot"></span>
         <span>{elapsed}</span>
       </p>
     {/if}
     {#if showModel}
-      <!-- Slides out of the microphone, on the microphone's own line, into the
-           empty space to its left. Nothing on the page moves for it. -->
+      <!-- Slides out of the microphone, on the microphone's own line. The strip
+           it sits in is reserved below the text, so it covers nothing. -->
       <p
         class={['cl-model-chip bottom-3 text-xs absolute', submitBtn ? 'right-23' : 'right-12']}
         aria-live="polite"
@@ -314,6 +321,13 @@
 <style lang="postcss">
   .fr-input {
     --border-plain-grey: var(--blue-france-main-525);
+  }
+
+  /* The microphone, the send button, the counter and the model chip all sit on
+     the bottom line of the box. Reserving the strip is what keeps them off the
+     text, and reserving it always means nothing reflows when one appears. */
+  .cl-reserve-controls {
+    padding-bottom: 2.75rem !important;
   }
 
   /* Marianne red, not the DSFR error red: the error state already owns that
@@ -402,7 +416,11 @@
     }
   }
 
+  /* Same height as the buttons it shares the line with, so it sits on their
+     centre rather than on their bottom edge. */
   .cl-recording-badge {
+    margin: 0;
+    height: 2rem;
     color: var(--red-marianne-425-625);
   }
 
