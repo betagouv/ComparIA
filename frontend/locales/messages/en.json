@@ -2301,6 +2301,7 @@
         "start": "Dictate the message",
         "stop": "Stop recording",
         "storageNotice": "Your recording is kept to improve transcription.",
+        "transcribedBy": "Transcribed by {model}",
         "transcribing": "Transcribing..."
     },
     "vote": {
