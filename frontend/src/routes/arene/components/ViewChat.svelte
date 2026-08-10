@@ -18,6 +18,9 @@
 
   const comparator = $derived(getComparison(comparisonId))
 
+  // A comparison that isn't in the store sends us back to the arena. The
+  // redirect only lands on the next tick, so everything below has to survive
+  // a render with no comparison rather than throw on the way out.
   $effect(() => {
     if (!comparator.comparison) {
       goto(resolve('/arene'))
@@ -28,12 +31,12 @@
   let voteReminder = $state(false)
   let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
 
-  const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison.mode)!)
+  const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison?.mode)!)
 
   const canContinue = $derived(
     !comparator.loading &&
       comparator.status == 'complete' &&
-      comparator.comparison.turns.every((turn) => !!turn.choice)
+      !!comparator.comparison?.turns.every((turn) => !!turn.choice)
   )
 
   async function onPromptSubmit() {
@@ -53,7 +56,7 @@
   }
 
   function remindToVote() {
-    const turn = comparator.comparison.turns.findLast((currentTurn) => !currentTurn.choice)
+    const turn = comparator.comparison?.turns.findLast((currentTurn) => !currentTurn.choice)
     if (!turn) return
 
     voteReminder = true
@@ -93,15 +96,15 @@
     aria-live="polite"
     class="flex grow flex-col"
   >
-    {#each comparator.comparison.turns as turn, idx (turn.id)}
+    {#each comparator.comparison?.turns ?? [] as turn, idx (turn.id)}
       <GroupedMessages
         {turn}
         disabled={comparator.status !== 'complete' ||
-          idx !== comparator.comparison.turns.length - 1}
+          idx !== (comparator.comparison?.turns.length ?? 0) - 1}
         error={comparator.error}
         onVote={comparator.vote}
         onRetry={comparator.retry}
-        autoScroll={!comparator.comparison.revealed}
+        autoScroll={!comparator.comparison?.revealed}
       >
         {#if idx === 0}
           <div
@@ -116,7 +119,7 @@
     {/each}
   </div>
 
-  {#if comparator.status === 'revealed' && comparator.comparison.reveal_data}
+  {#if comparator.status === 'revealed' && comparator.comparison?.reveal_data}
     {#key comparisonId}
       <RevealArea data={comparator.comparison.reveal_data} />
     {/key}

@@ -3,7 +3,7 @@
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel, Commons } from '$lib/models'
+  import type { BotModel, Commons, RankClass } from '$lib/models'
   import { ENERGY_CLASS_COLORS, getModelCards, MODALITIES } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
@@ -93,13 +93,23 @@
     width: 50 + (50 / ENERGY_CLASSES.length) * (i + 1)
   }))
 
-  const rankingRows = [
-    { c: '1', emoji: '🥇' },
-    { c: '2', emoji: '🥈' },
-    { c: '3', emoji: '🥉' },
-    { c: '4', emoji: '4️⃣' },
-    { c: '5', emoji: '5️⃣' }
-  ] as const
+  // One rung per class the leaderboard actually produced — the count comes
+  // from the data, so it changes as models are added and votes come in.
+  const rankingRows = $derived(Object.keys(commons.rankClasses) as RankClass[])
+
+  // The same shades as the table's class chips, in hard-stopped bands rather
+  // than a blend: one band per rung, so the bar and the chips agree on what a
+  // class looks like and both follow the instance's primary colour.
+  const rankRamp = $derived(
+    `linear-gradient(to right,${rankingRows
+      .map(
+        (rankClass, index) =>
+          `var(--brand-rank-${rankClass}) ${(index / rankingRows.length) * 100}% ${
+            ((index + 1) / rankingRows.length) * 100
+          }%`
+      )
+      .join(',')})`
+  )
 </script>
 
 <button class="hidden" data-fr-opened={autoOpen && !!model} aria-controls={modalId}>Hidden</button>
@@ -424,33 +434,51 @@
                           class="bg-very-light-primary py-2 px-4 b-light-primary rounded-sm flex flex-col items-center border"
                         >
                           <div
-                            class="h-4 from-primary mt-4 w-full rounded-full bg-linear-to-r to-[#AA5050]"
+                            class="h-4 mt-4 w-full rounded-full"
+                            style="background: {rankRamp}"
                           ></div>
+                          <!-- Full width and one equal share per rung, with no
+                               gap between them: the dot and the label then sit
+                               on the centre of their own band of the bar. -->
                           <div
-                            class="gap-2 flex w-9/10 justify-between"
+                            class="flex w-full"
                             aria-label={m['models.performance.level']({
                               count: model.data.rankClass,
                               total: rankingRows.length
                             })}
                           >
-                            {#each rankingRows as row (row.c)}
-                              {@const active = row.c === model.data.rankClass}
-                              <div class="gap-2 -mt-9 flex flex-col items-center">
+                            {#each rankingRows as rankClass (rankClass)}
+                              {@const active = rankClass === model.data.rankClass}
+                              {@const span = commons.rankClasses[rankClass]}
+                              <div class="gap-2 px-1 -mt-9 flex flex-1 flex-col items-center">
                                 <Icon
                                   icon="i-ri-triangle-fill"
                                   class={['text-primary -scale-100', { invisible: !active }]}
                                 />
-                                <div class="h-2 w-2 bg-white rounded-full"></div>
+                                <!-- The label colour of the band it sits on, so
+                                     the dot stays visible at the pale end. -->
+                                <div
+                                  class="h-2 w-2 rounded-full"
+                                  style="background: var(--brand-rank-{rankClass}-text)"
+                                ></div>
 
-                                <div class="lh-normal! text-center">
-                                  <div class="text-lg">{row.emoji}</div>
-                                  <div class="text-xs font-bold" class:opacity-50={!active}>
-                                    {m['models.performance.group']({ count: row.c })}<br />
+                                <!-- Eight rungs leave about 38px each on a
+                                     phone, which fits a number and nothing
+                                     else. The full wording returns as soon as
+                                     there is room; the rank of the model the
+                                     modal is about is spelled out in the card
+                                     above either way. -->
+                                <div class="lh-normal! text-center" class:opacity-50={!active}>
+                                  <div class="text-xs font-bold">
+                                    <span class="sm:hidden">{rankClass}</span>
+                                    <span class="sm:inline hidden">
+                                      {m['models.performance.group']({ count: rankClass })}
+                                    </span>
                                   </div>
-                                  <div class="text-xxs" class:opacity-50={!active}>
-                                    {m['models.performance.rankFromTo'](
-                                      commons.rankingTiers[row.c]
-                                    )}
+                                  <div class="text-xxs sm:block hidden">
+                                    {span.min === span.max
+                                      ? m['models.performance.rankSingle'](span)
+                                      : m['models.performance.rankFromTo'](span)}
                                   </div>
                                 </div>
                               </div>

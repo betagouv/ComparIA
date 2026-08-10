@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_BRAND_COLORS,
+  RANK_CLASS_COUNT,
   contrastRatio,
   createBrandThemeCss,
   createBrandThemeStyle,
@@ -35,6 +36,19 @@ describe('brand theme', () => {
     expect(dark.primarySoftest).not.toBe(dark.primary)
     expect(contrastRatio(light.secondaryText, '#FFFFFF')).toBeGreaterThanOrEqual(4.5)
     expect(contrastRatio(dark.secondaryText, '#161616')).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it('keeps every ranking shade readable, whatever primary the instance picks', () => {
+    for (const primary of ['#6464F3', '#9898F8', '#000000', '#F5F5F5', '#FF9575', '#008000']) {
+      for (const isDark of [false, true]) {
+        const { rankShades } = createBrandTokens(primary, '#FF9575', isDark)
+
+        expect(rankShades).toHaveLength(RANK_CLASS_COUNT)
+        for (const { background, text } of rankShades) {
+          expect(contrastRatio(background, text)).toBeGreaterThanOrEqual(4.5)
+        }
+      }
+    }
   })
 
   it('emits SSR-safe variables for light, dark, and system themes', () => {
