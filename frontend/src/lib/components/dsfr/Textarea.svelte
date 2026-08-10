@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte'
   import type { ClassValue, HTMLTextareaAttributes } from 'svelte/elements'
 
   let {
@@ -8,6 +9,7 @@
     help,
     error,
     groupClass,
+    tooltip,
     ...props
   }: {
     id: string
@@ -16,6 +18,8 @@
     help?: string
     error?: string
     groupClass?: ClassValue
+    /** Sits beside the label text. Use for a hint too long to leave on screen. */
+    tooltip?: Snippet
   } & HTMLTextareaAttributes = $props()
 
   const describedBy = $derived(
@@ -23,13 +27,24 @@
   )
 </script>
 
-<div class={['fr-input-group', { 'fr-input-group--error': !!error }, groupClass]}>
+{#snippet labelEl()}
   <label class="fr-label" for={id}>
     {label}
     {#if help}
       <span id={`${id}-help`} class="fr-hint-text">{help}</span>
     {/if}
   </label>
+{/snippet}
+
+<div class={['fr-input-group', { 'fr-input-group--error': !!error }, groupClass]}>
+  {#if tooltip}
+    <div class="gap-2 flex items-center">
+      {@render labelEl()}
+      {@render tooltip()}
+    </div>
+  {:else}
+    {@render labelEl()}
+  {/if}
   <textarea
     {...props}
     bind:value
