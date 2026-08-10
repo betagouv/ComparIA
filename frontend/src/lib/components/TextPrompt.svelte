@@ -4,6 +4,7 @@
   import { noop } from '$lib/utils/commons'
   import type { VoiceInput } from '$lib/voice.svelte'
   import type { Attachment } from 'svelte/attachments'
+  import { onDestroy } from 'svelte'
   import { Button } from './dsfr'
 
   export type TextAreaProps = {
@@ -180,6 +181,15 @@
     recording = false
     recorder?.stop()
   }
+
+  // Sending the first prompt swaps this box for the one in the conversation
+  // view, which can happen mid-recording. Without this the interval keeps
+  // ticking and the browser goes on showing that the microphone is live.
+  onDestroy(() => {
+    if (timer) clearInterval(timer)
+    if (modelTimer) clearTimeout(modelTimer)
+    releaseTracks()
+  })
 
   function toggleRecording(e: MouseEvent) {
     // DSFR shows a tooltip on focus as well as hover, and a click leaves the
