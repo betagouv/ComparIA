@@ -111,6 +111,12 @@
   // microphone, "voxtral-mini-transcribe" is the part that says anything.
   const shortModel = $derived(model.slice(model.lastIndexOf('/') + 1))
 
+  // The button that started the recording is the thing waiting on the provider,
+  // so it spins rather than a line of text appearing under the box.
+  const micIcon = $derived(
+    recording ? 'stop-circle-line' : transcribing ? 'refresh-line' : 'mic-line'
+  )
+
   const maxSeconds = $derived(voice?.maxSeconds ?? 60)
   const elapsed = $derived(seconds + '/' + maxSeconds + 's')
 
@@ -250,7 +256,7 @@
     {/if}
     {#if voice}
       <Button
-        icon={recording ? 'stop-circle-line' : 'mic-line'}
+        icon={micIcon}
         iconOnly
         size="sm"
         variant="tertiary-no-outline"
@@ -258,7 +264,11 @@
         aria-label={recording ? m['voice.stop']() : m['voice.start']()}
         aria-describedby={showHint ? `mic-hint-${id}` : undefined}
         onclick={toggleRecording}
-        class={['cl-mic bottom-3 absolute', submitBtn ? 'right-14' : 'right-3']}
+        class={[
+          'cl-mic bottom-3 absolute',
+          submitBtn ? 'right-14' : 'right-3',
+          { 'cl-mic-busy': transcribing }
+        ]}
       />
       {#if showHint}
         <!-- The same markup Tooltip.svelte renders, so this reads like every
@@ -294,7 +304,9 @@
            stays for the live region, which is all a screen reader has. -->
       <p class="fr-message sr-only">{m['voice.recording']()}</p>
     {:else if transcribing}
-      <p class="fr-message">{m['voice.transcribing']()}</p>
+      <!-- Said by the spinning microphone on screen. As a visible line it pushed
+           the page down for as long as the provider took, then let it back up. -->
+      <p class="fr-message sr-only">{m['voice.transcribing']()}</p>
     {/if}
   </div>
 </div>
@@ -329,6 +341,35 @@
 
   :global(.cl-mic:hover) {
     color: var(--text-title-blue-france);
+  }
+
+  /* DSFR paints a disabled button almost white. This one is not dead, it is
+     working, so it keeps the microphone's own colour. */
+  :global(.cl-mic-busy) {
+    color: var(--text-mention-grey) !important;
+  }
+
+  :global(.cl-mic-busy::before) {
+    animation: cl-mic-spin 1s linear infinite;
+  }
+
+  @keyframes cl-mic-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Still says something is happening, without the spin. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.cl-mic-busy::before) {
+      animation: cl-mic-pulse 1.2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes cl-mic-pulse {
+    50% {
+      opacity: 0.2;
+    }
   }
 
   /* Same colour as the send button, so the chip reads as the box's own. */
