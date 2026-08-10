@@ -2432,6 +2432,7 @@
             },
             "rank": {
                 "detail": "/{count} modèles",
+                "single": "#{min}",
                 "title": "Rang classement",
                 "title_short": "Classement",
                 "to": "#{min} à {max}",
@@ -2624,6 +2625,7 @@
             "group": "Groupe {count}",
             "level": "Niveau {count} sur {total}",
             "rankFromTo": "Rang {min} à {max}",
+            "rankSingle": "Rang {min}",
             "title": "Niveau de performance par rapport aux autres modèles",
             "tooltip": "Le niveau de performance est calculé à partir des votes compar:IA avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
         },
@@ -3089,7 +3091,8 @@
                     "n_match": "Total votes",
                     "name": "Modèle",
                     "organisation": "Organisation",
-                    "rank": "Rang",
+                    "rank": "Classe",
+                    "rank_number": "Rang",
                     "release": "Date sortie",
                     "size": "Taille<br>(paramètres)",
                     "trust_range": "Confiance (±)"
@@ -3099,12 +3102,16 @@
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
-                    "rank": "Rang de classement attribué selon le score de satisfaction Bradley-Terry",
+                    "rank": "Classe de modèles que les votes ne permettent pas de départager. Chaque modèle d'une classe est statistiquement indiscernable du premier de sa classe. Les classes sont calculées sur l'ensemble du classement : elles ne changent pas quand vous filtrez ou triez le tableau. La dernière classe regroupe tous les modèles situés en dessous.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
                     "trust_range": "Intervalle indiquant la fiabilité du rang de classement : plus l'intervalle est étroit, plus l'estimation du rang est fiable. Il y a 95% de chances que le vrai rang du modèle soit dans cette plage."
                 }
             },
             "lastUpdate": "Mise à jour le {date}",
+            "showRanks": {
+                "help": "Affiche la position exacte de chaque modèle, de 1 au dernier. Deux rangs voisins ne sont presque jamais départageables : l'écart entre le 4e et le 7e tient le plus souvent au hasard des votes. Les classes disent ce que les données permettent d'affirmer.",
+                "label": "Afficher les rangs"
+            },
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
