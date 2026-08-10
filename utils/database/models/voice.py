@@ -9,7 +9,7 @@ sent. The distance between the last two says how good the model was.
 
 Storage is off by default, and with it off no row is written at all: the
 transcription lives in the browser until the user sends it, and the database
-records a prompt like any other. See docs/adr/0004-voice-input-transcription.md.
+records a prompt like any other.
 """
 
 import uuid
