@@ -1,7 +1,7 @@
 """add_publish_destinations
 
 Revision ID: c9a2f5b7d3e1
-Revises: b3d1c7a4e9f2
+Revises: c24f368ecff0
 Create Date: 2026-08-03 00:00:00.000000
 
 """
@@ -17,7 +17,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "c9a2f5b7d3e1"
-down_revision: Union[str, Sequence[str], None] = "b3d1c7a4e9f2"
+down_revision: Union[str, Sequence[str], None] = "c24f368ecff0"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
