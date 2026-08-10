@@ -2,10 +2,10 @@
   import { goto, invalidateAll } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Badge, Button } from '$components/dsfr'
+  import { Button } from '$components/dsfr'
+  import { FormInput, type FormInputProps } from '$components/form'
   import Form from '$components/form/Form.svelte'
   import { api } from '$lib/fastapi-client'
-  import type { LLMEndpointPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { useForm } from '$lib/stores/form.svelte'
@@ -15,7 +15,7 @@
 
   const id = $derived(page.params.id)
   const method = $derived(id === 'create' ? 'post' : 'put')
-  const hasApiKey = $derived(!!(data.formProps.data as LLMEndpointPublic).has_api_key)
+  const hasApiKey = $derived(!!data.formProps.data.has_api_key)
 
   let confirmingRemoval = $state(false)
   let removing = $state(false)
@@ -38,6 +38,19 @@
     })
   )
 
+  const apiKeyField = $derived.by(() => {
+    const field = form.items.find((item) => item.id === 'api_key')!
+    return (
+      hasApiKey
+        ? {
+            ...field,
+            placeholder: '• '.repeat(20),
+            help: hasApiKey ? m['admin.endpointKey.hint']() : field.help
+          }
+        : field
+    ) as FormInputProps
+  })
+
   async function removeApiKey() {
     removing = true
     try {
@@ -54,19 +67,8 @@
 </script>
 
 <div>
-  <Form {id} label="Endpoint" subLabel={id} {...form} />
-
-  {#if id !== 'create'}
-    <div id="endpoint-api-key-state" class="gap-3 mt-6 flex flex-wrap items-center">
-      <Badge
-        size="sm"
-        variant={hasApiKey ? 'green' : 'orange'}
-        text={hasApiKey ? m['admin.endpointKey.set']() : m['admin.endpointKey.unset']()}
-      />
-      <span class="fr-text--sm text-[--text-mention-grey]">
-        {m['admin.endpointKey.hint']()}
-      </span>
-
+  {#snippet apiKey()}
+    <FormInput {...apiKeyField} type="password" bind:value={form.form['api_key']}>
       {#if hasApiKey}
         {#if confirmingRemoval}
           <Button
@@ -74,10 +76,10 @@
             variant="secondary"
             text={m['admin.endpointKey.removeConfirm']()}
             disabled={removing}
+            class="text-nowrap"
             onclick={removeApiKey}
           />
           <Button
-            variant="tertiary-no-outline"
             text={m['words.back']()}
             disabled={removing}
             onclick={() => (confirmingRemoval = false)}
@@ -85,12 +87,15 @@
         {:else}
           <Button
             id="endpoint-api-key-remove"
-            variant="tertiary-no-outline"
+            icon="delete-bin-line"
             text={m['admin.endpointKey.remove']()}
+            class="text-nowrap"
             onclick={() => (confirmingRemoval = true)}
           />
         {/if}
       {/if}
-    </div>
-  {/if}
+    </FormInput>
+  {/snippet}
+
+  <Form {id} label="Endpoint" subLabel={id} {...form} fieldSnippets={{ api_key: apiKey }} />
 </div>
