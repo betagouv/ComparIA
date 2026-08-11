@@ -4,6 +4,7 @@
   import {
     Badge,
     Button,
+    CheckboxGroup,
     Icon,
     Input,
     Modal,
@@ -29,7 +30,7 @@
 
   let { data }: { data: PageData } = $props()
 
-  type SurveyTrigger = AdminSurveyQuestion['trigger']
+  type SurveyTrigger = AdminSurveyQuestion['triggers'][number]
   type SurveyInputType = AdminSurveyQuestion['input_type']
 
   const auth = getAuthContext()
@@ -51,16 +52,11 @@
   let optimistic = $state<AdminSurveyQuestion[]>()
   let moveSeq = 0
   let announcement = $state('')
-  const questions = $derived(optimistic ?? data.survey.questions)
+  // One table and one order for every question: a question can name both
+  // moments, so it has one rank and each moment shows its own subset of it.
+  const rows = $derived(optimistic ?? data.survey.questions)
 
   const triggers: SurveyTrigger[] = ['signup', 'after_vote']
-  const byTrigger = $derived({
-    signup: questions.filter((question) => question.trigger === 'signup'),
-    after_vote: questions.filter((question) => question.trigger === 'after_vote')
-  })
-  // One table for every question, grouped by the moment it is asked, because
-  // that is the order a reorder works in.
-  const rows = $derived([...byTrigger.signup, ...byTrigger.after_vote])
 
   const cols = [
     { id: 'order', label: m['survey.admin.colOrder']() },
@@ -77,7 +73,8 @@
   let questionToDelete = $state<AdminSurveyQuestion>()
   let deleteConflict = $state(false)
 
-  let formTrigger = $state<SurveyTrigger>('signup')
+  let formTriggers = $state<SurveyTrigger[]>(['signup'])
+  let formRequired = $state(true)
   let formInputType = $state<SurveyInputType>('select')
   let formLabels = $state<Record<string, string>>({})
   let formPublished = $state(false)
@@ -117,9 +114,10 @@
     if (element) window.dsfr(element).modal.conceal()
   }
 
-  function openAdd(trigger: SurveyTrigger) {
+  function openAdd() {
     editing = undefined
-    formTrigger = trigger
+    formTriggers = ['signup']
+    formRequired = true
     formInputType = 'select'
     formLabels = {}
     formPublished = false
@@ -130,7 +128,8 @@
 
   function openEdit(question: AdminSurveyQuestion) {
     editing = question
-    formTrigger = question.trigger
+    formTriggers = [...question.triggers]
+    formRequired = question.required
     formInputType = question.input_type
     formLabels = { ...question.labels }
     formPublished = question.published
@@ -209,6 +208,14 @@
       formError = m['survey.admin.optionsError']()
       return
     }
+    if (!formTriggers.length) {
+      formError = m['survey.admin.triggersError']()
+      return
+    }
+
+    // Meaningless off the signup form, and leaving a stale true behind would
+    // start blocking sign-in the day the question is moved back onto it.
+    const required = formTriggers.includes('signup') && formRequired
 
     const target = editing
     const done = await run(
@@ -217,6 +224,8 @@
           ? api.request(`/admin/survey/${target.id}`, {
               method: 'PUT',
               body: JSON.stringify({
+                triggers: formTriggers,
+                required,
                 labels,
                 options,
                 published: formPublished
@@ -225,7 +234,8 @@
           : api.request('/admin/survey', {
               method: 'POST',
               body: JSON.stringify({
-                trigger: formTrigger,
+                triggers: formTriggers,
+                required,
                 input_type: formInputType,
                 labels,
                 options,
@@ -237,21 +247,20 @@
     if (done) closeModal('fr-modal-survey-question')
   }
 
-  async function reorder(trigger: SurveyTrigger, from: number, to: number) {
-    const side = byTrigger[trigger]
-    if (from === to || to < 0 || to >= side.length) return
+  async function reorder(from: number, to: number) {
+    if (from === to || to < 0 || to >= rows.length) return
 
-    const reordered = [...side]
+    const reordered = [...rows]
     reordered.splice(to, 0, ...reordered.splice(from, 1))
     // A row that moves under the pointer needs saying out loud for anyone
     // driving this from the keyboard.
     announcement = m['survey.admin.moved']({
-      label: displayLabel(side[from]),
+      label: displayLabel(rows[from]),
       position: to + 1,
-      total: side.length
+      total: rows.length
     })
     // No 'busy' here: the point is that the next move lands straight away.
-    optimistic = [...reordered, ...questions.filter((question) => question.trigger !== trigger)]
+    optimistic = reordered
     // Moving again before the last request answers would otherwise let the
     // older one drop the newer order on the floor.
     const seq = ++moveSeq
@@ -259,7 +268,7 @@
     try {
       await api.request('/admin/survey/order', {
         method: 'PUT',
-        body: JSON.stringify({ trigger, ids: reordered.map((question) => question.id) })
+        body: JSON.stringify({ ids: reordered.map((question) => question.id) })
       })
     } catch (error) {
       useToast((error as ApiError).message, 6000, 'error')
@@ -268,43 +277,34 @@
     if (seq === moveSeq) optimistic = undefined
   }
 
-  // Rank within its own trigger, which is what a reorder works on: the table
-  // lists both triggers, but a question only ever moves among its siblings.
-  function localIndex(question: AdminSurveyQuestion) {
-    return byTrigger[question.trigger].findIndex((other) => other.id === question.id)
-  }
-
   function move(question: AdminSurveyQuestion, direction: 'up' | 'down') {
-    const from = localIndex(question)
-    return reorder(question.trigger, from, direction === 'up' ? from - 1 : from + 1)
+    const from = rows.findIndex((other) => other.id === question.id)
+    return reorder(from, direction === 'up' ? from - 1 : from + 1)
   }
 
   // Dragging is the shortcut; the up and down buttons stay because a drag is
   // not reachable from a keyboard.
-  let dragging = $state<{ trigger: SurveyTrigger; index: number }>()
-  let dropTarget = $state<{ trigger: SurveyTrigger; index: number }>()
+  let dragging = $state<number>()
+  let dropTarget = $state<number>()
 
-  function onDragStart(event: DragEvent, trigger: SurveyTrigger, index: number) {
-    dragging = { trigger, index }
+  function onDragStart(event: DragEvent, index: number) {
+    dragging = index
     event.dataTransfer?.setData('text/plain', String(index))
     if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
   }
 
-  function onDragOver(event: DragEvent, trigger: SurveyTrigger, index: number) {
-    // A question only ever moves within its own trigger, so a drag across the
-    // two tables is refused rather than silently changing when it is asked.
-    if (dragging?.trigger !== trigger) return
+  function onDragOver(event: DragEvent, index: number) {
+    if (dragging === undefined) return
     event.preventDefault()
-    dropTarget = { trigger, index }
+    dropTarget = index
   }
 
-  function onDrop(event: DragEvent, trigger: SurveyTrigger, index: number) {
+  function onDrop(event: DragEvent, index: number) {
     event.preventDefault()
     const source = dragging
     dragging = undefined
     dropTarget = undefined
-    if (source?.trigger !== trigger) return
-    reorder(trigger, source.index, index)
+    if (source !== undefined) reorder(source, index)
   }
 
   const setArchived = (question: AdminSurveyQuestion, archived: boolean) =>
@@ -318,7 +318,7 @@
     )
 
   // The row-level toggle is a plain button rather than a bound DSFR `Toggle`:
-  // `questions` is a `$derived` array, so there is nothing safe to two-way
+  // `rows` is a `$derived` array, so there is nothing safe to two-way
   // bind the switch to, and every flip has to round-trip through the server
   // anyway since `published` only travels on the full `PUT`. The options sent
   // back are the row's current ones, unchanged, so this never touches labels
@@ -334,6 +334,8 @@
         api.request(`/admin/survey/${question.id}`, {
           method: 'PUT',
           body: JSON.stringify({
+            triggers: question.triggers,
+            required: question.required,
             labels: question.labels,
             options,
             published: !question.published
@@ -401,18 +403,18 @@
     {rows}
     animateRows
     rowAttributes={(row) => {
-      const index = localIndex(row)
+      const index = rows.findIndex((other) => other.id === row.id)
       return {
         draggable: true,
         class:
-          dropTarget?.trigger === row.trigger && dropTarget.index === index
+          dropTarget === index
             ? 'bg-very-light-primary'
-            : dragging?.trigger === row.trigger && dragging.index === index
+            : dragging === index
               ? 'opacity-50'
               : undefined,
-        ondragstart: (event: DragEvent) => onDragStart(event, row.trigger, index),
-        ondragover: (event: DragEvent) => onDragOver(event, row.trigger, index),
-        ondrop: (event: DragEvent) => onDrop(event, row.trigger, index),
+        ondragstart: (event: DragEvent) => onDragStart(event, index),
+        ondragover: (event: DragEvent) => onDragOver(event, index),
+        ondrop: (event: DragEvent) => onDrop(event, index),
         ondragend: () => {
           dragging = undefined
           dropTarget = undefined
@@ -427,7 +429,7 @@
         class="md:ms-auto"
         aria-controls="fr-modal-survey-question"
         data-fr-opened="false"
-        onclick={() => openAdd('signup')}
+        onclick={openAdd}
       />
     {/snippet}
 
@@ -442,7 +444,14 @@
           </span>
         </span>
       {:else if col.id === 'trigger'}
-        <span class="fr-text--sm">{m[`survey.admin.${row.trigger}`]()}</span>
+        <span class="gap-1 flex flex-wrap">
+          {#each row.triggers as trigger (trigger)}
+            <Badge size="sm" text={m[`survey.admin.${trigger}`]()} variant="blue-ecume" />
+          {/each}
+          {#if row.triggers.includes('signup') && row.required}
+            <Badge size="sm" text={m['survey.admin.required']()} variant="brown" />
+          {/if}
+        </span>
       {:else if col.id === 'respondents'}
         <span class="fr-text--sm text-grey">{row.respondent_count}</span>
       {:else if col.id === 'status'}
@@ -471,7 +480,7 @@
             iconOnly
             text={m['survey.admin.moveUp']()}
             title={m['survey.admin.moveUp']()}
-            disabled={busy || localIndex(row) === 0}
+            disabled={busy || rows[0]?.id === row.id}
             onclick={() => move(row, 'up')}
           />
           <Button
@@ -481,7 +490,7 @@
             iconOnly
             text={m['survey.admin.moveDown']()}
             title={m['survey.admin.moveDown']()}
-            disabled={busy || localIndex(row) === byTrigger[row.trigger].length - 1}
+            disabled={busy || rows[rows.length - 1]?.id === row.id}
             onclick={() => move(row, 'down')}
           />
         </span>
@@ -556,7 +565,7 @@
     </p>
 
     <div class="mt-6 gap-6 lg:grid-cols-2 grid grid-cols-1">
-      {#each questions.filter((question) => !question.archived) as question (question.id)}
+      {#each rows.filter((question) => !question.archived) as question (question.id)}
         <SurveyAnswersChart {question} {defaultLocale} title={displayLabel(question)} />
       {/each}
     </div>
@@ -574,13 +583,35 @@
   </h2>
 
   <form onsubmit={submit}>
+    <!-- Editable even on an existing question: moving it to another moment,
+         or adding one, changes nothing about the answers already given.
+         input_type would, so it stays frozen after creation. -->
+    <CheckboxGroup
+      id="survey-question-triggers"
+      bind:value={formTriggers}
+      legend={m['survey.admin.triggersLabel']()}
+      options={triggers.map((value) => ({ value, label: m[`survey.admin.${value}`]() }))}
+    />
+
+    {#if formTriggers.includes('signup')}
+      <div class="mb-4 gap-1 flex items-start">
+        <Toggle
+          id="survey-question-required"
+          bind:value={formRequired}
+          label={m['survey.admin.required']()}
+        />
+        <Tooltip
+          id="survey-required-help"
+          size="sm"
+          class="mt-1"
+          label={m['survey.admin.required']()}
+        >
+          {m['survey.admin.requiredHelp']()}
+        </Tooltip>
+      </div>
+    {/if}
+
     {#if !editing}
-      <Select
-        id="survey-question-trigger"
-        bind:selected={formTrigger}
-        label={m['survey.admin.triggerLabel']()}
-        options={triggers.map((value) => ({ value, label: m[`survey.admin.${value}`]() }))}
-      />
       <Select
         id="survey-question-input-type"
         bind:selected={formInputType}
@@ -591,9 +622,7 @@
         ]}
       />
     {:else}
-      <p class="fr-text--sm text-grey">
-        {m[`survey.admin.${editing.trigger}`]()} · {inputTypeLabel(editing)}
-      </p>
+      <p class="fr-text--sm text-grey">{inputTypeLabel(editing)}</p>
     {/if}
 
     {#each orderedLocales as locale (locale.code)}

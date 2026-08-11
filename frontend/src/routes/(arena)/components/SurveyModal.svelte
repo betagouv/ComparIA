@@ -15,14 +15,22 @@
   // Decided once, when the popup mounts: whether there is anything to ask and
   // whether this visitor has already been offered the popup this session.
   const show = questions.length > 0 && !hasShownSurveyThisSession()
-  if (show) markSurveyShownThisSession()
+
+  // Long enough for the visitor to read the reveal they just asked for before
+  // a popup lands on it, short enough that they are still on the page.
+  const OPEN_DELAY_MS = 4000
 
   // The DSFR modal script discloses on a change of data-fr-opened, not on its
   // initial value, so the attribute has to start false and flip once DSFR has
   // registered the button.
   let opened = $state(false)
   $effect(() => {
-    const timer = setTimeout(() => (opened = show), 100)
+    const timer = setTimeout(() => {
+      // Marked here rather than on mount: a visitor who leaves during the
+      // delay never saw the popup, so it should still be waiting for them.
+      if (show) markSurveyShownThisSession()
+      opened = show
+    }, OPEN_DELAY_MS)
     return () => clearTimeout(timer)
   })
 
