@@ -5,7 +5,7 @@
   export type SurveyQuestion = {
     id: string
     key: string
-    trigger: string
+    required: boolean
     input_type: 'select' | 'checkbox_group'
     label: string
     revision: number
@@ -16,15 +16,22 @@
     question,
     value = [],
     placeholder = '',
+    optionalSuffix = '',
     disabled = false,
     onchange
   }: {
     question: SurveyQuestion
     value?: string[]
     placeholder?: string
+    // Appended to the label of a question that may be left blank. Empty
+    // where every question is optional anyway, like the after-vote popup:
+    // saying so on each one there says nothing.
+    optionalSuffix?: string
     disabled?: boolean
     onchange: (option_keys: string[]) => void
   } = $props()
+
+  const label = $derived(question.required ? question.label : question.label + optionalSuffix)
 
   // Local, uncontrolled after mount: the DSFR inputs need a real bindable
   // variable, not a read of the `value` prop, so the initial answer seeds it
@@ -57,7 +64,7 @@
     id="survey-question-{question.id}"
     bind:selected={selectedKey}
     options={selectOptions}
-    label={question.label}
+    {label}
     onchange={onSelectChange}
     {disabled}
     class="mb-4!"
@@ -67,7 +74,7 @@
     id="survey-question-{question.id}"
     bind:value={selectedKeys}
     options={checkboxOptions}
-    legend={question.label}
+    legend={label}
     {disabled}
     class="mb-4!"
   />

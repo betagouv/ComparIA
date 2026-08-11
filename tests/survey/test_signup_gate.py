@@ -26,10 +26,11 @@ import backend.survey.services as services  # noqa: E402
 from utils.database.models.survey import SurveyQuestion  # noqa: E402
 
 
-def _question(trigger="signup", archived_at=None):
+def _question(triggers=("signup",), required=True, archived_at=None):
     return SurveyQuestion(
         key="profession",
-        trigger=trigger,
+        triggers=list(triggers),
+        required=required,
         input_type="select",
         labels={"fr": "Votre profession ?"},
         options=[
@@ -82,7 +83,33 @@ def test_after_vote_questions_do_not_gate_the_login():
             user_id=None, anonymous_user_hash="hash"
         )
 
-    assert _with_questions([_question(trigger="after_vote")], call) is True
+    assert _with_questions([_question(triggers=("after_vote",))], call) is True
+
+
+def test_an_optional_signup_question_does_not_gate_the_login():
+    """The whole point of the flag: the question is on the form and can be
+    left blank, so adding one later locks nobody out."""
+
+    async def call():
+        return await services.signup_questions_answered(
+            user_id=None, anonymous_user_hash="hash"
+        )
+
+    assert _with_questions([_question(required=False)], call) is True
+
+
+def test_a_question_asked_at_both_moments_still_gates_the_login():
+    """Naming the after-vote moment as well must not quietly turn a required
+    signup question into an optional one."""
+
+    async def call():
+        return await services.signup_questions_answered(
+            user_id=None, anonymous_user_hash=None
+        )
+
+    assert (
+        _with_questions([_question(triggers=("signup", "after_vote"))], call) is False
+    )
 
 
 def test_a_caller_with_no_identity_is_refused_rather_than_raising():
@@ -117,6 +144,8 @@ if __name__ == "__main__":
     test_an_instance_with_no_questions_never_touches_the_database()
     test_archived_questions_do_not_gate_anyone()
     test_after_vote_questions_do_not_gate_the_login()
+    test_an_optional_signup_question_does_not_gate_the_login()
+    test_a_question_asked_at_both_moments_still_gates_the_login()
     test_a_caller_with_no_identity_is_refused_rather_than_raising()
     test_the_identity_check_still_rejects_two_identities()
     print("ok")
