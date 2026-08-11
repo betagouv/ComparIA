@@ -14,7 +14,7 @@
   const endpoints = $derived(
     data.endpoints.map((endpoint) => ({
       ...endpoint,
-      configured: !!endpoint.api_key,
+      configured: !!endpoint.has_api_key,
       llms_count: data.llms.filter((llm) => llm.endpoint_id === endpoint.id!).length,
       updated_at: new Date(endpoint.updated_at!),
       created_at: new Date(endpoint.created_at!),

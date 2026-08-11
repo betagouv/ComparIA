@@ -13,6 +13,8 @@ from utils.database.models.llms import (
 )
 
 if TYPE_CHECKING:
+    from uuid import UUID
+
     from sqlmodel.ext.asyncio.session import AsyncSession
 
 logger = logging.getLogger("comparia.db")
@@ -66,7 +68,34 @@ async def upsert_llm_lab(
 async def upsert_llm_endpoint(
     endpoint: LLMEndpointUpsert, session: "AsyncSession", commit: bool = True
 ) -> LLMEndpoint:
+    """Upsert an endpoint, leaving its key alone unless a new one is given.
+
+    The admin panel is no longer told the key, so a form round trip carries an
+    empty one. Writing that through would silently disable every LLM on the
+    endpoint. Clearing a key is `clear_llm_endpoint_api_key`, on purpose.
+    """
+    if not endpoint.api_key and endpoint.id:
+        stored = await session.get(LLMEndpoint, endpoint.id)
+        if stored:
+            endpoint = endpoint.model_copy(update={"api_key": stored.api_key})
+
     return await _upsert_item(LLMEndpoint, endpoint, session, commit)
+
+
+async def clear_llm_endpoint_api_key(
+    endpoint_id: "UUID", session: "AsyncSession"
+) -> LLMEndpoint | None:
+    """Drop the stored key. Every LLM on this endpoint stops being served."""
+    endpoint = await session.get(LLMEndpoint, endpoint_id)
+    if not endpoint:
+        return None
+
+    endpoint.api_key = None
+    session.add(endpoint)
+    await session.commit()
+    await session.refresh(endpoint)
+    logger.info(f"Cleared api_key of LLMEndpoint '{endpoint_id}'")
+    return endpoint
 
 
 async def upsert_llm_data(

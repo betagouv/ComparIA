@@ -3,6 +3,7 @@
   import { m } from '$lib/i18n/messages'
   import { toEntries } from '$lib/utils/commons'
   import type { AnyFormItemProps } from '$lib/utils/form'
+  import type { Snippet } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
   import AnyFormItem from './AnyFormItem.svelte'
 
@@ -13,6 +14,8 @@
     items,
     form,
     errors = $bindable({}),
+    fieldSnippets,
+    children,
     onSubmit,
     ...props
   }: Omit<SvelteHTMLElements['form'], 'method'> & {
@@ -21,6 +24,7 @@
     items: AnyFormItemProps[]
     form: Record<string, any>
     errors?: Record<string, string>
+    fieldSnippets?: Record<string, Snippet>
     onSubmit: () => void
   } = $props()
 
@@ -42,7 +46,11 @@
   </h2>
 
   {#each items as item (item.id)}
-    <AnyFormItem {...item} bind:value={form[item.id]!} {errors} />
+    {#if fieldSnippets?.[item.id]}
+      {@render fieldSnippets[item.id]()}
+    {:else}
+      <AnyFormItem {...item} bind:value={form[item.id]!} {errors} />
+    {/if}
   {/each}
 
   {#if anyError.length}
