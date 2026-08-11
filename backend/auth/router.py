@@ -16,7 +16,6 @@ from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
     _hash,
     accept_invite,
-    account_exists,
     erase_user_account,
     get_anonymous_consent_status,
     get_consent_status,
@@ -227,12 +226,12 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     # would come to mean 'professionals, plus everyone who posted straight to
     # the API', which is not a column anyone can analyse.
     #
-    # They gate the creation of an account, not the return of someone who
-    # already has one. Otherwise adding a question locks every existing user
-    # out of the profile page that is the only place they could answer it,
-    # and the answers of everyone who signed up before it existed are
-    # unreachable from the anonymous session they are logging in from.
-    if not await account_exists(body.email) and not await signup_questions_answered(
+    # Asked of every address alike, and only ever about the session in front
+    # of us. Skipping the check for an address that already has an account
+    # would answer 'does this email have an account here' to anyone who asks,
+    # and it would buy nothing: the login form puts these questions to
+    # returning users as well, so nobody is held anywhere they cannot answer.
+    if not await signup_questions_answered(
         user_id=None, anonymous_user_hash=anonymous_user_hash
     ):
         raise HTTPException(

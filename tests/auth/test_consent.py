@@ -151,12 +151,7 @@ def routed(**overrides):
         # questions is the default, and that is what this stands in for.
         return True
 
-    async def account_exists(_email):
-        # A first-time visitor, which is the case the gates are written for.
-        return False
-
     overrides.setdefault("signup_questions_answered", signup_questions_answered)
-    overrides.setdefault("account_exists", account_exists)
 
     with patched(
         auth_router,
@@ -441,41 +436,36 @@ def test_login_code_requires_the_signup_questions():
     assert response.status_code == 428
 
 
-def test_signup_questions_do_not_gate_an_account_that_already_exists():
+def test_the_signup_gate_never_looks_at_the_address():
     """
-    The questions gate the creation of an account, not the return of someone
-    who already has one. An admin adding a question must not lock existing
-    users out of the profile page that is the only place they could answer it.
+    The gate asks about the session in front of it, never about the email. A
+    refusal that depended on the address would tell anyone who asked whether
+    it already has an account here.
     """
+    seen = []
 
-    async def unanswered(**_kwargs):
-        raise AssertionError("the gate ran for an account that already exists")
+    async def unanswered(**kwargs):
+        seen.append(kwargs)
+        return False
 
     async def granted(**_kwargs):
         return True
 
-    async def known_account(_email):
-        return True
-
-    # Only reached once the gates let the request through, which is the point
-    # of the test: without these it would fail on the database instead.
-    async def request_login_code(_email):
-        return "123456"
-
-    async def send_login_code(_email, _code):
-        pass
-
     with routed(
-        signup_questions_answered=unanswered,
-        has_current_terms_acceptance=granted,
-        account_exists=known_account,
-        request_login_code=request_login_code,
-        send_login_code=send_login_code,
+        signup_questions_answered=unanswered, has_current_terms_acceptance=granted
     ) as test_client:
-        response = test_client.post(
-            "/auth/email/request", json={"email": "a@b.fr", "altcha_payload": "valid"}
-        )
-    assert response.status_code == 204
+        responses = [
+            test_client.post(
+                "/auth/email/request",
+                json={"email": email, "altcha_payload": "valid"},
+            ).status_code
+            for email in ("known@b.fr", "unknown@b.fr")
+        ]
+
+    assert responses == [428, 428]
+    # The same call, twice, carrying nothing that could identify the address.
+    assert seen == [seen[0], seen[0]]
+    assert not any("email" in kwargs for kwargs in seen)
 
 
 def test_invite_acceptance_requires_a_current_acceptance():
