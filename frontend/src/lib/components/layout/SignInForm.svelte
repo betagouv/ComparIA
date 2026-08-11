@@ -155,7 +155,14 @@
       })
       step = 'code'
     } catch (err) {
-      error = (err as Error).message
+      // A 428 here means the backend has signup questions this form does not
+      // show, which is what a failed question fetch leaves behind. Without
+      // this the two sides contradict each other: no questions on screen, and
+      // a refusal that asks for answers to them.
+      error =
+        (err as ApiError).status === 428 && surveyQuestions.length === 0
+          ? m['survey.signup.reloadNeeded']()
+          : (err as Error).message
     } finally {
       loading = false
     }
@@ -302,6 +309,19 @@
       {/if}
     {/if}
 
+    {#if surveyQuestions.length > 0}
+      <p class="text-xs! mt-4! mb-2! text-grey">
+        {m['survey.signup.intro']()}
+      </p>
+      {#each surveyQuestions as question (question.id)}
+        <SurveyQuestionField
+          {question}
+          disabled={loading || step === 'code'}
+          onchange={(option_keys) => (surveyAnswers[question.id] = option_keys)}
+        />
+      {/each}
+    {/if}
+
     {#if canMergeComparisons}
       <Checkbox
         id="login-merge"
@@ -333,19 +353,6 @@
         disabled={consentLoading}
         onclick={() => readConsent(true)}
       />
-    {/if}
-
-    {#if surveyQuestions.length > 0}
-      <p class="text-xs! mt-4! mb-2! text-grey">
-        {m['survey.signup.intro']()}
-      </p>
-      {#each surveyQuestions as question (question.id)}
-        <SurveyQuestionField
-          {question}
-          disabled={loading || step === 'code'}
-          onchange={(option_keys) => (surveyAnswers[question.id] = option_keys)}
-        />
-      {/each}
     {/if}
 
     {#if step === 'totp'}
