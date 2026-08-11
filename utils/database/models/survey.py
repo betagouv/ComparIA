@@ -303,23 +303,6 @@ class AdminSurveyQuestion(SQLModel):
     respondent_count: int
 
 
-class AdminSurveyCombination(SQLModel):
-    """
-    How many respondents share one exact set of answers. Each question on its
-    own can be vague and the combination still land on a single person: in a
-    400-person medical instance, '55-64 / femme / chirurgienne' is likely one
-    identifiable human, and the published row carries her prompt text next to
-    it. Showing the count on the config page puts that number in front of the
-    admin who is ticking the publish box, which is where the judgement is
-    already being made.
-    """
-
-    answers: dict[str, str]
-    count: int
-
-
 class AdminSurveyResponse(SQLModel):
     questions: list[AdminSurveyQuestion]
-    # Ordered rarest first: the rows worth looking at are the thin ones.
-    combinations: list[AdminSurveyCombination]
     total_respondents: int
