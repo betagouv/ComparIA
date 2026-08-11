@@ -42,6 +42,12 @@ def _hash(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
 
 
+async def account_exists(email: str) -> bool:
+    async with get_session() as session:
+        result = await session.exec(select(User.id).where(User.email == email))
+        return result.first() is not None
+
+
 async def request_login_code(email: str) -> str:
     async with get_session() as session:
         result = await session.exec(select(User).where(User.email == email))
