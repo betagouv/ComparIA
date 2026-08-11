@@ -121,11 +121,13 @@ make models-maintenance    # Run model health checks
 
 ## Datasets
 
-**Prerequisites:** `COMPARIA_DB_URI`, `HF_PUSH_DATASET_KEY`, and `HF_PUSH_DATASET_PATH` environment variables configured.
+**Prerequisites:** `COMPARIA_DB_URI` configured, and at least one enabled
+destination in the admin panel. Add `--dry-run` to build the datasets locally
+and send them nowhere.
 
 ```bash
-make dataset-export        # Export FR datasets to HuggingFace
-make dataset-export-da     # Export DA datasets to HuggingFace
+make dataset-export           # Send the datasets to the configured destinations
+make dataset-export-dry-run   # Build them locally and send them nowhere
 ```
 
 ---

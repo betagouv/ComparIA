@@ -1,17 +1,18 @@
 """
-Export ComparIA datasets from PostgreSQL to HuggingFace Hub.
+Build the ComparIA datasets from PostgreSQL.
 
 This script:
 1. Fetches Comparisons from the database
 2. Validate data with Dataset* models
 3. Filters out archived, errored, not analyzed and specific cohorts (Pix, do-not-track) for the public dataset
 4. Exports to parquet (+ a small sample tsv/jsonl preview)
-5. Uploads to HuggingFace Hub repositories
+
+Sending the result to the configured destinations is publish.py's business.
 
 Usage:
     see `./comparia-cli generate datasets --help`
 
-Required env vars: COMPARIA_DB_URI, HF_PUSH_DATASET_KEY (if not --dry-run)
+Required env vars: COMPARIA_DB_URI
 """
 
 import json
@@ -21,11 +22,9 @@ from pathlib import Path
 from uuid import UUID
 
 from async_lru import alru_cache
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import and_, col, select
+from sqlmodel import col, select
 
 from backend.arena.web_search import merge_web_search_with_content
-from backend.config import settings
 from backend.llms.models import APILLMDataBase
 from backend.vote_tags.services import get_all_vote_tags
 from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION, Comparison
@@ -34,12 +33,14 @@ from utils.database.models.messages import LLMMessage
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 
-from .export import StreamingDatasetExporter, commit_and_push
+from .export import StreamingDatasetExporter
 from .models import (
     DatasetComparisonBaseMetadata,
     DatasetComparisonExtraMetadata,
     Datasets,
 )
+from .publish import LOCAL_NAMES
+from .runs import PUBLISHABLE
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -69,17 +70,7 @@ async def count_dataset_rows(datasets: list[Datasets]):
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
-            {
-                "normal": and_(
-                    col(Comparison.archived) == False,
-                    col(Comparison.llm_analyzed) == True,
-                    col(Comparison.contains_pii) != True,
-                    col(Comparison.contains_spam) != True,
-                    col(Comparison.error) == JSONB.NULL,
-                    col(Comparison.cohorts).in_((None, "")),
-                ),
-                "raw": col(Comparison.id) != None,
-            }
+            {"normal": PUBLISHABLE, "raw": col(Comparison.id) != None}
         )
 
         for dataset, count in counts.items():
@@ -315,23 +306,23 @@ def _reference_rows() -> list[dict]:
 
 
 def _build_exporters(
-    datasets: list[Datasets], repo_prefix: str, export_base_path: Path
+    datasets: list[Datasets], export_base_path: Path
 ) -> dict[Datasets, StreamingDatasetExporter]:
     schema_rows = _reference_rows()
     exporters: dict[Datasets, StreamingDatasetExporter] = {}
     for dataset in datasets:
-        repo_name = repo_prefix + ("-raw" if dataset == "raw" else "")
+        name = LOCAL_NAMES[dataset]
         if dataset == "normal":
             exporters[dataset] = StreamingDatasetExporter(
-                repo_name,
-                export_base_path / repo_name,
+                name,
+                export_base_path / name,
                 keep=lambda row: not row["excluded"],
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
             )
         else:
             exporters[dataset] = StreamingDatasetExporter(
-                repo_name, export_base_path / repo_name, schema_rows=schema_rows
+                name, export_base_path / name, schema_rows=schema_rows
             )
     return exporters
 
@@ -382,21 +373,6 @@ async def stream_to_exporters(
         )
     if total_rows == 0:
         raise Exception("No rows produced, aborting export")
-
-
-def get_repo_infos() -> tuple[str, str]:
-    if not settings.HF_PUSH_DATASET_PATH:
-        raise Exception("Missing env var 'HF_PUSH_DATASET_PATH'")
-
-    try:
-        org, prefix = settings.HF_PUSH_DATASET_PATH.split("/", 1)
-        assert org
-        assert prefix
-        return org, prefix
-    except Exception as exc:
-        raise Exception(
-            "'HF_PUSH_DATASET_PATH' should match the pattern '{organisation}/{repo_prefix}'"
-        )
 
 
 def _write_normal_from_raw_parquet(
@@ -528,56 +504,44 @@ async def write_vote_tags_vocabulary(export_dir: Path) -> None:
 async def process_datasets(
     datasets: list[Datasets],
     export_base_path: Path,
-    dry_run: bool = False,
     use_cache: bool = False,
-):
+) -> dict[Datasets, Path]:
     """
-    Process a single dataset: fetch from DB, transform (anonymize, add metadata),
-    Export to parquet (+ sample tsv/jsonl preview), and push to HF Hub.
+    Fetch from DB, transform (add metadata, drop what analysis held back) and
+    write each dataset to parquet (+ a sample tsv/jsonl preview). Sending the
+    result anywhere is the caller's business.
 
     Args:
-        dataset_names: Names of the datasets to process
+        datasets: Names of the datasets to process
         export_base_path: Local directory for export
-        dry_run: If True, skip HuggingFace upload
         use_cache: If True and raw parquet exists, regenerate normal from it (skips DB)
+
+    Returns the directory each dataset was written to.
     """
     logger.info(f"Starting processing datasets…")
 
-    repo_org, repo_prefix = get_repo_infos()
-    raw_parquet_path = (
-        export_base_path / (repo_prefix + "-raw") / (repo_prefix + "-raw.parquet")
-    )
+    raw_name = LOCAL_NAMES["raw"]
+    raw_parquet_path = export_base_path / raw_name / f"{raw_name}.parquet"
 
     logger.info(f"Folder defined for dataset: {export_base_path}")
 
     if use_cache and "normal" in datasets and raw_parquet_path.exists():
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
-        normal_repo_name = repo_prefix
-        normal_export_dir = export_base_path / normal_repo_name
-        _write_normal_from_raw_parquet(
-            raw_parquet_path, normal_repo_name, normal_export_dir
-        )
+        normal_name = LOCAL_NAMES["normal"]
+        normal_export_dir = export_base_path / normal_name
+        _write_normal_from_raw_parquet(raw_parquet_path, normal_name, normal_export_dir)
         await write_vote_tags_vocabulary(normal_export_dir)
-        if dry_run:
-            logger.info(
-                f"[DRY RUN] Skipping HuggingFace upload for '{normal_repo_name}'"
-            )
-        else:
-            commit_and_push(repo_org, normal_repo_name, normal_export_dir)
-    else:
-        if use_cache:
-            logger.warning(
-                f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export"
-            )
-        logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
-        exporters = _build_exporters(datasets, repo_prefix, export_base_path)
-        await stream_to_exporters(exporters)
+        return {"normal": normal_export_dir}
 
-        for dataset, exporter in exporters.items():
-            repo_name = exporter.dataset_name
-            repo_path = export_base_path / repo_name
-            await write_vote_tags_vocabulary(repo_path)
-            if dry_run:
-                logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{repo_name}'")
-            else:
-                commit_and_push(repo_org, repo_name, repo_path)
+    if use_cache:
+        logger.warning(
+            f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export"
+        )
+    logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
+    exporters = _build_exporters(datasets, export_base_path)
+    await stream_to_exporters(exporters)
+
+    built = {dataset: export_base_path / LOCAL_NAMES[dataset] for dataset in exporters}
+    for export_dir in built.values():
+        await write_vote_tags_vocabulary(export_dir)
+    return built

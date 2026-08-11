@@ -24,7 +24,7 @@ services:
       COMPARIA_REDIS_HOST: redis
       OPENROUTER_API_KEY:
       ORDBOGEN_API_KEY:
-      # Only needed for dataset export (uv run python -m utils.dataset.run):
+      # Read once, by the migration that creates the destination table:
       # HF_PUSH_DATASET_KEY:
       # HF_PUSH_DATASET_PATH: "danish-foundation-models/ai-arenaen"
       ALTCHA_HMAC_KEY:

@@ -27,6 +27,17 @@ from .prompt_check import (
     PromptCheckPublic,
     PromptCheckStatus,
 )
+from .publish import (
+    PUBLISH_DATASETS,
+    AdminPublishDestination,
+    AdminPublishDestinationsResponse,
+    HuggingFaceConfig,
+    PublishDataset,
+    PublishDestination,
+    PublishDestinationUpsert,
+    PublishKind,
+    S3Config,
+)
 from .suggestion import (
     AdminSuggestion,
     AdminSuggestionCategory,

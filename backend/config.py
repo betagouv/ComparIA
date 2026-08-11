@@ -31,8 +31,6 @@ class Settings(BaseSettings):
     ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
-    HF_PUSH_DATASET_KEY: str = ""
-    HF_PUSH_DATASET_PATH: str = ""
 
     # Names the deployment (fr, da, a museum one-off, ...). Used as the Redis key
     # namespace and to seed the default locale. Renamed from DEFAULT_COUNTRY_PORTAL,
@@ -51,6 +49,16 @@ class Settings(BaseSettings):
     REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
+
+    # Dataset publishing. The schedule itself lives in the admin panel; these
+    # are the boundaries the run gets on the machine. Off here, a larger
+    # deployment can run this same image as a dedicated scheduler replica.
+    DATASET_SCHEDULER_ENABLED: bool = True
+    DATASET_RUN_TIMEOUT: int = 6 * 3600
+    DATASET_MEMORY_LIMIT_GB: int = 8
+    # Generous: the export's single read walks the whole comparison table, and
+    # this is here to end a query that has stopped moving, not a slow one.
+    DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000
 
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session

@@ -13,6 +13,13 @@ from utils.database.models.llms import (
     LLMLicense,
 )
 from utils.database.models.prompt_check import PromptCheckPatch, PromptCheckStatus
+from utils.database.models.publish import (
+    AdminPublishDestination,
+    AdminPublishDestinationsResponse,
+    AdminPublishRun,
+    AdminPublishStatus,
+    PublishDestinationUpsert,
+)
 from utils.database.models.suggestion import (
     AdminSuggestion,
     AdminSuggestionCategory,

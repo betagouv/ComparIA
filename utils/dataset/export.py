@@ -1,13 +1,11 @@
 import logging
 import random
-from datetime import datetime
 from pathlib import Path
 from typing import Callable, Iterable
 
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-from huggingface_hub import HfApi
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -142,35 +140,3 @@ class StreamingDatasetExporter:
             f"Export completed for dataset '{self.dataset_name}' "
             f"({self.total_rows:,} rows, {len(self._reservoir):,} sampled)."
         )
-
-
-def commit_and_push(repo_org: str, repo_name: str, repo_path: Path):
-    """
-    Upload exported files to HuggingFace Hub repository.
-    Uses HF upload_folder method with timestamped commit message.
-
-    `delete_patterns=["*.jsonl"]` makes each push self-healing: any full
-    `*.jsonl` already on the remote (we no longer produce one) is removed in the
-    same commit. The `_samples.jsonl` preview is re-uploaded in this same commit,
-    so it is kept (uploaded files take precedence over the delete pattern). On a
-    fresh repo this is simply a no-op.
-    """
-    commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    logger.info(
-        f"Uploading '{repo_path}' to HF '{repo_org}/{repo_name}' with commit message: '{commit_message}'"
-    )
-
-    try:
-        commit_link = HfApi().upload_folder(
-            folder_path=str(repo_path),
-            repo_id=f"{repo_org}/{repo_name}",
-            repo_type="dataset",
-            commit_message=commit_message,
-            delete_patterns=["*.jsonl"],
-        )
-        logger.info(
-            f"Successfully pushed changes for '{repo_path}', commit: {commit_link}"
-        )
-    except Exception as exc:
-        logger.error(f"Failed to push changes for '{repo_path}'.")
-        raise
