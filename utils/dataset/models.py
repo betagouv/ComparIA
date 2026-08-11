@@ -22,6 +22,17 @@ from utils.database.models import (
 
 Datasets = Literal["normal", "raw"]
 
+# Shape of one respondent's published-question answers, keyed by the
+# question's stable `key` (never its editable, per-locale label): a single
+# option key for a 'select' question, a list of option keys for a
+# 'checkbox_group' one. Published in the dataset JSON-encoded under the
+# turn's `respondent` field (see utils/dataset/compute.py,
+# `get_survey_respondent_answers` and `_reference_rows`) rather than as a
+# struct/map parquet column, because the key set is admin-editable and a
+# fixed nested column can't express a set of keys that grows over time.
+RespondentAnswer = str | list[str]
+RespondentAnswers = dict[str, RespondentAnswer]
+
 
 class DatasetTurnMetadata(SQLModel):
     tokens_a: int | None

@@ -50,6 +50,11 @@
       icon: 'i-ri-price-tag-3-line'
     },
     {
+      label: m['admin.nav.survey'](),
+      href: '/admin/survey',
+      icon: 'i-ri-questionnaire-line'
+    },
+    {
       label: m['admin.nav.promptChecks'](),
       href: '/admin/prompt-checks',
       icon: 'i-ri-shield-check-line'

@@ -12,6 +12,7 @@ from sqlmodel import select
 
 from backend.config import settings
 from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
+from backend.survey.services import carry_over_anonymous, delete_for_user
 from utils.database.models.auth import (
     AnonymousConsentLog,
     AuthSession,
@@ -39,6 +40,12 @@ _INVITE_TOKEN_TTL_HOURS = 24
 
 def _hash(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
+
+
+async def account_exists(email: str) -> bool:
+    async with get_session() as session:
+        result = await session.exec(select(User.id).where(User.email == email))
+        return result.first() is not None
 
 
 async def request_login_code(email: str) -> str:
@@ -97,6 +104,7 @@ async def _create_session(
         await _associate_anonymous_acceptance(
             session, user, auth_session, anonymous_user_hash
         )
+        await carry_over_anonymous(session, anonymous_user_hash, user.id)
 
     if visitor_id:
         await session.execute(
@@ -512,6 +520,11 @@ async def erase_user_account(user_id: uuid.UUID) -> None:
                 anonymous_user_hash=None,
             )
         )
+        # Survey answers are the most personal rows an account carries, and
+        # unlike conversations they were never offered for publication under
+        # the research terms, so they are deleted outright rather than
+        # anonymised.
+        await delete_for_user(session, user_id)
         await session.execute(sa_delete(LoginCode).where(LoginCode.user_id == user_id))
         await session.execute(
             sa_delete(InviteToken).where(InviteToken.user_id == user_id)

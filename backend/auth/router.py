@@ -16,6 +16,7 @@ from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
     _hash,
     accept_invite,
+    account_exists,
     erase_user_account,
     get_anonymous_consent_status,
     get_consent_status,
@@ -31,6 +32,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models.auth import LegalDocument
 from utils.database.models.utils import as_naive_utc
@@ -217,6 +219,25 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
         raise HTTPException(
             status_code=status.HTTP_428_PRECONDITION_REQUIRED,
             detail="Accept the terms in force before requesting a login code.",
+        )
+
+    # The signup questions gate the account, so they are checked here rather
+    # than only in the form. On an arena whose point is a verified professional
+    # audience, a gate that the browser enforces alone is no gate: the answers
+    # would come to mean 'professionals, plus everyone who posted straight to
+    # the API', which is not a column anyone can analyse.
+    #
+    # They gate the creation of an account, not the return of someone who
+    # already has one. Otherwise adding a question locks every existing user
+    # out of the profile page that is the only place they could answer it,
+    # and the answers of everyone who signed up before it existed are
+    # unreachable from the anonymous session they are logging in from.
+    if not await account_exists(body.email) and not await signup_questions_answered(
+        user_id=None, anonymous_user_hash=anonymous_user_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Answer the signup questions before requesting a login code.",
         )
 
     code = await request_login_code(body.email)

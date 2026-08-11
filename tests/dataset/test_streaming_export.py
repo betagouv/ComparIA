@@ -247,6 +247,7 @@ def check_temporal_nulls(failures):
                 "archived_reason": None,
                 "archived_at": None,
             },
+            "respondent": '{"age": "25_34"}' if populated else "{}",
         }
 
     with tempfile.TemporaryDirectory() as d:

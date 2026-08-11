@@ -15,6 +15,7 @@ from backend.sentry import init_sentry
 from backend.settings.router import router as settings_router
 from backend.statistics import router as statistics_router
 from backend.suggestions.router import router as suggestions_router
+from backend.survey.router import router as survey_router
 from backend.utils.countries import get_vote_count
 from backend.vote_tags.router import router as vote_tags_router
 from utils.database.settings import get_app_settings
@@ -73,6 +74,7 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 app.include_router(models_router)
 app.include_router(suggestions_router)
 app.include_router(vote_tags_router)
+app.include_router(survey_router)
 app.include_router(arena_router)
 app.include_router(auth_router)
 app.include_router(admin_router)

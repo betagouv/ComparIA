@@ -28,7 +28,12 @@ from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import APILLMDataBase
 from backend.vote_tags.services import get_all_vote_tags
-from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION, Comparison
+from utils.database.models import (
+    LEGACY_PARTICIPATION_TERMS_VERSION,
+    Comparison,
+    SurveyAnswer,
+    SurveyQuestion,
+)
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
 from utils.database.session import get_session
@@ -39,6 +44,7 @@ from .models import (
     DatasetComparisonBaseMetadata,
     DatasetComparisonExtraMetadata,
     Datasets,
+    RespondentAnswers,
 )
 
 logger = logging.getLogger("comparia.dataset")
@@ -62,6 +68,79 @@ async def get_llms_data() -> dict[UUID, APILLMDataBase]:
     except Exception as e:
         logger.error(f"Error loading LLMs data: {e}")
         raise
+
+
+def _respondent_key(
+    user_id: UUID | None, anonymous_user_hash: str | None
+) -> str | None:
+    """
+    Mirrors how 'comparison' itself records a respondent: exactly one of
+    user_id/anonymous_user_hash is set (never both, never neither once a
+    comparison has a visitor attached). None means neither is set, which the
+    caller treats as "no survey answers to attach".
+    """
+    if user_id is not None:
+        return f"user:{user_id}"
+    if anonymous_user_hash:
+        return f"anon:{anonymous_user_hash}"
+    return None
+
+
+@alru_cache
+async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
+    """
+    Every current answer to a published, non-archived survey question,
+    grouped by respondent (see `_respondent_key`). Loaded once (cached) for
+    the whole export rather than queried per turn or per comparison: the
+    export streams millions of turns, but the answer table itself is small
+    (one row per option per question per respondent), so one join beats a
+    query per row.
+
+    Unpublished and archived questions are filtered out here, at the source:
+    their answers never enter the returned mapping and so never reach the
+    dataset, regardless of what a Comparison's row later looks up.
+
+    Answers are stored replace-in-place (see
+    utils/database/models/survey.py), so whatever is in the table now IS the
+    respondent's current answer; there is no history to reconcile. Rows are
+    folded in 'answered_at' order so that if a single-choice question is ever
+    somehow represented by more than one row for the same respondent, the
+    most recently answered one wins deterministically.
+    """
+    async with get_session() as session:
+        rows = (
+            await session.exec(
+                select(
+                    SurveyQuestion.key,
+                    SurveyQuestion.input_type,
+                    SurveyAnswer.user_id,
+                    SurveyAnswer.anonymous_user_hash,
+                    SurveyAnswer.option_key,
+                )
+                .join(
+                    SurveyAnswer,
+                    col(SurveyAnswer.question_id) == col(SurveyQuestion.id),
+                )
+                .where(
+                    col(SurveyQuestion.published) == True,
+                    col(SurveyQuestion.archived_at).is_(None),
+                )
+                .order_by(col(SurveyAnswer.answered_at))
+            )
+        ).all()
+
+    answers: dict[str, RespondentAnswers] = {}
+    for question_key, input_type, user_id, anonymous_user_hash, option_key in rows:
+        respondent = _respondent_key(user_id, anonymous_user_hash)
+        if respondent is None:
+            continue
+        per_respondent = answers.setdefault(respondent, {})
+        if input_type == "checkbox_group":
+            per_respondent.setdefault(question_key, [])  # type: ignore[assignment]
+            per_respondent[question_key].append(option_key)  # type: ignore[union-attr]
+        else:
+            per_respondent[question_key] = option_key
+    return answers
 
 
 async def count_dataset_rows(datasets: list[Datasets]):
@@ -150,6 +229,16 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     llms = await get_llms_data()
     llm_a = llms.get(comp.llm_id_a)  # .get() tolerates empty/unknown llm_id
     llm_b = llms.get(comp.llm_id_b)
+
+    # Published-questions-only socio-demographic answers for whoever had this
+    # conversation. Same dict for every turn of this comparison: the
+    # respondent doesn't change turn to turn, so this is computed once here
+    # rather than once per turn. JSON-encoded (see `_reference_rows`) because
+    # the key set is admin-editable and can't be pinned as a fixed struct.
+    respondent_answers = await get_survey_respondent_answers()
+    respondent_id = _respondent_key(comp.user_id, comp.anonymous_user_hash)
+    respondent = respondent_answers.get(respondent_id, {}) if respondent_id else {}
+    respondent_json = json.dumps(respondent, ensure_ascii=False, sort_keys=True)
 
     # A side's full conversation opens with its system prompt (when present),
     # then alternates user / assistant for every turn.
@@ -249,6 +338,7 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             "excluded": excluded,
             "metadata": {**turn_meta, **comp_meta},
             "extra_metadata": extra_meta,
+            "respondent": respondent_json,
         }
         for idx, (row, turn_meta) in enumerate(zip(partial_rows, turns_metadata))
     ]
@@ -310,6 +400,13 @@ def _reference_rows() -> list[dict]:
                 "archived_reason": "spam",
                 "archived_at": datetime(2024, 1, 1),
             },
+            # JSON-encoded string, not a struct: the question key set is
+            # admin-editable (new questions can be published at any time), so
+            # a struct/map column would either change shape release to
+            # release or force every answer to the same value type. A string
+            # column is the one shape that stays fixed regardless of what
+            # questions exist. See `get_survey_respondent_answers`.
+            "respondent": json.dumps({"x": "x", "y": ["x", "y"]}, sort_keys=True),
         }
     ]
 
@@ -455,6 +552,14 @@ def _write_normal_from_raw_parquet(
                 "metadata",
                 pa.chunked_array(chunks, type=pa.struct(fields)),
             )
+        # Same idea as 'participation_terms_version' above: a raw parquet
+        # cached from before 'respondent' existed has no such column at all.
+        # Backfill '{}' (answered nothing) rather than producing a normal
+        # dataset with a column missing entirely.
+        if table.schema.get_field_index("respondent") == -1:
+            table = table.append_column(
+                "respondent", pa.array(["{}"] * len(table), type=pa.string())
+            )
 
         if len(table) == 0:
             continue
@@ -525,6 +630,50 @@ async def write_vote_tags_vocabulary(export_dir: Path) -> None:
     logger.info(f"Wrote {len(tags)} vote tags to {export_dir / VOTE_TAGS_FILENAME}")
 
 
+README_FILENAME = "README.md"
+
+
+def write_dataset_readme(export_dir: Path, repo_name: str) -> None:
+    """
+    Minimal dataset card. There was no card generated by this pipeline before
+    (the HF repo only ever received the parquet, samples and vote tags
+    vocabulary via `commit_and_push`'s `upload_folder`), so this is the
+    smallest one that documents what a researcher cannot infer by looking at
+    the columns: what 'respondent' means and why two releases can disagree
+    about the same row. Rewritten in full on every export, same as
+    'vote_tags.json' above, rather than hand-edited.
+    """
+    export_dir.mkdir(parents=True, exist_ok=True)
+    (export_dir / README_FILENAME).write_text(
+        f"""# {repo_name}
+
+One row per conversation turn, exported from ComparIA.
+
+## The `respondent` field
+
+Each row carries a `respondent` field: a JSON-encoded object mapping every
+*published* survey question's key to the answer given by whoever had that
+conversation, for example `{{"age": "25_34", "job": ["dev", "student"]}}`.
+
+- A `select` question maps its key to a single option key (a string).
+- A `checkbox_group` question maps its key to a list of option keys.
+- `{{}}` means the respondent was not asked, or answered nothing.
+- Only questions marked "published" in the survey admin are included here;
+  unpublished or archived questions, and their answers, never leave the
+  instance.
+- Keys are the question's and options' stable, immutable identifiers, not
+  their (editable, per-locale) display labels.
+
+**Caveat:** demographic answers reflect each respondent's most recent
+answer, not the answer they held when the conversation happened. A
+respondent who updates an answer changes it for all their past rows, so two
+releases can disagree about the same `response_id`.
+""",
+        encoding="utf-8",
+    )
+    logger.info(f"Wrote dataset card to {export_dir / README_FILENAME}")
+
+
 async def process_datasets(
     datasets: list[Datasets],
     export_base_path: Path,
@@ -558,6 +707,7 @@ async def process_datasets(
             raw_parquet_path, normal_repo_name, normal_export_dir
         )
         await write_vote_tags_vocabulary(normal_export_dir)
+        write_dataset_readme(normal_export_dir, normal_repo_name)
         if dry_run:
             logger.info(
                 f"[DRY RUN] Skipping HuggingFace upload for '{normal_repo_name}'"
@@ -577,6 +727,7 @@ async def process_datasets(
             repo_name = exporter.dataset_name
             repo_path = export_base_path / repo_name
             await write_vote_tags_vocabulary(repo_path)
+            write_dataset_readme(repo_path, repo_name)
             if dry_run:
                 logger.info(f"[DRY RUN] Skipping HuggingFace upload for '{repo_name}'")
             else:

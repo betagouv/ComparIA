@@ -20,6 +20,7 @@ from backend.admin.services import (
     update_user,
 )
 from backend.admin.suggestions import router as admin_suggestions_router
+from backend.admin.survey import router as admin_survey_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
 from backend.arena.checks import (
     moderate,
@@ -82,6 +83,7 @@ router = APIRouter(
 
 router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
+router.include_router(admin_survey_router)
 router.include_router(admin_vote_tags_router)
 
 
@@ -340,6 +342,7 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         auth_access_policy=row.auth_access_policy,
         auth_domain_allowlist=row.auth_domain_allowlist,
         votes_objective=row.votes_objective,
+        survey_reask_after_days=row.survey_reask_after_days,
         platform_name=row.platform_name,
         primary_color_light=row.primary_color_light,
         primary_color_dark=row.primary_color_dark,
@@ -454,8 +457,7 @@ async def patch_prompt_check(
 
 
 NO_API_KEY_MESSAGE = (
-    "Aucune clé API Mistral n'est configurée : la vérification ne peut pas "
-    "s'exécuter."
+    "Aucune clé API Mistral n'est configurée : la vérification ne peut pas s'exécuter."
 )
 
 
