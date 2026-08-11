@@ -358,7 +358,7 @@ export interface PublicLegalDocument {
 export interface PublicSurveyQuestion {
   id: string;
   key: string;
-  trigger: "signup" | "after_vote";
+  required: boolean;
   input_type: "select" | "checkbox_group";
   label: string;
   revision: number;

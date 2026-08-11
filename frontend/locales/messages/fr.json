@@ -3196,7 +3196,7 @@
             "active": "Active",
             "addOption": "Ajouter une option",
             "addTitle": "Ajouter une question",
-            "after_vote": "Après un vote (facultatif)",
+            "after_vote": "Après un vote",
             "answersLabel": "réponses",
             "archive": "Archiver",
             "archiveSuccess": "Question archivée",
@@ -3207,7 +3207,7 @@
             "colOrder": "Ordre",
             "colRespondents": "Répondants",
             "colStatus": "Statut",
-            "colTrigger": "Moment",
+            "colTrigger": "Moments",
             "createSuccess": "Question ajoutée",
             "delete": "Supprimer",
             "deleteConfirm": "Supprimer « {label} » ?",
@@ -3248,12 +3248,15 @@
             "restoreSuccess": "Question désarchivée",
             "revisionN": "révision {revision}",
             "save": "Enregistrer",
-            "signup": "À l’inscription (bloquant)",
+            "required": "Réponse obligatoire",
+            "requiredHelp": "Une question obligatoire bloque la création du compte tant qu’elle est sans réponse. Sans elle, la question est posée mais peut rester vide.",
+            "signup": "À l’inscription",
             "statsIntro": "Total des répondants : {count}.",
             "statsTitle": "Réponses",
             "subtitle": "Configurez les questions posées à l’inscription et après un vote, et vérifiez à quel point les réponses sont identifiantes avant de les publier.",
             "title": "Sondage",
-            "triggerLabel": "Moment où elle est posée",
+            "triggersError": "Choisissez au moins un moment.",
+            "triggersLabel": "Moments où elle est posée",
             "unpublishAction": "Dépublier",
             "unpublishSuccess": "Question dépubliée"
         },
@@ -3275,6 +3278,7 @@
             "saveFailed": "Les réponses n’ont pas pu être enregistrées. Réessayez dans un instant."
         },
         "signup": {
+            "optional": " (facultatif)",
             "reloadNeeded": "Le questionnaire n’a pas pu être chargé. Rechargez la page puis réessayez."
         }
     },

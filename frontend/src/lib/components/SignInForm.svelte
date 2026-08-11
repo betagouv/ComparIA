@@ -49,8 +49,12 @@
 
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
   const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
+  // Optional questions are asked on this form and never hold it up, which is
+  // the same rule the backend gate applies before it hands out a login code.
   const surveyAnswered = $derived(
-    surveyQuestions.every((question) => (surveyAnswers[question.id]?.length ?? 0) > 0)
+    surveyQuestions
+      .filter((question) => question.required)
+      .every((question) => (surveyAnswers[question.id]?.length ?? 0) > 0)
   )
 
   async function readConsent(again = false) {
@@ -132,12 +136,12 @@
       })
       step = 'code'
     } catch (err) {
-      // A 428 here means the backend has signup questions this form does not
-      // show, which is what a failed question fetch leaves behind. Without
-      // this the two sides contradict each other: no questions on screen, and
-      // a refusal that asks for answers to them.
+      // A 428 here means the backend has required signup questions this form
+      // does not show: the fetch failed, or an admin added one while the page
+      // sat open. Either way the two sides contradict each other, reloading
+      // fixes both, and the raw refusal is untranslated.
       error =
-        (err as ApiError).status === 428 && surveyQuestions.length === 0
+        (err as ApiError).status === 428
           ? m['survey.signup.reloadNeeded']()
           : (err as Error).message
     } finally {
@@ -204,6 +208,7 @@
       {#each surveyQuestions as question (question.id)}
         <SurveyQuestionField
           {question}
+          optionalSuffix={m['survey.signup.optional']()}
           disabled={loading || step === 'code'}
           onchange={(option_keys) => (surveyAnswers[question.id] = option_keys)}
         />

@@ -2300,7 +2300,7 @@
             "active": "Active",
             "addOption": "Add an option",
             "addTitle": "Add a question",
-            "after_vote": "After a vote (optional)",
+            "after_vote": "After a vote",
             "answersLabel": "answers",
             "archive": "Archive",
             "archiveSuccess": "Question archived",
@@ -2311,7 +2311,7 @@
             "colOrder": "Order",
             "colRespondents": "Respondents",
             "colStatus": "Status",
-            "colTrigger": "When",
+            "colTrigger": "Moments",
             "createSuccess": "Question added",
             "delete": "Delete",
             "deleteConfirm": "Delete “{label}”?",
@@ -2352,12 +2352,15 @@
             "restoreSuccess": "Question unarchived",
             "revisionN": "revision {revision}",
             "save": "Save",
-            "signup": "At sign-up (blocking)",
+            "required": "Answer required",
+            "requiredHelp": "A required question holds back account creation until it is answered. Without it the question is asked but may be left blank.",
+            "signup": "At sign-up",
             "statsIntro": "Total respondents: {count}.",
             "statsTitle": "Answers",
             "subtitle": "Configure the questions asked at sign-up and after a vote, and check how identifying the answers are before publishing them.",
             "title": "Survey",
-            "triggerLabel": "When it's asked",
+            "triggersError": "Pick at least one moment.",
+            "triggersLabel": "When it is asked",
             "unpublishAction": "Unpublish",
             "unpublishSuccess": "Question unpublished"
         },
@@ -2379,6 +2382,7 @@
             "saveFailed": "The answers could not be saved. Try again in a moment."
         },
         "signup": {
+            "optional": " (optional)",
             "reloadNeeded": "The questions could not be loaded. Reload the page and try again."
         }
     },

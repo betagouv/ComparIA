@@ -49,7 +49,8 @@ export interface AdminSurveyOption {
 export interface AdminSurveyQuestion {
   id: string;
   key: string;
-  trigger: "signup" | "after_vote";
+  triggers: ("signup" | "after_vote")[];
+  required: boolean;
   input_type: "select" | "checkbox_group";
   labels: {
     [k: string]: string;
@@ -338,7 +339,8 @@ export interface SurveyQuestionArchiveUpdate {
   archived: boolean;
 }
 export interface SurveyQuestionCreate {
-  trigger: "signup" | "after_vote";
+  triggers: ("signup" | "after_vote")[];
+  required?: boolean;
   input_type: "select" | "checkbox_group";
   labels: {
     [k: string]: string;
@@ -347,15 +349,16 @@ export interface SurveyQuestionCreate {
   published?: boolean;
 }
 /**
- * A whole trigger's order, written in one request, as the vote tags do: one
- * round trip per drag, and the gaps archiving leaves in 'display_order' get
+ * The whole order, written in one request, as the vote tags do: one round
+ * trip per drag, and the gaps archiving leaves in 'display_order' get
  * rewritten away.
  */
 export interface SurveyQuestionOrder {
-  trigger: "signup" | "after_vote";
   ids: string[];
 }
 export interface SurveyQuestionUpdate {
+  triggers: ("signup" | "after_vote")[];
+  required: boolean;
   labels: {
     [k: string]: string;
   };
