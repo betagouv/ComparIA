@@ -3,8 +3,10 @@
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import type { BotModel, Commons, RankClass } from '$lib/models'
   import { ENERGY_CLASS_COLORS, getModelCards, MODALITIES } from '$lib/models'
+  import { formatRegion } from '$lib/regions'
   import { sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
   import InfoCard from './InfoCard.svelte'
@@ -331,7 +333,7 @@
                   </section>
 
                   <section class="xl:col-span-2 flex w-full flex-col">
-                    <div class="mb-3 flex items-center justify-between gap-3">
+                    <div class="mb-3 gap-3 flex items-center justify-between">
                       <h2 class="text-base! mb-0!">{m['models.opennessSovereignty.title']()}</h2>
                       <OpennessScore {model} />
                     </div>
@@ -351,8 +353,9 @@
                               {:else if field.id === 'license_name'}
                                 {field.value}
                               {:else if field.id === 'origin_country'}
-                                <!-- FIXME flag -->
-                                {field.value.toUpperCase()}
+                                {@const region = formatRegion(field.value, getLocale())}
+                                <span aria-hidden="true">{region.flag}</span>
+                                {region.name} ({region.code})
                               {:else}
                                 {@const words =
                                   field.id === 'eu_hostable'

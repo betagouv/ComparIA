@@ -2407,7 +2407,7 @@
                 "desc": "Plus la classe est proche de A, plus la consommation estimée à l’inférence est faible.",
                 "title": "Classe de consommation énergétique",
                 "title_short": "Score énergie",
-                "tooltip": "Classe estimée à partir de la consommation d’énergie à l’inférence, selon la méthodologie EcoLogits."
+                "tooltip": "Estimation EcoLogits 0.10.2 pour générer 1 million de jetons de sortie. Le calcul utilise le nombre total de paramètres et, pour les modèles à mélange d’experts (MoE), le nombre de paramètres actifs. Hypothèses : efficacité énergétique du centre de données (PUE) de 1,2, latence non renseignée et valeur médiane lorsque le résultat est une fourchette. Seuils : A < 100 Wh ; B < 300 Wh ; C < 1 000 Wh ; D < 3 000 Wh ; E < 10 000 Wh ; F ≥ 10 000 Wh. Il ne s’agit pas d’une mesure du fournisseur : le matériel réel, la quantification, la longueur des entrées et la latence peuvent modifier la consommation."
             },
             "license": {
                 "title": "Licence"
@@ -2485,7 +2485,7 @@
         "envImpact": {
             "hardware": {
                 "title": "Matériel nécessaire",
-                "tooltip": "Estimation du type de matériel nécessaire pour exécuter le modèle localement, selon sa taille et ses besoins en mémoire.",
+                "tooltip": "Estimation de la mémoire nécessaire pour charger les paramètres du modèle, hors cache KV, contexte, système et surcoût du moteur d’inférence. Catégories utilisées : jusqu’à 3 Go, smartphone ; jusqu’à 16 Go, ordinateur portable ; jusqu’à 80 Go, station de travail avec un GPU ; au-delà, serveur. Le nombre de GPU est arrondi à l’entier supérieur sur l’hypothèse de 80 Go de mémoire par carte. Il s’agit d’un minimum théorique : la précision des poids, la quantification, la longueur du contexte, la mise en lots et le logiciel d’inférence peuvent augmenter ou réduire le besoin réel.",
                 "types": {
                     "laptop": {
                         "detail": "Aucune carte graphique nécessaire",
