@@ -1,4 +1,5 @@
 import uuid
+from copy import deepcopy
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -87,6 +88,35 @@ SUPPORTED_LOCALES = ("da", "en", "fr", "lt", "sv")
 # /admin/locales, which is the point of the setting.
 DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
 
+DEFAULT_INFORMATIONAL_LEGAL_PAGES: dict[str, dict[str, object]] = {
+    "legal_notice": {
+        "mode": "internal",
+        "external_url": None,
+        "visible_in_legal_menu": True,
+        "visible_in_settings": True,
+        "content_by_locale": {},
+    },
+    "accessibility": {
+        "mode": "internal",
+        "external_url": None,
+        "visible_in_legal_menu": True,
+        "visible_in_settings": True,
+        "content_by_locale": {},
+    },
+    "ecodesign": {
+        "mode": "internal",
+        "external_url": None,
+        "visible_in_legal_menu": True,
+        "visible_in_settings": True,
+        "content_by_locale": {},
+    },
+}
+
+
+def default_informational_legal_pages() -> dict[str, dict[str, object]]:
+    """Return an independent copy suitable for a mutable JSONB column."""
+    return deepcopy(DEFAULT_INFORMATIONAL_LEGAL_PAGES)
+
 
 def _check_enabled_locales(value: list[str]) -> list[str]:
     if not value:
@@ -108,6 +138,9 @@ class AppSettings(SQLModel, table=True):
     votes_objective: int = Field(default=300_000)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
+    informational_legal_pages: Annotated[dict, Field(sa_type=JSONB)] = (
+        default_informational_legal_pages()
+    )
     primary_color_light: str = Field(default=PRIMARY_COLOR_LIGHT_DEFAULT, max_length=7)
     primary_color_dark: str = Field(default=PRIMARY_COLOR_DARK_DEFAULT, max_length=7)
     secondary_color_light: str = Field(

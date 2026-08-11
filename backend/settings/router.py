@@ -11,9 +11,18 @@ from backend.settings.legal import (
     get_active_legal_document,
     get_legal_presentation,
 )
+from backend.settings.informational_legal import (
+    InformationalLegalPages,
+    get_informational_legal_pages,
+)
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 
 router = APIRouter(prefix="/settings", tags=["settings"])
+
+
+@router.get("/legal/informational-pages", response_model=InformationalLegalPages)
+async def public_informational_legal_pages() -> InformationalLegalPages:
+    return await get_informational_legal_pages()
 
 
 class PublicLegalDocument(BaseModel):

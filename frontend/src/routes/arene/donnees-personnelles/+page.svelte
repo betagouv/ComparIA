@@ -9,7 +9,7 @@
 
 <SeoHead title={m['seo.titles.donnees-personnelles']()} />
 
-<main class="py-10 lg:py-15">
+<div class="py-10 lg:py-15">
   <div class="fr-container">
     <h1 id="politique-de-confidentialite">{m['general.privacy.title']()}</h1>
 
@@ -24,4 +24,4 @@
       <PrivacyPolicyFallback />
     {/if}
   </div>
-</main>
+</div>
