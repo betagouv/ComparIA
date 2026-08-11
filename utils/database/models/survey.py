@@ -8,14 +8,15 @@ from sqlmodel import Field, SQLModel, String
 
 from .utils import BaseDBModel, OptionalDatetime, UtcDatetime
 
-# Where a question is put to the visitor. Both are hardcoded: the moment
-# decides the behaviour, so an admin picks a moment rather than a matrix of
-# placement, frequency and required-ness.
-#  - 'signup' questions are all required and block account creation. They only
-#    mean anything on an instance running AUTH_ACCESS_POLICY=sign_in_required,
-#    since anywhere else the visitor can simply not create an account.
-#  - 'after_vote' questions are optional and dismissible, shown in a popup on
-#    the reveal page.
+# Where a question is put to the visitor. A question carries a set of these,
+# so the same question can be asked in both places: whoever answers it first
+# is not asked again, whichever moment that was.
+#  - 'signup' puts it on the sign-in form. Only means anything on an instance
+#    running AUTH_ACCESS_POLICY=sign_in_required, since anywhere else the
+#    visitor can simply not create an account. Whether it blocks that account
+#    is 'required', not the moment.
+#  - 'after_vote' puts it in a popup on the reveal page, always dismissible
+#    and capped at MAX_QUESTION_PROMPTS showings.
 SurveyTrigger = Literal["signup", "after_vote"]
 SURVEY_TRIGGERS: tuple[SurveyTrigger, ...] = get_args(SurveyTrigger)
 
@@ -65,7 +66,14 @@ class SurveyQuestionBase(BaseDBModel):
     # question keeps its identity across edits, so rewording 'Gender' into
     # 'Gender identity' does not start a new column in the dataset.
     key: Annotated[str, Field(max_length=100, unique=True, index=True)]
-    trigger: Annotated[SurveyTrigger, Field(sa_type=String, index=True)]
+    # At least one moment, kept as a list rather than a column per moment:
+    # nothing filters on it in SQL, the whole question list is cached and
+    # filtered in Python, and one column stays honest as moments are added.
+    triggers: Annotated[list[SurveyTrigger], Field(sa_type=JSONB)]
+    # Whether an unanswered question blocks account creation. Only the signup
+    # moment reads it: the after-vote popup is dismissible by design, so a
+    # question asked in both places blocks the form and not the popup.
+    required: bool = Field(default=True)
     input_type: Annotated[SurveyInputType, Field(sa_type=String)]
     # Per-locale question text, {'fr': "Quelle est votre tranche d'age ?"}.
     labels: Annotated[dict[str, str], Field(sa_type=JSONB)]
@@ -79,6 +87,8 @@ class SurveyQuestionBase(BaseDBModel):
     # what keeps 'this column means two things after March' visible in the data
     # rather than invisible.
     revision: int = Field(default=1, ge=1)
+    # One rank across every question, not one per moment: a question can sit
+    # in both moments, and each moment shows its own subset in this order.
     display_order: int = Field(default=0, ge=0)
     archived_at: OptionalDatetime = Field(default=None, index=True)
     archived_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
@@ -143,7 +153,9 @@ class PublicSurveyOption(SQLModel):
 class PublicSurveyQuestion(SQLModel):
     id: uuid.UUID
     key: str
-    trigger: SurveyTrigger
+    # The moments are not sent: the caller asked for one, and the form only
+    # needs to know whether it may be submitted without an answer.
+    required: bool
     input_type: SurveyInputType
     label: str
     revision: int
@@ -206,6 +218,14 @@ def _validate_labels(value: dict[str, str], what: str) -> dict[str, str]:
     return value
 
 
+def _validate_triggers(value: list[SurveyTrigger]) -> list[SurveyTrigger]:
+    if not value:
+        raise ValueError("a question needs at least one moment")
+    if len(value) != len(set(value)):
+        raise ValueError("a moment cannot appear twice")
+    return value
+
+
 def _validate_options(value: list["SurveyOptionWrite"]) -> list["SurveyOptionWrite"]:
     live = [option for option in value if not option.archived]
     if len(live) < 2:
@@ -231,7 +251,8 @@ class SurveyOptionWrite(SQLModel):
 
 
 class SurveyQuestionCreate(SQLModel):
-    trigger: SurveyTrigger
+    triggers: list[SurveyTrigger]
+    required: bool = True
     input_type: SurveyInputType
     # One entry per language the instance serves. The key is derived from the
     # first label given, so at least one is required.
@@ -244,6 +265,11 @@ class SurveyQuestionCreate(SQLModel):
     def check_labels(cls, value: dict[str, str]) -> dict[str, str]:
         return _validate_labels(value, "question")
 
+    @field_validator("triggers")
+    @classmethod
+    def check_triggers(cls, value: list[SurveyTrigger]) -> list[SurveyTrigger]:
+        return _validate_triggers(value)
+
     @field_validator("options")
     @classmethod
     def check_options(cls, value: list[SurveyOptionWrite]) -> list[SurveyOptionWrite]:
@@ -251,6 +277,10 @@ class SurveyQuestionCreate(SQLModel):
 
 
 class SurveyQuestionUpdate(SQLModel):
+    # Editable, unlike input_type: moving a question to another moment, or
+    # adding one, changes nothing about the answers already given.
+    triggers: list[SurveyTrigger]
+    required: bool
     labels: dict[str, QuestionLabel]
     options: list[SurveyOptionWrite]
     published: bool
@@ -259,6 +289,11 @@ class SurveyQuestionUpdate(SQLModel):
     @classmethod
     def check_labels(cls, value: dict[str, str]) -> dict[str, str]:
         return _validate_labels(value, "question")
+
+    @field_validator("triggers")
+    @classmethod
+    def check_triggers(cls, value: list[SurveyTrigger]) -> list[SurveyTrigger]:
+        return _validate_triggers(value)
 
     @field_validator("options")
     @classmethod
@@ -272,12 +307,11 @@ class SurveyQuestionArchiveUpdate(SQLModel):
 
 class SurveyQuestionOrder(SQLModel):
     """
-    A whole trigger's order, written in one request, as the vote tags do: one
-    round trip per drag, and the gaps archiving leaves in 'display_order' get
+    The whole order, written in one request, as the vote tags do: one round
+    trip per drag, and the gaps archiving leaves in 'display_order' get
     rewritten away.
     """
 
-    trigger: SurveyTrigger
     ids: list[uuid.UUID]
 
 
@@ -292,7 +326,8 @@ class AdminSurveyOption(SQLModel):
 class AdminSurveyQuestion(SQLModel):
     id: uuid.UUID
     key: str
-    trigger: SurveyTrigger
+    triggers: list[SurveyTrigger]
+    required: bool
     input_type: SurveyInputType
     labels: dict[str, str]
     options: list[AdminSurveyOption]
