@@ -1,28 +1,16 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { getAuthContext } from '$lib/auth.svelte'
-  import {
-    Accordion,
-    AccordionGroup,
-    Badge,
-    Button,
-    Icon,
-    Input,
-    Modal,
-    Select,
-    Table,
-    Toggle
-  } from '$components/dsfr'
+  import { Badge, Button, Icon, Input, Modal, Select, Table, Toggle } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type {
-    AdminSurveyCombination,
-    AdminSurveyOption,
     AdminSurveyQuestion,
     SurveyOptionWrite,
     SurveyQuestionCreate,
     SurveyQuestionUpdate
   } from '$lib/generated/admin'
+  import SurveyAnswersChart from './SurveyAnswersChart.svelte'
   import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
@@ -60,14 +48,14 @@
     signup: questions.filter((question) => question.trigger === 'signup'),
     after_vote: questions.filter((question) => question.trigger === 'after_vote')
   })
+  // One table for every question, grouped by the moment it is asked, because
+  // that is the order a reorder works in.
+  const rows = $derived([...byTrigger.signup, ...byTrigger.after_vote])
 
   const cols = [
     { id: 'order', label: m['survey.admin.colOrder']() },
     { id: 'label', label: m['survey.admin.colLabel']() },
-    { id: 'type', label: m['survey.admin.colType']() },
-    { id: 'options', label: m['survey.admin.colOptions']() },
-    { id: 'revision', label: m['survey.admin.colRevision']() },
-    { id: 'published', label: m['survey.admin.colPublished']() },
+    { id: 'trigger', label: m['survey.admin.colTrigger']() },
     { id: 'respondents', label: m['survey.admin.colRespondents']() },
     { id: 'status', label: m['survey.admin.colStatus']() },
     { id: 'actions', label: m['survey.admin.colActions']() }
@@ -270,8 +258,14 @@
     if (seq === moveSeq) optimistic = undefined
   }
 
+  // Rank within its own trigger, which is what a reorder works on: the table
+  // lists both triggers, but a question only ever moves among its siblings.
+  function localIndex(question: AdminSurveyQuestion) {
+    return byTrigger[question.trigger].findIndex((other) => other.id === question.id)
+  }
+
   function move(question: AdminSurveyQuestion, direction: 'up' | 'down') {
-    const from = byTrigger[question.trigger].findIndex((other) => other.id === question.id)
+    const from = localIndex(question)
     return reorder(question.trigger, from, direction === 'up' ? from - 1 : from + 1)
   }
 
@@ -376,43 +370,11 @@
     return question.labels[defaultLocale] ?? Object.values(question.labels)[0] ?? ''
   }
 
-  function optionLabel(option: AdminSurveyOption) {
-    return option.labels[defaultLocale] ?? Object.values(option.labels)[0] ?? option.key
-  }
-
   function inputTypeLabel(question: AdminSurveyQuestion) {
     return question.input_type === 'select'
       ? m['survey.admin.inputTypeSelect']()
       : m['survey.admin.inputTypeCheckboxGroup']()
   }
-
-  // Combinations carry question and option *keys*, not labels (see
-  // `admin_list` in backend/survey/services.py), so they are resolved against
-  // the current question list for display. A checkbox_group answer folds
-  // several option keys into one comma-joined string.
-  function comboSummary(answers: Record<string, string>) {
-    return Object.entries(answers).map(([questionKey, optionKeys]) => {
-      const question = questions.find((candidate) => candidate.key === questionKey)
-      if (!question) return { question: questionKey, value: optionKeys }
-      const optionLabels = optionKeys
-        .split(',')
-        .map((key) => question.options.find((option) => option.key === key)?.labels[defaultLocale])
-        .filter((label): label is string => !!label)
-      return {
-        question: displayLabel(question),
-        value: optionLabels.length ? optionLabels.join(', ') : optionKeys
-      }
-    })
-  }
-
-  type ComboRow = AdminSurveyCombination & { id: string }
-  const comboRows = $derived<ComboRow[]>(
-    data.survey.combinations.map((combo, index) => ({ ...combo, id: String(index) }))
-  )
-  const comboCols = [
-    { id: 'answers', label: m['survey.admin.colLabel']() },
-    { id: 'count', label: m['survey.admin.colRespondents']() }
-  ] satisfies TableCol[]
 </script>
 
 <PageLayout
@@ -422,169 +384,160 @@
 >
   <p class="sr-only" aria-live="polite">{announcement}</p>
 
-  {#each triggers as trigger (trigger)}
-    {@const rows = byTrigger[trigger]}
-    <section class="mb-10 last:mb-0">
-      <Table
-        caption={m[`survey.admin.${trigger}`]()}
-        hideCaption
-        {cols}
-        {rows}
-        animateRows
-        rowAttributes={(row, index) => ({
-          draggable: true,
-          class:
-            dropTarget?.trigger === trigger && dropTarget.index === index
-              ? 'bg-very-light-primary'
-              : dragging?.trigger === trigger && dragging.index === index
-                ? 'opacity-50'
-                : undefined,
-          ondragstart: (event: DragEvent) => onDragStart(event, trigger, index),
-          ondragover: (event: DragEvent) => onDragOver(event, trigger, index),
-          ondrop: (event: DragEvent) => onDrop(event, trigger, index),
-          ondragend: () => {
-            dragging = undefined
-            dropTarget = undefined
-          }
-        })}
-      >
-        {#snippet headerLeft()}
-          <h2 class="fr-h6 mb-0!">{m[`survey.admin.${trigger}`]()}</h2>
-        {/snippet}
+  <Table
+    caption={m['survey.admin.title']()}
+    hideCaption
+    {cols}
+    {rows}
+    animateRows
+    rowAttributes={(row) => {
+      const index = localIndex(row)
+      return {
+        draggable: true,
+        class:
+          dropTarget?.trigger === row.trigger && dropTarget.index === index
+            ? 'bg-very-light-primary'
+            : dragging?.trigger === row.trigger && dragging.index === index
+              ? 'opacity-50'
+              : undefined,
+        ondragstart: (event: DragEvent) => onDragStart(event, row.trigger, index),
+        ondragover: (event: DragEvent) => onDragOver(event, row.trigger, index),
+        ondrop: (event: DragEvent) => onDrop(event, row.trigger, index),
+        ondragend: () => {
+          dragging = undefined
+          dropTarget = undefined
+        }
+      }
+    }}
+  >
+    {#snippet headerRight()}
+      <Button
+        text={m['survey.admin.addTitle']()}
+        icon="add-line"
+        class="md:ms-auto"
+        aria-controls="fr-modal-survey-question"
+        data-fr-opened="false"
+        onclick={() => openAdd('signup')}
+      />
+    {/snippet}
 
-        {#snippet headerRight()}
+    {#snippet cell(row, col)}
+      {#if col.id === 'label'}
+        <span class="flex flex-col">
+          <strong class={{ 'text-grey line-through': row.archived }}>{displayLabel(row)}</strong>
+          <span class="fr-text--xs text-grey">
+            {inputTypeLabel(row)} · {m['survey.admin.optionCount']({
+              count: row.options.filter((option) => !option.archived).length
+            })} · {m['survey.admin.revisionN']({ revision: row.revision })}
+          </span>
+        </span>
+      {:else if col.id === 'trigger'}
+        <span class="fr-text--sm">{m[`survey.admin.${row.trigger}`]()}</span>
+      {:else if col.id === 'respondents'}
+        <span class="fr-text--sm text-grey">{row.respondent_count}</span>
+      {:else if col.id === 'status'}
+        <span class="gap-1 flex flex-wrap">
+          <Badge
+            size="sm"
+            text={row.archived ? m['survey.admin.archived']() : m['survey.admin.active']()}
+            variant={row.archived ? 'orange' : 'green'}
+          />
+          {#if row.published}
+            <Badge size="sm" text={m['survey.admin.published']()} variant="purple" />
+          {/if}
+        </span>
+      {:else if col.id === 'order'}
+        <span class="gap-1 flex items-center">
+          <Icon
+            icon="i-ri-draggable"
+            class="text-grey cursor-grab"
+            aria-hidden="true"
+            title={m['survey.admin.dragHint']()}
+          />
           <Button
-            text={m['survey.admin.addTitle']()}
-            icon="add-line"
-            variant="secondary"
-            class="md:ms-auto"
+            size="sm"
+            variant="tertiary-no-outline"
+            icon="arrow-up-line"
+            iconOnly
+            text={m['survey.admin.moveUp']()}
+            title={m['survey.admin.moveUp']()}
+            disabled={busy || localIndex(row) === 0}
+            onclick={() => move(row, 'up')}
+          />
+          <Button
+            size="sm"
+            variant="tertiary-no-outline"
+            icon="arrow-down-line"
+            iconOnly
+            text={m['survey.admin.moveDown']()}
+            title={m['survey.admin.moveDown']()}
+            disabled={busy || localIndex(row) === byTrigger[row.trigger].length - 1}
+            onclick={() => move(row, 'down')}
+          />
+        </span>
+      {:else if col.id === 'actions'}
+        <span class="gap-1 flex justify-end">
+          <Button
+            size="sm"
+            variant="tertiary-no-outline"
+            iconOnly
+            title={m['survey.admin.edit']()}
+            aria-label={`${m['survey.admin.edit']()} : ${displayLabel(row)}`}
+            disabled={busy}
             aria-controls="fr-modal-survey-question"
             data-fr-opened="false"
-            onclick={() => openAdd(trigger)}
-          />
-        {/snippet}
-
-        {#snippet cell(row, col)}
-          {#if col.id === 'label'}
-            <strong class={{ 'text-grey line-through': row.archived }}>
-              {displayLabel(row)}
-            </strong>
-          {:else if col.id === 'type'}
-            <span class="fr-text--sm text-grey">{inputTypeLabel(row)}</span>
-          {:else if col.id === 'options'}
-            <span class="fr-text--sm text-grey">
-              {row.options.filter((option) => !option.archived).length}
-            </span>
-          {:else if col.id === 'revision'}
-            <span class="fr-text--sm text-grey">{row.revision}</span>
-          {:else if col.id === 'published'}
-            <span class="gap-2 flex flex-col items-start">
-              <Badge
-                size="sm"
-                text={row.published
-                  ? m['survey.admin.published']()
-                  : m['survey.admin.notPublished']()}
-                variant={row.published ? 'purple' : ''}
-              />
-              <Button
-                size="sm"
-                variant="tertiary-no-outline"
-                text={row.published
-                  ? m['survey.admin.unpublishAction']()
-                  : m['survey.admin.publishAction']()}
-                disabled={busy}
-                onclick={() => togglePublished(row)}
-              />
-            </span>
-          {:else if col.id === 'respondents'}
-            <span class="fr-text--sm text-grey">{row.respondent_count}</span>
-          {:else if col.id === 'status'}
-            <Badge
+            onclick={() => openEdit(row)}
+          >
+            <Icon icon="i-ri-edit-line" />
+          </Button>
+          <Button
+            size="sm"
+            variant="tertiary-no-outline"
+            iconOnly
+            title={row.published
+              ? m['survey.admin.unpublishAction']()
+              : m['survey.admin.publishAction']()}
+            aria-label={`${row.published ? m['survey.admin.unpublishAction']() : m['survey.admin.publishAction']()} : ${displayLabel(row)}`}
+            disabled={busy}
+            onclick={() => togglePublished(row)}
+          >
+            <Icon icon={row.published ? 'i-ri-eye-off-line' : 'i-ri-eye-line'} />
+          </Button>
+          <Button
+            size="sm"
+            variant="tertiary-no-outline"
+            iconOnly
+            title={row.archived ? m['survey.admin.restore']() : m['survey.admin.archive']()}
+            aria-label={`${row.archived ? m['survey.admin.restore']() : m['survey.admin.archive']()} : ${displayLabel(row)}`}
+            disabled={busy}
+            onclick={() => setArchived(row, !row.archived)}
+          >
+            <Icon icon={row.archived ? 'i-ri-inbox-unarchive-line' : 'i-ri-archive-line'} />
+          </Button>
+          {#if row.respondent_count === 0}
+            <Button
               size="sm"
-              text={row.archived ? m['survey.admin.archived']() : m['survey.admin.active']()}
-              variant={row.archived ? 'orange' : 'green'}
-            />
-          {:else if col.id === 'order'}
-            <span class="gap-1 flex items-center">
-              <Icon
-                icon="i-ri-draggable"
-                class="text-grey cursor-grab"
-                aria-hidden="true"
-                title={m['survey.admin.dragHint']()}
-              />
-              <Button
-                size="sm"
-                variant="tertiary-no-outline"
-                icon="arrow-up-line"
-                iconOnly
-                text={m['survey.admin.moveUp']()}
-                title={m['survey.admin.moveUp']()}
-                disabled={busy || rows[0]?.id === row.id}
-                onclick={() => move(row, 'up')}
-              />
-              <Button
-                size="sm"
-                variant="tertiary-no-outline"
-                icon="arrow-down-line"
-                iconOnly
-                text={m['survey.admin.moveDown']()}
-                title={m['survey.admin.moveDown']()}
-                disabled={busy || rows[rows.length - 1]?.id === row.id}
-                onclick={() => move(row, 'down')}
-              />
-            </span>
-          {:else if col.id === 'actions'}
-            <span class="gap-1 flex justify-end">
-              <Button
-                size="sm"
-                variant="tertiary-no-outline"
-                iconOnly
-                title={m['survey.admin.edit']()}
-                aria-label={`${m['survey.admin.edit']()} : ${displayLabel(row)}`}
-                disabled={busy}
-                aria-controls="fr-modal-survey-question"
-                data-fr-opened="false"
-                onclick={() => openEdit(row)}
-              >
-                <Icon icon="i-ri-edit-line" />
-              </Button>
-              <Button
-                size="sm"
-                variant="tertiary-no-outline"
-                iconOnly
-                title={row.archived ? m['survey.admin.restore']() : m['survey.admin.archive']()}
-                aria-label={`${row.archived ? m['survey.admin.restore']() : m['survey.admin.archive']()} : ${displayLabel(row)}`}
-                disabled={busy}
-                onclick={() => setArchived(row, !row.archived)}
-              >
-                <Icon icon={row.archived ? 'i-ri-eye-line' : 'i-ri-eye-off-line'} />
-              </Button>
-              {#if row.respondent_count === 0}
-                <Button
-                  size="sm"
-                  variant="tertiary-no-outline"
-                  iconOnly
-                  class="text-[--text-default-error]!"
-                  title={m['survey.admin.delete']()}
-                  aria-label={`${m['survey.admin.delete']()} : ${displayLabel(row)}`}
-                  disabled={busy}
-                  aria-controls="fr-modal-survey-question-delete"
-                  data-fr-opened="false"
-                  onclick={() => openDelete(row)}
-                >
-                  <Icon icon="i-ri-delete-bin-line" />
-                </Button>
-              {/if}
-            </span>
+              variant="tertiary-no-outline"
+              iconOnly
+              class="text-[--text-default-error]!"
+              title={m['survey.admin.delete']()}
+              aria-label={`${m['survey.admin.delete']()} : ${displayLabel(row)}`}
+              disabled={busy}
+              aria-controls="fr-modal-survey-question-delete"
+              data-fr-opened="false"
+              onclick={() => openDelete(row)}
+            >
+              <Icon icon="i-ri-delete-bin-line" />
+            </Button>
           {/if}
-        {/snippet}
-      </Table>
-
-      {#if !rows.length}
-        <p class="fr-text--sm mt-2! text-warning">{m['survey.admin.emptyTrigger']()}</p>
+        </span>
       {/if}
-    </section>
-  {/each}
+    {/snippet}
+  </Table>
+
+  {#if !rows.length}
+    <p class="fr-text--sm mt-2! text-warning">{m['survey.admin.emptyTrigger']()}</p>
+  {/if}
 
   <section class="mt-10 pt-8 border-t-1 border-[--border-default-grey]">
     <h2 class="fr-h6">{m['survey.admin.statsTitle']()}</h2>
@@ -592,63 +545,11 @@
       {m['survey.admin.statsIntro']({ count: data.survey.total_respondents })}
     </p>
 
-    {#if questions.filter((question) => !question.archived).length}
-      <AccordionGroup class="mb-8">
-        {#each questions.filter((question) => !question.archived) as question (question.id)}
-          <Accordion
-            id="survey-stats-{question.id}"
-            label={`${displayLabel(question)} — ${question.respondent_count}`}
-          >
-            <ul class="m-0! space-y-1 p-0! list-none">
-              {#each question.options as option (option.key)}
-                <li
-                  class="gap-2 py-1 flex items-center justify-between border-b-1 border-[--border-default-grey] last:border-0"
-                >
-                  <span class={{ 'text-grey line-through': option.archived }}>
-                    {optionLabel(option)}
-                    {#if option.archived}
-                      <Badge
-                        size="xs"
-                        text={m['survey.admin.archived']()}
-                        variant="orange"
-                        class="ms-1"
-                      />
-                    {/if}
-                  </span>
-                  <span class="fr-text--sm text-grey">{option.answer_count}</span>
-                </li>
-              {/each}
-            </ul>
-          </Accordion>
-        {/each}
-      </AccordionGroup>
-    {/if}
-
-    <h3 class="fr-h6">{m['survey.admin.combinationsTitle']()}</h3>
-    <p class="fr-text--sm text-warning">{m['survey.admin.combinationsIntro']()}</p>
-
-    {#if !comboRows.length}
-      <p class="fr-text--sm text-grey">{m['survey.admin.combinationsEmpty']()}</p>
-    {:else}
-      <Table
-        caption={m['survey.admin.combinationsTitle']()}
-        hideCaption
-        cols={comboCols}
-        rows={comboRows}
-      >
-        {#snippet cell(row, col)}
-          {#if col.id === 'answers'}
-            <ul class="m-0! space-y-1 p-0! list-none">
-              {#each comboSummary(row.answers) as pair (pair.question)}
-                <li><strong>{pair.question}</strong> : {pair.value}</li>
-              {/each}
-            </ul>
-          {:else if col.id === 'count'}
-            <Badge text={String(row.count)} variant={row.count <= 2 ? 'red' : ''} />
-          {/if}
-        {/snippet}
-      </Table>
-    {/if}
+    <div class="mt-6 gap-6 lg:grid-cols-2 grid grid-cols-1">
+      {#each questions.filter((question) => !question.archived) as question (question.id)}
+        <SurveyAnswersChart {question} {defaultLocale} title={displayLabel(question)} />
+      {/each}
+    </div>
   </section>
 </PageLayout>
 
