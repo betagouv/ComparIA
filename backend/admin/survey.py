@@ -41,7 +41,7 @@ _OPTION_UNKNOWN = HTTPException(
 )
 _ORDER_MISMATCH = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
-    detail="The order has to list every question for this trigger, and nothing else",
+    detail="The order has to list every question exactly once, and nothing else",
 )
 _IN_USE = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
