@@ -190,13 +190,18 @@ describe('SignInForm consent', () => {
     render(SignInForm)
     render(SignInForm)
 
-    await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2))
+    // Each form fetches its own signup questions, so count the consent paths
+    // rather than every call: two forms, one shared consent request.
+    const consentPaths = () =>
+      paths().filter((path: string) => !path.startsWith('/survey/questions'))
+
+    await waitFor(() => expect(consentPaths().length).toBe(2))
     expect(mocks.request).toHaveBeenNthCalledWith(
       1,
       '/settings/legal/terms',
       expect.objectContaining({ searchParams: { locale: 'fr' } })
     )
-    expect(mocks.request).toHaveBeenNthCalledWith(2, '/auth/consent/anonymous')
+    expect(mocks.request).toHaveBeenNthCalledWith(4, '/auth/consent/anonymous')
   })
 
   it('does not repeat platform data-use copy next to the consent checkbox', async () => {

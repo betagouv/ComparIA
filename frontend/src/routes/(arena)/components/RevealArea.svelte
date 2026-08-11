@@ -7,6 +7,7 @@
   import { m } from '$lib/i18n/messages'
   import type { UsageProfileId } from '$lib/usageProfiles'
   import { RevealCard } from '.'
+  import SurveyModal from './SurveyModal.svelte'
 
   let { data }: { data: APIRevealData } = $props()
 
@@ -126,6 +127,8 @@
     </div>
   </div>
 </div>
+
+<SurveyModal />
 
 <style>
   #reveal-area {

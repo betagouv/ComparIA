@@ -151,6 +151,13 @@ def routed(**overrides):
             secondary_color_light="#FF9575",
         )
 
+    async def signup_questions_answered(**_kwargs):
+        # These tests are about the consent gate. An instance with no signup
+        # questions is the default, and that is what this stands in for.
+        return True
+
+    overrides.setdefault("signup_questions_answered", signup_questions_answered)
+
     with patched(
         auth_router,
         get_redis_client=lambda: FakeRedis(),
@@ -405,6 +412,29 @@ def test_login_code_requires_a_current_acceptance():
         return False
 
     with routed(has_current_terms_acceptance=declined) as test_client:
+        response = test_client.post(
+            "/auth/email/request", json={"email": "a@b.fr", "altcha_payload": "valid"}
+        )
+    assert response.status_code == 428
+
+
+def test_login_code_requires_the_signup_questions():
+    """
+    The gate is enforced here, not only in the sign-in form. On an arena whose
+    point is a verified professional audience, a check the browser makes alone
+    is no check: the answers would come to mean 'professionals, plus everyone
+    who posted straight to the API', which is not a column anyone can analyse.
+    """
+
+    async def unanswered(**_kwargs):
+        return False
+
+    async def granted(**_kwargs):
+        return True
+
+    with routed(
+        signup_questions_answered=unanswered, has_current_terms_acceptance=granted
+    ) as test_client:
         response = test_client.post(
             "/auth/email/request", json={"email": "a@b.fr", "altcha_payload": "valid"}
         )
