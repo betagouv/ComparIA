@@ -4,6 +4,7 @@
   import { page } from '$app/state'
   import { Alert, Badge, Button, Icon, Input, Link, Modal, Tabs } from '$components/dsfr'
   import { SeoHead } from '$components/layout'
+  import SurveyAnswersSection from '$components/SurveyAnswersSection.svelte'
   import ThemeSelector from '$components/ThemeSelector.svelte'
   import TotpSetupModal from '$components/TotpSetupModal.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
@@ -208,6 +209,8 @@
                 {/if}
               </div>
             </section>
+
+            <SurveyAnswersSection />
           {/if}
         {:else}
           <section aria-labelledby="links-title">
