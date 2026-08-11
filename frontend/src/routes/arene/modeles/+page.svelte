@@ -220,7 +220,7 @@
       class="w-auto! max-w-full"
     />
 
-    <div class="gap-6 md:grid-cols-2 xl:grid-cols-3 grid">
+    <div class="gap-6 md:grid-cols-2 2xl:grid-cols-3 grid">
       {#each filteredModels as model (model.id)}
         <ModelCard
           {model}
