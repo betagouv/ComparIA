@@ -3276,7 +3276,8 @@
             "saveFailed": "Les réponses n’ont pas pu être enregistrées. Réessayez dans un instant."
         },
         "signup": {
-            "intro": "Ces questions nous aident à savoir qui utilise compar:IA et à garder des jeux de données représentatifs."
+            "intro": "Ces questions nous aident à savoir qui utilise compar:IA et à garder des jeux de données représentatifs.",
+            "reloadNeeded": "Le questionnaire n’a pas pu être chargé. Rechargez la page puis réessayez."
         }
     },
     "vote": {
