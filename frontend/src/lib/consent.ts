@@ -1,6 +1,13 @@
 import { renderInlineMarkdown } from '$components/markdown/inline'
 import { api } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
+import {
+  DEFAULT_INFORMATIONAL_PAGES,
+  informationalPageHref,
+  isInformationalPageVisible,
+  type InformationalPages,
+  type InformationalPageSurface
+} from '$lib/informational-pages'
 
 export type ConsentPresentation = {
   arena: {
@@ -69,6 +76,7 @@ export const TERMS_PATH = '/arene/modalites'
 export const PRIVACY_POLICY_PATH = '/arene/donnees-personnelles'
 export const ACCESSIBILITY_PATH = '/arene/accessibilite'
 export const ECODESIGN_PATH = '/arene/ecoconception'
+export const LEGAL_NOTICE_PATH = '/arene/mentions-legales'
 
 /** The two documents a visitor accepts, as listed beside the checkbox. */
 export function legalLinks(): ConsentLink[] {
@@ -79,12 +87,36 @@ export function legalLinks(): ConsentLink[] {
 }
 
 /** Every public legal page, for the menus that list them all. */
-export function legalPageLinks(): ConsentLink[] {
-  return [
+export function legalPageLinks(
+  pages: InformationalPages = DEFAULT_INFORMATIONAL_PAGES,
+  surface?: InformationalPageSurface
+): ConsentLink[] {
+  const fixedLinks: ConsentLink[] = [
     { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH },
-    { label: m['consent.links.terms'](), href: TERMS_PATH },
-    { label: m['footer.links.accessibility'](), href: ACCESSIBILITY_PATH },
-    { label: m['footer.links.rgesn'](), href: ECODESIGN_PATH }
+    { label: m['consent.links.terms'](), href: TERMS_PATH }
+  ]
+  const informationalLinks = [
+    {
+      key: 'legal_notice' as const,
+      label: m['footer.links.legal'](),
+      href: informationalPageHref('legal_notice', pages)
+    },
+    {
+      key: 'accessibility' as const,
+      label: m['footer.links.accessibility'](),
+      href: informationalPageHref('accessibility', pages)
+    },
+    {
+      key: 'ecodesign' as const,
+      label: m['footer.links.rgesn'](),
+      href: informationalPageHref('ecodesign', pages)
+    }
+  ]
+  return [
+    ...fixedLinks,
+    ...informationalLinks.filter(
+      (link) => !surface || isInformationalPageVisible(pages[link.key], surface)
+    )
   ]
 }
 

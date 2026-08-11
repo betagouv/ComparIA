@@ -4,11 +4,12 @@ import { load as accessibilite } from './accessibilite/+page.server'
 import { load as donneesPersonnelles } from './donnees-personnelles/+page.server'
 import { load as ecoconception } from './ecoconception/+page.server'
 import { load as modalites } from './modalites/+page.server'
+import { load as mentionsLegales } from './mentions-legales/+page.server'
 import { load as terms } from './terms/+page.server'
 
-function redirectOf(load: () => void) {
+function redirectOf(load: CallableFunction) {
   try {
-    load()
+    load({} as never)
   } catch (error) {
     if (isRedirect(error)) return { status: error.status, location: error.location }
     throw error
@@ -21,6 +22,7 @@ describe('legacy legal routes', () => {
     ['modalites', modalites, '/arene/modalites'],
     ['terms', terms, '/arene/modalites'],
     ['donnees-personnelles', donneesPersonnelles, '/arene/donnees-personnelles'],
+    ['mentions-legales', mentionsLegales, '/arene/mentions-legales'],
     ['accessibilite', accessibilite, '/arene/accessibilite'],
     ['ecoconception', ecoconception, '/arene/ecoconception']
   ])('sends %s to its published page', (_name, load, location) => {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import { Button, Input, Link, Modal, Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import ThemeSelector from '$components/ThemeSelector.svelte'
@@ -159,7 +160,7 @@
               )}
             </p>
             <ul class="fr-raw-list gap-3 flex flex-col items-start">
-              {#each legalPageLinks() as link (link.href)}
+              {#each legalPageLinks(page.data.informationalPages, 'settings') as link (link.href)}
                 <li><Link href={link.href} text={link.label} /></li>
               {/each}
               <li>

@@ -3,6 +3,7 @@ import { load as accessibilite } from '../routes/(pages)/(general)/accessibilite
 import { load as donneesPersonnelles } from '../routes/(pages)/(general)/donnees-personnelles/+page.server'
 import { load as ecoconception } from '../routes/(pages)/(general)/ecoconception/+page.server'
 import { load as modalites } from '../routes/(pages)/(general)/modalites/+page.server'
+import { load as mentionsLegales } from '../routes/(pages)/(general)/mentions-legales/+page.server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   buildConsentEvidence,
@@ -17,6 +18,7 @@ import {
   type ConsentDocument
 } from './consent'
 import { api } from './fastapi-client'
+import { DEFAULT_INFORMATIONAL_PAGES } from './informational-pages'
 
 const document: ConsentDocument = {
   version: '2026-07-20',
@@ -57,9 +59,9 @@ const acceptance = {
   accepted_at: '2026-07-20T10:00:00.000Z'
 }
 
-function redirectTarget(load: () => void): string {
+function redirectTarget(load: CallableFunction): string {
   try {
-    load()
+    load({} as never)
   } catch (error) {
     if (isRedirect(error)) return error.location
     throw error
@@ -99,12 +101,25 @@ describe('consent', () => {
     expect(legalPageLinks().map((link) => link.href)).toEqual([
       '/arene/donnees-personnelles',
       '/arene/modalites',
+      '/arene/mentions-legales',
       '/arene/accessibilite',
       '/arene/ecoconception'
     ])
     expect(legalPageLinks().map((link) => link.href)).toEqual(
-      [donneesPersonnelles, modalites, accessibilite, ecoconception].map(redirectTarget)
+      [donneesPersonnelles, modalites, mentionsLegales, accessibilite, ecoconception].map(
+        redirectTarget
+      )
     )
+  })
+
+  it('keeps footer links independent from menu visibility', () => {
+    const pages = structuredClone(DEFAULT_INFORMATIONAL_PAGES)
+    pages.ecodesign.visible_in_legal_menu = false
+
+    expect(
+      legalPageLinks(pages, 'legal_menu').some((link) => link.href.includes('ecoconception'))
+    ).toBe(false)
+    expect(legalPageLinks(pages).some((link) => link.href.includes('ecoconception'))).toBe(true)
   })
 
   it('renders the checkbox label of the page that asks', () => {

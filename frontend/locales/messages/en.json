@@ -25,6 +25,37 @@
         "selectLanguage": "Select a language"
     },
     "admin": {
+        "legal": {
+            "back": "Back to legal documents",
+            "hub": {
+                "informationalDescription": "Legal notice, accessibility and ecodesign, hosted on the platform or linked to an external website."
+            },
+            "informational": {
+                "contentLabel": "Content in {locale}",
+                "external": "External link",
+                "externalUrl": "External page address",
+                "externalUrlError": "Enter a valid HTTPS address.",
+                "externalUrlHelp": "The address must start with https://.",
+                "internal": "Page hosted on Compar:IA",
+                "loading": "Loading information pages…",
+                "locale": "Content language",
+                "modeLabel": "Destination",
+                "pages": {
+                    "accessibility": "Accessibility statement",
+                    "ecodesign": "Ecodesign",
+                    "legal_notice": "Legal notice"
+                },
+                "save": "Save pages",
+                "saved": "Information pages saved.",
+                "saving": "Saving…",
+                "subtitle": "Choose where each page is hosted and where its link is displayed.",
+                "title": "Information pages",
+                "visibilityLabel": "Display the link in",
+                "visibleInLegalMenu": "The Legal menu",
+                "visibleInSettings": "The Settings page"
+            },
+            "markdownHelp": "Markdown formatting is supported: **bold**, *italics*, [link](https://example.com)."
+        },
         "nav": {
             "users": "Users",
             "llms": "LLMs",
