@@ -19,17 +19,15 @@
     headerClass?: ClassValue
     onClose?: () => void
   } & HTMLDialogAttributes = $props()
+
+  // DSFR announces a real close with this event, the same way ModelInfoModal
+  // listens for it. Blur is not a close: focusing a field inside the modal
+  // blurs the dialog, and reporting that as a close made consumers act on a
+  // modal the visitor was still using.
+  const dsfrEvents = { 'ondsfr.conceal': () => onClose?.() }
 </script>
 
-<dialog
-  aria-labelledby={titleId}
-  {id}
-  class="fr-modal"
-  onblur={() => onClose?.()}
-  onkeydown={(e) => {
-    if (e.key === 'Escape') onClose?.()
-  }}
->
+<dialog aria-labelledby={titleId} {id} class="fr-modal" {...dsfrEvents}>
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
       <div class={sizeClass}>
@@ -41,7 +39,6 @@
               title={m['closeModal']()}
               aria-controls={id}
               class="fr-btn--close z-100"
-              onclick={() => onClose?.()}
             />
           </div>
 
