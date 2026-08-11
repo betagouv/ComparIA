@@ -1,7 +1,17 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { getAuthContext } from '$lib/auth.svelte'
-  import { Badge, Button, Icon, Input, Modal, Select, Table, Toggle } from '$components/dsfr'
+  import {
+    Badge,
+    Button,
+    Icon,
+    Input,
+    Modal,
+    Select,
+    Table,
+    Toggle,
+    Tooltip
+  } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type {
@@ -604,11 +614,16 @@
       <p class="fr-text--sm text-grey">{m['survey.admin.keyPreview']({ key: keyPreview })}</p>
     {/if}
 
-    <fieldset class="fr-fieldset mt-4">
-      <legend class="fr-label mb-2!">{m['survey.admin.optionsLegend']()}</legend>
+    <fieldset class="fr-fieldset mt-4 gap-0 flex flex-col">
+      <legend class="fr-label mb-2! gap-1 flex items-center">
+        {m['survey.admin.optionsLegend']()}
+        <Tooltip id="survey-options-help" size="sm" label={m['survey.admin.optionsLegend']()}>
+          {m['survey.admin.optionArchivedHint']()}
+        </Tooltip>
+      </legend>
 
       {#each formOptions as option, index (option.key ?? `new-${index}`)}
-        <div class="mb-4 rounded-lg p-3 border-1 border-[--border-default-grey]">
+        <div class="mb-4 rounded-lg p-3 w-full border-1 border-[--border-default-grey]">
           <div class="mb-2 gap-2 flex items-center justify-between">
             <span class="fr-text--sm font-bold"
               >{m['survey.admin.optionN']({ index: index + 1 })}</span
@@ -645,24 +660,26 @@
         variant="secondary"
         size="sm"
         icon="add-line"
+        class="self-start"
         text={m['survey.admin.addOption']()}
         onclick={addOption}
       />
-      <p class="fr-hint-text mt-1!">{m['survey.admin.optionArchivedHint']()}</p>
     </fieldset>
 
-    <div
-      class="mt-4 rounded-lg p-3 border-1 border-[--border-default-orange] bg-[--background-alt-orange]"
-    >
+    <div class="mt-4 gap-1 flex items-start">
       <Toggle
         id="survey-question-published"
         bind:value={formPublished}
         label={m['survey.admin.published']()}
       />
-      <p class="fr-text--sm mt-1! text-[--text-default-warning]">
-        <Icon icon="i-ri-error-warning-line" aria-hidden="true" class="me-1" />
+      <Tooltip
+        id="survey-published-help"
+        size="sm"
+        class="mt-1"
+        label={m['survey.admin.published']()}
+      >
         {m['survey.admin.publishedHelp']()}
-      </p>
+      </Tooltip>
     </div>
 
     {#if formError}
