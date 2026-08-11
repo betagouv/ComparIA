@@ -56,7 +56,7 @@ class SurveyOptionUnknownError(Exception):
 
 
 class SurveyOrderMismatchError(Exception):
-    """An order has to list every question on the trigger, and nothing else."""
+    """An order has to list every question exactly once, and nothing else."""
 
 
 # --- shared helpers -------------------------------------------------------
@@ -117,18 +117,28 @@ def _check_answer_shape(input_type: SurveyInputType, option_keys: list[str]) -> 
 @redis_cache(REDIS_SURVEY_KEY)
 async def _all_questions() -> list[SurveyQuestion]:
     """
-    Every question, archived ones included, in display order within each
-    trigger. Cached the way `vote_tags` caches its full tag list: question
-    wording changes rarely, so one cached list serves every locale and every
-    respondent.
+    Every question, archived ones included, in display order. Cached the way
+    `vote_tags` caches its full tag list: question wording changes rarely, so
+    one cached list serves every locale and every respondent.
     """
     async with get_session() as session:
         result = await session.exec(
-            select(SurveyQuestion).order_by(
-                col(SurveyQuestion.trigger), col(SurveyQuestion.display_order)
-            )
+            select(SurveyQuestion).order_by(col(SurveyQuestion.display_order))
         )
         return list(result.all())
+
+
+async def _live_for(trigger: SurveyTrigger) -> list[SurveyQuestion]:
+    """Live questions asked at this moment, in display order. A question can
+    name both moments, so it appears in both lists."""
+    return sorted(
+        (
+            question
+            for question in await _all_questions()
+            if trigger in question.triggers and question.archived_at is None
+        ),
+        key=lambda question: question.display_order,
+    )
 
 
 async def _to_public(
@@ -147,7 +157,7 @@ async def _to_public(
     return PublicSurveyQuestion(
         id=question.id,
         key=question.key,
-        trigger=question.trigger,
+        required=question.required,
         input_type=question.input_type,
         label=await _label(question.labels, locale),
         revision=question.revision,
@@ -162,19 +172,11 @@ async def list_questions(
     session: AsyncSession, trigger: SurveyTrigger, locale: str
 ) -> list[PublicSurveyQuestion]:
     """
-    Every live question for a trigger, unconditional on who is asking.
-    `signup` questions are all required and use this: there is no respondent
-    yet to check answered/shown state against.
+    Every live question for a moment, unconditional on who is asking. The
+    signup form uses this: there is no respondent yet to check answered/shown
+    state against.
     """
-    questions = sorted(
-        (
-            question
-            for question in await _all_questions()
-            if question.trigger == trigger and question.archived_at is None
-        ),
-        key=lambda question: question.display_order,
-    )
-    return [await _to_public(question, locale) for question in questions]
+    return [await _to_public(question, locale) for question in await _live_for(trigger)]
 
 
 async def questions_to_prompt(
@@ -190,14 +192,7 @@ async def questions_to_prompt(
     """
     _require_respondent(user_id, anonymous_user_hash)
 
-    candidates = sorted(
-        (
-            question
-            for question in await _all_questions()
-            if question.trigger == trigger and question.archived_at is None
-        ),
-        key=lambda question: question.display_order,
-    )
+    candidates = await _live_for(trigger)
     if not candidates:
         return []
 
@@ -393,21 +388,22 @@ async def signup_questions_answered(
     anonymous_user_hash: str | None,
 ) -> bool:
     """
-    Whether every live signup question has an answer from this respondent.
+    Whether every required signup question has an answer from this respondent.
+
+    Optional ones are asked on the same form and never hold it up, which is
+    what lets a question be added later without locking anyone out.
 
     Opens its own session, like `has_current_terms_acceptance`: both are
     preconditions the auth routes check before doing any work, and both are
     free on the common path where nothing is configured.
     """
     signup_ids = [
-        question.id
-        for question in await _all_questions()
-        if question.trigger == "signup" and question.archived_at is None
+        question.id for question in await _live_for("signup") if question.required
     ]
-    # The overwhelmingly common case is an instance with no signup questions
-    # at all, and it costs nothing: the question list is cached, so the gate
-    # never reaches the database. Checked before the respondent, so an
-    # instance with nothing configured answers the same either way.
+    # The overwhelmingly common case is an instance with no required signup
+    # questions at all, and it costs nothing: the question list is cached, so
+    # the gate never reaches the database. Checked before the respondent, so
+    # an instance with nothing configured answers the same either way.
     if not signup_ids:
         return True
 
@@ -539,9 +535,7 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
     questions = list(
         (
             await session.exec(
-                select(SurveyQuestion).order_by(
-                    col(SurveyQuestion.trigger), col(SurveyQuestion.display_order)
-                )
+                select(SurveyQuestion).order_by(col(SurveyQuestion.display_order))
             )
         ).all()
     )
@@ -573,7 +567,8 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
             AdminSurveyQuestion(
                 id=question.id,
                 key=question.key,
-                trigger=question.trigger,
+                triggers=question.triggers,
+                required=question.required,
                 input_type=question.input_type,
                 labels=question.labels,
                 options=options,
@@ -622,18 +617,15 @@ async def create_question(
         raise SurveyQuestionLabelUnusableError()
 
     max_order = (
-        await session.exec(
-            select(func.max(SurveyQuestion.display_order)).where(
-                SurveyQuestion.trigger == payload.trigger
-            )
-        )
+        await session.exec(select(func.max(SurveyQuestion.display_order)))
     ).one()
 
     options = _derive_option_keys(payload.options)
 
     question = SurveyQuestion(
         key=key,
-        trigger=payload.trigger,
+        triggers=list(payload.triggers),
+        required=payload.required,
         input_type=payload.input_type,
         labels=dict(payload.labels),
         options=[option.model_dump() for option in options],
@@ -716,6 +708,10 @@ async def update_question(
     question.labels = dict(payload.labels)
     question.options = [option.model_dump() for option in new_options]
     question.published = payload.published
+    # Neither of these changes what an answer means, so neither bumps the
+    # revision: the same wording asked in one more place is the same column.
+    question.triggers = list(payload.triggers)
+    question.required = payload.required
     if label_changed or live_set_changed:
         question.revision += 1
     question.updated_at = datetime.now()
@@ -775,16 +771,10 @@ async def delete_question(session: AsyncSession, question_id: uuid.UUID) -> None
 
 
 async def reorder(session: AsyncSession, payload: SurveyQuestionOrder) -> None:
-    """Write one trigger's order from the list the client sends. It has to
-    name every question on that trigger exactly once, so a stale page cannot
-    drop a question another admin added in the meantime."""
-    siblings = list(
-        (
-            await session.exec(
-                select(SurveyQuestion).where(SurveyQuestion.trigger == payload.trigger)
-            )
-        ).all()
-    )
+    """Write the order from the list the client sends. It has to name every
+    question exactly once, so a stale page cannot drop a question another
+    admin added in the meantime."""
+    siblings = list((await session.exec(select(SurveyQuestion))).all())
     by_id = {row.id: row for row in siblings}
     if len(payload.ids) != len(by_id) or set(payload.ids) != set(by_id):
         raise SurveyOrderMismatchError()

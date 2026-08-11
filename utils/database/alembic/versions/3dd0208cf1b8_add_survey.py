@@ -27,7 +27,8 @@ def upgrade() -> None:
         sa.Column("created_at", postgresql.TIMESTAMP(), nullable=False),
         sa.Column("updated_at", postgresql.TIMESTAMP(), nullable=False),
         sa.Column("key", sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
-        sa.Column("trigger", sa.String(), nullable=False),
+        sa.Column("triggers", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("required", sa.Boolean(), nullable=False),
         sa.Column("input_type", sa.String(), nullable=False),
         sa.Column("labels", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
         sa.Column("options", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
@@ -41,9 +42,6 @@ def upgrade() -> None:
     )
     op.create_index(
         op.f("ix_survey_question_key"), "survey_question", ["key"], unique=True
-    )
-    op.create_index(
-        op.f("ix_survey_question_trigger"), "survey_question", ["trigger"], unique=False
     )
     op.create_index(
         op.f("ix_survey_question_archived_at"),
@@ -159,6 +157,5 @@ def downgrade() -> None:
     op.drop_table("survey_answer")
 
     op.drop_index(op.f("ix_survey_question_archived_at"), table_name="survey_question")
-    op.drop_index(op.f("ix_survey_question_trigger"), table_name="survey_question")
     op.drop_index(op.f("ix_survey_question_key"), table_name="survey_question")
     op.drop_table("survey_question")
