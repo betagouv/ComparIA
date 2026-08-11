@@ -31,6 +31,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from utils.database.models.auth import LegalDocument
 from utils.database.models.utils import as_naive_utc
@@ -217,6 +218,19 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
         raise HTTPException(
             status_code=status.HTTP_428_PRECONDITION_REQUIRED,
             detail="Accept the terms in force before requesting a login code.",
+        )
+
+    # The signup questions gate the account, so they are checked here rather
+    # than only in the form. On an arena whose point is a verified professional
+    # audience, a gate that the browser enforces alone is no gate: the answers
+    # would come to mean 'professionals, plus everyone who posted straight to
+    # the API', which is not a column anyone can analyse.
+    if not await signup_questions_answered(
+        user_id=None, anonymous_user_hash=anonymous_user_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Answer the signup questions before requesting a login code.",
         )
 
     code = await request_login_code(body.email)

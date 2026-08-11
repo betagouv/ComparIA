@@ -104,6 +104,11 @@ class AppSettings(SQLModel, table=True):
     auth_access_policy: str = Field(default="anonymous_first")
     auth_domain_allowlist: Annotated[list[str], Field(sa_type=JSONB)] = []
     votes_objective: int = Field(default=300_000)
+    # How long a dismissed or unanswered after_vote question stays quiet before
+    # it may be shown again. Instance-tunable rather than a constant: an
+    # instance running a short campaign wants a shorter gap than one running
+    # for a year.
+    survey_reask_after_days: int = Field(default=7)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
     primary_color_light: str = Field(default=PRIMARY_COLOR_LIGHT_DEFAULT, max_length=7)
@@ -129,6 +134,7 @@ class AppSettingsPublic(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"]
     auth_domain_allowlist: list[str]
     votes_objective: int
+    survey_reask_after_days: int
     platform_name: str
     primary_color_light: str
     primary_color_dark: str
@@ -146,6 +152,7 @@ class AppSettingsPatch(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"] | None = None
     auth_domain_allowlist: list[str] | None = None
     votes_objective: int | None = None
+    survey_reask_after_days: int | None = None
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None

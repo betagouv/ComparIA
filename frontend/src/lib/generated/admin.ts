@@ -38,6 +38,49 @@ export interface AdminSuggestionCategory {
   display_order: number;
   suggestion_count: number;
 }
+/**
+ * How many respondents share one exact set of answers. Each question on its
+ * own can be vague and the combination still land on a single person: in a
+ * 400-person medical instance, '55-64 / femme / chirurgienne' is likely one
+ * identifiable human, and the published row carries her prompt text next to
+ * it. Showing the count on the config page puts that number in front of the
+ * admin who is ticking the publish box, which is where the judgement is
+ * already being made.
+ */
+export interface AdminSurveyCombination {
+  answers: {
+    [k: string]: string;
+  };
+  count: number;
+}
+export interface AdminSurveyOption {
+  key: string;
+  labels: {
+    [k: string]: string;
+  };
+  archived: boolean;
+  answer_count: number;
+}
+export interface AdminSurveyQuestion {
+  id: string;
+  key: string;
+  trigger: "signup" | "after_vote";
+  input_type: "select" | "checkbox_group";
+  labels: {
+    [k: string]: string;
+  };
+  options: AdminSurveyOption[];
+  published: boolean;
+  revision: number;
+  display_order: number;
+  archived: boolean;
+  respondent_count: number;
+}
+export interface AdminSurveyResponse {
+  questions: AdminSurveyQuestion[];
+  combinations: AdminSurveyCombination[];
+  total_respondents: number;
+}
 export interface AdminVoteTag {
   id: string;
   key: string;
@@ -58,6 +101,7 @@ export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
   auth_domain_allowlist?: string[] | null;
   votes_objective?: number | null;
+  survey_reask_after_days?: number | null;
   platform_name?: string | null;
   primary_color_light?: string | null;
   primary_color_dark?: string | null;
@@ -71,6 +115,7 @@ export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
   auth_domain_allowlist: string[];
   votes_objective: number;
+  survey_reask_after_days: number;
   platform_name: string;
   primary_color_light: string;
   primary_color_dark: string;
@@ -297,6 +342,41 @@ export interface SuggestionCategoryCreate {
 export interface SuggestionCreate {
   category_id: string;
   text: string;
+}
+export interface SurveyOptionWrite {
+  key?: string | null;
+  labels: {
+    [k: string]: string;
+  };
+  archived?: boolean;
+}
+export interface SurveyQuestionArchiveUpdate {
+  archived: boolean;
+}
+export interface SurveyQuestionCreate {
+  trigger: "signup" | "after_vote";
+  input_type: "select" | "checkbox_group";
+  labels: {
+    [k: string]: string;
+  };
+  options: SurveyOptionWrite[];
+  published?: boolean;
+}
+/**
+ * A whole trigger's order, written in one request, as the vote tags do: one
+ * round trip per drag, and the gaps archiving leaves in 'display_order' get
+ * rewritten away.
+ */
+export interface SurveyQuestionOrder {
+  trigger: "signup" | "after_vote";
+  ids: string[];
+}
+export interface SurveyQuestionUpdate {
+  labels: {
+    [k: string]: string;
+  };
+  options: SurveyOptionWrite[];
+  published: boolean;
 }
 export interface UpdateLegalPresentationBody {
   presentation: LegalPresentation;

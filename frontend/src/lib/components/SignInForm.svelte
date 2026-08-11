@@ -16,6 +16,7 @@
   import { getLocale } from '$lib/i18n/runtime'
   import { onMount } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
+  import SurveyQuestionField, { type SurveyQuestion } from './SurveyQuestionField.svelte'
 
   let {
     onSuccess,
@@ -39,8 +40,18 @@
   let consentLoading = $state(true)
   let consentError = $state<string>()
 
+  // Blocking signup questions. A failed or empty fetch leaves this list
+  // empty, which is deliberately indistinguishable from "no questions
+  // configured": either way nothing here should stop sign-in.
+  let surveyQuestions = $state<SurveyQuestion[]>([])
+  let surveyLoading = $state(true)
+  let surveyAnswers = $state<Record<string, string[]>>({})
+
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
   const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
+  const surveyAnswered = $derived(
+    surveyQuestions.every((question) => (surveyAnswers[question.id]?.length ?? 0) > 0)
+  )
 
   async function readConsent(again = false) {
     consentLoading = true
@@ -58,8 +69,25 @@
     }
   }
 
+  async function loadSurveyQuestions() {
+    surveyLoading = true
+    try {
+      const data = await api.request<{ questions: SurveyQuestion[] }>(
+        `/survey/questions?trigger=signup&locale=${encodeURIComponent(locale)}`
+      )
+      surveyQuestions = data.questions
+    } catch {
+      // A survey outage must never block sign-in: this degrades exactly like
+      // no questions being configured at all.
+      surveyQuestions = []
+    } finally {
+      surveyLoading = false
+    }
+  }
+
   onMount(() => {
     readConsent()
+    loadSurveyQuestions()
   })
 
   $effect(() => {
@@ -75,12 +103,27 @@
       consentError = m['consent.required']()
       return
     }
+    if (!surveyAnswered) return
     loading = true
     error = undefined
     try {
       if (consentRequired) {
         await submitConsent(terms, false)
         consentRequired = false
+      }
+      if (surveyQuestions.length > 0) {
+        // Submitted while still anonymous, alongside consent: the backend
+        // attaches these to the anonymous session and carries them onto the
+        // account once it exists.
+        await api.request('/survey/answers', {
+          method: 'POST',
+          body: JSON.stringify({
+            answers: surveyQuestions.map((question) => ({
+              question_id: question.id,
+              option_keys: surveyAnswers[question.id] ?? []
+            }))
+          })
+        })
       }
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
@@ -181,6 +224,19 @@
       />
     {/if}
 
+    {#if surveyQuestions.length > 0}
+      <p class="text-xs! mt-4! mb-2! text-grey">
+        {m['survey.signup.intro']()}
+      </p>
+      {#each surveyQuestions as question (question.id)}
+        <SurveyQuestionField
+          {question}
+          disabled={loading || step === 'code'}
+          onchange={(option_keys) => (surveyAnswers[question.id] = option_keys)}
+        />
+      {/each}
+    {/if}
+
     {#if step === 'code'}
       <Input
         id="login-code"
@@ -222,7 +278,12 @@
       <Button
         type="submit"
         text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-        disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
+        disabled={loading ||
+          consentLoading ||
+          !terms ||
+          (consentRequired && !consented) ||
+          surveyLoading ||
+          !surveyAnswered}
         class="mt-8 block! w-full!"
       />
     {/if}

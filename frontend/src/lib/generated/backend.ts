@@ -329,6 +329,24 @@ export interface CurrencyInfo {
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;
 }
+/**
+ * What the profile page and the personal-data export show.
+ */
+export interface MySurveyAnswer {
+  question_id: string;
+  question_key: string;
+  label: string;
+  input_type: "select" | "checkbox_group";
+  options: PublicSurveyOption[];
+  selected_keys: string[];
+}
+export interface PublicSurveyOption {
+  key: string;
+  label: string;
+}
+export interface MySurveyAnswersResponse {
+  answers: MySurveyAnswer[];
+}
 export interface PublicLegalDocument {
   version: string;
   content_hash: string;
@@ -336,6 +354,18 @@ export interface PublicLegalDocument {
   content: string;
   published_at: string;
   effective_at: string;
+}
+export interface PublicSurveyQuestion {
+  id: string;
+  key: string;
+  trigger: "signup" | "after_vote";
+  input_type: "select" | "checkbox_group";
+  label: string;
+  revision: number;
+  options: PublicSurveyOption[];
+}
+export interface PublicSurveyQuestionsResponse {
+  questions: PublicSurveyQuestion[];
 }
 export interface PublicVoteTag {
   key: string;
@@ -346,4 +376,18 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
+}
+export interface SurveyAnswerSubmit {
+  answers: SurveyQuestionAnswer[];
+}
+export interface SurveyQuestionAnswer {
+  question_id: string;
+  option_keys: string[];
+}
+/**
+ * Closing the popup and declining it are the same thing: both count as one
+ * of the three showings and neither is a special case worth a column.
+ */
+export interface SurveyDismiss {
+  question_ids: string[];
 }

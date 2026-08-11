@@ -9,12 +9,16 @@ import uuid
 from datetime import datetime
 
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlmodel import col, select
 
 from backend.config import TurnChoice
+from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE
+from backend.survey.services import my_answers
 from utils.database.models.auth import ConsentLog, User
 from utils.database.models.comparison import Comparison
 from utils.database.models.llms import LLMData
+from utils.database.models.survey import MySurveyAnswer, SurveyAnswer
 from utils.database.models.turn import Turn
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
@@ -66,12 +70,19 @@ class ExportedConversation(BaseModel):
     turns: list[ExportedTurn]
 
 
+class ExportedSurveyAnswer(BaseModel):
+    question: str
+    options: list[str]
+    answered_at: datetime
+
+
 class AccountDataExport(BaseModel):
     schema_version: int = EXPORT_SCHEMA_VERSION
     exported_at: datetime
     account: ExportedAccount
     consents: list[ExportedConsent]
     conversations: list[ExportedConversation]
+    survey_answers: list[ExportedSurveyAnswer]
 
 
 def _message(message) -> ExportedMessage | None:
@@ -115,6 +126,17 @@ def _conversation(
     )
 
 
+def _survey_answer(
+    answer: MySurveyAnswer, answered_at: datetime
+) -> ExportedSurveyAnswer:
+    selected = set(answer.selected_keys)
+    return ExportedSurveyAnswer(
+        question=answer.label,
+        options=[option.label for option in answer.options if option.key in selected],
+        answered_at=answered_at,
+    )
+
+
 async def build_account_export(user: User) -> AccountDataExport:
     async with get_session() as session:
         comparisons = (
@@ -134,6 +156,26 @@ async def build_account_export(user: User) -> AccountDataExport:
         model_names = dict(
             (await session.exec(select(LLMData.id, LLMData.human_id))).all()
         )
+        # MySurveyAnswer carries labels but not the moment of answering, so
+        # that comes from the answer rows themselves. A checkbox question is
+        # several rows, one per selected option, so the latest of them is
+        # 'when it was answered' for the question as a whole.
+        answered_ats = dict(
+            (
+                await session.exec(
+                    select(SurveyAnswer.question_id, func.max(SurveyAnswer.answered_at))
+                    .where(SurveyAnswer.user_id == user.id)
+                    .group_by(col(SurveyAnswer.question_id))
+                )
+            ).all()
+        )
+        # The export is a document for the person, not a page rendered in
+        # their current session locale, so it always resolves labels in the
+        # instance's default language, same as the legal documents it also
+        # exports the acceptance of.
+        survey_answers = await my_answers(
+            session, DEFAULT_LEGAL_LANGUAGE, user.id, None
+        )
 
     return AccountDataExport(
         exported_at=utc_now(),
@@ -150,5 +192,10 @@ async def build_account_export(user: User) -> AccountDataExport:
         ],
         conversations=[
             _conversation(comparison, model_names) for comparison in comparisons
+        ],
+        survey_answers=[
+            _survey_answer(answer, answered_ats[answer.question_id])
+            for answer in survey_answers
+            if answer.selected_keys and answer.question_id in answered_ats
         ],
     )

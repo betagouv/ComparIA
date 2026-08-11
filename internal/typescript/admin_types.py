@@ -14,6 +14,17 @@ from utils.database.models.suggestion import (
     SuggestionCategoryCreate,
     SuggestionCreate,
 )
+from utils.database.models.survey import (
+    AdminSurveyCombination,
+    AdminSurveyOption,
+    AdminSurveyQuestion,
+    AdminSurveyResponse,
+    SurveyOptionWrite,
+    SurveyQuestionArchiveUpdate,
+    SurveyQuestionCreate,
+    SurveyQuestionOrder,
+    SurveyQuestionUpdate,
+)
 from utils.database.models.vote_tag import (
     AdminVoteTag,
     AdminVoteTagsResponse,

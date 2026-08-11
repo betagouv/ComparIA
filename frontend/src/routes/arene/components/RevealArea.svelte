@@ -8,6 +8,7 @@
   import { getLocale } from '$lib/i18n/runtime'
   import type { UsageProfileId } from '$lib/usageProfiles'
   import { RevealCard } from '.'
+  import SurveyModal from './SurveyModal.svelte'
 
   let { data }: { data: APIRevealData } = $props()
 
@@ -128,6 +129,8 @@
     </div>
   </div>
 </div>
+
+<SurveyModal />
 
 {#if ['fr', 'en'].includes(locale)}
   <section class="fr-container--fluid bg-light-info">
