@@ -457,10 +457,20 @@ def test_signup_questions_do_not_gate_an_account_that_already_exists():
     async def known_account(_email):
         return True
 
+    # Only reached once the gates let the request through, which is the point
+    # of the test: without these it would fail on the database instead.
+    async def request_login_code(_email):
+        return "123456"
+
+    async def send_login_code(_email, _code):
+        pass
+
     with routed(
         signup_questions_answered=unanswered,
         has_current_terms_acceptance=granted,
         account_exists=known_account,
+        request_login_code=request_login_code,
+        send_login_code=send_login_code,
     ) as test_client:
         response = test_client.post(
             "/auth/email/request", json={"email": "a@b.fr", "altcha_payload": "valid"}

@@ -73,6 +73,10 @@ async def _fake_signup_questions_answered(**kwargs):
     return True
 
 
+async def _fake_account_exists(email):
+    return False
+
+
 @contextlib.contextmanager
 def fake_router(verify_login_code=None, has_current_terms_acceptance=None):
     fake = FakeRedis()
@@ -86,10 +90,13 @@ def fake_router(verify_login_code=None, has_current_terms_acceptance=None):
         "get_app_settings": auth_router.get_app_settings,
         "has_current_terms_acceptance": auth_router.has_current_terms_acceptance,
         "signup_questions_answered": auth_router.signup_questions_answered,
+        "account_exists": auth_router.account_exists,
     }
     # These tests are about the throttle. An instance with no signup questions
-    # is the default, and that is what this stands in for.
+    # is the default, and that is what this stands in for. A first-time
+    # visitor likewise: the throttle counts a request either way.
     auth_router.signup_questions_answered = _fake_signup_questions_answered
+    auth_router.account_exists = _fake_account_exists
     auth_router.get_redis_client = lambda: fake
     auth_router.verify_altcha_token = lambda payload: (True, None)
     auth_router.request_login_code = _fake_request_login_code
