@@ -17,6 +17,7 @@ from backend.sentry import init_sentry
 from backend.settings.router import router as settings_router
 from backend.statistics import router as statistics_router
 from backend.suggestions.router import router as suggestions_router
+from backend.survey.router import router as survey_router
 from backend.utils.countries import get_vote_count
 from backend.vote_tags.router import router as vote_tags_router
 from utils.database.settings import get_app_settings
@@ -152,6 +153,7 @@ api_router = APIRouter(prefix="/api")
 api_router.include_router(models_router)
 api_router.include_router(suggestions_router)
 api_router.include_router(vote_tags_router)
+api_router.include_router(survey_router)
 api_router.include_router(arena_router)
 api_router.include_router(auth_router)
 api_router.include_router(admin_router)
