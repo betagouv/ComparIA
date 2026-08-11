@@ -38,21 +38,6 @@ export interface AdminSuggestionCategory {
   display_order: number;
   suggestion_count: number;
 }
-/**
- * How many respondents share one exact set of answers. Each question on its
- * own can be vague and the combination still land on a single person: in a
- * 400-person medical instance, '55-64 / femme / chirurgienne' is likely one
- * identifiable human, and the published row carries her prompt text next to
- * it. Showing the count on the config page puts that number in front of the
- * admin who is ticking the publish box, which is where the judgement is
- * already being made.
- */
-export interface AdminSurveyCombination {
-  answers: {
-    [k: string]: string;
-  };
-  count: number;
-}
 export interface AdminSurveyOption {
   key: string;
   labels: {
@@ -78,7 +63,6 @@ export interface AdminSurveyQuestion {
 }
 export interface AdminSurveyResponse {
   questions: AdminSurveyQuestion[];
-  combinations: AdminSurveyCombination[];
   total_respondents: number;
 }
 export interface AdminVoteTag {

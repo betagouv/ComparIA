@@ -44,7 +44,6 @@ from .survey import (
     MAX_QUESTIONS_PER_PROMPT,
     SURVEY_INPUT_TYPES,
     SURVEY_TRIGGERS,
-    AdminSurveyCombination,
     AdminSurveyOption,
     AdminSurveyQuestion,
     AdminSurveyResponse,

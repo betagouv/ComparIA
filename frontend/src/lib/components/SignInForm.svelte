@@ -201,9 +201,6 @@
     />
 
     {#if surveyQuestions.length > 0}
-      <p class="text-xs! mt-4! mb-2! text-grey">
-        {m['survey.signup.intro']()}
-      </p>
       {#each surveyQuestions as question (question.id)}
         <SurveyQuestionField
           {question}
