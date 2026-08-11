@@ -4,7 +4,7 @@ import Tabs from './Tabs.svelte'
 
 describe('Tabs', () => {
   it('updates the selected tab and panel', async () => {
-    const { getByRole } = render(Tabs, {
+    const { container, getByRole } = render(Tabs, {
       tabs: [
         { id: 'add', label: 'Ajouter', content: 'Formulaire' },
         { id: 'manage', label: 'Gérer', content: 'Liste' }
@@ -17,12 +17,15 @@ describe('Tabs', () => {
 
     expect(addTab).toHaveAttribute('aria-selected', 'true')
     expect(manageTab).toHaveAttribute('aria-selected', 'false')
+    expect(getByRole('tabpanel', { name: 'Ajouter' })).not.toHaveAttribute('hidden')
+    expect(container.querySelector('#tab-manage-panel')).toHaveAttribute('hidden')
 
     await fireEvent.click(manageTab)
 
     expect(addTab).toHaveAttribute('aria-selected', 'false')
     expect(manageTab).toHaveAttribute('aria-selected', 'true')
     expect(getByRole('tabpanel', { name: 'Gérer' })).toHaveClass('fr-tabs__panel--selected')
+    expect(container.querySelector('#tab-add-panel')).toHaveAttribute('hidden')
   })
 
   it('moves between tabs with the arrow, home and end keys', async () => {
