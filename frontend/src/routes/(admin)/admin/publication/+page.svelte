@@ -209,7 +209,7 @@
         method: 'POST'
       })
       useToast(m['admin.publishing.publishStarted'](), 4000)
-      await refetch()
+      setTimeout(() => refetch(), 3000)
     } catch (error) {
       useToast((error as ApiError).message, 8000, 'error')
     } finally {
