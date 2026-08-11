@@ -548,8 +548,8 @@
         },
         "modelSelection": "Sélection des modèles",
         "prompt": {
-            "label": "Écrivez votre premier message",
-            "placeholder": "Écrivez votre premier message ici"
+            "label": "Écrivez votre première requête",
+            "placeholder": "Écrivez votre première requête ici"
         },
         "selectModels": {
             "help": "Sélectionnez le mode de comparaison qui vous convient",
