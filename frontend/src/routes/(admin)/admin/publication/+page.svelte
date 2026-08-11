@@ -308,6 +308,7 @@
   }
 
   function runDetails(run: AdminPublishStatus['runs'][number]) {
+    if (run.finished_at === null) return m['admin.publishing.historyPending']()
     if (!run.error) return m['admin.publishing.historyNoError']()
     if (run.error === 'No rows produced, aborting export') {
       return m['admin.publishing.historyNoRows']()
