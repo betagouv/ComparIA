@@ -35,6 +35,11 @@ from utils.database.models.suggestion import (  # noqa: F401
     PromptSuggestion,
     SuggestionCategory,
 )
+from utils.database.models.survey import (  # noqa: F401
+    SurveyAnswer,
+    SurveyPromptLog,
+    SurveyQuestion,
+)
 
 config = context.config
 
