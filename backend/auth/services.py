@@ -66,6 +66,12 @@ async def find_user_by_email(session: "AsyncSession", email: str) -> User | None
     return result.first()
 
 
+async def account_exists(email: str) -> bool:
+    async with get_session() as session:
+        result = await session.exec(select(User.id).where(User.email == email))
+        return result.first() is not None
+
+
 async def request_login_code(email: str) -> str | None:
     """A fresh code for the address, or None when an admin deleted its
     account: such an account has no way in until an admin brings it back."""

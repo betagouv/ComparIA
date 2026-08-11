@@ -400,8 +400,6 @@ async def signup_questions_answered(
     preconditions the auth routes check before doing any work, and both are
     free on the common path where nothing is configured.
     """
-    _require_respondent(user_id, anonymous_user_hash)
-
     signup_ids = [
         question.id
         for question in await _all_questions()
@@ -409,9 +407,17 @@ async def signup_questions_answered(
     ]
     # The overwhelmingly common case is an instance with no signup questions
     # at all, and it costs nothing: the question list is cached, so the gate
-    # never reaches the database.
+    # never reaches the database. Checked before the respondent, so an
+    # instance with nothing configured answers the same either way.
     if not signup_ids:
         return True
+
+    # A caller with no identity at all cannot have answered anything. Saying
+    # so beats raising: this runs on a login route, where an unexpected shape
+    # should turn into the gate's own 428, not a 500.
+    if user_id is None and anonymous_user_hash is None:
+        return False
+    _require_respondent(user_id, anonymous_user_hash)
 
     async with get_session() as session:
         answered_ids = set(
@@ -766,10 +772,13 @@ async def set_archived(
     if question is None:
         raise SurveyQuestionNotFoundError()
 
-    now = datetime.now()
-    question.archived_at = now if archived else None
+    # archived_at is the survey's own column and reads in UTC like every other
+    # one it owns; updated_at belongs to BaseDBModel, whose default is the
+    # host's local time, and matching it keeps a row's own two stamps
+    # comparable.
+    question.archived_at = utc_now() if archived else None
     question.archived_by = admin_id if archived else None
-    question.updated_at = now
+    question.updated_at = datetime.now()
     session.add(question)
     await session.commit()
     invalidate_cache(REDIS_SURVEY_KEY)
