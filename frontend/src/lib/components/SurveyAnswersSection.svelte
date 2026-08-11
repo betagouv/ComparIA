@@ -12,8 +12,8 @@
   let saving = $state(false)
   let questions = $state<MySurveyAnswer[]>([])
   // One entry per question, keyed by question_id, holding whatever is
-  // currently selected in the form — regardless of input type, so a select
-  // and a checkbox group are edited and saved the same way.
+  // currently selected in the form, whatever its input type, so a select and
+  // a checkbox group are edited and saved the same way.
   let selections = $state<Record<string, string[]>>({})
 
   onMount(load)

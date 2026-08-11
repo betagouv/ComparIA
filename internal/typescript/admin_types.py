@@ -29,7 +29,6 @@ from utils.database.models.suggestion import (
     SuggestionCreate,
 )
 from utils.database.models.survey import (
-    AdminSurveyCombination,
     AdminSurveyOption,
     AdminSurveyQuestion,
     AdminSurveyResponse,
