@@ -12,7 +12,6 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from utils.database.models.survey import (
     MAX_QUESTION_PROMPTS,
     MAX_QUESTIONS_PER_PROMPT,
-    AdminSurveyCombination,
     AdminSurveyOption,
     AdminSurveyQuestion,
     AdminSurveyResponse,
@@ -588,45 +587,8 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
 
     total_respondents = len({_respondent_of(row) for row in all_answers})
 
-    # 'combinations': one profile per respondent, built only from published,
-    # non-archived questions (unpublished/archived questions never reach the
-    # dataset, so they cannot be part of a re-identification risk in it).
-    combinable_ids = {
-        question.id
-        for question in questions
-        if question.published and question.archived_at is None
-    }
-    key_by_question = {question.id: question.key for question in questions}
-
-    profiles: dict[tuple[str, object], dict[str, str]] = {}
-    for row in all_answers:
-        if row.question_id not in combinable_ids:
-            continue
-        profile = profiles.setdefault(_respondent_of(row), {})
-        question_key = key_by_question[row.question_id]
-        if question_key in profile:
-            # checkbox_group: fold every selected key into one canonical,
-            # order-independent string rather than losing all but the last.
-            keys = sorted(profile[question_key].split(",") + [row.option_key])
-            profile[question_key] = ",".join(keys)
-        else:
-            profile[question_key] = row.option_key
-
-    combo_counts: dict[tuple[tuple[str, str], ...], int] = {}
-    combo_answers: dict[tuple[tuple[str, str], ...], dict[str, str]] = {}
-    for profile in profiles.values():
-        combo_key = tuple(sorted(profile.items()))
-        combo_counts[combo_key] = combo_counts.get(combo_key, 0) + 1
-        combo_answers[combo_key] = profile
-
-    combinations = [
-        AdminSurveyCombination(answers=combo_answers[combo_key], count=count)
-        for combo_key, count in sorted(combo_counts.items(), key=lambda item: item[1])
-    ][:200]
-
     return AdminSurveyResponse(
         questions=admin_questions,
-        combinations=combinations,
         total_respondents=total_respondents,
     )
 
