@@ -439,22 +439,28 @@ async def carry_over_anonymous(
     `_associate_anonymous_acceptance()` in `backend/auth/services.py`: this is
     called from inside that same transaction, so it never commits itself.
     """
-    already_answered = set(
+    just_answered = set(
         (
             await session.exec(
-                select(SurveyAnswer.question_id).where(SurveyAnswer.user_id == user_id)
+                select(SurveyAnswer.question_id)
+                .where(
+                    SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
+                    col(SurveyAnswer.user_id).is_(None),
+                )
+                .distinct()
             )
         ).all()
     )
-    if already_answered:
-        # The account's own answer wins over whatever was given anonymously
-        # for the same question, so the anonymous duplicate is dropped rather
-        # than left to survive alongside it.
+    if just_answered:
+        # The newer answer wins. Both sides can hold one for the same question,
+        # since the login form asks it of returning users too, and the answer
+        # given a moment ago describes the person better than one given a year
+        # ago. This is the same replace-in-place rule the profile page follows,
+        # so the account's rows go and the anonymous ones take their place.
         await session.execute(
             sa_delete(SurveyAnswer).where(
-                SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
-                SurveyAnswer.user_id.is_(None),
-                col(SurveyAnswer.question_id).in_(already_answered),
+                SurveyAnswer.user_id == user_id,
+                col(SurveyAnswer.question_id).in_(just_answered),
             )
         )
 

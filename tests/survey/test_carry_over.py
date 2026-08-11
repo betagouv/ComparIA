@@ -60,6 +60,45 @@ def _log(question_id, shown_count, last_shown_at, *, anonymous):
     )
 
 
+def test_the_answer_just_given_replaces_the_one_on_the_account():
+    """
+    The login form asks the signup questions of returning users too, so both
+    sides can hold an answer to the same question. The newer one wins, which
+    means the account's rows for those questions are deleted before the
+    anonymous ones are moved across.
+    """
+    user_id = uuid.uuid4()
+    question_id = uuid.uuid4()
+
+    # First exec: the questions this anonymous session just answered.
+    session = FakeSession([question_id], [], [])
+    asyncio.run(carry_over_anonymous(session, "hash", user_id))
+
+    deletes = [
+        statement
+        for statement in session.statements
+        if statement.__visit_name__ == "delete"
+    ]
+    assert deletes, "the account's own answer was left in place"
+    target = str(deletes[0].compile(compile_kwargs={"literal_binds": True}))
+    assert "survey_answer" in target
+    assert "user_id" in target
+
+
+def test_nothing_is_deleted_when_the_session_answered_nothing():
+    """A plain sign-in must not touch the answers already on the account."""
+    user_id = uuid.uuid4()
+
+    session = FakeSession([], [], [])
+    asyncio.run(carry_over_anonymous(session, "hash", user_id))
+
+    assert not [
+        statement
+        for statement in session.statements
+        if statement.__visit_name__ == "delete"
+    ]
+
+
 def test_prompt_counts_are_added_together_rather_than_duplicated():
     """
     Both sides can hold a row for the same question, and the readers key their
@@ -117,6 +156,8 @@ def test_the_cap_still_holds_after_a_merge():
 
 
 if __name__ == "__main__":
+    test_the_answer_just_given_replaces_the_one_on_the_account()
+    test_nothing_is_deleted_when_the_session_answered_nothing()
     test_prompt_counts_are_added_together_rather_than_duplicated()
     test_an_unmatched_anonymous_row_is_reassigned_untouched()
     test_the_cap_still_holds_after_a_merge()
