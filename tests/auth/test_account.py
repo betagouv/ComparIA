@@ -210,7 +210,26 @@ def test_erasure_anonymises_the_account_and_clears_its_credentials():
         "auth_invite_token",
         "auth_totp",
         "auth_totp_challenge",
+        "survey_answer",
+        "survey_prompt_log",
     }
+
+
+def test_erasure_deletes_the_survey_answers_outright():
+    """
+    The conversations are anonymised rather than removed, because the arena
+    data keeps its value once no one is attached to it. The survey answers are
+    the opposite: age, gender and profession describe the person and nothing
+    else, so a request to be forgotten deletes them rather than orphaning them.
+    """
+    user = User(email="personne@example.test")
+    session = FakeSession(user)
+
+    with fake_session(session):
+        asyncio.run(auth_services.erase_user_account(user.id))
+
+    assert "survey_answer" in deleted_tables(session.statements)
+    assert "survey_prompt_log" in deleted_tables(session.statements)
 
 
 def test_erasure_keeps_the_consent_proof_without_its_address():
