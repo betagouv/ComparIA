@@ -25,6 +25,7 @@ from backend.auth.oidc import (
 )
 from backend.auth.services import (
     _hash,
+    RequestContext,
     accept_invite,
     erase_user_account,
     get_anonymous_consent_status,
@@ -326,10 +327,12 @@ async def email_verify(
     token = await verify_login_code(
         email=body.email,
         code=body.code,
-        ip=ip,
-        user_agent=user_agent,
-        visitor_id=visitor_id,
-        anonymous_user_hash=_anonymous_hash(request),
+        ctx=RequestContext(
+            ip=ip,
+            user_agent=user_agent,
+            visitor_id=visitor_id,
+            anonymous_user_hash=_anonymous_hash(request),
+        ),
     )
     if not token:
         try:
@@ -493,10 +496,12 @@ async def oidc_callback(
     visitor_id = get_matomo_tracker_from_cookies(request.cookies)
     token = await oidc_login_service(
         email=email,
-        ip=ip,
-        user_agent=user_agent,
-        visitor_id=visitor_id,
-        anonymous_user_hash=_anonymous_hash(request),
+        ctx=RequestContext(
+            ip=ip,
+            user_agent=user_agent,
+            visitor_id=visitor_id,
+            anonymous_user_hash=_anonymous_hash(request),
+        ),
     )
 
     redirect = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
@@ -533,10 +538,12 @@ async def invite_accept(
 
     token = await accept_invite(
         token=body.token,
-        ip=ip,
-        user_agent=user_agent,
-        visitor_id=visitor_id,
-        anonymous_user_hash=anonymous_user_hash,
+        ctx=RequestContext(
+            ip=ip,
+            user_agent=user_agent,
+            visitor_id=visitor_id,
+            anonymous_user_hash=anonymous_user_hash,
+        ),
     )
     if not token:
         raise HTTPException(

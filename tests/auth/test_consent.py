@@ -252,7 +252,9 @@ def test_signing_in_is_not_an_acceptance():
     session = FakeSession()
     asyncio.run(
         auth_services._create_session(
-            session, User(email="a@b.fr"), "10.0.0.1", None, None
+            session,
+            User(email="a@b.fr"),
+            auth_services.RequestContext(ip="10.0.0.1"),
         )
     )
 
@@ -439,7 +441,7 @@ def test_an_accepted_invite_carries_the_acceptance_of_the_visitor():
         response = test_client.post("/auth/invite/accept", json={"token": "invite"})
 
     assert response.status_code == 200
-    assert accepted["anonymous_user_hash"] == auth_services._hash("token")
+    assert accepted["ctx"].anonymous_user_hash == auth_services._hash("token")
 
 
 def test_the_carried_over_acceptance_answers_for_the_first_message():
