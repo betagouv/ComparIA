@@ -50,7 +50,7 @@
     class="fr-toggle__input"
     {id}
     bind:checked={value}
-    aria-describedby="toggle-hint-{id}"
+    aria-describedby={help ? `toggle-hint-${id}` : undefined}
   />
   {#if !inline}
     <div aria-hidden="true" class={['fr-label w-full', props.class]}>
