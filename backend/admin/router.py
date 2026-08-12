@@ -410,7 +410,9 @@ async def patch_settings(
     patch = body.model_dump(exclude_unset=True)
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")
-        patch["oidc_client_secret_encrypted"] = encrypt_oidc_secret(secret) if secret else None
+        patch["oidc_client_secret_encrypted"] = (
+            encrypt_oidc_secret(secret) if secret else None
+        )
     row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
 
