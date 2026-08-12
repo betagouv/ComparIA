@@ -150,6 +150,19 @@
             "title": "Diskussioner",
             "signIn": "Log ind"
         },
+        "oidc": {
+            "buttonFallback": "Log ind med identitetsudbyderen",
+            "or": "eller",
+            "error": {
+                "domain_not_allowed": "Din adresse tilhører ikke et domæne, der er godkendt til denne instans.",
+                "invalid_nonce": "Login via identitetsudbyderen mislykkedes (ugyldigt token).",
+                "invalid_state": "Login via identitetsudbyderen er udløbet. Prøv igen.",
+                "missing_code": "Login via identitetsudbyderen er ufuldstændig. Prøv igen.",
+                "no_email": "Identitetsudbyderen returnerede ingen e-mailadresse.",
+                "oidc_unavailable": "Login via identitetsudbyderen er ikke aktiveret på denne instans.",
+                "provider_error": "Identitetsudbyderen afviste loginanmodningen. Prøv igen."
+            }
+        },
         "modal": {
             "email": {
                 "title": "Log ind eller opret konto",

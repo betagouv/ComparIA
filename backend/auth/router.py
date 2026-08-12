@@ -200,6 +200,24 @@ async def get_config_logo() -> Response:
     )
 
 
+@router.get("/config/oidc/logo")
+async def get_config_oidc_logo() -> Response:
+    """The OIDC button logo, served publicly so the login page can render it.
+
+    The boolean `oidc_has_button_logo` in `/auth/config` only says *whether* a
+    custom logo exists; this endpoint serves the bytes. Mirrors the platform
+    logo endpoint above.
+    """
+    app_settings = await get_app_settings()
+    if not app_settings.oidc_button_logo:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return Response(
+        content=app_settings.oidc_button_logo,
+        media_type=app_settings.oidc_button_logo_content_type or "image/png",
+        headers={"Cache-Control": "public, max-age=300"},
+    )
+
+
 @router.post("/email/request", status_code=status.HTTP_204_NO_CONTENT)
 async def email_request(body: EmailRequestBody, request: Request) -> None:
     ip = get_ip(request)
