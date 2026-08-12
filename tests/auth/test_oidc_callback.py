@@ -75,7 +75,7 @@ def _discovery():
 
 
 @contextlib.contextmanager
-def routed(row=None, stored_nonce="the-nonce", exchange=None, discover=None):
+def routed(row=None, stored_nonce="the-nonce", exchange=None, discover=None, oidc_login=None):
     if row is None:
         row = _settings_row()
 
@@ -107,9 +107,14 @@ def routed(row=None, stored_nonce="the-nonce", exchange=None, discover=None):
     # paths must never reach it (no User row, no session minted).
     login_calls = []
 
-    async def oidc_login_service(**kwargs):
-        login_calls.append(kwargs)
-        return "session-token"
+    if oidc_login is None:
+
+        async def oidc_login_service(**kwargs):
+            login_calls.append(kwargs)
+            return "session-token"
+
+    else:
+        oidc_login_service = oidc_login
 
     def decrypt_oidc_secret(_ciphertext):
         return "super-secret"
@@ -445,6 +450,32 @@ def test_oidc_login_lands_on_a_pre_seeded_admin_account():
 
     assert token
     assert admin.role == "admin"
+    assert not any(isinstance(obj, User) for obj in session.added)
+
+
+def test_callback_reuses_an_existing_account_instead_of_duplicating_it():
+    """Router-seam test (spec: 'an existing email-code account is reused
+    when the same email authenticates via OIDC'). Wires the real
+    `oidc_login` service to a FakeSession that already holds a User row for
+    the callback's email, then asserts the callback succeeds and adds no
+    new User to the session."""
+    existing = User(email="agent@example.test")
+    session = FakeSession(results=[[existing]])
+
+    async def oidc_login(**kwargs):
+        return await auth_services.oidc_login(**kwargs)
+
+    with fake_session(session):
+        with routed(oidc_login=oidc_login) as client:
+            response = client.get(
+                "/auth/oidc/callback",
+                params={"code": "auth-code", "state": "good-state"},
+                follow_redirects=False,
+            )
+
+    assert response.status_code == 302
+    assert response.headers["location"] == "/"
+    assert "auth_session=" in response.headers["set-cookie"]
     assert not any(isinstance(obj, User) for obj in session.added)
 
 
