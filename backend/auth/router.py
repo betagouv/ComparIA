@@ -433,13 +433,17 @@ async def oidc_callback(
     if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
         return _login_error("oidc_unavailable")
 
+    # Consume the issued state up front so a provider-error redirect,
+    # a missing/invalid state, or a missing code all leave nothing behind
+    # in Redis — the round trip leaves no partial state on any failure path.
+    stored_nonce = consume_state(state) if state else None
+
     # The provider redirected back with an `error` param (OAuth2 standard) —
-    # the user denied consent, or the provider rejected the request. There is
-    # no code to exchange, and no point consuming state: bail out cleanly.
+    # the user denied consent, or the provider rejected the request. There
+    # is no code to exchange; bail out cleanly with the state already consumed.
     if error:
         return _login_error("provider_error")
 
-    stored_nonce = consume_state(state) if state else None
     if not stored_nonce:
         return _login_error("invalid_state")
     if not code:
