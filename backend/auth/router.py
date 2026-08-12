@@ -155,6 +155,17 @@ def _reject_cross_site(request: Request) -> None:
         )
 
 
+def _set_auth_session_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        "auth_session",
+        token,
+        httponly=True,
+        secure=settings.COMPARIA_COOKIE_SECURE,
+        samesite="lax",
+        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
+    )
+
+
 async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
     document = await get_active_legal_document("terms", assertion.locale)
     if (
@@ -389,14 +400,7 @@ async def email_verify(
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    response.set_cookie(
-        "auth_session",
-        token,
-        httponly=True,
-        secure=settings.COMPARIA_COOKIE_SECURE,
-        samesite="lax",
-        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
-    )
+    _set_auth_session_cookie(response, token)
     return {"email": body.email}
 
 
@@ -542,14 +546,7 @@ async def oidc_callback(
     )
 
     redirect = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    redirect.set_cookie(
-        "auth_session",
-        token,
-        httponly=True,
-        secure=not settings.LANGUIA_DEBUG,
-        samesite="lax",
-        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
-    )
+    _set_auth_session_cookie(redirect, token)
     return redirect
 
 
@@ -594,14 +591,7 @@ async def invite_accept(
             detail="Invalid or expired invite link.",
         )
 
-    response.set_cookie(
-        "auth_session",
-        token,
-        httponly=True,
-        secure=settings.COMPARIA_COOKIE_SECURE,
-        samesite="lax",
-        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
-    )
+    _set_auth_session_cookie(response, token)
     return {"success": True}
 
 
