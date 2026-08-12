@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Literal
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
@@ -370,11 +371,27 @@ async def oidc_login(request: Request) -> RedirectResponse:
     return RedirectResponse(url=authorization_url, status_code=status.HTTP_302_FOUND)
 
 
+def _login_error(reason: str) -> RedirectResponse:
+    """Redirect back to the login page with a machine-readable `error` param.
+
+    The callback is reached via a redirect from the identity provider, so every
+    failure mode resolves to a redirect (not an HTTPException): a bare error
+    page is a dead end for a user who arrived mid-flow. The login page renders
+    the `error` param. No session cookie is set on this path, so no partial
+    auth state survives the failure.
+    """
+    return RedirectResponse(
+        url=f"/login?{urlencode({'error': reason})}",
+        status_code=status.HTTP_302_FOUND,
+    )
+
+
 @router.get("/oidc/callback")
 async def oidc_callback(
     request: Request,
     code: str | None = None,
     state: str | None = None,
+    error: str | None = None,
 ) -> RedirectResponse:
     """Complete the OIDC round trip and sign the user in.
 
@@ -383,65 +400,67 @@ async def oidc_callback(
     provider, then the domain-allowlist check, then the same session mint and
     `auth_session` cookie as email login. The OIDC tokens are consumed inside
     `exchange_code_for_claims` and never persisted.
+
+    Every failure mode redirects back to `/login?error=...` instead of raising
+    an `HTTPException`: the user arrives here mid-flow from the identity
+    provider, so a JSON error page is a dead end. A failure never reaches
+    `oidc_login`, so no `User` row is created and no session is minted — the
+    round trip leaves no partial state behind.
     """
     app_settings = await get_app_settings()
     if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="OIDC is not enabled for this instance.",
-        )
+        return _login_error("oidc_unavailable")
+
+    # The provider redirected back with an `error` param (OAuth2 standard) —
+    # the user denied consent, or the provider rejected the request. There is
+    # no code to exchange, and no point consuming state: bail out cleanly.
+    if error:
+        return _login_error("provider_error")
 
     stored_nonce = consume_state(state) if state else None
     if not stored_nonce:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid or expired OIDC state.",
-        )
+        return _login_error("invalid_state")
     if not code:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="OIDC callback is missing the authorization code.",
-        )
+        return _login_error("missing_code")
 
-    discovery = await discover_provider(app_settings.oidc_issuer)
+    try:
+        discovery = await discover_provider(app_settings.oidc_issuer)
+    except Exception:
+        logger.exception("[OIDC] discovery failed during callback")
+        return _login_error("provider_error")
     token_endpoint = discovery.get("token_endpoint")
     userinfo_endpoint = discovery.get("userinfo_endpoint")
     if not token_endpoint or not userinfo_endpoint:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="OIDC provider discovery document is missing required endpoints.",
-        )
+        return _login_error("provider_error")
 
     client_secret = decrypt_oidc_secret(app_settings.oidc_client_secret_encrypted)
-    claims = await exchange_code_for_claims(
-        token_endpoint=token_endpoint,
-        userinfo_endpoint=userinfo_endpoint,
-        client_id=app_settings.oidc_client_id,
-        client_secret=client_secret,
-        code=code,
-        redirect_uri=oidc_callback_url(),
-    )
+    try:
+        claims = await exchange_code_for_claims(
+            token_endpoint=token_endpoint,
+            userinfo_endpoint=userinfo_endpoint,
+            client_id=app_settings.oidc_client_id,
+            client_secret=client_secret,
+            code=code,
+            redirect_uri=oidc_callback_url(),
+        )
+    except Exception:
+        # The token endpoint rejects denied/expired/reused codes with a 4xx;
+        # the userinfo endpoint can fail mid-flight. Either way the round trip
+        # is unrecoverable from the browser's point of view.
+        logger.exception("[OIDC] code exchange or userinfo retrieval failed")
+        return _login_error("provider_error")
 
     if not claims.get("nonce") or claims["nonce"] != stored_nonce:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="OIDC nonce validation failed.",
-        )
+        return _login_error("invalid_nonce")
 
     email = claims.get("email")
     if not email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="OIDC provider did not return an email claim.",
-        )
+        return _login_error("no_email")
 
     if app_settings.auth_domain_allowlist:
         domain = email.split("@")[-1].lower()
         if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Email domain not allowed.",
-            )
+            return _login_error("domain_not_allowed")
 
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
