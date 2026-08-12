@@ -619,6 +619,19 @@
             "signIn": "Se connecter",
             "title": "Discussions"
         },
+        "oidc": {
+            "buttonFallback": "Se connecter avec le fournisseur d’identité",
+            "or": "ou",
+            "error": {
+                "domain_not_allowed": "Votre adresse n’appartient pas à un domaine autorisé pour cette instance.",
+                "invalid_nonce": "La connexion via le fournisseur d’identité a échoué (jeton invalide).",
+                "invalid_state": "La connexion via le fournisseur d’identité a expiré. Réessayez.",
+                "missing_code": "La connexion via le fournisseur d’identité est incomplète. Réessayez.",
+                "no_email": "Le fournisseur d’identité n’a pas renvoyé d’adresse e-mail.",
+                "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas activée sur cette instance.",
+                "provider_error": "Le fournisseur d’identité a refusé la demande de connexion. Réessayez."
+            }
+        },
         "modal": {
             "code": {
                 "error": "Code invalide ou expiré.",

@@ -12,7 +12,7 @@ export interface AuthUser {
 
 export interface AuthConfig {
   access_policy: 'anonymous_first' | 'sign_in_required'
-  methods: 'email_code'[]
+  methods: ('email_code' | 'oidc')[]
   smtp_configured: boolean
   domain_allowlist: string[]
   platform_name: string
@@ -25,6 +25,12 @@ export interface AuthConfig {
   homepage_url: string | null
   enabled_locales: string[]
   default_locale: string
+  // OIDC method description for the login page. `oidc_enabled` is derived
+  // server-side from `methods` plus a complete provider config, so the button
+  // only renders when OIDC would actually work.
+  oidc_enabled: boolean
+  oidc_button_label: string | null
+  oidc_has_button_logo: boolean
 }
 
 type AuthCtx = {
