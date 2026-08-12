@@ -35,6 +35,7 @@ from backend.auth.oidc import (
     oidc_callback_url,
 )
 from backend.auth.services import (
+    RequestContext,
     _hash,
     accept_invite,
     erase_user_account,
@@ -402,9 +403,11 @@ async def email_verify(
     token = await verify_login_code(
         email=body.email,
         code=body.code,
-        ip=ip,
-        user_agent=user_agent,
-        anonymous_user_hash=_anonymous_hash(request),
+        ctx=RequestContext(
+            ip=ip,
+            user_agent=user_agent,
+            anonymous_user_hash=_anonymous_hash(request),
+        ),
     )
     if not token:
         try:
@@ -672,9 +675,11 @@ async def _complete_oidc_sign_in(
     anonymous_user_hash = _anonymous_hash(request)
     signed_in = await oidc_login_service(
         email=email,
-        ip=get_ip(request),
-        user_agent=request.headers.get("user-agent"),
-        anonymous_user_hash=anonymous_user_hash,
+        ctx=RequestContext(
+            ip=get_ip(request),
+            user_agent=request.headers.get("user-agent"),
+            anonymous_user_hash=anonymous_user_hash,
+        ),
     )
     if not signed_in:
         return _login_error("account_unavailable")
@@ -724,9 +729,11 @@ async def invite_accept(
 
     token = await accept_invite(
         token=body.token,
-        ip=ip,
-        user_agent=user_agent,
-        anonymous_user_hash=anonymous_user_hash,
+        ctx=RequestContext(
+            ip=ip,
+            user_agent=user_agent,
+            anonymous_user_hash=anonymous_user_hash,
+        ),
     )
     if not token:
         raise HTTPException(

@@ -494,9 +494,7 @@ def test_oidc_login_creates_a_user_when_none_exists():
         token = asyncio.run(
             auth_services.oidc_login(
                 email="newcomer@example.com",
-                ip="127.0.0.1",
-                user_agent=None,
-                anonymous_user_hash=None,
+                ctx=auth_services.RequestContext(ip="127.0.0.1"),
             )
         )
 
@@ -515,9 +513,7 @@ def test_oidc_login_reuses_an_existing_account_instead_of_duplicating_it():
         token = asyncio.run(
             auth_services.oidc_login(
                 email="agent@example.com",
-                ip="127.0.0.1",
-                user_agent=None,
-                anonymous_user_hash=None,
+                ctx=auth_services.RequestContext(ip="127.0.0.1"),
             )
         )
 
@@ -533,9 +529,7 @@ def test_oidc_login_lands_on_a_pre_seeded_admin_account():
         token = asyncio.run(
             auth_services.oidc_login(
                 email="boss@example.com",
-                ip="127.0.0.1",
-                user_agent=None,
-                anonymous_user_hash=None,
+                ctx=auth_services.RequestContext(ip="127.0.0.1"),
             )
         )
 
@@ -695,9 +689,7 @@ def test_oidc_login_refuses_a_deactivated_account():
         signed_in = asyncio.run(
             auth_services.oidc_login(
                 email="gone@example.com",
-                ip="127.0.0.1",
-                user_agent=None,
-                anonymous_user_hash=None,
+                ctx=auth_services.RequestContext(ip="127.0.0.1"),
             )
         )
 

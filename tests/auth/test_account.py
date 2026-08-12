@@ -325,7 +325,9 @@ def test_signing_in_claims_no_conversation_on_its_own():
 
     async def run():
         return await auth_services._create_session(
-            session, user, "192.0.2.10", "UA", anonymous_user_hash=None
+            session,
+            user,
+            auth_services.RequestContext(ip="192.0.2.10", user_agent="UA"),
         )
 
     asyncio.run(run())
