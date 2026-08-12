@@ -69,6 +69,10 @@ class Settings(BaseSettings):
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
+    # Required when OIDC is configured. No auto-generated fallback: a missing key
+    # must fail at usage time, not silently produce an unreadable stored secret.
+    # Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+    OIDC_ENCRYPTION_KEY: str | None = None
     AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = (
         "anonymous_first"
     )

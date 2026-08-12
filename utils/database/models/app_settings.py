@@ -167,6 +167,14 @@ class AppSettings(SQLModel, table=True):
         DEFAULT_ENABLED_LOCALES
     )
     default_locale: str = Field(default="fr")
+    auth_methods: Annotated[list[str], Field(sa_type=JSONB)] = list(["email_code"])
+    oidc_issuer: str | None = None
+    oidc_client_id: str | None = None
+    oidc_client_secret_encrypted: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
+    oidc_scopes: Annotated[list[str], Field(sa_type=JSONB)] = list(["openid", "email"])
+    oidc_button_label: str | None = None
+    oidc_button_logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
+    oidc_button_logo_content_type: str | None = None
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
@@ -189,8 +197,19 @@ class AppSettingsPublic(SQLModel):
     has_custom_logo: bool
     enabled_locales: list[str]
     default_locale: str
+    auth_methods: list[str]
+    oidc_issuer: str | None
+    oidc_client_id: str | None
+    oidc_has_client_secret: bool
+    oidc_scopes: list[str]
+    oidc_button_label: str | None
+    oidc_has_button_logo: bool
+    oidc_button_logo_content_type: str | None
     updated_at: str
     updated_by: uuid.UUID | None = None
+
+
+_VALID_AUTH_METHODS = frozenset({"email_code", "oidc"})
 
 
 class AppSettingsPatch(SQLModel):
@@ -210,6 +229,24 @@ class AppSettingsPatch(SQLModel):
     publish_frequency: PublishFrequency | None = None
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)
+    auth_methods: list[str] | None = None
+    oidc_issuer: str | None = None
+    oidc_client_id: str | None = None
+    oidc_client_secret: str | None = None
+    oidc_scopes: list[str] | None = None
+    oidc_button_label: str | None = None
+
+    @field_validator("auth_methods")
+    @classmethod
+    def validate_auth_methods(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        if not value:
+            raise ValueError("At least one auth method must be enabled")
+        unknown = sorted(set(value) - _VALID_AUTH_METHODS)
+        if unknown:
+            raise ValueError(f"Unknown auth methods: {', '.join(unknown)}")
+        return value
 
     @field_validator("publish_timezone")
     @classmethod
