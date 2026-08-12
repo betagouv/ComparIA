@@ -75,7 +75,7 @@ def _discovery():
 
 
 @contextlib.contextmanager
-def routed(row=None, stored_nonce="the-nonce"):
+def routed(row=None, stored_nonce="the-nonce", exchange=None, discover=None):
     if row is None:
         row = _settings_row()
 
@@ -87,13 +87,28 @@ def routed(row=None, stored_nonce="the-nonce"):
         # once per request, so returning the stored nonce is enough.
         return stored_nonce if state == "good-state" else None
 
-    async def discover_provider(_issuer):
-        return _discovery()
+    if discover is None:
 
-    async def exchange_code_for_claims(**_kwargs):
-        return {"email": "agent@example.test", "nonce": "the-nonce"}
+        async def discover_provider(_issuer):
+            return _discovery()
 
-    async def oidc_login_service(**_kwargs):
+    else:
+        discover_provider = discover
+
+    if exchange is None:
+
+        async def exchange_code_for_claims(**_kwargs):
+            return {"email": "agent@example.test", "nonce": "the-nonce"}
+
+    else:
+        exchange_code_for_claims = exchange
+
+    # Spy: records whether the happy-path `oidc_login` service ran. Failure
+    # paths must never reach it (no User row, no session minted).
+    login_calls = []
+
+    async def oidc_login_service(**kwargs):
+        login_calls.append(kwargs)
         return "session-token"
 
     def decrypt_oidc_secret(_ciphertext):
@@ -112,7 +127,23 @@ def routed(row=None, stored_nonce="the-nonce"):
         app.include_router(auth_router.router)
         client = TestClient(app)
         client.cookies.set("anonymous_session", "token")
+        # Expose the spy without changing the `routed() as client` convention.
+        client._login_calls = login_calls  # type: ignore[attr-defined]
         yield client
+
+
+def _login_redirect(response):
+    """A failure-path response: 302 to /login?error=..., no session cookie."""
+    assert response.status_code == 302, response.text
+    from urllib.parse import parse_qs, urlsplit
+
+    parsed = urlsplit(response.headers["location"])
+    assert parsed.path == "/login"
+    reason = parse_qs(parsed.query).get("error", [None])[0]
+    assert reason, f"expected an error param, got {response.headers['location']!r}"
+    # No session is ever minted on a failure path.
+    assert "auth_session" not in response.headers.get("set-cookie", "")
+    return reason
 
 
 def test_callback_signs_in_and_sets_the_session_cookie_on_success():
@@ -135,8 +166,9 @@ def test_callback_rejects_a_missing_state():
         response = client.get(
             "/auth/oidc/callback", params={"code": "auth-code"}, follow_redirects=False
         )
-    assert response.status_code == 400
-    assert "state" in response.json()["detail"].lower()
+    reason = _login_redirect(response)
+    assert reason == "invalid_state"
+    assert not client._login_calls
 
 
 def test_callback_rejects_an_unknown_state():
@@ -146,8 +178,9 @@ def test_callback_rejects_an_unknown_state():
             params={"code": "auth-code", "state": "never-issued"},
             follow_redirects=False,
         )
-    assert response.status_code == 400
-    assert "state" in response.json()["detail"].lower()
+    reason = _login_redirect(response)
+    assert reason == "invalid_state"
+    assert not client._login_calls
 
 
 def test_callback_rejects_a_missing_code():
@@ -157,38 +190,39 @@ def test_callback_rejects_a_missing_code():
             params={"state": "good-state"},
             follow_redirects=False,
         )
-    assert response.status_code == 400
-    assert "code" in response.json()["detail"].lower()
+    reason = _login_redirect(response)
+    assert reason == "missing_code"
+    assert not client._login_calls
 
 
 def test_callback_rejects_a_nonce_mismatch():
     async def exchange_code_for_claims(**_kwargs):
         return {"email": "agent@example.test", "nonce": "different-nonce"}
 
-    with routed() as client:
-        with patched(auth_router, exchange_code_for_claims=exchange_code_for_claims):
-            response = client.get(
-                "/auth/oidc/callback",
-                params={"code": "auth-code", "state": "good-state"},
-                follow_redirects=False,
-            )
-    assert response.status_code == 400
-    assert "nonce" in response.json()["detail"].lower()
+    with routed(exchange=exchange_code_for_claims) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "invalid_nonce"
+    assert not client._login_calls
 
 
 def test_callback_rejects_when_provider_returns_no_email():
     async def exchange_code_for_claims(**_kwargs):
         return {"email": None, "nonce": "the-nonce"}
 
-    with routed() as client:
-        with patched(auth_router, exchange_code_for_claims=exchange_code_for_claims):
-            response = client.get(
-                "/auth/oidc/callback",
-                params={"code": "auth-code", "state": "good-state"},
-                follow_redirects=False,
-            )
-    assert response.status_code == 400
-    assert "email" in response.json()["detail"].lower()
+    with routed(exchange=exchange_code_for_claims) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "no_email"
+    assert not client._login_calls
 
 
 def test_callback_denies_an_email_outside_the_domain_allowlist():
@@ -199,8 +233,9 @@ def test_callback_denies_an_email_outside_the_domain_allowlist():
             params={"code": "auth-code", "state": "good-state"},
             follow_redirects=False,
         )
-    assert response.status_code == 403
-    assert "domain" in response.json()["detail"].lower()
+    reason = _login_redirect(response)
+    assert reason == "domain_not_allowed"
+    assert not client._login_calls
 
 
 def test_callback_rejects_when_oidc_disabled_in_methods():
@@ -211,21 +246,102 @@ def test_callback_rejects_when_oidc_disabled_in_methods():
             params={"code": "auth-code", "state": "good-state"},
             follow_redirects=False,
         )
-    assert response.status_code == 400
+    reason = _login_redirect(response)
+    assert reason == "oidc_unavailable"
+    assert not client._login_calls
 
 
-def test_callback_rejects_when_discovery_is_missing_required_endpoints():
+def test_callback_redirects_when_discovery_is_missing_required_endpoints():
     async def discover_provider(_issuer):
         return {"issuer": "https://idp.example.test"}
 
+    with routed(discover=discover_provider) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_redirects_when_discovery_raises():
+    async def discover_provider(_issuer):
+        raise RuntimeError("network down")
+
+    with routed(discover=discover_provider) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_redirects_when_provider_returns_an_error_param():
+    """The IdP redirects back with `error` when the user denies consent or the
+    provider rejects the request — there is no code to exchange."""
     with routed() as client:
-        with patched(auth_router, discover_provider=discover_provider):
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"error": "access_denied", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_redirects_when_code_exchange_raises():
+    """A denied/expired/reused code makes the token endpoint reject the
+    exchange; the round trip is unrecoverable from the browser."""
+
+    async def exchange_code_for_claims(**_kwargs):
+        raise RuntimeError("token endpoint returned 400")
+
+    with routed(exchange=exchange_code_for_claims) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_failure_leaves_no_session_cookie_on_any_path():
+    """Every failure path is a redirect to /login with no auth_session cookie
+    set — verified collectively here, in addition to the per-path checks."""
+    rows = [
+        ("missing_state", {}, {}),
+        ("unknown_state", {}, {"state": "never-issued"}),
+        ("provider_error_param", {}, {"error": "access_denied"}),
+        (
+            "no_email",
+            {"exchange": _no_email_exchange},
+            {"code": "x", "state": "good-state"},
+        ),
+        (
+            "domain_not_allowed",
+            {"row": _settings_row(auth_domain_allowlist=["x.test"])},
+            {"code": "x", "state": "good-state"},
+        ),
+    ]
+    for _label, kwargs, params in rows:
+        with routed(**kwargs) as client:
             response = client.get(
-                "/auth/oidc/callback",
-                params={"code": "auth-code", "state": "good-state"},
-                follow_redirects=False,
+                "/auth/oidc/callback", params=params, follow_redirects=False
             )
-    assert response.status_code == 502
+        _login_redirect(response)
+        assert not client._login_calls
+
+
+async def _no_email_exchange(**_kwargs):
+    return {"email": None, "nonce": "the-nonce"}
 
 
 class _FakeResult:
