@@ -434,6 +434,24 @@ async def patch_settings(
         patch["oidc_client_secret_encrypted"] = (
             encrypt_oidc_secret(secret) if secret else None
         )
+    if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
+        current = await get_app_settings()
+        effective_methods = patch.get("auth_methods", current.auth_methods)
+        if "oidc" in effective_methods:
+            issuer = patch.get("oidc_issuer", current.oidc_issuer)
+            client_id = patch.get("oidc_client_id", current.oidc_client_id)
+            secret_enc = patch.get(
+                "oidc_client_secret_encrypted",
+                current.oidc_client_secret_encrypted,
+            )
+            if not (issuer and client_id and secret_enc):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "OIDC provider config (issuer, client_id, client_secret) "
+                        "must be complete before enabling the oidc auth method."
+                    ),
+                )
     row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
 
