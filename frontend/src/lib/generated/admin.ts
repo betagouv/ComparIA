@@ -109,6 +109,12 @@ export interface AppSettingsPatch {
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
   publish_hour?: number | null;
   publish_timezone?: string | null;
+  auth_methods?: string[] | null;
+  oidc_issuer?: string | null;
+  oidc_client_id?: string | null;
+  oidc_client_secret?: string | null;
+  oidc_scopes?: string[] | null;
+  oidc_button_label?: string | null;
 }
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
@@ -128,6 +134,14 @@ export interface AppSettingsPublic {
   has_custom_logo: boolean;
   enabled_locales: string[];
   default_locale: string;
+  auth_methods: string[];
+  oidc_issuer: string | null;
+  oidc_client_id: string | null;
+  oidc_has_client_secret: boolean;
+  oidc_scopes: string[];
+  oidc_button_label: string | null;
+  oidc_has_button_logo: boolean;
+  oidc_button_logo_content_type: string | null;
   updated_at: string;
   updated_by?: string | null;
 }
