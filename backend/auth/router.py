@@ -13,8 +13,15 @@ from backend.auth.dependencies import (
     anonymous_session_token,
 )
 from backend.auth.email import send_login_code
+from backend.auth.encryption import decrypt_oidc_secret
 from backend.auth.export import AccountDataExport, build_account_export
-from backend.auth.oidc import build_authorization_url, discover_provider
+from backend.auth.oidc import (
+    build_authorization_url,
+    consume_state,
+    discover_provider,
+    exchange_code_for_claims,
+    oidc_callback_url,
+)
 from backend.auth.services import (
     _hash,
     accept_invite,
@@ -24,6 +31,9 @@ from backend.auth.services import (
     get_invite_token_info,
     get_user_from_token,
     has_current_terms_acceptance,
+)
+from backend.auth.services import oidc_login as oidc_login_service
+from backend.auth.services import (
     record_anonymous_consent,
     record_user_consent,
     request_login_code,
@@ -358,6 +368,102 @@ async def oidc_login(request: Request) -> RedirectResponse:
         scopes=app_settings.oidc_scopes,
     )
     return RedirectResponse(url=authorization_url, status_code=status.HTTP_302_FOUND)
+
+
+@router.get("/oidc/callback")
+async def oidc_callback(
+    request: Request,
+    code: str | None = None,
+    state: str | None = None,
+) -> RedirectResponse:
+    """Complete the OIDC round trip and sign the user in.
+
+    Mirrors the email-code flow's ordering: the cheap local gate (state
+    validated against what `oidc_login` stored), then the network call to the
+    provider, then the domain-allowlist check, then the same session mint and
+    `auth_session` cookie as email login. The OIDC tokens are consumed inside
+    `exchange_code_for_claims` and never persisted.
+    """
+    app_settings = await get_app_settings()
+    if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OIDC is not enabled for this instance.",
+        )
+
+    stored_nonce = consume_state(state) if state else None
+    if not stored_nonce:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired OIDC state.",
+        )
+    if not code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OIDC callback is missing the authorization code.",
+        )
+
+    discovery = await discover_provider(app_settings.oidc_issuer)
+    token_endpoint = discovery.get("token_endpoint")
+    userinfo_endpoint = discovery.get("userinfo_endpoint")
+    if not token_endpoint or not userinfo_endpoint:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="OIDC provider discovery document is missing required endpoints.",
+        )
+
+    client_secret = decrypt_oidc_secret(app_settings.oidc_client_secret_encrypted)
+    claims = await exchange_code_for_claims(
+        token_endpoint=token_endpoint,
+        userinfo_endpoint=userinfo_endpoint,
+        client_id=app_settings.oidc_client_id,
+        client_secret=client_secret,
+        code=code,
+        redirect_uri=oidc_callback_url(),
+    )
+
+    if not claims.get("nonce") or claims["nonce"] != stored_nonce:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OIDC nonce validation failed.",
+        )
+
+    email = claims.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OIDC provider did not return an email claim.",
+        )
+
+    if app_settings.auth_domain_allowlist:
+        domain = email.split("@")[-1].lower()
+        if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Email domain not allowed.",
+            )
+
+    ip = get_ip(request)
+    user_agent = request.headers.get("user-agent")
+    visitor_id = get_matomo_tracker_from_cookies(request.cookies)
+    token = await oidc_login_service(
+        email=email,
+        ip=ip,
+        user_agent=user_agent,
+        visitor_id=visitor_id,
+        anonymous_user_hash=_anonymous_hash(request),
+    )
+
+    redirect = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    redirect.set_cookie(
+        "auth_session",
+        token,
+        httponly=True,
+        secure=not settings.LANGUIA_DEBUG,
+        samesite="lax",
+        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
+    )
+    return redirect
 
 
 @router.get("/invite/{token}")
