@@ -1,12 +1,17 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Badge, Link, Table } from '$components/dsfr'
+  import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { Archs } from '$lib/generated/constants'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
+  import {
+    applyStyleControl,
+    getModelsWithDataContext,
+    rankClassLabel,
+    rankClassSpans
+  } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -50,33 +55,62 @@
   const data = $derived(applyStyleControl(baseModels))
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
+  // The class spans in the context describe the style-controlled fit. The
+  // modal has to describe the fit on screen, so they are derived from it.
+  const activeCommons = $derived({
+    ...commons,
+    rankClasses: rankClassSpans(data.map((m) => m.data))
+  })
 
-  const cols = (
-    [
-      { id: 'rank', tooltip: m['ranking.table.data.tooltips.rank']() },
-      { id: 'name' },
-      { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
-      { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
-      { id: 'n_match' },
-      { id: 'consumption', tooltip: m['ranking.table.data.tooltips.consumption']() },
-      { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
-      { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
-      { id: 'release' },
-      { id: 'organisation' },
-      { id: 'license' }
-    ] as const
+  // Escape hatch back to numbered ranks. Deliberately not persisted: classes
+  // are the honest default and a sticky toggle would quietly undo that.
+  let showRanks = $state(false)
+
+  const cols = $derived(
+    (
+      [
+        { id: 'rank', tooltip: m['ranking.table.data.tooltips.rank']() },
+        { id: 'name' },
+        { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
+        { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
+        { id: 'n_match' },
+        { id: 'consumption', tooltip: m['ranking.table.data.tooltips.consumption']() },
+        { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
+        { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
+        { id: 'release' },
+        { id: 'organisation' },
+        { id: 'license' }
+      ] as const
+    )
+      .filter((col) => (includedCols ? includedCols.includes(col.id) : true))
+      .map((col) => ({
+        ...col,
+        // The rank column shows whichever the toggle asked for, so its header
+        // and tooltip have to follow rather than always announce classes.
+        ...(col.id === 'rank' && showRanks
+          ? {
+              label: m['ranking.table.data.cols.rank_number'](),
+              tooltip: m['ranking.table.showRanks.help']()
+            }
+          : { label: m[`ranking.table.data.cols.${col.id}`]() }),
+        orderable: true,
+        colHeaderClass: raw ? 'bg-white! border-b-1 border-[--border-contrast-grey]' : ''
+      }))
   )
-    .filter((col) => (includedCols ? includedCols.includes(col.id) : true))
-    .map((col) => ({
-      ...col,
-      label: m[`ranking.table.data.cols.${col.id}`](),
-      orderable: true,
-      colHeaderClass: raw ? 'bg-white! border-b-1 border-[--border-contrast-grey]' : ''
-    }))
 
   let orderingCol = $state(initialOrderCol)
   let orderingMethod = $state(initialOrderMethod)
   let search = $state('')
+
+  const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+  const roman = (rankClass: string) => ROMAN[Number(rankClass) - 1] ?? rankClass
+
+  // The shades come from the instance's own primary colour, so a rebranded
+  // deployment gets a ranking ramp in its own palette rather than ours. Both
+  // halves of the pair are needed: the label colour flips partway down the
+  // ramp, which is what lets the ramp span its full range and stay readable.
+  const classShade = (rankClass: string) =>
+    `background: var(--brand-rank-${rankClass}); color: var(--brand-rank-${rankClass}-text)`
 
   $effect(() => {
     if (orderingCol === undefined) {
@@ -95,16 +129,26 @@
 
     if (models.length === 0) return []
 
-    const highestElo = models[0].data.elo!
-    const lowestElo = models.reduce((a, llm) => (llm.data.elo < a ? llm.data.elo : a), highestElo)
     const highestConso = models.reduce((a, llm) => (llm.consumption > a ? llm.consumption : a), 0)
 
+    // Every score bar shares one axis, so widths and offsets compare across
+    // rows: the whole point is seeing which intervals overlap.
+    const axisMin = models.reduce((a, llm) => Math.min(a, llm.data.score_p2_5), Infinity)
+    const axisMax = models.reduce((a, llm) => Math.max(a, llm.data.score_p97_5), -Infinity)
+    const axisSpan = Math.max(axisMax - axisMin, 1)
+    const onAxis = (score: number) => ((score - axisMin) / axisSpan) * 100
+
     return models.map((model) => {
+      const ciLeft = onAxis(model.data.score_p2_5)
+
       return {
         ...model,
         arch: (model.license.kind === 'proprietary' ? 'na' : model.arch) as Archs,
         release_date: model.release_date,
-        eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
+        ciLeft,
+        // A hairline rather than nothing when the interval is vanishingly thin.
+        ciWidth: Math.max(onAxis(model.data.score_p97_5) - ciLeft, 0.5),
+        ciDot: onAxis(model.data.elo),
         consoRangeWidth: Math.ceil((model.consumption / highestConso) * 100)
       }
     })
@@ -186,6 +230,21 @@
         {m['ranking.table.lastUpdate']({ date: lastUpdateDate! })}
       </p>
 
+      {#if !raw}
+        <div class="gap-2 flex items-center">
+          <Toggle
+            id="{id}-show-ranks"
+            bind:value={showRanks}
+            label={m['ranking.table.showRanks.label']()}
+            hideCheckLabel
+            class="mb-0! pr-13! text-[14px]! whitespace-nowrap"
+          />
+          <Tooltip id="{id}-show-ranks-help" size="sm">
+            {m['ranking.table.showRanks.help']()}
+          </Tooltip>
+        </div>
+      {/if}
+
       <Link
         native={raw}
         href="#"
@@ -201,7 +260,24 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'rank'}
-      <span class="font-medium">{model.data.rank}</span>
+      {#if showRanks || raw}
+        <span class="font-medium">{model.data.rank}</span>
+      {:else}
+        <span
+          class="px-2 py-1 text-xs font-bold inline-block min-w-[2.75rem] rounded-full text-center"
+          style={classShade(model.data.rankClass)}
+        >
+          <span aria-hidden="true">{roman(model.data.rankClass)}</span>
+          <!-- On its own a numeral reads as "I". Spell the column and the
+               ranks it covers out for anyone who cannot see the chip. -->
+          <span class="fr-sr-only"
+            >{m['ranking.table.data.cols.rank']()}
+            {roman(model.data.rankClass)}, {rankClassLabel(
+              activeCommons.rankClasses[model.data.rankClass]
+            )}</span
+          >
+        </span>
+      {/if}
     {:else if col.id === 'name'}
       <div
         class="sm:max-w-none sm:overflow-visible max-w-[205px] overflow-hidden overflow-ellipsis"
@@ -234,12 +310,21 @@
       {#if raw}
         {model.data.elo}
       {:else}
-        <div
-          class="cg-border rounded-sm! text-info relative max-w-[100px]"
-          style="--range-width: {model.eloRangeWidth}%"
-        >
-          <div class="bg-light-info rounded-sm absolute z-0 h-full w-[--range-width]"></div>
-          <span class="p-1 text-xs font-bold relative z-1">{model.data.elo}</span>
+        <div class="gap-2 flex min-w-[160px] items-center">
+          <div
+            class="rounded-xs bg-light-info h-2 relative flex-1"
+            title={m['ranking.table.data.tooltips.trust_range']()}
+          >
+            <div
+              class="rounded-xs bg-info top-0 absolute h-full"
+              style="left: {model.ciLeft}%; width: {model.ciWidth}%"
+            ></div>
+            <div
+              class="bg-info h-2 w-2 ring-white absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2"
+              style="left: {model.ciDot}%"
+            ></div>
+          </div>
+          <span class="text-xs font-bold">{model.data.elo}</span>
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
@@ -265,4 +350,4 @@
   {/snippet}
 </Table>
 
-<ModelInfoModal {commons} model={selectedModelData} modalId="{id}-modal-model" />
+<ModelInfoModal commons={activeCommons} model={selectedModelData} modalId="{id}-modal-model" />

@@ -36,6 +36,7 @@
     const viewData = applyStyleControl(modelsData)
 
     const csvCols = [
+      { key: 'rankClass' as const, label: 'Class' },
       { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
       { key: 'elo' as const, label: 'Bradley-Terry Score', energy: true },
@@ -64,6 +65,7 @@
               if (
                 col.key === 'elo' ||
                 col.key === 'rank' ||
+                col.key === 'rankClass' ||
                 col.key === 'n_match' ||
                 col.key === 'rank_p2_5' ||
                 col.key === 'rank_p97_5' ||

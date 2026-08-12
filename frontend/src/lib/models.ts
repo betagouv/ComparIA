@@ -7,6 +7,7 @@ import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
 import { styleControl } from './styleControl.svelte'
+import { RANK_CLASS_COUNT } from './theme'
 
 export const CONSO_SIZES = ['S', 'M', 'L'] as const
 export type ConsoSizes = (typeof CONSO_SIZES)[number]
@@ -39,11 +40,15 @@ export const SOVEREIGNTY_FIELDS = [
   'eu_hostable'
 ] as const
 
-export type RankClass = '1' | '2' | '3' | '4' | '5'
+export type RankClass = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8'
 type ModelRevisedRank = { rank: number; rankClass: RankClass }
 export type Commons = {
   modelsCount: number
-  rankingTiers: Record<RankClass, Record<'min' | 'max', number>>
+  // Only holds the classes the current fit produced, which can be fewer than
+  // `MAX_RANK_CLASS`. Every read is keyed by a class that came out of the same
+  // computation as the spans, so a missing key would mean the two had drifted
+  // apart — see `rankClassSpans`.
+  rankClasses: Record<RankClass, Record<'min' | 'max', number>>
   currency: LLMList['currency']
 }
 export type Data = {
@@ -61,6 +66,13 @@ export type ModelCardSize = 'xxs' | 'xs' | 'sm' | 'md'
 
 export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
   return MAYBE_ARCHS.includes(arch as MaybeArchs)
+}
+
+/** "#4 to 6", or just "#4" when the class holds a single model. */
+export function rankClassLabel(span: Record<'min' | 'max', number>) {
+  return span.min === span.max
+    ? m['models.cards.rank.single'](span)
+    : m['models.cards.rank.to'](span)
 }
 
 export function getModelCards(model: BotModel, size: ModelCardSize, commons: Commons) {
@@ -186,7 +198,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       title: m[`models.cards.rank.title${size !== 'md' ? '_short' : ''}`](),
       tooltip: m['models.cards.rank.tooltip'](),
       content: model.data
-        ? m['models.cards.rank.to'](commons.rankingTiers[model.data.rankClass])
+        ? rankClassLabel(commons.rankClasses[model.data.rankClass])
         : m['words.NA'](),
       subContent: m['models.cards.rank.detail']({ count: commons.modelsCount })
     } as const
@@ -283,24 +295,87 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
   }
 }
 
+/**
+ * Highest class number we hand out. Everything below lands in the last one.
+ * The theme builds one shade per class from it, so there is a single count.
+ */
+export const MAX_RANK_CLASS = RANK_CLASS_COUNT
+
+/**
+ * Group models we cannot statistically tell apart.
+ *
+ * Walk the models from strongest to weakest. The first one opens class 1 and
+ * its lower confidence bound becomes the class *anchor*. A model joins the
+ * open class as long as its upper bound still reaches that anchor; otherwise
+ * it opens the next class with a new anchor.
+ *
+ * The anchor never moves once a class is open. Letting it follow each new
+ * member instead would chain small overlaps together until nearly every model
+ * shared one class. Fixed, it means the same thing for every member: this
+ * model is indistinguishable from the class leader.
+ *
+ * Past `MAX_RANK_CLASS` the classes stop splitting and the remainder shares
+ * the last one, which is the single class that carries no such guarantee.
+ *
+ * @param models sorted by score, strongest first
+ * @returns the class number of each model, in the same order
+ */
+export function assignRankClasses(
+  models: Pick<DatasetData, 'score_p2_5' | 'score_p97_5'>[]
+): number[] {
+  let rankClass = 1
+  let anchor = models[0]?.score_p2_5
+
+  return models.map((model) => {
+    if (model.score_p97_5 < anchor && rankClass < MAX_RANK_CLASS) {
+      rankClass += 1
+      anchor = model.score_p2_5
+    }
+    return rankClass
+  })
+}
+
+/**
+ * Rank span of each class, for the "1 to 11" wording on the model card and the
+ * ladder in the model modal.
+ *
+ * Derived from whichever models are on screen rather than stored once, because
+ * the class of a model follows the fit it was computed from: turning style
+ * control off re-fits, re-classes, and can produce a different number of
+ * classes altogether.
+ */
+export function rankClassSpans(models: ModelRevisedRank[]): Commons['rankClasses'] {
+  const spans = {} as Commons['rankClasses']
+
+  for (const { rank, rankClass } of models) {
+    const span = spans[rankClass]
+    if (!span) {
+      spans[rankClass] = { min: rank, max: rank }
+    } else {
+      span.min = Math.min(span.min, rank)
+      span.max = Math.max(span.max, rank)
+    }
+  }
+
+  return spans
+}
+
 export function setModelsContext(data: LLMList) {
   const rankedModels = data.models
     .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
     .sort((a, b) => a.data!.rank - b.data!.rank)
-    .map((llm, i) => ({ id: llm.id, rank: i + 1 }))
+    .map((llm, i) => ({ id: llm.id, rank: i + 1, data: llm.data! }))
 
   const modelsCount = rankedModels.length
-  const groupRatios = [0.1, 0.25, 0.5, 0.75]
-  const groupMax = groupRatios.map((r) => Math.ceil(r * modelsCount))
-  function getGroup(rank: number): RankClass {
-    for (let i = 0; i < groupMax.length; i++) {
-      if (rank <= groupMax[i]) return (i + 1).toString() as RankClass
-    }
-    return '5'
-  }
+  const classes = assignRankClasses(rankedModels.map(({ data }) => data))
+
   const revisedRankData: Record<string, ModelRevisedRank> = Object.fromEntries(
-    rankedModels.map(({ id, rank }) => [id, { rank, rankClass: getGroup(rank) }])
+    rankedModels.map(({ id, rank }, i) => [
+      id,
+      { rank, rankClass: classes[i].toString() as RankClass }
+    ])
   )
+  const rankClasses = rankClassSpans(Object.values(revisedRankData))
 
   setContext<Data>('data', {
     lastUpdateDate: data.data_timestamp
@@ -311,13 +386,7 @@ export function setModelsContext(data: LLMList) {
     commons: {
       modelsCount,
       currency: data.currency,
-      rankingTiers: {
-        '1': { min: 1, max: groupMax[0] },
-        '2': { min: groupMax[0] + 1, max: groupMax[1] },
-        '3': { min: groupMax[1] + 1, max: groupMax[2] },
-        '4': { min: groupMax[2] + 1, max: groupMax[3] },
-        '5': { min: groupMax[3] + 1, max: modelsCount }
-      }
+      rankClasses
     }
   })
 }
@@ -356,11 +425,25 @@ export function getModelsWithDataContext() {
  */
 export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[] {
   const enabled = styleControl.enabled
-  return models
+  const sorted = models
     .map((m) => {
       const active = enabled || !m.data.uncontrolled ? m.data : m.data.uncontrolled
-      return { ...m, data: { ...active, uncontrolled: m.data.uncontrolled } }
+      return { ...m, data: { ...m.data, ...active, uncontrolled: m.data.uncontrolled } }
     })
-    .sort((a, b) => a.data.rank - b.data.rank)
-    .map((m, i) => ({ ...m, data: { ...m.data, rank: i + 1 } }))
+    // Sort on the active score, not on `rank`: models the plain fit dropped
+    // keep their style-controlled rank, so the two numbering schemes interleave
+    // and the sequence stops being monotone in score. Class assignment reads
+    // the list as strongest-first and would otherwise let a class opened low
+    // swallow stronger models below it.
+    .sort((a, b) => b.data.elo - a.data.elo)
+
+  // Turning style control off is a different fit of the same votes, with its
+  // own confidence intervals, so the classes are recomputed from it. This is
+  // the one case where a model's class legitimately moves.
+  const classes = assignRankClasses(sorted.map(({ data }) => data))
+
+  return sorted.map((m, i) => ({
+    ...m,
+    data: { ...m.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
+  }))
 }

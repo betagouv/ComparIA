@@ -90,6 +90,12 @@ function textColorWithContrast(color: string, background: string): string {
   return mix(color, target, high)
 }
 
+/**
+ * How many ranking classes the leaderboard hands out. Lives here because the
+ * ramp below has to have one shade per class; `models.ts` reads it back.
+ */
+export const RANK_CLASS_COUNT = 8
+
 export type BrandTokens = {
   primary: string
   primaryHover: string
@@ -101,6 +107,8 @@ export type BrandTokens = {
   primarySoftest: string
   secondary: string
   secondaryText: string
+  /** One background per ranking class, with the text colour that reads on it. */
+  rankShades: { background: string; text: string }[]
 }
 
 export function createBrandTokens(
@@ -129,7 +137,17 @@ export function createBrandTokens(
     primarySoftActive: mix(safePrimary, surfaceTarget, 0.68),
     primarySoftest: mix(safePrimary, surfaceTarget, 0.93),
     secondary: safeSecondary,
-    secondaryText: textColorWithContrast(safeSecondary, isDark ? '#161616' : '#FFFFFF')
+    secondaryText: textColorWithContrast(safeSecondary, isDark ? '#161616' : '#FFFFFF'),
+    // The ranking classes are one scale, so they get one hue: the primary at
+    // full strength for the first class, fading toward the page surface for
+    // the last. Mixing in a second hue would read as categories rather than
+    // as positions. `contrastColor` picks the label per step, which is what
+    // lets the ramp span its whole range: black and white between them clear
+    // 4.5:1 on any background, so no shade is off limits.
+    rankShades: Array.from({ length: RANK_CLASS_COUNT }, (_, index) => {
+      const background = mix(safePrimary, surfaceTarget, (index / (RANK_CLASS_COUNT - 1)) * 0.84)
+      return { background, text: contrastColor(background) }
+    })
   }
 }
 
@@ -144,7 +162,11 @@ function cssVariables(tokens: BrandTokens): string {
     `--brand-primary-soft-active:${tokens.primarySoftActive}`,
     `--brand-primary-softest:${tokens.primarySoftest}`,
     `--brand-secondary:${tokens.secondary}`,
-    `--brand-secondary-text:${tokens.secondaryText}`
+    `--brand-secondary-text:${tokens.secondaryText}`,
+    ...tokens.rankShades.flatMap(({ background, text }, index) => [
+      `--brand-rank-${index + 1}:${background}`,
+      `--brand-rank-${index + 1}-text:${text}`
+    ])
   ].join(';')
 }
 

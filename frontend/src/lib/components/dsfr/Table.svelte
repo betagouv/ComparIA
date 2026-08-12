@@ -115,10 +115,19 @@
   onMount(() => {
     updateGradientDisplay()
     onscroll()
+
+    // The window is not what scrolls: the app puts the page inside a
+    // `max-h-screen overflow-y-auto` main element. Listening to the window
+    // alone left the offset frozen at whatever it was when the last window
+    // scroll happened, which parks the header in the middle of the table on
+    // top of a row. Capture phase catches the scroll from whichever ancestor
+    // actually moves.
+    document.addEventListener('scroll', onscroll, true)
+    return () => document.removeEventListener('scroll', onscroll, true)
   })
 </script>
 
-<svelte:window onresize={() => updateGradientDisplay()} {onscroll} />
+<svelte:window onresize={() => updateGradientDisplay()} />
 
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
   <div class="fr-table__header mb-4 gap-5 md:flex-row md:flex-wrap flex flex-col">
