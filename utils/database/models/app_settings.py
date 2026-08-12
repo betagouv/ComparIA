@@ -170,7 +170,9 @@ class AppSettings(SQLModel, table=True):
     auth_methods: Annotated[list[str], Field(sa_type=JSONB)] = list(["email_code"])
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
-    oidc_client_secret_encrypted: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
+    oidc_client_secret_encrypted: Annotated[
+        bytes | None, Field(sa_type=LargeBinary)
+    ] = None
     oidc_scopes: Annotated[list[str], Field(sa_type=JSONB)] = list(["openid", "email"])
     oidc_button_label: str | None = None
     oidc_button_logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
