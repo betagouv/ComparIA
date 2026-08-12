@@ -5,11 +5,9 @@ Run with pytest, or directly:
     uv run python tests/auth/test_oidc_settings.py
 """
 
-import asyncio
 import contextlib
 import os
 import sys
-import uuid
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -119,7 +117,9 @@ def test_patch_oidc_settings_encrypts_client_secret():
 
     async def update_app_settings(patch, updated_by):
         patches.append(patch)
-        row = _settings_row(**{k: v for k, v in patch.items() if k != "oidc_client_secret"})
+        row = _settings_row(
+            **{k: v for k, v in patch.items() if k != "oidc_client_secret"}
+        )
         return row
 
     row = _settings_row()
@@ -188,7 +188,9 @@ def test_patch_null_client_secret_clears_the_stored_value():
         update_app_settings=update_app_settings,
     ):
         with TestClient(app) as client:
-            response = client.patch("/admin/settings", json={"oidc_client_secret": None})
+            response = client.patch(
+                "/admin/settings", json={"oidc_client_secret": None}
+            )
 
     assert response.status_code == 200
     assert patches[0].get("oidc_client_secret_encrypted") is None

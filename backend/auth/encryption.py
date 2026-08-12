@@ -10,12 +10,14 @@ def _fernet() -> Fernet:
     if not key_hex:
         raise RuntimeError(
             "OIDC_ENCRYPTION_KEY is not set. "
-            "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+            'Generate one with: python -c "import secrets; print(secrets.token_hex(32))"'
         )
     try:
         raw = bytes.fromhex(key_hex)
     except ValueError as exc:
-        raise RuntimeError("OIDC_ENCRYPTION_KEY must be a 64-character hex string") from exc
+        raise RuntimeError(
+            "OIDC_ENCRYPTION_KEY must be a 64-character hex string"
+        ) from exc
     if len(raw) != 32:
         raise RuntimeError(
             "OIDC_ENCRYPTION_KEY must be exactly 64 hex characters (32 bytes), "
