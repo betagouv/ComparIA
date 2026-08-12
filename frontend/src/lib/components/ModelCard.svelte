@@ -1,6 +1,7 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import InfoCard from '$components/InfoCard.svelte'
+  import OpennessScore from '$components/OpennessScore.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Commons } from '$lib/models'
   import { getModelCards } from '$lib/models'
@@ -50,7 +51,13 @@
 
       <dl class="fr-card__desc p-0 gap-2 mt-0! sm:grid-cols-3 grid grid-cols-2">
         {#each cards as card (card.id)}
-          <InfoCard {...card} size="xxs" titleTag="dt" contentTag="dd" />
+          {#if card.id === 'sovereignty'}
+            <InfoCard {...card} content={undefined} size="xxs" titleTag="dt" contentTag="dd">
+              <OpennessScore {model} detailed />
+            </InfoCard>
+          {:else}
+            <InfoCard {...card} size="xxs" titleTag="dt" contentTag="dd" />
+          {/if}
         {/each}
       </dl>
 

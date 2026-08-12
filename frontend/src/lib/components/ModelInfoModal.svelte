@@ -8,6 +8,7 @@
   import { sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
   import InfoCard from './InfoCard.svelte'
+  import OpennessScore from './OpennessScore.svelte'
 
   let {
     model,
@@ -320,7 +321,10 @@
                   </section>
 
                   <section class="xl:col-span-2 flex w-full flex-col">
-                    <h2 class="text-base! mb-3!">{m['models.opennessSovereignty.title']()}</h2>
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                      <h2 class="text-base! mb-0!">{m['models.opennessSovereignty.title']()}</h2>
+                      <OpennessScore {model} />
+                    </div>
 
                     <div class="cg-border bg-white p-4 h-full">
                       <dl class="p-0">
