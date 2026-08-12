@@ -40,6 +40,14 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   has_custom_logo: false,
   enabled_locales: ['fr'],
   default_locale: 'fr',
+  auth_methods: ['email_code'],
+  oidc_issuer: null,
+  oidc_client_id: null,
+  oidc_has_client_secret: false,
+  oidc_scopes: [],
+  oidc_button_label: null,
+  oidc_has_button_logo: false,
+  oidc_button_logo_content_type: null,
   updated_at: '2026-09-13T13:59:34.551785',
   updated_by: null
 })
