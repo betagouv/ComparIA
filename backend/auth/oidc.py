@@ -105,9 +105,7 @@ def consume_state(state: str) -> str | None:
     `backend/arena/captcha.py`.
     """
     client = get_redis_client()
-    nonce = client.get(REDIS_OIDC_STATE_PREFIX + state)
-    if nonce is not None:
-        client.delete(REDIS_OIDC_STATE_PREFIX + state)
+    nonce = client.getdel(REDIS_OIDC_STATE_PREFIX + state)
     return nonce
 
 
