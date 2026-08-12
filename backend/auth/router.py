@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
@@ -13,6 +14,7 @@ from backend.auth.dependencies import (
 )
 from backend.auth.email import send_login_code
 from backend.auth.export import AccountDataExport, build_account_export
+from backend.auth.oidc import build_authorization_url, discover_provider
 from backend.auth.services import (
     _hash,
     accept_invite,
@@ -49,7 +51,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 class AuthConfig(BaseModel):
     access_policy: Literal["anonymous_first", "sign_in_required"]
-    methods: list[Literal["email_code"]]
+    methods: list[Literal["email_code", "oidc"]]
     smtp_configured: bool
     domain_allowlist: list[str]
     platform_name: str
@@ -62,6 +64,12 @@ class AuthConfig(BaseModel):
     has_custom_logo: bool
     enabled_locales: list[str]
     default_locale: str
+    # OIDC method description for the login page. `oidc_enabled` is derived
+    # from the instance's `auth_methods` plus a complete provider config, so
+    # the button only shows when OIDC would actually work.
+    oidc_enabled: bool
+    oidc_button_label: str | None
+    oidc_has_button_logo: bool
 
 
 class EmailRequestBody(BaseModel):
@@ -136,9 +144,12 @@ async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
 @router.get("/config")
 async def get_config() -> AuthConfig:
     app_settings = await get_app_settings()
+    oidc_enabled = (
+        _oidc_configured(app_settings) and "oidc" in app_settings.auth_methods
+    )
     return AuthConfig(
         access_policy=app_settings.auth_access_policy,
-        methods=["email_code"],
+        methods=app_settings.auth_methods,
         smtp_configured=bool(settings.SMTP_HOST),
         domain_allowlist=app_settings.auth_domain_allowlist,
         platform_name=app_settings.platform_name,
@@ -151,6 +162,18 @@ async def get_config() -> AuthConfig:
         has_custom_logo=app_settings.logo is not None,
         enabled_locales=app_settings.enabled_locales,
         default_locale=app_settings.default_locale,
+        oidc_enabled=oidc_enabled,
+        oidc_button_label=app_settings.oidc_button_label,
+        oidc_has_button_logo=app_settings.oidc_button_logo is not None,
+    )
+
+
+def _oidc_configured(app_settings) -> bool:
+    """An instance can actually use OIDC only with a complete provider config."""
+    return bool(
+        app_settings.oidc_issuer
+        and app_settings.oidc_client_id
+        and app_settings.oidc_client_secret_encrypted is not None
     )
 
 
@@ -296,6 +319,45 @@ async def email_verify(
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
     )
     return {"email": body.email}
+
+
+@router.get("/oidc/login")
+async def oidc_login(request: Request) -> RedirectResponse:
+    """Redirect the browser to the instance's configured OIDC provider.
+
+    Mirrors the email flow's ordering: the cheap, local gates (OIDC enabled
+    and fully configured, terms accepted) run before any network call to the
+    provider, so an unaccepted-terms flood never reaches discovery.
+    """
+    app_settings = await get_app_settings()
+    if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OIDC is not enabled for this instance.",
+        )
+
+    anonymous_user_hash = _anonymous_hash(request)
+    if not anonymous_user_hash or not await has_current_terms_acceptance(
+        user_id=None, anonymous_user_hash=anonymous_user_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Accept the terms in force before signing in.",
+        )
+
+    discovery = await discover_provider(app_settings.oidc_issuer)
+    authorization_endpoint = discovery.get("authorization_endpoint")
+    if not authorization_endpoint:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="OIDC provider discovery document has no authorization_endpoint.",
+        )
+    authorization_url = build_authorization_url(
+        authorization_endpoint=authorization_endpoint,
+        client_id=app_settings.oidc_client_id,
+        scopes=app_settings.oidc_scopes,
+    )
+    return RedirectResponse(url=authorization_url, status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/invite/{token}")
