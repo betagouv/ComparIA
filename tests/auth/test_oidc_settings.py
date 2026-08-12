@@ -217,7 +217,11 @@ def test_patch_oidc_enabled_auth_method_is_accepted():
         patches.append(patch)
         return _settings_row(auth_methods=patch.get("auth_methods", ["email_code"]))
 
-    row = _settings_row()
+    row = _settings_row(
+        oidc_issuer="https://idp.example.test",
+        oidc_client_id="client-123",
+        oidc_client_secret_encrypted=b"encrypted",
+    )
 
     async def get_app_settings():
         return row

@@ -33,6 +33,21 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("languia")
 
+
+@dataclass
+class RequestContext:
+    """Per-request fingerprint carried into the session-mint path.
+
+    Bundles the `(ip, user_agent, visitor_id, anonymous_user_hash)` quartet
+    that every auth method passes to `_create_session`, so the three flows
+    (email code, invite, OIDC) stop re-plumbing the same four params.
+    """
+
+    ip: str
+    user_agent: str | None = None
+    visitor_id: str | None = None
+    anonymous_user_hash: str | None = None
+
 _LOGIN_CODE_TTL_MINUTES = 10
 _INVITE_TOKEN_TTL_HOURS = 24
 
@@ -72,15 +87,16 @@ async def request_login_code(email: str) -> str:
 async def _create_session(
     session: "AsyncSession",
     user: User,
-    ip: str,
-    user_agent: str | None,
-    visitor_id: str | None,
-    anonymous_user_hash: str | None = None,
+    ctx: RequestContext,
 ) -> str:
     """Create the AuthSession for a user that just authenticated (login code or
     invite link), carry over the acceptance they gave while anonymous, and
     reattach their anonymous comparisons. Logging in is not an acceptance in
     itself. Does not commit; caller owns the transaction."""
+    ip = ctx.ip
+    user_agent = ctx.user_agent
+    visitor_id = ctx.visitor_id
+    anonymous_user_hash = ctx.anonymous_user_hash
     user.last_seen_at = datetime.now()
 
     token = secrets.token_urlsafe(32)
@@ -158,10 +174,7 @@ async def _associate_anonymous_acceptance(
 async def verify_login_code(
     email: str,
     code: str,
-    ip: str,
-    user_agent: str | None,
-    visitor_id: str | None,
-    anonymous_user_hash: str | None = None,
+    ctx: RequestContext,
 ) -> str | None:
     async with get_session() as session:
         result = await session.exec(select(User).where(User.email == email))
@@ -183,9 +196,7 @@ async def verify_login_code(
 
         login_code.used_at = datetime.now()
 
-        token = await _create_session(
-            session, user, ip, user_agent, visitor_id, anonymous_user_hash
-        )
+        token = await _create_session(session, user, ctx)
 
         await session.commit()
 
@@ -265,10 +276,7 @@ async def get_invite_token_info(token: str) -> InviteTokenInfo | None:
 
 async def accept_invite(
     token: str,
-    ip: str,
-    user_agent: str | None,
-    visitor_id: str | None,
-    anonymous_user_hash: str | None = None,
+    ctx: RequestContext,
 ) -> str | None:
     async with get_session() as session:
         result = await session.exec(
@@ -288,9 +296,7 @@ async def accept_invite(
 
         invite.used_at = datetime.now()
 
-        session_token = await _create_session(
-            session, user, ip, user_agent, visitor_id, anonymous_user_hash
-        )
+        session_token = await _create_session(session, user, ctx)
 
         await session.commit()
 
@@ -299,10 +305,7 @@ async def accept_invite(
 
 async def oidc_login(
     email: str,
-    ip: str,
-    user_agent: str | None,
-    visitor_id: str | None,
-    anonymous_user_hash: str | None = None,
+    ctx: RequestContext,
 ) -> str:
     """Resolve or create the `User` for an OIDC-authenticated email and mint a
     session, exactly like `verify_login_code` and `accept_invite` do for their
@@ -319,9 +322,7 @@ async def oidc_login(
             session.add(user)
             await session.flush()
 
-        token = await _create_session(
-            session, user, ip, user_agent, visitor_id, anonymous_user_hash
-        )
+        token = await _create_session(session, user, ctx)
         await session.commit()
 
     return token
