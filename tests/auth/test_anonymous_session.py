@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
+os.environ.setdefault("OIDC_ENCRYPTION_KEY", "aa" * 32)
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

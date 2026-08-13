@@ -337,6 +337,12 @@
                 "domainAllowlist": {
                     "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines.",
                     "label": "Domaines email autorisés"
+                },
+                "authMethods": {
+                    "emailCode": "Code par email",
+                    "error": "Au moins une méthode doit être activée",
+                    "label": "Méthodes d'authentification",
+                    "oidc": "Fournisseur d'identité (OIDC)"
                 }
             },
             "customization": {
@@ -382,7 +388,41 @@
             "save": "Enregistrer",
             "saved": "Paramètres mis à jour",
             "saving": "Enregistrement...",
-            "subtitle": "Configuration de l'application."
+            "subtitle": "Configuration de l'application.",
+            "oidc": {
+                "buttonLabel": {
+                    "hint": "Ex. : Se connecter avec ProConnect",
+                    "label": "Libellé du bouton"
+                },
+                "buttonLogo": {
+                    "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum.",
+                    "label": "Logo du bouton",
+                    "reset": "Supprimer",
+                    "resetDone": "Logo supprimé",
+                    "updated": "Logo mis à jour"
+                },
+                "clientId": {
+                    "label": "Client ID",
+                    "required": "Le client ID est requis"
+                },
+                "clientSecret": {
+                    "hint": "Laissez vide pour conserver la valeur actuelle",
+                    "label": "Client secret",
+                    "replace": "Remplacer",
+                    "required": "Le client secret est requis pour activer l'OIDC",
+                    "set": "Secret enregistré"
+                },
+                "issuer": {
+                    "hint": "Ex. : https://auth.example.gouv.fr",
+                    "label": "URL de l'émetteur (issuer)",
+                    "required": "L'URL de l'émetteur est requise"
+                },
+                "scopes": {
+                    "hint": "Séparés par des espaces. Ex. : openid email",
+                    "label": "Scopes"
+                },
+                "title": "Configuration OIDC"
+            }
         },
         "publishing": {
             "accessKeyLabel": "Clé d'accès",
@@ -603,6 +643,19 @@
         "discussions": {
             "signIn": "Se connecter",
             "title": "Discussions"
+        },
+        "oidc": {
+            "buttonFallback": "Se connecter avec le fournisseur d’identité",
+            "or": "ou",
+            "error": {
+                "domain_not_allowed": "Votre adresse n’appartient pas à un domaine autorisé pour cette instance.",
+                "invalid_nonce": "La connexion via le fournisseur d’identité a échoué (jeton invalide).",
+                "invalid_state": "La connexion via le fournisseur d’identité a expiré. Réessayez.",
+                "missing_code": "La connexion via le fournisseur d’identité est incomplète. Réessayez.",
+                "no_email": "Le fournisseur d’identité n’a pas renvoyé d’adresse e-mail.",
+                "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas activée sur cette instance.",
+                "provider_error": "Le fournisseur d’identité a refusé la demande de connexion. Réessayez."
+            }
         },
         "modal": {
             "code": {

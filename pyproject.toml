@@ -31,6 +31,7 @@ dependencies = [
     "linkup-sdk>=0.13.0",
     "async-lru>=2.3.0",
     "python-multipart>=0.0.32",
+    "cryptography>=46.0.5",
 ]
 
 [dependency-groups]

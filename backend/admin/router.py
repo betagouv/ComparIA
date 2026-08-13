@@ -30,6 +30,7 @@ from backend.arena.checks import (
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
+from backend.auth.encryption import encrypt_oidc_secret
 from backend.auth.services import create_invite
 from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
 from backend.settings.legal import (
@@ -379,6 +380,14 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         has_custom_logo=row.logo is not None,
         enabled_locales=row.enabled_locales,
         default_locale=row.default_locale,
+        auth_methods=row.auth_methods,
+        oidc_issuer=row.oidc_issuer,
+        oidc_client_id=row.oidc_client_id,
+        oidc_has_client_secret=row.oidc_client_secret_encrypted is not None,
+        oidc_scopes=row.oidc_scopes,
+        oidc_button_label=row.oidc_button_label,
+        oidc_has_button_logo=row.oidc_button_logo is not None,
+        oidc_button_logo_content_type=row.oidc_button_logo_content_type,
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
     )
@@ -419,9 +428,31 @@ async def patch_settings(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail="Unknown LLM endpoint",
                 )
-    row = await update_app_settings(
-        body.model_dump(exclude_unset=True), updated_by=current_user.id
-    )
+    patch = body.model_dump(exclude_unset=True)
+    if "oidc_client_secret" in patch:
+        secret = patch.pop("oidc_client_secret")
+        patch["oidc_client_secret_encrypted"] = (
+            encrypt_oidc_secret(secret) if secret else None
+        )
+    if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
+        current = await get_app_settings()
+        effective_methods = patch.get("auth_methods", current.auth_methods)
+        if "oidc" in effective_methods:
+            issuer = patch.get("oidc_issuer", current.oidc_issuer)
+            client_id = patch.get("oidc_client_id", current.oidc_client_id)
+            secret_enc = patch.get(
+                "oidc_client_secret_encrypted",
+                current.oidc_client_secret_encrypted,
+            )
+            if not (issuer and client_id and secret_enc):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "OIDC provider config (issuer, client_id, client_secret) "
+                        "must be complete before enabling the oidc auth method."
+                    ),
+                )
+    row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
 
 
@@ -452,6 +483,41 @@ async def upload_logo(
 async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
     row = await update_app_settings(
         {"logo": None, "logo_content_type": None}, updated_by=current_user.id
+    )
+    return _to_app_settings_public(row)
+
+
+@router.put("/settings/oidc-logo", response_model=AppSettingsPublic)
+async def upload_oidc_logo(
+    current_user: RequiredAdmin,
+    file: UploadFile,
+) -> AppSettingsPublic:
+    if file.content_type not in _LOGO_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported content type: {file.content_type}",
+        )
+    content = await file.read()
+    if len(content) > _LOGO_MAX_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Logo file is too large (max 2 MB)",
+        )
+    row = await update_app_settings(
+        {
+            "oidc_button_logo": content,
+            "oidc_button_logo_content_type": file.content_type,
+        },
+        updated_by=current_user.id,
+    )
+    return _to_app_settings_public(row)
+
+
+@router.delete("/settings/oidc-logo", response_model=AppSettingsPublic)
+async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
+    row = await update_app_settings(
+        {"oidc_button_logo": None, "oidc_button_logo_content_type": None},
+        updated_by=current_user.id,
     )
     return _to_app_settings_public(row)
 

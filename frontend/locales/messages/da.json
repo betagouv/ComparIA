@@ -71,7 +71,47 @@
                 "domainAllowlist": {
                     "label": "Tilladte e-maildomæner",
                     "help": "Adskilt med kommaer. Lad stå tomt for at tillade alle domæner."
+                },
+                "authMethods": {
+                    "emailCode": "E-mail kode",
+                    "error": "Mindst én metode skal være aktiveret",
+                    "label": "Godkendelsesmetoder",
+                    "oidc": "Identitetsudbyder (OIDC)"
                 }
+            },
+            "oidc": {
+                "buttonLabel": {
+                    "hint": "Ex. : Se connecter avec ProConnect",
+                    "label": "Knaptekst"
+                },
+                "buttonLogo": {
+                    "hint": "PNG, JPEG, SVG eller WebP, maks. 2 MB.",
+                    "label": "Knaplogo",
+                    "reset": "Slet",
+                    "resetDone": "Logo slettet",
+                    "updated": "Logo opdateret"
+                },
+                "clientId": {
+                    "label": "Client ID",
+                    "required": "Client ID er påkrævet"
+                },
+                "clientSecret": {
+                    "hint": "Lad feltet være tomt for at beholde den aktuelle værdi",
+                    "label": "Client secret",
+                    "replace": "Erstat",
+                    "required": "Client secret er påkrævet for at aktivere OIDC",
+                    "set": "Secret gemt"
+                },
+                "issuer": {
+                    "hint": "Ex. : https://auth.example.gouv.fr",
+                    "label": "Udsteder URL (issuer)",
+                    "required": "Udsteder URL er påkrævet"
+                },
+                "scopes": {
+                    "hint": "Adskilt af mellemrum. Ex. : openid email",
+                    "label": "Scopes"
+                },
+                "title": "OIDC-konfiguration"
             }
         }
     },
@@ -110,6 +150,19 @@
             "title": "Diskussioner",
             "prompt": "Log ind for at få adgang til din samtalehistorik",
             "signIn": "Log ind"
+        },
+        "oidc": {
+            "buttonFallback": "Log ind med identitetsudbyderen",
+            "or": "eller",
+            "error": {
+                "domain_not_allowed": "Din adresse tilhører ikke et domæne, der er godkendt til denne instans.",
+                "invalid_nonce": "Login via identitetsudbyderen mislykkedes (ugyldigt token).",
+                "invalid_state": "Login via identitetsudbyderen er udløbet. Prøv igen.",
+                "missing_code": "Login via identitetsudbyderen er ufuldstændig. Prøv igen.",
+                "no_email": "Identitetsudbyderen returnerede ingen e-mailadresse.",
+                "oidc_unavailable": "Login via identitetsudbyderen er ikke aktiveret på denne instans.",
+                "provider_error": "Identitetsudbyderen afviste loginanmodningen. Prøv igen."
+            }
         },
         "modal": {
             "email": {
@@ -2282,10 +2335,18 @@
         },
         "overview": "Overblik",
         "metrics": {
-            "conversations": { "label": "Gennemførte samtaler" },
-            "models": { "label": "Testede modeller" },
-            "prompts": { "label": "Indsendte prompts" },
-            "votes": { "label": "Afgivne stemmer" }
+            "conversations": {
+                "label": "Gennemførte samtaler"
+            },
+            "models": {
+                "label": "Testede modeller"
+            },
+            "prompts": {
+                "label": "Indsendte prompts"
+            },
+            "votes": {
+                "label": "Afgivne stemmer"
+            }
         },
         "title": "Platformens statistik"
     },
