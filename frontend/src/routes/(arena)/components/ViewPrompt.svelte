@@ -136,9 +136,9 @@
 
 <div id="prompt-area" class="fr-container py-10 md:py-24">
   <div class="fr-col-xl-8 m-auto">
-    <h3 class="mb-0! text-center">
+    <h2 class="fr-h3 mb-0! text-center">
       {m['arenaHome.title']()}
-    </h3>
+    </h2>
     <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pb-20 md:pt-12 grid">
       <div class="md:order-none md:col-span-full order-1">
         <TextPrompt

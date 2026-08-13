@@ -27,13 +27,13 @@
   <section>
     <div class="md:flex-row gap-4 md:gap-15 flex flex-col">
       <div class="md:max-w-[350px]">
-        <h2 class="text-2xl! mb-7!">{m['home.vote.title']()}</h2>
+        <h2 id="fr-modal-title-modal-vote" class="text-2xl! mb-7!">{m['home.vote.title']()}</h2>
         <p class="text-sm! lh-relaxed!">{m['vote.importantDesc']()}</p>
       </div>
       <div class="gap-5 mb-10 md:mb-0 flex flex-col">
         {#each voteReasons as reason, index (index)}
           <div class="gap-4 flex items-start">
-            <img src={reason.src} alt={reason.title} width="55" height="55" class="" />
+            <img src={reason.src} alt="" width="55" height="55" />
             <div>
               <h3 class="text-sm! mb-1!">{reason.title}</h3>
               <p class="text-xs! text-grey mb-0!">{reason.desc}</p>
@@ -48,6 +48,7 @@
     <div class="gap-5 flex items-center">
       <Link
         text={m['actions.discover']()}
+        title={m['a11y.externalLink']({ text: m['actions.discover']() })}
         icon="external-link-line"
         iconPos="right"
         button

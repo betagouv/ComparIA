@@ -92,11 +92,11 @@
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
-      <AILogo logo={modelA.lab.logo} alt={modelA.lab.logo} class="me-1 inline" />
+      <AILogo logo={modelA.lab.logo} alt="" class="me-1 inline" />
       {modelA.name}
       <strong class="mx-2">VS</strong>
       {#if modelB}
-        <AILogo logo={modelB.lab.logo} alt={modelB.lab.logo} class="me-1 inline" />
+        <AILogo logo={modelB.lab.logo} alt="" class="me-1 inline" />
         {modelB.name}
       {:else}
         {m['words.random']()}
@@ -130,16 +130,16 @@
 
             <div class="mt-2 w-full self-start">
               {#if showModelsSelection == false}
-                <h6 id="modal-mode-selection-title" class="mb-3!">
+                <h2 id="modal-mode-selection-title" class="fr-h6 mb-3!">
                   {m['arenaHome.selectModels.question']()}
-                </h6>
+                </h2>
                 <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
               {:else}
                 <div class="gap-3 md:flex-row flex w-full flex-col">
                   <div>
-                    <h6 id="modal-mode-selection" class="mb-3!">
+                    <h2 id="modal-mode-selection-title" class="fr-h6 mb-3!">
                       {m['arenaHome.compareModels.question']()}
-                    </h6>
+                    </h2>
                     <p class="mb-0!">
                       {m['arenaHome.compareModels.help']()}
                     </p>
@@ -159,6 +159,8 @@
             {#if showModelsSelection == false}
               <Selector
                 id="mode-selector"
+                kind="radio"
+                label={m['arenaHome.selectModels.question']()}
                 bind:value={mode}
                 choices={modeChoices}
                 containerClass="flex flex-col gap-3 md:gap-4"
@@ -191,6 +193,7 @@
                 <Selector
                   id="models-selector"
                   kind="checkbox"
+                  label={m['arenaHome.compareModels.question']()}
                   bind:value={modelsSelection}
                   choices={filteredModels}
                   multiple
@@ -207,7 +210,7 @@
                     <label {...labelProps}>
                       {@render input(opt)}
                       <div class="text-dark-grey flex">
-                        <AILogo logo={opt.lab.logo} alt={opt.lab.name} class="me-2" />
+                        <AILogo logo={opt.lab.logo} alt="" class="me-2" />
                         <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
                           >{opt.name}</strong
                         >

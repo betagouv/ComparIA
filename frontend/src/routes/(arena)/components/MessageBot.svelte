@@ -50,7 +50,7 @@
   >
     <div class="px-4 py-2 flex items-center">
       <div class="c-bot-disk-{bot}"></div>
-      <h3 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h3>
+      <h2 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h2>
       <Copy value={message.content} />
     </div>
 

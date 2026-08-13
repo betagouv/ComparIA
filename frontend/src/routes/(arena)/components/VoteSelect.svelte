@@ -44,7 +44,7 @@
     aria-labelledby="{id}-legend {id}-help"
     class="cl-vote-select xl:max-w-[950px] bg-light-info py-2 px-2 md:px-5 rounded-b-xl shadow-md gap-1 mx-auto flex flex-col"
   >
-    <legend id="display-fieldset-legend" class="sr-only">{m['vote.title']()}</legend>
+    <legend id="{id}-legend" class="sr-only">{m['vote.title']()}</legend>
 
     <div class="gap-1 md:gap-2 md:grid-cols-4 grid grid-cols-2">
       {#each choices as choice (choice.value)}

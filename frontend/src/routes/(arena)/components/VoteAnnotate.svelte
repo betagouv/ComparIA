@@ -38,7 +38,7 @@
   in:fly={{ y: 8, duration: 200 }}
 >
   <TextPrompt
-    id="chatbot-prompt"
+    id="{id}-comment"
     bind:value={annotations.custom_annotation}
     {disabled}
     label={m[`vote.choices.${kind}.comment`]()}
@@ -57,6 +57,7 @@
     <Selector
       id="{id}-selector"
       kind="checkbox"
+      label={m[`vote.choices.${kind}.question`]()}
       bind:value={annotations.keyword_annotations}
       choices={keywordChoices}
       multiple

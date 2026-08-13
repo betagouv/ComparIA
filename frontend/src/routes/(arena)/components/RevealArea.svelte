@@ -92,14 +92,15 @@
                   />
                 </div>
                 <div class="fr-modal__content">
-                  <h6 class="mb-3! text-dark-grey!">
+                  <h2 id="fr-modal-title-share-modal" class="fr-h6 mb-3! text-dark-grey!">
                     {m['reveal.feedback.shareResult']()}
-                  </h6>
+                  </h2>
 
                   <p class="mb-0! text-sm!">
                     {m['reveal.feedback.description']()}
                   </p>
                   <div class="gap-3 py-8 flex flex-wrap">
+                    <label class="sr-only" for="share-link">{m['a11y.shareLinkLabel']()}</label>
                     <input
                       bind:this={shareInput}
                       type="text"
@@ -134,7 +135,7 @@
     <div class="fr-container">
       <div class="gap-x-15 lg:gap-x-30 lg:px-15 gap-y-10 py-10 md:flex-row flex flex-col">
         <div class="flex max-w-[350px] flex-col">
-          <h5 class="font mb-3!">{m['reveal.thanks.title']()}</h5>
+          <h2 class="fr-h5 font mb-3!">{m['reveal.thanks.title']()}</h2>
           <p class="mb-8!">{m['reveal.thanks.desc']()}</p>
 
           <Link

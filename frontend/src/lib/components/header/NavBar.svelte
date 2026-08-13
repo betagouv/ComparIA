@@ -155,6 +155,8 @@
       variant="tertiary-no-outline"
       size="sm"
       class="px-1! lg:block! hidden!"
+      aria-label={m[expanded ? 'actions.reduceMenu' : 'actions.expandMenu']()}
+      aria-expanded={expanded}
       onclick={() => (expanded = !expanded)}
     >
       <Icon
@@ -162,7 +164,7 @@
         class="text-grey"
         size="sm"
         block
-        aria-label={m[expanded ? 'actions.reduceMenu' : 'actions.expandMenu']()}
+        aria-hidden="true"
       />
     </Button>
 
@@ -180,7 +182,7 @@
   </div>
 
   <div class="lg:flex min-h-0 hidden flex-auto flex-col">
-    <nav class="py-4">
+    <nav class="py-4" aria-label={m['a11y.mainNav']()}>
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
@@ -207,7 +209,7 @@
   </div>
 
   <dialog
-    aria-labelledby="fr-modal-title-modal-menu"
+    aria-label={m['a11y.mobileMenu']()}
     id="fr-modal-menu"
     class="fr-modal fr-header__menu lg:hidden!"
   >
@@ -223,7 +225,7 @@
         />
       </div>
 
-      <nav class="fr-nav border-b border-[--grey-925-125]">
+      <nav class="fr-nav border-b border-[--grey-925-125]" aria-label={m['a11y.mobileNav']()}>
         <ul class="fr-nav__list fr-container">
           {#each navLinks as link (link.href)}
             <li class="fr-nav__item">

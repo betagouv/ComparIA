@@ -22,12 +22,30 @@
   )
 </script>
 
+<a href="#contenu" class="cl-skip-link">{m['a11y.skipToContent']()}</a>
+
 <div class="lg:flex min-h-screen">
   <NavBar {navLinks} />
 
-  <main class="lg:max-h-screen lg:overflow-y-auto w-full">
+  <main id="contenu" class="lg:max-h-screen lg:overflow-y-auto w-full">
     {@render children()}
   </main>
 </div>
 
 <SignInModal />
+
+<style>
+  .cl-skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .cl-skip-link:focus {
+    left: 0;
+    padding: 0.5rem 1rem;
+    background-color: var(--background-default-grey);
+    color: var(--text-title-blue-france);
+  }
+</style>
