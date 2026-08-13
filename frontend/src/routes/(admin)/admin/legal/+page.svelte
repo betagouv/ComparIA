@@ -56,6 +56,19 @@
           </h3>
           <p class="fr-text--sm fr-mb-0">{m['admin.legal.hub.privacyDescription']()}</p>
         </li>
+        <li class="fr-py-3v">
+          <h3 class="fr-h5 fr-mb-1v">
+            <a
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
+              href={resolve('/admin/legal/pages-information')}
+            >
+              {m['admin.legal.informational.title']()}
+            </a>
+          </h3>
+          <p class="fr-text--sm fr-mb-0">
+            {m['admin.legal.hub.informationalDescription']()}
+          </p>
+        </li>
       </ul>
     </section>
   </div>

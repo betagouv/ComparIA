@@ -13,7 +13,7 @@
   // never match.
   const resolveHref = resolve as (href: string) => string
 
-  const links = legalPageLinks()
+  const links = $derived(legalPageLinks(page.data.informationalPages, 'legal_menu'))
 </script>
 
 <nav class="legal-menu" aria-label={m['header.legal.title']()}>
@@ -43,7 +43,9 @@
         <li class="fr-sidemenu__item">
           <a
             class="fr-sidemenu__link py-2! text-sm! font-normal!"
-            href={resolveHref(link.href)}
+            href={link.href.startsWith('http') ? link.href : resolveHref(link.href)}
+            target={link.href.startsWith('http') ? '_blank' : undefined}
+            rel={link.href.startsWith('http') ? 'noopener external' : undefined}
             aria-current={page.url.pathname === link.href ? 'page' : undefined}
           >
             {link.label}

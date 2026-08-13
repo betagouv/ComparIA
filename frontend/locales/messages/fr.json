@@ -71,10 +71,35 @@
                 "journeyDescription": "Textes affichés avant le premier message et lors de la connexion.",
                 "journeyGroup": "Parcours d’acceptation",
                 "journeyLink": "Parcours de participation",
+                "informationalDescription": "Mentions légales, accessibilité et écoconception, hébergées sur la plateforme ou liées à un site externe.",
                 "privacyDescription": "Information relative à l’utilisation des données personnelles.",
                 "subtitle": "Chaque contenu dispose de son propre espace de gestion et de publication.",
                 "termsDescription": "Document dont l’acceptation est obligatoire.",
                 "title": "Documents et parcours juridiques"
+            },
+            "informational": {
+                "contentLabel": "Contenu en {locale}",
+                "external": "Lien externe",
+                "externalUrl": "Adresse de la page externe",
+                "externalUrlError": "Saisissez une adresse HTTPS valide.",
+                "externalUrlHelp": "L’adresse doit commencer par https://.",
+                "internal": "Page hébergée sur Compar:IA",
+                "loading": "Chargement des pages d’information…",
+                "locale": "Langue du contenu",
+                "modeLabel": "Destination",
+                "pages": {
+                    "accessibility": "Déclaration d’accessibilité",
+                    "ecodesign": "Écoconception",
+                    "legal_notice": "Mentions légales"
+                },
+                "save": "Enregistrer les pages",
+                "saved": "Les pages d’information ont été enregistrées.",
+                "saving": "Enregistrement…",
+                "subtitle": "Choisissez où chaque page est hébergée et dans quels emplacements elle est proposée.",
+                "title": "Pages d’information",
+                "visibilityLabel": "Afficher le lien dans",
+                "visibleInLegalMenu": "Le menu « Légal »",
+                "visibleInSettings": "La page Paramètres"
             },
             "markdownHelp": "Mise en forme Markdown acceptée : **gras**, *italique*, [lien](https://exemple.fr).",
             "participation": {

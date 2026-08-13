@@ -49,6 +49,10 @@ from backend.settings.legal import (
     list_legal_documents,
     publish_legal_document,
 )
+from backend.settings.informational_legal import (
+    InformationalLegalPages,
+    get_informational_legal_pages,
+)
 from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
@@ -129,6 +133,23 @@ class PublishLegalDocumentBody(BaseModel):
 
 class UpdateLegalPresentationBody(BaseModel):
     presentation: LegalPresentation
+
+
+@router.get("/legal/informational-pages", response_model=InformationalLegalPages)
+async def get_admin_informational_legal_pages() -> InformationalLegalPages:
+    return await get_informational_legal_pages()
+
+
+@router.put("/legal/informational-pages", response_model=InformationalLegalPages)
+async def put_admin_informational_legal_pages(
+    body: InformationalLegalPages,
+    current_user: RequiredAdmin,
+) -> InformationalLegalPages:
+    await update_app_settings(
+        {"informational_legal_pages": body.pages.model_dump(mode="json")},
+        updated_by=current_user.id,
+    )
+    return body
 
 
 _LOGO_MAX_SIZE = 2 * 1024 * 1024
