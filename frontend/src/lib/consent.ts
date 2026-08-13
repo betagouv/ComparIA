@@ -72,11 +72,11 @@ export type ConsentLink = { label: string; href: string }
 // Canonical paths, not the redirects they replaced: a visitor reading what
 // they are about to accept should not go through a hop. Every legal
 // destination in the app is named here so a page move has one place to land.
-export const TERMS_PATH = '/arene/terms'
-export const PRIVACY_POLICY_PATH = '/arene/privacy'
-export const ACCESSIBILITY_PATH = '/arene/accessibility'
-export const ECODESIGN_PATH = '/arene/eco-design'
-export const LEGAL_NOTICE_PATH = '/arene/legal'
+export const TERMS_PATH = '/terms'
+export const PRIVACY_POLICY_PATH = '/privacy'
+export const ACCESSIBILITY_PATH = '/accessibility'
+export const ECODESIGN_PATH = '/eco-design'
+export const LEGAL_NOTICE_PATH = '/legal'
 
 /** The two documents a visitor accepts, as listed beside the checkbox. */
 export function legalLinks(): ConsentLink[] {

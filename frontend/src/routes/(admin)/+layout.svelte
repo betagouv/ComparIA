@@ -67,7 +67,7 @@
     },
     {
       label: m['actions.returnArena'](),
-      href: '/arene',
+      href: '/',
       icon: 'i-ri-arrow-left-line'
     }
   ])

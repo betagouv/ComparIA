@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
@@ -92,7 +93,7 @@
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
       useToast(m['auth.success'](), 4000)
-      goto('/arene')
+      goto(resolve('/'))
     } catch (err) {
       error = (err as Error).message
       checkStatus = 'invalid'

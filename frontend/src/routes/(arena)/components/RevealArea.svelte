@@ -61,7 +61,7 @@
         <Link
           button
           icon="edit-line"
-          href="../arene/"
+          href="/"
           text={m['header.chatbot.newDiscussion']()}
           class="md:hidden! w-full!"
         />
@@ -140,7 +140,7 @@
           <Link
             button
             size="lg"
-            href="/arene/ranking"
+            href="/ranking"
             icon="trophy-line"
             text={m['reveal.thanks.cta']()}
             class="sm:w-auto! w-full!"

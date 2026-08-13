@@ -23,7 +23,7 @@
   // a render with no comparison rather than throw on the way out.
   $effect(() => {
     if (!comparator.comparison) {
-      goto(resolve('/arene'))
+      goto(resolve('/'))
     }
   })
 

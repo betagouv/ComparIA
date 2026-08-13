@@ -39,7 +39,7 @@
             icon="refresh-line"
             iconPos="right"
             variant="secondary"
-            href="../arene/"
+            href="/"
             text={m['words.restart']()}
             class="w-full!"
           />
