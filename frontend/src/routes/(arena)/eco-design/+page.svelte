@@ -133,6 +133,14 @@
           </li>
         {/each}
       </ul>
+
+      <h2 id="done" class="mt-10!">{m['general.rgesn.8.title']()}</h2>
+      <p>{m['general.rgesn.8.desc']()}</p>
+      <ul class="mb-6!">
+        {#each ['1', '2', '3', '4'] as const as n (n)}
+          <li>{m[`general.rgesn.8.${n}`]()}</li>
+        {/each}
+      </ul>
     {/if}
   </div>
 </div>
