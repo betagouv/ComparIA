@@ -87,6 +87,8 @@
   }
 
   .objective {
-    color: #7f7f7f;
+    /* Not a raw hex: at 12px the old #7f7f7f only reached 3.66:1 on the
+       sidebar background, and stayed put in dark mode. */
+    color: var(--text-mention-grey);
   }
 </style>

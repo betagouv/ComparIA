@@ -43,7 +43,9 @@ export default defineConfig({
       'very-light-info': 'var(--cg-very-light-blue)',
       error: 'var(--error-425-625)',
       warning: 'var(--warning-425-625)',
-      success: 'var(--green-emeraude-main-632)',
+      // Text token, not the decorative --green-emeraude-main-632: that one only
+      // reached 3.06:1 on white, and this class is mostly used on text.
+      success: 'var(--text-default-success)',
       yellow: 'var(--yellow-tournesol-850-200)',
       green: 'var(--cg-green)',
       purple: 'var(--cg-purple)',

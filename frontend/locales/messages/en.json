@@ -1,6 +1,7 @@
 {
     "a11y": {
         "externalLink": "{text}",
+        "languageNav": "Language selection",
         "mainNav": "Main navigation",
         "mobileMenu": "Menu",
         "mobileNav": "Mobile navigation",

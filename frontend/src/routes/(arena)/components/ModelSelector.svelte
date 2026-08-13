@@ -217,7 +217,9 @@
                       </div>
                       <ul class="fr-badges-group mt-3! md:flex! hidden!">
                         {#each modelBadges as badge, i (i)}
-                          <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
+                          <li>
+                            <Badge {...badge} id="{opt.value}-card-badge-{i}" size="xs" noTooltip />
+                          </li>
                         {/each}
                       </ul>
                     </label>
