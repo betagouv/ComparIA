@@ -2,7 +2,7 @@
  * Accessibility regression tests for the shared building blocks.
  *
  * Every case here stands for a defect that was actually shipped and found in
- * the RGAA audit of 2026-08-13 (see audits/rgaa-2026-08-13.md). Rendering a
+ * the RGAA audit of August 2026. Rendering a
  * component twice is not padding: the ids that collided on the reveal screen
  * were unique inside their component and only clashed once two models were
  * on screen at once.

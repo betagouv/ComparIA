@@ -66,5 +66,4 @@ This one does check colour contrast, reflow at 320px, dark mode and the skip lin
 and when to delete it.
 
 **Neither is a substitute for a screen reader.** Automated rules catch roughly a third of
-real barriers. A green run means nothing obvious regressed. The last audit and its
-remaining open points are in [`audits/`](../audits/).
+real barriers. A green run means nothing obvious regressed.
