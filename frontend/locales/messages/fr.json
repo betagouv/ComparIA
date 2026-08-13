@@ -756,9 +756,6 @@
         "unknown": "Une erreur est survenue"
     },
     "footer": {
-        "backHome": "Retour à l'accueil du site - compar:IA",
-        "dpg": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods",
-        "helpUs": "Aidez-nous à améliorer ce service !",
         "license": {
             "linkTitle": "Licence etalab - nouvelle fenêtre",
             "mention": "Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous <a {linkProps}>licence etalab-2.0</a>"
@@ -770,8 +767,7 @@
             "rgesn": "Écoconception",
             "sources": "Code source",
             "tos": "Modalités d'utilisation"
-        },
-        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {formLinkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !"
+        }
     },
     "general": {
         "a11y": {
@@ -2128,21 +2124,12 @@
                 "title": "Révélation"
             }
         },
-        "help": {
-            "link": {
-                "content": "Améliorer le comparateur",
-                "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre"
-            }
-        },
         "homeTitle": "Accueil - compar:IA",
         "legal": {
             "label": "Légal",
             "title": "Informations légales"
         },
-        "logoAlt": "République Française",
         "menu": "Menu",
-        "startDiscussion": "Commencer à discuter",
-        "subtitle": "Le comparateur d’IA conversationnelles",
         "title": "compar:IA",
         "votes": {
             "count": "{count} votes",
