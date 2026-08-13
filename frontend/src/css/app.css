@@ -1,5 +1,5 @@
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
-@import '@gouvfr/dsfr/dist/utility/icons/icons.css';
+/* icons.css picks which DSFR icons we ship; see the note in it. */
 @import './icons.css';
 
 :root {
