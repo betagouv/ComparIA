@@ -67,7 +67,9 @@
     if (randomPrompt) {
       dispatchPromptWithSelection(randomPrompt.text, 'handleCardSelect')
     } else {
-      const fallbackText = `Explorer la catégorie : ${categoryValue}`
+      // Was a hardcoded French sentence, typed into the user's prompt box
+      // whatever language the interface was in.
+      const fallbackText = m['arenaHome.suggestions.fallback']({ category: categoryValue })
       console.warn(
         `[GuidedPromptSuggestions] No prompts found for category: ${categoryValue}. Using fallback: "${fallbackText}"`
       )

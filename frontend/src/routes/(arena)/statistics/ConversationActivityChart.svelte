@@ -77,7 +77,9 @@
     >
   </div>
   <!-- Focusable: the chart is wider than the box on small screens, and a
-       keyboard user with no stop inside it can never scroll to the right. -->
+       keyboard user with no stop inside it can never scroll to the right.
+       The lint rule below cannot see that it scrolls. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     class="chart-scroller mt-4 overflow-x-auto"
     tabindex="0"

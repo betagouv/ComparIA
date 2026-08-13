@@ -42,7 +42,11 @@
         {m['auth.discussions.title']()}
       </p>
     </div>
-    <nav {...props} class={['comparison-history lg:overflow-y-auto', props.class]}>
+    <nav
+      {...props}
+      aria-label={m['auth.discussions.title']()}
+      class={['comparison-history lg:overflow-y-auto', props.class]}
+    >
       <ul class="fr-sidemenu__list">
         {#each comparisons as comp (comp.id)}
           {@const href = resolve(`/${comp.id}`)}
