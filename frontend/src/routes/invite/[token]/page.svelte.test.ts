@@ -2,6 +2,7 @@ import { resetConsent } from '$lib/consent'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import InvitePage from './+page.svelte'
+import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
 
 const mocks = vi.hoisted(() => ({ request: vi.fn(), goto: vi.fn() }))
 
@@ -141,8 +142,8 @@ describe('invite consent', () => {
 
     const links = [...container.querySelectorAll<HTMLAnchorElement>('#invite-consent-links a')]
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
-      '/arene/modalites',
-      '/arene/donnees-personnelles'
+      TERMS_PATH,
+      PRIVACY_POLICY_PATH
     ])
   })
 })

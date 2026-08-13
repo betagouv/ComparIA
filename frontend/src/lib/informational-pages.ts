@@ -12,9 +12,9 @@ export type InformationalPage = {
 export type InformationalPages = Record<InformationalPageKey, InformationalPage>
 
 export const INFORMATIONAL_PAGE_PATHS: Record<InformationalPageKey, string> = {
-  legal_notice: '/arene/mentions-legales',
-  accessibility: '/arene/accessibilite',
-  ecodesign: '/arene/ecoconception'
+  legal_notice: '/arene/legal',
+  accessibility: '/arene/accessibility',
+  ecodesign: '/arene/eco-design'
 }
 
 const visibleInternalPage = (): InformationalPage => ({

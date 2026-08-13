@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { TERMS_PATH } from '$lib/consent'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 </script>
@@ -74,7 +75,7 @@
     <li>{m['general.privacy.privacyDataForm']()}</li>
   </ul>
   <p>
-    {@html sanitize(m['general.privacy.privacyResp']({ linkProps: 'href="/arene/modalites"' }))}
+    {@html sanitize(m['general.privacy.privacyResp']({ linkProps: `href="${TERMS_PATH}"` }))}
   </p>
 
   <h2 id="data-use">{m['general.privacy.dataUseTitle']()}</h2>
