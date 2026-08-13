@@ -197,6 +197,70 @@ test('text survives the RGAA 10.12 spacing overrides', async ({ page }) => {
   expect(clipped, 'containers clipping their text under forced spacing').toEqual([])
 })
 
+/**
+ * Sends one prompt and drives the flow to the results screen. Both clipping
+ * tests below need this, and it is the flow that actually reaches the two
+ * containers with fixed heights — the prompt screen alone never exercises them.
+ */
+async function reachResults(page: Page) {
+  await page.goto('/arene')
+  await page.locator('#initial-prompt').fill('Explique en deux phrases pourquoi le ciel est bleu.')
+  await page.locator('main button[type=submit].fr-btn--primary').click()
+
+  // A fresh browser profile shows a consent modal before anything else works.
+  // The DSFR opens it asynchronously, so give it a moment to appear rather
+  // than testing visibility on the same tick as the click.
+  const consentModal = page.locator('#fr-modal-welcome')
+  await consentModal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
+  if (await consentModal.isVisible().catch(() => false)) {
+    await page.locator('label[for="tos-modal"]').click()
+    await page.locator('#fr-modal-welcome .fr-modal__footer button').click()
+  }
+
+  await page.locator('#chat-area').waitFor()
+  await expect(page.locator('.message-bot')).toHaveCount(2)
+  // Both answers are complete once the vote form shows up, not before.
+  await page.locator('fieldset[id^=vote-select]').waitFor()
+
+  await page.locator('button[data-choice="a_better"]').click()
+
+  // The reveal button stays aria-disabled until the vote has registered, and
+  // Playwright treats aria-disabled as not actionable.
+  const reveal = page.locator('#send-area button.fr-icon-arrow-up-circle-line')
+  await expect(reveal).toHaveAttribute('aria-disabled', 'false')
+  await reveal.click()
+  await page.locator('#reveal-area').waitFor()
+}
+
+test('conversation and results screens are not clipped at 200% zoom', async ({ page }) => {
+  // The prompt screen has no fixed-height containers; the risk is in the chat
+  // transcript (.grouped-responses has a fixed height) and the reveal card
+  // (model title has an inline min-height), both reached only after a message.
+  await page.setViewportSize({ width: 640, height: 512 })
+  await reachResults(page)
+
+  const clipped = await page.evaluate(CLIPPING)
+  expect(clipped, 'containers clipping their text at 200% zoom').toEqual([])
+})
+
+test('conversation and results screens survive the RGAA 10.12 spacing overrides', async ({
+  page
+}) => {
+  // Same containers as above, but wider text from forced spacing is what
+  // usually finds a fixed pixel height first.
+  await reachResults(page)
+
+  await page.addStyleTag({
+    content: `* { line-height: 1.5 !important; letter-spacing: 0.12em !important;
+               word-spacing: 0.16em !important; }
+              p { margin-bottom: 2em !important; }`
+  })
+  await page.waitForTimeout(200)
+
+  const clipped = await page.evaluate(CLIPPING)
+  expect(clipped, 'containers clipping their text under forced spacing').toEqual([])
+})
+
 test('the arena has no contrast failures in dark mode', async ({ page }) => {
   await page.goto('/arene')
   await page.evaluate(() => {

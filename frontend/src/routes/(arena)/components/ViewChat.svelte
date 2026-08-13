@@ -77,6 +77,20 @@
 
   onDestroy(() => clearTimeout(voteReminderTimeout))
 
+  // Screen readers get milestones, not tokens: the streaming answers are no
+  // longer inside a live region, so this sentence is the only thing spoken.
+  // 'pending' is skipped because Pending.svelte already announces it.
+  const announcement = $derived.by(() => {
+    switch (comparator.status) {
+      case 'generating':
+        return m['chatbot.announce.generating']()
+      case 'complete':
+        return m['chatbot.announce.ready']()
+      default:
+        return ''
+    }
+  })
+
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
   let footerSize: number = $derived(footer ? footer.offsetHeight : 0)
@@ -89,11 +103,13 @@
 <svelte:window onresize={onResize} />
 
 <div style="--footer-size: {footerSize}px;" class="flex grow flex-col">
+  <!-- Present from first render: a live region only announces what lands in it after it exists. -->
+  <p role="status" class="sr-only">{announcement}</p>
+
   <div
     id="chat-area"
-    role="log"
+    role="region"
     aria-label={m['chatbot.conversation']()}
-    aria-live="polite"
     class="flex grow flex-col"
   >
     {#each comparator.comparison?.turns ?? [] as turn, idx (turn.id)}

@@ -350,6 +350,10 @@
         }
     },
     "chatbot": {
+        "announce": {
+            "generating": "The models are writing their answers…",
+            "ready": "Both answers are ready."
+        },
         "continuePrompt": "Continue the discussion…",
         "conversation": "Chat",
         "errors": {

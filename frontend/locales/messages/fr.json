@@ -691,6 +691,10 @@
         "success": "Vous êtes connecté !"
     },
     "chatbot": {
+        "announce": {
+            "generating": "Les modèles rédigent leur réponse…",
+            "ready": "Les deux réponses sont prêtes."
+        },
         "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
         "errors": {

@@ -54,7 +54,15 @@
       <Copy value={message.content} />
     </div>
 
-    <div class="px-4 overflow-scroll">
+    <!-- Long answers scroll inside this box. Without a tab stop, a keyboard
+         user cannot reach the part below the fold. -->
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+    <div
+      class="px-4 overflow-scroll"
+      tabindex="0"
+      role="group"
+      aria-label={m[`models.names.${bot}`]()}
+    >
       {#if message.reasoning_content?.trim()}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
