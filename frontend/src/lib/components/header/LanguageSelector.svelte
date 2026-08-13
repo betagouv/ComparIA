@@ -13,7 +13,11 @@
   const currentLocale = getLocale()
 </script>
 
-<nav {...props} class={['language-selector fr-translate fr-nav whitespace-nowrap', props.class]}>
+<nav
+  {...props}
+  aria-label={m['a11y.languageNav']()}
+  class={['language-selector fr-translate fr-nav whitespace-nowrap', props.class]}
+>
   <Dropdown
     id="dropdown-{id}"
     label={locales.find((locale) => locale.code === currentLocale)?.short ??

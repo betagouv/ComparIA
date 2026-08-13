@@ -1,6 +1,7 @@
 {
     "a11y": {
         "externalLink": "{text} (nouvelle fenêtre)",
+        "languageNav": "Choix de la langue",
         "mainNav": "Navigation principale",
         "mobileMenu": "Menu",
         "mobileNav": "Navigation mobile",

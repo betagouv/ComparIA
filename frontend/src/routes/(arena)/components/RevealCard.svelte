@@ -251,7 +251,7 @@
       </div>
       {#if selected}
         <div
-          class="border-primary text-primary px-3 font-bold ms-auto shrink-0 rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px] text-nowrap"
+          class="border-primary px-3 font-bold ms-auto shrink-0 rounded-[3.75rem] border bg-[--blue-france-975-75] text-[14px] text-nowrap text-[--text-title-blue-france]"
         >
           {m['vote.yours']()}
         </div>
@@ -259,7 +259,9 @@
     </h2>
     <ul class="fr-badges-group mb-4!">
       {#each modelBadges as badge, i (i)}
-        <li><Badge id="card-badge-{i}" {...badge} size="sm" noTooltip /></li>
+        <!-- id after the spread: the badge carries its own id, shared with the
+             model modal, and two elements can't answer to the same one. -->
+        <li><Badge {...badge} id="{model.id}-card-badge-{i}" size="sm" noTooltip /></li>
       {/each}
     </ul>
   </div>
