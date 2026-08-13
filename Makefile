@@ -200,10 +200,6 @@ i18n-clean-locales: ## Remove locales keys not present in fr
 	@echo "Cleaning frontend locales keys..."
 	./comparia-cli internal i18n
 
-i18n-build-news: ## generate news files
-	@echo "Generating news files..."
-	$(UV) run python -m utils.news.build_news
-
 ###################################
 # Dataset utilities
 ###################################
