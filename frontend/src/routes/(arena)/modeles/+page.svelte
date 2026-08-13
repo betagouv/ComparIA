@@ -153,7 +153,7 @@
   seoTitle={m['seo.titles.modeles']()}
   title={m['seo.titles.modeles']()}
   titleAsBubble
-  headerClass="hidden"
+  headerClass="sr-only!"
   class="py-0! px-0!"
 >
   <aside class="bg-light-grey py-3 md:py-4 px-4 md:px-6">
@@ -207,10 +207,15 @@
   </aside>
 
   <div class="py-4 md:py-6 px-4 md:px-6">
-    <p class="fr-h5 mb-4!">
-      {filteredModels.length}
-      {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
-    </p>
+    <!-- The live region wraps the heading rather than sitting on it: a role
+         on the h2 would cost it its heading semantics. Filtering and searching
+         change this count with no other signal. -->
+    <div role="status" aria-live="polite">
+      <h2 class="fr-h5 mb-4!">
+        {filteredModels.length}
+        {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
+      </h2>
+    </div>
 
     <Select
       bind:selected={sortingMethod}
@@ -220,19 +225,21 @@
       class="w-auto! max-w-full"
     />
 
-    <div class="gap-6 md:grid-cols-2 2xl:grid-cols-3 grid">
+    <ul class="gap-6 md:grid-cols-2 2xl:grid-cols-3 m-0! p-0! grid list-none">
       {#each filteredModels as model (model.id)}
-        <ModelCard
-          {model}
-          modalId="modal-model"
-          {commons}
-          onModelSelected={(name) => (selectedModel = name)}
-        />
+        <li class="p-0! flex">
+          <ModelCard
+            {model}
+            modalId="modal-model"
+            {commons}
+            onModelSelected={(name) => (selectedModel = name)}
+          />
+        </li>
       {/each}
-    </div>
+    </ul>
 
     {#if filteredModels.length === 0}
-      <p class="fr-text--lead fr-mt-4w">{m['models.list.noresults']()}</p>
+      <p class="fr-text--lead fr-mt-4w" role="status">{m['models.list.noresults']()}</p>
     {/if}
   </div>
 </PageLayout>

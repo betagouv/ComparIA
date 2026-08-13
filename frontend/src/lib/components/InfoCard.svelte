@@ -9,6 +9,7 @@
     id,
     title,
     titleTag = 'h2',
+    rootTag = 'article',
     titleClass,
     icon,
     iconClass,
@@ -26,6 +27,8 @@
     icon: string
     title: string
     titleTag?: string
+    /** Inside a <dl> an <article> is invalid markup; pass 'div' there. */
+    rootTag?: string
     titleClass?: ClassValue
     iconClass?: ClassValue
     badge?: BadgeProps
@@ -86,7 +89,11 @@
   </div>
 {/snippet}
 
-<article {id} class={['cg-border bg-white flex flex-col', classes.base, props.class]}>
+<svelte:element
+  this={rootTag}
+  {id}
+  class={['cg-border bg-white flex flex-col', classes.base, props.class]}
+>
   <div class={['gap-1 flex', { 'items-start': size === 'xs' }]}>
     <svelte:element
       this={titleTag}
@@ -134,4 +141,4 @@
       {desc}
     </p>
   {/if}
-</article>
+</svelte:element>

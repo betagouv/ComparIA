@@ -91,7 +91,7 @@
         <div
           class={[
             'cg-border bg-white p-7 pb-8',
-            { 'border-2! border-[#58B77D]!': card.k === 'pros' }
+            { 'border-2! border-[--border-plain-success]!': card.k === 'pros' }
           ]}
         >
           <div class="flex h-full flex-col">
@@ -111,7 +111,7 @@
                       ? 'i-ri-checkbox-circle-line'
                       : 'i-ri-close-circle-fill'}
                     block
-                    class={['me-1', card.k === 'pros' ? 'text-[#58B77D]' : 'text-[#FF9575]']}
+                    class={['me-1', card.k === 'pros' ? 'text-success' : 'text-error']}
                   />
                   <span>{@html sanitize(m[`ranking.methodo.methods.${card.id}.list.${i}`]())}</span>
                 </li>
@@ -170,12 +170,17 @@
     <div class="gap-6 lg:grid-cols-2 grid">
       <div class="max-w-[528px]">
         <h4 class="mb-5! leading-normal! lg:mb-10! text-[14px]!">
-          {m['ranking.methodo.impacts.winrate.title']()}
+          {m['ranking.methodo.impacts.winrate']()}
         </h4>
 
         <div>
           <div class="rounded-sm bg-white h-[400px]">
-            <WinHistogram data={modelsData['win_rate']} {minMaxY} />
+            <WinHistogram
+              id="histogram-winrate"
+              title={m['ranking.methodo.impacts.winrate']()}
+              data={modelsData['win_rate']}
+              {minMaxY}
+            />
           </div>
           <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
@@ -204,12 +209,17 @@
 
       <div class="max-w-[528px]">
         <h4 class="mb-5! leading-normal! text-[14px]!">
-          {m['ranking.methodo.impacts.elo.title']()}
+          {m['ranking.methodo.impacts.elo']()}
         </h4>
 
         <div>
           <div class="rounded-sm bg-white h-[400px]">
-            <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
+            <WinHistogram
+              id="histogram-elo"
+              title={m['ranking.methodo.impacts.elo']()}
+              data={modelsData['mean_win_prob']}
+              {minMaxY}
+            />
           </div>
           <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
