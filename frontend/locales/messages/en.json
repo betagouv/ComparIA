@@ -259,6 +259,7 @@
             "question": "Which models would you like to compare?"
         },
         "suggestions": {
+            "fallback": "Explore the category: {category}",
             "generateAnother": "Generate another prompt",
             "title": "Suggested prompts"
         },

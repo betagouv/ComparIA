@@ -294,7 +294,8 @@
 
   <div class="mt-8 cg-border rounded-sm! bg-light-grey p-3 pb-5">
     <h3 class="text-sm! mb-1! gap-1 mt-auto! flex flex-wrap items-center text-left!">
-      <span class="text-dark-grey! font-bold whitespace-nowrap">{m['reveal.impacts.title']()}</span>
+      <!-- Wraps: this label is 5 characters in French and 32 in Swedish. -->
+      <span class="text-dark-grey! font-bold">{m['reveal.impacts.title']()}</span>
       <Dropdown
         id="usage-profile-{data.pos}"
         label={m['reveal.impacts.usage.changeLabel']()}

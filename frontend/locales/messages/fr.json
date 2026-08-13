@@ -594,6 +594,7 @@
             "question": "Quels modèles voulez-vous comparer ?"
         },
         "suggestions": {
+            "fallback": "Explorer la catégorie : {category}",
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
