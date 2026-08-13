@@ -23,7 +23,7 @@
   sizeClass="fr-col-md-10"
   contentClass="mb-10!"
 >
-  <Badge text={m['seo.titles.datasets']()} variant="light-info" class="mb-3" />
+  <Badge text={m['home.vote.datasets']()} variant="light-info" class="mb-3" />
   <section>
     <div class="md:flex-row gap-4 md:gap-15 flex flex-col">
       <div class="md:max-w-[350px]">
