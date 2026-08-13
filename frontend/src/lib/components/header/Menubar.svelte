@@ -1,25 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
 
-  const locale = getLocale()
   // Navigation links for both desktop and mobile menus
   const navLinks = [
     { href: '/', label: m['seo.titles.home']() },
     { href: '/product', label: m['seo.titles.product']() },
-    { href: '/datasets', label: m['seo.titles.datasets']() },
-    { href: '/news', label: m['seo.titles.news']() }
-  ].filter((link) => {
-    if (link.href.includes('/news') && !['fr', 'en'].includes(locale)) {
-      return false
-    }
-    return true
-  })
+    { href: '/datasets', label: m['seo.titles.datasets']() }
+  ]
 
   function isCurrentPage(path: string, href: string) {
     if (path.includes('product')) return href.includes('product')
-    if (path.includes('news')) return href.includes('news')
     return path === href
   }
 </script>
