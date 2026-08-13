@@ -3,13 +3,9 @@
   import { m } from '$lib/i18n/messages'
 
   // Navigation links for both desktop and mobile menus
-  const navLinks = [
-    { href: '/', label: m['seo.titles.home']() },
-    { href: '/product', label: m['seo.titles.product']() }
-  ]
+  const navLinks = [{ href: '/', label: m['seo.titles.home']() }]
 
   function isCurrentPage(path: string, href: string) {
-    if (path.includes('product')) return href.includes('product')
     return path === href
   }
 </script>
