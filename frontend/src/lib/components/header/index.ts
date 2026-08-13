@@ -1,6 +1,5 @@
 export { default as History } from './History.svelte'
 export { default as LanguageSelector } from './LanguageSelector.svelte'
 export { default as LegalMenu } from './LegalMenu.svelte'
-export { default as Menubar } from './Menubar.svelte'
 export { default as NavBar } from './NavBar.svelte'
 export { default as VoteGauge } from './VoteGauge.svelte'
