@@ -16,9 +16,11 @@
     "lint:fix": "eslint . --fix",
     "test:e2e": "playwright test",
     "test": "npm run test:e2e && npm run test:unit -- --run",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "test:a11y": "playwright test e2e/a11y.test.ts"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
     "@eslint/compat": "^2.1.0",
     "@eslint/js": "^10.0.1",
     "@iconify-json/ri": "^1.2.10",
@@ -40,6 +42,7 @@
     "@unocss/extractor-svelte": "^66.7.0",
     "@unocss/preset-icons": "^66.7.0",
     "@unocss/preset-wind4": "^66.7.0",
+    "axe-core": "^4.10.2",
     "eslint": "^10.4.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.19.0",

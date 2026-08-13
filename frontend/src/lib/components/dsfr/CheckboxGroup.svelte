@@ -66,7 +66,7 @@
       <div class="fr-checkbox-group">
         <input
           name="checkbox-{id}"
-          id="${id}-all"
+          id="{id}-all"
           type="checkbox"
           value="all"
           checked={allSelected}
@@ -74,7 +74,7 @@
           onclick={() => toggleAll()}
           disabled={value.length === 0}
         />
-        <label class={['fr-label ms-6!', { 'inline-block!': row }, labelClass]} for="${id}-all">
+        <label class={['fr-label ms-6!', { 'inline-block!': row }, labelClass]} for="{id}-all">
           {#if labelSlot}
             {@render labelSlot({ option: all, index: -1 })}
           {:else}

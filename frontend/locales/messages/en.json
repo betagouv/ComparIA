@@ -1,11 +1,14 @@
 {
     "a11y": {
+        "energyGraphDesc": "Scatter plot: each model is placed by its preference score on the vertical axis and its energy consumption on the horizontal axis. The same data is available as a table.",
         "externalLink": "{text}",
+        "graphAsTable": "View the same data as a table",
         "languageNav": "Language selection",
         "mainNav": "Main navigation",
         "mobileMenu": "Menu",
         "mobileNav": "Mobile navigation",
         "modeSelection": "Choice of models to compare",
+        "modelSheet": "Model details",
         "newWindow": "new window",
         "shareLinkLabel": "Share link for the result",
         "skipToContent": "Skip to main content",
@@ -382,7 +385,8 @@
         "table": {
             "linePerPage": "Number of lines per page",
             "pageCount": "{count} lines per page",
-            "triage": "Sort"
+            "triage": "Sort",
+            "triageCol": "Sort by {col}"
         },
         "theme": {
             "legend": "Choose a theme to customize the appearance of the site.",

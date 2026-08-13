@@ -72,12 +72,25 @@
 <figure class="chart-panel bg-very-light-primary">
   <figcaption><h3 id={titleId} class="fr-h5 mb-0!">{title}</h3></figcaption>
   <div class="legend mt-4" aria-hidden="true">
-    <span><i class="prompts"></i>{labels.prompts}</span><span
-      ><i class="conversations"></i>{labels.conversations}</span
+    <span><span class="swatch prompts"></span>{labels.prompts}</span><span
+      ><span class="swatch conversations"></span>{labels.conversations}</span
     >
   </div>
-  <div class="mt-4 overflow-x-auto">
-    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={titleId} class="chart">
+  <!-- Focusable: the chart is wider than the box on small screens, and a
+       keyboard user with no stop inside it can never scroll to the right. -->
+  <div
+    class="chart-scroller mt-4 overflow-x-auto"
+    tabindex="0"
+    role="group"
+    aria-labelledby={titleId}
+  >
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-labelledby={titleId}
+      aria-describedby="{titleId}-table"
+      class="chart"
+    >
       {#each yTicks as tick (tick)}
         <line
           x1={margin.left}
@@ -124,13 +137,14 @@
       {/each}
     </svg>
   </div>
-  <details class="mt-4">
+  <details class="mt-4" id="{titleId}-table">
     <summary class="fr-link cursor-pointer">{labels.table}</summary>
     <div class="fr-table fr-table--bordered mt-3">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
             <table>
+              <caption class="fr-sr-only">{title}</caption>
               <thead
                 ><tr
                   ><th scope="col">{labels.date}</th><th scope="col">{labels.prompts}</th><th
@@ -153,6 +167,10 @@
 </figure>
 
 <style>
+  .chart-scroller:focus-visible {
+    outline: 2px solid var(--outline-color);
+    outline-offset: 2px;
+  }
   .chart-panel {
     padding: 1.5rem;
     border: 1px solid var(--border-default-blue-france);
@@ -165,13 +183,14 @@
     height: auto;
   }
   .grid-line {
-    stroke: var(--border-default-blue-france);
-    stroke-opacity: 0.35;
+    stroke: var(--text-mention-grey);
+    stroke-opacity: 0.45;
     stroke-dasharray: 4 5;
   }
+  /* Grey, not the brand blue at 65%: that rendered ~#9696f7 on the panel,
+     2.19:1, and the baseline is the zero reference of the graph. */
   .axis-line {
-    stroke: var(--border-default-blue-france);
-    stroke-opacity: 0.65;
+    stroke: var(--text-mention-grey);
   }
   .axis-label {
     fill: var(--text-mention-grey);
@@ -184,8 +203,11 @@
   .prompts-line {
     stroke: var(--brand-primary);
   }
+  /* Dashed as well as red: blue against red is the common colour-blind
+     confusion pair, and the two lines sit at 1.10:1 against each other. */
   .conversations-line {
     stroke: var(--red-marianne-main-472);
+    stroke-dasharray: 8 5;
   }
   .activity-point {
     stroke: white;
@@ -208,11 +230,15 @@
     align-items: center;
     gap: 0.5rem;
   }
-  .legend i {
+  .legend .swatch {
     display: block;
     width: 0.9rem;
     height: 0.9rem;
     border-radius: 50%;
+  }
+  /* Mirrors the dashed line: the legend must not rely on hue either. */
+  .legend .conversations {
+    border-radius: 0;
   }
   .legend .prompts {
     background: var(--brand-primary);

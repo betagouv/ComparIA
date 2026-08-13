@@ -127,7 +127,7 @@
   bind:orderingMethod
   bind:search
   searchLabel={m['actions.searchModel']()}
-  caption={m['ranking.title']()}
+  caption={m['ranking.preferences.title']()}
   hideCaption
 >
   {#snippet headerLeft()}

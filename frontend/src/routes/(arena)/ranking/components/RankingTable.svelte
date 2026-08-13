@@ -29,6 +29,7 @@
 
   let {
     id,
+    caption,
     initialOrderCol = 'elo',
     initialOrderMethod = 'descending',
     includedCols,
@@ -38,6 +39,8 @@
     filterProprietary = false
   }: {
     id: string
+    /** Two of these render on the ranking page; each needs its own title. */
+    caption?: string
     initialOrderCol?: ColKind
     initialOrderMethod?: 'ascending' | 'descending'
     includedCols?: ColKind[]
@@ -207,7 +210,7 @@
   bind:orderingMethod
   bind:search
   searchLabel={m['actions.searchModel']()}
-  caption={m['ranking.title']()}
+  caption={caption ?? m['ranking.title']()}
   hideCaption
 >
   {#snippet headerLeft()}

@@ -32,6 +32,7 @@
     {...props}
     bind:value
     {id}
+    aria-invalid={error ? 'true' : undefined}
     aria-describedby="input-{id}-messages"
     class={['fr-input', { 'bg-white!': variant === 'light' }, props.class]}
   />

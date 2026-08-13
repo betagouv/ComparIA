@@ -1,11 +1,14 @@
 {
     "a11y": {
+        "energyGraphDesc": "Nuage de points : chaque modèle est positionné selon son score de préférence en ordonnée et sa consommation énergétique en abscisse. Les mêmes données sont disponibles sous forme de tableau.",
         "externalLink": "{text} (nouvelle fenêtre)",
+        "graphAsTable": "Consulter les mêmes données sous forme de tableau",
         "languageNav": "Choix de la langue",
         "mainNav": "Navigation principale",
         "mobileMenu": "Menu",
         "mobileNav": "Navigation mobile",
         "modeSelection": "Choix des modèles à comparer",
+        "modelSheet": "Fiche du modèle",
         "newWindow": "nouvelle fenêtre",
         "shareLinkLabel": "Lien de partage du résultat",
         "skipToContent": "Aller au contenu principal",
@@ -724,7 +727,8 @@
         "table": {
             "linePerPage": "Nombre de lignes par page",
             "pageCount": "{count} lignes par page",
-            "triage": "Trier"
+            "triage": "Trier",
+            "triageCol": "Trier par {col}"
         },
         "theme": {
             "legend": "Choisissez un thème pour personnaliser l’apparence du site.",

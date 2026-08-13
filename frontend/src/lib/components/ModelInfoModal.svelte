@@ -136,8 +136,11 @@
   </svelte:element>
 {/snippet}
 
+<!-- The title only exists once a model is picked; without the fallback the
+     dialog points its name at nothing for as long as the page is idle. -->
 <dialog
-  aria-labelledby="{modalId}-title"
+  aria-labelledby={model ? `${modalId}-title` : undefined}
+  aria-label={model ? undefined : m['a11y.modelSheet']()}
   id={modalId}
   class="fr-modal before:h-[5vh]! before:basis-[5vh]! after:h-[5vh]! after:basis-[5vh]!"
   {...dsfrEvents}

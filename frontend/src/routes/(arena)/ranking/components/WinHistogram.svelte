@@ -2,7 +2,18 @@
   import { extent, range, scaleLinear, ticks } from 'd3'
   import { onMount } from 'svelte'
 
-  let { data, minMaxY }: { data: { x: string; y: number }[]; minMaxY: [number, number] } = $props()
+  let {
+    data,
+    minMaxY,
+    id,
+    title
+  }: {
+    data: { x: string; y: number }[]
+    minMaxY: [number, number]
+    /** Unique per chart: two histograms render on the methodology tab. */
+    id: string
+    title: string
+  } = $props()
 
   let svg = $state<SVGSVGElement>()
   let width = $state(528)
@@ -25,7 +36,9 @@
   const barWidth = $derived(xScale(1) - xScale(0))
 </script>
 
-<svg bind:this={svg} class="histogram">
+<!-- Named, or the bars are a blank rectangle to a screen reader. -->
+<svg bind:this={svg} class="histogram" role="img" aria-labelledby="{id}-title">
+  <title id="{id}-title">{title}</title>
   <g>
     <!-- bars -->
     {#each data as d, i (i)}

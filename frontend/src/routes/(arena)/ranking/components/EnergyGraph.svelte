@@ -198,7 +198,17 @@
 
     <div class="relative flex-grow">
       <div class="flex">
-        <svg bind:this={svg}>
+        <!-- A scatter plot exposes nothing on its own. It is named and
+             described here, and the same figures sit in #energy-table below,
+             which is the equivalent a screen reader can actually read. -->
+        <svg
+          bind:this={svg}
+          role="img"
+          aria-labelledby="energy-graph-title"
+          aria-describedby="energy-graph-desc"
+        >
+          <title id="energy-graph-title">{m['ranking.energy.views.graph.title']()}</title>
+          <desc id="energy-graph-desc">{m['a11y.energyGraphDesc']()}</desc>
           <!-- y axis -->
           <g class="axis y-axis">
             {#each yTicks as tick (tick)}
@@ -246,6 +256,7 @@
                 m.class,
                 { hovered: hoveredModel === m.id, blurred: hoveredModel && hoveredModel !== m.id }
               ]}
+              aria-hidden="true"
               onpointerenter={() => onModelHover(m)}
               onpointerleave={() => (hoveredModel = undefined)}
             />
@@ -390,8 +401,8 @@
       background-color: #cecece;
     }
     .moe {
-      fill: var(--green-archipel-925-125);
-      background-color: var(--green-archipel-925-125);
+      fill: var(--green-archipel-main-557);
+      background-color: var(--green-archipel-main-557);
     }
     .dense {
       fill: var(--cg-orange);

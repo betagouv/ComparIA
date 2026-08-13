@@ -149,7 +149,7 @@
         </Tooltip>
       </div>
 
-      <Tabs {tabs} noBorders kind="nav">
+      <Tabs {tabs} label={m['seo.titles.ranking']()} noBorders kind="nav">
         {#snippet tab({ id })}
           {#if id === 'ranking'}
             <p class="mb-12! text-dark-grey text-[14px]!">
