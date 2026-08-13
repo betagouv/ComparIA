@@ -2,7 +2,6 @@
   import { Accordion, AccordionGroup, Button, Icon, Link } from '$components/dsfr'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
-  import * as env from '$env/static/public'
   import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
@@ -11,10 +10,6 @@
 
   const locale = getLocale()
   const i18nData = getI18nContext()
-
-  let PUBLIC_GIT_COMMIT = $state<string | null>((env as any).PUBLIC_GIT_COMMIT ?? null)
-
-  if (PUBLIC_GIT_COMMIT) console.log(`Git commit: ${PUBLIC_GIT_COMMIT}`)
 
   function handleRedirect() {
     window.location.href = '/arene/'

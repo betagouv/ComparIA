@@ -4,6 +4,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import Toaster from '$components/Toaster.svelte'
+  import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
   import { UnauthorizedError } from '$lib/fastapi-client'
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
@@ -26,6 +27,8 @@
   // svelte-ignore state_referenced_locally
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
+
+  if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
 
   onMount(() => {
     // Remove locale param to avoid locale changes override problems
