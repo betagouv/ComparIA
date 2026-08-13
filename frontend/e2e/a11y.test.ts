@@ -35,8 +35,9 @@ async function analyse(page: Page) {
  * app.css points --text-action-high-blue-france at the instance brand colour,
  * which lands DSFR link and button labels at 4.12:1 instead of 4.5:1. It is a
  * real RGAA 3.2 failure, left open because the fix changes the colour of every
- * action label in the product — see audits/rgaa-2026-08-13.md. Delete this once
- * the token is darkened, and delete it before publishing any conformity rate.
+ * action label in the product, so it is a decision to take on its own. Delete
+ * this once the token is darkened, and delete it before publishing any
+ * conformity rate.
  */
 const ACCEPTED = [{ rule: 'color-contrast', fgColor: '#6464f3' }]
 
