@@ -53,7 +53,8 @@
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['setConsentGiven'])
       _paq.push(['enableLinkTracking'])
-      _paq.push(['HeatmapSessionRecording::enable'])
+      /* No HeatmapSessionRecording: it captured mouse movement and DOM changes
+         for the whole visit, and nobody watched the recordings. */
       _paq.push(['trackPageView'])
       ;(function () {
         var u = '%matomo_url%/'
