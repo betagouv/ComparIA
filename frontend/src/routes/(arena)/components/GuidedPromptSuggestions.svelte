@@ -93,19 +93,16 @@
     >
       {#snippet item({ value, label, icon, title, tooltip })}
         {#if icon.includes('iasummit')}
-          <img
-            class="mb-3 md:block hidden dark:invert"
-            width="110"
-            height="35"
-            src="/iasummit.png"
-            alt={title}
-          />
-          <img
-            class="me-2 md:hidden inline-block object-contain dark:invert"
-            width="24"
-            src="/iasummit-small.png"
-            alt={title}
-          />
+          <!-- One <img>, two sources. Rendering both and hiding one in CSS
+               downloaded both every time. 48em is the md breakpoint. -->
+          <picture>
+            <source media="(min-width: 48em)" srcset="/iasummit.png" width="110" height="35" />
+            <img
+              class="md:mb-3 me-2 md:me-0 md:w-[110px] md:block inline-block w-[24px] object-contain dark:invert"
+              src="/iasummit-small.png"
+              alt={title}
+            />
+          </picture>
         {:else}
           <Icon
             {icon}
