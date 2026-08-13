@@ -78,12 +78,13 @@
 
 {#if suggestionsCategoriesCards.length}
   <div class="fr-container px-0!">
-    <h4 class="mb-4! text-dark-grey md:mb-5! md:text-base! text-[14px]!">
+    <h3 class="mb-4! text-dark-grey md:mb-5! md:text-base! text-[14px]!">
       <strong>{m['arenaHome.suggestions.title']()}</strong>
-    </h4>
+    </h3>
 
     <RadioGroupCard
       id="guided-cards"
+      label={m['a11y.suggestionCategories']()}
       bind:value={selected}
       options={suggestionsCategoriesCards}
       onChange={handleCardSelect}
@@ -104,7 +105,13 @@
             alt={title}
           />
         {:else}
-          <Icon {icon} aria-label={title} block class="text-primary me-2 md:mb-4 md:block" />
+          <Icon
+            {icon}
+            role="img"
+            aria-label={title}
+            block
+            class="text-primary me-2 md:mb-4 md:block"
+          />
         {/if}
         <span>
           {label}

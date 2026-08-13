@@ -1,6 +1,15 @@
 {
     "a11y": {
-        "externalLink": "{text} (nouvelle fenêtre)"
+        "externalLink": "{text} (nouvelle fenêtre)",
+        "mainNav": "Navigation principale",
+        "mobileMenu": "Menu",
+        "mobileNav": "Navigation mobile",
+        "modeSelection": "Choix des modèles à comparer",
+        "newWindow": "nouvelle fenêtre",
+        "shareLinkLabel": "Lien de partage du résultat",
+        "skipToContent": "Aller au contenu principal",
+        "suggestionCategories": "Catégories de suggestions de questions",
+        "voteTags": "Mots-clés qualifiant la réponse"
     },
     "actions": {
         "accessData": "Accéder aux données",

@@ -241,7 +241,7 @@
 
 <div class="cg-border bg-white p-5 md:p-7 md:pb-10 flex h-full flex-col">
   <div>
-    <h5
+    <h2
       class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-start"
       style="min-height: {Math.max(40, modelTitleHeight)}px"
     >
@@ -256,7 +256,7 @@
           {m['vote.yours']()}
         </div>
       {/if}
-    </h5>
+    </h2>
     <ul class="fr-badges-group mb-4!">
       {#each modelBadges as badge, i (i)}
         <li><Badge id="card-badge-{i}" {...badge} size="sm" noTooltip /></li>
@@ -269,6 +269,7 @@
       <InfoCard
         {...card}
         id="{model.id}-{card.id}"
+        titleTag="h3"
         iconClass={'iconClass' in card ? card.iconClass : 'text-info'}
         titleClass="3xl:flex-row lg:flex-col"
         size="xs"
@@ -290,7 +291,7 @@
   </div>
 
   <div class="mt-8 cg-border rounded-sm! bg-light-grey p-3 pb-5">
-    <h6 class="text-sm! mb-1! gap-1 mt-auto! flex flex-wrap items-center text-left!">
+    <h3 class="text-sm! mb-1! gap-1 mt-auto! flex flex-wrap items-center text-left!">
       <span class="text-dark-grey! font-bold whitespace-nowrap">{m['reveal.impacts.title']()}</span>
       <Dropdown
         id="usage-profile-{data.pos}"
@@ -323,7 +324,7 @@
           {/each}
         </ul>
       </Dropdown>
-    </h6>
+    </h3>
     <p class="text-xxs! text-grey mb-3!">{selectedUsageOption.description}</p>
     {#if usageProfile !== 'discussion'}
       <p class="text-xxs! text-grey mb-3! -mt-2!">{m['reveal.impacts.usage.assumption']()}</p>
@@ -331,11 +332,18 @@
     <div class="gap-4 flex flex-col">
       <div class="gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 grid">
         {#each consoCards as card (card.id)}
-          <InfoCard {...card} id="{model.id}-{card.id}" iconClass="text-info" size="sm" />
+          <InfoCard
+            {...card}
+            id="{model.id}-{card.id}"
+            titleTag="h4"
+            iconClass="text-info"
+            size="sm"
+          />
         {/each}
         <InfoCard
           id="{model.id}-conso-cost"
           icon="i-ri-coins-line"
+          titleTag="h4"
           title={m['reveal.impacts.cost.title']()}
           tooltip={m['reveal.impacts.cost.tooltip']()}
           iconClass="text-info"
@@ -368,6 +376,7 @@
         <InfoCard
           id="{model.id}-conso-energy"
           icon="i-ri-flashlight-fill"
+          titleTag="h4"
           title={m['reveal.impacts.energy.title']()}
           tooltip={`${m['reveal.impacts.energy.tooltip']()} ${m['reveal.impacts.energy.estimate']()}`}
           iconClass="text-info"

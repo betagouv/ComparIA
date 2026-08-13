@@ -1,6 +1,15 @@
 {
     "a11y": {
-        "externalLink": "{text}"
+        "externalLink": "{text}",
+        "mainNav": "Main navigation",
+        "mobileMenu": "Menu",
+        "mobileNav": "Mobile navigation",
+        "modeSelection": "Choice of models to compare",
+        "newWindow": "new window",
+        "shareLinkLabel": "Share link for the result",
+        "skipToContent": "Skip to main content",
+        "suggestionCategories": "Question suggestion categories",
+        "voteTags": "Keywords describing the answer"
     },
     "actions": {
         "accessData": "Access data",
@@ -2395,10 +2404,18 @@
         },
         "overview": "Overview",
         "metrics": {
-            "conversations": { "label": "Conversations had" },
-            "models": { "label": "Models tested" },
-            "prompts": { "label": "Prompts submitted" },
-            "votes": { "label": "Votes cast" }
+            "conversations": {
+                "label": "Conversations had"
+            },
+            "models": {
+                "label": "Models tested"
+            },
+            "prompts": {
+                "label": "Prompts submitted"
+            },
+            "votes": {
+                "label": "Votes cast"
+            }
         },
         "title": "Platform statistics"
     },
