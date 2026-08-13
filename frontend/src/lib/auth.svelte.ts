@@ -70,7 +70,7 @@ export async function logout(auth: AuthCtx, comparisons: ComparisonsCtx): Promis
     if (auth.config?.access_policy === 'sign_in_required') {
       goto(resolve('/login'))
     } else {
-      goto(resolve('/arene'))
+      goto(resolve('/'))
     }
   }
 }

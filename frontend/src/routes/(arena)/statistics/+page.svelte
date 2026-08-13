@@ -54,7 +54,7 @@
       <span class="fr-text--sm mb-0! font-bold">{m['statistics.filters.label']()}</span>
       <div class="period-links">
         {#each periods as period (period.value)}<a
-            href={resolve(`/arene/statistics?period=${period.value}`)}
+            href={resolve(`/statistics?period=${period.value}`)}
             aria-current={data.statistics.period === period.value ? 'page' : undefined}
             >{period.label}</a
           >{/each}

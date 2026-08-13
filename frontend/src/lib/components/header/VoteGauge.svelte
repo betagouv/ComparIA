@@ -21,7 +21,7 @@
 {#if votes}
   <div {...props} class={['gap-3 text-xs lg:gap-1 flex w-full items-center', props.class]}>
     <a
-      href={resolve('/arene/statistics')}
+      href={resolve('/statistics')}
       class="statistics-link rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
       aria-label={m['statistics.counterLink']()}
     >

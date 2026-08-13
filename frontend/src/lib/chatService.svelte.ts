@@ -244,13 +244,13 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
           if (event.type === 'add') {
             comparison.turns.push(parseAPITurn(event.turn))
-            goto(resolve(`/arene/${comparisonId_ as string}`))
+            goto(resolve(`/${comparisonId_ as string}`))
           } else {
             if (!turn) throw new InternalError('No turn to update')
 
             if (event.type === 'update') {
               comparison.turns[comparison.turns.length - 1] = parseAPITurn(event.turn)
-              goto(resolve(`/arene/${comparisonId_ as string}`))
+              goto(resolve(`/${comparisonId_ as string}`))
             } else if (event.type === 'error') {
               if (event.pos) {
                 turn[event.pos].status = 'error'

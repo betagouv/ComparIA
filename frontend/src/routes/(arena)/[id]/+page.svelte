@@ -35,7 +35,7 @@
       <Link
         button
         icon="edit-line"
-        href="../arene/"
+        href="/"
         text={m['header.chatbot.newDiscussion']()}
         class="text-nowrap"
       />

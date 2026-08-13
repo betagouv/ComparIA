@@ -7,7 +7,7 @@
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
 
-  const redirectTo = $derived(page.url.searchParams.get('redirect') || '/arene')
+  const redirectTo = $derived(page.url.searchParams.get('redirect') || '/')
 
   const loginTitle = env.PUBLIC_AUTH_LOGIN_TITLE || 'Bienvenue sur compar:IA'
   const loginDescription =

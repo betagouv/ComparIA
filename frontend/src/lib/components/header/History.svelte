@@ -45,7 +45,7 @@
     <nav {...props} class={['comparison-history lg:overflow-y-auto', props.class]}>
       <ul class="fr-sidemenu__list">
         {#each comparisons as comp (comp.id)}
-          {@const href = resolve(`/arene/${comp.id}`)}
+          {@const href = resolve(`/${comp.id}`)}
           {@const current = page.url.pathname === href ? 'page' : undefined}
           <li class={['fr-sidemenu__item', { 'before:content-none!': mode === 'mobile' }]}>
             <Link

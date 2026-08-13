@@ -66,7 +66,7 @@
       })
       auth.user = null
       resetConsent()
-      window.location.href = '/arene'
+      window.location.href = '/'
     } catch {
       eraseError = m['auth.settings.erase.failed']()
     } finally {
