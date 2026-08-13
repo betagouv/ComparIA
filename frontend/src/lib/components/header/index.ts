@@ -1,4 +1,3 @@
-export { default as Header } from './Header.svelte'
 export { default as History } from './History.svelte'
 export { default as LanguageSelector } from './LanguageSelector.svelte'
 export { default as LegalMenu } from './LegalMenu.svelte'
