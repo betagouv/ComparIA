@@ -958,6 +958,14 @@
                 "desc": "Plusieurs améliorations ont été ou sont toujours en cours d’identification, parmi lesquelles :",
                 "title": "Améliorations identifiées"
             },
+            "8": {
+                "1": "Feuille de style all\u00e9g\u00e9e de 3,27 Mo \u00e0 1,46 Mo, soit 239 Ko de moins apr\u00e8s compression sur chaque page : le service n\u2019embarque plus les 1 047 ic\u00f4nes du syst\u00e8me de design mais seulement les vingt-cinq qu\u2019il utilise.",
+                "2": "Retrait de 344 Ko de fichiers publics qu\u2019aucune page n\u2019appelait.",
+                "3": "Arr\u00eat de l\u2019enregistrement des sessions : il observait les mouvements de souris et les modifications de la page pendant toute la visite, pour des enregistrements que personne ne consultait. Le comptage de pages est conserv\u00e9.",
+                "4": "Mesure du 13 ao\u00fbt 2026 sur l\u2019\u00e9cran de discussion : 111 requ\u00eates et 1 152 Ko. Le service reste au-dessus des limites qu\u2019il s\u2019est fix\u00e9es plus haut, 40 requ\u00eates et 600 Ko par \u00e9cran. Le principal poste restant est le fichier de traductions, qui contient les cinq langues sur chaque page.",
+                "desc": "Depuis la publication, les corrections suivantes ont \u00e9t\u00e9 apport\u00e9es \u00e0 l\u2019ar\u00e8ne :",
+                "title": "Am\u00e9liorations r\u00e9alis\u00e9es"
+            },
             "desc": "publiée le 11 décembre 2025",
             "title": "Déclaration d’écoconception"
         },
