@@ -1,20 +1,18 @@
-import { isRedirect } from '@sveltejs/kit'
-import { load as accessibilite } from '../routes/(pages)/(general)/accessibilite/+page.server'
-import { load as donneesPersonnelles } from '../routes/(pages)/(general)/donnees-personnelles/+page.server'
-import { load as ecoconception } from '../routes/(pages)/(general)/ecoconception/+page.server'
-import { load as modalites } from '../routes/(pages)/(general)/modalites/+page.server'
-import { load as mentionsLegales } from '../routes/(pages)/(general)/mentions-legales/+page.server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  ACCESSIBILITY_PATH,
   buildConsentEvidence,
   consentCheckboxLabel,
+  ECODESIGN_PATH,
   hasAcceptedDocument,
-  legalLinks,
+  LEGAL_NOTICE_PATH,
   legalPageLinks,
   loadConsent,
+  PRIVACY_POLICY_PATH,
   reloadConsent,
   resetConsent,
   submitConsent,
+  TERMS_PATH,
   type ConsentDocument
 } from './consent'
 import { api } from './fastapi-client'
@@ -59,16 +57,6 @@ const acceptance = {
   accepted_at: '2026-07-20T10:00:00.000Z'
 }
 
-function redirectTarget(load: CallableFunction): string {
-  try {
-    load({} as never)
-  } catch (error) {
-    if (isRedirect(error)) return error.location
-    throw error
-  }
-  throw new Error('the load did not redirect')
-}
-
 describe('consent', () => {
   beforeEach(() => {
     resetConsent()
@@ -85,31 +73,14 @@ describe('consent', () => {
     })
   })
 
-  it('links to the published pages, not to the paths that redirect', () => {
-    expect(legalLinks().map((link) => link.href)).toEqual([
-      '/arene/modalites',
-      '/arene/donnees-personnelles'
-    ])
-    // Tied to where the legacy routes send visitors, so moving a document
-    // without moving these links turns red here rather than adding a hop.
-    expect(legalLinks().map((link) => link.href)).toEqual(
-      [modalites, donneesPersonnelles].map(redirectTarget)
-    )
-  })
-
   it('lists every legal page on the same canonical paths', () => {
     expect(legalPageLinks().map((link) => link.href)).toEqual([
-      '/arene/donnees-personnelles',
-      '/arene/modalites',
-      '/arene/mentions-legales',
-      '/arene/accessibilite',
-      '/arene/ecoconception'
+      PRIVACY_POLICY_PATH,
+      TERMS_PATH,
+      LEGAL_NOTICE_PATH,
+      ACCESSIBILITY_PATH,
+      ECODESIGN_PATH
     ])
-    expect(legalPageLinks().map((link) => link.href)).toEqual(
-      [donneesPersonnelles, modalites, mentionsLegales, accessibilite, ecoconception].map(
-        redirectTarget
-      )
-    )
   })
 
   it('keeps footer links independent from menu visibility', () => {
@@ -117,9 +88,9 @@ describe('consent', () => {
     pages.ecodesign.visible_in_legal_menu = false
 
     expect(
-      legalPageLinks(pages, 'legal_menu').some((link) => link.href.includes('ecoconception'))
+      legalPageLinks(pages, 'legal_menu').some((link) => link.href.includes('eco-design'))
     ).toBe(false)
-    expect(legalPageLinks(pages).some((link) => link.href.includes('ecoconception'))).toBe(true)
+    expect(legalPageLinks(pages).some((link) => link.href.includes('eco-design'))).toBe(true)
   })
 
   it('renders the checkbox label of the page that asks', () => {

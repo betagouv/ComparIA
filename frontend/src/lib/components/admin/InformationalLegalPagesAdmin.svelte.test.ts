@@ -16,7 +16,7 @@ const pages = {
   },
   accessibility: {
     mode: 'external',
-    external_url: 'https://example.test/accessibilite',
+    external_url: 'https://example.test/accessibility',
     visible_in_legal_menu: true,
     visible_in_settings: true,
     content_by_locale: { fr: '', en: '' }
@@ -52,7 +52,7 @@ describe('informational legal pages administration', () => {
       })
     ).toHaveValue('# Mentions légales')
     expect(getByRole('textbox', { name: /Adresse de la page externe/ })).toHaveValue(
-      'https://example.test/accessibilite'
+      'https://example.test/accessibility'
     )
     expect(queryByRole('checkbox', { name: 'Le pied de page' })).not.toBeInTheDocument()
   })
@@ -84,7 +84,7 @@ describe('informational legal pages administration', () => {
     const { getByRole, getByText } = render(InformationalLegalPagesAdmin)
     const url = await waitFor(() => getByRole('textbox', { name: /Adresse de la page externe/ }))
 
-    await fireEvent.input(url, { target: { value: 'http://example.test/accessibilite' } })
+    await fireEvent.input(url, { target: { value: 'http://example.test/accessibility' } })
     await fireEvent.click(getByRole('button', { name: 'Enregistrer les pages' }))
 
     expect(getByText('Saisissez une adresse HTTPS valide.')).toBeInTheDocument()
