@@ -1,10 +1,10 @@
 <script lang="ts">
   import Pending from '$components/Pending.svelte'
   import SideSwitcher from '$components/SideSwitcher.svelte'
-  import type { AnyAPIVote, ComparisonTurn } from '$lib/chatService.svelte'
+  import type { AnyAPIVote, ComparisonTurn, TurnChoice } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { type Snippet } from 'svelte'
+  import { tick, type Snippet } from 'svelte'
   import { ErrorDisplay, MessageBot, MessageUser, VoteSelect } from '.'
 
   let {
@@ -24,6 +24,18 @@
     onRetry: () => void
     children: Snippet<[]> | undefined
   } = $props()
+
+  // Voting unmounts the fieldset the focused button lives in, which drops focus
+  // to <body>: the next Tab restarts at the top of the document, back through
+  // both answers. Hand it to whatever the vote just revealed instead.
+  async function onChoice(choice: TurnChoice) {
+    onVote({ turn_id: turn.id, choice })
+    await tick()
+    const next =
+      document.getElementById(`vote-annotate-${turn.id}-a-comment`) ??
+      document.getElementById('chatbot-prompt')
+    next?.focus({ preventScroll: true })
+  }
 </script>
 
 <div class="grouped-messages px-4 py-2 md:py-5 md:px-6 gap-2 md:gap-5 flex flex-col">
@@ -68,10 +80,7 @@
     {/if}
 
     {#if turn.status === 'complete' && !turn.choice}
-      <VoteSelect
-        id="vote-select-{turn.id}"
-        onVote={(choice) => onVote({ turn_id: turn.id, choice })}
-      />
+      <VoteSelect id="vote-select-{turn.id}" onVote={onChoice} />
     {/if}
   </div>
 </div>

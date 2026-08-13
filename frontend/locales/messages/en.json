@@ -349,6 +349,10 @@
         }
     },
     "chatbot": {
+        "announce": {
+            "generating": "The models are writing their answers…",
+            "ready": "Both answers are ready."
+        },
         "continuePrompt": "Continue the chat with the AI models",
         "conversation": "Chat",
         "errors": {
