@@ -6,6 +6,7 @@ import {
   localizedInformationalContent,
   normalizeInformationalPages
 } from './informational-pages'
+import { ACCESSIBILITY_PATH } from './consent'
 
 describe('informational legal pages', () => {
   it('keeps the seeded internal pages when no configuration is available', () => {
@@ -18,13 +19,13 @@ describe('informational legal pages', () => {
         ecodesign: {
           ...DEFAULT_INFORMATIONAL_PAGES.ecodesign,
           mode: 'external',
-          external_url: 'https://example.gouv.fr/ecoconception',
+          external_url: 'https://example.gouv.fr/eco-design',
           visible_in_settings: false
         }
       }
     })
 
-    expect(informationalPageHref('ecodesign', pages)).toBe('https://example.gouv.fr/ecoconception')
+    expect(informationalPageHref('ecodesign', pages)).toBe('https://example.gouv.fr/eco-design')
     expect(isInformationalPageVisible(pages.ecodesign, 'settings')).toBe(false)
     expect(isInformationalPageVisible(pages.ecodesign, 'legal_menu')).toBe(true)
   })
@@ -41,7 +42,7 @@ describe('informational legal pages', () => {
       }
     })
 
-    expect(informationalPageHref('accessibility', pages)).toBe('/arene/accessibilite')
+    expect(informationalPageHref('accessibility', pages)).toBe(ACCESSIBILITY_PATH)
     expect(localizedInformationalContent(pages.accessibility, 'en')).toBe('# Déclaration')
   })
 })

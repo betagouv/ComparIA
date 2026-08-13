@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
+import { PRIVACY_POLICY_PATH, TERMS_PATH, ACCESSIBILITY_PATH, ECODESIGN_PATH } from '$lib/consent'
 
 const request = vi.fn()
 
@@ -29,16 +30,14 @@ describe('Settings page', () => {
     expect(getByRole('heading', { name: 'Liens utiles' })).toBeTruthy()
     expect(
       getByRole('link', { name: 'Conditions générales d’utilisation' }).getAttribute('href')
-    ).toBe('/arene/modalites')
+    ).toBe(TERMS_PATH)
     expect(getByRole('link', { name: 'Politique de confidentialité' }).getAttribute('href')).toBe(
-      '/arene/donnees-personnelles'
+      PRIVACY_POLICY_PATH
     )
     expect(getByRole('link', { name: /Accessibilité/ }).getAttribute('href')).toBe(
-      '/arene/accessibilite'
+      ACCESSIBILITY_PATH
     )
-    expect(getByRole('link', { name: 'Écoconception' }).getAttribute('href')).toBe(
-      '/arene/ecoconception'
-    )
+    expect(getByRole('link', { name: 'Écoconception' }).getAttribute('href')).toBe(ECODESIGN_PATH)
     // Tabs keeps every panel in the DOM and hides the inactive ones through
     // the DSFR styles, so the selected class is what separates them here.
     expect(container.querySelector('#tab-about-panel')).toHaveClass('fr-tabs__panel--selected')
