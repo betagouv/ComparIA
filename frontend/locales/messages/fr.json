@@ -740,36 +740,6 @@
         "saveFailed": "Votre choix n’a pas pu être enregistré. Vérifiez votre connexion puis réessayez.",
         "saving": "Enregistrement…"
     },
-    "datasets": {
-        "access": {
-            "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
-            "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
-            "repos": {
-                "arena": {
-                    "desc": "Conversations, réponses, réactions et préférences réunies dans un seul jeu de données",
-                    "title": "/comparia-fr-arena"
-                }
-            },
-            "share": "Partagez-nous vos réutilisations",
-            "title": "Accédez aux jeux de données compar:IA"
-        },
-        "reuse": {
-            "bunka": {
-                "analyze": {
-                    "desc": "Analyse des conversations des utilisateurs avec détection des tâches (création, recherche d'informations...), des sujets (arts et culture, éducation...), des émotions complexes (curiosité, enthousiasme...), des types de langage (formel, professionnel...)",
-                    "title": "Accéder à l’analyse par indicateur"
-                },
-                "conversations": {
-                    "desc": "Visualisation interactive des conversations où chaque point représente un cluster de discussions évoqué par les utilisateurs (comme l’éducation, la santé, l’environnement, ou encore la philosophie).",
-                    "title": "Explorer la visualisation de données"
-                },
-                "desc": "L'équipe Bunka.ai a mené une étude approfondie sur les interactions entre les utilisateurs de la plateforme Compar:IA et les modèles d'IA, examinant les thématiques privilégiées, les tâches principales et déterminant si ces modèles fonctionnent avant tout comme des outils d'automatisation ou d'augmentation des capacités humaines. Cette analyse repose sur un large échantillon de 25 000 conversations.",
-                "method": "En savoir plus sur la méthodologie"
-            },
-            "desc": "Exemples de réutilisation des jeux de données compar:IA",
-            "title": "Comment ces données sont-elles utilisées ?"
-        }
-    },
     "errors": {
         "404": {
             "desc": "Si vous avez tapé l'adresse web dans le navigateur, vérifiez qu'elle est correcte. La page n’est peut-être plus disponible.<br />Dans ce cas, pour continuer votre visite vous pouvez consulter notre page d’accueil.<br />Sinon contactez-nous pour que l’on puisse vous rediriger vers la bonne information.",
@@ -3273,7 +3243,6 @@
             "arene": "Discussion",
             "community": "Communauté",
             "comparator": "Le comparateur",
-            "datasets": "Jeux de données",
             "donnees-personnelles": "Politique de confidentialité",
             "faq": "FAQ",
             "history": "Dates clés",

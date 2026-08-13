@@ -5,8 +5,7 @@
   // Navigation links for both desktop and mobile menus
   const navLinks = [
     { href: '/', label: m['seo.titles.home']() },
-    { href: '/product', label: m['seo.titles.product']() },
-    { href: '/datasets', label: m['seo.titles.datasets']() }
+    { href: '/product', label: m['seo.titles.product']() }
   ]
 
   function isCurrentPage(path: string, href: string) {
