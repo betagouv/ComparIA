@@ -238,8 +238,8 @@
         },
         "modelSelection": "Model selection",
         "prompt": {
-            "label": "Write your first message",
-            "placeholder": "Write your first message here"
+            "label": "Write your first prompt",
+            "placeholder": "Write your first prompt here"
         },
         "selectModels": {
             "help": "Choose the comparison mode",

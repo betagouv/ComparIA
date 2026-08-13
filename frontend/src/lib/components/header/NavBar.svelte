@@ -130,7 +130,7 @@
 
 {#snippet footer(mode: 'desktop' | 'mobile' = 'desktop')}
   <div class="gap-2 flex flex-col">
-    <VoteGauge id="vote-gauge" class={{ 'lg:hidden': !expanded }} />
+    <VoteGauge id="vote-gauge-{mode}" class={{ 'lg:hidden': !expanded }} />
 
     <div class="gap-2 flex items-center">
       <div class="min-w-0 flex-1">

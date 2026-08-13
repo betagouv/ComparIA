@@ -153,7 +153,7 @@
     {#if canMergeComparisons}
       <Checkbox
         id="login-merge"
-        class="text-xs!"
+        class="text-xs! mt-1!"
         bind:checked={mergeComparisons}
         disabled={step === 'code'}
         label={m['auth.modal.merge']()}
@@ -163,11 +163,12 @@
     {#if terms}
       <Checkbox
         id="login-consent"
-        class="text-xs!"
+        class="text-xs! mt-1!"
         bind:checked={consented}
         disabled={loading || step === 'code' || !consentRequired}
         label={consentLabel}
         links={legalLinks()}
+        linksClass="text-xs! leading-5!"
         error={consentError}
       />
     {:else if consentError}
