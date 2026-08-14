@@ -42,7 +42,7 @@
             class="text-black! after:text-primary"
             data-fr-opened="false"
             aria-controls={modalId}
-            href="#{model.id}"
+            href="#{model.human_id}"
             onclick={() => onModelSelected(model.id)}
             ><span class="font-extrabold">{model.name}</span></a
           >

@@ -146,7 +146,13 @@
   }
 
   let selectedModel = $state<string>(page.url.hash.replace('#', ''))
-  const selectedModelData = $derived(models.find((m) => m.id === selectedModel))
+  // human_id first: it is what goes in the URL, and it survives being shared
+  // between environments, which the uuid does not. The uuid is still accepted
+  // so links made while the card pointed at it keep working, and so the click
+  // handlers, which pass an id, do not have to change.
+  const selectedModelData = $derived(
+    models.find((m) => m.human_id === selectedModel || m.id === selectedModel)
+  )
 </script>
 
 <PageLayout
