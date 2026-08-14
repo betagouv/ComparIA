@@ -31,7 +31,7 @@
     [
       { href: '/', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
       { href: '/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
-      { href: '/modeles', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' },
+      { href: '/models', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' },
       { href: '/admin', role: 'admin', label: m['admin.panelLink'](), icon: 'i-ri-admin-line' }
     ].filter((link) => userAllowed(auth, link.role))
   )

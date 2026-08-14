@@ -14,7 +14,7 @@ import { expect, test, type Page } from '@playwright/test'
 /** Pages reachable without signing in. */
 const PAGES = [
   { path: '/', name: 'arena — prompt' },
-  { path: '/modeles', name: 'model list' },
+  { path: '/models', name: 'model list' },
   { path: '/ranking', name: 'ranking' },
   { path: '/statistics', name: 'statistics' },
   { path: '/settings', name: 'settings' },
@@ -127,8 +127,8 @@ test('changing page moves focus and says where you landed', async ({ page }) => 
   await page.goto('/')
   await page.waitForLoadState('networkidle')
 
-  await page.locator('nav[aria-label] a[href="/modeles"]').first().click()
-  await page.waitForURL('**/modeles')
+  await page.locator('nav[aria-label] a[href="/models"]').first().click()
+  await page.waitForURL('**/models')
 
   // Without this, a client-side navigation leaves focus on the link that was
   // just clicked and announces nothing: the page silently swaps underneath.
@@ -141,7 +141,7 @@ test('changing page moves focus and says where you landed', async ({ page }) => 
 
 test('the model list stays readable at 320px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 })
-  await page.goto('/modeles')
+  await page.goto('/models')
   await page.waitForLoadState('networkidle')
 
   const overflows = await page.evaluate(
