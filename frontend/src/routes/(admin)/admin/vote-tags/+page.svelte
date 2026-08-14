@@ -23,8 +23,7 @@
   const defaultLocale = $derived(data.defaultLocale)
   const orderedLocales = $derived(
     getLocales(auth.config.enabled_locales).sort(
-      (left, right) =>
-        Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
+      (left, right) => Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
     )
   )
 
@@ -325,9 +324,7 @@
             <span class="gap-1 flex flex-wrap">
               <Badge
                 size="sm"
-                text={row.archived
-                  ? m['admin.voteTags.archived']()
-                  : m['admin.voteTags.active']()}
+                text={row.archived ? m['admin.voteTags.archived']() : m['admin.voteTags.active']()}
                 variant={row.archived ? 'orange' : 'green'}
               />
               {#if row.reserved}
@@ -340,7 +337,7 @@
             <span class="gap-1 flex items-center">
               <Icon
                 icon="i-ri-draggable"
-                class="cursor-grab text-grey"
+                class="text-grey cursor-grab"
                 aria-hidden="true"
                 title={m['admin.voteTags.dragHint']()}
               />
@@ -386,9 +383,7 @@
                 size="sm"
                 variant="tertiary-no-outline"
                 iconOnly
-                title={row.archived
-                  ? m['admin.voteTags.restore']()
-                  : m['admin.voteTags.archive']()}
+                title={row.archived ? m['admin.voteTags.restore']() : m['admin.voteTags.archive']()}
                 aria-label={`${row.archived ? m['admin.voteTags.restore']() : m['admin.voteTags.archive']()} : ${displayLabel(row)}`}
                 disabled={busy}
                 onclick={() => setArchived(row, !row.archived)}

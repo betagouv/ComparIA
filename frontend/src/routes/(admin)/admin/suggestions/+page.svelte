@@ -551,7 +551,8 @@
         bind:value={prompt}
         required
         maxlength="4000"
-        aria-describedby="suggestion-text-messages"></textarea>
+        aria-describedby="suggestion-text-messages"
+      ></textarea>
       {#if formError}
         <div class="fr-messages-group" id="suggestion-text-messages" aria-live="polite">
           <p class="fr-message fr-message--error">{formError}</p>
