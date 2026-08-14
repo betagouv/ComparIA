@@ -106,36 +106,6 @@
             "title": "Ajustes de pantalla"
         }
     },
-    "datasets": {
-        "access": {
-            "catch": "Modelo publicado, investigación, compañías, ¡ahora es tu turno!",
-            "desc": "Las preguntas y preferencias expresadas en la plataforma están mayoritariamente en francés y reflejan un uso real y espontáneo. Estos conjuntos de datos están disponibles en <a {linkProps}>data.gouv</a> y Hugging Face.",
-            "repos": {
-                "arena": {
-                    "desc": "Conversaciones, respuestas, reacciones y preferencias reunidas en un solo conjunto de datos",
-                    "title": "/comparia-fr-arena"
-                }
-            },
-            "share": "Comparte con nosotros como usas los datos",
-            "title": "Acceder al conjunto de datos de compar:IA"
-        },
-        "reuse": {
-            "bunka": {
-                "analyze": {
-                    "desc": "Análisis de las conversaciones de los usuarios con detección de tareas (creación, búsqueda de información, etc.), temas (arte y cultura, educación, etc.), emociones complejas (curiosidad, entusiasmo, etc.) y tipos de lenguaje (formal, profesional...)",
-                    "title": "Acceda al análisis por indicador"
-                },
-                "conversations": {
-                    "desc": "Visualización interactiva de conversaciones donde cada punto representa un conjunto de debates planteados por los usuarios (como educación, salud, medio ambiente o incluso filosofía).",
-                    "title": "Explorar la visualización de datos"
-                },
-                "desc": "El equipo de Bunka.ai realizó un estudio exhaustivo de las interacciones entre los usuarios de la plataforma Compar:AI y los modelos de IA, analizando los temas preferidos, las tareas principales y determinando si estos modelos funcionan principalmente como herramientas de automatización o como complementos de las capacidades humanas. Este análisis se basa en una amplia muestra de 25.000 conversaciones.",
-                "method": "Obtenga más información sobre la metodología"
-            },
-            "desc": "Ejemplos de reutilización de conjuntos de datos de compar:AI",
-            "title": "¿Cómo se utilizan estos datos?"
-        }
-    },
     "errors": {
         "404": {
             "desc": "Si tecleaste la URL en tu navegador, verifica que sea correcta. Es posible que la página ya no esté disponible. <br />Puedes continuar visitando nuestra página de inicio. <br />De lo contrario, póngase en contacto con nosotros para que podamos redirigirle a la información correcta.",
@@ -150,66 +120,5 @@
             "title": "Error inesperado"
         },
         "unknown": "Ha sucedido un error"
-    },
-    "faq": {
-        "datasets": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Los datos de preferencias se utilizan para mejorar los modelos durante el entrenamiento futuro.</p><p>Al comparar ciegamente las respuestas de dos modelos, los usuarios de compar:AI expresan sus preferencias, indicando qué respuestas son más relevantes. Estos datos de preferencias se pueden utilizar para ajustar la alineación del modelo, entrenándolo para generar respuestas que se ajusten mejor a las expectativas y preferencias del usuario.</p><p>Este es un proceso iterativo, donde el modelo aprende gradualmente a generar mejores respuestas basándose en la retroalimentación de los humanos sobre la calidad de las respuestas. Al estar expuestos a los datos de preferencias, los modelos aprenden a incorporarlos en su proceso de generación de respuestas.</p>",
-                    "title": "¿Los datos de preferencias tienen un efecto inmediato en la mejora de los modelos?"
-                },
-                "2": {
-                    "desc": "<p>La singularidad de los datos recopilados en la plataforma compar:IA reside en que están en francés y corresponden a tareas reales de los usuarios. Estos datos reflejan las preferencias humanas dentro de un contexto lingüístico y cultural específico. Esto permite ajustar los modelos para que sean más relevantes, precisos y se adapten mejor al comportamiento del usuario, al tiempo que se corrigen los sesgos o deficiencias de los modelos actuales.</p>",
-                    "title": "¿Por qué son valiosos los datos de preferencias recopilados en compar:IA?"
-                },
-                "3": {
-                    "desc": "<p>compar:IA se posiciona como una herramienta de evaluación y alineación específica para Francia, centrada en la calidad de la respuesta y la recopilación de datos de preferencias, distinguiéndose así del enfoque de clasificación global de <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> desarrollado por <a href='http://lmsys.org' target='_blank'>lmsys.org</a> y de la alineación ética de modelos de IA por <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
-                    "title": "¿Qué hace que compar:IA sea única en comparación con otras iniciativas similares?"
-                }
-            },
-            "title": "Conjunto de datos"
-        },
-        "ecology": {
-            "questions": {
-                "1": {
-                    "desc": "<p>compar:AI utiliza la metodología desarrollada por <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> para proporcionar un balance energético que permite a los usuarios comparar el impacto ambiental de diferentes modelos de IA para la misma consulta. Esta transparencia es esencial para fomentar el desarrollo y la adopción de modelos de IA más eco-responsables.</p><p>Ecologits aplica los principios de la Evaluación del Ciclo de Vida (ACV) de acuerdo con la norma ISO 14044, centrándose actualmente en el impacto de la <strong>inferencia</strong> (es decir, el uso de modelos para responder consultas) y la <strong>fabricación de tarjetas gráficas</strong> (extracción de recursos, fabricación y transporte).</p><p>El consumo de energía del modelo se estima teniendo en cuenta varios parámetros, como el tamaño del modelo de IA utilizado, la ubicación de los servidores donde se implementan los modelos y el número de tokens de salida. El cálculo del indicador de potencial de calentamiento global, expresado en equivalente de CO2, se deriva de la medición del consumo de energía del modelo.</p><p>Es importante señalar que las metodologías para evaluar el impacto ambiental de la IA aún están en desarrollo.</p>",
-                    "title": "¿Cómo se calculan los indicadores ecológicos?"
-                },
-                "2": {
-                    "desc": "<p>La ubicación de los centros de datos influye en la huella de carbono de la IA. Si un modelo se entrena o utiliza en un país que depende en gran medida de los combustibles fósiles, su impacto ambiental será mayor que si se aloja en un país que utiliza principalmente energías renovables.</p><p>El método de análisis del impacto ambiental de la IA desarrollado por <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (de GenAI Impact)</a> incorpora datos sobre la matriz energética de los diferentes países donde se ubican los servidores. Esto permite una estimación más precisa y detallada de la huella de carbono real de la inferencia en diferentes modelos generativos de IA.</p>",
-                    "title": "¿Los indicadores ambientales tienen en cuenta la matriz energética de los diferentes países?"
-                },
-                "3": {
-                    "desc": "<p> Muchas métricas de impacto ambiental se centran principalmente en el impacto de la <strong>inferencia</strong>, es decir, el uso de modelos de IA para responder consultas. Este enfoque puede dar la ilusión de que la inferencia consume menos energía que el entrenamiento del modelo. Sin embargo, <strong> la realidad es más compleja. </strong> Consideremos la analogía del automóvil: </p> <ul> <li> Construir un automóvil (entrenamiento) es un proceso único que consume muchos recursos. </li> <li> Cada viaje en automóvil (inferencia) consume menos energía, pero estos viajes se repiten diariamente y su número es potencialmente inmenso. </li> </ul> <p> De manera similar, <strong> el impacto acumulativo de la inferencia, en millones de usuarios que realizan consultas diariamente, suele ser significativamente mayor que el impacto del entrenamiento inicial. <strong> Por eso es crucial que las herramientas de evaluación de la huella de carbono de la IA consideren todo el ciclo de vida de los modelos, desde el entrenamiento hasta la inferencia. </strong> </p>",
-                    "title": "¿Los indicadores de impacto ambiental tienen en cuenta los recursos utilizados para entrenar los modelos?"
-                }
-            },
-            "title": "Indicadores ecológicos"
-        },
-        "i18n": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Sí, la internacionalización de compar:AI está en marcha. Comenzamos con una expansión a tres países piloto: Lituania, Suecia y Dinamarca. Esta primera fase nos permitirá probar el enfoque y adaptar la interfaz a diferentes contextos lingüísticos y culturales europeos. Posteriormente, el proyecto podría ampliarse a más idiomas europeos en función de los comentarios recibidos en estos países piloto. El objetivo es construir gradualmente un verdadero espacio digital europeo común para la evaluación humana de la IA conversacional, con una gobernanza colaborativa que aún está por definir entre los diferentes países participantes.</p>",
-                    "title": "compar:AI se centró inicialmente en el francés: ¿hay planes para otros idiomas europeos?"
-                },
-                "2": {
-                    "desc": "<p>El desarrollo de una plataforma europea para comparar modelos de IA conversacional ofrece varias ventajas concretas. Permite recopilar datos de preferencias que reflejen las necesidades reales de los usuarios europeos, mejorando así la relevancia de las respuestas de los modelos para esta base de usuarios. La publicación de los conjuntos de datos garantiza una mejor representación de las lenguas y culturas europeas, a menudo infrarrepresentadas en los conjuntos de datos y evaluaciones globales dominados por el inglés. Asimismo, garantiza el cumplimiento de la normativa europea (RGPD, Ley de IA) e integra criterios de evaluación alineados con las prioridades europeas, como la reducción del impacto ambiental y la transparencia algorítmica. Por último, fomenta el surgimiento de un ecosistema de IA europeo competitivo y autónomo.</p>",
-                    "title": "¿Cuáles son las ventajas de una plataforma de recopilación de preferencias específicamente europea?"
-                }
-            },
-            "title": "Internacionalización"
-        },
-        "models": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Seleccionamos los modelos en función de su popularidad, diversidad y relevancia para los usuarios. Prestamos especial atención a que dichos modelos sean accesibles <em>open weights</em> (semiabiertas) y de diferentes tamaños.</p>"
-                },
-                "5": {
-                    "title": "¿Puede ver los datos de entrenamiento de los modelos?"
-                }
-            },
-            "title": "Modelos"
-        },
-        "title": "Preguntas Más Frecuentes"
     }
 }
