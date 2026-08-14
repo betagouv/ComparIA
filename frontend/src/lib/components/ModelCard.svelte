@@ -27,7 +27,7 @@
 
 <article
   class={[
-    'fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! bg-none!',
+    'fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! w-full bg-none!',
     { 'border-primary!': model.new }
   ]}
 >
