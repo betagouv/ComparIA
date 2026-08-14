@@ -20,7 +20,7 @@
     disabled: boolean
     error?: string
     autoScroll?: boolean
-    onVote: (data: AnyAPIVote) => void
+    onVote: (data: AnyAPIVote) => Promise<void> | void
     onRetry: () => void
     children: Snippet<[]> | undefined
   } = $props()
@@ -28,13 +28,23 @@
   // Voting unmounts the fieldset the focused button lives in, which drops focus
   // to <body>: the next Tab restarts at the top of the document, back through
   // both answers. Hand it to whatever the vote just revealed instead.
+  //
+  // The await matters: turn.choice is only set once the POST comes back, and
+  // the annotation box is what that renders. Without it we looked a round trip
+  // too early, always missed, and fell through to the prompt box — stepping
+  // over the controls the vote had just revealed. Nothing moves before then
+  // anyway, since the button keeping focus lives until the same response.
   async function onChoice(choice: TurnChoice) {
-    onVote({ turn_id: turn.id, choice })
-    await tick()
-    const next =
-      document.getElementById(`vote-annotate-${turn.id}-a-comment`) ??
-      document.getElementById('chatbot-prompt')
-    next?.focus({ preventScroll: true })
+    try {
+      await onVote({ turn_id: turn.id, choice })
+    } finally {
+      // Even on a failed vote: the alternative is focus stranded on <body>.
+      await tick()
+      const next =
+        document.getElementById(`vote-annotate-${turn.id}-a-comment`) ??
+        document.getElementById('chatbot-prompt')
+      next?.focus({ preventScroll: true })
+    }
   }
 </script>
 

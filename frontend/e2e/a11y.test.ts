@@ -198,12 +198,8 @@ test('text survives the RGAA 10.12 spacing overrides', async ({ page }) => {
   expect(clipped, 'containers clipping their text under forced spacing').toEqual([])
 })
 
-/**
- * Sends one prompt and drives the flow to the results screen. Both clipping
- * tests below need this, and it is the flow that actually reaches the two
- * containers with fixed heights — the prompt screen alone never exercises them.
- */
-async function reachResults(page: Page) {
+/** Sends one prompt and waits for both answers and the vote form. */
+async function reachVote(page: Page) {
   await page.goto('/arene')
   await page.locator('#initial-prompt').fill('Explique en deux phrases pourquoi le ciel est bleu.')
   await page.locator('main button[type=submit].fr-btn--primary').click()
@@ -222,7 +218,15 @@ async function reachResults(page: Page) {
   await expect(page.locator('.message-bot')).toHaveCount(2)
   // Both answers are complete once the vote form shows up, not before.
   await page.locator('fieldset[id^=vote-select]').waitFor()
+}
 
+/**
+ * Carries on to the results screen. Both clipping tests below need this, and it
+ * is the flow that actually reaches the two containers with fixed heights — the
+ * prompt screen alone never exercises them.
+ */
+async function reachResults(page: Page) {
+  await reachVote(page)
   await page.locator('button[data-choice="a_better"]').click()
 
   // The reveal button stays aria-disabled until the vote has registered, and
@@ -232,6 +236,25 @@ async function reachResults(page: Page) {
   await reveal.click()
   await page.locator('#reveal-area').waitFor()
 }
+
+test('voting hands focus to the controls it just revealed', async ({ page }) => {
+  await reachVote(page)
+
+  // Keyboard, because that is who this is for.
+  await page.locator('button[data-choice="a_better"]').focus()
+  await page.keyboard.press('Enter')
+
+  // Voting unmounts the fieldset holding the focused button. The annotation box
+  // only exists once the vote round trip returns, so this is also a guard
+  // against looking for it too early and silently landing on the prompt box.
+  const annotation = page.locator('[id^=vote-annotate-][id$=-a-comment]')
+  await annotation.waitFor()
+  await expect(annotation).toBeFocused()
+
+  // And the next stop carries on from there rather than restarting at the top.
+  await page.keyboard.press('Tab')
+  expect(await page.evaluate(() => !!document.activeElement?.closest('main'))).toBe(true)
+})
 
 test('conversation and results screens are not clipped at 200% zoom', async ({ page }) => {
   // The prompt screen has no fixed-height containers; the risk is in the chat
