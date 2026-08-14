@@ -3,6 +3,10 @@ import hashlib
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
+from backend.settings.informational_legal import (
+    InformationalLegalPages,
+    get_informational_legal_pages,
+)
 from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
     LegalPresentation,
@@ -10,10 +14,6 @@ from backend.settings.legal import (
     UtcTimestamp,
     get_active_legal_document,
     get_legal_presentation,
-)
-from backend.settings.informational_legal import (
-    InformationalLegalPages,
-    get_informational_legal_pages,
 )
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 

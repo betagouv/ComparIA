@@ -32,6 +32,10 @@ from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
 from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
+from backend.settings.informational_legal import (
+    InformationalLegalPages,
+    get_informational_legal_pages,
+)
 from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
     LEGAL_CONTENT_MAX_LENGTH,
@@ -48,10 +52,6 @@ from backend.settings.legal import (
     get_legal_presentation,
     list_legal_documents,
     publish_legal_document,
-)
-from backend.settings.informational_legal import (
-    InformationalLegalPages,
-    get_informational_legal_pages,
 )
 from utils.database.models.app_settings import (
     AppSettings,
