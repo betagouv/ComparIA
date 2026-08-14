@@ -48,7 +48,7 @@ describe('Icon', () => {
 
 describe('Input', () => {
   it('labels the field and keeps the live region mounted', async () => {
-    const { container } = render(Input, { id: 'email', label: 'Adresse électronique' })
+    const { container } = render(Input, { id: 'email', value: '', label: 'Adresse électronique' })
 
     expect(container.querySelector('label')!.getAttribute('for')).toBe('email')
     // Present even with no error: a live region that appears at the same
@@ -61,6 +61,7 @@ describe('Input', () => {
   it('marks the field invalid and points at the message when it errors', async () => {
     const { container } = render(Input, {
       id: 'email',
+      value: '',
       label: 'Adresse électronique',
       error: 'Saisissez une adresse valide, par exemple nom@domaine.fr'
     })
@@ -75,7 +76,7 @@ describe('Input', () => {
 
 describe('Toggle', () => {
   it('only describes itself when there is a hint to point at', () => {
-    const { container } = render(Toggle, { id: 'web-search', label: 'Recherche web' })
+    const { container } = render(Toggle, { id: 'web-search', value: false, label: 'Recherche web' })
 
     expect(container.querySelector('input')!.getAttribute('aria-describedby')).toBeNull()
     expectNoDanglingAriaRefs(container)
@@ -84,6 +85,7 @@ describe('Toggle', () => {
   it('links the hint when one is given', () => {
     const { container } = render(Toggle, {
       id: 'web-search',
+      value: false,
       label: 'Recherche web',
       help: 'Interroge le web avant de répondre'
     })
