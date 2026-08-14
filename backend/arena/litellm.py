@@ -71,10 +71,10 @@ def litellm_stream_iter(
     # if debug:
     #     litellm._turn_on_debug()
 
-    # Configure Sentry error tracking if available
-    if settings.SENTRY_DSN:
-        litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
-        litellm.failure_callback.append("sentry")
+    # No input_callback here: it would ship every raw prompt to Sentry as a
+    # breadcrumb. Failures are reported explicitly via sentry_sdk.capture_exception
+    # elsewhere instead of the litellm failure_callback, which also carries the
+    # request body.
 
     # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
