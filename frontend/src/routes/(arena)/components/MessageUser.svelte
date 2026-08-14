@@ -10,6 +10,13 @@
   }
 
   let { id, message }: MessageUserProps = $props()
+
+  // Search results come from the provider, so a javascript: or data: URL must
+  // never reach an href or an img src.
+  function safeUrl(url: string | undefined, schemes: string[]): string | undefined {
+    if (!url) return undefined
+    return schemes.some((scheme) => url.toLowerCase().startsWith(scheme)) ? url : undefined
+  }
 </script>
 
 <div class="message-user md:ms-auto md:max-w-3/5 rounded-2xl px-5 py-3 bg-light-info">
@@ -31,14 +38,18 @@
       <div {id} class="fr-collapse m-0! p-0!">
         <ul class="mt-2! text-sm m-0! p-0! xl:grid-cols-2 md:max-h-[150px] grid max-h-[100px]">
           {#each message.web_search_results as search, i (i)}
+            {@const favicon = safeUrl(search.favicon, ['http://', 'https://', 'data:image/'])}
+            {@const url = safeUrl(search.url, ['http://', 'https://'])}
             <li class="gap-3 flex items-center">
-              <img aria-hidden="true" alt="" src={search.favicon} class="h-[14px] w-[14px]" />
+              {#if favicon}
+                <img aria-hidden="true" alt="" src={favicon} class="h-[14px] w-[14px]" />
+              {/if}
               <span>
-                <Link
-                  href={search.url}
-                  text={search.name}
-                  class="text-black! lh-tight! text-[12px]!"
-                />
+                {#if url}
+                  <Link href={url} text={search.name} class="text-black! lh-tight! text-[12px]!" />
+                {:else}
+                  <span class="lh-tight! text-[12px]">{search.name}</span>
+                {/if}
               </span>
             </li>
           {/each}

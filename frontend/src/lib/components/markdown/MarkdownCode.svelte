@@ -97,7 +97,8 @@
         mermaid.initialize({
           startOnLoad: false,
           theme: theme_mode === 'dark' ? 'dark' : 'default',
-          securityLevel: 'antiscript'
+          // Diagram source comes from the model, so it is treated as untrusted.
+          securityLevel: 'strict'
         })
         await mermaid.run({
           nodes: Array.from(mermaidDivs).map((node) => node as HTMLElement)

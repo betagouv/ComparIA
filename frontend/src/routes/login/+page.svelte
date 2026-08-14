@@ -7,7 +7,12 @@
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
 
-  const redirectTo = $derived(page.url.searchParams.get('redirect') || '/')
+  // Only same-site paths: '//evil.example' is a protocol-relative URL, not a path.
+  function safeRedirect(target: string | null): string {
+    return target?.startsWith('/') && !target.startsWith('//') ? target : '/'
+  }
+
+  const redirectTo = $derived(safeRedirect(page.url.searchParams.get('redirect')))
 
   const loginTitle = env.PUBLIC_AUTH_LOGIN_TITLE || 'Bienvenue sur compar:IA'
   const loginDescription =

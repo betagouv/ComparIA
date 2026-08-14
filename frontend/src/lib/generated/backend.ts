@@ -19,6 +19,7 @@ export interface ComparisonPublic {
   system_msg_b?: string | null;
 }
 export interface ErrorDetails {
+  code?: ("timeout" | "context_too_long" | "empty_response" | "provider_error") | null;
   message: string;
   pos?: ("a" | "b") | null;
   is_timeout?: boolean;
@@ -72,9 +73,6 @@ export interface LLMMessageCreate {
   updated_at?: string | null;
   content?: string;
   reasoning_content?: string | null;
-  generation_id?: string | null;
-  tokens?: number | null;
-  is_cached?: boolean;
   [k: string]: unknown;
 }
 export interface RevealData {

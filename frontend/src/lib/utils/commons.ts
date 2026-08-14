@@ -18,7 +18,7 @@ export function sanitize(html: string, allowLinks = true): string {
 
 export function propsToAttrs(props: Record<string, unknown>): string {
   return Object.entries(props)
-    .map(([k, v]) => `${k}="${v}"`)
+    .map(([k, v]) => `${k}="${String(v).replaceAll('"', '&quot;')}"`)
     .join(' ')
 }
 

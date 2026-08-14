@@ -23,7 +23,7 @@
   <body data-sveltekit-preload-data="hover">
     <div id="app">%sveltekit.body%</div>
 
-    <script>
+    <script nonce="%sveltekit.nonce%">
       // Directly set scheme + theme to avoid initial flash
       const scheme = localStorage.getItem('scheme') || 'system'
       const theme =
@@ -48,7 +48,7 @@
     </script>
 
     <!-- Matomo -->
-    <script>
+    <script nonce="%sveltekit.nonce%">
       var _paq = (window._paq = window._paq || [])
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['setConsentGiven'])
