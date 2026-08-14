@@ -290,13 +290,6 @@
                 },
                 "reset": "Rensa alla filter",
                 "size": {
-                    "labels": {
-                        "L": "70 till 150 miljarder",
-                        "M": "20 till 70 miljarder",
-                        "S": "7 till 20 miljarder",
-                        "XL": "> 150 miljarder",
-                        "XS": "< 7 miljarder"
-                    },
                     "legend": "Storlek (parametrar)"
                 }
             },
@@ -326,7 +319,14 @@
         "release": "Utgiven {date}",
         "size": {
             "estimated": "Uppskattad storlek ({size})",
-            "title": "Storlek"
+            "title": "Storlek {size}",
+            "count": {
+                "L": "100 till 400 miljarder",
+                "M": "60 till 100 miljarder",
+                "S": "15 till 60 miljarder",
+                "XL": ">400 miljarder",
+                "XS": "<15 miljarder"
+            }
         }
     },
     "modes": {

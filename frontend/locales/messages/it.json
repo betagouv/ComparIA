@@ -399,13 +399,6 @@
                 },
                 "reset": "Cancella tutti i filtri",
                 "size": {
-                    "labels": {
-                        "L": "tra 70 e 150 miliardi",
-                        "M": "da 20 a 70 miliardi",
-                        "S": "da 7 a 20 miliardi",
-                        "XL": ">150 miliardi",
-                        "XS": "<7 miliardi"
-                    },
                     "legend": "Dimensioni (parametri)"
                 }
             },
@@ -442,7 +435,7 @@
                 "XS": "<15 miliardi"
             },
             "estimated": "Dimensione stimata ({size})",
-            "title": "Dimensioni"
+            "title": "Dimensioni {size}"
         }
     },
     "modes": {

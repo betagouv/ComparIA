@@ -88,6 +88,20 @@ describe('buildConsumptionSummary', () => {
     expect(summary).toContain('une consommation comparable')
   })
 
+  it('describes a proprietary mixture of experts without parameter counts', () => {
+    const summary = consumptionSummaryToText(
+      buildConsumptionSummary(
+        { ...claude, name: 'MoE propriétaire', arch: 'moe', params: 1600, active_params: 49 },
+        gemma,
+        { tokens: 100, energy_mwh: 100 },
+        { tokens: 100, energy_mwh: 100 }
+      )
+    )
+
+    expect(summary).toContain('architecture par mélange d’experts')
+    expect(summary).not.toMatch(/\d+\s*milliards/)
+  })
+
   it('handles the existing XS and Matformer repository values explicitly', () => {
     const summary = consumptionSummaryToText(
       buildConsumptionSummary(

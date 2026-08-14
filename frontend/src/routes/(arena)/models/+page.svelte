@@ -51,7 +51,7 @@
         { value: 'all', label: m['models.list.filters.size.all'](), count: models.length },
         ...SIZE_CLASSES.map((value) => ({
           value,
-          label: m[`models.list.filters.size.labels.${value}`](),
+          label: m[`models.size.count.${value}`](),
           count: models.filter((llm) => llm.size_class === value).length
         }))
       ],

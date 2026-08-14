@@ -14,6 +14,7 @@
     icon,
     iconClass,
     badge,
+    contentBadge,
     tooltip,
     content,
     subContent,
@@ -32,6 +33,8 @@
     titleClass?: ClassValue
     iconClass?: ClassValue
     badge?: BadgeProps
+    /** Takes the place of `content` when the value is a class, not a figure. */
+    contentBadge?: BadgeProps
     tooltip?: string
     content?: string
     subContent?: string
@@ -122,15 +125,22 @@
   </div>
 
   <svelte:element this={contentTag} class="p-0">
-    {#if badge && size === 'xxs'}
+    {#if content}
+      {@render innerContent(content, subContent)}
+    {:else if size === 'xxs' && (badge ?? contentBadge)}
+      <!-- The header row is hidden at this size, so the badge is the value. -->
       <Badge
-        {...badge}
+        {...(badge ?? contentBadge)!}
         tooltip={undefined}
         size="xs"
-        class="px-1! leading-tight! tracking-normal! max-w-full text-center text-[10px]! [overflow-wrap:anywhere] whitespace-normal!"
+        class="px-1! leading-tight! tracking-normal! max-w-full text-center whitespace-normal!"
       />
-    {:else if content}
-      {@render innerContent(content, subContent)}
+    {:else if contentBadge}
+      <Badge
+        {...contentBadge}
+        size={size === 'md' ? 'md' : 'sm'}
+        class="leading-tight! max-w-full text-center whitespace-normal!"
+      />
     {:else}
       {@render children?.()}
     {/if}

@@ -72,6 +72,9 @@ function buildClassification(model: ConsumptionSummaryModel): string {
     case 'dense':
       return m['reveal.impacts.summary.classification.dense'](inputs)
     case 'moe':
+      if (model.license.kind === 'proprietary') {
+        return m['reveal.impacts.summary.classification.moeProprietary'](inputs)
+      }
       if (model.active_params !== null) {
         return m['reveal.impacts.summary.classification.moe']({
           ...inputs,
