@@ -1,7 +1,7 @@
+import { formatCurrencyFromEuro } from '$lib/currency'
 import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
-import { formatCurrencyFromEuro } from '$lib/currency'
 import { propsToAttrs } from '$lib/utils/commons'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
@@ -273,8 +273,6 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
         text: m[licenseType === 'proprietary' ? 'models.size.estimated' : 'models.size.title']({
           size: model.size_class
         })
-        // tooltip:
-        //   licenseType === 'proprietary' ? m['models.openWeight.tooltips.params']() : undefined
       },
       size_short: {
         id: `model-parameters-${model.id}`,

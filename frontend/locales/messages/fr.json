@@ -1312,23 +1312,6 @@
                 "tooltip": "Score calculé à partir de critères d’ouverture et de maîtrise : licence, poids, données et code d’entraînement publics, usage commercial, réutilisation des sorties et hébergement possible dans l’Union européenne."
             }
         },
-        "conditions": {
-            "commercialUse": {
-                "question": "Les usages commerciaux du modèle sont-ils autorisés ?",
-                "title": "Usage commercial"
-            },
-            "reuse": {
-                "question": "Puis-je utiliser les sorties du modèle pour en entrainer de nouveaux ?",
-                "subTitle": "Vous ne pouvez pas les réutiliser pour entraîner d’autres modèles",
-                "title": "Réutilisation des résultats générés"
-            },
-            "title": "Conditions d'utilisation",
-            "types": {
-                "allowed": "Autorisé",
-                "conditions": "Sous conditions",
-                "forbidden": "Interdit"
-            }
-        },
         "conso": {
             "count": {
                 "L": "> 5000 mWh",
@@ -1366,14 +1349,6 @@
             },
             "title": "Impact environnemental"
         },
-        "extra": {
-            "experts": {
-                "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>",
-                "open-weights": "Pour les expert·es, consultez la <a {linkProps}>fiche du modèle sur Hugging Face</a>"
-            },
-            "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>.",
-            "title": "Pour aller plus loin"
-        },
         "infosSources": {
             "title": "Plus d’informations et sources"
         },
@@ -1392,12 +1367,9 @@
             "filters": {
                 "archived": {
                     "checkedLabel": "Visibles",
-                    "help": "Par défaut, seuls les modèles actifs dans le comparateur sont visibles.",
                     "label": "Modèles archivés",
-                    "legend": "Archivés",
                     "uncheckedLabel": "Non visibles"
                 },
-                "display": "Afficher les filtres",
                 "editor": {
                     "all": "Tous les éditeurs",
                     "legend": "Éditeur"
@@ -1423,11 +1395,9 @@
                     "legend": "Status"
                 }
             },
-            "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
             "model": "modèle",
             "models": "modèles",
             "noresults": "Aucun modèle ne correspond à vos critères de recherche.",
-            "title": "Découvrez les modèles",
             "triage": {
                 "label": "Trier par",
                 "options": {
@@ -1458,15 +1428,10 @@
         },
         "openWeight": {
             "tooltips": {
-                "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
-                "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
                 "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
-                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source ».",
-                "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il a besoin de ressources pour fonctionner.",
-                "ram": "La mémoire vive stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de mémoire vive pour fonctionner."
+                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
             }
         },
-        "parameters": "{number} mds de paramètres",
         "performance": {
             "fields": {
                 "score": {
@@ -1484,7 +1449,6 @@
             "title": "Niveau de performance par rapport aux autres modèles",
             "tooltip": "Le niveau de performance est calculé à partir des votes compar:IA avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
         },
-        "ram": "{min} à {max} Go",
         "release": "Sortie {date}",
         "size": {
             "count": {
@@ -1830,12 +1794,6 @@
                 },
                 "title": "Pourquoi cette consommation ?"
             },
-            "size": {
-                "count": "milliards param.",
-                "estimated": "(est.)",
-                "label": "taille du modèle",
-                "quantized": "(quantisé)"
-            },
             "summary": {
                 "classification": {
                     "dense": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>dense</strong> : il mobilise l’ensemble de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
@@ -1873,7 +1831,6 @@
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand.",
                 "used": "{count}<span {midProps}> jetons</span><span {smallProps}> utilisés</span>"
             },
-            "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée.",
             "usage": {
                 "assumption": "Hypothèse : exécution sans cache. Les éventuelles réductions tarifaires ou énergétiques liées au cache ne sont pas incluses.",
                 "changeLabel": "Changer le scénario de l’estimation",
