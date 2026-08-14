@@ -170,14 +170,14 @@
     <div class="gap-6 lg:grid-cols-2 grid">
       <div class="max-w-[528px]">
         <h4 class="mb-5! leading-normal! lg:mb-10! text-[14px]!">
-          {m['ranking.methodo.impacts.winrate']()}
+          {m['ranking.methodo.impacts.winrate.title']()}
         </h4>
 
         <div>
           <div class="rounded-sm bg-white h-[400px]">
             <WinHistogram
               id="histogram-winrate"
-              title={m['ranking.methodo.impacts.winrate']()}
+              title={m['ranking.methodo.impacts.winrate.title']()}
               data={modelsData['win_rate']}
               {minMaxY}
             />
@@ -209,14 +209,14 @@
 
       <div class="max-w-[528px]">
         <h4 class="mb-5! leading-normal! text-[14px]!">
-          {m['ranking.methodo.impacts.elo']()}
+          {m['ranking.methodo.impacts.elo.title']()}
         </h4>
 
         <div>
           <div class="rounded-sm bg-white h-[400px]">
             <WinHistogram
               id="histogram-elo"
-              title={m['ranking.methodo.impacts.elo']()}
+              title={m['ranking.methodo.impacts.elo.title']()}
               data={modelsData['mean_win_prob']}
               {minMaxY}
             />
