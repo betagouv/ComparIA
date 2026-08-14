@@ -7,7 +7,7 @@
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
   import { UnauthorizedError } from '$lib/fastapi-client'
-  import { setI18nContext, setVotesContext } from '$lib/global.svelte'
+  import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
@@ -44,7 +44,6 @@
   setVotesContext(data.votes)
   // svelte-ignore state_referenced_locally
   setModelsContext(data.data)
-  setI18nContext()
   setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
