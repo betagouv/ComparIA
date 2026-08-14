@@ -6,22 +6,29 @@ services:
     depends_on:
       - backend-fr
     environment:
-      PUBLIC_LANGUIA_DEBUG: "true"
+      PUBLIC_LANGUIA_DEBUG: "false"
       PUBLIC_API_LOCAL_URL: "http://backend-fr:80"
       PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8001}"
       PUBLIC_API_DEV_MODE: "true"
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 200
     networks:
       - comparia-net
 
   backend-fr:
     environment:
       LOGDIR: /data
-      LANGUIA_DEBUG: "true"
+      LANGUIA_DEBUG: "false"
+      # This instance sits behind exactly one reverse-proxy hop (Caddy).
+      COMPARIA_TRUSTED_PROXY_COUNT: "1"
       COMPARIA_INSTANCE_NAME: fr
-      COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:-postgresql://comparia:comparia@postgres:5432/comparia}"
+      COMPARIA_DB_URI: "${COMPARIA_DB_URI_FR:?COMPARIA_DB_URI_FR is required}"
       COMPARIA_REDIS_HOST: redis
+      COMPARIA_REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+      METRICS_TOKEN:
       OPENROUTER_API_KEY:
       ALBERT_KEY:
       # Read once, by the migration that creates the destination table:
@@ -36,7 +43,10 @@ services:
       context: ../../..
       dockerfile: devops/docker/Dockerfile
     ports:
-      - "8001:80"
+      - "127.0.0.1:8001:80"
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 200
     networks:
       - comparia-net
 

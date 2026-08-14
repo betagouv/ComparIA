@@ -1,30 +1,36 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:11a9d238fbb48bab14599c57e41123254452b1a2d93c6c8595bce96f346bd082
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-comparia}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       POSTGRES_DB: ${POSTGRES_DB:-comparia}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ../data/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-comparia}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 200
 
   redis:
-    image: redis:7
+    image: redis:7@sha256:e9b2e45ecd47fbb69b877cf8d045d5cccaaaed52524b6e098b4abe8212994f73
     restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"]
     volumes:
       - redis-data:/data
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 100
 
   backend:
     build:
       context: ../..
-      dockerfile: devops/Dockerfile
+      dockerfile: devops/docker/Dockerfile
     restart: unless-stopped
     depends_on:
       postgres:
@@ -34,6 +40,9 @@ services:
     environment:
       COMPARIA_DB_URI: postgresql://${POSTGRES_USER:-comparia}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-comparia}
       COMPARIA_REDIS_HOST: redis
+      COMPARIA_REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+      # Caddy is the only reverse proxy in front of this stack.
+      COMPARIA_TRUSTED_PROXY_COUNT: 1
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       ALBERT_KEY: ${ALBERT_KEY:-}
       ALTCHA_HMAC_KEY: ${ALTCHA_HMAC_KEY:-}
@@ -43,11 +52,14 @@ services:
       CACHE_MAX_RESPONSES: ${CACHE_MAX_RESPONSES:-5}
       LOG_FORMAT: JSON
       LOGDIR: /data
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 200
 
   frontend:
     build:
       context: ../../frontend
-      dockerfile: ../devops/Dockerfile.front
+      dockerfile: ../devops/docker/Dockerfile.front
       args:
         PUBLIC_API_URL: ${PUBLIC_URL}
         MATOMO_ID: ${MATOMO_ID:-}
@@ -59,9 +71,12 @@ services:
       PORT: 3000
       PUBLIC_API_URL: ${PUBLIC_URL}
       PUBLIC_API_LOCAL_URL: http://backend:80
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 200
 
   caddy:
-    image: caddy:2-alpine
+    image: caddy:2-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
     restart: unless-stopped
     depends_on:
       - frontend
@@ -75,6 +90,9 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 100
 
 volumes:
   postgres-data:

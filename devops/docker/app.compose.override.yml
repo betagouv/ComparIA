@@ -14,7 +14,10 @@ services:
       PUBLIC_API_URL: "http://localhost:8000"
       PUBLIC_API_DEV_MODE: "true"
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 200
     # Dev config
     # volumes:
     #   - ../../frontend:/app
@@ -25,9 +28,14 @@ services:
     env_file: ../../.env
     environment:
       LOGDIR: /data
-      # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
+      # Local dev over plain http://localhost: LANGUIA_DEBUG=true gets a
+      # dev-only auto-generated ALTCHA_HMAC_KEY if none is set; the Secure
+      # cookie flag is set separately since it no longer follows debug.
+      LANGUIA_DEBUG: "true"
+      COMPARIA_COOKIE_SECURE: "false"
       COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
       COMPARIA_REDIS_HOST: redis
+      COMPARIA_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
     build:
       context: ../..
       dockerfile: devops/docker/Dockerfile
@@ -38,7 +46,10 @@ services:
       #   MATOMO_URL: ${MATOMO_URL:-}
     image: languia:latest
     ports:
-      - "8000:80"
+      - "127.0.0.1:8000:80"
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 200
     # volumes:
     #   # Dev config - mount everything except .venv
     #   - ../../:/app
