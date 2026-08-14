@@ -26,6 +26,17 @@ def as_naive_utc(value: datetime) -> datetime:
     return value.astimezone(timezone.utc).replace(tzinfo=None)
 
 
+def escape_like(value: str) -> str:
+    """Neutralise the LIKE wildcards in a user-supplied search term.
+
+    Binding the term stops SQL injection but not `%` and `_`, which still mean
+    "anything" to LIKE: a search for `_` matches every row. Pass `escape="\\"`
+    to `ilike()` alongside this. Lives here because the admin and suggestion
+    searches both need it and share nothing else.
+    """
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 ModelId = Annotated[
     uuid.UUID,
     Field(

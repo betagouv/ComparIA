@@ -1,10 +1,15 @@
 import uuid
 from typing import TYPE_CHECKING, Annotated
 
+from pydantic import StringConstraints, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from backend.config import TurnChoice
+from backend.config import (
+    MAX_VOTE_CUSTOM_ANNOTATION_LEN,
+    MAX_VOTE_KEYWORD_ANNOTATIONS,
+    TurnChoice,
+)
 from utils.validation import StripAndEmptyAsNone
 
 from .messages import (
@@ -111,5 +116,22 @@ class TurnVoteChoice(SQLModel):
 class TurnVoteAnnotate(SQLModel):
     turn_id: Annotated[uuid.UUID, Field(exclude=True)]
     pos: Annotated[BotPos, Field(exclude=True)]
-    keyword_annotations: list[str]
-    custom_annotation: Annotated[str | None, StripAndEmptyAsNone]
+    # Both go into JSONB exactly as sent, so they are bounded here rather than
+    # by the column.
+    keyword_annotations: Annotated[
+        list[str], Field(max_length=MAX_VOTE_KEYWORD_ANNOTATIONS)
+    ]
+    # The bound sits on the str, not on the union: StripAndEmptyAsNone turns an
+    # empty annotation into None, and a length check has nothing to measure.
+    custom_annotation: Annotated[
+        Annotated[str, StringConstraints(max_length=MAX_VOTE_CUSTOM_ANNOTATION_LEN)]
+        | None,
+        StripAndEmptyAsNone,
+    ]
+
+    @field_validator("keyword_annotations")
+    @classmethod
+    def deduplicate_keywords(cls, value: list[str]) -> list[str]:
+        # A tag means the same thing said twice; order is kept so the vote reads
+        # back the way it was cast.
+        return list(dict.fromkeys(value))

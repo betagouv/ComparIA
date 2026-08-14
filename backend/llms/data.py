@@ -185,8 +185,14 @@ class LLMsData(BaseModel):
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
-            # Custom selection are not uuid
-            custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+            # `AddFirstTextBody` already refuses anything but one or two UUIDs,
+            # but this is also called from the CLI, where nothing has checked.
+            if len(custom_selection) > 2:
+                raise ValueError("At most two models can be selected.")
+            try:
+                custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+            except ValueError:
+                raise ValueError("Custom LLMs selection contains invalid ids")
 
             if unknown_llms := [
                 llm_id

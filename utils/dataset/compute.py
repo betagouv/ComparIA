@@ -293,7 +293,12 @@ def _reference_rows() -> list[dict]:
             },
             "extra_metadata": {
                 "cohorts": "x",
-                "error": {"message": "x", "pos": "a", "is_timeout": False},
+                "error": {
+                    "code": "provider_error",
+                    "message": "x",
+                    "pos": "a",
+                    "is_timeout": False,
+                },
                 "llm_analyzed": True,
                 "contains_pii": False,
                 "contains_spam": False,

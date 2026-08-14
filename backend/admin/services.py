@@ -11,6 +11,7 @@ from utils.database.models.auth import (
     UserPublic,
     UserUpsert,
 )
+from utils.database.models.utils import escape_like
 from utils.database.session import get_session
 
 
@@ -70,7 +71,9 @@ async def list_users(
     async with get_session() as session:
         base = select(User).where(User.deleted_at.is_(None))
         if search:
-            base = base.where(col(User.email).ilike(f"%{search}%"))
+            base = base.where(
+                col(User.email).ilike(f"%{escape_like(search)}%", escape="\\")
+            )
 
         count_result = await session.exec(
             select(func.count()).select_from(base.subquery())

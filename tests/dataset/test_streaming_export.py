@@ -172,7 +172,12 @@ def check_reference_schema(failures):
         languages=["fr"],
         short_summary="s",
         cohorts="c",
-        error={"message": "e", "pos": "a", "is_timeout": False},
+        error={
+            "code": "provider_error",
+            "message": "e",
+            "pos": "a",
+            "is_timeout": False,
+        },
         llm_analyzed=True,
         contains_pii=False,
         contains_spam=False,

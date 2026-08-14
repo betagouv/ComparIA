@@ -25,6 +25,21 @@ def test_the_product_categories_are_seeded_off():
         assert DEFAULT_CATEGORIES[category]["action"] == "off"
 
 
+def test_a_fresh_install_acts_rather_than_watches():
+    """Everything used to be seeded on log, so an instance nobody had configured
+    refused nothing at all. Loosening these is now a deliberate decision."""
+    assert DEFAULT_CATEGORIES["jailbreaking"]["action"] == "block"
+    assert DEFAULT_CATEGORIES["sexual"]["action"] == "warn"
+    assert DEFAULT_CATEGORIES["selfharm"]["action"] == "warn"
+
+
+def test_the_topic_categories_still_only_watch():
+    """These describe subjects people are entitled to ask about, so acting on
+    them would refuse ordinary prompts."""
+    for category in ("hate_and_discrimination", "violence_and_threats", "pii"):
+        assert DEFAULT_CATEGORIES[category]["action"] == "log"
+
+
 def test_sexual_threshold_catches_the_minor_case():
     """Mistral has no minor category and scored an explicit request involving a
     12-year-old at 0.41, so the default must sit below that."""
