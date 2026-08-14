@@ -91,7 +91,7 @@
         <div
           class={[
             'cg-border bg-white p-7 pb-8',
-            { 'border-2! border-[#58B77D]!': card.k === 'pros' }
+            { 'border-2! border-[--border-plain-success]!': card.k === 'pros' }
           ]}
         >
           <div class="flex h-full flex-col">
@@ -111,7 +111,7 @@
                       ? 'i-ri-checkbox-circle-line'
                       : 'i-ri-close-circle-fill'}
                     block
-                    class={['me-1', card.k === 'pros' ? 'text-[#58B77D]' : 'text-[#FF9575]']}
+                    class={['me-1', card.k === 'pros' ? 'text-success' : 'text-error']}
                   />
                   <span>{@html sanitize(m[`ranking.methodo.methods.${card.id}.list.${i}`]())}</span>
                 </li>
@@ -175,7 +175,12 @@
 
         <div>
           <div class="rounded-sm bg-white h-[400px]">
-            <WinHistogram data={modelsData['win_rate']} {minMaxY} />
+            <WinHistogram
+              id="histogram-winrate"
+              title={m['ranking.methodo.impacts.winrate.title']()}
+              data={modelsData['win_rate']}
+              {minMaxY}
+            />
           </div>
           <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link
@@ -209,7 +214,12 @@
 
         <div>
           <div class="rounded-sm bg-white h-[400px]">
-            <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
+            <WinHistogram
+              id="histogram-elo"
+              title={m['ranking.methodo.impacts.elo.title']()}
+              data={modelsData['mean_win_prob']}
+              {minMaxY}
+            />
           </div>
           <div class="mb-5 mt-2 gap-5 flex">
             <!-- <Link

@@ -67,7 +67,9 @@
     if (randomPrompt) {
       dispatchPromptWithSelection(randomPrompt.text, 'handleCardSelect')
     } else {
-      const fallbackText = `Explorer la catégorie : ${categoryValue}`
+      // Was a hardcoded French sentence, typed into the user's prompt box
+      // whatever language the interface was in.
+      const fallbackText = m['arenaHome.suggestions.fallback']({ category: categoryValue })
       console.warn(
         `[GuidedPromptSuggestions] No prompts found for category: ${categoryValue}. Using fallback: "${fallbackText}"`
       )
@@ -78,33 +80,37 @@
 
 {#if suggestionsCategoriesCards.length}
   <div class="fr-container px-0!">
-    <h4 class="mb-4! text-dark-grey md:mb-5! md:text-base! text-[14px]!">
+    <h3 class="mb-4! text-dark-grey md:mb-5! md:text-base! text-[14px]!">
       <strong>{m['arenaHome.suggestions.title']()}</strong>
-    </h4>
+    </h3>
 
     <RadioGroupCard
       id="guided-cards"
+      label={m['a11y.suggestionCategories']()}
       bind:value={selected}
       options={suggestionsCategoriesCards}
       onChange={handleCardSelect}
     >
       {#snippet item({ value, label, icon, title, tooltip })}
         {#if icon.includes('iasummit')}
-          <img
-            class="mb-3 md:block hidden dark:invert"
-            width="110"
-            height="35"
-            src="/iasummit.png"
-            alt={title}
-          />
-          <img
-            class="me-2 md:hidden inline-block object-contain dark:invert"
-            width="24"
-            src="/iasummit-small.png"
-            alt={title}
-          />
+          <!-- One <img>, two sources. Rendering both and hiding one in CSS
+               downloaded both every time. 48em is the md breakpoint. -->
+          <picture>
+            <source media="(min-width: 48em)" srcset="/iasummit.png" width="110" height="35" />
+            <img
+              class="md:mb-3 me-2 md:me-0 md:w-[110px] md:block inline-block w-[24px] object-contain dark:invert"
+              src="/iasummit-small.png"
+              alt={title}
+            />
+          </picture>
         {:else}
-          <Icon {icon} aria-label={title} block class="text-primary me-2 md:mb-4 md:block" />
+          <Icon
+            {icon}
+            role="img"
+            aria-label={title}
+            block
+            class="text-primary me-2 md:mb-4 md:block"
+          />
         {/if}
         <span>
           {label}

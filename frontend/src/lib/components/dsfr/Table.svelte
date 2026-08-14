@@ -8,6 +8,13 @@
   import { flip } from 'svelte/animate'
   import type { HTMLAttributes, HTMLTableAttributes } from 'svelte/elements'
 
+  /** Column labels may carry markup; an accessible name has to be plain text. */
+  const stripTags = (label: string) =>
+    label
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
   type TableProps = {
     caption: string
     cols: Col[]
@@ -140,7 +147,7 @@
 
       {#if search !== undefined}
         <Search
-          id="table-search"
+          id="{id}-table-search"
           bind:value={search}
           label={searchLabel}
           class="md:w-auto mb-0! ms-auto w-full"
@@ -173,8 +180,10 @@
 
   <div class="fr-table__wrapper relative">
     <div
-      id="table-gradient"
-      class={['inset-0 md:start-[95%] absolute start-[80%] z-3', { hidden: !scrollable.right }]}
+      class={[
+        'table-gradient inset-0 md:start-[95%] absolute start-[80%] z-3',
+        { hidden: !scrollable.right }
+      ]}
     ></div>
 
     <div
@@ -189,7 +198,17 @@
           <thead bind:this={stickyElem} class="relative z-2">
             <tr>
               {#each cols as col (col.id)}
-                <th class={col.colHeaderClass}>
+                <!-- aria-sort belongs on the header cell: on the button it is
+                     ignored, and the sort state is never announced. -->
+                <th
+                  scope="col"
+                  aria-sort={col.orderable
+                    ? col.id === orderingCol
+                      ? orderingMethod
+                      : 'none'
+                    : undefined}
+                  class={col.colHeaderClass}
+                >
                   <div class="text-xs font-medium text-dark-grey! flex items-center">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
@@ -197,14 +216,13 @@
                     {/if}
                     {#if col.orderable}
                       <Button
-                        text={m['components.table.triage']()}
+                        text={m['components.table.triageCol']({ col: stripTags(col.label) })}
                         icon={col.id === orderingCol && orderingMethod === 'ascending'
                           ? 'sort-asc'
                           : 'sort-desc'}
                         size="xs"
                         variant="tertiary-no-outline"
                         iconOnly
-                        aria-sort={col.id === orderingCol ? orderingMethod : undefined}
                         class={['ms-1!', { 'text-dark-grey!': orderingCol !== col.id }]}
                         onclick={() => onOrderingColClick(col)}
                       />
@@ -218,7 +236,7 @@
           <tbody>
             {#each displayedRows as row, i (row.id)}
               <tr
-                id={row.id}
+                id="{id}-{row.id}"
                 data-row-key={i}
                 {...rowAttributes?.(row, i)}
                 animate:flip={{ duration: flipDuration }}
@@ -239,7 +257,7 @@
       <div class="fr-table__footer--start">
         <Select
           bind:selected={maxRowsPerPage}
-          id="max-row-select"
+          id="{id}-max-row-select"
           options={maxRowsOptions}
           label={m['components.table.linePerPage']()}
           hideLabel
@@ -278,7 +296,7 @@
     --border-plain-grey: none;
   }
 
-  #table-gradient {
+  .table-gradient {
     background: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0) 0%,

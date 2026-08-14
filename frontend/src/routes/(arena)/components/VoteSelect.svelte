@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Icon } from '$components/dsfr'
-  import { TURN_CHOICES, type TurnChoice } from '$lib/chatService.svelte'
+  import { type TurnChoice } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
   import { onDestroy } from 'svelte'
@@ -18,7 +18,10 @@
     both_good: 'i-ri-thumb-up-line',
     idk: ''
   }
-  const choices = TURN_CHOICES.filter((v) => v !== 'idk').map((value) => ({
+  // Display order, not TURN_CHOICES order. The grid used to be reordered in CSS
+  // for narrow screens, which left the tab order zigzagging across it: second
+  // stop bottom-right, fourth stop top-right. One order everywhere instead.
+  const choices = (['a_better', 'b_better', 'both_bad', 'both_good'] as const).map((value) => ({
     value,
     label: value,
     icon: choiceIcons[value]
@@ -44,7 +47,7 @@
     aria-labelledby="{id}-legend {id}-help"
     class="cl-vote-select xl:max-w-[950px] bg-light-info py-2 px-2 md:px-5 rounded-b-xl shadow-md gap-1 mx-auto flex flex-col"
   >
-    <legend id="display-fieldset-legend" class="sr-only">{m['vote.title']()}</legend>
+    <legend id="{id}-legend" class="sr-only">{m['vote.title']()}</legend>
 
     <div class="gap-1 md:gap-2 md:grid-cols-4 grid grid-cols-2">
       {#each choices as choice (choice.value)}
@@ -71,10 +74,10 @@
       </button>
     </div>
 
-    <p
-      id="{id}-help"
-      class="mb-0! text-grey lh-normal! md:not-sr-only sr-only text-center text-[11px]!"
-    >
+    <!-- hidden, not sr-only, on narrow screens: sr-only kept the link in the
+         tab order while parking it off-screen, so focus vanished into nothing.
+         It still names the fieldset through aria-labelledby either way. -->
+    <p id="{id}-help" class="mb-0! text-grey lh-normal! md:block hidden text-center text-[11px]!">
       {@html sanitize(
         m['vote.turn.important']({
           linkProps: propsToAttrs({
@@ -138,21 +141,6 @@
     :global(.cl-vote-nudge) {
       animation: none;
       box-shadow: 0 0 0 4px var(--blue-france-850-200);
-    }
-  }
-
-  @media (max-width: 47.99em) {
-    .cl-vote-select button[data-choice='a_better'] {
-      order: 1;
-    }
-    .cl-vote-select button[data-choice='b_better'] {
-      order: 2;
-    }
-    .cl-vote-select button[data-choice='both_bad'] {
-      order: 3;
-    }
-    .cl-vote-select button[data-choice='both_good'] {
-      order: 4;
     }
   }
 </style>

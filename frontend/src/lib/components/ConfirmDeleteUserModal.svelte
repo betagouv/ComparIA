@@ -28,6 +28,10 @@
   <p>Delete {email}? This cannot be undone.</p>
   <div class="fr-btns-group fr-btns-group--inline-md">
     <Button text="Cancel" variant="secondary" onclick={closeModal} />
-    <Button text="Delete" onclick={confirm} />
+    <!-- Name states target and permanence so the action is unambiguous out of context (RGAA 11.9). -->
+    <Button
+      text={email ? `Delete ${email} permanently` : 'Delete user permanently'}
+      onclick={confirm}
+    />
   </div>
 </Modal>

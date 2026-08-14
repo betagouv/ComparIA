@@ -1,10 +1,10 @@
 <script lang="ts">
   import Pending from '$components/Pending.svelte'
   import SideSwitcher from '$components/SideSwitcher.svelte'
-  import type { AnyAPIVote, ComparisonTurn } from '$lib/chatService.svelte'
+  import type { AnyAPIVote, ComparisonTurn, TurnChoice } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { type Snippet } from 'svelte'
+  import { tick, type Snippet } from 'svelte'
   import { ErrorDisplay, MessageBot, MessageUser, VoteSelect } from '.'
 
   let {
@@ -20,10 +20,32 @@
     disabled: boolean
     error?: string
     autoScroll?: boolean
-    onVote: (data: AnyAPIVote) => void
+    onVote: (data: AnyAPIVote) => Promise<void> | void
     onRetry: () => void
     children: Snippet<[]> | undefined
   } = $props()
+
+  // Voting unmounts the fieldset the focused button lives in, which drops focus
+  // to <body>: the next Tab restarts at the top of the document, back through
+  // both answers. Hand it to whatever the vote just revealed instead.
+  //
+  // The await matters: turn.choice is only set once the POST comes back, and
+  // the annotation box is what that renders. Without it we looked a round trip
+  // too early, always missed, and fell through to the prompt box — stepping
+  // over the controls the vote had just revealed. Nothing moves before then
+  // anyway, since the button keeping focus lives until the same response.
+  async function onChoice(choice: TurnChoice) {
+    try {
+      await onVote({ turn_id: turn.id, choice })
+    } finally {
+      // Even on a failed vote: the alternative is focus stranded on <body>.
+      await tick()
+      const next =
+        document.getElementById(`vote-annotate-${turn.id}-a-comment`) ??
+        document.getElementById('chatbot-prompt')
+      next?.focus({ preventScroll: true })
+    }
+  }
 </script>
 
 <div class="grouped-messages px-4 py-2 md:py-5 md:px-6 gap-2 md:gap-5 flex flex-col">
@@ -68,10 +90,7 @@
     {/if}
 
     {#if turn.status === 'complete' && !turn.choice}
-      <VoteSelect
-        id="vote-select-{turn.id}"
-        onVote={(choice) => onVote({ turn_id: turn.id, choice })}
-      />
+      <VoteSelect id="vote-select-{turn.id}" onVote={onChoice} />
     {/if}
   </div>
 </div>

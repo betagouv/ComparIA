@@ -32,14 +32,17 @@
     {...props}
     bind:value
     {id}
+    aria-invalid={error ? 'true' : undefined}
     aria-describedby="input-{id}-messages"
     class={['fr-input', { 'bg-white!': variant === 'light' }, props.class]}
   />
-  {#if error}
-    <div class="fr-messages-group" id="input-{id}-messages" aria-live="polite">
+  <!-- Always rendered: a live region has to exist before the message lands in
+       it, otherwise screen readers announce nothing. -->
+  <div class="fr-messages-group" id="input-{id}-messages" aria-live="polite">
+    {#if error}
       <p class="fr-message fr-message--error">{error}</p>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
 
 <style lang="postcss">

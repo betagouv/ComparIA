@@ -29,6 +29,8 @@
       <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
       <InformationalPageContent content={data.content} />
     {:else}
+      <!-- Single h1 for this branch: the disclaimer and title used to duplicate it (RGAA 9.1). -->
+      <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
       <p>{@html sanitize(m['general.a11y.disclaimer']())}</p>
 
       <!-- <p>À cette fin, beta.gouv.fr met en œuvre la stratégie et les actions suivantes :</p>
@@ -38,7 +40,6 @@
     <li><a href="/accessibilite/schema-pluriannuel#plan-2024">Plan d’action 2024</a></li>
   </ul> -->
 
-      <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
       <!-- <p><em>Établie le 24 avril 2024.</em></p> -->
       <p>{@html sanitize(m['general.a11y.desc']({ domain }))}</p>
 

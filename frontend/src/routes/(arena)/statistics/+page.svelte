@@ -102,15 +102,20 @@
   }
   .period-links a {
     background: white;
+    /* Explicit: inherited, the label came out #cecece on white, 1.57:1. */
+    color: var(--text-title-blue-france);
     border: 1px solid var(--brand-primary);
     border-radius: 999px;
     padding: 0.4rem 0.8rem;
     background-image: none;
     font-size: 0.875rem;
   }
+  /* Bold as well as filled, so the selected period is not signalled by colour
+     alone. The fill is the dark blue: white on the brand tint was ~2.4:1. */
   .period-links a[aria-current='page'] {
-    background: var(--brand-primary);
+    background: var(--text-title-blue-france);
     color: white;
+    font-weight: 700;
   }
   .metrics-grid {
     display: grid;

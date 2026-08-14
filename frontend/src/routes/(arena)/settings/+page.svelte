@@ -141,9 +141,13 @@
                 disabled={exporting}
                 onclick={exportData}
               />
-              {#if exportError}
-                <p class="fr-error-text" role="alert">{exportError}</p>
-              {/if}
+              <!-- Always rendered: a live region must exist in the DOM before the
+                   message lands in it, otherwise screen readers announce nothing. -->
+              <div aria-live="polite">
+                {#if exportError}
+                  <p class="fr-error-text" role="alert">{exportError}</p>
+                {/if}
+              </div>
             </section>
           {/if}
         {:else}
@@ -199,6 +203,8 @@
       help={m['auth.settings.erase.confirmHelp']({ email: auth.user.email })}
       error={eraseError}
       autocomplete="email"
+      required
+      aria-required="true"
     />
   {/if}
   <div class="fr-btns-group fr-btns-group--inline-reverse fr-btns-group--inline-lg">

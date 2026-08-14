@@ -120,7 +120,7 @@
 {#snippet iconHeading({
   icon,
   title,
-  tag = 'h2',
+  tag = 'h4',
   iconClass = 'text-info',
   classes = 'mb-0!'
 }: {
@@ -136,8 +136,11 @@
   </svelte:element>
 {/snippet}
 
+<!-- The title only exists once a model is picked; without the fallback the
+     dialog points its name at nothing for as long as the page is idle. -->
 <dialog
-  aria-labelledby="{modalId}-title"
+  aria-labelledby={model ? `${modalId}-title` : undefined}
+  aria-label={model ? undefined : m['a11y.modelSheet']()}
   id={modalId}
   class="fr-modal before:h-[5vh]! before:basis-[5vh]! after:h-[5vh]! after:basis-[5vh]!"
   {...dsfrEvents}
@@ -161,7 +164,7 @@
 
           {#if model}
             <article class="fr-modal__content">
-              <h1
+              <h2
                 id="{modalId}-title"
                 class="mb-7! text-lg! font-normal! text-dark-grey gap-2 flex items-center"
               >
@@ -169,15 +172,15 @@
                 <div>
                   {model.lab.name}/<span class="font-extrabold">{model.name}</span>
                 </div>
-              </h1>
+              </h2>
 
               <div class="gap-4 flex flex-col">
                 <section class="gap-3 flex flex-col">
-                  <h2 class="text-base! mb-0!">{m['models.technical.title']()}</h2>
+                  <h3 class="text-base! mb-0!">{m['models.technical.title']()}</h3>
                   <ul class="fr-badges-group">
                     {#each badges as badge, i (i)}
                       <li>
-                        <Badge id="general-badge-{i}" {...badge} class="mb-0!" />
+                        <Badge {...badge} id="{modalId}-general-badge-{i}" class="mb-0!" />
                       </li>
                     {/each}
                   </ul>
@@ -186,7 +189,8 @@
                     {#each cards.technical as card, i (i)}
                       <InfoCard
                         {...card}
-                        id="technical-{card.id}"
+                        id="{modalId}-technical-{card.id}"
+                        titleTag="h4"
                         iconClass="text-info"
                         class={card.id === 'modalities'
                           ? 'md:col-span-2 lg:col-span-4'
@@ -213,13 +217,15 @@
                                 class="bg-white p-2 text-xs gap-1 flex flex-col items-center"
                                 aria-hidden={active ? 'false' : 'true'}
                               >
+                                <!-- text-grey, not #B3B3B3: the muted state still
+                                     has to be readable (was 2.09:1 on white). -->
                                 <Icon
                                   icon={mod.icon}
                                   size="sm"
                                   block
-                                  class={active ? 'text-primary' : 'text-[#B3B3B3]'}
+                                  class={active ? 'text-primary' : 'text-grey'}
                                 />
-                                <span class={{ 'text-[#B3B3B3]': !active }}>{mod.title}</span>
+                                <span class={{ 'text-grey': !active }}>{mod.title}</span>
                               </div>
                             {/each}
                           </div>
@@ -231,7 +237,7 @@
 
                 <div class="gap-4 xl:grid-cols-5 grid">
                   <section class="xl:col-span-3 flex flex-col">
-                    <h2 class="text-base! mb-3!">{m['models.envImpact.title']()}</h2>
+                    <h3 class="text-base! mb-3!">{m['models.envImpact.title']()}</h3>
 
                     <div class="gap-4 md:flex-row flex h-full flex-col">
                       <article class="cg-border bg-white p-4 relative flex basis-1/2 flex-col">
@@ -242,7 +248,7 @@
                         })}
 
                         <Tooltip
-                          id="hardware-tooltip"
+                          id="{modalId}-hardware-tooltip"
                           text={m['models.envImpact.hardware.tooltip']()}
                           size="xs"
                           class="top-3 right-4 absolute"
@@ -297,7 +303,12 @@
                         {/if}
                       </article>
                       {#if cards.energy}
-                        <InfoCard {...cards.energy} class="basis-1/2 justify-between">
+                        <InfoCard
+                          {...cards.energy}
+                          id="{modalId}-energy"
+                          titleTag="h4"
+                          class="basis-1/2 justify-between"
+                        >
                           <div
                             class="gap-1 my-6 flex w-full flex-col"
                             aria-label="{m['models.cards.energy.title']()} {model.energy_class}"
@@ -334,7 +345,7 @@
 
                   <section class="xl:col-span-2 flex w-full flex-col">
                     <div class="mb-3 gap-3 flex items-center justify-between">
-                      <h2 class="text-base! mb-0!">{m['models.opennessSovereignty.title']()}</h2>
+                      <h3 class="text-base! mb-0!">{m['models.opennessSovereignty.title']()}</h3>
                       <OpennessScore {model} />
                     </div>
 
@@ -378,11 +389,11 @@
                 <div class="gap-4 xl:grid-cols-5 grid">
                   {#if model.data && cards.rank}
                     <section class="xl:col-span-3">
-                      <h2 class="text-base! mb-3!">{m['models.performance.title']()}</h2>
+                      <h3 class="text-base! mb-3!">{m['models.performance.title']()}</h3>
 
                       <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
                         <Tooltip
-                          id="perf-tooltip"
+                          id="{modalId}-perf-tooltip"
                           text={m['models.performance.tooltip']()}
                           size="xs"
                           class="top-3 right-4 absolute"
@@ -498,7 +509,7 @@
 
                   {#if model.links?.length}
                     <section class="xl:col-span-2">
-                      <h2 class="text-base! mb-3!">{m['models.infosSources.title']()}</h2>
+                      <h3 class="text-base! mb-3!">{m['models.infosSources.title']()}</h3>
 
                       <div class="cg-border bg-white p-4">
                         <ul class="p-0 m-0 grid w-full grid-cols-2">

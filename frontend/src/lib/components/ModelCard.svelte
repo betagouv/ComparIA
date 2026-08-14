@@ -33,8 +33,8 @@
 >
   <div class="fr-card__body">
     <div class="fr-card__content px-3! pt-3!">
-      <h6
-        class="fr-card__title mb-4! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
+      <h3
+        class="fr-card__title fr-text--sm mb-4! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
       >
         <AILogo logo={model.lab.logo} alt={model.lab.name} />
         <div>
@@ -42,24 +42,45 @@
             class="text-black! after:text-primary"
             data-fr-opened="false"
             aria-controls={modalId}
-            href="#{model.id}"
+            href="#{model.human_id}"
             onclick={() => onModelSelected(model.id)}
             ><span class="font-extrabold">{model.name}</span></a
           >
         </div>
-      </h6>
+      </h3>
 
-      <dl class="fr-card__desc p-0 gap-2 mt-0! sm:grid-cols-3 grid grid-cols-2">
+      <!-- Not a <dl>: InfoCard wraps its own markup around the label, so the
+           dt/dd never end up direct children and the list is invalid. -->
+      <div class="fr-card__desc p-0 gap-2 mt-0! sm:grid-cols-3 grid grid-cols-2">
         {#each cards as card (card.id)}
+          <!-- id after the spread and scoped to the model: getModelCards hands
+               out the same 'size'/'license'/... ids to every card, and this
+               page renders one set per model. Left alone, every tooltip on the
+               list points at the first model's text. -->
           {#if card.id === 'sovereignty'}
-            <InfoCard {...card} content={undefined} size="xxs" titleTag="dt" contentTag="dd">
+            <InfoCard
+              {...card}
+              id="{model.id}-{card.id}"
+              rootTag="div"
+              content={undefined}
+              size="xxs"
+              titleTag="p"
+              contentTag="div"
+            >
               <OpennessScore {model} detailed />
             </InfoCard>
           {:else}
-            <InfoCard {...card} size="xxs" titleTag="dt" contentTag="dd" />
+            <InfoCard
+              {...card}
+              id="{model.id}-{card.id}"
+              rootTag="div"
+              size="xxs"
+              titleTag="p"
+              contentTag="div"
+            />
           {/if}
         {/each}
-      </dl>
+      </div>
 
       <div class="fr-card__start m-0! order-2!">
         <ul class="fr-badges-group">

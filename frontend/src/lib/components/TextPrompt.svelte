@@ -80,7 +80,7 @@
 </script>
 
 <div class={['fr-input-group', classNames, { 'fr-input-group--error': !!error }]}>
-  <label for={id} class={['fr-label', { 'hidden!': hideLabel }]}>{label}</label>
+  <label for={id} class={['fr-label', { 'sr-only!': hideLabel }]}>{label}</label>
   <div class="relative">
     <textarea
       {id}

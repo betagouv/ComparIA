@@ -1,6 +1,19 @@
 {
     "a11y": {
-        "externalLink": "{text} (nouvelle fenêtre)"
+        "energyGraphDesc": "Nuage de points : chaque modèle est positionné selon son score de préférence en ordonnée et sa consommation énergétique en abscisse. Les mêmes données sont disponibles sous forme de tableau.",
+        "externalLink": "{text} (nouvelle fenêtre)",
+        "graphAsTable": "Consulter les mêmes données sous forme de tableau",
+        "languageNav": "Choix de la langue",
+        "mainNav": "Navigation principale",
+        "mobileMenu": "Menu",
+        "mobileNav": "Navigation mobile",
+        "modeSelection": "Choix des modèles à comparer",
+        "modelSheet": "Fiche du modèle",
+        "newWindow": "nouvelle fenêtre",
+        "shareLinkLabel": "Lien de partage du résultat",
+        "skipToContent": "Aller au contenu principal",
+        "suggestionCategories": "Catégories de suggestions de questions",
+        "voteTags": "Mots-clés qualifiant la réponse"
     },
     "actions": {
         "accessData": "Accéder aux données",
@@ -581,6 +594,7 @@
             "question": "Quels modèles voulez-vous comparer ?"
         },
         "suggestions": {
+            "fallback": "Explorer la catégorie : {category}",
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
@@ -677,6 +691,10 @@
         "success": "Vous êtes connecté !"
     },
     "chatbot": {
+        "announce": {
+            "generating": "Les modèles rédigent leur réponse…",
+            "ready": "Les deux réponses sont prêtes."
+        },
         "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
         "errors": {
@@ -714,7 +732,8 @@
         "table": {
             "linePerPage": "Nombre de lignes par page",
             "pageCount": "{count} lignes par page",
-            "triage": "Trier"
+            "triage": "Trier",
+            "triageCol": "Trier par {col}"
         },
         "theme": {
             "legend": "Choisissez un thème pour personnaliser l’apparence du site.",
@@ -938,6 +957,14 @@
                 "6": "Les scores d’analyses EcoIndex démontrent un décalage important dans les mesures d’impact avec des notes allant jusqu’à E ou F pour certaines pages (poids, complexité et nombre de requêtes des pages relativement importants) ; il s’agit désormais de comprendre plus finement ces résultats au cas par cas, malgré les bonnes pratiques mises en œuvre, pour identifier de nouvelles améliorations.",
                 "desc": "Plusieurs améliorations ont été ou sont toujours en cours d’identification, parmi lesquelles :",
                 "title": "Améliorations identifiées"
+            },
+            "8": {
+                "1": "Feuille de style all\u00e9g\u00e9e de 3,27 Mo \u00e0 1,46 Mo, soit 239 Ko de moins apr\u00e8s compression sur chaque page : le service n\u2019embarque plus les 1 047 ic\u00f4nes du syst\u00e8me de design mais seulement les vingt-cinq qu\u2019il utilise.",
+                "2": "Retrait de 344 Ko de fichiers publics qu\u2019aucune page n\u2019appelait.",
+                "3": "Arr\u00eat de l\u2019enregistrement des sessions : il observait les mouvements de souris et les modifications de la page pendant toute la visite, pour des enregistrements que personne ne consultait. Le comptage de pages est conserv\u00e9.",
+                "4": "Mesure du 13 ao\u00fbt 2026 sur l\u2019\u00e9cran de discussion : 111 requ\u00eates et 1 152 Ko. Le service reste au-dessus des limites qu\u2019il s\u2019est fix\u00e9es plus haut, 40 requ\u00eates et 600 Ko par \u00e9cran. Le principal poste restant est le fichier de traductions, qui contient les cinq langues sur chaque page.",
+                "desc": "Depuis la publication, les corrections suivantes ont \u00e9t\u00e9 apport\u00e9es \u00e0 l\u2019ar\u00e8ne :",
+                "title": "Am\u00e9liorations r\u00e9alis\u00e9es"
             },
             "desc": "publiée le 11 décembre 2025",
             "title": "Déclaration d’écoconception"

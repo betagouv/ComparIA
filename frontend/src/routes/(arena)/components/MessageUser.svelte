@@ -17,7 +17,7 @@
 
   {#if message.web_search_results}
     <section class="fr-accordion p-3 bg-white cg-border mt-3 before:shadow-none!">
-      <h3 class="fr-accordion__title">
+      <h2 class="fr-accordion__title">
         <button
           type="button"
           class="fr-accordion__btn text-black! p-0! flex! min-h-auto! bg-transparent!"
@@ -27,7 +27,7 @@
           <Icon icon="i-ri-global-line" size="sm" class="text-primary me-1" />
           <span class="text-[12px]">{m['chatbot.webSearch.label']()}</span>
         </button>
-      </h3>
+      </h2>
       <div {id} class="fr-collapse m-0! p-0!">
         <ul class="mt-2! text-sm m-0! p-0! xl:grid-cols-2 md:max-h-[150px] grid max-h-[100px]">
           {#each message.web_search_results as search, i (i)}

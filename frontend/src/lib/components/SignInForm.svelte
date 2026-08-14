@@ -19,9 +19,12 @@
 
   let {
     onSuccess,
+    titleId,
     ...props
   }: {
     onSuccess?: () => void
+    /** Lets a wrapping modal point its aria-labelledby at this form's title. */
+    titleId?: string
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
@@ -132,7 +135,7 @@
 </script>
 
 <div {...props} class={['my-10 mx-8', props.class]}>
-  <h2 class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+  <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
   <p class="text-xs! mb-6! text-grey">
     {m['auth.modal.email.subtitle']()}
   </p>

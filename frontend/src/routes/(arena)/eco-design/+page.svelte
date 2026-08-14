@@ -55,7 +55,8 @@
         {/each}
       </ul>
 
-      <h2 id="strategy" class="mt-10!">{m['general.rgesn.4.title']()}</h2>
+      <!-- Distinct id: was duplicating the "strategy" section's id above (RGAA 8.9/9.1). -->
+      <h2 id="diagnostic" class="mt-10!">{m['general.rgesn.4.title']()}</h2>
       <p>
         {@html sanitize(
           m['general.rgesn.4.1']({
@@ -82,12 +83,15 @@
       </ul>
       <p>{m['general.rgesn.5.2']()}</p>
       <ul class="mb-6!">
-        <li class="font-bold">{m['general.rgesn.5.3.title']()}</li>
-        <ul class="list-decimal!">
-          {#each ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as const as n (n)}
-            <li>{m[`general.rgesn.5.3.${n}`]()}</li>
-          {/each}
-        </ul>
+        <!-- The nested list belongs inside its <li>, not beside it. -->
+        <li class="font-bold">
+          {m['general.rgesn.5.3.title']()}
+          <ul class="list-decimal!">
+            {#each ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as const as n (n)}
+              <li class="font-normal">{m[`general.rgesn.5.3.${n}`]()}</li>
+            {/each}
+          </ul>
+        </li>
       </ul>
 
       <div class="fr-tile fr-tile--sm fr-tile--download fr-enlarge-link max-w-[400px]">
@@ -127,6 +131,14 @@
               {m[`general.rgesn.7.${n}`]()}
             {/if}
           </li>
+        {/each}
+      </ul>
+
+      <h2 id="done" class="mt-10!">{m['general.rgesn.8.title']()}</h2>
+      <p>{m['general.rgesn.8.desc']()}</p>
+      <ul class="mb-6!">
+        {#each ['1', '2', '3', '4'] as const as n (n)}
+          <li>{m[`general.rgesn.8.${n}`]()}</li>
         {/each}
       </ul>
     {/if}

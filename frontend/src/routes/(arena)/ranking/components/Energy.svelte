@@ -25,6 +25,10 @@
       </div>
 
       <EnergyGraph />
+
+      <p class="mt-6! mb-0! text-sm! text-center">
+        <a href="#energy-table" class="fr-link fr-link--sm">{m['a11y.graphAsTable']()}</a>
+      </p>
     </section>
 
     <div class="gap-8 md:flex-row flex flex-col">
@@ -80,6 +84,7 @@
       <h3 class="mb-0! text-lg!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
+        caption={m['ranking.energy.views.table.title']()}
         initialOrderCol="consumption"
         initialOrderMethod="ascending"
         includedCols={['name', 'elo', 'consumption', 'size', 'arch', 'organisation', 'license']}

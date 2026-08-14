@@ -14,17 +14,17 @@
   } = $props()
 </script>
 
-<div class={['fr-container', classes]}>
+<div class={['fr-container', classes]} role="alert">
   <div class="cg-border gap-3 bg-white p-5 m-auto flex max-w-[38rem] items-start">
-    <Icon icon="warning-fill" class="mt-1 text-error shrink-0" />
+    <Icon icon="warning-fill" class="mt-1 text-error shrink-0" aria-hidden="true" />
     <div class="min-w-0 flex-1">
       {#if error === 'Context too long.'}
-        <h6 class="mb-2!">{m['chatbot.errors.tooLong.title']()}</h6>
+        <h2 class="fr-h6 mb-2!">{m['chatbot.errors.tooLong.title']()}</h2>
         <p>
           {m['chatbot.errors.tooLong.message']()}&nbsp;{m[`chatbot.errors.tooLong.retry`]()}
         </p>
       {:else}
-        <h6 class="mb-2!">{m['chatbot.errors.other.title']()}</h6>
+        <h2 class="fr-h6 mb-2!">{m['chatbot.errors.other.title']()}</h2>
         <p>
           {m['chatbot.errors.other.message']()}<br />
           {m['chatbot.errors.other.retry']()}.

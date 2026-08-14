@@ -9,6 +9,7 @@
     id,
     title,
     titleTag = 'h2',
+    rootTag = 'article',
     titleClass,
     icon,
     iconClass,
@@ -26,6 +27,8 @@
     icon: string
     title: string
     titleTag?: string
+    /** Inside a <dl> an <article> is invalid markup; pass 'div' there. */
+    rootTag?: string
     titleClass?: ClassValue
     iconClass?: ClassValue
     badge?: BadgeProps
@@ -45,28 +48,28 @@
           title: 'text-xxs! items-center text-grey',
           content: 'font-bold text-base',
           sub: 'text-sm!',
-          icon: 'xxs'
+          iconSize: 'xxs'
         },
         xs: {
           base: 'p-2 gap-2',
           title: 'text-xxs! text-grey',
           content: 'text-base!',
           sub: 'text-xxs!',
-          icon: 'xs'
+          iconSize: 'xs'
         },
         sm: {
           base: 'p-3 gap-2',
           title: 'text-xs! text-grey',
           content: 'text-base! mb-1!',
           sub: 'text-xxs!',
-          icon: 'xs'
+          iconSize: 'xs'
         },
         md: {
           base: 'p-4 gap-2',
           title: 'text-sm! items-center',
           content: 'text-[22px]!',
           sub: 'text-sm!',
-          icon: 'xs'
+          iconSize: 'xs'
         }
       } as const
     )[size]
@@ -86,13 +89,17 @@
   </div>
 {/snippet}
 
-<article {id} class={['cg-border bg-white flex flex-col', classes.base, props.class]}>
+<svelte:element
+  this={rootTag}
+  {id}
+  class={['cg-border bg-white flex flex-col', classes.base, props.class]}
+>
   <div class={['gap-1 flex', { 'items-start': size === 'xs' }]}>
     <svelte:element
       this={titleTag}
       class={['gap-1 font-normal mb-0! p-0! min-w-0 flex', classes.title, titleClass]}
     >
-      <Icon {icon} size={classes.icon} block class={size !== 'xxs' ? iconClass : undefined} />
+      <Icon {icon} size={classes.iconSize} block class={size !== 'xxs' ? iconClass : undefined} />
       {title}
     </svelte:element>
 
@@ -134,4 +141,4 @@
       {desc}
     </p>
   {/if}
-</article>
+</svelte:element>
