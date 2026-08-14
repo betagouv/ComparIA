@@ -131,7 +131,11 @@ class ComparisonPublic(SQLModel):
         if self.revealed:
             if self.reveal_data is None:
                 llms = info.context.get("llms_data")
-                self.reveal_data = get_reveal_data(self, llms)
+                # A model disabled since the comparison has left the catalogue,
+                # so its impact cannot be computed. The conversation itself
+                # stays readable rather than taking the whole list down.
+                if self.llm_id_a in llms.all and self.llm_id_b in llms.all:
+                    self.reveal_data = get_reveal_data(self, llms)
         else:
             self.llm_id_a = None
             self.llm_id_b = None
