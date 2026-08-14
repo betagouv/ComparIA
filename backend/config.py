@@ -15,8 +15,8 @@ class Settings(BaseSettings):
         env_file=ROOT_DIR / ".env", env_file_encoding="utf-8", extra="ignore"
     )
     LANGUIA_DEBUG: bool = False
-    LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
     COMPARIA_REDIS_HOST: str = "localhost"
+    COMPARIA_REDIS_PASSWORD: str | None = None
     MOCK_RESPONSE: bool = False
     LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
@@ -75,12 +75,34 @@ class Settings(BaseSettings):
     AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR: int = 2000
     AUTH_EMAIL_REQUEST_PER_EMAIL_PER_HOUR: int = 5
     AUTH_VERIFY_MAX_ATTEMPTS: int = 5
+    # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
+    # above only slows one attacker down; this one closes the login code itself.
+    AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
 
     # Anonymous
     ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
 
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
+
+    # Number of reverse proxies in front of the app. X-Forwarded-For is only read
+    # when this is > 0, and only the entry the outermost trusted proxy appended is
+    # kept, so a client cannot pick its own IP by sending the header itself.
+    # Set it to the real number of hops in every deployment (1 behind Caddy alone).
+    COMPARIA_TRUSTED_PROXY_COUNT: int = 0
+
+    # Session cookies carry the Secure flag unless this is turned off for local
+    # HTTP development. Never tie it to the debug flag: debug logging and cookie
+    # security are separate decisions.
+    COMPARIA_COOKIE_SECURE: bool = True
+
+    # Extra browser origins allowed to call the API with credentials. The
+    # deployments serve the front and the API from one origin through Caddy, so
+    # this stays empty outside development.
+    COMPARIA_CORS_ORIGINS: list[str] = []
+
+    # When set, /metrics requires "Authorization: Bearer <token>".
+    METRICS_TOKEN: str | None = None
 
     @field_validator("COMPARIA_APP_URL")
     @classmethod
@@ -128,8 +150,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Generate a random HMAC key if not configured (dev mode)
+# A per-process key breaks the captcha across replicas and across restarts, so it
+# is a dev-only convenience. Outside debug the deployment has to provide one.
 if not settings.ALTCHA_HMAC_KEY:
+    if not settings.LANGUIA_DEBUG:
+        raise RuntimeError(
+            "ALTCHA_HMAC_KEY is required. Generate one with: openssl rand -hex 32"
+        )
     import secrets
 
     settings.ALTCHA_HMAC_KEY = secrets.token_hex(32)
@@ -171,6 +198,19 @@ BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 # so users behind a shared NAT (schools, hospitals) each get their own budget.
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
+# The per-session budget above is the one that matters, since users behind one
+# shared NAT each get their own. But a client that drops the `anonymous_session`
+# cookie gets a fresh session on every request, so the same budget also runs per
+# IP as a backstop. Twenty times the room, because that IP may be a whole
+# building.
+RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 20
+
+# Cheap models are not free either, and only pricey ones used to be counted, so
+# nothing at all stopped someone hammering the rest. Wider still: an ordinary
+# session must never meet this.
+RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
+RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
+
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts only blocks in a rolling window; once an IP crosses the
 # threshold it is cooled down for the rest of the window WITHOUT calling the
@@ -180,6 +220,14 @@ RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
 
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+
+# Every turn resends the whole transcript to both models, so an endless
+# conversation costs more on each message. Cap it.
+MAX_TURNS_PER_COMPARISON = 20
+
+# Bounds on the free-text and tag annotations a voter can attach to a turn.
+MAX_VOTE_KEYWORD_ANNOTATIONS = 20
+MAX_VOTE_CUSTOM_ANNOTATION_LEN = 1_000
 
 # Altcha PoW CAPTCHA settings
 ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end
