@@ -283,7 +283,7 @@
               options={viewOptions}
               bind:value={view}
               onchange={onViewChange}
-              class="mb-6!"
+              class="mb-10!"
             />
 
             {#if view === 'general'}
