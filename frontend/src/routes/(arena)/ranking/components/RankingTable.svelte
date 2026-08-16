@@ -3,15 +3,9 @@
   import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { Archs } from '$lib/generated/constants'
-  import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import {
-    applyStyleControl,
-    getModelsWithDataContext,
-    rankClassLabel,
-    rankClassSpans
-  } from '$lib/models'
+  import { rankClassLabel, type BotModelWithData, type Commons } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -30,6 +24,10 @@
   let {
     id,
     caption,
+    models: data,
+    commons,
+    lastUpdateDate,
+    totalVotes,
     initialOrderCol = 'elo',
     initialOrderMethod = 'descending',
     includedCols,
@@ -41,6 +39,12 @@
     id: string
     /** Two of these render on the ranking page; each needs its own title. */
     caption?: string
+    // Handed over ready to render — style control applied, ranks and classes
+    // assigned — so the table has no opinion on where the rows came from.
+    models: BotModelWithData[]
+    commons: Commons
+    lastUpdateDate: string | null
+    totalVotes: number
     initialOrderCol?: ColKind
     initialOrderMethod?: 'ascending' | 'descending'
     includedCols?: ColKind[]
@@ -52,18 +56,9 @@
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
 
-  const votesData = getVotesContext()
-  const totalVotes = $derived(NumberFormater.format(votesData.count))
-  const { lastUpdateDate, commons, models: baseModels } = getModelsWithDataContext()
-  const data = $derived(applyStyleControl(baseModels))
+  const totalVotesLabel = $derived(NumberFormater.format(totalVotes))
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
-  // The class spans in the context describe the style-controlled fit. The
-  // modal has to describe the fit on screen, so they are derived from it.
-  const activeCommons = $derived({
-    ...commons,
-    rankClasses: rankClassSpans(data.map((m) => m.data))
-  })
 
   // Escape hatch back to numbered ranks. Deliberately not persisted: classes
   // are the honest default and a sticky toggle would quietly undo that.
@@ -223,7 +218,7 @@
 
         <div class="cg-border rounded-sm! bg-white px-4 py-2">
           <strong>{m['ranking.table.totalVotes']()}</strong>
-          <span class="text-grey">{totalVotes}</span>
+          <span class="text-grey">{totalVotesLabel}</span>
         </div>
       </div>
     {/if}
@@ -276,7 +271,7 @@
           <span class="fr-sr-only"
             >{m['ranking.table.data.cols.rank']()}
             {roman(model.data.rankClass)}, {rankClassLabel(
-              activeCommons.rankClasses[model.data.rankClass]
+              commons.rankClasses[model.data.rankClass]
             )}</span
           >
         </span>
@@ -353,4 +348,4 @@
   {/snippet}
 </Table>
 
-<ModelInfoModal commons={activeCommons} model={selectedModelData} modalId="{id}-modal-model" />
+<ModelInfoModal {commons} model={selectedModelData} modalId="{id}-modal-model" />

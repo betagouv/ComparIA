@@ -1,10 +1,20 @@
 <script lang="ts">
   import { Icon } from '$components/dsfr'
+  import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
+  import { applyStyleControl, getModelsWithDataContext, rankClassSpans } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
   let { onDownloadData }: { onDownloadData: () => void } = $props()
+
+  const { lastUpdateDate, commons, models: modelsData } = getModelsWithDataContext()
+  const votesData = getVotesContext()
+  const rankingRows = $derived(applyStyleControl(modelsData))
+  const rankingCommons = $derived({
+    ...commons,
+    rankClasses: rankClassSpans(rankingRows.map((m) => m.data))
+  })
 </script>
 
 <div id="ranking-energy">
@@ -85,6 +95,10 @@
       <RankingTable
         id="energy-table"
         caption={m['ranking.energy.views.table.title']()}
+        models={rankingRows}
+        commons={rankingCommons}
+        {lastUpdateDate}
+        totalVotes={votesData.count}
         initialOrderCol="consumption"
         initialOrderMethod="ascending"
         includedCols={['name', 'elo', 'consumption', 'size', 'arch', 'organisation', 'license']}

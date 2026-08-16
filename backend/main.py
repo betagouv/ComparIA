@@ -11,6 +11,7 @@ from backend.auth.router import router as auth_router
 from backend.config import settings
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
+from backend.ranking.router import router as ranking_router
 from backend.sentry import init_sentry
 from backend.settings.router import router as settings_router
 from backend.statistics import router as statistics_router
@@ -88,6 +89,7 @@ app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(settings_router)
 app.include_router(statistics_router)
+app.include_router(ranking_router)
 
 
 @app.get("/counter")

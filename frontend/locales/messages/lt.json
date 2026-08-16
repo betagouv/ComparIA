@@ -163,6 +163,44 @@
         },
         "title": "Platformos statistika"
     },
+    "ranking": {
+        "personal": {
+            "cols": {
+                "battles": "Palyginimai",
+                "general_rank": "Bendras rangas",
+                "record": "Rezultatas (L-P-Ly)",
+                "score": "Mano įvertis"
+            },
+            "loading": "Įkeliamas jūsų reitingas…",
+            "noVotes": "Balsuokite palyginime, kad pradėtumėte savo reitingą.",
+            "signedOut": "Prisijunkite, kad pamatytumėte reitingą, sudarytą iš jūsų balsų.",
+            "title": "Mano reitingas",
+            "tooltips": {
+                "score": "Modelis, kurį palyginote vos kelis kartus, priartinamas prie jūsų vidurkio, o ne rodo kraštutinį įvertį."
+            },
+            "totalModels": "Įvertinti modeliai:",
+            "totalVotes": "Mano balsai:"
+        },
+        "views": {
+            "general": "Bendras",
+            "legend": "Reitingo rodinys",
+            "personal": "Mano reitingas"
+        },
+        "methodo": {
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Nė vienas neteko</strong>: po 0 taškų kiekvienam modeliui — skaičiuojamas jūsų nepasitenkinimas, o ne tik santykinis pasirinkimas.",
+                    "both_good": "<strong>Abu geri</strong>: po 0,5 taško kiekvienam modeliui.",
+                    "idk": "<strong>Nežinau</strong>: neįtraukiama į skaičiavimą, neįskaitoma nė vienam modeliui."
+                },
+                "desc": {
+                    "1": "Bradley-Terry metodui reikia sujungto palyginimų tinklo: jūsų balsai daugiausia sudaro išsibarsčiusias, nesusijusias poras, todėl metodas netinka vienai paskyrai. Asmeninis įvertis yra <strong>sumažintas laimėjimų rodiklis</strong>:",
+                    "2": "<strong>points</strong> – jūsų taškų suma už modelį, <strong>battles</strong> – įvertintų palyginimų su juo skaičius, o <strong>m</strong> – jūsų vidutinis taškų skaičius už palyginimą visuose modeliuose. Sumažinimas retai lyginamą modelį priartina prie šio vidurkio: vienas laimėjimas rodo 0,667, o ne 100 %, o dvidešimt kartų lygintas modelis lenkia vieną kartą lygintą modelį esant panašiam santykiui."
+                },
+                "title": "Asmeninis reitingas: kaip apskaičiuojamas jūsų įvertis"
+            }
+        }
+    },
     "reveal": {
         "impacts": {
             "summary": {
