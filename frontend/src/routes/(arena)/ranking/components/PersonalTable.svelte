@@ -86,10 +86,16 @@
             return b.battles - a.battles
           case 'record':
             return b.wins - a.wins
-          case 'general_rank':
+          case 'general_rank': {
             // A model the general ranking does not hold sits at the end either
-            // way round: it has no position to compare.
-            return (a.generalRank ?? Infinity) - (b.generalRank ?? Infinity)
+            // way round: it has no position to compare. Decided on the rows as
+            // given rather than the swapped pair, so reversing the column does
+            // not carry the missing ones to the top with it.
+            const aMissing = ra.generalRank === null
+            const bMissing = rb.generalRank === null
+            if (aMissing || bMissing) return aMissing === bMissing ? 0 : aMissing ? 1 : -1
+            return a.generalRank! - b.generalRank!
+          }
           case 'size':
             return (b.model?.params ?? 0) - (a.model?.params ?? 0)
           case 'arch':

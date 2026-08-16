@@ -82,6 +82,27 @@ describe('personal ranking table', () => {
     expect(cells[1].slice(2, 6)).toEqual(['0,667', '1', '1-0-0', ''])
   })
 
+  it('keeps a model with no general rank last, whichever way that column is sorted', async () => {
+    const { container } = render(PersonalTable, {
+      id: 'personal-ranking-table',
+      rows,
+      commons,
+      votesCount: 21,
+      onDownloadData: () => {}
+    })
+
+    const generalRank = container.querySelectorAll('thead th')[5].querySelector('button')!
+
+    // Best general rank first, and the model the general ranking does not hold
+    // brings up the rear.
+    await fireEvent.click(generalRank)
+    expect(ranks(container)).toEqual(['3', '1', '2'])
+
+    // Reversing the column must not carry it to the top.
+    await fireEvent.click(generalRank)
+    expect(ranks(container)).toEqual(['1', '3', '2'])
+  })
+
   it('keeps a model that has left the arena, without a link to its card', () => {
     const { getByText } = render(PersonalTable, {
       id: 'personal-ranking-table',
