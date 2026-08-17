@@ -246,4 +246,30 @@
       </div>
     </div>
   </section>
+
+  <section class="mt-16">
+    <h3 class="fr-h6 mb-4!">{m['ranking.methodo.personal.title']()}</h3>
+    <p class="mb-6! text-dark-grey text-[14px]!">
+      {@html sanitize(m['ranking.methodo.personal.desc.1']())}
+    </p>
+
+    <div class="cg-border rounded-sm! bg-white p-6 max-w-[640px]">
+      <p class="mb-3! font-mono font-bold text-[15px]!">score = (points + 2m) / (battles + 2)</p>
+      <p class="mb-0! text-dark-grey text-[13px]!">
+        {@html sanitize(m['ranking.methodo.personal.desc.2']())}
+      </p>
+    </div>
+
+    <ul class="mt-6! m-0! p-0! max-w-[640px] list-none!">
+      {#each ['both_good', 'both_bad', 'idk'] as const as choice (choice)}
+        <li
+          class="not-last:mb-3 pb-3 p-0! not-last:border-b not-last:border-[--border-default-grey]"
+        >
+          <span class="text-[14px]"
+            >{@html sanitize(m[`ranking.methodo.personal.choices.${choice}`]())}</span
+          >
+        </li>
+      {/each}
+    </ul>
+  </section>
 </div>

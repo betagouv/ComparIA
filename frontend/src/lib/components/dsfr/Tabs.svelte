@@ -15,6 +15,7 @@
     tabs,
     label,
     initialId = tabs[0].id,
+    currentTabId = $bindable(untrack(() => initialId)),
     noBorders = false,
     panelClass = '',
     kind = 'tab',
@@ -24,13 +25,12 @@
     tabs: Readonly<T[]>
     label: string
     initialId?: T['id']
+    currentTabId?: T['id']
     noBorders?: boolean
     panelClass?: ClassValue
     kind?: 'tab' | 'nav'
     tab?: Snippet<[T]>
   } & SvelteHTMLElements['div'] = $props()
-
-  let currentTabId = $state(untrack(() => initialId))
 
   function selectTab(index: number) {
     const tab = tabs[index]

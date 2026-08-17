@@ -1490,6 +1490,28 @@
         }
     },
     "ranking": {
+        "personal": {
+            "cols": {
+                "battles": "Comparaisons",
+                "general_rank": "Rang général",
+                "record": "Bilan (V-D-É)",
+                "score": "Mon score"
+            },
+            "loading": "Chargement de votre classement…",
+            "noVotes": "Votez lors d’une comparaison pour commencer votre classement.",
+            "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
+            "title": "Mon classement",
+            "tooltips": {
+                "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
+            },
+            "totalModels": "Modèles classés :",
+            "totalVotes": "Mes votes :"
+        },
+        "views": {
+            "general": "Général",
+            "legend": "Vue du classement",
+            "personal": "Mon classement"
+        },
         "energy": {
             "desc": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
@@ -1590,6 +1612,18 @@
                     },
                     "title": "Classement par taux de victoire"
                 }
+            },
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Aucun des deux ne convient</strong> : 0 point pour chacun des deux modèles — l’insatisfaction compte, pas seulement la préférence relative.",
+                    "both_good": "<strong>Les deux se valent</strong> : 0,5 point pour chacun des deux modèles.",
+                    "idk": "<strong>Je ne sais pas</strong> : le vote est exclu, il ne compte pour aucun des deux modèles."
+                },
+                "desc": {
+                    "1": "Bradley-Terry a besoin d’un réseau de comparaisons connecté : vos votes ne forment qu’un nuage de paires isolées, la méthode ne s’applique donc pas à l’échelle d’un compte. Le score personnel est un <strong>taux de victoire lissé</strong> :",
+                    "2": "<strong>points</strong> est votre total de points sur le modèle, <strong>battles</strong> le nombre de comparaisons scorées le concernant, et <strong>m</strong> votre moyenne de points par comparaison, tous modèles confondus. Le lissage rapproche un modèle peu comparé de cette moyenne : une seule victoire affiche donc 0,667 et non 100 %, et un modèle comparé vingt fois dépasse un modèle comparé une fois à taux comparable."
+                },
+                "title": "Le classement personnel : comment est calculé votre score"
             },
             "style": {
                 "coef": {

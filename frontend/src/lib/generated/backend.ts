@@ -329,6 +329,34 @@ export interface CurrencyInfo {
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;
 }
+/**
+ * The signed-in user's own ranking, already scored, ordered and numbered.
+ *
+ * Rows carry no model metadata beyond the identity: the client joins them on
+ * the model list it already holds.
+ */
+export interface PersonalRanking {
+  rows: PersonalRankingRow[];
+  votes_count: number;
+}
+/**
+ * One model in a user's own ranking, scored, ordered and numbered.
+ *
+ * Carries the model name as well as its id: a model the user voted on can have
+ * left the arena since, and is then missing from the model list the client
+ * holds.
+ */
+export interface PersonalRankingRow {
+  llm_id: string;
+  name: string;
+  rank: number;
+  score: number;
+  battles: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  [k: string]: unknown;
+}
 export interface PublicLegalDocument {
   version: string;
   content_hash: string;

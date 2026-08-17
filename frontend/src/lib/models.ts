@@ -1,5 +1,11 @@
 import { formatCurrencyFromEuro } from '$lib/currency'
-import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
+import type {
+  APILLMData,
+  DatasetData,
+  LLMList,
+  PersonalRankingRow,
+  PreferencesData
+} from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { propsToAttrs } from '$lib/utils/commons'
@@ -61,6 +67,13 @@ export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & {
   data: DatasetData
   prefs: PreferencesData
+}
+export type PersonalRow = PersonalRankingRow & {
+  id: string
+  // Missing when the user voted on a model that has since left the arena.
+  model: BotModel | null
+  generalRank: number | null
+  search: string
 }
 export type ModelCardSize = 'xxs' | 'xs' | 'sm' | 'md'
 
@@ -446,4 +459,31 @@ export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[
     ...m,
     data: { ...m.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
   }))
+}
+
+/**
+ * Attach each personal ranking row to the model it is about.
+ *
+ * The rows come from the server already scored, ordered and numbered, so the
+ * order is kept as it arrives. A row whose model is gone from the arena keeps
+ * its place with the name the server sent, and a model missing from the general
+ * ranking gets no general rank rather than a zero.
+ */
+export function joinPersonalRanking(
+  rows: PersonalRankingRow[],
+  models: BotModel[],
+  generalRanks: Record<string, number>
+): PersonalRow[] {
+  const byId = new Map(models.map((model) => [model.id, model]))
+
+  return rows.map((row) => {
+    const model = byId.get(row.llm_id) ?? null
+    return {
+      ...row,
+      id: row.llm_id,
+      model,
+      generalRank: generalRanks[row.llm_id] ?? null,
+      search: model?.search ?? row.name
+    }
+  })
 }

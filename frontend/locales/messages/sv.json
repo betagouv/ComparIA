@@ -362,6 +362,28 @@
         }
     },
     "ranking": {
+        "personal": {
+            "cols": {
+                "battles": "Jämförelser",
+                "general_rank": "Allmän rang",
+                "record": "Resultat (V-F-O)",
+                "score": "Mina poäng"
+            },
+            "loading": "Laddar din rankning…",
+            "noVotes": "Rösta i en jämförelse för att starta din rankning.",
+            "signedOut": "Logga in för att se rankningen som byggts av dina röster.",
+            "title": "Min rankning",
+            "tooltips": {
+                "score": "En modell du bara jämfört några gånger dras mot ditt eget genomsnitt i stället för att visa en extrem poäng."
+            },
+            "totalModels": "Rankade modeller:",
+            "totalVotes": "Mina röster:"
+        },
+        "views": {
+            "general": "Allmän",
+            "legend": "Rankningsvy",
+            "personal": "Min rankning"
+        },
         "energy": {
             "views": {
                 "graph": {
@@ -421,6 +443,18 @@
                     },
                     "title": "Rankning efter vinstfrekvens"
                 }
+            },
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Ingen är bra</strong>: 0 poäng till vardera modell — ditt missnöje räknas, inte bara din relativa preferens.",
+                    "both_good": "<strong>Båda är bra</strong>: 0,5 poäng till vardera modell.",
+                    "idk": "<strong>Vet inte</strong>: utesluts från beräkningen, räknas inte för någon av modellerna."
+                },
+                "desc": {
+                    "1": "Bradley-Terry kräver ett sammanhängande nätverk av jämförelser: dina röster bildar mestadels spridda, osammanhängande par, så metoden fungerar inte för ett enskilt konto. Den personliga poängen är en <strong>utjämnad vinstandel</strong>:",
+                    "2": "<strong>points</strong> är din totala poäng på modellen, <strong>battles</strong> antalet poängsatta jämförelser den ingår i, och <strong>m</strong> ditt genomsnittliga antal poäng per jämförelse över alla modeller. Utjämningen drar en sällan jämförd modell mot detta genomsnitt: en vinst visar 0,667 och inte 100 %, och en modell jämförd tjugo gånger rankas över en jämförd en gång vid liknande andel."
+                },
+                "title": "Din personliga rankning: så beräknas din poäng"
             },
             "tabLabel": "Metodik",
             "title": "Hur väljer man metod för att klassificera modeller?"

@@ -624,6 +624,28 @@
         }
     },
     "ranking": {
+        "personal": {
+            "cols": {
+                "battles": "Sammenligninger",
+                "general_rank": "Generel rang",
+                "record": "Resultat (S-N-U)",
+                "score": "Min score"
+            },
+            "loading": "Indlæser din rangliste…",
+            "noVotes": "Stem i en sammenligning for at starte din rangering.",
+            "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
+            "title": "Min rangering",
+            "tooltips": {
+                "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
+            },
+            "totalModels": "Rangerede modeller:",
+            "totalVotes": "Mine stemmer:"
+        },
+        "views": {
+            "general": "Generel",
+            "legend": "Visning af rangering",
+            "personal": "Min rangering"
+        },
         "energy": {
             "desc": "Denne graf viser for hver model sammenhængen mellem tilfredshedsscore (Bradley Terry-score) og det estimerede gennemsnitlige energiforbrug pr. 1000 tokens. Energiforbruget estimeres ved hjælp af <a {linkProps}>Ecologits</a>-metodologien, som tager højde for to faktorer: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. Da <strong>proprietære modeller</strong> ikke offentliggør disse oplysninger - eller kun gør det delvist - er de ikke medtaget i grafen nedenfor.",
             "tabLabel": "Energi fokus",
@@ -723,6 +745,18 @@
                     },
                     "title": "Rangordning efter sejrsrate"
                 }
+            },
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Ingen er gode</strong>: 0 point til hver model — din utilfredshed tæller, ikke kun din relative præference.",
+                    "both_good": "<strong>Begge er gode</strong>: 0,5 point til hver model.",
+                    "idk": "<strong>Ved ikke</strong>: udelukkes fra beregningen, tæller ikke for nogen af modellerne."
+                },
+                "desc": {
+                    "1": "Bradley-Terry kræver et sammenhængende netværk af sammenligninger: dine stemmer danner mest spredte, usammenhængende par, så metoden virker ikke for en enkelt konto. Den personlige score er en <strong>udjævnet vinderrate</strong>:",
+                    "2": "<strong>points</strong> er dit samlede antal point på modellen, <strong>battles</strong> antallet af scorede sammenligninger med den, og <strong>m</strong> dit gennemsnitlige antal point pr. sammenligning på tværs af alle modeller. Udjævningen trækker en sjældent sammenlignet model mod dette gennemsnit: én sejr viser 0,667 og ikke 100 %, og en model sammenlignet tyve gange rangerer over en sammenlignet én gang ved samme rate."
+                },
+                "title": "Din personlige rangering: sådan beregnes din score"
             },
             "tabLabel": "Metodologi",
             "title": "Hvordan vælger man metoden til rangordning af modeller?"
