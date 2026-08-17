@@ -5,13 +5,14 @@
 
 ### The open-source LLM arena. Deploy it for your organisation, sector, or language.
 
-Crowdsource human preferences, benchmark models, and build open datasets in any language.
+Crowdsource human votes, benchmark models, and build open datasets in any language/sector.
 
 <br>
 
 [![License](https://img.shields.io/github/license/betagouv/ComparIA?color=blue)](./LICENSE)
 [![Hugging Face datasets](https://img.shields.io/badge/Hugging%20Face-datasets-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/ministere-culture)
 [![Paper](https://img.shields.io/badge/arXiv-2602.06669-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2602.06669)
+[![DPG Badge](https://img.shields.io/badge/Verified-DPG-3333AB?logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMzEiIGhlaWdodD0iMzMiIHZpZXdCb3g9IjAgMCAzMSAzMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0LjIwMDggMjEuMzY3OEwxMC4xNzM2IDE4LjAxMjRMMTEuNTIxOSAxNi40MDAzTDEzLjk5MjggMTguNDU5TDE5LjYyNjkgMTIuMjExMUwyMS4xOTA5IDEzLjYxNkwxNC4yMDA4IDIxLjM2NzhaTTI0LjYyNDEgOS4zNTEyN0wyNC44MDcxIDMuMDcyOTdMMTguODgxIDUuMTg2NjJMMTUuMzMxNCAtMi4zMzA4MmUtMDVMMTEuNzgyMSA1LjE4NjYyTDUuODU2MDEgMy4wNzI5N0w2LjAzOTA2IDkuMzUxMjdMMCAxMS4xMTc3TDMuODQ1MjEgMTYuMDg5NUwwIDIxLjA2MTJMNi4wMzkwNiAyMi44Mjc3TDUuODU2MDEgMjkuMTA2TDExLjc4MjEgMjYuOTkyM0wxNS4zMzE0IDMyLjE3OUwxOC44ODEgMjYuOTkyM0wyNC44MDcxIDI5LjEwNkwyNC42MjQxIDIyLjgyNzdMMzAuNjYzMSAyMS4wNjEyTDI2LjgxNzYgMTYuMDg5NUwzMC42NjMxIDExLjExNzdMMjQuNjI0MSA5LjM1MTI3WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==)](https://www.digitalpublicgoods.net/r/comparia)
 
 **[Try the arena](https://comparia.beta.gouv.fr)** · **[Datasets](https://huggingface.co/ministere-culture)** · **[Deploy your own](#deploy-your-own)** · **[Roadmap](#roadmap)** · **[Contribute](#contribute)**
 
@@ -21,7 +22,7 @@ Crowdsource human preferences, benchmark models, and build open datasets in any 
 
 ## What is compar:IA?
 
-compar:IA is a blind arena for large language models. You type a prompt, two anonymous models reply, and you vote for the answer you prefer. Only after voting do you see which models wrote them.
+compar:IA is an LLM arena: the user types a prompt, two anonymous models reply, and the user votes for the answer they prefer. Only after voting (or skipping the vote) does the user see which models wrote the answers.
 
 
 <div align="center">
@@ -29,22 +30,20 @@ compar:IA is a blind arena for large language models. You type a prompt, two ano
 </div>
 
 
-The platform is used in a few ways:
 
-- Teaching people about model diversity, bias, sovereignty, and the energy cost of generative AI.
-- Ranking models on real use instead of English-first benchmarks, so you can see which ones work best in your own language or in your sector or even company.
-- Building open datasets of prompts, votes, and reactions that anyone can reuse to study how people use these tools, or to train and align models.
+The platform can be used for many different purposes:
 
-Most models are weaker outside English. compar:IA is a way to measure that gap in public and collect the preference data needed to narrow it.
+- Teaching people about model diversity, bias, openness, energy consumption...
+- Ranking models on real-world use instead of "laboratory" benchmarks, so you can see which ones work best in your own use case and language.
+- Building and publishing open datasets of prompts, votes, and reactions that anyone can reuse to study how people use these tools, or to train and fine-tune models.
 
-## The story so far
+## The story of compar:IA
 
 - **Oct 2024:** The French government launches [comparia.beta.gouv.fr](https://comparia.beta.gouv.fr), an LLM arena open to the public.
 - **Mar 2025:** 50,000 votes reached, and the first dataset goes up on Hugging Face.
 - **Nov 2025:** The first public leaderboard ships, and a second instance goes live: [AI-arenaen](https://ai-arenaen.dk) in Denmark.
-- **Today:** Over 700,000 conversations and 250,000 votes ([about 89% in French](https://arxiv.org/abs/2602.06669)), several datasets, and new instances starting up regularly.
-
-compar:IA is now built to be run by anyone: a company, a sector, or a language community.
+- **Jun 2026:** Over 700,000 conversations and 250,000 votes ([about 89% in French](https://arxiv.org/abs/2602.06669)), several datasets, and new instances starting up regularly.
+- **Sept 2026:** compar:IA 2.0 is released : message history, personal leaderboard, admin panel, etc. compar:IA is now built to be run by anyone: a company, a sector, or a language community.
 
 ## Active instances
 
@@ -76,7 +75,14 @@ For the full setup guide (instances, KeePass, Docker, testing, models, i18n, arc
 ## Roadmap
 
 **In progress**
+- Agentic tool use
+- OIDC SSO
+- Improved style control
 
+<details>
+<summary><b>Done</b></summary>
+
+<br>
 - [Authentication](https://github.com/betagouv/ComparIA/milestone/11) *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
 - Style control, [#532](https://github.com/betagouv/ComparIA/pull/532) *(🇫🇷 Ministry of Culture)*
 - Prompt moderation, [#542](https://github.com/betagouv/ComparIA/pull/542) *(🇫🇷 Ministry of Culture)*
@@ -85,12 +91,6 @@ For the full setup guide (instances, KeePass, Docker, testing, models, i18n, arc
 - Message history *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
 - Socio-demographic data collection *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
 - [Back-office management](https://github.com/betagouv/ComparIA/milestone/17) *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
-
-<details>
-<summary><b>Done</b></summary>
-
-<br>
-
 - New voting system *(🇪🇺 ALT-EDIC, 🇫🇷 Ministry of Culture)*
 - Web search *(🇪🇺 ALT-EDIC)*
 - Separation of all platforms into separate instances *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
@@ -109,9 +109,10 @@ For the full setup guide (instances, KeePass, Docker, testing, models, i18n, arc
 
 ## Contribute
 
-compar:IA is a digital common. You can help with money, code, translations, or ideas.
+compar:IA is a digital common. You can help financially, in code, translations, or ideas.
 
-- **Financially.** compar:IA is funded by DINUM and the French Ministry of Culture, with European support from ALT-EDIC. We are looking for new partners and funders to keep the infrastructure running, add languages, and keep the project independent. Reach us at [contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr).
+- **Run your own instance.** compar:IA achieves its mission as instances multiply — and with them, open datasets, benchmarks, and people who understand these tools.
+- **Financially.** compar:IA is funded by ALT-EDIC, DINUM and the French Ministry of Culture. We are looking for new partners and funders to keep the infrastructure running, add languages, and keep the project independent. Reach us at [contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr).
 - **In code.** The whole platform is open source and we welcome contributions of any size: bug fixes, features, translations, documentation. [Open a pull request](https://github.com/betagouv/ComparIA/pulls).
 - **In discussions.** Share ideas, flag issues, or ask questions on [GitHub Discussions](https://github.com/betagouv/ComparIA/discussions).
 - **Any other way.** Partnerships, academic work, media coverage, or spreading the word. [Get in touch](mailto:contact@comparia.beta.gouv.fr).
@@ -125,7 +126,5 @@ compar:IA is a digital common. You can help with money, code, translations, or i
 <div align="center">
 
 Read the paper: **[compar:IA: The French Government's LLM arena](https://arxiv.org/abs/2602.06669)**
-
-A digital common. Reuse it, improve it, or run your own.
 
 </div>
