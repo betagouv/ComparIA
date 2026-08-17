@@ -1,0 +1,9 @@
+apiVersion: v2
+name: comparia
+description: Self-hosted ComparIA (backend + frontend) on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "latest"
+home: https://github.com/betagouv/ComparIA
+sources:
+  - https://github.com/betagouv/ComparIA
