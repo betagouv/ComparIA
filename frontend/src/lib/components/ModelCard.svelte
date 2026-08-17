@@ -51,7 +51,11 @@
 
       <!-- Not a <dl>: InfoCard wraps its own markup around the label, so the
            dt/dd never end up direct children and the list is invalid. -->
-      <div class="fr-card__desc p-0 gap-2 mt-0! sm:grid-cols-3 grid grid-cols-2">
+      <!-- The floor is what the longest badge ("Propriétaire") needs on one line.
+           Any narrower and DSFR's break-word splits it mid-word. -->
+      <div
+        class="fr-card__desc p-0 gap-2 mt-0! grid grid-cols-[repeat(auto-fit,minmax(7.25rem,1fr))]"
+      >
         {#each cards as card (card.id)}
           <!-- id after the spread and scoped to the model: getModelCards hands
                out the same 'size'/'license'/... ids to every card, and this

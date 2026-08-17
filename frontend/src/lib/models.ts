@@ -82,27 +82,29 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
   const archI18nKey = isMaybeArch(model.arch) ? 'na' : model.arch
   const archDescription = m[`generated.archs.${archI18nKey}.desc`]()
   const archLongName = m[`generated.archs.${archI18nKey}.long_name`]()
+  // Proprietary labs do not publish parameter counts, so ours are estimates and
+  // we show the size class instead of a figure we cannot source. The estimate is
+  // still what the energy figures are computed from, server side.
+  const estimated = model.license.kind === 'proprietary'
   return {
     size: {
       id: 'size',
       icon: 'i-ri-ruler-line',
       title: m['models.cards.size.title'](),
-      badge: size !== 'sm' ? model.badges.size_short : undefined,
+      badge: estimated || size === 'sm' ? undefined : model.badges.size_short,
+      contentBadge: estimated ? model.badges.size : undefined,
       tooltip: m['models.cards.size.tooltip'](),
-      content:
-        size !== 'xs'
-          ? m[`models.cards.size.params_count${size === 'sm' ? '_short' : ''}`]({
-              count: model.params,
-              midProps,
-              smallProps
-            })
-          : undefined,
+      content: estimated
+        ? undefined
+        : m[`models.cards.size.params_count${size === 'md' ? '' : '_short'}`]({
+            count: model.params,
+            midProps,
+            smallProps
+          }),
       subContent:
-        model.license.kind === 'proprietary'
-          ? m['models.cards.size.estimated']()
-          : model.active_params
-            ? m['models.cards.size.active_params_count']({ count: model.active_params })
-            : undefined,
+        !estimated && model.active_params
+          ? m['models.cards.size.active_params_count']({ count: model.active_params })
+          : undefined,
       desc: undefined
     } as const,
     arch: {

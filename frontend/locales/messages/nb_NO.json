@@ -394,13 +394,6 @@
                 },
                 "reset": "Nullstill alle filtre",
                 "size": {
-                    "labels": {
-                        "L": "mellom 70 og 150 milliarder",
-                        "M": "fra 20 til 70 milliarder",
-                        "S": "mellom 7 og 20 milliarder",
-                        "XL": "> 150 milliarder",
-                        "XS": "< 7 milliarder"
-                    },
                     "legend": "Størrelse (parametere)"
                 }
             },
@@ -437,7 +430,7 @@
                 "XS": "< 15 milliarder"
             },
             "estimated": "Estimert størrelse ({size})",
-            "title": "Størrelse"
+            "title": "Størrelse {size}"
         }
     },
     "modes": {

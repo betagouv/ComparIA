@@ -1299,7 +1299,6 @@
             "size": {
                 "active_params_count": "Dont {count}mds actifs",
                 "desc": "Plus un modèle a de paramètres, plus il demande de ressources",
-                "estimated": "Estimation",
                 "params_count": "{count}<span {midProps}>mds</span> <span {smallProps}>paramètres</span>",
                 "params_count_short": "{count}<span {midProps}>mds</span> <span {smallProps}>param.</span>",
                 "title": "Taille",
@@ -1381,13 +1380,6 @@
                 "reset": "Effacer tous les filtres",
                 "size": {
                     "all": "Toutes les tailles",
-                    "labels": {
-                        "L": "de 70 à 150 milliards",
-                        "M": "de 20 à 70 milliards",
-                        "S": "de 7 à 20 milliards",
-                        "XL": "> 150 milliards",
-                        "XS": "< à 7 milliards"
-                    },
                     "legend": "Taille (paramètres)"
                 },
                 "statuses": {
@@ -1458,7 +1450,7 @@
                 "XL": ">400 mds",
                 "XS": "<15 mds"
             },
-            "estimated": "Taille estimée {size}",
+            "estimated": "Taille estimée {size}",
             "title": "Taille {size}"
         },
         "technical": {
@@ -1800,7 +1792,8 @@
                     "matformer": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>Matformer</strong> : il adapte la part de ses paramètres mobilisée à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse (environ <strong>{activeParams} milliards</strong> sur <strong>{params} milliards</strong>). Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "unknown": "<strong>{model}</strong> est un modèle <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
-                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>."
+                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "moeProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>."
                 },
                 "comparison": {
                     "comparable": "une consommation <strong>comparable</strong> à celle de <strong>{otherModel}</strong>",
