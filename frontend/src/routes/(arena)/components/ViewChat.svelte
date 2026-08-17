@@ -139,7 +139,8 @@
     {#key comparisonId}
       <RevealArea data={comparator.comparison.reveal_data} />
     {/key}
-  {:else}
+    <!-- FIXME in case of disabled llm: explain why no reveal + cannot continue -->
+  {:else if !comparator.comparison.revealed}
     <div
       bind:this={footer}
       id="send-area"
