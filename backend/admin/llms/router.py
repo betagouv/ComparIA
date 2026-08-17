@@ -24,6 +24,7 @@ from utils.llms.services import (
     upsert_llm_lab,
     upsert_llm_license,
 )
+from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, invalidate_cache
 from utils.utils import FormJsonSchema
 
 logger = logging.getLogger("languia")
@@ -85,7 +86,9 @@ async def get_schema():
 @router.put("/llm")
 async def upsert_llm(body: LLMDataUpsert) -> LLMData:
     async with get_session() as session:
-        return await upsert_llm_data(body, session)
+        db_llm = await upsert_llm_data(body, session)
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        return db_llm
 
 
 @router.post("/endpoint")
@@ -96,6 +99,7 @@ async def upsert_endpoint(body: LLMEndpointUpsert) -> LLMEndpointPublic:
         # Commit expires the attributes, and the instance detaches when the
         # session closes, so refresh and build the payload here.
         await session.refresh(endpoint)
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return _to_endpoint_public(endpoint)
 
 
@@ -105,6 +109,7 @@ async def delete_endpoint_api_key(endpoint_id: UUID) -> LLMEndpointPublic:
         endpoint = await clear_llm_endpoint_api_key(endpoint_id, session)
         if not endpoint:
             raise HTTPException(status_code=404, detail="endpoint_not_found")
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return _to_endpoint_public(endpoint)
 
 
@@ -112,11 +117,15 @@ async def delete_endpoint_api_key(endpoint_id: UUID) -> LLMEndpointPublic:
 @router.put("/lab")
 async def upsert_lab(body: LLMLabUpsert) -> LLMLab:
     async with get_session() as session:
-        return await upsert_llm_lab(body, session)
+        db_lab = await upsert_llm_lab(body, session)
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        return db_lab
 
 
 @router.post("/license")
 @router.put("/license")
 async def upsert_license(body: LLMLicenseUpsert) -> LLMLicense:
     async with get_session() as session:
-        return await upsert_llm_license(body, session)
+        db_license = await upsert_llm_license(body, session)
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        return db_license
