@@ -47,6 +47,46 @@ tests:
           path: spec.template.spec.containers[0].readinessProbe.httpGet.path
           value: /
 
+  - it: sets the admin/auth/currency env vars with their defaults
+    template: backend-deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ADMIN_EMAILS
+            value: "[]"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DISPLAY_CURRENCY
+            value: EUR
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SMTP_HOST
+
+  - it: sets ADMIN_EMAILS and SMTP_HOST/PORT when configured
+    template: backend-deployment.yaml
+    set:
+      config.adminEmails: ["you@example.com"]
+      config.smtp.host: smtp.example.com
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ADMIN_EMAILS
+            value: '["you@example.com"]'
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SMTP_HOST
+            value: smtp.example.com
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SMTP_PORT
+            value: "587"
+
   - it: points the frontend at the backend Service
     template: frontend-deployment.yaml
     asserts:

@@ -86,9 +86,36 @@ config:
   sentryDsn: ""
   sentryEnvironment: prod
 
+  ## -- Public origin used to build absolute links in emails (e.g. login codes). Left empty, the
+  ## app falls back to its own dev default (http://localhost:5173) -- set this for a real install.
+  appUrl: ""
+  ## -- Emails promoted to the admin role on startup, created if absent. Left empty, nobody can
+  ## reach /admin. Example: ["you@example.com"].
+  adminEmails: []
+  auth:
+    ## -- If non-empty, only emails from these domains can request a login code. Example: ["example.com"].
+    domainAllowlist: []
+    sessionLengthDays: 30
+  currency:
+    ## -- ISO 4217 code models prices are converted to for display (stored in EUR internally).
+    display: EUR
+    ## -- Manual EUR -> display currency rate. Set this to enable currencies unavailable from the
+    ## rate API, run fully offline, or avoid the EUR fallback if the rate service is unreachable
+    ## at startup. Left null, the rate is fetched from exchangeApiUrl instead.
+    rateFromEur: null
+    exchangeApiUrl: https://api.frankfurter.dev/v2
+    exchangeCacheSeconds: 86400
+  ## -- "From" address/name on outgoing emails (login codes).
+  emailFrom: ""
+  emailFromName: "ComparIA"
+  smtp:
+    ## -- Left empty, login codes are logged to console instead of being sent by email.
+    host: ""
+    port: 587
+
 backend:
-  ## -- Extra env vars for the backend container, e.g. SMTP_*, ADMIN_EMAILS, AUTH_DOMAIN_ALLOWLIST.
-  ## Same shape as a container's `env:` list (name/value or name/valueFrom).
+  ## -- Extra env vars for the backend container, for anything not covered by config.* above
+  ## or secrets.* below. Same shape as a container's `env:` list (name/value or name/valueFrom).
   extraEnv: []
 
 frontend:
@@ -113,6 +140,12 @@ secrets:
   ordbogenApiKey: ""
   linkupApiKey: ""
   altchaHmacKey: ""
+  ## -- Mistral moderation API key, for prompt checks (content safety, personal data). Left
+  ## empty, both checks no-op.
+  mistralApiKey: ""
+  ## -- Only used when config.smtp.host is set.
+  smtpUsername: ""
+  smtpPassword: ""
 
 cronjobs:
   ranking:
