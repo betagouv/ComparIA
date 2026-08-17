@@ -82,7 +82,6 @@ For the full setup guide (instances, KeePass, Docker, testing, models, i18n, arc
 <details>
 <summary><b>Done</b></summary>
 
-<br>
 - [Authentication](https://github.com/betagouv/ComparIA/milestone/11) *(🇪🇺 ALT-EDIC, 🇫🇷 DINUM)*
 - Style control, [#532](https://github.com/betagouv/ComparIA/pull/532) *(🇫🇷 Ministry of Culture)*
 - Prompt moderation, [#542](https://github.com/betagouv/ComparIA/pull/542) *(🇫🇷 Ministry of Culture)*
