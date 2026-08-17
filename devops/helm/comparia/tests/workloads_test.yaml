@@ -1,0 +1,92 @@
+suite: backend and frontend workloads
+templates:
+  - backend-deployment.yaml
+  - frontend-deployment.yaml
+  - backend-service.yaml
+  - frontend-service.yaml
+  - serviceaccount.yaml
+values:
+  - ../ci/values-lint.yaml
+tests:
+  - it: renders the backend Deployment with the configured image and probes
+    template: backend-deployment.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-comparia-backend
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/betagouv/comparia-backend:latest
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 80
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /docs
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.tcpSocket.port
+          value: http
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: RELEASE-NAME-comparia
+
+  - it: renders the frontend Deployment with the configured image and probes
+    template: frontend-deployment.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-comparia-frontend
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/betagouv/comparia-frontend:latest
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /
+
+  - it: points the frontend at the backend Service
+    template: frontend-deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PUBLIC_API_LOCAL_URL
+            value: http://RELEASE-NAME-comparia-backend:80
+
+  - it: uses distinct chart and app image tags
+    template: backend-deployment.yaml
+    set:
+      image.backend.tag: "1.2.3"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/betagouv/comparia-backend:1.2.3
+
+  - it: renders backend and frontend Services
+    template: backend-service.yaml
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.selector["app.kubernetes.io/component"]
+          value: backend
+
+  - it: creates a ServiceAccount by default
+    template: serviceaccount.yaml
+    asserts:
+      - isKind:
+          of: ServiceAccount
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-comparia
+
+  - it: does not create a ServiceAccount when disabled
+    template: serviceaccount.yaml
+    set:
+      serviceAccount.create: false
+    asserts:
+      - hasDocuments:
+          count: 0

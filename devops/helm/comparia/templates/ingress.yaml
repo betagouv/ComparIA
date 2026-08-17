@@ -1,0 +1,56 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "comparia.fullname" . }}
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- with .Values.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ required "ingress.host is required when ingress.enabled is true" .Values.ingress.host | quote }}
+      http:
+        paths:
+          # Routes called directly by the browser, mirroring
+          # devops/standalone_docker_install/Caddyfile. Everything else (auth,
+          # admin, SSR data loading, ...) is called server-side by the
+          # frontend over PUBLIC_API_LOCAL_URL, inside the cluster.
+          - path: /counter
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-backend
+                port:
+                  number: {{ .Values.service.backend.port }}
+          - path: /models/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-backend
+                port:
+                  number: {{ .Values.service.backend.port }}
+          - path: /arena/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-backend
+                port:
+                  number: {{ .Values.service.backend.port }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-frontend
+                port:
+                  number: {{ .Values.service.frontend.port }}
+{{- end }}

@@ -1,0 +1,139 @@
+## Default values for the comparia chart.
+## See README.md for a full description of every value.
+
+## -- Overrides for the generated resource names.
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  ## -- Applied to every image below unless overridden per-image.
+  pullPolicy: IfNotPresent
+  ## -- Names to add to imagePullSecrets on every Pod.
+  pullSecrets: []
+  backend:
+    repository: ghcr.io/betagouv/comparia-backend
+    ## -- Defaults to .Chart.AppVersion when unset. Independent of the chart's own version.
+    tag: ""
+  frontend:
+    repository: ghcr.io/betagouv/comparia-frontend
+    ## -- Defaults to .Chart.AppVersion when unset. Independent of the chart's own version.
+    tag: ""
+
+serviceAccount:
+  ## -- Whether a ServiceAccount is created for the release.
+  create: true
+  ## -- Name of the ServiceAccount to use. Defaults to the release's fullname when create is true.
+  name: ""
+  annotations: {}
+
+replicaCount:
+  backend: 1
+  frontend: 1
+
+service:
+  backend:
+    port: 80
+  frontend:
+    port: 80
+
+resources:
+  backend:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  frontend:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  ## -- Applied to the pre-install/pre-upgrade migration Job.
+  migration:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  ## -- Applied to all three maintenance CronJobs.
+  cronjobs:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+## -- Non-secret application settings, passed to the backend/frontend as plain env vars.
+config:
+  ## -- Names the deployment (Redis key namespace, default locale). Also used to seed the
+  ## initial HuggingFace dataset destination on first install; see cronjobs.exportDataset below.
+  instanceName: fr
+  ## -- "anonymous_first" (sign-in optional) or "sign_in_required".
+  authAccessPolicy: anonymous_first
+  logFormat: JSON
+  votesObjective: 300000
+  cache:
+    enabled: true
+    probability: 0.75
+    ttl: 172800
+    maxResponses: 5
+  ## -- Left empty, errors are not sent anywhere.
+  sentryDsn: ""
+  sentryEnvironment: prod
+
+backend:
+  ## -- Extra env vars for the backend container, e.g. SMTP_*, ADMIN_EMAILS, AUTH_DOMAIN_ALLOWLIST.
+  ## Same shape as a container's `env:` list (name/value or name/valueFrom).
+  extraEnv: []
+
+frontend:
+  ## -- Public URL the frontend is served at. Left empty, requests are treated as same-origin.
+  publicApiUrl: ""
+  ## -- Comma-separated locales to hide from the language switcher.
+  disabledLocales: ""
+  ## -- Extra env vars for the frontend container. Same shape as a container's `env:` list.
+  extraEnv: []
+
+## -- Secret material. In existingSecret mode, the values below (other than existingSecret
+## itself) are ignored: point existingSecret at a Secret you manage, containing whichever of
+## the keys documented in README.md your setup needs.
+secrets:
+  ## -- Name of a pre-existing Secret to use instead of the chart-rendered one. Takes precedence.
+  existingSecret: ""
+  dbUri: ""
+  redisHost: ""
+  openrouterApiKey: ""
+  albertKey: ""
+  hfInferenceKey: ""
+  ordbogenApiKey: ""
+  linkupApiKey: ""
+  altchaHmacKey: ""
+
+cronjobs:
+  ranking:
+    enabled: true
+    schedule: "17 * * * *"
+  exportDataset:
+    enabled: false
+    schedule: "15 4 * * *"
+    ## -- '{organisation}/{repo_prefix}' on HuggingFace. Required when enabled. Only read once,
+    ## by the migration hook, to seed the destination row (see README.md).
+    hfRepo: ""
+    ## -- HuggingFace token with write access to hfRepo. Required when enabled.
+    hfToken: ""
+  analyze:
+    enabled: false
+    schedule: "35 3 * * *"
+
+ingress:
+  enabled: false
+  className: ""
+  host: ""
+  annotations: {}
+  ## -- cert-manager-style TLS block, passed through as-is.
+  tls: []

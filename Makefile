@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
 
 # Variables
 PYTHON := python3
@@ -7,6 +7,7 @@ NPM := yarn
 BACKEND_PORT := 8008
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
+HELM_CHART := devops/helm/comparia
 
 COMPARIA_REDIS_HOST ?= localhost
 export COMPARIA_REDIS_HOST
@@ -218,3 +219,12 @@ dataset-export-dry-run: ## Build the datasets locally and send them nowhere (req
 		exit 1; \
 	fi
 	$(UV) run python -m utils.dataset.run --dry-run
+
+###################################
+# Helm chart (devops/helm/comparia)
+###################################
+helm-lint: ## Lint the self-hosting Helm chart
+	helm lint $(HELM_CHART) -f $(HELM_CHART)/ci/values-lint.yaml
+
+helm-test: ## Run the Helm chart's helm-unittest suite
+	helm unittest $(HELM_CHART)

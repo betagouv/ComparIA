@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Copier le venv et le code
 COPY --from=builder /app/.venv /app/.venv
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock alembic.ini ./
 COPY controller.py /app/
 COPY backend /app/backend
 COPY utils /app/utils
