@@ -62,7 +62,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `serviceAccount.create`   | `true`  | Create a ServiceAccount for the release |
 | `serviceAccount.name`     | `""`    | Name to use; defaults to the release fullname |
 | `serviceAccount.annotations` | `{}` | Annotations on the created ServiceAccount |
-| `backend.extraEnv`        | `[]`    | Extra env vars for the backend container (SMTP\_\*, `ADMIN_EMAILS`, `AUTH_DOMAIN_ALLOWLIST`, ...), same shape as a container's `env:` list |
+| `backend.extraEnv`        | `[]`    | Extra env vars for the backend container, for anything not covered by `config.*`/`secrets.*` below, same shape as a container's `env:` list |
 | `frontend.extraEnv`       | `[]`    | Extra env vars for the frontend container, same shape |
 | `frontend.publicApiUrl`   | `""`    | Public URL the frontend is served at; empty means same-origin |
 | `frontend.disabledLocales`| `""`    | Comma-separated locales to hide from the language switcher |
@@ -81,6 +81,18 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.cache.maxResponses`| `5`                 | Max cached responses per (model, prompt) pair         |
 | `config.sentryDsn`         | `""`                | Left empty, errors are not sent anywhere              |
 | `config.sentryEnvironment` | `prod`              |                                                        |
+| `config.appUrl`            | `""`                | `COMPARIA_APP_URL`, public origin used to build absolute links in emails (login codes). Left empty, falls back to the app's own dev default — set this for a real install |
+| `config.adminEmails`       | `[]`                | `ADMIN_EMAILS`, promoted to the admin role on startup, created if absent. Left empty, nobody can reach `/admin` |
+| `config.auth.domainAllowlist` | `[]`             | `AUTH_DOMAIN_ALLOWLIST`. If non-empty, only emails from these domains can request a login code |
+| `config.auth.sessionLengthDays` | `30`           | `AUTH_SESSION_LENGTH_DAYS`                            |
+| `config.currency.display`  | `EUR`               | `DISPLAY_CURRENCY`, ISO 4217 code models prices are converted to for display |
+| `config.currency.rateFromEur` | `null`            | `DISPLAY_CURRENCY_RATE_FROM_EUR`, manual EUR conversion rate. Set to enable a currency unavailable from the rate API, run fully offline, or avoid the EUR fallback if the rate service is unreachable at startup |
+| `config.currency.exchangeApiUrl` | `https://api.frankfurter.dev/v2` | `EXCHANGE_RATE_API_URL`                |
+| `config.currency.exchangeCacheSeconds` | `86400`  | `EXCHANGE_RATE_CACHE_SECONDS`                         |
+| `config.emailFrom`         | `""`                | `EMAIL_FROM`. Left empty, falls back to the app's own default |
+| `config.emailFromName`     | `ComparIA`          | `EMAIL_FROM_NAME`                                     |
+| `config.smtp.host`         | `""`                | `SMTP_HOST`. Left empty, login codes are logged to console instead of being sent by email |
+| `config.smtp.port`         | `587`               | `SMTP_PORT`. Only rendered when `config.smtp.host` is set |
 
 ### Secrets
 
@@ -90,9 +102,10 @@ this if you manage secrets externally (Vault, sealed-secrets, ...) — your
 Secret should provide whichever of the keys below your setup needs
 (`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`,
 `OPENROUTER_API_KEY`, `ALBERT_KEY`, `HF_INFERENCE_KEY`, `ORDBOGEN_API_KEY`,
-`LINKUP_API_KEY`, and `HF_PUSH_DATASET_PATH`/`HF_PUSH_DATASET_KEY` if you use
-dataset export). In this mode the chart cannot validate that a required key
-is present — that is your Secret's responsibility.
+`LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and
+`HF_PUSH_DATASET_PATH`/`HF_PUSH_DATASET_KEY` if you use dataset export). In
+this mode the chart cannot validate that a required key is present — that is
+your Secret's responsibility.
 
 Otherwise, the chart renders a `Secret` from these values:
 
@@ -106,6 +119,9 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.hfInferenceKey`       | at least one of these four | `HF_INFERENCE_KEY` |
 | `secrets.ordbogenApiKey`       | at least one of these four | `ORDBOGEN_API_KEY` |
 | `secrets.linkupApiKey`         | no       | `LINKUP_API_KEY`, enables web search      |
+| `secrets.mistralApiKey`        | no       | `MISTRAL_API_KEY`, Mistral moderation API. Left empty, prompt checks (content safety, personal data) no-op |
+| `secrets.smtpUsername`         | no       | `SMTP_USERNAME`. Only relevant when `config.smtp.host` is set |
+| `secrets.smtpPassword`         | no       | `SMTP_PASSWORD`. Only relevant when `config.smtp.host` is set |
 
 ### Automatic database migrations
 
