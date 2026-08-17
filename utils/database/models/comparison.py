@@ -129,7 +129,7 @@ class ComparisonPublic(SQLModel):
     @model_validator(mode="after")
     def inject_reveal_data(self, info: ValidationInfo) -> Self:
         if self.revealed:
-            if self.reveal_data is None:
+            if self.reveal_data is None and info.context is not None:
                 llms = info.context.get("llms_data")
                 # A model disabled since the comparison has left the catalogue,
                 # so its impact cannot be computed. The conversation itself
