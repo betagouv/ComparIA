@@ -51,6 +51,10 @@ logger.info("=" * 80)
 init_sentry()
 
 
+# COMPARIA_APP_URL is the only real, deployed origin the frontend's SSR loads run
+# under (see backend/config.py); without it, SvelteKit's server-side CORS
+# emulation for universal `load` functions (which sets Origin to the
+# request's own origin, not PUBLIC_API_LOCAL_URL's) rejects every response.
 origins = [
     "http://localhost",
     "http://localhost:3000",
@@ -62,6 +66,7 @@ origins = [
     "http://localhost:8001",
     "http://localhost:8002",
     "http://localhost:8008",
+    settings.COMPARIA_APP_URL,
 ]
 
 app.middleware("http")(auth_middleware)
