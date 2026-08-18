@@ -167,6 +167,13 @@ ingress:
   enabled: false
   className: ""
   host: ""
+  ## -- Path prefix this release's own routes (frontend catch-all + the three backend
+  ## routes below) are served under. Left at "/", this chart owns the whole host --
+  ## the generic self-hosting case (tickets 01-05). Only set this to something like
+  ## "/arena" for the beta.gouv shared-domain topology, where a separate release owns
+  ## "/" (see README) -- the frontend image used must then be built with
+  ## PUBLIC_BASE_PATH set to the same value.
+  path: /
   annotations: {}
   ## -- cert-manager-style TLS block, passed through as-is.
   tls: []

@@ -1,4 +1,5 @@
 {{- if .Values.ingress.enabled }}
+{{- $prefix := trimSuffix "/" .Values.ingress.path }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -25,28 +26,32 @@ spec:
           # devops/standalone_docker_install/Caddyfile. Everything else (auth,
           # admin, SSR data loading, ...) is called server-side by the
           # frontend over PUBLIC_API_LOCAL_URL, inside the cluster.
-          - path: /counter
+          #
+          # ingress.path prefixes every route below. Left at the default "/", this
+          # is a no-op. Non-root values are only meant for the beta.gouv
+          # shared-domain topology (see README) -- a separate release owns "/".
+          - path: {{ $prefix }}/counter
             pathType: Prefix
             backend:
               service:
                 name: {{ include "comparia.fullname" . }}-backend
                 port:
                   number: {{ .Values.service.backend.port }}
-          - path: /models/
+          - path: {{ $prefix }}/models/
             pathType: Prefix
             backend:
               service:
                 name: {{ include "comparia.fullname" . }}-backend
                 port:
                   number: {{ .Values.service.backend.port }}
-          - path: /arena/
+          - path: {{ $prefix }}/arena/
             pathType: Prefix
             backend:
               service:
                 name: {{ include "comparia.fullname" . }}-backend
                 port:
                   number: {{ .Values.service.backend.port }}
-          - path: /
+          - path: {{ $prefix }}/
             pathType: Prefix
             backend:
               service:

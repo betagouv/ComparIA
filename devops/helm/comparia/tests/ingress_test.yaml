@@ -65,3 +65,40 @@ tests:
       - equal:
           path: spec.rules[0].http.paths[3].backend.service.name
           value: RELEASE-NAME-comparia-frontend
+
+  - it: routes are root-anchored by default, unaffected by the subpath feature
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /counter
+      - equal:
+          path: spec.rules[0].http.paths[1].path
+          value: /models/
+      - equal:
+          path: spec.rules[0].http.paths[2].path
+          value: /arena/
+      - equal:
+          path: spec.rules[0].http.paths[3].path
+          value: /
+
+  - it: prefixes every route with ingress.path, for the beta.gouv shared-domain topology
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+      ingress.path: /arena
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /arena/counter
+      - equal:
+          path: spec.rules[0].http.paths[1].path
+          value: /arena/models/
+      - equal:
+          path: spec.rules[0].http.paths[2].path
+          value: /arena/arena/
+      - equal:
+          path: spec.rules[0].http.paths[3].path
+          value: /arena/

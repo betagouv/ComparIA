@@ -166,6 +166,7 @@ assumed.
 | ---------------------- | ------- | ------------ |
 | `ingress.enabled`      | `false` | |
 | `ingress.host`         | `""`    | Required when enabled |
+| `ingress.path`         | `/`     | Path prefix for this release's own routes. See [Shared-domain topology](#shared-domain-topology-beta-gouv-specific) below |
 | `ingress.className`    | `""`    | |
 | `ingress.annotations`  | `{}`    | Passed through as-is, e.g. for cert-manager |
 | `ingress.tls`          | `[]`    | Passed through as-is |
@@ -176,6 +177,40 @@ everything else to the frontend Service, mirroring
 Other backend endpoints (auth, admin, ...) are called server-side by the
 frontend over the cluster-internal `PUBLIC_API_LOCAL_URL`, not through this
 Ingress.
+
+#### Shared-domain topology (beta.gouv-specific)
+
+This section describes how beta.gouv runs `comparia.beta.gouv.fr`, not the
+generic self-hosting case above — skip it unless you're deliberately
+reproducing that topology. It does not change any default in this chart:
+`ingress.path` defaults to `/`, so a plain install is unaffected.
+
+beta.gouv splits the landing pages (home, news, product, ...) into a
+separate app and chart,
+[`comparia-landing`](https://github.com/betagouv/ComparIA-landing/tree/main/devops/helm/comparia-landing),
+installed as its own release at the domain root. This chart's release then
+owns only the arena app, mounted at a subpath (`/arena` by default, matching
+`comparia-landing`'s `PUBLIC_ARENA_URL`). Two things have to agree for that
+to work:
+
+1. `ingress.path` on this chart, set to the subpath (e.g. `/arena`) — this
+   shifts the frontend catch-all and the three backend routes above under
+   that prefix, so this chart's own Ingress no longer claims `/`.
+2. The frontend image (`image.frontend.tag`) built with `PUBLIC_BASE_PATH`
+   set to the same value (see `frontend/svelte.config.js` /
+   `frontend/.env.example` in this repo) — that's a build-time setting, so
+   this requires a dedicated image build, distinct from the root-mounted one
+   used by the generic self-hosting case.
+
+This chart's Ingress still only routes its own paths; it does not know
+about `comparia-landing`'s Service. Routing `/` to `comparia-landing` is a
+separate Ingress resource (or a separate rule set, depending on your
+ingress controller), created by whatever composes the two releases —
+mirroring how `languia-infra/kustomize/overlays/*/prd/ingress.yaml` already
+routes this domain today, just without the landing split yet. This chart
+deliberately does not template that second Ingress: doing so would require
+it to know the other chart's release name and Service naming convention,
+coupling two otherwise-independent, self-contained charts.
 
 ## Upgrading
 
