@@ -5,6 +5,7 @@
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
+  import { getVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { contrastRatio, isHexColor } from '$lib/theme'
@@ -38,6 +39,7 @@
     hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : '/orgs/comparia.png'
   )
   const auth = getAuthContext()
+  const votes = getVotesContext()
 
   async function load() {
     loading = true
@@ -130,6 +132,8 @@
         method: 'PATCH',
         body: JSON.stringify(patch)
       })
+      votesObjective = String(saved.votes_objective)
+      votes.objective = saved.votes_objective
       platformName = saved.platform_name
       primaryColorLight = saved.primary_color_light
       primaryColorDark = saved.primary_color_dark
