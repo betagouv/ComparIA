@@ -28,6 +28,7 @@ COPY backend /app/backend
 COPY utils /app/utils
 COPY templates /app/templates
 COPY comparia-cli /app/
+COPY data /app/data
 
 VOLUME /data
 EXPOSE 80
