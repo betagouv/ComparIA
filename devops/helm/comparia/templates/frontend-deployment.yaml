@@ -1,3 +1,17 @@
+{{- /*
+Host the readiness probe presents to the frontend, so SvelteKit's server-side
+CORS emulation for its root `load` (which checks the request's own origin,
+not PUBLIC_API_LOCAL_URL's) sees the same origin the backend's CORS
+allow-list is configured for (config.appUrl / COMPARIA_APP_URL). Without
+this, the probe hits the Pod IP directly and its origin never matches,
+regardless of the backend's CORS config.
+*/}}
+{{- $probeHost := "" }}
+{{- if .Values.config.appUrl }}
+{{- $probeHost = (urlParse .Values.config.appUrl).host }}
+{{- else if .Values.ingress.host }}
+{{- $probeHost = .Values.ingress.host }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,6 +54,11 @@ spec:
             httpGet:
               path: /
               port: http
+              {{- if $probeHost }}
+              httpHeaders:
+                - name: Host
+                  value: {{ $probeHost | quote }}
+              {{- end }}
             initialDelaySeconds: 10
             periodSeconds: 30
             timeoutSeconds: 5
