@@ -9,10 +9,7 @@ export const load: PageLoad = async ({ depends, fetch, url }) => {
     locale: url.searchParams.get('language') ?? '',
     category_id: url.searchParams.get('category_id') ?? ''
   }
-  const params = new URLSearchParams({
-    page: url.searchParams.get('page') ?? '1',
-    page_size: url.searchParams.get('page_size') ?? '25'
-  })
+  const params = new URLSearchParams()
 
   for (const [key, value] of Object.entries(filters)) {
     if (value) params.set(key, value)

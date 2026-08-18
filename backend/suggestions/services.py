@@ -5,6 +5,7 @@ from datetime import datetime
 
 from sqlalchemy import nulls_first
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import col, func, select
 
@@ -49,7 +50,10 @@ class SuggestionCategoryTitleUnusableError(Exception):
 
 
 def _to_admin_category(
-    category: SuggestionCategory, *, suggestion_count: int = 0
+    category: SuggestionCategory,
+    *,
+    suggestion_count: int = 0,
+    available_suggestion_count: int = 0,
 ) -> AdminSuggestionCategory:
     return AdminSuggestionCategory(
         id=category.id,
@@ -61,6 +65,7 @@ def _to_admin_category(
         tooltip=category.tooltip,
         display_order=category.display_order,
         suggestion_count=suggestion_count,
+        available_suggestion_count=available_suggestion_count,
     )
 
 
@@ -126,6 +131,16 @@ async def list_admin_suggestions(
     page_size: int = 50,
 ) -> tuple[list[AdminSuggestion], int, list[AdminSuggestionCategory]]:
     async with get_session() as session:
+        available_suggestion = aliased(PromptSuggestion)
+        category_has_available_suggestions = (
+            select(available_suggestion.id)
+            .where(
+                available_suggestion.category_id == SuggestionCategory.id,
+                available_suggestion.archived_at.is_(None),
+            )
+            .correlate(SuggestionCategory)
+            .exists()
+        )
         filters: list[ColumnElement[bool]] = []
         if search:
             filters.append(col(PromptSuggestion.text).ilike(f"%{search.strip()}%"))
@@ -150,6 +165,10 @@ async def list_admin_suggestions(
             # Available suggestions first. Postgres sorts nulls last on an
             # ascending column, which would float archived rows to the top.
             statement.order_by(
+                category_has_available_suggestions.desc(),
+                (col(SuggestionCategory.locale) == "fr").desc(),
+                col(SuggestionCategory.locale),
+                col(SuggestionCategory.display_order),
                 nulls_first(col(PromptSuggestion.archived_at)),
                 col(PromptSuggestion.updated_at).desc(),
             )
@@ -158,7 +177,10 @@ async def list_admin_suggestions(
         )
         categories_result = await session.exec(
             select(SuggestionCategory).order_by(
-                col(SuggestionCategory.locale), col(SuggestionCategory.display_order)
+                category_has_available_suggestions.desc(),
+                (col(SuggestionCategory.locale) == "fr").desc(),
+                col(SuggestionCategory.locale),
+                col(SuggestionCategory.display_order),
             )
         )
         suggestion_counts_result = await session.exec(
@@ -167,6 +189,14 @@ async def list_admin_suggestions(
             ).group_by(col(PromptSuggestion.category_id))
         )
         suggestion_counts = dict(suggestion_counts_result.all())
+        available_suggestion_counts_result = await session.exec(
+            select(
+                PromptSuggestion.category_id, func.count(col(PromptSuggestion.id))
+            )
+            .where(col(PromptSuggestion.archived_at).is_(None))
+            .group_by(col(PromptSuggestion.category_id))
+        )
+        available_suggestion_counts = dict(available_suggestion_counts_result.all())
         categories = categories_result.all()
         return (
             [
@@ -176,7 +206,11 @@ async def list_admin_suggestions(
             total,
             [
                 _to_admin_category(
-                    category, suggestion_count=suggestion_counts.get(category.id, 0)
+                    category,
+                    suggestion_count=suggestion_counts.get(category.id, 0),
+                    available_suggestion_count=available_suggestion_counts.get(
+                        category.id, 0
+                    ),
                 )
                 for category in categories
             ],
@@ -316,3 +350,35 @@ async def set_suggestion_archived(
         await session.refresh(suggestion)
         await session.refresh(category)
         return _to_admin_suggestion(suggestion, category)
+
+
+async def set_suggestion_category_archived(
+    category_id: uuid.UUID, *, archived: bool, updated_by: uuid.UUID
+) -> AdminSuggestionCategory:
+    """Archive or restore every suggestion in a category as one operation."""
+    async with get_session() as session:
+        category = await session.get(SuggestionCategory, category_id)
+        if category is None:
+            raise SuggestionCategoryNotFoundError()
+
+        result = await session.exec(
+            select(PromptSuggestion).where(
+                col(PromptSuggestion.category_id) == category_id
+            )
+        )
+        suggestions = result.all()
+        now = datetime.now()
+        for suggestion in suggestions:
+            suggestion.archived_at = now if archived else None
+            suggestion.archived_by = updated_by if archived else None
+            suggestion.updated_at = now
+            session.add(suggestion)
+
+        response = _to_admin_category(
+            category,
+            suggestion_count=len(suggestions),
+            available_suggestion_count=0 if archived else len(suggestions),
+        )
+        await session.commit()
+        invalidate_cache(REDIS_SUGGESTIONS_KEY)
+        return response

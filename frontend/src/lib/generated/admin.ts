@@ -75,6 +75,7 @@ export interface AdminSuggestionCategory {
   tooltip?: string | null;
   display_order: number;
   suggestion_count: number;
+  available_suggestion_count: number;
 }
 export interface AdminVoteTag {
   id: string;
