@@ -5,13 +5,10 @@
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
   import type { UsageProfileId } from '$lib/usageProfiles'
   import { RevealCard } from '.'
 
   let { data }: { data: APIRevealData } = $props()
-
-  const locale = getLocale()
 
   const { selected, modelsData, shareB64Data } = $derived(parseAPIRevealData(data))
   let usageProfile = $state<UsageProfileId>('discussion')
@@ -130,41 +127,6 @@
   </div>
 </div>
 
-{#if ['fr', 'en'].includes(locale)}
-  <section class="fr-container--fluid bg-light-info">
-    <div class="fr-container">
-      <div class="gap-x-15 lg:gap-x-30 lg:px-15 gap-y-10 py-10 md:flex-row flex flex-col">
-        <div class="flex max-w-[350px] flex-col">
-          <h2 class="fr-h5 font mb-3!">{m['reveal.thanks.title']()}</h2>
-          <p class="mb-8!">{m['reveal.thanks.desc']()}</p>
-
-          <Link
-            button
-            size="lg"
-            href="/ranking"
-            icon="trophy-line"
-            text={m['reveal.thanks.cta']()}
-            class="sm:w-auto! w-full!"
-          />
-        </div>
-
-        <div class="relative flex max-w-[640px] items-start">
-          <img
-            src="/images/ranking-table.png"
-            class="rounded-xl shadow-md md:-me-[10%] -me-[30%] w-full max-w-[400px]"
-            alt={m['reveal.thanks.rankingAlt']()}
-          />
-          <img
-            src="/images/ranking-graph.png"
-            class="rounded-xl shadow-md mt-[30px] w-full max-w-[300px]"
-            alt={m['reveal.thanks.graphAlt']()}
-          />
-        </div>
-      </div>
-    </div>
-  </section>
-{/if}
-
 <style>
   #reveal-area {
     scroll-margin-top: calc(var(--second-header-size) + 1rem);
@@ -172,7 +134,7 @@
       180deg,
       var(--cg-very-light-grey) 0%,
       var(--blue-france-950-100) 50%,
-      var(--info-950-100) 100%
+      var(--brand-primary-soft) 100%
     );
   }
 </style>

@@ -335,7 +335,7 @@
       <p class="text-xxs! text-grey mb-3! -mt-2!">{m['reveal.impacts.usage.assumption']()}</p>
     {/if}
     <div class="gap-4 flex flex-col">
-      <div class="gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 grid">
+      <div class="gap-2 xl:grid-cols-3 md:grid-cols-1 sm:grid-cols-2 grid">
         {#each consoCards as card (card.id)}
           <InfoCard
             {...card}

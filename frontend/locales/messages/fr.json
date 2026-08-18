@@ -1809,7 +1809,7 @@
                     }
                 },
                 "estimate": "Pour les scénarios, cette estimation porte sur la génération de la réponse. Elle ne modélise ni le contexte envoyé au modèle ni les effets éventuels du cache.",
-                "title": "Énergie de génération estimée",
+                "title": "Énergie estimée",
                 "tooltip": "Exprimée en milliwattheures, cette estimation représente l'électricité mobilisée par le modèle pour générer une réponse. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "how": {
