@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import SeoHead from '$components/SEOHead.svelte'
   import InformationalPageContent from '$components/InformationalPageContent.svelte'
   import { m } from '$lib/i18n/messages'
@@ -98,7 +99,12 @@
         <div class="fr-tile__body">
           <div class="fr-tile__content">
             <h3 class="fr-tile__title">
-              <a hreflang="fr" data-fr-assess-file download href="/general/rgesn_2025_comparIA.ods">
+              <a
+                hreflang="fr"
+                data-fr-assess-file
+                download
+                href={asset('/general/rgesn_2025_comparIA.ods')}
+              >
                 {m['general.rgesn.5.4.title']()}
               </a>
             </h3>

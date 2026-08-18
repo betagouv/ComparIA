@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset, resolve } from '$app/paths'
   import { Link, Modal } from '$components/dsfr'
   import Badge from '$components/dsfr/Badge.svelte'
   import Icon from '$components/dsfr/Icon.svelte'
@@ -6,9 +7,9 @@
 
   const voteReasons = (
     [
-      { i18nKey: 'prefs', src: '/home/prefs.svg' },
-      { i18nKey: 'datasets', src: '/home/datasets.svg' },
-      { i18nKey: 'finetune', src: '/home/finetune.svg' }
+      { i18nKey: 'prefs', src: asset('/home/prefs.svg') },
+      { i18nKey: 'datasets', src: asset('/home/datasets.svg') },
+      { i18nKey: 'finetune', src: asset('/home/finetune.svg') }
     ] as const
   ).map(({ i18nKey, ...reason }) => ({
     ...reason,
@@ -52,7 +53,7 @@
         icon="external-link-line"
         iconPos="right"
         button
-        href="/product/comparator"
+        href={resolve('/product/comparator')}
         target="_blank"
       />
       <Link

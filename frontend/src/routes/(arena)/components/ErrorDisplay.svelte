@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Button, Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { ClassValue } from 'svelte/elements'
@@ -39,7 +40,7 @@
             icon="refresh-line"
             iconPos="right"
             variant="secondary"
-            href="/"
+            href={resolve('/')}
             text={m['words.restart']()}
             class="w-full!"
           />

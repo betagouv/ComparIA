@@ -1,3 +1,4 @@
+import { resolve } from '$app/paths'
 import type { AuthUser } from '$lib/auth.svelte'
 import { api } from '$lib/fastapi-client'
 import { redirect } from '@sveltejs/kit'
@@ -8,6 +9,6 @@ export const load: LayoutLoad = async ({ url, fetch }) => {
   const auth = await api.request<{ user: AuthUser | null }>('/auth/me', { fetch })
 
   if (!(auth.user?.role === 'admin')) {
-    redirect(302, `/login?redirect=${encodeURIComponent(url.pathname)}`)
+    redirect(302, `${resolve('/login')}?redirect=${encodeURIComponent(url.pathname)}`)
   }
 }

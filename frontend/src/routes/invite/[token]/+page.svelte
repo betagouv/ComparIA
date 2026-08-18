@@ -133,7 +133,7 @@
     <div class="my-10 mx-8 md:max-w-[350px]">
       {#if checkStatus === 'invalid'}
         <p class="text-sm! mb-6!">{m['invite.invalid']()}</p>
-        <Link button href="/login" text={m['invite.backToLogin']()} />
+        <Link button href={resolve('/login')} text={m['invite.backToLogin']()} />
       {:else if checkStatus === 'valid'}
         {#if terms}
           <Checkbox

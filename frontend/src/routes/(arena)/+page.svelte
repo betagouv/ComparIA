@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Link } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
@@ -54,7 +55,7 @@
       <Link
         button
         icon="edit-line"
-        href="/"
+        href={resolve('/')}
         text={m['header.chatbot.newDiscussion']()}
         class="text-nowrap"
       />

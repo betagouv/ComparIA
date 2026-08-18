@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private'
+import { base } from '$app/paths'
 import { api, UnauthorizedError } from '$lib/fastapi-client'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
@@ -78,7 +79,7 @@ defineCustomServerStrategy('custom-url', {
 export const handleError: HandleServerError = async ({ error, event }) => {
   if (error instanceof UnauthorizedError) {
     const path = event.url.pathname
-    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+    redirect(302, `${base}/login?redirect=${encodeURIComponent(path)}`)
   }
   console.error(error)
 }
@@ -104,7 +105,7 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
   })
 }
 
-const MAINTENANCE_PATH = '/maintenance'
+const MAINTENANCE_PATH = `${base}/maintenance`
 const MAINTENANCE_CHECK_TTL_MS = 20_000
 
 // Cached per Node process so we don't hit the backend on every single request
@@ -114,7 +115,10 @@ let maintenanceCache: { enabled: boolean; checkedAt: number } | null = null
 // fresh navigation sees the flag within that window (unlike client-side
 // polling, already-open idle tabs are only caught on their next navigation).
 const maintenanceHandle: Handle = async ({ event, resolve }) => {
-  if (event.url.pathname.startsWith(MAINTENANCE_PATH) || event.url.pathname.startsWith('/_app')) {
+  if (
+    event.url.pathname.startsWith(MAINTENANCE_PATH) ||
+    event.url.pathname.startsWith(`${base}/_app`)
+  ) {
     return resolve(event)
   }
 
@@ -176,12 +180,16 @@ const authWallHandle: Handle = ({ event, resolve }) => {
   if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
 
   const path = event.url.pathname
-  if (path.startsWith('/login') || path.startsWith('/_app') || path.startsWith(MAINTENANCE_PATH))
+  if (
+    path.startsWith(`${base}/login`) ||
+    path.startsWith(`${base}/_app`) ||
+    path.startsWith(MAINTENANCE_PATH)
+  )
     return resolve(event)
 
   const cookie = event.cookies.get('auth_session')
   if (!cookie) {
-    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+    redirect(302, `${base}/login?redirect=${encodeURIComponent(path)}`)
   }
 
   return resolve(event)

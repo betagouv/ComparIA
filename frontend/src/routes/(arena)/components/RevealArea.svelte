@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset, resolve } from '$app/paths'
   import { Button, Link } from '$components/dsfr'
   import SideSwitcher from '$components/SideSwitcher.svelte'
   import { parseAPIRevealData, type APIRevealData } from '$lib/chatService.svelte'
@@ -61,7 +62,7 @@
         <Link
           button
           icon="edit-line"
-          href="/"
+          href={resolve('/')}
           text={m['header.chatbot.newDiscussion']()}
           class="md:hidden! w-full!"
         />
@@ -116,7 +117,7 @@
                   </div>
                   <img
                     class="fr-responsive-img"
-                    src="/share-example.png"
+                    src={asset('/share-example.png')}
                     alt={m['reveal.feedback.example']()}
                     title={m['reveal.feedback.example']()}
                   />
@@ -141,7 +142,7 @@
           <Link
             button
             size="lg"
-            href="/ranking"
+            href={resolve('/ranking')}
             icon="trophy-line"
             text={m['reveal.thanks.cta']()}
             class="sm:w-auto! w-full!"
@@ -150,12 +151,12 @@
 
         <div class="relative flex max-w-[640px] items-start">
           <img
-            src="/images/ranking-table.png"
+            src={asset('/images/ranking-table.png')}
             class="rounded-xl shadow-md md:-me-[10%] -me-[30%] w-full max-w-[400px]"
             alt={m['reveal.thanks.rankingAlt']()}
           />
           <img
-            src="/images/ranking-graph.png"
+            src={asset('/images/ranking-graph.png')}
             class="rounded-xl shadow-md mt-[30px] w-full max-w-[300px]"
             alt={m['reveal.thanks.graphAlt']()}
           />

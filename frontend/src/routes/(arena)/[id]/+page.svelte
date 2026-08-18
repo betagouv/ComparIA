@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Link } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
@@ -35,7 +36,7 @@
       <Link
         button
         icon="edit-line"
-        href="/"
+        href={resolve('/')}
         text={m['header.chatbot.newDiscussion']()}
         class="text-nowrap"
       />
