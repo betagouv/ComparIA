@@ -1,5 +1,3 @@
 .git/
 .gitignore
 tests/
-*.md
-!README.md
