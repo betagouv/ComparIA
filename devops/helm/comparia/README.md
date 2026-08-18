@@ -59,9 +59,6 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `resources.frontend`      | see `values.yaml` | Frontend requests/limits   |
 | `resources.migration`     | see `values.yaml` | Migration Job requests/limits |
 | `resources.cronjobs`      | see `values.yaml` | Applied to all three CronJobs |
-| `serviceAccount.create`   | `true`  | Create a ServiceAccount for the release |
-| `serviceAccount.name`     | `""`    | Name to use; defaults to the release fullname |
-| `serviceAccount.annotations` | `{}` | Annotations on the created ServiceAccount |
 | `backend.extraEnv`        | `[]`    | Extra env vars for the backend container, for anything not covered by `config.*`/`secrets.*` below, same shape as a container's `env:` list |
 | `frontend.extraEnv`       | `[]`    | Extra env vars for the frontend container, same shape |
 | `frontend.publicApiUrl`   | `""`    | Public URL the frontend is served at; empty means same-origin |

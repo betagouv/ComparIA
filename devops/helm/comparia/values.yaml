@@ -19,13 +19,6 @@ image:
     ## -- Defaults to .Chart.AppVersion when unset. Independent of the chart's own version.
     tag: ""
 
-serviceAccount:
-  ## -- Whether a ServiceAccount is created for the release.
-  create: true
-  ## -- Name of the ServiceAccount to use. Defaults to the release's fullname when create is true.
-  name: ""
-  annotations: {}
-
 replicaCount:
   backend: 1
   frontend: 1
