@@ -4,6 +4,7 @@
  * Replaces Gradio client with native HTTP/SSE implementation.
  */
 import { browser, dev } from '$app/environment'
+import { base } from '$app/paths'
 import { env as publicEnv } from '$env/dynamic/public'
 import type {
   APIComparison,
@@ -22,8 +23,10 @@ function getBackendUrl(): string {
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
     return publicEnv.PUBLIC_API_URL || 'http://localhost:8008'
   } else {
-    // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    // Client-side: same origin, under the app's own base path (e.g. "/arena" when
+    // mounted at a subpath on a shared domain -- see PUBLIC_BASE_PATH).
+    const origin = window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return `${origin}${base}`
   }
 }
 
