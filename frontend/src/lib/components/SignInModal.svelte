@@ -33,7 +33,12 @@
     <!-- The published terms describe how data is used, so the modal does not
          repeat it and risk saying something different. -->
     <div class="-mt-12">
-      <SignInForm {onSuccess} titleId="fr-modal-title-signin" class="min-w-0" />
+      <SignInForm
+        {onSuccess}
+        onLegalNavigate={closeModal}
+        titleId="fr-modal-title-signin"
+        class="min-w-0"
+      />
     </div>
   </Modal>
 {/if}

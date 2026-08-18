@@ -6,6 +6,7 @@ import SignInModal from './SignInModal.svelte'
 
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),
+  conceal: vi.fn(),
   authContext: { user: null, config: { access_policy: 'anonymous_first' } }
 }))
 
@@ -72,8 +73,13 @@ const paths = () => mocks.request.mock.calls.map(([path]) => path)
 describe('SignInForm consent', () => {
   beforeEach(() => {
     resetConsent()
+    mocks.conceal.mockClear()
     mocks.authContext.config.access_policy = 'anonymous_first'
     servesTerms()
+    Object.defineProperty(window, 'dsfr', {
+      configurable: true,
+      value: () => ({ modal: { conceal: mocks.conceal } })
+    })
   })
 
   it('does not request a code until the terms are accepted', async () => {
@@ -158,6 +164,16 @@ describe('SignInForm consent', () => {
 
     expect(container.textContent).not.toContain('Comment mes données sont-elles utilisées')
     expect(container.textContent).not.toContain('Les jeux de données compar:IA')
+  })
+
+  it('closes the modal before navigating to a legal document', async () => {
+    const { container } = render(SignInModal)
+    await waitFor(() => expect(container.querySelector('a[href="/privacy"]')).not.toBeNull())
+    const privacyLink = container.querySelector<HTMLAnchorElement>('a[href="/privacy"]')!
+
+    await fireEvent.click(privacyLink)
+
+    expect(mocks.conceal).toHaveBeenCalledOnce()
   })
 
   it('hides the merge option when authentication is required', async () => {
