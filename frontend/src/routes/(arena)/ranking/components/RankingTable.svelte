@@ -250,7 +250,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class={['text-[14px]!', { 'text-grey!': raw }]}
+        class={['bg-none! text-[14px]! no-underline!', { 'text-grey!': raw }]}
         onclick={() => onDownloadData()}
       />
     </div>
@@ -310,15 +310,15 @@
       {:else}
         <div class="gap-2 flex min-w-[160px] items-center">
           <div
-            class="rounded-xs bg-light-info h-2 relative flex-1"
+            class="rounded-xs bg-light-primary h-2 relative flex-1"
             title={m['ranking.table.data.tooltips.trust_range']()}
           >
             <div
-              class="rounded-xs bg-info top-0 absolute h-full"
+              class="rounded-xs bg-primary top-0 absolute h-full"
               style="left: {model.ciLeft}%; width: {model.ciWidth}%"
             ></div>
             <div
-              class="bg-info h-2 w-2 ring-white absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2"
+              class="bg-primary h-2 w-2 ring-white absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2"
               style="left: {model.ciDot}%"
             ></div>
           </div>
@@ -334,7 +334,7 @@
         {model.consumption} mWh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="rounded-xs bg-info h-[4px] w-[--range-width]"></div>
+            <div class="rounded-xs bg-primary h-[4px] w-[--range-width]"></div>
           </div>
         {/if}
       {/if}

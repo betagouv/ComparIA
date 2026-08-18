@@ -138,7 +138,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class="text-[14px]!"
+        class="bg-none! text-[14px]! no-underline!"
         onclick={() => onDownloadData()}
       />
     </div>

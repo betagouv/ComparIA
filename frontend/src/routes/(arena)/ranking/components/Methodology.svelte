@@ -195,7 +195,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-dark-grey! text-[14px]!"
+              class="text-dark-grey! bg-none! text-[14px]! no-underline!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -234,7 +234,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-dark-grey! text-[14px]!"
+              class="text-dark-grey! bg-none! text-[14px]! no-underline!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -262,9 +262,7 @@
 
     <ul class="mt-6! m-0! p-0! max-w-[640px] list-none!">
       {#each ['both_good', 'both_bad', 'idk'] as const as choice (choice)}
-        <li
-          class="not-last:mb-3 pb-3 p-0! not-last:border-b not-last:border-[--border-default-grey]"
-        >
+        <li class="not-last:mb-3 pb-3 p-0!">
           <span class="text-[14px]"
             >{@html sanitize(m[`ranking.methodo.personal.choices.${choice}`]())}</span
           >
