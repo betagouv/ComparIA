@@ -23,7 +23,11 @@
     aria-hidden="true"
     class={[
       'p-1 b-1 rounded-full',
-      { 'b-primary bg-[#E8EDFF]': chosen, 'b-[#DDD]': !!llm_id, 'b-primary b-dashed': !llm_id }
+      {
+        'b-primary bg-light-primary': chosen,
+        'b-[#DDD]': !!llm_id,
+        'b-primary b-dashed': !llm_id
+      }
     ]}
   >
     {#if llm_id}

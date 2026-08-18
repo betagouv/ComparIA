@@ -13,6 +13,9 @@
   --brand-primary-soft-hover: #dadafc;
   --brand-primary-soft-active: #cdcdfb;
   --brand-primary-softest: #f4f4fe;
+  --brand-toggle-track: url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='%236464F3' height='24' viewBox='0 0 40 24' fill='transparent' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E");
+  --brand-toggle-track-checked: url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='%236464F3' height='24' viewBox='0 0 40 24' fill='%236464F3' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E");
+  --brand-toggle-check: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236464F3' d='m10 15.17 9.2-9.2 1.4 1.42L10 18l-6.36-6.36 1.4-1.42z'/%3E%3C/svg%3E");
   --brand-secondary: #ff9575;
   --brand-secondary-text: #ab644e;
 
@@ -40,26 +43,39 @@
   --text-inverted-blue-france: var(--brand-primary-contrast);
   --text-active-blue-france: var(--brand-primary);
   --text-action-high-blue-france: var(--brand-primary);
+  --text-title-blue-france: var(--brand-primary);
+  --border-action-high-blue-france: var(--brand-primary);
+  --border-active-blue-france: var(--brand-primary);
+  --border-default-blue-france: var(--brand-primary);
   --background-open-blue-france: var(--brand-primary-soft);
   --background-open-blue-france-hover: var(--brand-primary-soft-hover);
   --background-open-blue-france-active: var(--brand-primary-soft-active);
   --background-active-blue-france: var(--brand-primary);
+  --background-active-blue-france-hover: var(--brand-primary-hover);
+  --background-active-blue-france-active: var(--brand-primary-active);
+  --background-action-high-blue-france: var(--brand-primary);
+  --background-action-high-blue-france-hover: var(--brand-primary-hover);
+  --background-action-high-blue-france-active: var(--brand-primary-active);
   --background-action-low-blue-france: var(--brand-primary-soft);
 
   /* CUSTOM DSFR LIKE ADDITION */
   --cg-blue-france-main-525-hover: var(--brand-primary-hover);
   --cg-blue-france-main-525-active: var(--brand-primary-active);
-  --outline-color: #0a76f6;
+  --outline-color: var(--brand-primary);
 
   /* CUSTOM */
   --cg-very-light-grey: #fcfcfd;
   --cg-light-grey: #f3f5f9;
-  --cg-very-light-blue: #f9fbff;
+  --cg-very-light-blue: var(--brand-primary-softest);
   --cg-green: #58b77d;
   --cg-purple: #a96afe;
   --cg-orange: var(--brand-secondary);
   --blue-ecume-925-125: var(--brand-primary-soft);
   --blue-ecume-975-75: var(--brand-primary-softest);
+  --blue-france-975-75: var(--brand-primary-softest);
+  --blue-france-950-100: var(--brand-primary-soft);
+  --blue-france-925-125: var(--brand-primary-soft);
+  --blue-france-850-200: var(--brand-primary-soft-active);
 
   /* xs breakpoint */
   --text-xs: 0.675rem;
@@ -77,6 +93,9 @@
   --brand-primary-soft-hover: #24243c;
   --brand-primary-soft-active: #31314f;
   --brand-primary-softest: #0b0b11;
+  --brand-toggle-track: url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='%239898F8' height='24' viewBox='0 0 40 24' fill='transparent' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E");
+  --brand-toggle-track-checked: url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='%239898F8' height='24' viewBox='0 0 40 24' fill='%239898F8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E");
+  --brand-toggle-check: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%239898F8' d='m10 15.17 9.2-9.2 1.4 1.42L10 18l-6.36-6.36 1.4-1.42z'/%3E%3C/svg%3E");
   --brand-secondary: #ffcc00;
   --brand-secondary-text: #ffcc00;
 
@@ -102,10 +121,19 @@
   --text-inverted-blue-france: var(--brand-primary-contrast);
   --text-active-blue-france: var(--brand-primary);
   --text-action-high-blue-france: var(--brand-primary);
+  --text-title-blue-france: var(--brand-primary);
+  --border-action-high-blue-france: var(--brand-primary);
+  --border-active-blue-france: var(--brand-primary);
+  --border-default-blue-france: var(--brand-primary);
   --background-open-blue-france: var(--brand-primary-soft);
   --background-open-blue-france-hover: var(--brand-primary-soft-hover);
   --background-open-blue-france-active: var(--brand-primary-soft-active);
   --background-active-blue-france: var(--brand-primary);
+  --background-active-blue-france-hover: var(--brand-primary-hover);
+  --background-active-blue-france-active: var(--brand-primary-active);
+  --background-action-high-blue-france: var(--brand-primary);
+  --background-action-high-blue-france-hover: var(--brand-primary-hover);
+  --background-action-high-blue-france-active: var(--brand-primary-active);
   --background-action-low-blue-france: var(--brand-primary-soft);
 
   /* CUSTOM DSFR LIKE ADDITION */
@@ -115,9 +143,13 @@
   /* CUSTOM */
   --cg-very-light-grey: #0a0a0b;
   --cg-light-grey: #1c1e22;
-  --cg-very-light-blue: #0a0a0b;
+  --cg-very-light-blue: var(--brand-primary-softest);
   --blue-ecume-925-125: var(--brand-primary-soft);
   --blue-ecume-975-75: var(--brand-primary-softest);
+  --blue-france-975-75: var(--brand-primary-softest);
+  --blue-france-950-100: var(--brand-primary-soft);
+  --blue-france-925-125: var(--brand-primary-soft);
+  --blue-france-850-200: var(--brand-primary-soft-active);
 }
 
 @media (min-width: 36em) {

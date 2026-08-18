@@ -45,7 +45,7 @@
   <fieldset
     {id}
     aria-labelledby="{id}-legend {id}-help"
-    class="cl-vote-select xl:max-w-[950px] bg-light-info py-2 px-2 md:px-5 rounded-b-xl shadow-md gap-1 mx-auto flex flex-col"
+    class="cl-vote-select xl:max-w-[950px] bg-light-primary py-2 px-2 md:px-5 rounded-b-xl shadow-md gap-1 mx-auto flex flex-col"
   >
     <legend id="{id}-legend" class="sr-only">{m['vote.title']()}</legend>
 

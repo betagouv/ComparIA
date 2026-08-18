@@ -152,6 +152,11 @@ export function createBrandTokens(
 }
 
 function cssVariables(tokens: BrandTokens): string {
+  const svgColor = tokens.primary.replace('#', '%23')
+  const toggleTrack = `url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='${svgColor}' height='24' viewBox='0 0 40 24' fill='transparent' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E")`
+  const toggleTrackChecked = `url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='${svgColor}' height='24' viewBox='0 0 40 24' fill='${svgColor}' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E")`
+  const toggleCheck = `url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='${svgColor}' d='m10 15.17 9.2-9.2 1.4 1.42L10 18l-6.36-6.36 1.4-1.42z'/%3E%3C/svg%3E")`
+
   return [
     `--brand-primary:${tokens.primary}`,
     `--brand-primary-hover:${tokens.primaryHover}`,
@@ -161,6 +166,9 @@ function cssVariables(tokens: BrandTokens): string {
     `--brand-primary-soft-hover:${tokens.primarySoftHover}`,
     `--brand-primary-soft-active:${tokens.primarySoftActive}`,
     `--brand-primary-softest:${tokens.primarySoftest}`,
+    `--brand-toggle-track:${toggleTrack}`,
+    `--brand-toggle-track-checked:${toggleTrackChecked}`,
+    `--brand-toggle-check:${toggleCheck}`,
     `--brand-secondary:${tokens.secondary}`,
     `--brand-secondary-text:${tokens.secondaryText}`,
     ...tokens.rankShades.flatMap(({ background, text }, index) => [
