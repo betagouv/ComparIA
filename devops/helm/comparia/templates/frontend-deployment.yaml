@@ -12,6 +12,9 @@ regardless of the backend's CORS config.
 {{- else if .Values.ingress.host }}
 {{- $probeHost = .Values.ingress.host }}
 {{- end }}
+{{- /* The frontend only serves routes under ingress.path (e.g. "/arena/" -- see
+ingress.yaml); "/" 404s once that's non-root, so the probe must match. */}}
+{{- $probePath := printf "%s/" (trimSuffix "/" .Values.ingress.path) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,7 +55,7 @@ spec:
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: {{ $probePath }}
               port: http
               {{- if $probeHost }}
               httpHeaders:
