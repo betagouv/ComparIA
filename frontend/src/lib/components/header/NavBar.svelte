@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import { resolve } from '$app/paths'
+  import { base, resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
@@ -75,7 +75,7 @@
     ]}
   >
     <img
-      src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : '/orgs/comparia.png'}
+      src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : `${base}/orgs/comparia.png`}
       aria-hidden="true"
       alt=""
       class="h-[35px]"

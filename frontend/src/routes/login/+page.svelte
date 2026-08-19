@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { base } from '$app/paths'
   import { page } from '$app/state'
   import SignInForm from '$components/SignInForm.svelte'
   import { env } from '$env/dynamic/public'
@@ -25,7 +26,7 @@
   <header class="px-8 py-10 gap-20 md:justify-center flex basis-1/2 flex-col">
     <div class="gap-2 flex items-center">
       <img
-        src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : '/orgs/comparia.png'}
+        src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : `${base}/orgs/comparia.png`}
         aria-hidden="true"
         alt=""
         class="h-[35px]"

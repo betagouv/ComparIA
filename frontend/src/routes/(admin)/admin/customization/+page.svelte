@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths'
   import { Button, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
   import PageLayout from '$components/PageLayout.svelte'
@@ -35,7 +36,7 @@
   let errors = $state<Record<string, string>>({})
 
   const logoSrc = $derived(
-    hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : '/orgs/comparia.png'
+    hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : `${base}/orgs/comparia.png`
   )
   const auth = getAuthContext()
 
