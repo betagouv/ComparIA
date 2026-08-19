@@ -178,9 +178,7 @@ export class FastAPIClient {
 
       return response.json()
     } catch (error) {
-      // Temporary: url (not just path) needed to correlate CORS failures with the
-      // resolved origin logged per-request in hooks.server.ts.
-      console.error(`Request to ${url} failed: ${(error as Error).message}`)
+      console.error(`Request to ${path} failed: ${(error as Error).message}`)
       throw error
     }
   }

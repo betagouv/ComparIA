@@ -170,13 +170,7 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
     route: event.route?.id,
     status: response.status,
     duration_ms: Math.round(Date.now() - start),
-    user_agent: event.request.headers.get('user-agent'),
-    // Temporary: correlating intermittent SSR CORS failures with what SvelteKit
-    // actually resolved event.url.origin to vs. the raw headers nginx-ingress sent.
-    resolved_origin: event.url.origin,
-    hdr_host: event.request.headers.get('host'),
-    hdr_x_forwarded_host: event.request.headers.get('x-forwarded-host'),
-    hdr_x_forwarded_proto: event.request.headers.get('x-forwarded-proto')
+    user_agent: event.request.headers.get('user-agent')
   })
 
   return response
