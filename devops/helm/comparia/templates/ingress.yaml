@@ -1,5 +1,13 @@
 {{- if .Values.ingress.enabled }}
 {{- $prefix := trimSuffix "/" .Values.ingress.path }}
+{{- /* Every top-level backend route (app.include_router(...) plus the two bare
+@app.get in backend/main.py), independent of ingress.path -- keep this list in
+sync with main.py when adding a new router. */}}
+{{- $backendRouteNames := list "counter" "maintenance/status" "models" "suggestions" "vote-tags" "arena" "auth" "admin" "settings" "statistics" "ranking" }}
+{{- $backendRegexAlternatives := list }}
+{{- range $backendRouteNames }}
+{{- $backendRegexAlternatives = append $backendRegexAlternatives (printf "%s(/.*)?" .) }}
+{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -22,10 +30,11 @@ spec:
     - host: {{ required "ingress.host is required when ingress.enabled is true" .Values.ingress.host | quote }}
       http:
         paths:
-          # Routes called directly by the browser, mirroring
-          # devops/standalone_docker_install/Caddyfile. Everything else (auth,
-          # admin, SSR data loading, ...) is called server-side by the
-          # frontend over PUBLIC_API_LOCAL_URL, inside the cluster.
+          # Routes called directly by the browser (SSR data loading calls the
+          # backend server-side over PUBLIC_API_LOCAL_URL instead, inside the
+          # cluster, and never goes through this Ingress -- but +layout.ts is a
+          # universal load, so it and anything else client-invoked still needs
+          # a public route here too).
           #
           # ingress.path prefixes every route below. Left at the default "/", this
           # is a no-op and these backend routes need no rewriting -- they already
@@ -35,27 +44,15 @@ spec:
           # strips the prefix back off before it reaches the backend, since the
           # backend itself has no notion of ingress.path.
           {{- if not $prefix }}
-          - path: /counter
+          {{- range $backendRouteNames }}
+          - path: /{{ . }}
             pathType: Prefix
             backend:
               service:
-                name: {{ include "comparia.fullname" . }}-backend
+                name: {{ include "comparia.fullname" $ }}-backend
                 port:
-                  number: {{ .Values.service.backend.port }}
-          - path: /models/
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ include "comparia.fullname" . }}-backend
-                port:
-                  number: {{ .Values.service.backend.port }}
-          - path: /arena/
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ include "comparia.fullname" . }}-backend
-                port:
-                  number: {{ .Values.service.backend.port }}
+                  number: {{ $.Values.service.backend.port }}
+          {{- end }}
           {{- end }}
           - path: {{ $prefix }}/
             pathType: Prefix
@@ -66,9 +63,9 @@ spec:
                   number: {{ .Values.service.frontend.port }}
 {{- if $prefix }}
 ---
-# Non-root ingress.path only: the frontend calls /counter, /models/* and
-# /arena/* client-side under its own base path (PUBLIC_BASE_PATH == ingress.path,
-# for same-origin routing), but the backend's own routes are always unprefixed --
+# Non-root ingress.path only: the frontend calls the backend routes above
+# client-side under its own base path (PUBLIC_BASE_PATH == ingress.path, for
+# same-origin routing), but the backend's own routes are always unprefixed --
 # it has no notion of ingress.path. Strip the prefix back off before forwarding.
 # A separate Ingress because rewrite-target applies to every path on the object
 # that carries it, and the frontend rule above must NOT be rewritten.
@@ -96,7 +93,7 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: {{ $prefix }}/(counter|models/.*|arena/.*)
+          - path: {{ $prefix }}/({{ join "|" $backendRegexAlternatives }})
             pathType: ImplementationSpecific
             backend:
               service:
