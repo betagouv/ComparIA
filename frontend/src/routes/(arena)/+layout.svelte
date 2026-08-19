@@ -1,5 +1,6 @@
 <script lang="ts">
   import { afterNavigate } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { NavBar } from '$components/header'
   import { getAuthContext, userAllowed } from '$lib/auth.svelte.js'
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
@@ -29,10 +30,19 @@
 
   const navLinks = $derived(
     [
-      { href: '/', label: m['header.chatbot.newDiscussion'](), icon: 'i-ri-chat-new-line' },
-      { href: '/ranking', label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
-      { href: '/models', label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' },
-      { href: '/admin', role: 'admin', label: m['admin.panelLink'](), icon: 'i-ri-admin-line' }
+      {
+        href: resolve('/'),
+        label: m['header.chatbot.newDiscussion'](),
+        icon: 'i-ri-chat-new-line'
+      },
+      { href: resolve('/ranking'), label: m['seo.titles.ranking'](), icon: 'i-ri-trophy-line' },
+      { href: resolve('/models'), label: m['seo.titles.modeles'](), icon: 'i-ri-stack-line' },
+      {
+        href: resolve('/admin'),
+        role: 'admin',
+        label: m['admin.panelLink'](),
+        icon: 'i-ri-admin-line'
+      }
     ].filter((link) => userAllowed(auth, link.role))
   )
 </script>

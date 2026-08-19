@@ -108,7 +108,7 @@
     {/if}
 
     {@render renderLink({
-      href: '/settings',
+      href: resolve('/settings'),
       label: m['seo.titles.settings'](),
       icon: 'i-ri-settings-4-line',
       class: 'text-sm! text-black! fr-sidemenu__link font-normal! py-2! before:content-none!'

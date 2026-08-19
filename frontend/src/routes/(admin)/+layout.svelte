@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import NavBar, { type NavLink } from '$components/header/NavBar.svelte'
   import { initComparisonsContext } from '$lib/chatService.svelte'
@@ -13,61 +14,61 @@
   const navLinks: NavLink[] = $derived([
     {
       label: m['admin.nav.customization'](),
-      href: '/admin/customization',
+      href: resolve('/admin/customization'),
       icon: 'i-ri-palette-line'
     },
     {
       label: m['admin.nav.locales'](),
-      href: '/admin/locales',
+      href: resolve('/admin/locales'),
       icon: 'i-ri-translate-2'
     },
     {
       label: m['admin.nav.authentification'](),
-      href: '/admin/authentification',
+      href: resolve('/admin/authentification'),
       icon: 'i-ri-fingerprint-line'
     },
     {
       label: m['admin.nav.legal'](),
-      href: '/admin/legal',
+      href: resolve('/admin/legal'),
       icon: 'i-ri-file-shield-2-line',
       isCurrent: () =>
-        page.url.pathname.startsWith('/admin/legal') ||
-        page.url.pathname === '/admin/conditions-participation'
+        page.url.pathname.startsWith(resolve('/admin/legal')) ||
+        page.url.pathname === resolve('/admin/conditions-participation')
     },
     {
       label: m['admin.nav.users'](),
-      href: '/admin/utilisateurs',
+      href: resolve('/admin/utilisateurs'),
       icon: 'i-ri-user-settings-line'
     },
     {
       label: m['admin.nav.suggestions'](),
-      href: '/admin/suggestions',
+      href: resolve('/admin/suggestions'),
       icon: 'i-ri-lightbulb-line'
     },
     {
       label: m['admin.nav.voteTags'](),
-      href: '/admin/vote-tags',
+      href: resolve('/admin/vote-tags'),
       icon: 'i-ri-price-tag-3-line'
     },
     {
       label: m['admin.nav.promptChecks'](),
-      href: '/admin/prompt-checks',
+      href: resolve('/admin/prompt-checks'),
       icon: 'i-ri-shield-check-line'
     },
     {
       label: m['admin.nav.publishing'](),
-      href: '/admin/publication',
+      href: resolve('/admin/publication'),
       icon: 'i-ri-upload-cloud-line'
     },
     {
       label: m['admin.nav.llms'](),
-      href: '/admin/llms/llms',
+      href: resolve('/admin/llms/llms'),
       icon: 'i-ri-ai-agent-line',
       isCurrent: () => page.url.pathname.includes('/admin/llms')
     },
     {
       label: m['actions.returnArena'](),
-      href: '/',
+      href: resolve('/'),
       icon: 'i-ri-arrow-left-line'
     }
   ])
