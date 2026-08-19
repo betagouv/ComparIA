@@ -28,29 +28,35 @@ spec:
           # frontend over PUBLIC_API_LOCAL_URL, inside the cluster.
           #
           # ingress.path prefixes every route below. Left at the default "/", this
-          # is a no-op. Non-root values are only meant for the beta.gouv
-          # shared-domain topology (see README) -- a separate release owns "/".
-          - path: {{ $prefix }}/counter
+          # is a no-op and these backend routes need no rewriting -- they already
+          # match the backend's own (unprefixed) route namespace 1:1. Non-root
+          # values are only meant for the beta.gouv shared-domain topology (see
+          # README) -- a separate release owns "/", and a second Ingress below
+          # strips the prefix back off before it reaches the backend, since the
+          # backend itself has no notion of ingress.path.
+          {{- if not $prefix }}
+          - path: /counter
             pathType: Prefix
             backend:
               service:
                 name: {{ include "comparia.fullname" . }}-backend
                 port:
                   number: {{ .Values.service.backend.port }}
-          - path: {{ $prefix }}/models/
+          - path: /models/
             pathType: Prefix
             backend:
               service:
                 name: {{ include "comparia.fullname" . }}-backend
                 port:
                   number: {{ .Values.service.backend.port }}
-          - path: {{ $prefix }}/arena/
+          - path: /arena/
             pathType: Prefix
             backend:
               service:
                 name: {{ include "comparia.fullname" . }}-backend
                 port:
                   number: {{ .Values.service.backend.port }}
+          {{- end }}
           - path: {{ $prefix }}/
             pathType: Prefix
             backend:
@@ -58,4 +64,44 @@ spec:
                 name: {{ include "comparia.fullname" . }}-frontend
                 port:
                   number: {{ .Values.service.frontend.port }}
+{{- if $prefix }}
+---
+# Non-root ingress.path only: the frontend calls /counter, /models/* and
+# /arena/* client-side under its own base path (PUBLIC_BASE_PATH == ingress.path,
+# for same-origin routing), but the backend's own routes are always unprefixed --
+# it has no notion of ingress.path. Strip the prefix back off before forwarding.
+# A separate Ingress because rewrite-target applies to every path on the object
+# that carries it, and the frontend rule above must NOT be rewritten.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "comparia.fullname" . }}-api
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- with .Values.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: {{ $prefix }}/(counter|models/.*|arena/.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-backend
+                port:
+                  number: {{ .Values.service.backend.port }}
+{{- end }}
 {{- end }}
