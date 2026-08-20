@@ -54,7 +54,12 @@ spec:
                   number: {{ $.Values.service.backend.port }}
           {{- end }}
           {{- end }}
-          - path: {{ $prefix }}/
+          # Prefix pathType requires this to be exactly the prefix, no trailing
+          # slash: ingress-nginx matches "/arena" and "/arena/..." alike, but
+          # "/arena/" as a Prefix path requires the trailing slash in the
+          # request too, so a link to bare "/arena" falls through to whatever
+          # else owns "/" on this host instead of matching here.
+          - path: {{ if $prefix }}{{ $prefix }}{{ else }}/{{ end }}
             pathType: Prefix
             backend:
               service:
