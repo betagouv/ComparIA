@@ -3264,7 +3264,11 @@
             "description": "Vos réponses sont facultatives, anonymes et nous aident à mieux comprendre qui utilise compar:IA.",
             "dismiss": "Plus tard",
             "submit": "Envoyer mes réponses",
+            "submitFailed": "L’envoi a échoué. Vos réponses n’ont pas été enregistrées, vous pouvez réessayer.",
             "title": "Quelques questions pour mieux vous connaître"
+        },
+        "question": {
+            "chooseOption": "Sélectionnez une option"
         },
         "profile": {
             "title": "Vos réponses au questionnaire",

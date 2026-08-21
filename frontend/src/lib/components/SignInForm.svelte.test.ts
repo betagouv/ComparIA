@@ -1,4 +1,5 @@
 import { resetConsent } from '$lib/consent'
+import { getTestLocale, setTestLocale } from '$lib/testing/reactive-locale.svelte'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SignInForm from './SignInForm.svelte'
@@ -28,7 +29,7 @@ vi.mock('$lib/fastapi-client', () => ({
 
 vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/i18n/runtime')>()),
-  getLocale: () => 'fr'
+  getLocale: () => getTestLocale()
 }))
 
 const terms = {
@@ -171,5 +172,59 @@ describe('SignInForm consent', () => {
 
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
     expect(container.querySelector('#login-merge')).toBeNull()
+  })
+
+  it('re-fetches the signup questions when the language changes', async () => {
+    setTestLocale('fr')
+    const { unmount } = render(SignInForm)
+
+    await waitFor(() =>
+      expect(paths().filter((path) => path.startsWith('/survey/questions'))).toEqual([
+        '/survey/questions?trigger=signup&locale=fr'
+      ])
+    )
+
+    setTestLocale('en')
+    await waitFor(() =>
+      expect(paths().filter((path) => path.startsWith('/survey/questions'))).toEqual([
+        '/survey/questions?trigger=signup&locale=fr',
+        '/survey/questions?trigger=signup&locale=en'
+      ])
+    )
+    unmount()
+    setTestLocale('fr')
+  })
+
+  it('labels the blank entry of a required select question for everyone', async () => {
+    servesTerms()
+    mocks.request.mockImplementation((path: string) => {
+      if (path.startsWith('/settings/legal/terms')) return Promise.resolve(terms)
+      if (path === '/auth/consent/anonymous') return Promise.resolve({ terms: null })
+      if (path === '/survey/questions?trigger=signup&locale=fr')
+        return Promise.resolve({
+          questions: [
+            {
+              id: 'q1',
+              key: 'age',
+              required: true,
+              input_type: 'select',
+              label: 'Tranche d’âge',
+              revision: 1,
+              options: [{ key: '18_25', label: '18–25 ans' }]
+            }
+          ]
+        })
+      return Promise.reject(new Error(`Unexpected request: ${path}`))
+    })
+    const { container } = render(SignInForm)
+
+    const select = await waitFor(() => {
+      const element = container.querySelector<HTMLSelectElement>('#survey-question-q1')!
+      expect(element).not.toBeNull()
+      return element
+    })
+    expect(select.getAttribute('aria-required')).toBe('true')
+    const blankOption = select.querySelector<HTMLOptionElement>('option[value=""]')!
+    expect(blankOption.textContent).toBe('Sélectionnez une option')
   })
 })
