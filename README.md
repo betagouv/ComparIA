@@ -3,9 +3,9 @@
 
 # compar:IA
 
-### The open-source LLM arena. Deploy it for your organisation, sector, or language.
+### An open-source LLM arena for your organisation, sector, or language.
 
-Crowdsource human votes, benchmark models, and build open datasets in any language/sector.
+Collect human votes, compare models through real use, and publish open datasets for any language or sector.
 
 <br>
 
@@ -14,7 +14,7 @@ Crowdsource human votes, benchmark models, and build open datasets in any langua
 [![Paper](https://img.shields.io/badge/arXiv-2602.06669-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2602.06669)
 [![DPG Badge](https://img.shields.io/badge/Verified-DPG-3333AB?logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMzEiIGhlaWdodD0iMzMiIHZpZXdCb3g9IjAgMCAzMSAzMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0LjIwMDggMjEuMzY3OEwxMC4xNzM2IDE4LjAxMjRMMTEuNTIxOSAxNi40MDAzTDEzLjk5MjggMTguNDU5TDE5LjYyNjkgMTIuMjExMUwyMS4xOTA5IDEzLjYxNkwxNC4yMDA4IDIxLjM2NzhaTTI0LjYyNDEgOS4zNTEyN0wyNC44MDcxIDMuMDcyOTdMMTguODgxIDUuMTg2NjJMMTUuMzMxNCAtMi4zMzA4MmUtMDVMMTEuNzgyMSA1LjE4NjYyTDUuODU2MDEgMy4wNzI5N0w2LjAzOTA2IDkuMzUxMjdMMCAxMS4xMTc3TDMuODQ1MjEgMTYuMDg5NUwwIDIxLjA2MTJMNi4wMzkwNiAyMi44Mjc3TDUuODU2MDEgMjkuMTA2TDExLjc4MjEgMjYuOTkyM0wxNS4zMzE0IDMyLjE3OUwxOC44ODEgMjYuOTkyM0wyNC44MDcxIDI5LjEwNkwyNC42MjQxIDIyLjgyNzdMMzAuNjYzMSAyMS4wNjEyTDI2LjgxNzYgMTYuMDg5NUwzMC42NjMxIDExLjExNzdMMjQuNjI0MSA5LjM1MTI3WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==)](https://www.digitalpublicgoods.net/r/comparia)
 
-**[Try the arena](https://comparia.beta.gouv.fr)** · **[Datasets](https://huggingface.co/ministere-culture)** · **[Deploy your own](#deploy-your-own)** · **[Roadmap](#roadmap)** · **[Contribute](#contribute)**
+**[Try the arena](https://comparia.beta.gouv.fr)** · **[Leaderboard](https://comparia.beta.gouv.fr/ranking)** · **[Walkthrough](#walkthrough-video)** · **[Datasets](https://huggingface.co/ministere-culture)** · **[Deploy your own](#deploy-your-own)** · **[Roadmap](#roadmap)** · **[Contribute](#contribute)**
 
 </div>
 
@@ -22,42 +22,51 @@ Crowdsource human votes, benchmark models, and build open datasets in any langua
 
 ## What is compar:IA?
 
-compar:IA is an LLM arena: the user types a prompt, two anonymous models reply, and the user votes for the answer they prefer. Only after voting (or skipping the vote) does the user see which models wrote the answers.
+compar:IA is an LLM arena. Enter a prompt and two anonymous models respond. Vote for the answer you prefer or skip the vote; the model names are revealed only afterwards. The French public arena is free and does not require an account.
 
+The [model catalogue](https://comparia.beta.gouv.fr/modeles) lists each model's origin and technical characteristics. Where enough technical data is available, compar:IA also shows an EcoLogits estimate of its energy use.
 
 <div align="center">
   <img width="7164" height="2269" alt="Frame 15928" src="https://github.com/user-attachments/assets/629853f5-fbc3-461a-8357-1f5073d58aa0" />
 </div>
 
+## Walkthrough video
 
+https://github.com/user-attachments/assets/cf23a010-0ce8-4c96-a603-b087bef3271b
 
-The platform can be used for many different purposes:
+## What can you use it for?
 
-- Teaching people about model diversity, bias, openness, energy consumption...
-- Ranking models on real-world use instead of "laboratory" benchmarks, so you can see which ones work best in your own use case and language.
-- Building and publishing open datasets of prompts, votes, and reactions that anyone can reuse to study how people use these tools, or to train and fine-tune models.
+- Raise awareness about differences between models, including bias, openness, and energy consumption.
+- Rank models through real-world use rather than laboratory benchmarks, for a specific use case and language.
+- Publish open datasets of prompts, votes, and reactions for research, training, and fine-tuning.
 
-## The story of compar:IA
+## Leaderboard and open data
 
-- **Oct 2024:** The French government launches [comparia.beta.gouv.fr](https://comparia.beta.gouv.fr), an LLM arena open to the public.
-- **Mar 2025:** 50,000 votes reached, and the first dataset goes up on Hugging Face.
-- **Nov 2025:** The first public leaderboard ships, and a second instance goes live: [AI-arenaen](https://ai-arenaen.dk) in Denmark.
-- **Jun 2026:** Over 700,000 conversations and 250,000 votes ([about 89% in French](https://arxiv.org/abs/2602.06669)), several datasets, and new instances starting up regularly.
-- **Sept 2026:** compar:IA 2.0 is released : message history, personal leaderboard, admin panel, etc. compar:IA is now built to be run by anyone: a company, a sector, or a language community.
+The [public leaderboard](https://comparia.beta.gouv.fr/ranking) converts blind votes into Bradley-Terry scores with 95% confidence intervals. It measures the preferences collected in the arena, not objective model quality. The [methodology](https://huggingface.co/blog/comparIA/publication-du-premier-classement), calculations, and source data are public.
+
+The [`comparia-fr-arena` dataset](https://huggingface.co/datasets/ministere-culture/comparia-fr-arena) is published under the Etalab Open Licence 2.0 and CC BY 4.0.
+
+## Project history
+
+- **Oct 2024:** The French government launched [comparia.beta.gouv.fr](https://comparia.beta.gouv.fr), a public LLM arena.
+- **Mar 2025:** The arena reached 50,000 votes, and the first dataset was published on Hugging Face.
+- **Nov 2025:** The first public leaderboard was released, and compar:IA was [recognized as a Digital Public Good](https://www.digitalpublicgoods.net/r/comparia). A second instance, Denmark's [AI-arenaen](https://ai-arenaen.dk), also went live.
+- **Jun 2026:** The project passed 700,000 conversations and 250,000 votes ([about 89% in French](https://arxiv.org/abs/2602.06669)), with more than 130 models tested and several datasets published.
+- **Sept 2026:** compar:IA 2.0 was released with message history, personal leaderboards, and an admin panel. Companies, sectors, and language communities can now deploy their own instance.
 
 ## Active instances
 
 | Instance | Region | Live | Datasets |
 | --- | :---: | --- | --- |
 | **compar:IA**, French Government | 🇫🇷 | [comparia.beta.gouv.fr](https://comparia.beta.gouv.fr) | [Hugging Face](https://huggingface.co/datasets/ministere-culture/comparia-fr-arena), [data.gouv.fr](https://www.data.gouv.fr/datasets/compar-ia), [Mozilla](https://mozilladatacollective.com/datasets/cmklbq9qt006mnw077t9lqh89) |
-| **AI-arenaen**, Denmark | 🇩🇰 | [ai-arenaen.dk](https://ai-arenaen.dk) | *coming soon* |
-| **Yours?** | 🌍 | [Deploy one](#deploy-your-own) | your own |
+| **AI-arenaen**, Denmark | 🇩🇰 | [ai-arenaen.dk](https://ai-arenaen.dk) | *Coming soon* |
+| **Yours?** | 🌍 | [Deploy one](#deploy-your-own) | Your own |
 
 ## Deploy your own
 
-Run the whole platform yourself — your own models, your own language, your own datasets and leaderboard.
+Host compar:IA with your own models, language, datasets, and leaderboard.
 
-**Self-host with Docker** (single server, automatic HTTPS via Caddy): see [devops/standalone_docker_install/DOCKER_INSTALL.md](https://github.com/betagouv/ComparIA/blob/develop/devops/standalone_docker_install/DOCKER_INSTALL.md).
+**Self-host with Docker:** Run the platform on a single server with automatic HTTPS from Caddy. Follow the [Docker installation guide](https://github.com/betagouv/ComparIA/blob/develop/devops/standalone_docker_install/DOCKER_INSTALL.md).
 
 **Local development:**
 
@@ -70,11 +79,12 @@ make dev-backend       # backend  -> http://localhost:8008
 make dev-frontend      # frontend -> http://localhost:5173
 ```
 
-For the full setup guide (instances, KeePass, Docker, testing, models, i18n, architecture), see [CONTRIBUTING.md](https://github.com/betagouv/ComparIA/blob/develop/CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/betagouv/ComparIA/blob/develop/CONTRIBUTING.md) for the full setup guide, including instances, KeePass, Docker, testing, models, internationalisation, and architecture.
 
 ## Roadmap
 
 **In progress**
+
 - Agentic tool use
 - OIDC SSO
 - Improved style control
@@ -108,17 +118,17 @@ For the full setup guide (instances, KeePass, Docker, testing, models, i18n, arc
 
 ## Contribute
 
-compar:IA is a digital common. You can help financially, in code, translations, or ideas.
+compar:IA is a digital common. You can support it by running an instance, funding the work, contributing code or translations, or sharing research and ideas.
 
-- **Run your own instance.** compar:IA achieves its mission as instances multiply — and with them, open datasets, benchmarks, and people who understand these tools.
-- **Financially.** compar:IA is funded by ALT-EDIC, DINUM and the French Ministry of Culture. We are looking for new partners and funders to keep the infrastructure running, add languages, and keep the project independent. Reach us at [contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr).
-- **In code.** The whole platform is open source and we welcome contributions of any size: bug fixes, features, translations, documentation. [Open a pull request](https://github.com/betagouv/ComparIA/pulls).
-- **In discussions.** Share ideas, flag issues, or ask questions on [GitHub Discussions](https://github.com/betagouv/ComparIA/discussions).
-- **Any other way.** Partnerships, academic work, media coverage, or spreading the word. [Get in touch](mailto:contact@comparia.beta.gouv.fr).
+- **Run an instance:** Each deployment can produce an open dataset and benchmark for its language, sector, or organisation.
+- **Fund the project:** compar:IA is funded by ALT-EDIC, DINUM, and the French Ministry of Culture. New partners and funders help cover infrastructure, add languages, and keep the project independent. Contact [contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr).
+- **Contribute code or translations:** Bug fixes, features, translations, and documentation can be submitted through a [pull request](https://github.com/betagouv/ComparIA/pulls).
+- **Share ideas or report issues:** Start or join a thread in [GitHub Discussions](https://github.com/betagouv/ComparIA/discussions).
+- **Research and partnerships:** For academic work, media enquiries, partnerships, or other forms of support, [get in touch](mailto:contact@comparia.beta.gouv.fr).
 
 ## Built by
 
-**DINUM**, **French Ministry of Culture**, and **ALT-EDIC** 🇪🇺, with **AI-arenaen** (Denmark), **PIX**, **PEReN**, and other contributors.
+**DINUM**, the **French Ministry of Culture**, and **ALT-EDIC** 🇪🇺, with **AI-arenaen** (Denmark), **PIX**, **PEReN**, and other contributors.
 
 ---
 
