@@ -43,8 +43,12 @@
   // would burn one of the visitor's three chances to be asked again for
   // nothing.
   let handled = $state(false)
+  let submitFailed = $state(false)
 
-  async function recordShowing(): Promise<void> {
+  // One recording pass for the whole popup: whatever was selected goes to
+  // /survey/answers, whatever was left blank counts as shown-and-declined.
+  // Returns whether everything was recorded.
+  async function recordShowing(): Promise<boolean> {
     const answered = questions
       .map((question) => ({ question_id: question.id, option_keys: answers[question.id] ?? [] }))
       .filter((answer) => answer.option_keys.length > 0)
@@ -67,42 +71,40 @@
           body: JSON.stringify({ question_ids: blankIds })
         })
       }
+      submitFailed = false
+      return true
     } catch (error) {
-      // The popup already closed from the visitor's point of view; losing
-      // this one showing to a network blip isn't worth an error toast.
       console.error(`Unable to record survey response: ${(error as Error).message}`)
+      submitFailed = true
+      return false
     }
   }
 
-  async function declineAll(): Promise<void> {
-    try {
-      await api.request('/survey/dismiss', {
-        method: 'POST',
-        body: JSON.stringify({ question_ids: questions.map((question) => question.id) })
-      })
-    } catch (error) {
-      console.error(`Unable to record survey dismissal: ${(error as Error).message}`)
-    }
-  }
-
-  // Closing the popup and declining it are the same action on purpose: both
-  // paths lead here, and there is exactly one place that calls
-  // /survey/dismiss for every question that was on screen.
+  // Closing the popup without submitting is declining on purpose, but only
+  // for the questions left blank. Selections that exist are real answers and
+  // go through the same path as a submit; only blanks are recorded as
+  // dismissed. There is exactly one recording pass per popup, whichever of
+  // close or submit fires first.
   function onClose() {
     if (handled) return
     handled = true
-    void declineAll()
+    void recordShowing()
   }
 
   // Deliberately not wired to aria-controls: DSFR closes the modal on its own
   // click listener, and the close reaches onClose before this handler would
   // run, so onClose would win the `handled` race and throw the answers away.
-  // Record first, then close by flipping the attribute back.
-  function onSubmit() {
+  // Record first, then close by flipping the attribute back, and stay open
+  // with an error notice when recording fails, so nothing is lost silently.
+  async function onSubmit() {
     if (handled) return
     handled = true
-    void recordShowing()
-    opened = false
+    if (await recordShowing()) {
+      opened = false
+    } else {
+      // Let the visitor retry: the next submit or close records again.
+      handled = false
+    }
   }
 </script>
 
@@ -126,11 +128,14 @@
       {#each questions as question (question.id)}
         <SurveyQuestionField
           {question}
-          placeholder={m['survey.profile.noAnswerOption']()}
           onchange={(option_keys) => (answers[question.id] = option_keys)}
         />
       {/each}
     </div>
+
+    {#if submitFailed}
+      <p class="fr-error-text" role="alert">{m['survey.afterVote.submitFailed']()}</p>
+    {/if}
 
     <div class="gap-3 flex flex-wrap items-center justify-end">
       <Button
