@@ -10,7 +10,7 @@ logger = logging.getLogger("languia")
 
 # Keys that can carry a user prompt or model output, stripped from every
 # event/breadcrumb before it leaves the process.
-_SENSITIVE_KEYS = {"messages", "prompt", "content"}
+_SENSITIVE_KEYS = {"messages", "prompt", "content", "api_key"}
 
 
 def _scrub(value: Any) -> Any:
@@ -45,6 +45,10 @@ def init_sentry() -> None:
     sentry_sdk.init(
         release=settings.GIT_COMMIT,
         attach_stacktrace=True,
+        # Frame locals hold the provider endpoint, api_key included, whenever a
+        # completion raises. Sentry's own scrubber only looks at top-level
+        # variable names, so it would send the key through.
+        include_local_variables=False,
         dsn=settings.SENTRY_DSN,
         environment=settings.SENTRY_ENVIRONMENT,
         traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
