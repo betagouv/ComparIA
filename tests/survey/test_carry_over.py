@@ -70,8 +70,9 @@ def test_the_answer_just_given_replaces_the_one_on_the_account():
     user_id = uuid.uuid4()
     question_id = uuid.uuid4()
 
-    # First exec: the questions this anonymous session just answered.
-    session = FakeSession([question_id], [], [])
+    # First exec: what the anonymous session just answered and when. Second:
+    # nothing on the account to compare against, so the session's answer wins.
+    session = FakeSession([(question_id, utc_now())], [], [])
     asyncio.run(carry_over_anonymous(session, "hash", user_id))
 
     deletes = [
@@ -97,6 +98,30 @@ def test_nothing_is_deleted_when_the_session_answered_nothing():
         for statement in session.statements
         if statement.__visit_name__ == "delete"
     ]
+
+
+def test_an_older_anonymous_answer_loses_to_the_account_answer():
+    """
+    The login form can be filled with answers older than the ones already on
+    the account — a bookmarked form, a second tab. The newer answer wins per
+    question, so the account's row stays and nothing is deleted for it.
+    """
+    user_id = uuid.uuid4()
+    question_id = uuid.uuid4()
+    yesterday = utc_now() - timedelta(days=1)
+    an_hour_ago = utc_now() - timedelta(hours=1)
+
+    # The anonymous side answered yesterday, the account an hour ago.
+    session = FakeSession(
+        [(question_id, yesterday)], [(question_id, an_hour_ago)], []
+    )
+    asyncio.run(carry_over_anonymous(session, "hash", user_id))
+
+    assert not [
+        statement
+        for statement in session.statements
+        if statement.__visit_name__ == "delete"
+    ], "the account's newer answer was replaced by an older one"
 
 
 def test_prompt_counts_are_added_together_rather_than_duplicated():
@@ -158,6 +183,7 @@ def test_the_cap_still_holds_after_a_merge():
 if __name__ == "__main__":
     test_the_answer_just_given_replaces_the_one_on_the_account()
     test_nothing_is_deleted_when_the_session_answered_nothing()
+    test_an_older_anonymous_answer_loses_to_the_account_answer()
     test_prompt_counts_are_added_together_rather_than_duplicated()
     test_an_unmatched_anonymous_row_is_reassigned_untouched()
     test_the_cap_still_holds_after_a_merge()
