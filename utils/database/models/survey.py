@@ -3,6 +3,7 @@ import uuid
 from typing import Annotated, Literal, get_args
 
 from pydantic import StringConstraints, field_validator
+from sqlalchemy import Index, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -35,6 +36,15 @@ MAX_QUESTION_PROMPTS = 3
 # Questions shown in a single after-vote popup. Past three the popup stops
 # reading as a question and starts reading as a form.
 MAX_QUESTIONS_PER_PROMPT = 3
+
+# How many question ids one dismiss call may name. The client only ever sends
+# what one popup showed; anything longer is a bug or abuse, and the log rows
+# it would create are worthless either way.
+MAX_DISMISS_IDS = 50
+
+# Stands in for "no user" inside the COALESCE of the answer uniqueness index.
+# Shared between the model and its migration so the two cannot drift apart.
+NO_USER_SENTINEL = "00000000-0000-0000-0000-000000000000"
 
 QuestionLabel = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=300)
@@ -120,6 +130,25 @@ class SurveyAnswerBase(BaseDBModel):
 
 class SurveyAnswer(SurveyAnswerBase, table=True):
     __tablename__ = "survey_answer"
+
+    # One row per option per respondent, enforced by the database rather than
+    # only by delete-then-insert in `submit_answers`: two concurrent
+    # submissions would otherwise both pass the delete and leave a duplicate.
+    # Both ownership columns are nullable and Postgres treats NULL as distinct
+    # in unique indexes, so each is wrapped in COALESCE to a sentinel that no
+    # real row carries — exactly one of the two is ever set.
+    __table_args__ = (
+        Index(
+            "uq_survey_answer_respondent_option",
+            "question_id",
+            "option_key",
+            text(
+                f"COALESCE(user_id, '{NO_USER_SENTINEL}'::uuid)"
+            ),
+            text("COALESCE(anonymous_user_hash, '')"),
+            unique=True,
+        ),
+    )
 
 
 class SurveyPromptLogBase(BaseDBModel):
