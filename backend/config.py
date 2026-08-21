@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from typing import Literal, get_args
@@ -82,6 +83,10 @@ class Settings(BaseSettings):
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
 
+    # Extra CORS origins allowed in production (e.g. "https://comparia.beta.gouv.fr").
+    # Localhost origins are always allowed for development.
+    COMPARIA_CORS_ORIGINS: list[str] = []
+
     @field_validator("COMPARIA_APP_URL")
     @classmethod
     def _strip_trailing_slash(cls, value: str) -> str:
@@ -128,11 +133,18 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Generate a random HMAC key if not configured (dev mode)
+# Generate a random HMAC key if not configured (dev mode). A random key breaks
+# CAPTCHA verification whenever more than one process serves the app, since the
+# process issuing a challenge is not the one verifying it.
 if not settings.ALTCHA_HMAC_KEY:
     import secrets
 
     settings.ALTCHA_HMAC_KEY = secrets.token_hex(32)
+    logging.getLogger(__name__).warning(
+        "ALTCHA_HMAC_KEY is not set: using a random per-process key. "
+        "CAPTCHA verification will fail with multiple workers or replicas. "
+        "Set ALTCHA_HMAC_KEY in production (see devops/standalone_docker_install/DOCKER_INSTALL.md)."
+    )
 
 # Create directory for JSON backup files
 os.makedirs(settings.LOGDIR, exist_ok=True)

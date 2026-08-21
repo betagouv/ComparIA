@@ -76,7 +76,7 @@ async def read_comparison(
         else:
             query = query.where(Comparison.anonymous_user_hash == anonymous_user_hash)
 
-        db_comparison = (await session.exec(query)).one()
+        db_comparison = (await session.exec(query)).first()
         if not db_comparison:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

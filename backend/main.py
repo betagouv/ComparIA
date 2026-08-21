@@ -62,7 +62,7 @@ origins = [
     "http://localhost:8001",
     "http://localhost:8002",
     "http://localhost:8008",
-]
+] + settings.COMPARIA_CORS_ORIGINS
 
 app.middleware("http")(auth_middleware)
 app.middleware("http")(anonymous_middleware)
