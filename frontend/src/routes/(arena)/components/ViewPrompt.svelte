@@ -7,7 +7,6 @@
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
-  import type { ToolPublic } from '$lib/generated/backend'
   import { sanitize } from '$lib/utils/commons'
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
@@ -19,7 +18,7 @@
     onPrompt,
     promptError,
     loading,
-    suggestions
+    suggestions,
     tools
   }: {
     onPrompt: (args: APIModeAndPromptData) => void

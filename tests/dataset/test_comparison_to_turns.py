@@ -542,6 +542,80 @@ def test_skips():
         assert _raises(comparison_to_turns, comp), name
 
 
+def tool_export_value_cases():
+    # (name, comparison, checker). Equivalence with the oracle can't catch a
+    # bug shared by both paths, so these pin the actual exported shape.
+    with_tools = comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg(
+                    "a1", 100, agent_trace=AGENT_TRACE, agent_stop_reason="completed"
+                ),
+                llm_msg("b1", 90),
+            )
+        ],
+        enabled_tools=["web_search"],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    def check_with_tools(row):
+        assert row["metadata"]["available_tools"] == ["web_search"]
+        assistant_a = row["response_a"][1]
+        assert assistant_a["tool_queries"] == [
+            {"name": "web_search", "arguments": '{"query": "compar:IA"}'}
+        ], assistant_a
+        assert assistant_a["tool_sources"] == [
+            {
+                "type": "text",
+                "name": "source",
+                "url": "https://example.com",
+                "content": "c",
+                "favicon": "",
+            }
+        ], assistant_a
+        assert assistant_a["agent_stop_reason"] == "completed", assistant_a
+        # Side b had no tool activity: none of the new keys leak onto it.
+        assistant_b = row["response_b"][1]
+        assert "tool_queries" not in assistant_b, assistant_b
+        assert "tool_sources" not in assistant_b, assistant_b
+        assert "agent_stop_reason" not in assistant_b, assistant_b
+
+    no_tools = comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    def check_no_tools(row):
+        assert row["metadata"]["available_tools"] == []
+        assert "tool_queries" not in row["response_a"][1]
+        assert "agent_stop_reason" not in row["response_a"][1]
+
+    yield "tools offered and used on side a only", with_tools, check_with_tools
+    yield "no tool offered", no_tools, check_no_tools
+
+
+# pytest entry points (if pytest is ever added)
+def test_equivalence():
+    for name, comp in equivalent_cases():
+        assert comparison_to_turns(comp) == oracle_comparison_to_turns(comp), name
+
+
+def test_skips():
+    for name, comp in skip_cases():
+        assert _raises(comparison_to_turns, comp), name
+
+
+def test_time_to_vote_values():
+    for name, comp, expected in time_to_vote_value_cases():
+        got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
+
+
 def test_time_to_vote_values():
     for name, comp, expected in time_to_vote_value_cases():
         got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]

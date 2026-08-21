@@ -33,6 +33,14 @@ type AuthCtx = {
 }
 export const [getAuthContext, baseSetAuthContext] = createContext<AuthCtx>()
 
+export function isAdmin(): boolean {
+  try {
+    return getAuthContext().user?.role === 'admin'
+  } catch {
+    return false
+  }
+}
+
 export function setAuthContext(data: AuthCtx) {
   const auth = $state(data)
   baseSetAuthContext(auth)
