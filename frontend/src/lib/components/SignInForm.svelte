@@ -73,7 +73,7 @@
     }
   }
 
-  async function loadSurveyQuestions() {
+  async function loadSurveyQuestions(locale: string) {
     surveyLoading = true
     try {
       const data = await api.request<{ questions: SurveyQuestion[] }>(
@@ -91,7 +91,13 @@
 
   onMount(() => {
     readConsent()
-    loadSurveyQuestions()
+  })
+
+  // Re-fetch the questions when the language changes while the form is open:
+  // getLocale() is reactive, so tracking it here keeps the labels in step
+  // with the rest of the page.
+  $effect(() => {
+    void loadSurveyQuestions(getLocale())
   })
 
   $effect(() => {

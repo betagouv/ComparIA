@@ -2368,7 +2368,11 @@
             "description": "Your answers are optional, anonymous, and help us better understand who uses compar:IA.",
             "dismiss": "Later",
             "submit": "Send my answers",
+            "submitFailed": "Sending failed. Your answers were not saved, you can try again.",
             "title": "A few questions to get to know you"
+        },
+        "question": {
+            "chooseOption": "Select an option"
         },
         "profile": {
             "title": "Your survey answers",
@@ -2431,6 +2435,7 @@
         "reset": "Reset",
         "restart": "Start again",
         "retry": "Start again",
+        "save": "Save",
         "search": "Search",
         "send": "Send",
         "tooltip": "Tooltip",

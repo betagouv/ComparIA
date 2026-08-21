@@ -1,5 +1,6 @@
 <script lang="ts">
   import { CheckboxGroup, Select } from '$components/dsfr'
+  import { m } from '$lib/i18n/messages'
 
   export type SurveyOption = { key: string; label: string }
   export type SurveyQuestion = {
@@ -39,8 +40,17 @@
   let selectedKey = $state(value[0] ?? '')
   let selectedKeys = $state<string[]>([...value])
 
+  // The blank first entry of a select needs a visible, spoken label: an empty
+  // one reads as a broken control. Required questions ask to be answered,
+  // optional ones offer the explicit way out.
+  const emptyOptionLabel = $derived(
+    placeholder ||
+      (question.required
+        ? m['survey.question.chooseOption']()
+        : m['survey.profile.noAnswerOption']())
+  )
   const selectOptions = $derived([
-    { value: '', label: placeholder },
+    { value: '', label: emptyOptionLabel },
     ...question.options.map((option) => ({ value: option.key, label: option.label }))
   ])
   const checkboxOptions = $derived(
@@ -67,6 +77,7 @@
     {label}
     onchange={onSelectChange}
     {disabled}
+    aria-required={question.required || undefined}
     class="mb-4!"
   />
 {:else}
