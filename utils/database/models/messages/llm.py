@@ -70,7 +70,12 @@ AgentTraceEvent = (
 # every other value means we cut it off, and the difference matters when reading
 # tool-use behaviour out of the data.
 AgentStopReason = Literal[
-    "completed", "deadline", "call_limit", "round_limit", "context_exceeded"
+    "completed",
+    "deadline",
+    "call_limit",
+    "round_limit",
+    "context_exceeded",
+    "repeat_limit",
 ]
 
 

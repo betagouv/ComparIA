@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from types import SimpleNamespace
 from typing import Any
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import litellm
 from linkup import LinkupSearchTextResult
@@ -1387,8 +1387,10 @@ async def _test_a_round_over_the_cap_still_runs_what_it_can():
                 _chunk(response_id="r1", delta={"role": "assistant"}),
                 _chunk(
                     response_id="r1",
+                    # Distinct arguments: this test exercises the call cap,
+                    # not the identical-repeat guard.
                     delta=_tool_call_delta(
-                        *[(f"call-{i}", "spy", "{}") for i in range(over)]
+                        *[(f"call-{i}", "spy", f'{{"i": {i}}}') for i in range(over)]
                     ),
                     finish_reason="tool_calls",
                 ),
@@ -1461,3 +1463,87 @@ if __name__ == "__main__":
     for test in tests:
         test()
     print(f"{len(tests)} agentic web search tests passed.")
+
+
+async def _test_identical_repeated_calls_are_refused_and_marked():
+    """A model stuck on the same call gets refusals, then a repeat stop reason."""
+
+    call_number = 0
+
+    async def fake_completion(**kwargs):
+        nonlocal call_number
+        call_number += 1
+        if call_number > 1:
+            return AsyncChunkStream([_chunk(
+                    response_id="r",
+                    delta={"role": "assistant", "content": "Answer."},
+                    finish_reason="stop",
+                )])
+        # One round asking for the same search five times.
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="r",
+                    delta={
+                        "role": "assistant",
+                        "tool_calls": [
+                            {
+                                "index": index,
+                                "id": f"call-{index}",
+                                "type": "function",
+                                "function": {
+                                    "name": "web_search",
+                                    "arguments": '{"query":"same query"}',
+                                },
+                            }
+                            for index in range(5)
+                        ]
+                    },
+                    finish_reason="tool_calls",
+                )
+            ]
+        )
+
+    search_count = 0
+
+    async def fake_search(query: str, raise_on_error: bool = False):
+        nonlocal search_count
+        search_count += 1
+        return []
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "test"),
+        patch.object(web_search, "search_web", fake_search),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Search the same thing over and over")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+    results = [
+        event
+        for event in message.agent_trace or []
+        if isinstance(event, AgentTraceToolResult)
+    ]
+    ran = [event for event in results if event.status != "error"]
+    refused = [event for event in results if event.status == "error"]
+    # The first MAX_IDENTICAL_TOOL_CALLS identical calls run; the rest are
+    # refused with an explanation instead of executed a fourth time.
+    assert search_count == integration.MAX_IDENTICAL_TOOL_CALLS
+    assert len(ran) == integration.MAX_IDENTICAL_TOOL_CALLS
+    assert len(refused) == 5 - integration.MAX_IDENTICAL_TOOL_CALLS
+    assert all("already made" in event.content for event in refused)
+    # Every call of the round was a repeat past the cap: the trace says why.
+    assert message.agent_stop_reason == "repeat_limit"
+
+
+def test_identical_repeated_calls_are_refused_and_marked():
+    asyncio.run(_test_identical_repeated_calls_are_refused_and_marked())

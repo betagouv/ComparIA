@@ -200,6 +200,10 @@ TOOL_TIME_BUDGET_SECONDS = 60.0
 # rounds are sequential and the deadline above is what the visitor actually feels.
 MAX_TOOL_CALLS = 15
 MAX_TOOL_ROUNDS = 6
+# Times one exact (tool, arguments) pair may run in a single response. A model
+# repeating itself is stuck, not thorough: the repeats are refused and it is
+# told to answer from what it has.
+MAX_IDENTICAL_TOOL_CALLS = 3
 # How long we remember that an endpoint refused tool schemas
 TOOL_REJECTION_TTL = 86_400  # 24h
 

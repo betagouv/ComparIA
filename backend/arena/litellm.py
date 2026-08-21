@@ -22,6 +22,7 @@ from backend.arena.tools import (
 )
 from backend.config import (
     GLOBAL_TIMEOUT,
+    MAX_IDENTICAL_TOOL_CALLS,
     MAX_TOOL_CALLS,
     MAX_TOOL_ROUNDS,
     ORDBOGEN_GLOBAL_TIMEOUT,
@@ -197,6 +198,10 @@ async def litellm_stream_iter(
     tool_round_count = 0
     final_answer_retry_count = 0
     total_tokens = 0
+    # Identical (tool, arguments) pairs already run this response. A model that
+    # repeats itself is stuck: past a few repeats the extra calls buy nothing,
+    # so they are refused and the model is told to answer from what it has.
+    seen_calls: dict[tuple[str, str], int] = {}
     tools_were_offered = tools_available
     sheds = 0
     # Set the first time we refuse to offer tools again, so that "the model was
@@ -384,19 +389,39 @@ async def litellm_stream_iter(
         allowed = max(0, MAX_TOOL_CALLS - tool_call_count)
         tool_call_count += len(requested)
 
-        pending = [
-            (
-                _run_tool_call(
-                    tools_by_name.get(tool_name),
-                    tool_name,
-                    arguments_json,
-                    seconds_left,
+        pending: list[Awaitable[tuple[ToolResult, int]]] = []
+        repeat_refusals = 0
+        for index, (_, tool_name, arguments_json) in enumerate(requested):
+            key = (tool_name, arguments_json)
+            times_seen = seen_calls.get(key, 0)
+            seen_calls[key] = times_seen + 1
+            if index >= allowed:
+                pending.append(_refuse_tool_call("The tool call limit has been reached."))
+            elif times_seen >= MAX_IDENTICAL_TOOL_CALLS:
+                # The exact same work was already done this response; running it
+                # again cannot teach the model anything new.
+                repeat_refusals += 1
+                pending.append(
+                    _refuse_tool_call(
+                        f"This exact call was already made {times_seen} times "
+                        "and returned the same result each time. Do not repeat "
+                        "it: use what you already have and answer."
+                    )
                 )
-                if index < allowed
-                else _refuse_tool_call("The tool call limit has been reached.")
-            )
-            for index, (_, tool_name, arguments_json) in enumerate(requested)
-        ]
+            else:
+                pending.append(
+                    _run_tool_call(
+                        tools_by_name.get(tool_name),
+                        tool_name,
+                        arguments_json,
+                        seconds_left,
+                    )
+                )
+        if repeat_refusals:
+            # Part of the round was refused as repetition: the model was going
+            # in circles, and the trace should say so rather than blame a
+            # budget or report an untruncated completion.
+            stopped_by = "repeat_limit"
         # Calls emitted together run together: running them in turn would spend
         # the whole budget on work that overlaps.
         outcomes = await asyncio.gather(*pending)
