@@ -503,11 +503,13 @@ async def carry_over_anonymous(
                 )
             ).all()
         )
+        # Ties go to the session: leaving both rows in place would trip the
+        # unique index the moment the UPDATE below reassigns them.
         newer_on_the_session = [
             question_id
             for question_id, answered_at in just_answered.items()
             if question_id not in account_answered
-            or answered_at > account_answered[question_id]
+            or answered_at >= account_answered[question_id]
         ]
         if newer_on_the_session:
             await session.execute(

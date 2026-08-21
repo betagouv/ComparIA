@@ -42,6 +42,10 @@ MAX_QUESTIONS_PER_PROMPT = 3
 # it would create are worthless either way.
 MAX_DISMISS_IDS = 50
 
+# Stands in for "no user" inside the COALESCE of the answer uniqueness index.
+# Shared between the model and its migration so the two cannot drift apart.
+NO_USER_SENTINEL = "00000000-0000-0000-0000-000000000000"
+
 QuestionLabel = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=300)
 ]
@@ -138,7 +142,9 @@ class SurveyAnswer(SurveyAnswerBase, table=True):
             "uq_survey_answer_respondent_option",
             "question_id",
             "option_key",
-            text("COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid)"),
+            text(
+                f"COALESCE(user_id, '{NO_USER_SENTINEL}'::uuid)"
+            ),
             text("COALESCE(anonymous_user_hash, '')"),
             unique=True,
         ),

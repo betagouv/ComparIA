@@ -100,6 +100,29 @@ def test_nothing_is_deleted_when_the_session_answered_nothing():
     ]
 
 
+def test_a_tied_answer_goes_to_the_session():
+    """
+    An exact timestamp tie must not leave both rows in place: the UPDATE that
+    reassigns the anonymous rows would trip the answer uniqueness index. The
+    session wins, like it does on any other non-strict loss.
+    """
+    user_id = uuid.uuid4()
+    question_id = uuid.uuid4()
+    same_moment = utc_now()
+
+    session = FakeSession(
+        [(question_id, same_moment)], [(question_id, same_moment)], []
+    )
+    asyncio.run(carry_over_anonymous(session, "hash", user_id))
+
+    deletes = [
+        statement
+        for statement in session.statements
+        if statement.__visit_name__ == "delete"
+    ]
+    assert deletes, "the account's tied answer was left in place"
+
+
 def test_an_older_anonymous_answer_loses_to_the_account_answer():
     """
     The login form can be filled with answers older than the ones already on
@@ -184,6 +207,7 @@ if __name__ == "__main__":
     test_the_answer_just_given_replaces_the_one_on_the_account()
     test_nothing_is_deleted_when_the_session_answered_nothing()
     test_an_older_anonymous_answer_loses_to_the_account_answer()
+    test_a_tied_answer_goes_to_the_session()
     test_prompt_counts_are_added_together_rather_than_duplicated()
     test_an_unmatched_anonymous_row_is_reassigned_untouched()
     test_the_cap_still_holds_after_a_merge()

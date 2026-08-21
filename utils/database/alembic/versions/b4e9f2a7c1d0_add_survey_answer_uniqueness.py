@@ -11,6 +11,8 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
+from utils.database.models.survey import NO_USER_SENTINEL
+
 # revision identifiers, used by Alembic.
 revision: str = "b4e9f2a7c1d0"
 down_revision: Union[str, Sequence[str], None] = "3dd0208cf1b8"
@@ -31,9 +33,7 @@ def upgrade() -> None:
         [
             "question_id",
             "option_key",
-            sa.text(
-                "COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid)"
-            ),
+            sa.text(f"COALESCE(user_id, '{NO_USER_SENTINEL}'::uuid)"),
             sa.text("COALESCE(anonymous_user_hash, '')"),
         ],
         unique=True,
