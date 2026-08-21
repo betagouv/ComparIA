@@ -1,7 +1,7 @@
 import re
 import unicodedata
 import uuid
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import update as sa_update
@@ -10,6 +10,7 @@ from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from utils.database.models.survey import (
+    MAX_DISMISS_IDS,
     MAX_QUESTION_PROMPTS,
     MAX_QUESTIONS_PER_PROMPT,
     AdminSurveyOption,
@@ -46,6 +47,14 @@ class SurveyQuestionInUseError(Exception):
 
 class SurveyQuestionLabelUnusableError(Exception):
     """A label with no letters or digits leaves nothing to build a key from."""
+
+
+class SurveyQuestionKeyCollisionError(Exception):
+    """
+    A label that slugs to a key another question already uses. Distinct from
+    `SurveyQuestionLabelUnusableError`: the label itself is fine, the admin
+    just needs to reword it so it stops colliding.
+    """
 
 
 class SurveyOptionUnknownError(Exception):
@@ -257,6 +266,24 @@ async def record_shown(
     if not question_ids:
         return
 
+    # Dismissing is best-effort: a stale or arbitrary id from the client must
+    # not reach the foreign key and surface as a 500, so anything the question
+    # table does not know about is dropped rather than rejected. The list is
+    # capped first, since only what one popup showed can ever be legitimate.
+    question_ids = question_ids[:MAX_DISMISS_IDS]
+    known_ids = set(
+        (
+            await session.exec(
+                select(SurveyQuestion.id).where(
+                    col(SurveyQuestion.id).in_(question_ids)
+                )
+            )
+        ).all()
+    )
+    question_ids = [qid for qid in question_ids if qid in known_ids]
+    if not question_ids:
+        return
+
     existing = {
         log.question_id: log
         for log in (
@@ -439,30 +466,58 @@ async def carry_over_anonymous(
     `_associate_anonymous_acceptance()` in `backend/auth/services.py`: this is
     called from inside that same transaction, so it never commits itself.
     """
-    just_answered = set(
+    # Both sides can hold answers for the same question, since the login form
+    # asks it of returning users too. The newer answer wins, per question: the
+    # answer given a moment ago describes the person better than one given a
+    # year ago. This is the same replace-in-place rule the profile page
+    # follows, so the losing account rows go and the anonymous ones take
+    # their place.
+    just_answered = dict(
         (
             await session.exec(
-                select(SurveyAnswer.question_id)
+                select(
+                    SurveyAnswer.question_id,
+                    func.max(SurveyAnswer.answered_at),
+                )
                 .where(
                     SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
                     col(SurveyAnswer.user_id).is_(None),
                 )
-                .distinct()
+                .group_by(col(SurveyAnswer.question_id))
             )
         ).all()
     )
     if just_answered:
-        # The newer answer wins. Both sides can hold one for the same question,
-        # since the login form asks it of returning users too, and the answer
-        # given a moment ago describes the person better than one given a year
-        # ago. This is the same replace-in-place rule the profile page follows,
-        # so the account's rows go and the anonymous ones take their place.
-        await session.execute(
-            sa_delete(SurveyAnswer).where(
-                SurveyAnswer.user_id == user_id,
-                col(SurveyAnswer.question_id).in_(just_answered),
-            )
+        account_answered = dict(
+            (
+                await session.exec(
+                    select(
+                        SurveyAnswer.question_id,
+                        func.max(SurveyAnswer.answered_at),
+                    )
+                    .where(
+                        SurveyAnswer.user_id == user_id,
+                        col(SurveyAnswer.question_id).in_(list(just_answered)),
+                    )
+                    .group_by(col(SurveyAnswer.question_id))
+                )
+            ).all()
         )
+        # Ties go to the session: leaving both rows in place would trip the
+        # unique index the moment the UPDATE below reassigns them.
+        newer_on_the_session = [
+            question_id
+            for question_id, answered_at in just_answered.items()
+            if question_id not in account_answered
+            or answered_at >= account_answered[question_id]
+        ]
+        if newer_on_the_session:
+            await session.execute(
+                sa_delete(SurveyAnswer).where(
+                    SurveyAnswer.user_id == user_id,
+                    col(SurveyAnswer.question_id).in_(newer_on_the_session),
+                )
+            )
 
     await session.execute(
         sa_update(SurveyAnswer)
@@ -643,9 +698,10 @@ async def create_question(
         await session.commit()
     except IntegrityError as error:
         await session.rollback()
-        # Two labels slugging to the same key is the only way this collides,
-        # which is the same complaint as a label with nothing to slug at all.
-        raise SurveyQuestionLabelUnusableError() from error
+        # The key is the only unique constraint on this table, so a collision
+        # here means the label slugs to a key another question already uses —
+        # not that the label is unusable, which was checked before the insert.
+        raise SurveyQuestionKeyCollisionError() from error
 
     invalidate_cache(REDIS_SURVEY_KEY)
     await session.refresh(question)
@@ -720,7 +776,7 @@ async def update_question(
     question.required = payload.required
     if label_changed or live_set_changed:
         question.revision += 1
-    question.updated_at = datetime.now()
+    question.updated_at = utc_now()
 
     session.add(question)
     await session.commit()
@@ -737,12 +793,11 @@ async def set_archived(
         raise SurveyQuestionNotFoundError()
 
     # archived_at is the survey's own column and reads in UTC like every other
-    # one it owns; updated_at belongs to BaseDBModel, whose default is the
-    # host's local time, and matching it keeps a row's own two stamps
-    # comparable.
+    # one it owns; updated_at is stamped on the same scale so a row's own two
+    # stamps stay comparable.
     question.archived_at = utc_now() if archived else None
     question.archived_by = admin_id if archived else None
-    question.updated_at = datetime.now()
+    question.updated_at = utc_now()
     session.add(question)
     await session.commit()
     invalidate_cache(REDIS_SURVEY_KEY)
