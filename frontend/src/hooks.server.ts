@@ -217,7 +217,7 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
   return response
 }
 
-const authWallHandle: Handle = ({ event, resolve }) => {
+export const authWallHandle: Handle = async ({ event, resolve }) => {
   if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
 
   const path = event.url.pathname
@@ -226,6 +226,27 @@ const authWallHandle: Handle = ({ event, resolve }) => {
 
   const cookie = event.cookies.get('auth_session')
   if (!cookie) {
+    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+  }
+
+  // Holding a cookie is not the same as holding a session: anyone can set one
+  // by hand. The backend answers from another host in every deployment, so
+  // event.fetch will not carry the cookie on its own and we pass it along.
+  let session: { user: unknown }
+  try {
+    session = await api.request<{ user: unknown }>('/auth/me', {
+      fetch: event.fetch,
+      headers: { cookie: `auth_session=${cookie}` }
+    })
+  } catch (error) {
+    // Fail open, like the maintenance and locale checks above: a backend blip
+    // must not sign everyone out, and the API guards its own endpoints anyway.
+    logger.error('Auth wall session check failed', { error: `${error}` })
+    return resolve(event)
+  }
+
+  if (!session.user) {
+    event.cookies.delete('auth_session', { path: '/' })
     redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
   }
 
