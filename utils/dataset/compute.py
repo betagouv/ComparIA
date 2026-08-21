@@ -27,6 +27,7 @@ from sqlmodel import and_, col, select
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.llms.models import APILLMDataBase
+from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
 from backend.vote_tags.services import get_all_vote_tags
 from utils.database.models import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -86,6 +87,59 @@ def _respondent_key(
     return None
 
 
+def publishable_survey_terms_versions(active_version: str | None) -> set[str]:
+    """
+    The SurveyAnswer.terms_version values whose answers may be published in
+    the public dataset. This is THE place to edit when the terms are bumped:
+    add a version here only if its consent text covers research publication
+    of survey answers to the same extent as the current one.
+
+    - active published "terms" document version: IN. It is what
+      backend.auth.services.get_current_terms_acceptance_version() stamps on
+      every answer (see backend/survey/router.py), so it is the only version
+      whose text we know the respondent actually accepted.
+    - LEGACY_PARTICIPATION_TERMS_VERSION ("legacy-pre-versioning"): OUT.
+      get_current_terms_acceptance_version() returns that marker when NO terms
+      document is published at all, i.e. the respondent accepted nothing —
+      and backend/auth/services.py:erase_user_account explicitly notes survey
+      answers were never offered for publication under the research terms.
+    - NULL: OUT. Old rows predate version recording, so no proof of consent
+      exists; when unsure, do not publish.
+    - Any other (retired or unknown) version: OUT, for the same reason.
+
+    If nothing is currently published, nothing is publishable.
+    """
+    return {active_version} if active_version else set()
+
+
+def _survey_answers_query(publishable_versions: set[str]):
+    """
+    Published, non-archived questions joined to answers whose consent version
+    is publishable (see `publishable_survey_terms_versions`). The consent gate
+    lives here, in the WHERE clause: NULL (not matched by IN) and
+    legacy/retired versions never leave the database.
+    """
+    return (
+        select(
+            SurveyQuestion.key,
+            SurveyQuestion.input_type,
+            SurveyAnswer.user_id,
+            SurveyAnswer.anonymous_user_hash,
+            SurveyAnswer.option_key,
+        )
+        .join(
+            SurveyAnswer,
+            col(SurveyAnswer.question_id) == col(SurveyQuestion.id),
+        )
+        .where(
+            col(SurveyQuestion.published) == True,
+            col(SurveyQuestion.archived_at).is_(None),
+            col(SurveyAnswer.terms_version).in_(publishable_versions),
+        )
+        .order_by(col(SurveyAnswer.answered_at))
+    )
+
+
 @alru_cache
 async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
     """
@@ -100,6 +154,10 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
     their answers never enter the returned mapping and so never reach the
     dataset, regardless of what a Comparison's row later looks up.
 
+    Answers are also filtered on consent: only those recorded under a terms
+    version listed in `publishable_survey_terms_versions` (see that function
+    for which versions qualify and why) enter the dataset.
+
     Answers are stored replace-in-place (see
     utils/database/models/survey.py), so whatever is in the table now IS the
     respondent's current answer; there is no history to reconcile. Rows are
@@ -108,26 +166,11 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
     most recently answered one wins deterministically.
     """
     async with get_session() as session:
-        rows = (
-            await session.exec(
-                select(
-                    SurveyQuestion.key,
-                    SurveyQuestion.input_type,
-                    SurveyAnswer.user_id,
-                    SurveyAnswer.anonymous_user_hash,
-                    SurveyAnswer.option_key,
-                )
-                .join(
-                    SurveyAnswer,
-                    col(SurveyAnswer.question_id) == col(SurveyQuestion.id),
-                )
-                .where(
-                    col(SurveyQuestion.published) == True,
-                    col(SurveyQuestion.archived_at).is_(None),
-                )
-                .order_by(col(SurveyAnswer.answered_at))
-            )
-        ).all()
+        active_terms = await get_active_legal_document("terms", DEFAULT_LEGAL_LANGUAGE)
+        publishable_versions = publishable_survey_terms_versions(
+            active_terms.version if active_terms else None
+        )
+        rows = (await session.exec(_survey_answers_query(publishable_versions))).all()
 
     answers: dict[str, RespondentAnswers] = {}
     for question_key, input_type, user_id, anonymous_user_hash, option_key in rows:
