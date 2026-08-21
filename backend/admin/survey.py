@@ -7,6 +7,7 @@ from backend.survey.services import (
     SurveyOptionUnknownError,
     SurveyOrderMismatchError,
     SurveyQuestionInUseError,
+    SurveyQuestionKeyCollisionError,
     SurveyQuestionLabelUnusableError,
     SurveyQuestionNotFoundError,
     admin_list,
@@ -47,6 +48,10 @@ _IN_USE = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="Answers already carry this question, archive it instead of deleting it",
 )
+_KEY_COLLISION = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="This label slugs to a key another question already uses, reword it",
+)
 
 
 async def _admin_question(session, question_id: uuid.UUID) -> AdminSurveyQuestion:
@@ -80,6 +85,8 @@ async def add_survey_question(
             question = await create_question(session, body)
         except SurveyQuestionLabelUnusableError:
             raise _LABEL_UNUSABLE
+        except SurveyQuestionKeyCollisionError:
+            raise _KEY_COLLISION
         except SurveyOptionUnknownError:
             raise _OPTION_UNKNOWN
         return await _admin_question(session, question.id)
