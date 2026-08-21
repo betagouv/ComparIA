@@ -108,8 +108,11 @@ async def security_headers_middleware(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Content-Security-Policy"] = (
-        "frame-ancestors 'none'; form-action 'none'; base-uri 'none'"
+    # setdefault, not assignment: a route serving untrusted bytes can set a
+    # stricter policy of its own and keep it (see GET /auth/config/logo).
+    response.headers.setdefault(
+        "Content-Security-Policy",
+        "frame-ancestors 'none'; form-action 'none'; base-uri 'none'",
     )
     # This is the API, not a browser client: uvicorn isn't started with
     # --proxy-headers, so request.url.scheme stays "http" behind Caddy and

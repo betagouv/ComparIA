@@ -179,7 +179,16 @@ async def get_config_logo() -> Response:
     return Response(
         content=app_settings.logo,
         media_type=app_settings.logo_content_type or "image/png",
-        headers={"Cache-Control": "public, max-age=300"},
+        headers={
+            "Cache-Control": "public, max-age=300",
+            # The logo can be an SVG, and an SVG can carry a <script>. Pages
+            # only ever show it in an <img>, where scripts never run, but
+            # opening this URL directly would render it as a document on our
+            # own origin. sandbox puts it in an opaque origin with scripting
+            # off, which leaves <img> untouched.
+            "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+            "Content-Disposition": "inline",
+        },
     )
 
 
