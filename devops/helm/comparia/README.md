@@ -170,12 +170,14 @@ assumed.
 | `ingress.annotations`  | `{}`    | Passed through as-is, e.g. for cert-manager |
 | `ingress.tls`          | `[]`    | Passed through as-is |
 
-Routes `/counter`, `/models/`, and `/arena/` to the backend Service and
-everything else to the frontend Service, mirroring
-[`devops/standalone_docker_install/Caddyfile`](../standalone_docker_install/Caddyfile).
-Other backend endpoints (auth, admin, ...) are called server-side by the
-frontend over the cluster-internal `PUBLIC_API_LOCAL_URL`, not through this
-Ingress.
+Routes every top-level backend router (`/counter`, `/maintenance/status`,
+`/models`, `/suggestions`, `/vote-tags`, `/arena`, `/auth`, `/admin`,
+`/settings`, `/statistics`, `/ranking`) to the backend Service and everything
+else to the frontend Service. Most of these (auth, admin, ...) are normally
+called server-side by the frontend over the cluster-internal
+`PUBLIC_API_LOCAL_URL` instead, but `/auth/config` and others are also called
+client-side from a universal SvelteKit load, so they need a public route
+here too.
 
 ## Upgrading
 
