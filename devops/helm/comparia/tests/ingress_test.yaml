@@ -51,17 +51,105 @@ tests:
           path: spec.tls[0].secretName
           value: comparia-tls
 
-  - it: routes backend paths to the backend Service and everything else to the frontend Service
+  - it: routes every backend router path to the backend Service and everything else to the frontend Service
     set:
       ingress.enabled: true
       ingress.host: comparia.example.com
     asserts:
       - equal:
-          path: spec.rules[0].http.paths[0].backend.service.name
-          value: RELEASE-NAME-comparia-backend
-      - equal:
-          path: spec.rules[0].http.paths[2].backend.service.name
-          value: RELEASE-NAME-comparia-backend
-      - equal:
-          path: spec.rules[0].http.paths[3].backend.service.name
-          value: RELEASE-NAME-comparia-frontend
+          path: spec.rules[0].http.paths
+          value:
+            - path: /counter
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /maintenance/status
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /models
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /suggestions
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /vote-tags
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /arena
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /auth
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /admin
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /settings
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /statistics
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /ranking
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-frontend
+                  port:
+                    number: 80
+
+  - it: never renders a rewrite-target annotation
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+    asserts:
+      - notExists:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/rewrite-target"]
+      - hasDocuments:
+          count: 1
