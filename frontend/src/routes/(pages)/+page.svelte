@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Button, Checkbox, Icon, Link } from '$components/dsfr'
+  import SeoHead from '$components/SEOHead.svelte'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
   import * as env from '$env/static/public'
@@ -144,6 +145,8 @@
     desc: m[`faq.${id}.questions.${index}.desc`]()
   }))
 </script>
+
+<SeoHead />
 
 <main id="content" class="">
   <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
