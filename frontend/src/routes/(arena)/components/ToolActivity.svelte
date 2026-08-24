@@ -101,10 +101,12 @@
   <details class="tool-activity-card cg-border my-3 rounded-lg bg-white w-full overflow-hidden">
     <summary class="tool-activity-summary gap-2 px-3 py-2 text-sm flex cursor-pointer items-center">
       <Icon icon="i-ri-global-line" size="sm" class="text-primary shrink-0" />
-      <span class="gap-x-2 min-w-0 sm:flex grow items-baseline">
-        <span id="{id}-title" class="font-medium">{call.label || call.name}</span>
+      <span class="gap-x-2 min-w-0 flex grow items-baseline">
+        <span id="{id}-title" class="font-medium shrink-0 whitespace-nowrap"
+          >{call.label || call.name}</span
+        >
         {#if requestSummary}
-          <span class="sm:inline block truncate text-[--text-mention-grey]">
+          <span class="min-w-0 truncate whitespace-nowrap text-[--text-mention-grey]">
             «&nbsp;{requestSummary}&nbsp;»
           </span>
         {/if}
