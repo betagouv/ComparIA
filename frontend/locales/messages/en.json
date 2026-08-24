@@ -282,6 +282,7 @@
                 "submitting": "Sending..."
             },
             "code": {
+                "changeEmail": "Change email address",
                 "label": "6-digit code",
                 "submit": "Verify",
                 "verifying": "Verifying...",

@@ -620,6 +620,7 @@
         },
         "modal": {
             "code": {
+                "changeEmail": "Modifier l’adresse email",
                 "error": "Code invalide ou expiré.",
                 "label": "Code reçu par email",
                 "notReceived": "Vous n’avez rien reçu ?",

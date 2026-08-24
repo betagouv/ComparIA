@@ -14,7 +14,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { onMount } from 'svelte'
+  import { onMount, tick } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
@@ -41,6 +41,7 @@
   let consented = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
+  let formContainer: HTMLDivElement
 
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
   const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
@@ -127,6 +128,14 @@
     requestCode()
   }
 
+  async function onChangeEmail() {
+    step = 'email'
+    error = undefined
+    code = ''
+    await tick()
+    formContainer.querySelector<HTMLInputElement>('#login-email')?.focus()
+  }
+
   function onSubmit(e: SubmitEvent) {
     e.preventDefault()
     if (step === 'email') requestCode()
@@ -134,7 +143,7 @@
   }
 </script>
 
-<div {...props} class={['my-10 mx-8', props.class]}>
+<div bind:this={formContainer} {...props} class={['my-10 mx-8', props.class]}>
   <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
   <p class="text-xs! mb-6! text-grey">
     {m['auth.modal.email.subtitle']()}
@@ -152,6 +161,18 @@
       required
       class="mb-4!"
     />
+
+    {#if step === 'code'}
+      <Button
+        type="button"
+        size="xs"
+        variant="tertiary-no-outline"
+        text={m['auth.modal.code.changeEmail']()}
+        disabled={loading}
+        onclick={onChangeEmail}
+        class="-mt-2! mb-4! text-black! underline"
+      />
+    {/if}
 
     {#if canMergeComparisons}
       <Checkbox
