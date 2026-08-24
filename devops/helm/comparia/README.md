@@ -79,7 +79,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.sentryDsn`         | `""`                | Left empty, errors are not sent anywhere              |
 | `config.sentryEnvironment` | `prod`              |                                                        |
 | `config.appUrl`            | `""`                | `COMPARIA_APP_URL`, public origin used to build absolute links in emails (login codes). Left empty, falls back to the app's own dev default — set this for a real install |
-| `config.adminEmails`       | `[]`                | `ADMIN_EMAILS`, promoted to the admin role on startup, created if absent. Left empty, nobody can reach `/admin` |
+| `config.adminEmails`       | `[]`                | `ADMIN_EMAILS`, promoted to the admin role on startup, created if absent. Left empty, nobody can reach `/api/admin` |
 | `config.auth.domainAllowlist` | `[]`             | `AUTH_DOMAIN_ALLOWLIST`. If non-empty, only emails from these domains can request a login code |
 | `config.auth.sessionLengthDays` | `30`           | `AUTH_SESSION_LENGTH_DAYS`                            |
 | `config.currency.display`  | `EUR`               | `DISPLAY_CURRENCY`, ISO 4217 code models prices are converted to for display |
@@ -167,14 +167,12 @@ assumed.
 | `ingress.annotations`  | `{}`    | Passed through as-is, e.g. for cert-manager |
 | `ingress.tls`          | `[]`    | Passed through as-is |
 
-Routes every top-level backend router (`/counter`, `/maintenance/status`,
-`/models`, `/suggestions`, `/vote-tags`, `/arena`, `/auth`, `/admin`,
-`/settings`, `/statistics`, `/ranking`) to the backend Service and everything
-else to the frontend Service. Most of these (auth, admin, ...) are normally
-called server-side by the frontend over the cluster-internal
-`PUBLIC_API_LOCAL_URL` instead, but `/auth/config` and others are also called
-client-side from a universal SvelteKit load, so they need a public route
-here too.
+Routes `/api` (every backend router, see `backend/main.py`) to the backend
+Service and everything else to the frontend Service. Most backend routes
+(auth, admin, ...) are normally called server-side by the frontend over the
+cluster-internal `PUBLIC_API_LOCAL_URL` instead, but `/api/auth/config` and
+others are also called client-side from a universal SvelteKit load, so they
+need a public route here too.
 
 ## Upgrading
 

@@ -416,7 +416,7 @@ def test_invite_acceptance_requires_a_current_acceptance():
     with routed(
         has_current_terms_acceptance=declined, accept_invite=accept_invite
     ) as test_client:
-        response = test_client.post("/auth/invite/accept", json={"token": "invite"})
+        response = test_client.post("/api/auth/invite/accept", json={"token": "invite"})
 
     assert response.status_code == 428
 
@@ -435,7 +435,7 @@ def test_an_accepted_invite_carries_the_acceptance_of_the_visitor():
     with routed(
         has_current_terms_acceptance=granted, accept_invite=accept_invite
     ) as test_client:
-        response = test_client.post("/auth/invite/accept", json={"token": "invite"})
+        response = test_client.post("/api/auth/invite/accept", json={"token": "invite"})
 
     assert response.status_code == 200
     assert accepted["anonymous_user_hash"] == auth_services._hash("token")

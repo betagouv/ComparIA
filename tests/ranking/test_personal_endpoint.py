@@ -48,7 +48,7 @@ def ranking_of(asked_for: list):
 
 
 def test_a_signed_out_visitor_is_refused_rather_than_given_an_empty_ranking():
-    response = client().get("/ranking/personal")
+    response = client().get("/api/ranking/personal")
 
     assert response.status_code == 401
     assert response.json()["detail"] == "auth_required"
@@ -59,7 +59,7 @@ def test_a_signed_in_user_is_ranked_on_their_own_votes():
     asked_for: list = []
 
     with ranking_of(asked_for):
-        response = client(user).get("/ranking/personal")
+        response = client(user).get("/api/ranking/personal")
 
     assert response.status_code == 200
     assert response.json() == {"rows": [], "votes_count": 0}

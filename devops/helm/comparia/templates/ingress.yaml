@@ -1,8 +1,4 @@
 {{- if .Values.ingress.enabled }}
-{{- /* Every top-level backend route (app.include_router(...) plus the two bare
-@app.get in backend/main.py) -- keep this list in sync with main.py when
-adding a new router. */}}
-{{- $backendRouteNames := list "counter" "maintenance/status" "models" "suggestions" "vote-tags" "arena" "auth" "admin" "settings" "statistics" "ranking" }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -25,20 +21,23 @@ spec:
     - host: {{ required "ingress.host is required when ingress.enabled is true" .Values.ingress.host | quote }}
       http:
         paths:
-          # Routes called directly by the browser (SSR data loading calls the
-          # backend server-side over PUBLIC_API_LOCAL_URL instead, inside the
-          # cluster, and never goes through this Ingress -- but +layout.ts is a
-          # universal load, so it and anything else client-invoked still needs
-          # a public route here too).
-          {{- range $backendRouteNames }}
-          - path: /{{ . }}
+          # Every backend route lives under /api (see backend/main.py), so a
+          # single prefix covers all of them and can never collide with a
+          # same-named frontend page (e.g. /admin, /models, /settings are
+          # both SvelteKit pages and, without this prefix, backend routers).
+          #
+          # SSR data loading calls the backend server-side over
+          # PUBLIC_API_LOCAL_URL instead, inside the cluster, and never goes
+          # through this Ingress -- but +layout.ts is a universal load, so it
+          # and anything else client-invoked still needs a public route here
+          # too.
+          - path: /api
             pathType: Prefix
             backend:
               service:
-                name: {{ include "comparia.fullname" $ }}-backend
+                name: {{ include "comparia.fullname" . }}-backend
                 port:
-                  number: {{ $.Values.service.backend.port }}
-          {{- end }}
+                  number: {{ .Values.service.backend.port }}
           - path: /
             pathType: Prefix
             backend:

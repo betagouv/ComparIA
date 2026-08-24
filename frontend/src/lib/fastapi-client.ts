@@ -16,14 +16,20 @@ import type {
 function getBackendUrl(): string {
   const ssr = !browser // browser false if SSR
 
+  // /api: every backend route lives there (see backend/main.py) so it never
+  // collides with a same-named SvelteKit page once both sit behind the same
+  // host with no base path (e.g. /admin, /models, /settings are pages too).
   if (ssr) {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
-    return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return (
+      (publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') +
+      '/api'
+    )
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
-    return publicEnv.PUBLIC_API_URL || 'http://localhost:8008'
+    return (publicEnv.PUBLIC_API_URL || 'http://localhost:8008') + '/api'
   } else {
     // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return (window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') + '/api'
   }
 }
 

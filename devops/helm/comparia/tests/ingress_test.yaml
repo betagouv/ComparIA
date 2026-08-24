@@ -51,7 +51,7 @@ tests:
           path: spec.tls[0].secretName
           value: comparia-tls
 
-  - it: routes every backend router path to the backend Service and everything else to the frontend Service
+  - it: routes /api to the backend Service and everything else to the frontend Service
     set:
       ingress.enabled: true
       ingress.host: comparia.example.com
@@ -59,77 +59,7 @@ tests:
       - equal:
           path: spec.rules[0].http.paths
           value:
-            - path: /counter
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /maintenance/status
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /models
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /suggestions
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /vote-tags
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /arena
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /auth
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /admin
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /settings
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /statistics
-              pathType: Prefix
-              backend:
-                service:
-                  name: RELEASE-NAME-comparia-backend
-                  port:
-                    number: 80
-            - path: /ranking
+            - path: /api
               pathType: Prefix
               backend:
                 service:

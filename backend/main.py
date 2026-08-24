@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -143,18 +143,24 @@ Instrumentator().instrument(app).expose(
     app, endpoint="/metrics", dependencies=[Depends(_verify_metrics_token)]
 )
 
-app.include_router(models_router)
-app.include_router(suggestions_router)
-app.include_router(vote_tags_router)
-app.include_router(arena_router)
-app.include_router(auth_router)
-app.include_router(admin_router)
-app.include_router(settings_router)
-app.include_router(statistics_router)
-app.include_router(ranking_router)
+# Every browser/frontend-facing route lives under /api, so it never collides
+# with a same-named SvelteKit page (e.g. /admin, /models, /settings are both
+# frontend pages and, without this prefix, backend routers) once both sit
+# behind the same host with no base path.
+api_router = APIRouter(prefix="/api")
+
+api_router.include_router(models_router)
+api_router.include_router(suggestions_router)
+api_router.include_router(vote_tags_router)
+api_router.include_router(arena_router)
+api_router.include_router(auth_router)
+api_router.include_router(admin_router)
+api_router.include_router(settings_router)
+api_router.include_router(statistics_router)
+api_router.include_router(ranking_router)
 
 
-@app.get("/counter")
+@api_router.get("/counter")
 async def get_counter():
     app_settings = await get_app_settings()
     return {
@@ -163,6 +169,9 @@ async def get_counter():
     }
 
 
-@app.get("/maintenance/status")
+@api_router.get("/maintenance/status")
 async def maintenance_status():
     return {"enabled": get_maintenance_mode()}
+
+
+app.include_router(api_router)

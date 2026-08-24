@@ -89,7 +89,7 @@ def test_public_suggestions_returns_grouped_categories(monkeypatch):
     app = FastAPI()
     app.include_router(suggestions_router.router)
 
-    response = TestClient(app).get("/suggestions?locale=fr")
+    response = TestClient(app).get("/api/suggestions?locale=fr")
 
     assert response.status_code == 200
     assert response.json()["categories"][0]["suggestions"] == [
@@ -105,7 +105,7 @@ def test_public_suggestions_returns_nothing_for_a_locale_without_content(monkeyp
     app = FastAPI()
     app.include_router(suggestions_router.router)
 
-    response = TestClient(app).get("/suggestions?locale=lt")
+    response = TestClient(app).get("/api/suggestions?locale=lt")
 
     assert response.status_code == 200
     assert response.json() == {"categories": []}
@@ -115,7 +115,7 @@ def test_admin_suggestions_requires_an_admin():
     app = FastAPI()
     app.include_router(admin_router)
 
-    response = TestClient(app).get("/admin/suggestions")
+    response = TestClient(app).get("/api/admin/suggestions")
 
     assert response.status_code == 401
 
@@ -136,7 +136,7 @@ def test_admin_suggestions_passes_filters_and_returns_categories(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).get(
-        f"/admin/suggestions?search=lettre&status=available&locale=fr&category_id={_category().id}&page=2&page_size=20"
+        f"/api/admin/suggestions?search=lettre&status=available&locale=fr&category_id={_category().id}&page=2&page_size=20"
     )
 
     assert response.status_code == 200
@@ -161,7 +161,7 @@ def test_create_suggestion_rejects_blank_text_before_service(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions",
+        "/api/admin/suggestions",
         json={"category_id": str(_category().id), "text": "   "},
     )
 
@@ -185,7 +185,7 @@ def test_create_suggestion_normalizes_text_and_passes_admin(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions",
+        "/api/admin/suggestions",
         json={"category_id": str(_category().id), "text": "  Écris une lettre.  "},
     )
 
@@ -207,7 +207,7 @@ def test_create_suggestion_returns_conflict_for_duplicate(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions",
+        "/api/admin/suggestions",
         json={"category_id": str(_category().id), "text": "Écris une lettre."},
     )
 
@@ -223,7 +223,7 @@ def test_create_category_validates_remix_icon():
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions/categories",
+        "/api/admin/suggestions/categories",
         json={
             "locale": "fr",
             "title": "Sciences",
@@ -259,7 +259,7 @@ def test_create_category_normalizes_fields(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions/categories",
+        "/api/admin/suggestions/categories",
         json={
             "locale": "fr",
             "title": "  Sciences  ",
@@ -311,7 +311,7 @@ def test_create_category_accepts_fields_at_length_limit(monkeypatch, field, max_
     payload[field] = "a" * max_length
 
     response = TestClient(app).post(
-        "/admin/suggestions/categories",
+        "/api/admin/suggestions/categories",
         json=payload,
     )
 
@@ -343,7 +343,7 @@ def test_create_category_rejects_fields_above_length_limit(field, max_length):
     payload[field] = "a" * (max_length + 1)
 
     response = TestClient(app).post(
-        "/admin/suggestions/categories",
+        "/api/admin/suggestions/categories",
         json=payload,
     )
 
@@ -365,7 +365,7 @@ def test_create_category_returns_conflict_for_duplicate(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions/categories",
+        "/api/admin/suggestions/categories",
         json={
             "locale": "fr",
             "title": "Administratif",
@@ -390,7 +390,7 @@ def test_create_category_rejects_a_title_without_letters_or_digits(monkeypatch):
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).post(
-        "/admin/suggestions/categories",
+        "/api/admin/suggestions/categories",
         json={
             "locale": "fr",
             "title": "???",
@@ -422,7 +422,7 @@ def test_delete_empty_category(monkeypatch):
     app.include_router(admin_router)
     app.dependency_overrides[require_admin] = fake_admin
 
-    response = TestClient(app).delete(f"/admin/suggestions/categories/{_category().id}")
+    response = TestClient(app).delete(f"/api/admin/suggestions/categories/{_category().id}")
 
     assert response.status_code == 204
     assert response.content == b""
@@ -441,7 +441,7 @@ def test_delete_category_returns_conflict_when_it_contains_suggestions(monkeypat
     app.include_router(admin_router)
     app.dependency_overrides[require_admin] = fake_admin
 
-    response = TestClient(app).delete(f"/admin/suggestions/categories/{_category().id}")
+    response = TestClient(app).delete(f"/api/admin/suggestions/categories/{_category().id}")
 
     assert response.status_code == 409
     assert response.json()["detail"] == (
@@ -461,7 +461,7 @@ def test_delete_category_returns_not_found(monkeypatch):
     app.include_router(admin_router)
     app.dependency_overrides[require_admin] = fake_admin
 
-    response = TestClient(app).delete(f"/admin/suggestions/categories/{_category().id}")
+    response = TestClient(app).delete(f"/api/admin/suggestions/categories/{_category().id}")
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Category not found"
@@ -557,7 +557,7 @@ def test_archive_suggestion_passes_admin_and_handles_missing_suggestion(monkeypa
     app.dependency_overrides[require_admin] = fake_admin
 
     response = TestClient(app).patch(
-        f"/admin/suggestions/{_suggestion().id}",
+        f"/api/admin/suggestions/{_suggestion().id}",
         json={"archived": True},
     )
 
@@ -574,7 +574,7 @@ def test_archive_suggestion_passes_admin_and_handles_missing_suggestion(monkeypa
 
     monkeypatch.setattr(admin_suggestions, "set_suggestion_archived", fake_missing)
     response = TestClient(app).patch(
-        f"/admin/suggestions/{_suggestion().id}",
+        f"/api/admin/suggestions/{_suggestion().id}",
         json={"archived": False},
     )
     assert response.status_code == 404

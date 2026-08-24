@@ -16,8 +16,8 @@ async def auth_middleware(request: Request, call_next):
 
     if (
         app_settings.auth_access_policy == "sign_in_required"
-        and request.url.path.startswith("/arena")
-        and request.url.path != "/arena/challenge"
+        and request.url.path.startswith("/api/arena")
+        and request.url.path != "/api/arena/challenge"
         and settings.COMPARIA_DB_URI
     ):
         token = request.cookies.get("auth_session")
