@@ -327,24 +327,24 @@ def public_client(presentation=None, document=None):
 
 def test_public_terms_are_revalidated_with_an_etag():
     with public_client() as client:
-        first = client.get("/api/settings/legal/terms")
+        first = client.get("/settings/legal/terms")
         assert first.status_code == 200
         assert first.headers["Cache-Control"] == "no-cache"
 
         etag = first.headers["ETag"]
-        cached = client.get("/api/settings/legal/terms", headers={"If-None-Match": etag})
+        cached = client.get("/settings/legal/terms", headers={"If-None-Match": etag})
         assert cached.status_code == 304
 
 
 def test_public_terms_etag_changes_with_the_presentation():
     with public_client() as client:
-        etag = client.get("/api/settings/legal/terms").headers["ETag"]
+        etag = client.get("/settings/legal/terms").headers["ETag"]
 
     edited = legal.LegalPresentation.model_validate(
         presentation_payload(title="Titre modifié")
     )
     with public_client(edited) as client:
-        assert client.get("/api/settings/legal/terms").headers["ETag"] != etag
+        assert client.get("/settings/legal/terms").headers["ETag"] != etag
 
 
 def test_public_timestamps_carry_a_utc_offset():
@@ -355,7 +355,7 @@ def test_public_timestamps_carry_a_utc_offset():
     """
     stored = datetime(2026, 7, 27, 22, 30)
     with public_client(document=terms_document(effective_at=stored)) as client:
-        payload = client.get("/api/settings/legal/terms").json()
+        payload = client.get("/settings/legal/terms").json()
 
     for key in ("published_at", "effective_at"):
         assert datetime.fromisoformat(payload[key]).utcoffset() == timedelta(0)
