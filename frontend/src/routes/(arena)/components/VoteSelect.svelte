@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Icon } from '$components/dsfr'
-  import { type TurnChoice } from '$lib/chatService.svelte'
+  import { TURN_CHOICES, type TurnChoice } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
   import { onDestroy } from 'svelte'
@@ -18,14 +18,12 @@
     both_good: 'i-ri-thumb-up-line',
     idk: ''
   }
-  // Display order, not TURN_CHOICES order. The grid used to be reordered in CSS
-  // for narrow screens, which left the tab order zigzagging across it: second
-  // stop bottom-right, fourth stop top-right. One order everywhere instead.
-  const choices = (['a_better', 'b_better', 'both_bad', 'both_good'] as const).map((value) => ({
-    value,
-    label: value,
-    icon: choiceIcons[value]
-  }))
+  // Two orders: A and B at the ends on desktop, paired on the first row once the
+  // grid folds to two columns. Reordering one grid in CSS would leave the tab
+  // order zigzagging across it, so each width gets its own grid and the other is
+  // display:none, which keeps it out of the tab order.
+  const desktopOrder = TURN_CHOICES.filter((v) => v !== 'idk')
+  const mobileOrder = ['a_better', 'b_better', 'both_bad', 'both_good'] as const
 
   let pickedChoice = $state<TurnChoice | null>(null)
   let voteTimeout: ReturnType<typeof setTimeout> | undefined
@@ -49,24 +47,36 @@
   >
     <legend id="{id}-legend" class="sr-only">{m['vote.title']()}</legend>
 
-    <div class="gap-1 md:gap-2 md:grid-cols-4 grid grid-cols-2">
-      {#each choices as choice (choice.value)}
-        <button
-          type="submit"
-          class={[
-            'cl-vote-choice rounded-lg px-1 py-2 md:p-2 text-xs! bg-white cg-border flex items-center',
-            { 'cl-vote-picked': pickedChoice === choice.value }
-          ]}
-          data-choice={choice.value}
-          disabled={pickedChoice !== null && pickedChoice !== choice.value}
-        >
-          <span class={['gap-1 m-auto flex', { 'flex-row-reverse': choice.value === 'b_better' }]}>
-            <Icon icon={choice.icon} block size="xs" class="text-primary" />
-            {m[`vote.turn.choices.${choice.value}`]()}
-          </span>
-        </button>
-      {/each}
-    </div>
+    {#snippet grid(order: readonly TurnChoice[], layout: string)}
+      <div class="gap-1 md:gap-2 {layout}">
+        {#each order as choice (choice)}
+          {@const label = m[`vote.turn.choices.${choice}`]()}
+          <button
+            type="submit"
+            class={[
+              'cl-vote-choice rounded-lg px-1 py-2 md:p-2 text-xs! bg-white cg-border flex items-center',
+              { 'cl-vote-picked': pickedChoice === choice }
+            ]}
+            data-choice={choice}
+            disabled={pickedChoice !== null && pickedChoice !== choice}
+          >
+            <!-- The icon flows with the text rather than sitting beside it in a
+                 flex row: a label that wraps to two lines fills the row, which
+                 left the icon stranded against the button edge. -->
+            <span class="cl-vote-label m-auto text-center">
+              {#if choice === 'b_better'}
+                {label}<Icon icon={choiceIcons[choice]} size="xs" class="text-primary ml-1" />
+              {:else}
+                <Icon icon={choiceIcons[choice]} size="xs" class="text-primary mr-1" />{label}
+              {/if}
+            </span>
+          </button>
+        {/each}
+      </div>
+    {/snippet}
+
+    {@render grid(mobileOrder, 'grid grid-cols-2 md:hidden')}
+    {@render grid(desktopOrder, 'md:grid md:grid-cols-4 hidden')}
 
     <div class="order-last flex justify-center">
       <button type="submit" class="text-dark-grey text-xs bg-transparent!" data-choice="idk">
@@ -96,6 +106,11 @@
     &:disabled {
       filter: grayscale(100%);
     }
+  }
+
+  /* The glyph is inline now, so nudge it off the baseline onto the text. */
+  .cl-vote-label :global(span) {
+    vertical-align: -0.2em;
   }
 
   .cl-vote-choice {
