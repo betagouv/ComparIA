@@ -12,8 +12,11 @@ from typing import Awaitable
 from pydantic import BaseModel, ValidationError
 
 from backend.config import (
+    RATELIMIT_ALL_MODELS_INPUT,
+    RATELIMIT_ALL_MODELS_INPUT_PER_IP,
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
+    RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
 )
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
@@ -88,41 +91,60 @@ def delete_session(id: uuid.UUID) -> bool:
         return False
 
 
-def increment_input_chars(key: str, input_chars: int) -> None:
-    """
-    Track input character count per anonymous session for rate limiting.
+def _budget_key(pool: str, identity: str) -> str:
+    """One Redis counter per (pool, identity). The pool goes in the key because
+    the four budgets share the one key template."""
+    return REDIS_USER_CHAR_COUNT.format(key=f"{pool}:{identity}")
 
-    Increments a counter in Redis for the given key and sets expiry to 2 hours.
-    This prevents users from overloading expensive model APIs.
+
+def increment_input_chars(key: str, ip: str, input_chars: int, pricey: bool) -> None:
+    """
+    Track input character count for rate limiting.
+
+    Every message counts against the whole-pool budgets; only messages sent to
+    an expensive model also count against the pricey ones. Each budget is
+    counted twice, once per anonymous session and once per IP.
 
     Args:
-        key: Rate-limit identity (anonymous session hash)
-        input_chars: Number of input characters to add to counter
+        key: anonymous session hash
+        ip: caller IP
+        input_chars: Number of input characters to add to the counters
+        pricey: whether an expensive model answered this message
     """
     client = get_redis_client()
-    client.incrby(REDIS_USER_CHAR_COUNT.format(key=key), input_chars)
-    # Set counter to expire in 2 hours (3600 * 2 seconds)
-    client.expire(REDIS_USER_CHAR_COUNT.format(key=key), 3600 * 2)
+    pools = ["all", "all_ip"] + (["pricey", "pricey_ip"] if pricey else [])
+    for pool in pools:
+        redis_key = _budget_key(pool, ip if pool.endswith("_ip") else key)
+        client.incrby(redis_key, input_chars)
+        # Set counter to expire in 2 hours (3600 * 2 seconds)
+        client.expire(redis_key, 3600 * 2)
 
 
-def is_ratelimited(key: str) -> bool:
+def is_ratelimited(key: str, ip: str) -> bool:
     """
-    Check if an anonymous session has exceeded the rate limit for expensive models.
+    Check whether this session or its IP has spent any of its four budgets.
 
     Args:
-        key: Rate-limit identity (anonymous session hash)
+        key: anonymous session hash
+        ip: caller IP
 
     Returns:
-        bool: True if the key has exceeded the limit (2x RATELIMIT_PRICEY_MODELS_INPUT)
+        bool: True if any budget is exhausted
     """
     client = get_redis_client()
-    counter = client.get(REDIS_USER_CHAR_COUNT.format(key=key))
-    assert not isinstance(counter, Awaitable)
-    # Rate limit is 2x the configured limit for pricey models
-    if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
-        return True
-    else:
-        return False
+    budgets = (
+        # Rate limit is 2x the configured limit for pricey models
+        ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
+        ("pricey_ip", ip, RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
+        ("all", key, RATELIMIT_ALL_MODELS_INPUT),
+        ("all_ip", ip, RATELIMIT_ALL_MODELS_INPUT_PER_IP),
+    )
+    for pool, identity, limit in budgets:
+        counter = client.get(_budget_key(pool, identity))
+        assert not isinstance(counter, Awaitable)
+        if counter and int(counter) > limit:
+            return True
+    return False
 
 
 def increment_blocked_prompts(ip: str) -> None:

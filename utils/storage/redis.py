@@ -74,6 +74,7 @@ def get_redis_client() -> redis.Redis:
         client = redis.Redis(
             host=settings.COMPARIA_REDIS_HOST,
             port=6379,
+            password=settings.COMPARIA_REDIS_PASSWORD,  # None keeps local dev unauthenticated
             decode_responses=True,  # returns strings instead of bytes
         )
 

@@ -22,7 +22,7 @@ from backend.arena.conversation import (
 )
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
-from backend.errors import ChatError
+from backend.errors import ChatError, ContextTooLongError, EmptyResponseError
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
@@ -30,6 +30,7 @@ from utils.database.models import (
     BotPos,
     ComparisonPublic,
     ComparisonRead,
+    ErrorCode,
     ErrorDetails,
     LLMMessageCreate,
     TurnPublic,
@@ -37,6 +38,22 @@ from utils.database.models import (
 )
 
 logger = logging.getLogger("languia")
+
+
+def error_code(e: Exception) -> ErrorCode:
+    """The one thing about a failure the browser is allowed to be told.
+
+    Provider messages carry base URLs, provider names and model identity, so
+    sending them on would tell a voter who they are voting for. `ChatError`
+    carries the code in its `message`, which is what reaches the client.
+    """
+    if isinstance(e, litellm.Timeout):
+        return "timeout"
+    if isinstance(e, ContextTooLongError):
+        return "context_too_long"
+    if isinstance(e, EmptyResponseError):
+        return "empty_response"
+    return "provider_error"
 
 
 class SSEEventMsgChunk(TypedDict):
@@ -53,7 +70,7 @@ class SSEEventMsgComplete(TypedDict):
 class SSEEventMsgError(TypedDict):
     type: Literal["error"]
     pos: BotPos
-    error: str
+    error: ErrorCode
 
 
 class SSEEventInit(TypedDict):
@@ -77,7 +94,7 @@ class SSEEventComplete(TypedDict):
 
 class SSEEventError(TypedDict):
     type: Literal["error"]
-    error: str
+    error: ErrorCode
 
 
 class SSEEventWarning(TypedDict):
@@ -139,8 +156,10 @@ async def stream_llm_response(
 
         yield {"type": "complete", "pos": pos}
 
+        # The answer itself is kept out: it is quoted back from the prompt often
+        # enough to carry whatever the user put in it.
         logger.info(
-            f"response_modele_{pos} ({llm.id}): {llm_msg.content}",
+            f"response_modele_{pos} ({llm.id}): {len(llm_msg.content or '')} chars",
             extra={"request": request},
         )
 
@@ -156,18 +175,6 @@ async def stream_llm_response(
             f"error_during_convo: {llm.id}, {llm.endpoint.api_type}, {error_message}"
         )
 
-        # TODO ContextLengthError: do not log to controller?
-        try:
-            import requests
-
-            requests.post(
-                f"{settings.LANGUIA_CONTROLLER_URL}/models/{llm.id}/error",
-                json={"error": error_reason},
-                timeout=1,
-            )
-        except:
-            pass
-
         logger.exception(
             error_reason,
             extra={
@@ -178,8 +185,9 @@ async def stream_llm_response(
             exc_info=True,
         )
 
+        # The raw message stops here, in the log and in Sentry above.
         raise ChatError(
-            message=error_message, pos=pos, is_timeout=isinstance(e, litellm.Timeout)
+            message=error_code(e), pos=pos, is_timeout=isinstance(e, litellm.Timeout)
         )
 
 
@@ -297,23 +305,27 @@ async def stream_comparison_messages(
     except ChatError as e:
         # Specific chat error
         # Error logging is done in `stream_llm_response()`
+        code = e.message
         await update_comparison_error(
             comparison,
-            ErrorDetails(message=e.message, pos=e.pos, is_timeout=e.is_timeout),
+            ErrorDetails(code=code, message=code, pos=e.pos, is_timeout=e.is_timeout),
         )
 
-        yield {"type": "error", "error": e.message, "pos": e.pos}
+        yield {"type": "error", "error": code, "pos": e.pos}
     except Exception as e:
         # General error
         if settings.SENTRY_DSN:
             # Error is silenced to be sent thru sse message, send it to sentry manually
             sentry_sdk.capture_exception(e)
 
-        await update_comparison_error(comparison, ErrorDetails(message=str(e)))
+        # str(e) would name the provider, so only the generic code is stored.
+        await update_comparison_error(
+            comparison, ErrorDetails(code="provider_error", message="provider_error")
+        )
         logger.error(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
-        yield {"type": "error", "error": str(e)}
+        yield {"type": "error", "error": "provider_error"}
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:

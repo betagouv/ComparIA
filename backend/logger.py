@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import json
 import logging
 import os
@@ -51,8 +52,13 @@ class JSONFormatter(logging.Formatter):
             try:
                 log_data["query_params"] = dict(record.request.query_params)
                 log_data["path_params"] = dict(record.request.path_params)
-                # TODO: remove IP? (privacy concern)
-                log_data["ip"] = get_ip(record.request)
+                # Hashed rather than raw: still lets us correlate requests from
+                # the same source for rate-limit debugging without storing an
+                # IP address (personal data) in the JSONL file / Loki.
+                ip = get_ip(record.request)
+                log_data["ip_hash"] = (
+                    hashlib.sha256(ip.encode()).hexdigest()[:16] if ip else None
+                )
                 log_data["comparison_id"] = record.request.headers.get(
                     "x-comparison-id"
                 )

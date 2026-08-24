@@ -10,6 +10,8 @@ refused). A prompt takes the strongest action any triggered category asks for.
 Fails open: if Mistral errors or times out, the prompt proceeds. Fail-open is
 NOT fail-silent: failures are logged at error level, sent to Sentry, and counted
 in Redis so the admin panel can show a check that has quietly stopped working.
+They also spend the caller's per-IP block budget (see `run_checks` in the
+router), so induced timeouts are not a free way round the check.
 """
 
 import json

@@ -23,7 +23,6 @@
   const token = $derived(page.params.token)
 
   let checkStatus = $state<'loading' | 'valid' | 'invalid'>('loading')
-  let email = $state<string>()
   let consented = $state(false)
   let submitting = $state(false)
   let error = $state<string>()
@@ -54,11 +53,8 @@
   onMount(async () => {
     readConsent()
     try {
-      const result = await api.request<{ valid: boolean; email: string | null }>(
-        `/auth/invite/${token}`
-      )
+      const result = await api.request<{ valid: boolean }>(`/auth/invite/${token}`)
       checkStatus = result.valid ? 'valid' : 'invalid'
-      email = result.email ?? undefined
     } catch {
       checkStatus = 'invalid'
     }
@@ -123,9 +119,6 @@
 
     <div>
       <h2 class="fr-h5 mb-4!">{m['invite.title']()}</h2>
-      {#if email}
-        <p class="text-sm! mb-0!">{email}</p>
-      {/if}
     </div>
   </header>
 

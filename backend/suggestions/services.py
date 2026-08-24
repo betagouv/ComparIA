@@ -20,6 +20,7 @@ from utils.database.models.suggestion import (
     SuggestionCreate,
     SuggestionLocale,
 )
+from utils.database.models.utils import escape_like
 from utils.database.session import get_session
 from utils.storage.redis import REDIS_SUGGESTIONS_KEY, invalidate_cache, redis_cache
 
@@ -128,7 +129,11 @@ async def list_admin_suggestions(
     async with get_session() as session:
         filters: list[ColumnElement[bool]] = []
         if search:
-            filters.append(col(PromptSuggestion.text).ilike(f"%{search.strip()}%"))
+            filters.append(
+                col(PromptSuggestion.text).ilike(
+                    f"%{escape_like(search.strip())}%", escape="\\"
+                )
+            )
         if status == "available":
             filters.append(col(PromptSuggestion.archived_at).is_(None))
         elif status == "archived":

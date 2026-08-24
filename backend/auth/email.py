@@ -41,14 +41,23 @@ _INVITE_HTML_TEMPLATE = """\
 
 async def send_login_code(to_email: str, code: str) -> None:
     if not settings.SMTP_HOST:
-        logger.info(f"[AUTH] Login code for {to_email}: {code}")
+        # The code signs someone in on its own, so it belongs in the logs only
+        # when a developer is reading them in place of a mailbox.
+        if settings.LANGUIA_DEBUG:
+            logger.info(f"[AUTH] Login code for {to_email}: {code}")
+        else:
+            logger.error(f"[AUTH] SMTP is not configured, no code sent to {to_email}")
         return
     await asyncio.to_thread(_send_smtp, to_email, code)
 
 
 async def send_invite_link(to_email: str, link: str) -> None:
     if not settings.SMTP_HOST:
-        logger.info(f"[AUTH] Invite link for {to_email}: {link}")
+        # The link carries the invite token, which is a credential too.
+        if settings.LANGUIA_DEBUG:
+            logger.info(f"[AUTH] Invite link for {to_email}: {link}")
+        else:
+            logger.error(f"[AUTH] SMTP is not configured, no invite sent to {to_email}")
         return
     await asyncio.to_thread(_send_invite_smtp, to_email, link)
 

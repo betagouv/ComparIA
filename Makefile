@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run
 
 # Variables
 PYTHON := python3
@@ -137,6 +137,8 @@ install-backend: ## Install Python backend dependencies with uv
 		echo "uv is not installed. Installing..."; \
 		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
+	# ^ upstream's own installer, fetched over TLS; verifying its signature or
+	# using a package manager (brew install uv, pipx install uv) is safer
 	$(UV) sync
 
 install-frontend: ## Install npm frontend dependencies

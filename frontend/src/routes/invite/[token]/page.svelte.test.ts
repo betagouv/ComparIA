@@ -42,8 +42,7 @@ const terms = {
 
 function servesTerms({ accepted = false, consentFails = false } = {}) {
   mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-    if (path === '/auth/invite/invite-token')
-      return Promise.resolve({ valid: true, email: 'personne@example.test' })
+    if (path === '/auth/invite/invite-token') return Promise.resolve({ valid: true })
     if (consentFails) return Promise.reject(new Error('offline'))
     if (path.startsWith('/settings/legal/terms')) return Promise.resolve(terms)
     if (path === '/auth/consent/anonymous' && options?.method === 'POST')

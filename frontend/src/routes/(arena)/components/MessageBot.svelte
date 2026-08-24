@@ -71,7 +71,7 @@
                 type="button"
                 class="fr-accordion__btn text-primary! bg-transparent!"
                 aria-expanded="true"
-                aria-controls="reasoning-{message.generation_id}"
+                aria-controls="reasoning-{id}"
               >
                 <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
                 {#if message.content === '' && turnSide.status === 'generating'}
@@ -81,10 +81,7 @@
                 {/if}
               </button>
             </h3>
-            <div
-              id="reasoning-{message.generation_id}"
-              class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
-            >
+            <div id="reasoning-{id}" class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]">
               <div class="px-5 py-4">
                 {@html sanitize(message.reasoning_content.split('\n').join('<br>'))}
               </div>

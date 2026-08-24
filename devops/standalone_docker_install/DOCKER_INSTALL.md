@@ -30,10 +30,11 @@ Edit `.env` and fill in at minimum:
 | `PUBLIC_DOMAIN`      | Your domain name, e.g. `comparia.example.com`        |
 | `PUBLIC_URL`         | Full public URL, e.g. `https://comparia.example.com` |
 | `POSTGRES_PASSWORD`  | A strong password for the database                   |
+| `REDIS_PASSWORD`     | A strong password for Redis                          |
 | `OPENROUTER_API_KEY` | API key from [openrouter.ai](https://openrouter.ai)  |
 | `ALTCHA_HMAC_KEY`    | A random secret key for spam protection              |
 
-Generate random `ALTCHA_HMAC_KEY` with for example:
+Generate random values for `POSTGRES_PASSWORD`, `REDIS_PASSWORD` and `ALTCHA_HMAC_KEY` with for example:
 
 ```bash
 openssl rand -hex 32
@@ -52,23 +53,23 @@ Caddy will automatically obtain a TLS certificate for your domain on first start
 
 ## Database configuration
 
+The schema is applied with Alembic migrations, baked into the backend image (`alembic.ini`, `utils/database/alembic/`). There is no separate init-db.sql to generate.
+
 ### Option A: containerized PostgreSQL (default)
 
-The stack includes a PostgreSQL container. Before starting it, generate the schema init file:
-
-```bash
-set -a && source devops/standalone_docker_install/.env && set +ao
-bash devops/generate-init-db.sh
-```
-
-`POSTGRES_USER` must be exported so the init script replaces the hardcoded dev role with your actual database user.
-
-Then start the database first and wait for it to be healthy before starting the rest:
+Start the database first and wait for it to be healthy before starting the rest:
 
 ```bash
 cd devops/standalone_docker_install/
 docker compose --env-file .env up -d postgres
-docker compose logs -f # to check for correct init or error
+docker compose --env-file .env logs -f postgres # wait for "database system is ready to accept connections"
+```
+
+Build the backend image and apply migrations against it:
+
+```bash
+docker compose --env-file .env build backend
+docker compose --env-file .env run --rm backend uv run alembic upgrade head
 ```
 
 Continue to start the full stack part...
@@ -81,12 +82,11 @@ If you have an existing PostgreSQL instance, set `COMPARIA_DB_URI` in your `.env
 COMPARIA_DB_URI=postgresql://user:password@host:5432/dbname
 ```
 
-Initialize the schema against your external database:
+Apply migrations against it the same way:
 
 ```bash
-set -a && source devops/standalone_docker_install/.env && set +a
-bash devops/generate-init-db.sh
-psql "$COMPARIA_DB_URI" -f devops/data/init-db.sql
+docker compose --env-file .env build backend
+docker compose --env-file .env run --rm backend uv run alembic upgrade head
 ```
 
 Then comment out the `postgres` service and its volume in `docker-compose.yml`:

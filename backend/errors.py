@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
-from utils.database.models import BotPos
+from utils.database.models import BotPos, ErrorCode
 
 # from enum import StrEnum
 # TODO raise errors with error keys and add i18n on front
@@ -29,13 +29,20 @@ class EmptyResponseError(RuntimeError):
 
 
 class ChatError(RuntimeError):
-    """Raised when an error occurs during chat."""
+    """Raised when an error occurs during chat.
 
-    message: str
+    `message` is one of the fixed codes from `error_code()`, not the provider's
+    own wording: it is sent to the browser and stored on the comparison, and a
+    provider error string would tell a voter which model they are voting for.
+    """
+
+    message: ErrorCode
     pos: BotPos
     is_timeout: bool
 
-    def __init__(self, message: str, pos: BotPos, is_timeout: bool = False) -> None:
+    def __init__(
+        self, message: ErrorCode, pos: BotPos, is_timeout: bool = False
+    ) -> None:
         super().__init__(message)
         self.message = message
         self.pos = pos

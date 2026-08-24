@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private'
+import { env as publicEnv } from '$env/dynamic/public'
 import { api, UnauthorizedError } from '$lib/fastapi-client'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
@@ -10,6 +11,50 @@ import { sequence } from '@sveltejs/kit/hooks'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
+
+function originOf(url: string): string | null {
+  try {
+    return new URL(url).origin
+  } catch {
+    return null
+  }
+}
+
+// Matomo lives on a host only known at runtime, and the API sits on another
+// origin in dev, so both are added to the build-time policy from svelte.config.js
+// instead of being hardcoded there.
+const EXTRA_CSP_SOURCES: Record<string, (string | null)[]> = {
+  'script-src': [originOf(MATOMO_URL)],
+  'connect-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')],
+  'img-src': [originOf(MATOMO_URL)]
+}
+
+function withRuntimeOrigins(policy: string): string {
+  return policy
+    .split('; ')
+    .map((directive) => {
+      const extra = (EXTRA_CSP_SOURCES[directive.split(' ')[0]] ?? []).filter(
+        (origin): origin is string => !!origin && !directive.includes(origin)
+      )
+      return extra.length ? `${directive} ${extra.join(' ')}` : directive
+    })
+    .join('; ')
+}
+
+const securityHeadersHandle: Handle = async ({ event, resolve }) => {
+  const response = await resolve(event)
+
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  const policy = response.headers.get('content-security-policy')
+  if (policy) {
+    response.headers.set('content-security-policy', withRuntimeOrigins(policy))
+  }
+
+  return response
+}
 
 const LOCALE_SETTINGS_TTL_MS = 20_000
 
@@ -172,7 +217,7 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
   return response
 }
 
-const authWallHandle: Handle = ({ event, resolve }) => {
+export const authWallHandle: Handle = async ({ event, resolve }) => {
   if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
 
   const path = event.url.pathname
@@ -184,7 +229,36 @@ const authWallHandle: Handle = ({ event, resolve }) => {
     redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
   }
 
+  // Holding a cookie is not the same as holding a session: anyone can set one
+  // by hand. The backend answers from another host in every deployment, so
+  // event.fetch will not carry the cookie on its own and we pass it along.
+  let session: { user: unknown }
+  try {
+    session = await api.request<{ user: unknown }>('/auth/me', {
+      fetch: event.fetch,
+      headers: { cookie: `auth_session=${cookie}` }
+    })
+  } catch (error) {
+    // Fail open, like the maintenance and locale checks above: a backend blip
+    // must not sign everyone out, and the API guards its own endpoints anyway.
+    logger.error('Auth wall session check failed', { error: `${error}` })
+    return resolve(event)
+  }
+
+  if (!session.user) {
+    event.cookies.delete('auth_session', { path: '/' })
+    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+  }
+
   return resolve(event)
 }
 
-export const handle = sequence(maintenanceHandle, authWallHandle, metricsHandle, paraglideHandle)
+// securityHeadersHandle comes first so it sees the finished response, including
+// the Content-Security-Policy SvelteKit sets when it renders a page.
+export const handle = sequence(
+  securityHeadersHandle,
+  maintenanceHandle,
+  authWallHandle,
+  metricsHandle,
+  paraglideHandle
+)

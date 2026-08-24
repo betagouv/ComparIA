@@ -76,7 +76,6 @@ class EmailVerifyBody(BaseModel):
 
 class InviteStatus(BaseModel):
     valid: bool
-    email: str | None = None
 
 
 class InviteAcceptBody(BaseModel):
@@ -117,6 +116,24 @@ class ConsentBody(BaseModel):
 def _anonymous_hash(request: Request) -> str | None:
     token = anonymous_session_token(request)
     return _hash(token) if token else None
+
+
+def _reject_cross_site(request: Request) -> None:
+    """Refuse a state-changing auth POST driven by another site.
+
+    Browsers send Origin on these, so a value that is neither ours nor the app's
+    means a third-party page is trying to sign the visitor in, or out, without
+    them asking. No Origin at all means a non-browser client, which is allowed.
+    """
+    origin = request.headers.get("origin")
+    if not origin:
+        return
+    own_origin = f"{request.url.scheme}://{request.url.netloc}"
+    if origin.rstrip("/") not in (settings.COMPARIA_APP_URL, own_origin):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cross-site request rejected.",
+        )
 
 
 async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
@@ -162,12 +179,22 @@ async def get_config_logo() -> Response:
     return Response(
         content=app_settings.logo,
         media_type=app_settings.logo_content_type or "image/png",
-        headers={"Cache-Control": "public, max-age=300"},
+        headers={
+            "Cache-Control": "public, max-age=300",
+            # The logo can be an SVG, and an SVG can carry a <script>. Pages
+            # only ever show it in an <img>, where scripts never run, but
+            # opening this URL directly would render it as a document on our
+            # own origin. sandbox puts it in an opaque origin with scripting
+            # off, which leaves <img> untouched.
+            "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+            "Content-Disposition": "inline",
+        },
     )
 
 
 @router.post("/email/request", status_code=status.HTTP_204_NO_CONTENT)
 async def email_request(body: EmailRequestBody, request: Request) -> None:
+    _reject_cross_site(request)
     ip = get_ip(request)
 
     ok, error = verify_altcha_token(body.altcha_payload)
@@ -242,15 +269,29 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
 async def email_verify(
     body: EmailVerifyBody, request: Request, response: Response
 ) -> dict:
+    _reject_cross_site(request)
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     visitor_id = get_matomo_tracker_from_cookies(request.cookies)
-    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=_hash(body.email))
+    email_hash = _hash(body.email)
+    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=email_hash)
+    # Same counter, keyed on the email alone: "*" is not a possible host, so the
+    # two buckets never collide. Bounds guessing spread over many source IPs.
+    email_fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip="*", email=email_hash)
 
     try:
         client = get_redis_client()
         fail_count = client.get(fail_key)
         if fail_count and int(fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many attempts, please request a new code.",
+            )
+        email_fail_count = client.get(email_fail_key)
+        if (
+            email_fail_count
+            and int(email_fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL
+        ):
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="Too many attempts, please request a new code.",
@@ -271,9 +312,10 @@ async def email_verify(
     if not token:
         try:
             client = get_redis_client()
-            fail_count = client.incr(fail_key)
-            if fail_count == 1:
-                client.expire(fail_key, 600)
+            for key in (fail_key, email_fail_key):
+                fail_count = client.incr(key)
+                if fail_count == 1:
+                    client.expire(key, 600)
         except Exception as e:
             logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
@@ -283,7 +325,9 @@ async def email_verify(
         )
 
     try:
-        get_redis_client().delete(fail_key)
+        client = get_redis_client()
+        client.delete(fail_key)
+        client.delete(email_fail_key)
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
@@ -291,7 +335,7 @@ async def email_verify(
         "auth_session",
         token,
         httponly=True,
-        secure=not settings.LANGUIA_DEBUG,
+        secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
     )
@@ -300,16 +344,17 @@ async def email_verify(
 
 @router.get("/invite/{token}")
 async def invite_status(token: str) -> InviteStatus:
+    # Only whether the link still works: the invited address is not the token
+    # holder's to read, and an invite link travels through mailboxes and logs.
     info = await get_invite_token_info(token)
-    if not info:
-        return InviteStatus(valid=False)
-    return InviteStatus(valid=True, email=info.email)
+    return InviteStatus(valid=bool(info))
 
 
 @router.post("/invite/accept")
 async def invite_accept(
     body: InviteAcceptBody, request: Request, response: Response
 ) -> dict:
+    _reject_cross_site(request)
     # Nothing cheap to run first, unlike the login route, and accept_invite
     # spends the token, so a refusal has to come before it.
     anonymous_user_hash = _anonymous_hash(request)
@@ -342,7 +387,7 @@ async def invite_accept(
         "auth_session",
         token,
         httponly=True,
-        secure=not settings.LANGUIA_DEBUG,
+        secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
     )

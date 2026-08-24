@@ -17,6 +17,7 @@ from .comparison import (
     ComparisonPublic,
     ComparisonRead,
     ComparisonUnarchiveUpdate,
+    ErrorCode,
     ErrorDetails,
 )
 from .messages import *

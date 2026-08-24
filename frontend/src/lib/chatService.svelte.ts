@@ -44,7 +44,6 @@ export type Bot = 'a' | 'b'
 // Comparison overrides
 export type UserMessage = UserMessageRead
 export interface AssistantMessage extends LLMMessageCreate {
-  generation_id: string
   content: string
 }
 export type AnyMessage = UserMessage | AssistantMessage
@@ -375,7 +374,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async reveal() {
       if (!comparison) throw new InternalError('No comparison to reveal.')
-      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`)
+      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`, {
+        method: 'POST'
+      })
 
       comparison.reveal_data = revealData
     }

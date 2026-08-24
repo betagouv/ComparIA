@@ -1,5 +1,7 @@
+import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
+from urllib.parse import urlparse
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlmodel import SQLModel
@@ -7,11 +9,30 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.config import settings
 
+logger = logging.getLogger("languia")
+
 
 def _async_url(url: str) -> str:
     if url.startswith("postgresql://"):
         return url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
+
+
+def _warn_if_db_uri_lacks_tls(url: str) -> None:
+    """Loud warning, not a hard fail: an unencrypted URI to a remote host may
+    already be running in production, and refusing to start would turn a
+    config gap into an outage."""
+    if settings.LANGUIA_DEBUG:
+        return
+    parsed = urlparse(url)
+    if parsed.hostname in (None, "localhost", "127.0.0.1") or "sslmode" in (
+        parsed.query or ""
+    ):
+        return
+    logger.warning(
+        "COMPARIA_DB_URI points at a non-local host without sslmode set: "
+        "the Postgres connection may be unencrypted."
+    )
 
 
 _engine: AsyncEngine | None = None
@@ -41,6 +62,7 @@ def get_engine() -> AsyncEngine | None:
     if not settings.COMPARIA_DB_URI:
         return None
     if _engine is None:
+        _warn_if_db_uri_lacks_tls(settings.COMPARIA_DB_URI)
         options = (
             {
                 "pool_size": 2,
