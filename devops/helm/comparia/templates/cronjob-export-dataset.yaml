@@ -1,0 +1,43 @@
+{{- if .Values.cronjobs.exportDataset.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "comparia.fullname" . }}-export-dataset
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: export-dataset
+spec:
+  schedule: {{ .Values.cronjobs.exportDataset.schedule | quote }}
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            {{- include "comparia.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: export-dataset
+        spec:
+          restartPolicy: Never
+          {{- with .Values.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: export-dataset
+              image: {{ include "comparia.backendImage" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              # The target repo/token are not read here: they are only consumed once, by
+              # the pre-install/pre-upgrade migration hook, to seed the HuggingFace
+              # destination row that this run then reads from the database.
+              command: ["uv", "run", "python", "-m", "utils.dataset.run", "--record"]
+              envFrom:
+                - secretRef:
+                    name: {{ include "comparia.secretName" . }}
+              env:
+                - name: COMPARIA_INSTANCE_NAME
+                  value: {{ .Values.config.instanceName | quote }}
+              resources:
+                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
+{{- end }}

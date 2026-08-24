@@ -1,0 +1,48 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "comparia.fullname" . }}
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- with .Values.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ required "ingress.host is required when ingress.enabled is true" .Values.ingress.host | quote }}
+      http:
+        paths:
+          # Every backend route lives under /api (see backend/main.py), so a
+          # single prefix covers all of them and can never collide with a
+          # same-named frontend page (e.g. /admin, /models, /settings are
+          # both SvelteKit pages and, without this prefix, backend routers).
+          #
+          # SSR data loading calls the backend server-side over
+          # PUBLIC_API_LOCAL_URL instead, inside the cluster, and never goes
+          # through this Ingress -- but +layout.ts is a universal load, so it
+          # and anything else client-invoked still needs a public route here
+          # too.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-backend
+                port:
+                  number: {{ .Values.service.backend.port }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "comparia.fullname" . }}-frontend
+                port:
+                  number: {{ .Values.service.frontend.port }}
+{{- end }}

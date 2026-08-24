@@ -1,0 +1,41 @@
+{{- if .Values.cronjobs.ranking.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "comparia.fullname" . }}-ranking
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ranking
+spec:
+  schedule: {{ .Values.cronjobs.ranking.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            {{- include "comparia.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: ranking
+        spec:
+          restartPolicy: Never
+          {{- with .Values.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: ranking
+              image: {{ include "comparia.backendImage" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["uv", "run", "python", "-m", "utils.ranking.run"]
+              envFrom:
+                - secretRef:
+                    name: {{ include "comparia.secretName" . }}
+              env:
+                - name: COMPARIA_INSTANCE_NAME
+                  value: {{ .Values.config.instanceName | quote }}
+              resources:
+                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
+{{- end }}
