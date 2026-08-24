@@ -19,7 +19,6 @@ spec:
             app.kubernetes.io/component: ranking
         spec:
           restartPolicy: Never
-          serviceAccountName: {{ include "comparia.serviceAccountName" . }}
           {{- with .Values.image.pullSecrets }}
           imagePullSecrets:
             {{- range . }}

@@ -30,14 +30,6 @@ app.kubernetes.io/name: {{ include "comparia.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
-{{- define "comparia.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-{{- default (include "comparia.fullname" .) .Values.serviceAccount.name -}}
-{{- else -}}
-{{- default "default" .Values.serviceAccount.name -}}
-{{- end -}}
-{{- end -}}
-
 {{/*
 Name of the Secret every workload reads its DB/Redis/API-key env vars from:
 either the chart-rendered one, or a pre-existing Secret the caller points at.

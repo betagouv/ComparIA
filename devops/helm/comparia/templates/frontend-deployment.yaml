@@ -17,7 +17,6 @@ spec:
         {{- include "comparia.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: frontend
     spec:
-      serviceAccountName: {{ include "comparia.serviceAccountName" . }}
       {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
         {{- range . }}

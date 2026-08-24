@@ -18,7 +18,6 @@ spec:
             app.kubernetes.io/component: export-dataset
         spec:
           restartPolicy: Never
-          serviceAccountName: {{ include "comparia.serviceAccountName" . }}
           {{- with .Values.image.pullSecrets }}
           imagePullSecrets:
             {{- range . }}

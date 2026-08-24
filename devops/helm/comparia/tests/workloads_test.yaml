@@ -4,7 +4,6 @@ templates:
   - frontend-deployment.yaml
   - backend-service.yaml
   - frontend-service.yaml
-  - serviceaccount.yaml
 values:
   - ../ci/values-lint.yaml
 tests:
@@ -28,9 +27,6 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe.tcpSocket.port
           value: http
-      - equal:
-          path: spec.template.spec.serviceAccountName
-          value: RELEASE-NAME-comparia
 
   - it: renders the frontend Deployment with the configured image and probes
     template: frontend-deployment.yaml
@@ -113,20 +109,3 @@ tests:
       - equal:
           path: spec.selector["app.kubernetes.io/component"]
           value: backend
-
-  - it: creates a ServiceAccount by default
-    template: serviceaccount.yaml
-    asserts:
-      - isKind:
-          of: ServiceAccount
-      - equal:
-          path: metadata.name
-          value: RELEASE-NAME-comparia
-
-  - it: does not create a ServiceAccount when disabled
-    template: serviceaccount.yaml
-    set:
-      serviceAccount.create: false
-    asserts:
-      - hasDocuments:
-          count: 0
