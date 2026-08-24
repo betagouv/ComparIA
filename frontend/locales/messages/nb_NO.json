@@ -26,6 +26,14 @@
         "selectLanguage": "Velg språk"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Når de er slått på, tilbys de valgte verktøyene til begge modellene som sammenlignes, og de står fritt til å bruke dem eller ikke.",
+            "count": "{count} verktøy",
+            "label": "Verktøy",
+            "legend": "Verktøy",
+            "locked": "Verktøyene er låst for hele samtalen.",
+            "none": "Ingen verktøy"
+        },
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Hvis du bare velger én, velges den andre tilfeldig",
@@ -51,11 +59,32 @@
         "webSearch": {
             "disabled": "Nettsøk deaktivert",
             "enabled": "Nettsøk aktivert",
-            "label": "Nettsøk",
-            "tooltip": "Aktiver nettsøk for å la modellene bruke nettkilder og sitere mer oppdatert informasjon.<br><strong>Uten nettsøk</strong> svarer modellene basert på det de lærte under trening (treningsdataene sine). De kan ikke verifisere informasjon på nettet, så svært nye eller svært spesifikke fakta kan være ufullstendige."
+            "help": "Hver modell avgjør selv om det er nyttig å utføre et søk.",
+            "label": "Tillat nettsøk",
+            "tooltip": "Tillat modellene å søke etter informasjon på nettet og sitere nyere kilder. <strong>Hver modell velger selv om den vil bruke verktøyet</strong> ut fra meldingen din.<br>Hvis du ikke tillater det, svarer modellene bare ut fra det de lærte under treningen, og kan ikke kontrollere informasjon på nettet."
         }
     },
     "chatbot": {
+        "tools": {
+            "done": "Ferdig",
+            "fixed": "Verktøy låst for denne samtalen: {tools}",
+            "noResult": "Ingen resultater",
+            "none": "Ingen verktøy brukt",
+            "running": "Søker…",
+            "sources": "{count} kilde(r)"
+        },
+        "agentTrace": {
+            "intermediate": "Midlertidig modellmelding",
+            "label": "Se kjøringssporet",
+            "query": "Søk som ble brukt: ",
+            "reasoning": "Resonnement delt av modellen",
+            "request": "Brukerforespørsel",
+            "sources": "kilde(r)",
+            "status": { "empty": "Ingen resultater", "error": "Mislyktes", "success": "Vellykket" },
+            "technicalDetails": "Vis tekniske detaljer",
+            "toolCall": "Verktøykall",
+            "toolResult": "Verktøysvar"
+        },
         "continuePrompt": "Fortsett samtalen med KI-modellene",
         "conversation": "Samtale",
         "errors": {

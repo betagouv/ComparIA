@@ -61,9 +61,10 @@ def oracle_comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     ctx = {
         "llm_a": LLMS.get(db_comparison.llm_id_a),
         "llm_b": LLMS.get(db_comparison.llm_id_b),
-        "metadata": DatasetComparisonBaseMetadata.model_validate(
-            db_comparison
-        ).model_dump(),
+        "metadata": {
+            **DatasetComparisonBaseMetadata.model_validate(db_comparison).model_dump(),
+            "available_tools": list(db_comparison.enabled_tools or []),
+        },
         "extra_metadata": DatasetComparisonExtraMetadata.model_validate(
             db_comparison
         ).model_dump(),
@@ -96,6 +97,41 @@ T0 = datetime(2024, 1, 1, 12, 0, 0)
 
 def user_msg(content="hi", **kw):
     return UserMessage(content=content, created_at=T0, **kw)
+
+
+def system_msg(content="be nice"):
+    return content
+
+
+# Raw agent_trace shape, matching what the JSONB column actually holds (plain
+# dicts, see backend/arena/litellm.py's persistence path).
+AGENT_TRACE = [
+    {"type": "reasoning", "content": "thinking"},
+    {
+        "type": "tool_call",
+        "tool_call_id": "call-1",
+        "name": "web_search",
+        "arguments_json": '{"query": "compar:IA"}',
+        "arguments": {"query": "compar:IA"},
+    },
+    {
+        "type": "tool_result",
+        "tool_call_id": "call-1",
+        "name": "web_search",
+        "status": "success",
+        "duration_ms": 42,
+        "content": "[]",
+        "results": [
+            {
+                "type": "text",
+                "name": "source",
+                "url": "https://example.com",
+                "content": "c",
+                "favicon": "",
+            }
+        ],
+    },
+]
 
 
 def llm_msg(
@@ -143,6 +179,7 @@ def comparison(
     categories=None,
     languages=None,
     short_summary=None,
+    enabled_tools=(),
     cohorts=None,
     error=None,
     llm_analyzed=None,
@@ -154,6 +191,7 @@ def comparison(
 ):
     c = Comparison(ip="0.0.0.0", mode=mode, llm_id_a=llm_id_a, llm_id_b=llm_id_b)
     c.custom_models_selection = custom_models_selection
+    c.enabled_tools = list(enabled_tools)
     c.categories = categories
     c.languages = languages
     c.short_summary = short_summary
@@ -342,6 +380,32 @@ def equivalent_cases():
         archived=False,
     )
 
+    # Tool activity: queries and sources travel on the message they belong to,
+    # alongside content; a side with no trace at all carries none of the new
+    # keys, and a comparison with no tool offered stays that way too.
+    yield "tool activity on side a, side b answers with none", comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg(
+                    "a1", 100, agent_trace=AGENT_TRACE, agent_stop_reason="completed"
+                ),
+                llm_msg("b1", 90),
+            )
+        ],
+        enabled_tools=["web_search"],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    yield "no tool offered -> available_tools empty", comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
 
 # --- cases the old pipeline skipped (both must raise) ----------------------
 
@@ -449,6 +513,15 @@ def run():
         else:
             print(f"  ok  time_to_vote: {name}  ({got!r})")
 
+    for name, comp, checker in tool_export_value_cases():
+        row = comparison_to_turns(comp)[0]
+        try:
+            checker(row)
+        except AssertionError as e:
+            failures.append(f"[TOOL_EXPORT {name}] {e}")
+        else:
+            print(f"  ok  tool export: {name}")
+
     print()
     if failures:
         print(f"FAILED ({len(failures)}):")
@@ -469,10 +542,89 @@ def test_skips():
         assert _raises(comparison_to_turns, comp), name
 
 
+def tool_export_value_cases():
+    # (name, comparison, checker). Equivalence with the oracle can't catch a
+    # bug shared by both paths, so these pin the actual exported shape.
+    with_tools = comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg(
+                    "a1", 100, agent_trace=AGENT_TRACE, agent_stop_reason="completed"
+                ),
+                llm_msg("b1", 90),
+            )
+        ],
+        enabled_tools=["web_search"],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    def check_with_tools(row):
+        assert row["metadata"]["available_tools"] == ["web_search"]
+        assistant_a = row["response_a"][1]
+        assert assistant_a["tool_queries"] == [
+            {"name": "web_search", "arguments": '{"query": "compar:IA"}'}
+        ], assistant_a
+        assert assistant_a["tool_sources"] == [
+            {
+                "type": "text",
+                "name": "source",
+                "url": "https://example.com",
+                "content": "c",
+                "favicon": "",
+            }
+        ], assistant_a
+        assert assistant_a["agent_stop_reason"] == "completed", assistant_a
+        # Side b had no tool activity: none of the new keys leak onto it.
+        assistant_b = row["response_b"][1]
+        assert "tool_queries" not in assistant_b, assistant_b
+        assert "tool_sources" not in assistant_b, assistant_b
+        assert "agent_stop_reason" not in assistant_b, assistant_b
+
+    no_tools = comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    def check_no_tools(row):
+        assert row["metadata"]["available_tools"] == []
+        assert "tool_queries" not in row["response_a"][1]
+        assert "agent_stop_reason" not in row["response_a"][1]
+
+    yield "tools offered and used on side a only", with_tools, check_with_tools
+    yield "no tool offered", no_tools, check_no_tools
+
+
+# pytest entry points (if pytest is ever added)
+def test_equivalence():
+    for name, comp in equivalent_cases():
+        assert comparison_to_turns(comp) == oracle_comparison_to_turns(comp), name
+
+
+def test_skips():
+    for name, comp in skip_cases():
+        assert _raises(comparison_to_turns, comp), name
+
+
 def test_time_to_vote_values():
     for name, comp, expected in time_to_vote_value_cases():
         got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
         assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
+
+
+def test_time_to_vote_values():
+    for name, comp, expected in time_to_vote_value_cases():
+        got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
+
+
+def test_tool_export_values():
+    for name, comp, checker in tool_export_value_cases():
+        checker(comparison_to_turns(comp)[0])
 
 
 if __name__ == "__main__":

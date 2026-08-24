@@ -26,6 +26,14 @@
         "selectLanguage": "Seleziona una lingua"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Una volta attivati, gli strumenti selezionati sono proposti ai due modelli confrontati, che restano liberi di usarli o meno.",
+            "count": "{count} strumenti",
+            "label": "Strumenti",
+            "legend": "Strumenti",
+            "locked": "Gli strumenti sono fissati per tutta la conversazione.",
+            "none": "Nessuno strumento"
+        },
         "compareModels": {
             "count": "{count}/2 modelli",
             "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
@@ -51,11 +59,32 @@
         "webSearch": {
             "disabled": "Ricerca web disabilitata",
             "enabled": "Ricerca web abilitata",
-            "label": "Ricerca web",
-            "tooltip": "Abilitare la ricerca web permette ai modelli di utilizzare fonti online e citare informazioni più recenti.<br> <strong>> Senza la ricerca web</strong>, i modelli rispondono in base a quanto appreso durante la formazione (i dati di formazione). Non potendo verificare le informazioni online, le informazioni più recenti o specifiche potrebbero risultare incomplete."
+            "help": "Ogni modello decide autonomamente se è utile effettuare una ricerca.",
+            "label": "Consenti la ricerca web",
+            "tooltip": "Consenti ai modelli di cercare informazioni online e citare fonti più recenti. <strong>Ogni modello decide autonomamente se usare questo strumento</strong> in base al tuo messaggio.<br>Se non lo consenti, i modelli rispondono solo in base a ciò che hanno appreso durante l’addestramento e non possono verificare informazioni online."
         }
     },
     "chatbot": {
+        "tools": {
+            "done": "Fatto",
+            "fixed": "Strumenti fissati per questa conversazione: {tools}",
+            "noResult": "Nessun risultato",
+            "none": "Nessuno strumento utilizzato",
+            "running": "Ricerca in corso…",
+            "sources": "{count} fonte/i"
+        },
+        "agentTrace": {
+            "intermediate": "Messaggio intermedio del modello",
+            "label": "Vedi la traccia di esecuzione",
+            "query": "Ricerca utilizzata: ",
+            "reasoning": "Ragionamento condiviso dal modello",
+            "request": "Richiesta dell’utente",
+            "sources": "fonte/i",
+            "status": { "empty": "Nessun risultato", "error": "Errore", "success": "Riuscito" },
+            "technicalDetails": "Mostra dettagli tecnici",
+            "toolCall": "Chiamata allo strumento",
+            "toolResult": "Risposta dello strumento"
+        },
         "continuePrompt": "Continua la conversazione…",
         "conversation": "Conversazione",
         "errors": {

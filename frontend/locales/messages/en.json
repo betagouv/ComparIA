@@ -122,7 +122,8 @@
             "save": "Save",
             "signLabel": "Kind",
             "subtitle": "Add and manage the tags visitors attach to their vote.",
-            "title": "Vote tags"
+            "title": "Vote tags",
+            "tools": "Tools"
         },
         "panelLink": "Admin panel",
         "settings": {
@@ -238,6 +239,14 @@
         }
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Once enabled, the selected tools are offered to both compared models, which remain free to use them or not.",
+            "count": "{count} tools",
+            "label": "Tools",
+            "legend": "Tools",
+            "locked": "Tools are fixed for the whole conversation.",
+            "none": "No tool"
+        },
         "compareModels": {
             "count": "{count}/2 models",
             "help": "If you only choose one, the second will be selected randomly",
@@ -264,8 +273,9 @@
         "webSearch": {
             "disabled": "Web search disabled",
             "enabled": "Web search enabled",
-            "label": "Web search",
-            "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
+            "help": "Each model decides whether running a search would be useful.",
+            "label": "Allow web search",
+            "tooltip": "Allow the models to search for information online and cite more recent sources. <strong>Each model independently chooses whether to use this tool</strong> based on your message.<br>If you do not allow it, the models answer only from what they learned during training and cannot verify information online."
         }
     },
     "auth": {
@@ -344,6 +354,28 @@
         }
     },
     "chatbot": {
+        "tools": {
+            "done": "Done",
+            "fixed": "Tools fixed for this conversation: {tools}",
+            "noResult": "No result",
+            "none": "No tool used",
+            "result": "1 result",
+            "results": "{count} results",
+            "running": "Searching…",
+            "sources": "{count} source(s)"
+        },
+        "agentTrace": {
+            "intermediate": "Intermediate model message",
+            "label": "View execution trace",
+            "query": "Search query: ",
+            "reasoning": "Reasoning shared by the model",
+            "request": "User request",
+            "sources": "source(s)",
+            "status": { "empty": "No results", "error": "Failed", "success": "Successful" },
+            "technicalDetails": "Show technical details",
+            "toolCall": "Tool call",
+            "toolResult": "Tool response"
+        },
         "announce": {
             "generating": "The models are writing their answers…",
             "ready": "Both answers are ready."

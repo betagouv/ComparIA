@@ -45,6 +45,12 @@ class Settings(BaseSettings):
     EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
+    # Display currency. Model prices are stored in euros and converted for the UI.
+    DISPLAY_CURRENCY: str = "EUR"
+    DISPLAY_CURRENCY_RATE_FROM_EUR: float | None = None
+    EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
+    EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
+
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
@@ -186,5 +192,34 @@ ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-e
 ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
 ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 
+# Wall-clock seconds a model may spend in tools across one response. This is the
+# real limit: the counters below are runaway guards, set high enough that hitting
+# one is a defect rather than ordinary behaviour.
+TOOL_TIME_BUDGET_SECONDS = 60.0
+# Calls in one round run concurrently, so this bounds work rather than waiting;
+# rounds are sequential and the deadline above is what the visitor actually feels.
+MAX_TOOL_CALLS = 15
+MAX_TOOL_ROUNDS = 6
+# Times one exact (tool, arguments) pair may run in a single response. A model
+# repeating itself is stuck, not thorough: the repeats are refused and it is
+# told to answer from what it has.
+MAX_IDENTICAL_TOOL_CALLS = 3
+# How long we remember that an endpoint refused tool schemas
+TOOL_REJECTION_TTL = 86_400  # 24h
+
+# MCP servers. Listing happens while the visitor waits for a first token, so it
+# gets a much shorter leash than the call itself.
+MCP_DISCOVERY_TIMEOUT_SECONDS = 5
+MCP_CALL_TIMEOUT_SECONDS = 20
+# How long a discovered schema list is used without asking again, and how long it
+# stays usable as a fallback when the server can no longer be reached.
+MCP_SCHEMA_TTL = 900  # 15 min
+MCP_SCHEMA_STALE_TTL = 86_400  # 24h
+MCP_MAX_RESULT_LENGTH = 12_000
+
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"
+WEB_SEARCH_MAX_RESULTS_PER_CALL = 8
+WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH = 4_000
+WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH = 12_000
+WEB_SEARCH_TOOL_TIMEOUT_SECONDS = 10

@@ -50,6 +50,9 @@ class DatasetComparisonBaseMetadata(SQLModel):
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
+    # No tool table yet (backend/arena/tools.py): web search is the only tool
+    # a comparison can ever offer today.
+    available_tools: list[str]
     total_tokens_a: int | None
     total_tokens_b: int | None
     total_conso_a: float | None  # None for legacy comparisons with empty llm_id
@@ -156,13 +159,37 @@ class DatasetTurn(SQLModel):
         msgs = [
             self.user_msg.model_dump(
                 include={"role", "content", "user_content"},
-                context={"merge_web_search": True},
+                context={"merge_sources": True},
             )
         ]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
-            msgs.append(
-                llm_msg.model_dump(include={"role", "content", "reasoning_content"})
+            response = llm_msg.model_dump(
+                include={"role", "content", "reasoning_content"}
             )
+            if llm_msg.web_search_results:
+                response["web_search_results"] = [
+                    result.model_dump(mode="json")
+                    for result in llm_msg.web_search_results
+                ]
+            if llm_msg.agent_trace:
+                queries = [
+                    {"name": event["name"], "arguments": event["arguments_json"]}
+                    for event in llm_msg.agent_trace
+                    if event.get("type") == "tool_call"
+                ]
+                sources = [
+                    source
+                    for event in llm_msg.agent_trace
+                    if event.get("type") == "tool_result"
+                    for source in event.get("results") or []
+                ]
+                if queries:
+                    response["tool_queries"] = queries
+                if sources:
+                    response["tool_sources"] = sources
+            if llm_msg.agent_stop_reason:
+                response["agent_stop_reason"] = llm_msg.agent_stop_reason
+            msgs.append(response)
         return msgs
 
 

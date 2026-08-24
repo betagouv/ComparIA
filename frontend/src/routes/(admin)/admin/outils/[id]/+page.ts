@@ -1,0 +1,13 @@
+import type { Tool } from '$lib/generated/admin'
+import { error } from '@sveltejs/kit'
+import type { PageLoad } from './$types'
+
+export const load: PageLoad = async ({ parent, params }) => {
+  const { tools, schemas } = await parent()
+  const data = tools.find((item) => item.id === params.id)
+  if (!data && params.id !== 'create') error(404)
+
+  return {
+    formProps: { schema: schemas.tools, data: data ?? ({} as Tool) }
+  }
+}

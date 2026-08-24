@@ -6,6 +6,8 @@
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
+  import { page } from '$app/state'
+  import type { ToolPublic } from '$lib/generated/backend'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
 
   let {
@@ -17,6 +19,18 @@
   } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
+
+  // The picker lives on the prompt view, which is gone once a conversation has
+  // started. Without this the selection silently disappears from view.
+  const toolLabels = $derived(
+    new Map(((page.data.tools ?? []) as ToolPublic[]).map((tool) => [tool.key, tool.label]))
+  )
+  const activeTools = $derived(
+    (comparator.comparison?.enabled_tools ?? []).map((key) => ({
+      key,
+      label: toolLabels.get(key) ?? key
+    }))
+  )
 
   // A comparison that isn't in the store sends us back to the arena. The
   // redirect only lands on the next tick, so everything below has to survive
@@ -123,12 +137,29 @@
         autoScroll={!comparator.comparison?.revealed}
       >
         {#if idx === 0}
-          <div
-            class="cg-border md:me-3 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
-          >
-            <Icon icon={mode.icon} size="sm" class="text-primary" />
-            <strong>{mode.title}</strong>
-            <Tooltip id="mode-desc" text={mode.description} size="xs" />
+          <div class="gap-2 md:gap-3 flex flex-wrap items-center">
+            <div
+              class="cg-border md:me-0 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
+            >
+              <Icon icon={mode.icon} size="sm" class="text-primary" />
+              <strong>{mode.title}</strong>
+              <Tooltip id="mode-desc" text={mode.description} size="xs" />
+            </div>
+
+            {#each activeTools as tool (tool.key)}
+              <div
+                class="cg-border md:me-0 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
+              >
+                <Icon icon="i-ri-tools-line" size="sm" class="text-primary" />
+                <strong>{tool.label}</strong>
+                <Tooltip
+                  id="tools-used-desc-{comparisonId}-{tool.key}"
+                  label={m['chatbot.tools.fixed']({ tools: tool.label })}
+                  text={m['chatbot.tools.fixed']({ tools: tool.label })}
+                  size="xs"
+                />
+              </div>
+            {/each}
           </div>
         {/if}
       </GroupedMessages>

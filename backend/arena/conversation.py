@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import AsyncGenerator, Literal
 
 from fastapi import Request
+from linkup import LinkupSearchTextResult
 from litellm.litellm_core_utils.token_counter import token_counter
 from pydantic import BaseModel
 
@@ -20,6 +21,8 @@ from backend.arena.cache import (
     store_cached_response,
 )
 from backend.arena.litellm import litellm_stream_iter
+from backend.arena.tools import ToolSpec
+from backend.arena.web_search import WEB_SEARCH_TOOL_NAME
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
@@ -86,6 +89,28 @@ async def _stream_cached_response(
     yield llm_msg
 
 
+def _mirror_web_search_results(llm_msg: LLMMessageCreate) -> None:
+    """
+    Copy web search sources out of the trace into their own column.
+
+    The column duplicates the trace and is kept only so the results accordion on
+    older comparisons and the dataset keep working. Drop it with the accordion.
+    """
+    results = [
+        LinkupSearchTextResult(
+            type="text",
+            name=source.name,
+            url=source.url or "",
+            content=source.content,
+        )
+        for event in llm_msg.agent_trace or []
+        if event.type == "tool_result" and event.name == WEB_SEARCH_TOOL_NAME
+        for source in event.results
+    ]
+    if results:
+        llm_msg.web_search_results = results
+
+
 async def bot_response_async(
     pos: BotPos,
     llm: LLMDataEnabled,
@@ -95,6 +120,7 @@ async def bot_response_async(
     request: Request | None = None,
     temperature=0.7,
     max_new_tokens=16384,
+    tools: list[ToolSpec] | None = None,
 ) -> AsyncGenerator[LLMMessageCreate]:
     """
     Stream a response from a LLM asynchronously.
@@ -119,7 +145,7 @@ async def bot_response_async(
         EmptyResponseError: If the LLM returns empty response
     """
     # Try cache on first turn only
-    if turn_index == 0:
+    if turn_index == 0 and not tools:
         cached = get_cached_response(llm.id, turn.user_msg.content)
         if cached:
             logger.info(
@@ -144,12 +170,20 @@ async def bot_response_async(
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         request=request,
+        tools=tools,
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
-        # Yield complete chat only if there's content to display in current message
-        if llm_msg.content or llm_msg.reasoning_content:
+    async for llm_msg in stream_iter:
+        _mirror_web_search_results(llm_msg)
+        # Tool results are independently displayable and should reach the UI
+        # before the final answer starts streaming.
+        if (
+            llm_msg.content
+            or llm_msg.reasoning_content
+            or llm_msg.web_search_results
+            or llm_msg.agent_trace
+        ):
             yield llm_msg
 
     duration = (llm_msg.updated_at - llm_msg.created_at).total_seconds()
@@ -157,7 +191,7 @@ async def bot_response_async(
         f"duration for {llm_msg.generation_id}: {duration}", extra={"request": request}
     )
     # Check for empty responses and raise error (check on data that is not stripped)
-    if not llm_msg.content and not llm_msg.reasoning_content:
+    if not llm_msg.content:
         logger.error(
             f"reponse_vide: {llm.id}, message: {llm_msg}",
             exc_info=True,
@@ -178,7 +212,7 @@ async def bot_response_async(
     yield llm_msg
 
     # Store successful response in cache (first turn only)
-    if turn_index == 0:
+    if turn_index == 0 and not tools:
         store_cached_response(
             llm.id,
             turn.user_msg.content,

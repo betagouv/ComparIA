@@ -158,8 +158,20 @@ def check_reference_schema(failures):
         [
             fix.turn(
                 fix.user_msg("q"),
-                fix.llm_msg("a", 100, reasoning="r"),
-                fix.llm_msg("b", 90, reasoning="r"),
+                fix.llm_msg(
+                    "a",
+                    100,
+                    reasoning="r",
+                    agent_trace=fix.AGENT_TRACE,
+                    agent_stop_reason="completed",
+                ),
+                fix.llm_msg(
+                    "b",
+                    90,
+                    reasoning="r",
+                    agent_trace=fix.AGENT_TRACE,
+                    agent_stop_reason="completed",
+                ),
                 "a_better",
                 voted_at=datetime(2024, 1, 1, 12, 0, 5),
             )
@@ -171,6 +183,7 @@ def check_reference_schema(failures):
         categories=["c"],
         languages=["fr"],
         short_summary="s",
+        enabled_tools=["web_search"],
         cohorts="c",
         error={"message": "e", "pos": "a", "is_timeout": False},
         llm_analyzed=True,

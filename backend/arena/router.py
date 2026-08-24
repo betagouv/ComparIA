@@ -23,6 +23,7 @@ from backend.arena.services import (
     set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
+    update_comparison_tool_capability,
     update_turn,
     update_turn_vote,
 )
@@ -40,7 +41,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.web_search import search_web
+from backend.arena.tools import get_enabled_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.llms.data import get_llms_data, pick_replacement_model
@@ -54,6 +55,7 @@ from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
+    ToolPublic,
     TurnPublic,
     TurnVoteAnnotate,
     TurnVoteChoice,
@@ -183,6 +185,12 @@ async def get_challenge() -> dict:
     return generate_challenge()
 
 
+@router.get("/tools")
+async def get_tools() -> list[ToolPublic]:
+    """Tools a visitor may offer to the models on this instance."""
+    return [ToolPublic.model_validate(tool) for tool in await get_enabled_tools()]
+
+
 @router.post(
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
@@ -244,12 +252,6 @@ async def add_first_text(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
-    web_search_results = None
-    if args.web_search:
-        web_search_results = await search_web(args.prompt_value)
-        if web_search_results:
-            logger.info("Web search returned context", extra={"request": request})
-
     # Initialize comparison and save it to db
     comparison = await create_comparison(
         ComparisonCreate(
@@ -261,6 +263,7 @@ async def add_first_text(
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,
+            enabled_tools=args.tools,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
         )
@@ -286,7 +289,6 @@ async def add_first_text(
         comparison, turn = await add_comparison_turn(
             comparison.id,
             args.prompt_value,
-            web_search_results,
             prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
@@ -304,6 +306,7 @@ async def add_first_text(
                     increment_input_chars(anonymous_user_hash, len(args.prompt_value))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
 
         store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -375,6 +378,7 @@ async def add_text(
                     increment_input_chars(anonymous_user_hash, len(args.message))
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
 
         store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -458,6 +462,7 @@ async def retry(
                     )
 
             await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
 
         store_comparison_metadata(comparison.id, is_streaming=False)
 

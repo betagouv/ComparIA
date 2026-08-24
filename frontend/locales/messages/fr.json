@@ -173,7 +173,8 @@
             "publishing": "Jeux de données",
             "suggestions": "Suggestions",
             "users": "Utilisateurs",
-            "voteTags": "Étiquettes de vote"
+            "voteTags": "Étiquettes de vote",
+            "tools": "Outils"
         },
         "panelLink": "Administration",
         "promptChecks": {
@@ -599,11 +600,20 @@
             "title": "Suggestions de prompts"
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
+        "tools": {
+            "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
+            "count": "{count} outils",
+            "label": "Outils",
+            "legend": "Outils",
+            "locked": "Les outils sont fixés pour toute la conversation.",
+            "none": "Aucun outil"
+        },
         "webSearch": {
             "disabled": "Recherche web désactivée",
             "enabled": "Recherche web activée",
-            "label": "Recherche web",
-            "tooltip": "Activez la recherche sur le Web pour permettre aux modèles d'utiliser des sources en ligne et de citer des informations plus récentes.<br><strong>Sans la recherche sur le Web</strong>, les modèles répondent en se basant sur ce qu'ils ont appris pendant leur formation (leurs données d'entraînement). Ils ne peuvent pas vérifier les informations en ligne ; par conséquent, les faits très récents ou très spécifiques peuvent être incomplets."
+            "help": "Chaque modèle décide lui-même s’il est utile de lancer une recherche.",
+            "label": "Autoriser la recherche web",
+            "tooltip": "Autorisez les modèles à rechercher des informations en ligne et à citer des sources plus récentes. <strong>Chaque modèle choisit librement d’utiliser ou non cet outil</strong> selon votre message.<br>Si vous ne l’autorisez pas, les modèles répondent uniquement à partir de ce qu’ils ont appris pendant leur entraînement et ne peuvent pas vérifier d’informations en ligne."
         }
     },
     "arene": {
@@ -688,15 +698,41 @@
             "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres"
         },
-        "success": "Vous êtes connecté !"
+        "success": "Vous êtes connecté !",
+        "settings": {
+            "title": "Paramètres",
+            "logout": "Se déconnecter"
+        }
     },
     "chatbot": {
+        "agentTrace": {
+            "intermediate": "Message intermédiaire du modèle",
+            "label": "Voir la trace d’exécution",
+            "query": "Recherche utilisée : ",
+            "reasoning": "Raisonnement transmis par le modèle",
+            "request": "Requête utilisateur",
+            "sources": "source(s)",
+            "status": { "empty": "Aucun résultat", "error": "Échec", "success": "Succès" },
+            "technicalDetails": "Afficher les détails techniques",
+            "toolCall": "Appel de l’outil",
+            "toolResult": "Réponse de l’outil"
+        },
         "announce": {
             "generating": "Les modèles rédigent leur réponse…",
             "ready": "Les deux réponses sont prêtes."
         },
         "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
+        "tools": {
+            "done": "Terminé",
+            "fixed": "Outils fixés pour cette conversation : {tools}",
+            "noResult": "Aucun résultat",
+            "none": "Aucun outil utilisé",
+            "result": "1 résultat",
+            "results": "{count} résultats",
+            "running": "Recherche en cours…",
+            "sources": "{count} source(s)"
+        },
         "errors": {
             "other": {
                 "message": "Une erreur temporaire est survenue.",
@@ -1942,6 +1978,7 @@
         "title": "Statistiques de la plateforme"
     },
     "vote": {
+        "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
         "choices": {
             "negative": {
                 "comment": "Précisez ce que vous n’avez pas aimé…",

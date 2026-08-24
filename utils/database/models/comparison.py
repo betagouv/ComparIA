@@ -65,6 +65,9 @@ class ComparisonBase(BaseDBModel):
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
+    # Tool keys the visitor selected, fixed for the whole comparison so that
+    # every turn ran under the same conditions.
+    enabled_tools: Annotated[list[str], Field(sa_type=JSONB)] = []
     revealed: bool = False
     revealed_at: OptionalDatetime = None
 
@@ -94,6 +97,12 @@ class ComparisonWithAnalyzeData(ComparisonBase):
     archived_reason: Annotated[ArchivedReason | None, Field(sa_type=String)] = None
     archived_at: OptionalDatetime = None
 
+    # Learnt by trying (backend/arena/tools.py), not decided in advance: null
+    # when no tool was offered to that side this conversation, so "not
+    # applicable" and "declined" stay distinguishable when ranking is filtered.
+    tool_capable_a: bool | None = None
+    tool_capable_b: bool | None = None
+
 
 class Comparison(ComparisonWithAnalyzeData, table=True):
     turns: list[Turn] = Relationship(
@@ -115,6 +124,7 @@ class ComparisonPublic(SQLModel):
     id: uuid.UUID
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
+    enabled_tools: list[str]
     error: ErrorDetails | None
     turns: list[TurnPublic]
     revealed: bool

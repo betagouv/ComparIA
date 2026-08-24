@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from linkup import LinkupSearchTextResult
 from sqlmodel import and_, col, select, update
 
+from backend.arena.tools import model_rejects_tools
 from backend.llms.data import get_llms_data
 from utils.database.models import (
     BOT_POS,
@@ -133,6 +134,34 @@ async def update_comparison_error(
         await session.commit()
 
 
+async def update_comparison_tool_capability(comparison: ComparisonRead) -> None:
+    """
+    Record, per side, whether the model actually accepted the tools it was
+    offered this turn. Left untouched (null) when no tool was offered at all,
+    so a model with nothing to decline is never mistaken for one that did.
+    """
+    # Nothing to record when the visitor selected nothing. Re-resolving here
+    # would repeat the turn's tool discovery, network calls included, and a
+    # server that has since gone down would wrongly read as "no tools offered".
+    if not comparison.enabled_tools:
+        return
+
+    llms_data = (await get_llms_data()).enabled
+
+    async with get_session() as session:
+        db_comparison = await _get_item(Comparison, comparison.id, session)
+        for pos in BOT_POS:
+            model = llms_data[
+                getattr(comparison, f"llm_id_{pos}")
+            ].litellm_endpoint.model
+            setattr(
+                db_comparison, f"tool_capable_{pos}", not model_rejects_tools(model)
+            )
+        db_comparison.updated_at = datetime.now()
+        session.add(db_comparison)
+        await session.commit()
+
+
 async def set_comparison_revealed(comparison_id: uuid.UUID) -> None:
     async with get_session() as session:
         db_comparison = await _get_item(Comparison, comparison_id, session)
@@ -175,13 +204,27 @@ async def add_comparison_turn(
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
 
+def _llm_message_for_persistence(message: LLMMessageCreate) -> LLMMessage:
+    """Build a DB message whose JSONB fields contain JSON-native values."""
+    db_message = LLMMessage.model_validate(message)
+    if message.web_search_results:
+        db_message.web_search_results = [
+            result.model_dump(mode="json") for result in message.web_search_results
+        ]
+    if message.agent_trace:
+        db_message.agent_trace = [
+            event.model_dump(mode="json") for event in message.agent_trace
+        ]
+    return db_message
+
+
 async def update_turn(
     id: uuid.UUID, llm_msg_a: LLMMessageCreate, llm_msg_b: LLMMessageCreate
 ) -> None:
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
-        db_turn.llm_msg_a = LLMMessage.model_validate(llm_msg_a)
-        db_turn.llm_msg_b = LLMMessage.model_validate(llm_msg_b)
+        db_turn.llm_msg_a = _llm_message_for_persistence(llm_msg_a)
+        db_turn.llm_msg_b = _llm_message_for_persistence(llm_msg_b)
         session.add(db_turn)
         await session.commit()
 

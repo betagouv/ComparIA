@@ -26,6 +26,14 @@
         "selectLanguage": "Seleccionar idioma"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Una vez activadas, las herramientas seleccionadas se ofrecen a los dos modelos comparados, que siguen siendo libres de usarlas o no.",
+            "count": "{count} herramientas",
+            "label": "Herramientas",
+            "legend": "Herramientas",
+            "locked": "Las herramientas quedan fijadas para toda la conversación.",
+            "none": "Ninguna herramienta"
+        },
         "compareModels": {
             "count": "{count}/2 modelos",
             "help": "Si elige solo uno, el segundo sera elegido al azar",
@@ -51,11 +59,32 @@
         "webSearch": {
             "disabled": "Búsqueda web desactivada",
             "enabled": "Búsqueda web activada",
-            "label": "Búsqueda web",
-            "tooltip": "Activa la búsqueda web para que los modelos utilicen fuentes en línea y citen información más actualizada.<br><strong>Sin búsqueda web</strong>, los modelos responden basándose en lo que aprendieron durante su entrenamiento (sus datos de entrenamiento). No pueden verificar información en línea, por lo que los datos muy recientes o muy específicos pueden ser incompletos."
+            "help": "Cada modelo decide por sí mismo si resulta útil realizar una búsqueda.",
+            "label": "Permitir la búsqueda web",
+            "tooltip": "Permite que los modelos busquen información en línea y citen fuentes más recientes. <strong>Cada modelo decide libremente si utiliza esta herramienta</strong> según tu mensaje.<br>Si no lo permites, los modelos responden únicamente a partir de lo aprendido durante el entrenamiento y no pueden verificar información en línea."
         }
     },
     "chatbot": {
+        "tools": {
+            "done": "Hecho",
+            "fixed": "Herramientas fijadas para esta conversación: {tools}",
+            "noResult": "Sin resultados",
+            "none": "Ninguna herramienta utilizada",
+            "running": "Buscando…",
+            "sources": "{count} fuente(s)"
+        },
+        "agentTrace": {
+            "intermediate": "Mensaje intermedio del modelo",
+            "label": "Ver la traza de ejecución",
+            "query": "Búsqueda utilizada: ",
+            "reasoning": "Razonamiento compartido por el modelo",
+            "request": "Solicitud del usuario",
+            "sources": "fuente(s)",
+            "status": { "empty": "Sin resultados", "error": "Error", "success": "Correcto" },
+            "technicalDetails": "Mostrar detalles técnicos",
+            "toolCall": "Llamada a la herramienta",
+            "toolResult": "Respuesta de la herramienta"
+        },
         "continuePrompt": "Continúa la discusión…",
         "conversation": "Conversación",
         "errors": {
