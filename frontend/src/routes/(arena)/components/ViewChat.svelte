@@ -25,8 +25,11 @@
   const toolLabels = $derived(
     new Map(((page.data.tools ?? []) as ToolPublic[]).map((tool) => [tool.key, tool.label]))
   )
-  const activeToolLabels = $derived(
-    (comparator.comparison?.enabled_tools ?? []).map((key) => toolLabels.get(key) ?? key)
+  const activeTools = $derived(
+    (comparator.comparison?.enabled_tools ?? []).map((key) => ({
+      key,
+      label: toolLabels.get(key) ?? key
+    }))
   )
 
   // A comparison that isn't in the store sends us back to the arena. The
@@ -143,20 +146,20 @@
               <Tooltip id="mode-desc" text={mode.description} size="xs" />
             </div>
 
-            {#if activeToolLabels.length > 0}
+            {#each activeTools as tool (tool.key)}
               <div
-                class="cg-border rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-4 md:py-3 min-w-fit self-start border-dashed! text-center"
+                class="cg-border md:me-0 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
               >
                 <Icon icon="i-ri-tools-line" size="sm" class="text-primary" />
-                <strong>{activeToolLabels.join(', ')}</strong>
+                <strong>{tool.label}</strong>
                 <Tooltip
-                  id="tools-used-desc-{comparisonId}"
-                  label={m['chatbot.tools.fixed']({ tools: activeToolLabels.join(', ') })}
-                  text={m['chatbot.tools.fixed']({ tools: activeToolLabels.join(', ') })}
+                  id="tools-used-desc-{comparisonId}-{tool.key}"
+                  label={m['chatbot.tools.fixed']({ tools: tool.label })}
+                  text={m['chatbot.tools.fixed']({ tools: tool.label })}
                   size="xs"
                 />
               </div>
-            {/if}
+            {/each}
           </div>
         {/if}
       </GroupedMessages>
