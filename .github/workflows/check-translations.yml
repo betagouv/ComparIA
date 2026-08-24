@@ -1,0 +1,92 @@
+name: Check Missing Translations
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/locales/messages/*.json'
+      - '.github/workflows/check-translations.yml'
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  check-translations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check missing translations
+        run: |
+          python3 << 'EOF'
+          import json
+          import os
+          import glob
+
+          def get_leaf_keys(d, parent_key=""):
+              keys = set()
+              for k, v in d.items():
+                  key = f"{parent_key}.{k}" if parent_key else k
+                  if isinstance(v, dict):
+                      keys |= get_leaf_keys(v, key)
+                  elif v:  # skip empty strings
+                      keys.add(key)
+              return keys
+
+          fr = json.loads(open("frontend/locales/messages/fr.json").read())
+          fr_keys = get_leaf_keys(fr)
+
+          locale_files = sorted(glob.glob("frontend/locales/messages/*.json"))
+          body_parts = []
+
+          for filepath in locale_files:
+              lang_code = os.path.basename(filepath).replace(".json", "")
+              if lang_code == "fr":
+                  continue
+
+              other = json.loads(open(filepath).read())
+              other_keys = get_leaf_keys(other)
+
+              missing = sorted(fr_keys - other_keys)
+              obsolete = sorted(other_keys - fr_keys)
+
+              if missing:
+                  items = "\n".join(f"- `{k}`" for k in missing)
+                  body_parts.append(
+                      f"### `{lang_code}.json` is missing {len(missing)} key(s) present in `fr.json`\n\n"
+                      f"{items}"
+                  )
+
+              if obsolete:
+                  items = "\n".join(f"- `{k}`" for k in obsolete)
+                  body_parts.append(
+                      f"### `{lang_code}.json` has {len(obsolete)} obsolete key(s) not in `fr.json` (should be removed)\n\n"
+                      f"{items}"
+                  )
+
+          if body_parts:
+              body = "## Missing Translations\n\n" + "\n\n".join(body_parts)
+          else:
+              body = "## Missing Translations\n\nAll locale files are in sync with `fr.json`!"
+
+          with open("/tmp/comment-body.md", "w") as f:
+              f.write(body)
+          EOF
+
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '## Missing Translations'
+
+      - name: Post or update PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: /tmp/comment-body.md
+          edit-mode: replace
