@@ -123,13 +123,6 @@
     aria-label={m['chatbot.conversation']()}
     class="flex grow flex-col"
   >
-    {#if activeToolLabels.length > 0}
-      <p class="fr-container fr-text--sm mb-0! pt-4 text-[--text-mention-grey]">
-        <Icon icon="i-ri-tools-line" size="sm" class="text-primary me-1" />
-        {m['chatbot.tools.fixed']({ tools: activeToolLabels.join(', ') })}
-      </p>
-    {/if}
-
     {#each comparator.comparison?.turns ?? [] as turn, idx (turn.id)}
       <GroupedMessages
         {turn}
@@ -141,12 +134,29 @@
         autoScroll={!comparator.comparison?.revealed}
       >
         {#if idx === 0}
-          <div
-            class="cg-border md:me-3 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
-          >
-            <Icon icon={mode.icon} size="sm" class="text-primary" />
-            <strong>{mode.title}</strong>
-            <Tooltip id="mode-desc" text={mode.description} size="xs" />
+          <div class="gap-2 md:gap-3 flex flex-wrap items-center">
+            <div
+              class="cg-border md:me-0 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
+            >
+              <Icon icon={mode.icon} size="sm" class="text-primary" />
+              <strong>{mode.title}</strong>
+              <Tooltip id="mode-desc" text={mode.description} size="xs" />
+            </div>
+
+            {#if activeToolLabels.length > 0}
+              <div
+                class="cg-border rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-4 md:py-3 min-w-fit self-start border-dashed! text-center"
+              >
+                <Icon icon="i-ri-tools-line" size="sm" class="text-primary" />
+                <strong>{activeToolLabels.join(', ')}</strong>
+                <Tooltip
+                  id="tools-used-desc-{comparisonId}"
+                  label={m['chatbot.tools.fixed']({ tools: activeToolLabels.join(', ') })}
+                  text={m['chatbot.tools.fixed']({ tools: activeToolLabels.join(', ') })}
+                  size="xs"
+                />
+              </div>
+            {/if}
           </div>
         {/if}
       </GroupedMessages>

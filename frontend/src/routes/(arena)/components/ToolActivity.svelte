@@ -128,7 +128,12 @@
                 class="mt-0.5 h-[14px] w-[14px] shrink-0"
               />
             {/if}
-            <Link href={source.url} text={source.name} class="text-sm!" />
+            <Link
+              href={source.url}
+              text={source.name}
+              class="text-sm!"
+              style="--underline-img: none"
+            />
           </li>
         {/each}
       </ul>
