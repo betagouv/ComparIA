@@ -113,8 +113,8 @@ describe('ToolActivity', () => {
     expect(container.querySelector('img[src="https://example.com/favicon.ico"]')).toBeTruthy()
   })
 
-  it('renders a generic tool request and textual result without requiring sources', () => {
-    render(ToolActivity, {
+  it('renders a generic tool result as a compact expandable row', () => {
+    const { container } = render(ToolActivity, {
       props: {
         id: 'generic',
         call: {
@@ -141,5 +141,10 @@ describe('ToolActivity', () => {
     expect(screen.getByText('Jurisprudence')).toBeTruthy()
     expect(screen.getByText(/droit du travail/)).toBeTruthy()
     expect(screen.getByText('Deux décisions pertinentes ont été trouvées.')).toBeTruthy()
+    expect(screen.getByText('Terminé')).toBeTruthy()
+    expect(container.querySelector('details.tool-activity-card')).toBeTruthy()
+    expect(container.querySelector('summary')).toBeTruthy()
+    expect(container.querySelector('.i-ri-tools-line')).toBeTruthy()
+    expect(container.querySelector('.tool-activity-content')).toBeTruthy()
   })
 })

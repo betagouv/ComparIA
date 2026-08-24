@@ -97,10 +97,14 @@
   )
 </script>
 
-{#if call.name === 'web_search' && sources.length > 0}
+{#if sources.length > 0 || resultSummary}
   <details class="tool-activity-card cg-border my-3 rounded-lg bg-white w-full overflow-hidden">
     <summary class="tool-activity-summary gap-2 px-3 py-2 text-sm flex cursor-pointer items-center">
-      <Icon icon="i-ri-global-line" size="sm" class="text-primary shrink-0" />
+      <Icon
+        icon={call.name === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'}
+        size="sm"
+        class="text-primary shrink-0"
+      />
       <span class="gap-x-2 min-w-0 flex grow items-baseline">
         <span id="{id}-title" class="font-medium shrink-0 whitespace-nowrap"
           >{call.label || call.name}</span
@@ -111,34 +115,40 @@
           </span>
         {/if}
       </span>
-      <span class="text-xs shrink-0 text-[--text-mention-grey]">{resultCountLabel}</span>
+      <span class="text-xs shrink-0 text-[--text-mention-grey]">
+        {sources.length > 0 ? resultCountLabel : m['chatbot.tools.done']()}
+      </span>
       <span class="tool-activity-chevron flex shrink-0" aria-hidden="true">
         <Icon icon="i-ri-arrow-down-s-line" size="sm" />
       </span>
     </summary>
     <div class="tool-activity-content px-4 py-3 border-t border-[--border-default-grey]">
-      <ul class="my-0! p-0! text-sm list-none!">
-        {#each sources as source (source.url)}
-          <li class="gap-2 mb-1 last:mb-0 flex items-start">
-            {#if source.favicon}
-              <img
-                aria-hidden="true"
-                alt=""
-                src={source.favicon}
-                loading="lazy"
-                onerror={hideBrokenFavicon}
-                class="mt-0.5 h-[14px] w-[14px] shrink-0"
+      {#if sources.length > 0}
+        <ul class="my-0! p-0! text-sm list-none!">
+          {#each sources as source (source.url)}
+            <li class="gap-2 mb-1 last:mb-0 flex items-start">
+              {#if source.favicon}
+                <img
+                  aria-hidden="true"
+                  alt=""
+                  src={source.favicon}
+                  loading="lazy"
+                  onerror={hideBrokenFavicon}
+                  class="mt-0.5 h-[14px] w-[14px] shrink-0"
+                />
+              {/if}
+              <Link
+                href={source.url}
+                text={source.name}
+                class="text-sm!"
+                style="--underline-img: none"
               />
-            {/if}
-            <Link
-              href={source.url}
-              text={source.name}
-              class="text-sm!"
-              style="--underline-img: none"
-            />
-          </li>
-        {/each}
-      </ul>
+            </li>
+          {/each}
+        </ul>
+      {:else if resultSummary}
+        <p class="mt-0! mb-0! text-sm whitespace-pre-line">{resultSummary}</p>
+      {/if}
     </div>
   </details>
 {:else}
