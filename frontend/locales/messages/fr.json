@@ -581,9 +581,6 @@
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
             "question": "Quels modèles voulez-vous comparer ?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard."
-        },
         "modelSelection": "Sélection des modèles",
         "prompt": {
             "label": "Écrivez votre première requête",
@@ -782,10 +779,8 @@
         "links": {
             "accessibility": "Accessibilité : non conforme",
             "legal": "Mentions légales",
-            "privacy": "Politique de confidentialité",
             "rgesn": "Écoconception",
-            "sources": "Code source",
-            "tos": "Modalités d'utilisation"
+            "sources": "Code source"
         }
     },
     "general": {
@@ -1859,14 +1854,12 @@
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
-            "home": "Accueil",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "ranking": "Classement",
             "rgesn": "Déclaration d’écoconception",
-            "settings": "Paramètres",
-            "share": "Mon bilan"
+            "settings": "Paramètres"
         }
     },
     "statistics": {
@@ -1937,17 +1930,6 @@
             "important": "Votre vote est important : il contribue à un meilleur alignement avec les <a {linkProps}>préférences francophones</a>."
         },
         "yours": "Votre vote"
-    },
-    "welcome": {
-        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées.",
-        "go": "C'est parti",
-        "privacy": "Ne communiquez pas d’informations personnelles comme votre nom, prénom ou adresse.",
-        "title": "Bienvenue sur compar:IA !",
-        "tos": {
-            "desc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d’IA plus inclusifs.",
-            "moreInfos": "En savoir plus sur le projet."
-        },
-        "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
     },
     "words": {
         "NA": "N/A",

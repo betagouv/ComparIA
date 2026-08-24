@@ -29,9 +29,6 @@
             "help": "Viss du berre vel ein, vert den andre vald tilfeldig",
             "question": "Kva modellar vil du samanlikne?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modellvalet er avgrensa for å sikre rettferdig tilgang for alle. Du kan halde fram med å bruke tilfeldig modus, eller prøve att seinare."
-        },
         "modelSelection": "Val av modellar",
         "prompt": {
             "label": "Skriv den første meldinga di",

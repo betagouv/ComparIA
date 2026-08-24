@@ -581,9 +581,6 @@
             "help": "If you only choose one, the second will be selected randomly",
             "question": "Which models would you like to compare?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Model selection is limited to ensure fair access for everyone. You can continue using random mode, or try again later."
-        },
         "modelSelection": "Model selection",
         "prompt": {
             "label": "Write your first prompt",
@@ -782,10 +779,8 @@
         "links": {
             "accessibility": "Accessibility: non-compliant",
             "legal": "Legal notice",
-            "privacy": "Privacy policy",
             "rgesn": "Eco-design",
-            "sources": "Source code",
-            "tos": "Terms of use"
+            "sources": "Source code"
         }
     },
     "general": {
@@ -1859,14 +1854,12 @@
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
             "donnees-personnelles": "Privacy policy",
-            "home": "Home",
             "mentions-legales": "Legal notice",
             "modalites": "Terms of use",
             "modeles": "Model list",
             "ranking": "Leaderboard",
             "rgesn": "Ecodesign statement",
-            "settings": "Settings",
-            "share": "My results"
+            "settings": "Settings"
         }
     },
     "statistics": {
@@ -1937,17 +1930,6 @@
             "important": "Your vote matters: it helps AI models align better with <a {linkProps}>local language preferences</a>."
         },
         "yours": "Your vote"
-    },
-    "welcome": {
-        "errors": "AI can make mistakes: we encourage you to check the information provided",
-        "go": "Here we go",
-        "privacy": "Do not share personal information such as your name, surname or address.",
-        "title": "Welcome to compar:IA!",
-        "tos": {
-            "desc": "The conversations and preferences you express on the arena are used anonymously to create datasets representative of European languages and usage, in order to reduce cultural bias and propose more inclusive future AI models.",
-            "moreInfos": "Learn more about the project."
-        },
-        "use": "Do not use the comparator for illegal or harmful purposes"
     },
     "words": {
         "NA": "N / A",

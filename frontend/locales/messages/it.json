@@ -31,9 +31,6 @@
             "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
             "question": "Quali modelli desideri confrontare?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "La scelta dei modelli è limitata per garantire un accesso equo a tutti. Puoi continuare a utilizzare la modalità casuale oppure riprovare più tardi."
-        },
         "modelSelection": "Selezione del modello",
         "prompt": {
             "label": "Scrivi il tuo primo messaggio",
@@ -129,10 +126,8 @@
         "links": {
             "accessibility": "Accessibilità: non conforme",
             "legal": "Avviso legale",
-            "privacy": "Politica sulla riservatezza",
             "rgesn": "Ecodesign",
-            "sources": "Codice sorgente",
-            "tos": "Termini di utilizzo"
+            "sources": "Codice sorgente"
         }
     },
     "general": {
@@ -693,13 +688,11 @@
             "accessibilite": "Dichiarazione di accessibilità",
             "arene": "Chat",
             "donnees-personnelles": "Politica sulla riservatezza",
-            "home": "Home",
             "mentions-legales": "Avviso legale",
             "modalites": "Termini d'uso",
             "modeles": "Elenco dei modelli",
             "ranking": "Classifica",
-            "rgesn": "Dichiarazione di ecodesign",
-            "share": "I miei risultati"
+            "rgesn": "Dichiarazione di ecodesign"
         }
     },
     "vote": {
@@ -733,17 +726,6 @@
             "important": "Il tuo voto è importante: contribuisce a un migliore allineamento con le <a {linkProps}>preferenze francofone</a>."
         },
         "yours": "Il tuo voto"
-    },
-    "welcome": {
-        "errors": "L'IA può commettere errori: vi invitiamo a verificare le informazioni fornite.",
-        "go": "Partiamo",
-        "privacy": "Non condividere informazioni personali come nome, cognome o indirizzo.",
-        "title": "Benvenuti su compar:IA!",
-        "tos": {
-            "desc": "Le conversazioni e le preferenze che esprimi su compar:AI vengono utilizzate in forma anonima per creare dataset rappresentativi delle lingue e degli usi europei, al fine di ridurre i pregiudizi culturali e proporre in futuro modelli di intelligenza artificiale più inclusivi.",
-            "moreInfos": "Scopri di più sul progetto."
-        },
-        "use": "Non utilizzare il comparatore per scopi illegali o dannosi."
     },
     "words": {
         "NA": "N/A",

@@ -29,9 +29,6 @@
             "help": "Om bara en är vald, kommer den andra att väljas slumpmässigt",
             "question": "Vilka modeller vill du jämföra?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modellval är begränsat för att säkerställa rättvis åtkomst för alla. Du kan fortsätta använda slumpmässigt läge eller försöka igen senare."
-        },
         "modelSelection": "Val av modeller",
         "prompt": {
             "label": "Skriv ditt första meddelande",
@@ -127,9 +124,7 @@
         "links": {
             "accessibility": "Brister i tillgänglighet",
             "legal": "Rättsliga meddelanden",
-            "privacy": "Integritetspolicy",
-            "sources": "Källkod",
-            "tos": "Användarvillkor"
+            "sources": "Källkod"
         }
     },
     "general": {
@@ -577,12 +572,10 @@
             "accessibilite": "Tillgänglighetspolicy",
             "arene": "Chat",
             "donnees-personnelles": "Integritetspolicy",
-            "home": "Startsida",
             "mentions-legales": "Rättsliga meddelanden",
             "modalites": "Användarvillkor",
             "modeles": "Lista över modeller",
-            "ranking": "Rankning",
-            "share": "Mina resultat"
+            "ranking": "Rankning"
         }
     },
     "statistics": {
@@ -640,17 +633,6 @@
         "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "title": "Vilken AI-modell föredrar du?",
         "yours": "Din röst"
-    },
-    "welcome": {
-        "errors": "AI kan göra misstag! Vi uppmuntrar dig att verifiera information du får från AI-modellerna.",
-        "go": "Nu kör vi",
-        "privacy": "Dela inte personlig information som förnamn, efternamn eller adress.",
-        "title": "Välkommen till compar:IA!",
-        "tos": {
-            "desc": "Dina konversationer på compar:IA och de preferenser du uttrycker används anonymt för att skapa datamängder som är representativa för europeiska språk och språkbruk, i syfte att minska kulturell bias och skapa mer inkluderande framtida AI-modeller.",
-            "moreInfos": "Läs mer om projektet."
-        },
-        "use": "Använd inte verktyget för olagliga eller skadliga ändamål."
     },
     "words": {
         "NA": "--",

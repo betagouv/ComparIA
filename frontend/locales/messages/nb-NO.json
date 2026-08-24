@@ -31,9 +31,6 @@
             "help": "Hvis du bare velger én, velges den andre tilfeldig",
             "question": "Hvilke modeller vil du sammenligne?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modellvalg er begrenset for å sikre rettferdig tilgang for alle. Du kan fortsette å bruke tilfeldig modus, eller prøve igjen senere."
-        },
         "modelSelection": "Valg av modeller",
         "prompt": {
             "label": "Skriv din første melding",
@@ -129,10 +126,8 @@
         "links": {
             "accessibility": "Tilgjengelighet: ikke kompatibel",
             "legal": "Juridisk merknad",
-            "privacy": "Personvernerklæring",
             "rgesn": "Økodesign",
-            "sources": "Kildekode",
-            "tos": "Brukervilkår"
+            "sources": "Kildekode"
         }
     },
     "general": {
@@ -666,13 +661,11 @@
             "accessibilite": "Tlgjengelighetserklæring",
             "arene": "Chat",
             "donnees-personnelles": "Personvernerklæring",
-            "home": "Hjem",
             "mentions-legales": "Juridisk merknad",
             "modalites": "Vilkår for bruk",
             "modeles": "Liste over modeller",
             "ranking": "Rangering",
-            "rgesn": "Økodesign-erklæring",
-            "share": "Min vurdering"
+            "rgesn": "Økodesign-erklæring"
         }
     },
     "vote": {
@@ -693,17 +686,6 @@
         },
         "title": "Hvilken KI-modell foretrekker du?",
         "yours": "Din stemme"
-    },
-    "welcome": {
-        "errors": "KI kan gjøre feil: vi oppfordrer deg til å sjekke og få bekreftet informasjonen.",
-        "go": "Da setter vi i gang",
-        "privacy": "Ikke del personlig informasjon som navn, etternavn eller adresse.",
-        "title": "Velkommen til compar:IA!",
-        "tos": {
-            "desc": "Samtalene og preferansene du uttrykker på compar:IA brukes anonymt til å lage datasett som er representative for europeiske språk og deres bruksområder, for å redusere kulturelle skjevheter og åpne opp for mer inkluderende KI-modeller i fremtiden.",
-            "moreInfos": "Lær mer om prosjektet."
-        },
-        "use": "Ikke bruk compar:IA til ulovlige eller skadelige formål."
     },
     "words": {
         "NA": "Ikke aktuelt",

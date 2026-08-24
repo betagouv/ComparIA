@@ -29,9 +29,6 @@
             "help": "Kui valid ainult ühe, valitakse teine juhuslikult",
             "question": "Missuguseid mudeleid võrrelda soovid?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Mudelite valik on piiratud, et tagada kõigile võrdne juurdepääs. Saad jätkata juhusliku režiimi kasutamist või proovida hiljem uuesti."
-        },
         "modelSelection": "Mudelite valik",
         "prompt": {
             "label": "Sisesta oma esimene sõnum",
@@ -127,10 +124,8 @@
         "links": {
             "accessibility": "Ligipääsetavus: nõuetele-mittevastav",
             "legal": "Õigusteave",
-            "privacy": "Privaatsuseeskirjad",
             "rgesn": "Ökokontseptsioon",
-            "sources": "Lähtekood",
-            "tos": "Kasutustingimused"
+            "sources": "Lähtekood"
         }
     },
     "general": {
@@ -664,13 +659,11 @@
             "accessibilite": "Ligipääsetavuse avaldus",
             "arene": "Vestlus",
             "donnees-personnelles": "Privatsuspõhimõtted",
-            "home": "Avaleht",
             "mentions-legales": "Õigusteave",
             "modalites": "Kasutustingimused",
             "modeles": "Mudelite nimekiri",
             "ranking": "Edetabel",
-            "rgesn": "Ökodisaini avaldus",
-            "share": "Minu tulemused"
+            "rgesn": "Ökodisaini avaldus"
         }
     },
     "vote": {
@@ -691,17 +684,6 @@
         },
         "title": "Missugust keelemudelit sa eelistad?",
         "yours": "Sinu hääl"
-    },
-    "welcome": {
-        "errors": "Tehisaru võib eksida – soovitame esitatud teabe üle kontrollida.",
-        "go": "Hakkame pihta",
-        "privacy": "Ära jaga isikuandmeid, nagu oma ees- ja perekonnanimi või aadress.",
-        "title": "Tere tulemast baromeeter.ai lehele!",
-        "tos": {
-            "desc": "Platvormi vestlusi ja eelistusi kasutatakse anonüümselt, et luua Euroopa keeli ja nende kasutusviise esindavaid andmestikke, eesmärgiga vähendada kultuurilist kallutatust ja pakkuda tulevikus kaasavamaid tehisarumudeleid.",
-            "moreInfos": "Loe projekti kohta lisaks."
-        },
-        "use": "Ära kasuta platvormi funktsioone ebaseaduslikel või kahjustavatel eesmärkidel."
     },
     "words": {
         "NA": "N/A",

@@ -81,9 +81,6 @@
             "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt",
             "question": "Hvilke modeller vil du gerne sammenligne?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modelvalg er begrænset for at sikre fair adgang for alle. Du kan fortsætte med at bruge tilfældig tilstand eller prøve igen senere."
-        },
         "modelSelection": "Modelvalg",
         "prompt": {
             "label": "Skriv din første besked",
@@ -254,10 +251,8 @@
         "links": {
             "accessibility": "Tilgængelighed: ikke compliant",
             "legal": "Om os",
-            "privacy": "Privatlivspolitik",
             "rgesn": "Miljøvenligt design",
-            "sources": "Kildekode",
-            "tos": "Brugsbetingelser"
+            "sources": "Kildekode"
         }
     },
     "general": {
@@ -888,14 +883,12 @@
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
             "donnees-personnelles": "Fortrolighedspolitik",
-            "home": "Hjem",
             "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
             "ranking": "Rangliste",
             "rgesn": "Erklæring om bæredygtigt design",
-            "settings": "Indstillinger",
-            "share": "Mine resultater"
+            "settings": "Indstillinger"
         }
     },
     "statistics": {
@@ -966,17 +959,6 @@
             "important": "Din stemme er vigtig: den bidrager til en bedre tilpasning til <a {linkProps}>dansksprogede præferencer</a>."
         },
         "yours": "Din stemme"
-    },
-    "welcome": {
-        "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",
-        "go": "Så er vi klar",
-        "privacy": "Del ikke personlige oplysninger såsom dit navn, efternavn eller adresse.",
-        "title": "Velkommen til AI Arenaen!",
-        "tos": {
-            "desc": "Samtalerne og de præferencer, du udtrykker på AI-arenaen, bruges anonymt til at udgøre datasæt, der er repræsentative for europæiske sprog og anvendelser for at reducere kulturelle bias og tilbyde fremtidige AI-modeller, der er mere inkluderende.",
-            "moreInfos": "Lær mere om projektet"
-        },
-        "use": "Brug ikke arenaen til ulovlige eller skadelige formål."
     },
     "words": {
         "NA": "N/A",
