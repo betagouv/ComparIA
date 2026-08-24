@@ -19,10 +19,12 @@
 
   let {
     onSuccess,
+    onLegalNavigate,
     titleId,
     ...props
   }: {
     onSuccess?: () => void
+    onLegalNavigate?: (event: MouseEvent) => void
     /** Lets a wrapping modal point its aria-labelledby at this form's title. */
     titleId?: string
   } & SvelteHTMLElements['div'] = $props()
@@ -172,6 +174,7 @@
         label={consentLabel}
         links={legalLinks()}
         linksClass="text-xs! leading-5!"
+        onLinkClick={onLegalNavigate}
         error={consentError}
       />
     {:else if consentError}

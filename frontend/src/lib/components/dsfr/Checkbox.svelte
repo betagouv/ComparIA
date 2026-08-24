@@ -12,6 +12,7 @@
     help,
     links = [],
     linksClass,
+    onLinkClick,
     error,
     disabled,
     ...props
@@ -22,6 +23,7 @@
     help?: string
     links?: CheckboxLink[]
     linksClass?: string
+    onLinkClick?: (event: MouseEvent) => void
     error?: string
     disabled?: boolean
   } & SvelteHTMLElements['label'] = $props()
@@ -69,7 +71,13 @@
   {#if safeLinks.length > 0}
     <div id="{id}-links" class="ms-8 mb-3 gap-x-3 gap-y-1 flex flex-wrap">
       {#each safeLinks as link (link.href)}
-        <Link href={link.href} text={link.label} size="sm" class={linksClass} />
+        <Link
+          href={link.href}
+          text={link.label}
+          size="sm"
+          class={linksClass}
+          onclick={onLinkClick}
+        />
       {/each}
     </div>
   {/if}

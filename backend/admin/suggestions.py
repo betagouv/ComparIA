@@ -17,6 +17,7 @@ from backend.suggestions.services import (
     delete_suggestion_category,
     list_admin_suggestions,
     set_suggestion_archived,
+    set_suggestion_category_archived,
 )
 from utils.database.models.suggestion import (
     AdminSuggestion,
@@ -119,6 +120,24 @@ async def remove_suggestion_category(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="A category containing suggestions cannot be deleted",
+        )
+
+
+@router.patch(
+    "/categories/{category_id}", response_model=AdminSuggestionCategory
+)
+async def patch_suggestion_category(
+    category_id: uuid.UUID,
+    body: SuggestionArchiveUpdate,
+    current_user: RequiredAdmin,
+) -> AdminSuggestionCategory:
+    try:
+        return await set_suggestion_category_archived(
+            category_id, archived=body.archived, updated_by=current_user.id
+        )
+    except SuggestionCategoryNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Category not found"
         )
 
 

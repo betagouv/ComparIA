@@ -2,18 +2,15 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Badge, Button, Icon, Modal, Select, Table } from '$components/dsfr'
+  import { Badge, Button, Icon, Modal, Pagination, Search, Select } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { TableCol } from '$lib/utils/data'
-  import { toSearchString } from '$lib/utils/data'
-  import { SvelteURLSearchParams } from 'svelte/reactivity'
+  import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity'
   import type { PageProps } from './$types'
   import CategoryIconPicker from './CategoryIconPicker.svelte'
-  import CategoryManager from './CategoryManager.svelte'
-  import type { PromptSuggestion, SuggestionStatus } from './types'
+  import type { PromptSuggestion, SuggestionCategory, SuggestionStatus } from './types'
 
   let { data }: PageProps = $props()
 
@@ -33,9 +30,11 @@
   let categoryId = $state(data.filters.category_id)
   // svelte-ignore state_referenced_locally
   let currentPage = $state(data.suggestions.page - 1)
-  let pageSize = $derived(data.suggestions.page_size)
-
+  // svelte-ignore state_referenced_locally
+  let pageSize = $state(data.suggestions.page_size)
   let suggestionToToggle = $state<PromptSuggestion | null>(null)
+  let categoryToToggle = $state<SuggestionCategory | null>(null)
+  const collapsedCategoryIds = new SvelteSet<string>()
   let actionLoading = $state(false)
   let prompt = $state('')
   let promptCategoryId = $state('')
@@ -108,25 +107,34 @@
     { value: 'available', label: m['admin.suggestions.available']() },
     { value: 'archived', label: m['admin.suggestions.archived']() }
   ]
+  const pageSizeOptions = [10, 25, 50].map((value) => ({
+    value,
+    label: m['components.table.pageCount']({ count: value })
+  }))
 
-  const rows = $derived(
-    data.suggestions.items.map((suggestion) => ({
-      ...suggestion,
-      id: suggestion.id,
-      search: toSearchString([suggestion.text, suggestion.category_title, suggestion.locale]),
-      actions: undefined
-    }))
+  function isCategoryArchived(category: SuggestionCategory) {
+    return category.archived
+  }
+
+  const groupedSuggestions = $derived(
+    categories
+      .map((category) => ({
+        category,
+        suggestions: data.suggestions.items.filter(
+          (suggestion) => suggestion.category_id === category.id
+        )
+      }))
+      .filter((group) => group.suggestions.length > 0)
+      .sort(
+        (left, right) =>
+          Number(isCategoryArchived(left.category)) - Number(isCategoryArchived(right.category))
+      )
   )
-  type SuggestionColumn = 'text' | 'category_title' | 'locale' | 'status' | 'actions'
-  // Not orderable: the server paginates and returns available suggestions
-  // first, so sorting here would only reorder the current page.
-  const cols = [
-    { id: 'text', label: m['admin.suggestions.prompt']() },
-    { id: 'category_title', label: m['admin.suggestions.category']() },
-    { id: 'locale', label: m['admin.suggestions.locale']() },
-    { id: 'status', label: m['admin.suggestions.status']() },
-    { id: 'actions', label: m['admin.suggestions.actions']() }
-  ] satisfies TableCol<SuggestionColumn>[]
+
+  function toggleCategory(categoryId: string) {
+    if (collapsedCategoryIds.has(categoryId)) collapsedCategoryIds.delete(categoryId)
+    else collapsedCategoryIds.add(categoryId)
+  }
 
   $effect(() => {
     search = data.filters.search
@@ -134,23 +142,19 @@
     locale = data.filters.locale
     categoryId = data.filters.category_id
     currentPage = data.suggestions.page - 1
+    pageSize = data.suggestions.page_size
   })
 
   $effect(() => {
     if (search === data.filters.search) return
 
-    const timeout = setTimeout(() => updateQuery({ search, page: '1' }), 300)
+    const timeout = setTimeout(() => updateQuery({ search, page: 1 }), 300)
     return () => clearTimeout(timeout)
   })
 
   $effect(() => {
     if (currentPage === data.suggestions.page - 1) return
-    updateQuery({ page: String(currentPage + 1) })
-  })
-
-  $effect(() => {
-    if (params.get('page_size') === pageSize.toString()) return
-    updateQuery({ page_size: pageSize, page: 1 })
+    updateQuery({ page: currentPage + 1 })
   })
 
   function updateQuery(updates: Record<string, any>) {
@@ -164,6 +168,10 @@
 
   function updateFilters() {
     updateQuery({ status, language: locale, category_id: categoryId, page: 1 })
+  }
+
+  function updatePageSize() {
+    updateQuery({ page_size: pageSize, page: 1 })
   }
 
   function updateLocaleFilter() {
@@ -187,6 +195,11 @@
   function openStatusModal(suggestion: PromptSuggestion) {
     suggestionToToggle = suggestion
     discloseModal('fr-modal-suggestion-status')
+  }
+
+  function openCategoryStatusModal(category: SuggestionCategory) {
+    categoryToToggle = category
+    discloseModal('fr-modal-suggestion-category-status')
   }
 
   function openAddCategoryModal() {
@@ -304,6 +317,31 @@
     }
   }
 
+  async function confirmCategoryStatusChange() {
+    if (!categoryToToggle) return
+
+    actionLoading = true
+    const archive = !categoryToToggle.archived
+    try {
+      await api.request(`/admin/suggestions/categories/${categoryToToggle.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ archived: archive })
+      })
+      closeModal('fr-modal-suggestion-category-status')
+      useToast(
+        archive
+          ? m['admin.suggestions.categoryArchiveSuccess']()
+          : m['admin.suggestions.categoryRestoreSuccess'](),
+        4000
+      )
+      await refetch()
+    } catch (error) {
+      useToast((error as Error).message, 6000, 'error')
+    } finally {
+      actionLoading = false
+    }
+  }
+
   function statusLabel(value: SuggestionStatus) {
     return value === 'archived'
       ? m['admin.suggestions.archived']()
@@ -316,101 +354,182 @@
   title={m['admin.suggestions.title']()}
   subtitle={m['admin.suggestions.subtitle']()}
 >
-  <Table
-    bind:search
-    caption={m['admin.suggestions.tableCaption']()}
-    hideCaption
-    {cols}
-    {rows}
-    searchLabel={m['words.search']()}
-    bind:currentPage
-    bind:maxRowsPerPage={pageSize}
-    itemCount={data.suggestions.total}
-  >
-    {#snippet headerLeft()}
-      <div class="gap-3 md:flex-row flex flex-col flex-wrap">
-        <Select
-          id="suggestions-status-filter"
-          label={m['admin.suggestions.status']()}
-          options={statusOptions}
-          bind:selected={status}
-          onchange={updateFilters}
-        />
-        <Select
-          id="suggestions-locale-filter"
-          label={m['admin.suggestions.locale']()}
-          options={localeOptions}
-          bind:selected={locale}
-          onchange={updateLocaleFilter}
-        />
-        <Select
-          id="suggestions-category-filter"
-          label={m['admin.suggestions.category']()}
-          options={filterCategoryOptions}
-          bind:selected={categoryId}
-          onchange={updateFilters}
+  <div class="mb-6 gap-4 flex flex-col">
+    <div
+      class="gap-3 md:grid-cols-2 xl:grid-cols-[minmax(18rem,2fr)_repeat(3,minmax(9rem,1fr))] grid w-full"
+    >
+      <div>
+        <span class="fr-label mb-2! block" aria-hidden="true">
+          {m['admin.suggestions.searchFilter']()}
+        </span>
+        <Search
+          id="suggestions-search"
+          label={m['admin.suggestions.search']()}
+          bind:value={search}
         />
       </div>
-    {/snippet}
+      <Select
+        id="suggestions-status-filter"
+        label={m['admin.suggestions.status']()}
+        options={statusOptions}
+        bind:selected={status}
+        onchange={updateFilters}
+      />
+      <Select
+        id="suggestions-locale-filter"
+        label={m['admin.suggestions.locale']()}
+        options={localeOptions}
+        bind:selected={locale}
+        onchange={updateLocaleFilter}
+      />
+      <Select
+        id="suggestions-category-filter"
+        label={m['admin.suggestions.category']()}
+        options={filterCategoryOptions}
+        bind:selected={categoryId}
+        onchange={updateFilters}
+      />
+    </div>
+    <div class="gap-2 flex flex-wrap justify-end">
+      <Button
+        variant="secondary"
+        class="gap-2"
+        aria-controls="fr-modal-add-suggestion-category"
+        data-fr-opened="false"
+        onclick={openAddCategoryModal}
+      >
+        <Icon icon="i-ri-folder-add-line" aria-hidden="true" />
+        <span>{m['admin.suggestions.addCategory']()}</span>
+      </Button>
+      <Button text={m['admin.suggestions.add']()} icon="add-line" onclick={openAddModal} />
+    </div>
+  </div>
 
-    {#snippet headerRight()}
-      <div class="gap-2 flex flex-wrap justify-end">
-        <CategoryManager {categories} onDeleted={refetch} />
-        <Button
-          variant="secondary"
-          class="gap-2"
-          aria-controls="fr-modal-add-suggestion-category"
-          data-fr-opened="false"
-          onclick={openAddCategoryModal}
+  <p class="fr-text--sm mb-4! text-[--text-mention-grey]" aria-live="polite">
+    {m['admin.suggestions.resultCount']({ count: data.suggestions.total })}
+  </p>
+
+  <div class="gap-5 flex flex-col">
+    {#each groupedSuggestions as group (group.category.id)}
+      {@const isArchived = isCategoryArchived(group.category)}
+      {@const isCollapsed = collapsedCategoryIds.has(group.category.id)}
+      <section
+        class="overflow-hidden border border-[--border-default-grey] bg-[--background-default-grey]"
+        aria-labelledby={`suggestion-category-${group.category.id}`}
+      >
+        <header
+          class="gap-4 p-4 md:p-5 md:flex-row md:items-start flex flex-col justify-between bg-[--background-alt-grey]"
         >
-          <Icon icon="i-ri-folder-add-line" aria-hidden="true" />
-          <span>{m['admin.suggestions.addCategory']()}</span>
-        </Button>
-        <Button
-          text={m['admin.suggestions.add']()}
-          icon="add-line"
-          aria-controls="fr-modal-add-suggestion"
-          data-fr-opened="false"
-          onclick={openAddModal}
-        />
-      </div>
-    {/snippet}
+          <div class="min-w-0">
+            <div class="gap-2 flex flex-wrap items-center">
+              <Icon icon={group.category.icon} class="text-primary text-xl" aria-hidden="true" />
+              <h2 id={`suggestion-category-${group.category.id}`} class="fr-h5 mb-0!">
+                {group.category.title}
+              </h2>
+              <button
+                type="button"
+                class="p-1 flex items-center justify-center"
+                aria-expanded={!isCollapsed}
+                aria-controls={`suggestions-list-${group.category.id}`}
+                aria-label={`${isCollapsed ? m['admin.suggestions.expandCategory']() : m['admin.suggestions.collapseCategory']()}: ${group.category.title}`}
+                onclick={() => toggleCategory(group.category.id)}
+              >
+                <Icon
+                  icon={isCollapsed ? 'i-ri-arrow-down-s-line' : 'i-ri-arrow-up-s-line'}
+                  aria-hidden="true"
+                />
+              </button>
+              <Badge size="sm" text={group.category.locale.toUpperCase()} />
+              {#if isArchived}
+                <Badge size="sm" text={m['admin.suggestions.archived']()} variant="orange" />
+              {/if}
+            </div>
+            <p class="fr-text--sm mb-0! mt-2! text-[--text-mention-grey]">
+              {group.category.description}
+            </p>
+            <p class="fr-text--xs mb-0! mt-2!">
+              {m['admin.suggestions.categoryCountSummary']({
+                available: group.category.available_suggestion_count,
+                total: group.category.suggestion_count
+              })}
+            </p>
+          </div>
+          {#if group.category.suggestion_count > 0}
+            <Button
+              variant="tertiary"
+              size="sm"
+              class="gap-2 shrink-0"
+              aria-label={`${isArchived ? m['admin.suggestions.restoreCategory']() : m['admin.suggestions.archiveCategory']()}: ${group.category.title}`}
+              onclick={() => openCategoryStatusModal(group.category)}
+            >
+              <Icon icon={isArchived ? 'i-ri-inbox-unarchive-line' : 'i-ri-archive-line'} />
+              <span
+                >{isArchived
+                  ? m['admin.suggestions.restoreCategory']()
+                  : m['admin.suggestions.archiveCategory']()}</span
+              >
+            </Button>
+          {/if}
+        </header>
+        {#if !isCollapsed}
+          <ul id={`suggestions-list-${group.category.id}`} class="m-0! p-0! list-none!">
+            {#each group.suggestions as suggestion (suggestion.id)}
+              <li
+                class="gap-4 px-4 py-3 md:px-5 md:flex-row md:items-center flex flex-col justify-between border-t border-[--border-default-grey] first:border-t-0"
+              >
+                <div class="min-w-0 gap-3 flex items-start">
+                  <Badge
+                    size="sm"
+                    text={statusLabel(suggestion.status)}
+                    variant={suggestion.status === 'archived' ? 'orange' : 'green'}
+                  />
+                  <p class="fr-text--sm mb-0! whitespace-pre-wrap">{suggestion.text}</p>
+                </div>
+                <Button
+                  variant="tertiary-no-outline"
+                  size="sm"
+                  class="gap-2 md:self-auto shrink-0 self-end"
+                  aria-label={`${suggestion.status === 'archived' ? m['admin.suggestions.restore']() : m['admin.suggestions.archive']()}: ${suggestion.text}`}
+                  onclick={() => openStatusModal(suggestion)}
+                >
+                  <Icon
+                    icon={suggestion.status === 'archived'
+                      ? 'i-ri-inbox-unarchive-line'
+                      : 'i-ri-archive-line'}
+                  />
+                  <span
+                    >{suggestion.status === 'archived'
+                      ? m['admin.suggestions.restore']()
+                      : m['admin.suggestions.archive']()}</span
+                  >
+                </Button>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </section>
+    {/each}
+  </div>
 
-    {#snippet cell(row, col)}
-      {#if col.id === 'text'}
-        <span class="fr-text--sm whitespace-pre-wrap">{row.text}</span>
-      {:else if col.id === 'status'}
-        <Badge
-          size="sm"
-          text={statusLabel(row.status)}
-          variant={row.status === 'archived' ? 'orange' : 'green'}
-        />
-      {:else if col.id === 'locale'}
-        <span class="fr-text--sm uppercase">{row.locale}</span>
-      {:else if col.id === 'actions'}
-        <div class="flex justify-end">
-          <Button
-            iconOnly
-            variant="tertiary-no-outline"
-            size="sm"
-            title={row.status === 'archived'
-              ? m['admin.suggestions.restore']()
-              : m['admin.suggestions.archive']()}
-            aria-label={`${row.status === 'archived' ? m['admin.suggestions.restore']() : m['admin.suggestions.archive']()}: ${row.text}`}
-            onclick={() => openStatusModal(row)}
-          >
-            <Icon
-              icon={row.status === 'archived' ? 'i-ri-inbox-unarchive-line' : 'i-ri-archive-line'}
-            />
-          </Button>
-        </div>
-      {:else if col.id === 'category_title'}
-        <span class="fr-text--sm">{row.category_title}</span>
-      {:else}
-        <span class="fr-text--sm">{row.text}</span>
-      {/if}
-    {/snippet}
-  </Table>
+  {#if data.suggestions.total > 0}
+    <div
+      class="mt-6 gap-4 md:flex-row md:items-center pt-4 flex flex-col justify-between border-t-2 border-[--border-default-grey]"
+    >
+      <Select
+        id="suggestions-page-size"
+        label={m['components.table.linePerPage']()}
+        options={pageSizeOptions}
+        bind:selected={pageSize}
+        onchange={updatePageSize}
+        hideLabel
+      />
+      <Pagination
+        itemCount={data.suggestions.total}
+        bind:page={currentPage}
+        maxItemPerPage={data.suggestions.page_size}
+      />
+    </div>
+  {/if}
 
   {#if data.suggestions.total === 0}
     <p class="fr-text--sm mt-4! text-[--text-mention-grey]">{m['admin.suggestions.empty']()}</p>
@@ -597,6 +716,42 @@
       text={m['admin.suggestions.confirm']()}
       disabled={actionLoading}
       onclick={confirmStatusChange}
+    />
+  </div>
+</Modal>
+
+<Modal
+  id="fr-modal-suggestion-category-status"
+  titleId="fr-modal-title-suggestion-category-status"
+  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
+  contentClass="md:pt-4! mb-6!"
+>
+  {@const categoryIsArchived = categoryToToggle?.archived ?? false}
+  <h2 id="fr-modal-title-suggestion-category-status" class="fr-modal__title">
+    {categoryIsArchived
+      ? m['admin.suggestions.restoreCategory']()
+      : m['admin.suggestions.archiveCategory']()}
+  </h2>
+  <p>
+    {categoryIsArchived
+      ? m['admin.suggestions.categoryRestoreConfirm']({ title: categoryToToggle?.title ?? '' })
+      : m['admin.suggestions.categoryArchiveConfirm']({
+          title: categoryToToggle?.title ?? '',
+          count: categoryToToggle?.suggestion_count ?? 0
+        })}
+  </p>
+  <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
+    <Button
+      text={m['admin.suggestions.cancel']()}
+      variant="secondary"
+      onclick={() => closeModal('fr-modal-suggestion-category-status')}
+    />
+    <Button
+      text={categoryIsArchived
+        ? m['admin.suggestions.restoreCategory']()
+        : m['admin.suggestions.archiveCategory']()}
+      disabled={actionLoading}
+      onclick={confirmCategoryStatusChange}
     />
   </div>
 </Modal>

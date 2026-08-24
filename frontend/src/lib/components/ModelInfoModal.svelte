@@ -185,7 +185,7 @@
                     {/each}
                   </ul>
 
-                  <div class="lg:grid-cols-24 gap-4 md:grid-cols-9 sm:grid-cols-2 grid">
+                  <div class="lg:grid-cols-24 gap-4 md:grid-cols-9 sm:grid-cols-2 min-w-0 grid">
                     {#each cards.technical as card, i (i)}
                       <InfoCard
                         {...card}
@@ -236,11 +236,13 @@
                 </section>
 
                 <div class="gap-4 xl:grid-cols-5 grid">
-                  <section class="xl:col-span-3 flex flex-col">
+                  <section class="xl:col-span-3 min-w-0 flex flex-col">
                     <h3 class="text-base! mb-3!">{m['models.envImpact.title']()}</h3>
 
-                    <div class="gap-4 md:flex-row flex h-full flex-col">
-                      <article class="cg-border bg-white p-4 relative flex basis-1/2 flex-col">
+                    <div class="gap-4 md:flex-row min-w-0 flex h-full flex-col">
+                      <article
+                        class="cg-border bg-white p-4 min-w-0 relative flex basis-1/2 flex-col"
+                      >
                         {@render iconHeading({
                           icon: 'i-ri-cpu-line',
                           title: m['models.envImpact.hardware.title'](),
@@ -273,19 +275,22 @@
                             </p>
 
                             <div
-                              class="mt-7 gap-2 flex w-full items-start justify-between"
+                              class="mt-7 gap-1 sm:gap-2 min-w-0 flex w-full items-start justify-between"
                               aria-hidden="true"
                             >
                               {#each hardwares as h, i (h.tier)}
                                 {@const active = h.tier === hardware.tier}
-                                <div class="gap-1.5 flex basis-1/4 flex-col items-center">
+                                <div class="gap-1.5 min-w-0 flex basis-1/4 flex-col items-center">
                                   <Icon
                                     icon={h.icon}
                                     size="lg"
                                     block
                                     class={active ? 'text-primary' : 'text-[#B3B3B3]'}
                                   />
-                                  <span class="text-xs text-center" class:text-[#B3B3B3]={!active}>
+                                  <span
+                                    class="text-xxs sm:text-xs text-center break-words"
+                                    class:text-[#B3B3B3]={!active}
+                                  >
                                     {m[`models.envImpact.hardware.types.${h.tier}.name`]()}
                                   </span>
                                 </div>
@@ -307,7 +312,7 @@
                           {...cards.energy}
                           id="{modalId}-energy"
                           titleTag="h4"
-                          class="basis-1/2 justify-between"
+                          class="min-w-0 basis-1/2 justify-between"
                         >
                           <div
                             class="gap-1 my-6 flex w-full flex-col"
@@ -343,7 +348,7 @@
                     </div>
                   </section>
 
-                  <section class="xl:col-span-2 flex w-full flex-col">
+                  <section class="xl:col-span-2 min-w-0 flex w-full flex-col">
                     <div class="mb-3 gap-3 flex items-center justify-between">
                       <h3 class="text-base! mb-0!">{m['models.opennessSovereignty.title']()}</h3>
                       <OpennessScore {model} />
@@ -388,7 +393,7 @@
 
                 <div class="gap-4 xl:grid-cols-5 grid">
                   {#if model.data && cards.rank}
-                    <section class="xl:col-span-3">
+                    <section class="xl:col-span-3 min-w-0">
                       <h3 class="text-base! mb-3!">{m['models.performance.title']()}</h3>
 
                       <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
@@ -508,7 +513,7 @@
                   {/if}
 
                   {#if model.links?.length}
-                    <section class="xl:col-span-2">
+                    <section class="xl:col-span-2 min-w-0">
                       <h3 class="text-base! mb-3!">{m['models.infosSources.title']()}</h3>
 
                       <div class="cg-border bg-white p-4">
