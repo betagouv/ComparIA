@@ -1,8 +1,9 @@
 # Multi-stage build optimisé avec buildx
-FROM public.ecr.aws/docker/library/node:24.4@sha256:c7a63f857d6dc9b3780ceb1874544cc22f3e399333c82de2a46de0049e841729 AS builder
+FROM public.ecr.aws/docker/library/node:26@sha256:bde0dae02f2b12d2bce5ee72b2432f0e511767b7b2dc4dd3b064df11ae422fee AS builder
 
 WORKDIR /app
-COPY package.json yarn.lock ./
+RUN npm install -g yarn@1.22.22
+COPY package.json yarn.lock .dsfr.yml ./
 RUN yarn install --frozen-lockfile
 
 COPY . .
@@ -11,7 +12,7 @@ ENV PUBLIC_API_URL=$PUBLIC_API_URL MATOMO_ID=$MATOMO_ID MATOMO_URL=$MATOMO_URL P
 
 RUN yarn build && yarn install --production --ignore-scripts
 
-FROM public.ecr.aws/docker/library/node:24.4-alpine@sha256:820e86612c21d0636580206d802a726f2595366e1b867e564cbc652024151e8a AS runtime
+FROM public.ecr.aws/docker/library/node:26-alpine@sha256:aadf416b2cdce311a8811ba3f0608a61b77dbf997500e2eafe781b51f6a0b019 AS runtime
 WORKDIR /app
 
 # Copier le build et les dépendances de production. The image already ships

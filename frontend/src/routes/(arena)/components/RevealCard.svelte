@@ -266,7 +266,9 @@
     </ul>
   </div>
 
-  <div class="gap-4 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 grid grid-cols-2">
+  <!-- The floor is what "Niveau d'ouverture" and the size badge need to fit.
+       Any narrower and DSFR's break-word splits them mid-word. -->
+  <div class="gap-4 grid grid-cols-[repeat(auto-fit,minmax(9.75rem,1fr))]">
     {#each cards as card, i (i)}
       <InfoCard
         {...card}

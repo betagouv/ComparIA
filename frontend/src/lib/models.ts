@@ -1,5 +1,11 @@
 import { formatCurrencyFromEuro } from '$lib/currency'
-import type { APILLMData, DatasetData, LLMList, PreferencesData } from '$lib/generated/backend'
+import type {
+  APILLMData,
+  DatasetData,
+  LLMList,
+  PersonalRankingRow,
+  PreferencesData
+} from '$lib/generated/backend'
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { propsToAttrs } from '$lib/utils/commons'
@@ -62,6 +68,13 @@ export type BotModelWithData = BotModel & {
   data: DatasetData
   prefs: PreferencesData
 }
+export type PersonalRow = PersonalRankingRow & {
+  id: string
+  // Missing when the user voted on a model that has since left the arena.
+  model: BotModel | null
+  generalRank: number | null
+  search: string
+}
 export type ModelCardSize = 'xxs' | 'xs' | 'sm' | 'md'
 
 export function isMaybeArch(arch: Archs | MaybeArchs): arch is MaybeArchs {
@@ -82,27 +95,29 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
   const archI18nKey = isMaybeArch(model.arch) ? 'na' : model.arch
   const archDescription = m[`generated.archs.${archI18nKey}.desc`]()
   const archLongName = m[`generated.archs.${archI18nKey}.long_name`]()
+  // Proprietary labs do not publish parameter counts, so ours are estimates and
+  // we show the size class instead of a figure we cannot source. The estimate is
+  // still what the energy figures are computed from, server side.
+  const estimated = model.license.kind === 'proprietary'
   return {
     size: {
       id: 'size',
       icon: 'i-ri-ruler-line',
       title: m['models.cards.size.title'](),
-      badge: size !== 'sm' ? model.badges.size_short : undefined,
+      badge: estimated || size === 'sm' ? undefined : model.badges.size_short,
+      contentBadge: estimated ? model.badges.size : undefined,
       tooltip: m['models.cards.size.tooltip'](),
-      content:
-        size !== 'xs'
-          ? m[`models.cards.size.params_count${size === 'sm' ? '_short' : ''}`]({
-              count: model.params,
-              midProps,
-              smallProps
-            })
-          : undefined,
+      content: estimated
+        ? undefined
+        : m[`models.cards.size.params_count${size === 'md' ? '' : '_short'}`]({
+            count: model.params,
+            midProps,
+            smallProps
+          }),
       subContent:
-        model.license.kind === 'proprietary'
-          ? m['models.cards.size.estimated']()
-          : model.active_params
-            ? m['models.cards.size.active_params_count']({ count: model.active_params })
-            : undefined,
+        !estimated && model.active_params
+          ? m['models.cards.size.active_params_count']({ count: model.active_params })
+          : undefined,
       desc: undefined
     } as const,
     arch: {
@@ -444,4 +459,31 @@ export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[
     ...m,
     data: { ...m.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
   }))
+}
+
+/**
+ * Attach each personal ranking row to the model it is about.
+ *
+ * The rows come from the server already scored, ordered and numbered, so the
+ * order is kept as it arrives. A row whose model is gone from the arena keeps
+ * its place with the name the server sent, and a model missing from the general
+ * ranking gets no general rank rather than a zero.
+ */
+export function joinPersonalRanking(
+  rows: PersonalRankingRow[],
+  models: BotModel[],
+  generalRanks: Record<string, number>
+): PersonalRow[] {
+  const byId = new Map(models.map((model) => [model.id, model]))
+
+  return rows.map((row) => {
+    const model = byId.get(row.llm_id) ?? null
+    return {
+      ...row,
+      id: row.llm_id,
+      model,
+      generalRank: generalRanks[row.llm_id] ?? null,
+      search: model?.search ?? row.name
+    }
+  })
 }

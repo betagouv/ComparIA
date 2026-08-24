@@ -715,13 +715,6 @@
                 },
                 "reset": "Clear all filters",
                 "size": {
-                    "labels": {
-                        "L": "100 to 400 billion",
-                        "M": "60 to 100 billion",
-                        "S": "15 to 60 billion",
-                        "XL": "> 400 billion",
-                        "XS": "< 15 billion"
-                    },
                     "legend": "Size (parameters)"
                 }
             },
@@ -758,7 +751,7 @@
                 "XS": "<15 billion"
             },
             "estimated": "Estimated size ({size})",
-            "title": "Size"
+            "title": "Size {size}"
         }
     },
     "modes": {
@@ -794,6 +787,28 @@
         }
     },
     "ranking": {
+        "personal": {
+            "cols": {
+                "battles": "Comparisons",
+                "general_rank": "General rank",
+                "record": "Record (W-L-T)",
+                "score": "My score"
+            },
+            "loading": "Loading your ranking…",
+            "noVotes": "Vote in a comparison to start your ranking.",
+            "signedOut": "Sign in to see the ranking built from your votes.",
+            "title": "My ranking",
+            "tooltips": {
+                "score": "A model you have compared only a few times is pulled toward your own average rather than showing an extreme score."
+            },
+            "totalModels": "Models ranked:",
+            "totalVotes": "My votes:"
+        },
+        "views": {
+            "general": "General",
+            "legend": "Ranking view",
+            "personal": "My ranking"
+        },
         "energy": {
             "desc": "This graph represents the satisfaction score (Bradley Terry score) for each model as a function of the estimated average energy consumption per 1000 tokens. Energy consumption is estimated using the Ecologits methodology and is based on two parameters: the size of the models (number of parameters) and their architecture. For proprietary models, this information is either not provided or only partially available. Therefore, they are excluded from the graph below.",
             "tabLabel": "Energy focus",
@@ -893,6 +908,18 @@
                     },
                     "title": "Ranking by win rate"
                 }
+            },
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Both bad</strong>: 0 points to each model — your dissatisfaction counts, not only your relative preference.",
+                    "both_good": "<strong>Both good</strong>: 0.5 points to each model.",
+                    "idk": "<strong>I don't know</strong>: excluded from the count, it does not count for either model."
+                },
+                "desc": {
+                    "1": "Bradley-Terry needs a connected network of comparisons: your votes are mostly scattered, disconnected pairs, so the method does not apply at the scale of a single account. The personal score is a <strong>shrunk win rate</strong>:",
+                    "2": "<strong>points</strong> is your point total on the model, <strong>battles</strong> the number of scored comparisons involving it, and <strong>m</strong> your average points per comparison across every model. Shrinkage pulls a rarely compared model toward that average: a single win shows 0.667 rather than 100%, and a model compared twenty times outranks one compared once at a comparable rate."
+                },
+                "title": "The personal ranking: how your score is worked out"
             },
             "tabLabel": "Methodology",
             "title": "How to choose the model classification method?"
@@ -1016,7 +1043,8 @@
                     "matformer": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>Matformer</strong> architecture: it adjusts how many of its parameters are used for each response. Its energy class is <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>mixture-of-experts</strong> architecture: it activates only some of its parameters to generate each response (about <strong>{activeParams} billion</strong> out of <strong>{params} billion</strong>). Its energy class is <strong>{energyClass}</strong>.",
                     "unknown": "<strong>{model}</strong> is a <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>.",
-                    "unknownProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>."
+                    "unknownProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>.",
+                    "moeProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model with a <strong>mixture-of-experts</strong> architecture: it activates only some of its parameters to generate each response. Its energy class is <strong>{energyClass}</strong>."
                 },
                 "comparison": {
                     "comparable": "comparable to <strong>{otherModel}</strong>",

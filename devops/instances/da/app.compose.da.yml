@@ -22,8 +22,7 @@ services:
     environment:
       LOGDIR: /data
       LANGUIA_DEBUG: "false"
-      # This instance sits behind exactly one reverse-proxy hop (Caddy).
-      COMPARIA_TRUSTED_PROXY_COUNT: "1"
+      COMPARIA_TRUSTED_PROXY_COUNT: ${COMPARIA_TRUSTED_PROXY_COUNT:?COMPARIA_TRUSTED_PROXY_COUNT is required}
       COMPARIA_INSTANCE_NAME: da
       COMPARIA_DB_URI: "${COMPARIA_DB_URI_DA:?COMPARIA_DB_URI_DA is required}"
       COMPARIA_REDIS_HOST: redis
@@ -34,7 +33,7 @@ services:
       # Read once, by the migration that creates the destination table:
       # HF_PUSH_DATASET_KEY:
       # HF_PUSH_DATASET_PATH: "danish-foundation-models/ai-arenaen"
-      ALTCHA_HMAC_KEY:
+      ALTCHA_HMAC_KEY: ${ALTCHA_HMAC_KEY:?ALTCHA_HMAC_KEY is required}
       SENTRY_SAMPLE_RATE: "1.0"
       SENTRY_ENV: "dev-da"
       SENTRY_FRONT_DSN: "https://454e45b18f4ad93227ac60659a7d373c@sentry.incubateur.net/164"
