@@ -64,13 +64,32 @@ describe('ToolActivity', () => {
   })
 
   it('shows the request while the call is still running', () => {
-    render(ToolActivity, {
+    const { container } = render(ToolActivity, {
       props: { id: 'a', call: searchCall, result: null, finished: false }
     })
 
     expect(screen.getByText('Recherche web')).toBeTruthy()
     expect(screen.getByText(/Recherche en cours/)).toBeTruthy()
     expect(screen.getByText(/prix immobilier Nantes/)).toBeTruthy()
+    expect(container.querySelector('.tool-activity-summary')).toBeTruthy()
+    expect(container.querySelector('h4')).toBeNull()
+    expect(container.querySelector('.text-\\[--text-mention-grey\\].text-xs')).toBeTruthy()
+  })
+
+  it('keeps the same compact header when a tool finishes without content', () => {
+    const { container } = render(ToolActivity, {
+      props: {
+        id: 'a',
+        call: searchCall,
+        result: { ...searchResult, status: 'empty' as const, content: '{}', results: [] },
+        finished: true
+      }
+    })
+
+    expect(screen.getByText('Aucun résultat')).toBeTruthy()
+    expect(container.querySelector('.tool-activity-summary')).toBeTruthy()
+    expect(container.querySelector('h4')).toBeNull()
+    expect(container.querySelector('.text-\\[--text-mention-grey\\].text-xs')).toBeTruthy()
   })
 
   it('never renders a non-http source as a link', () => {

@@ -193,40 +193,32 @@
     class="tool-activity-card cg-border my-3 rounded-lg bg-white w-full overflow-hidden"
     aria-labelledby="{id}-title"
   >
-    <div class="gap-2 px-3 py-2 text-sm flex items-center">
+    <div class="tool-activity-summary gap-2 px-3 py-2 text-sm flex items-center">
       <Icon
         icon={call.name === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'}
         size="sm"
         class="text-primary shrink-0"
       />
-      <span class="gap-x-2 min-w-0 sm:flex grow items-baseline">
-        <h4 id="{id}-title" class="mb-0! text-base! font-medium! shrink-0">
+      <span class="gap-x-2 min-w-0 flex grow items-baseline">
+        <span id="{id}-title" class="font-medium shrink-0 whitespace-nowrap">
           {call.label || call.name}
-        </h4>
+        </span>
         {#if requestSummary}
-          <span class="sm:inline block truncate text-[--text-mention-grey]">
+          <span class="min-w-0 truncate whitespace-nowrap text-[--text-mention-grey]">
             «&nbsp;{requestSummary}&nbsp;»
           </span>
         {/if}
       </span>
       {#if !result}
-        <span class="text-sm shrink-0 text-[--text-mention-grey]" aria-live="polite">
+        <span class="text-xs shrink-0 text-[--text-mention-grey]" aria-live="polite">
           {finished ? m['chatbot.tools.noResult']() : m['chatbot.tools.running']()}
         </span>
       {:else if sources.length === 0 && !resultSummary}
-        <span class="text-sm shrink-0 text-[--text-mention-grey]">
+        <span class="text-xs shrink-0 text-[--text-mention-grey]">
           {result.status === 'success' ? m['chatbot.tools.done']() : m['chatbot.tools.noResult']()}
         </span>
       {/if}
     </div>
-
-    {#if resultSummary}
-      <p
-        class="mt-0! mb-0! px-4 py-3 text-sm border-t border-[--border-default-grey] whitespace-pre-line"
-      >
-        {resultSummary}
-      </p>
-    {/if}
   </section>
 {/if}
 
