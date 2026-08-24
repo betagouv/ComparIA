@@ -2,7 +2,7 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Badge, Button, Icon, Modal, Search, Select } from '$components/dsfr'
+  import { Badge, Button, Icon, Modal, Pagination, Search, Select } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -17,8 +17,6 @@
   const refetch = () => invalidate('admin:suggestions')
   const baseRoute = '/admin/suggestions'
   const params = new SvelteURLSearchParams(page.url.searchParams)
-  params.delete('page')
-  params.delete('page_size')
 
   // These local controls are deliberately initialized from the SSR-loaded data,
   // then resynchronized below whenever SvelteKit refreshes the page data.
@@ -30,6 +28,10 @@
   let locale = $state(data.filters.locale)
   // svelte-ignore state_referenced_locally
   let categoryId = $state(data.filters.category_id)
+  // svelte-ignore state_referenced_locally
+  let currentPage = $state(data.suggestions.page - 1)
+  // svelte-ignore state_referenced_locally
+  let pageSize = $state(data.suggestions.page_size)
   let suggestionToToggle = $state<PromptSuggestion | null>(null)
   let categoryToToggle = $state<SuggestionCategory | null>(null)
   const collapsedCategoryIds = new SvelteSet<string>()
@@ -105,9 +107,13 @@
     { value: 'available', label: m['admin.suggestions.available']() },
     { value: 'archived', label: m['admin.suggestions.archived']() }
   ]
+  const pageSizeOptions = [10, 25, 50].map((value) => ({
+    value,
+    label: m['components.table.pageCount']({ count: value })
+  }))
 
   function isCategoryArchived(category: SuggestionCategory) {
-    return category.suggestion_count > 0 && category.available_suggestion_count === 0
+    return category.archived
   }
 
   const groupedSuggestions = $derived(
@@ -135,13 +141,20 @@
     status = data.filters.status
     locale = data.filters.locale
     categoryId = data.filters.category_id
+    currentPage = data.suggestions.page - 1
+    pageSize = data.suggestions.page_size
   })
 
   $effect(() => {
     if (search === data.filters.search) return
 
-    const timeout = setTimeout(() => updateQuery({ search }), 300)
+    const timeout = setTimeout(() => updateQuery({ search, page: 1 }), 300)
     return () => clearTimeout(timeout)
+  })
+
+  $effect(() => {
+    if (currentPage === data.suggestions.page - 1) return
+    updateQuery({ page: currentPage + 1 })
   })
 
   function updateQuery(updates: Record<string, any>) {
@@ -154,7 +167,11 @@
   }
 
   function updateFilters() {
-    updateQuery({ status, language: locale, category_id: categoryId })
+    updateQuery({ status, language: locale, category_id: categoryId, page: 1 })
+  }
+
+  function updatePageSize() {
+    updateQuery({ page_size: pageSize, page: 1 })
   }
 
   function updateLocaleFilter() {
@@ -304,7 +321,7 @@
     if (!categoryToToggle) return
 
     actionLoading = true
-    const archive = categoryToToggle.available_suggestion_count > 0
+    const archive = !categoryToToggle.archived
     try {
       await api.request(`/admin/suggestions/categories/${categoryToToggle.id}`, {
         method: 'PATCH',
@@ -494,6 +511,26 @@
     {/each}
   </div>
 
+  {#if data.suggestions.total > 0}
+    <div
+      class="mt-6 gap-4 md:flex-row md:items-center pt-4 flex flex-col justify-between border-t-2 border-[--border-default-grey]"
+    >
+      <Select
+        id="suggestions-page-size"
+        label={m['components.table.linePerPage']()}
+        options={pageSizeOptions}
+        bind:selected={pageSize}
+        onchange={updatePageSize}
+        hideLabel
+      />
+      <Pagination
+        itemCount={data.suggestions.total}
+        bind:page={currentPage}
+        maxItemPerPage={data.suggestions.page_size}
+      />
+    </div>
+  {/if}
+
   {#if data.suggestions.total === 0}
     <p class="fr-text--sm mt-4! text-[--text-mention-grey]">{m['admin.suggestions.empty']()}</p>
   {/if}
@@ -633,7 +670,8 @@
         bind:value={prompt}
         required
         maxlength="4000"
-        aria-describedby="suggestion-text-messages"></textarea>
+        aria-describedby="suggestion-text-messages"
+      ></textarea>
       {#if formError}
         <div class="fr-messages-group" id="suggestion-text-messages" aria-live="polite">
           <p class="fr-message fr-message--error">{formError}</p>
@@ -688,10 +726,7 @@
   headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
   contentClass="md:pt-4! mb-6!"
 >
-  {@const categoryIsArchived =
-    categoryToToggle &&
-    categoryToToggle.suggestion_count > 0 &&
-    categoryToToggle.available_suggestion_count === 0}
+  {@const categoryIsArchived = categoryToToggle?.archived ?? false}
   <h2 id="fr-modal-title-suggestion-category-status" class="fr-modal__title">
     {categoryIsArchived
       ? m['admin.suggestions.restoreCategory']()

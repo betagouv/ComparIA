@@ -48,7 +48,7 @@ async def get_suggestions(
     locale: SuggestionLocale | None = Query(default=None),
     category_id: uuid.UUID | None = Query(default=None),
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=1_000, ge=1, le=1_000),
+    page_size: int = Query(default=50, ge=1, le=200),
 ) -> AdminSuggestionsPage:
     items, total, categories = await list_admin_suggestions(
         search=search,

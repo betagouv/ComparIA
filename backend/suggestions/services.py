@@ -64,6 +64,7 @@ def _to_admin_category(
         icon=category.icon,
         tooltip=category.tooltip,
         display_order=category.display_order,
+        archived=category.archived_at is not None,
         suggestion_count=suggestion_count,
         available_suggestion_count=available_suggestion_count,
     )
@@ -94,6 +95,7 @@ async def list_public_suggestions(
             .join(PromptSuggestion)
             .where(
                 col(SuggestionCategory.locale) == locale,
+                col(SuggestionCategory.archived_at).is_(None),
                 col(PromptSuggestion.archived_at).is_(None),
             )
             .order_by(
@@ -165,6 +167,7 @@ async def list_admin_suggestions(
             # Available suggestions first. Postgres sorts nulls last on an
             # ascending column, which would float archived rows to the top.
             statement.order_by(
+                col(SuggestionCategory.archived_at).is_(None).desc(),
                 category_has_available_suggestions.desc(),
                 (col(SuggestionCategory.locale) == "fr").desc(),
                 col(SuggestionCategory.locale),
@@ -177,6 +180,7 @@ async def list_admin_suggestions(
         )
         categories_result = await session.exec(
             select(SuggestionCategory).order_by(
+                col(SuggestionCategory.archived_at).is_(None).desc(),
                 category_has_available_suggestions.desc(),
                 (col(SuggestionCategory.locale) == "fr").desc(),
                 col(SuggestionCategory.locale),
@@ -355,30 +359,37 @@ async def set_suggestion_archived(
 async def set_suggestion_category_archived(
     category_id: uuid.UUID, *, archived: bool, updated_by: uuid.UUID
 ) -> AdminSuggestionCategory:
-    """Archive or restore every suggestion in a category as one operation."""
+    """Archive or restore a category without changing individual suggestions."""
     async with get_session() as session:
         category = await session.get(SuggestionCategory, category_id)
         if category is None:
             raise SuggestionCategoryNotFoundError()
 
-        result = await session.exec(
-            select(PromptSuggestion).where(
-                col(PromptSuggestion.category_id) == category_id
-            )
-        )
-        suggestions = result.all()
         now = datetime.now()
-        for suggestion in suggestions:
-            suggestion.archived_at = now if archived else None
-            suggestion.archived_by = updated_by if archived else None
-            suggestion.updated_at = now
-            session.add(suggestion)
-
-        response = _to_admin_category(
-            category,
-            suggestion_count=len(suggestions),
-            available_suggestion_count=0 if archived else len(suggestions),
-        )
+        category.archived_at = now if archived else None
+        category.archived_by = updated_by if archived else None
+        session.add(category)
         await session.commit()
         invalidate_cache(REDIS_SUGGESTIONS_KEY)
-        return response
+        await session.refresh(category)
+
+        suggestion_count = (
+            await session.exec(
+                select(func.count(col(PromptSuggestion.id))).where(
+                    col(PromptSuggestion.category_id) == category_id
+                )
+            )
+        ).one()
+        available_suggestion_count = (
+            await session.exec(
+                select(func.count(col(PromptSuggestion.id))).where(
+                    col(PromptSuggestion.category_id) == category_id,
+                    col(PromptSuggestion.archived_at).is_(None),
+                )
+            )
+        ).one()
+        return _to_admin_category(
+            category,
+            suggestion_count=suggestion_count,
+            available_suggestion_count=available_suggestion_count,
+        )

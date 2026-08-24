@@ -1,4 +1,5 @@
-import { fireEvent, render } from '@testing-library/svelte'
+import { goto } from '$app/navigation'
+import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
 import type { PageProps } from './$types'
@@ -119,6 +120,7 @@ describe('admin suggestions page', () => {
           icon: 'i-ri-book-open-line',
           tooltip: null,
           display_order: 0,
+          archived: false,
           suggestion_count: 1,
           available_suggestion_count: 1
         },
@@ -131,6 +133,7 @@ describe('admin suggestions page', () => {
           icon: 'i-ri-archive-line',
           tooltip: null,
           display_order: 0,
+          archived: true,
           suggestion_count: 1,
           available_suggestion_count: 0
         }
@@ -166,5 +169,23 @@ describe('admin suggestions page', () => {
       method: 'PATCH',
       body: JSON.stringify({ archived: true })
     })
+  })
+
+  it('offers pagination when more suggestions exist than fit on the current page', async () => {
+    const paginatedSuggestions: SuggestionsPage = {
+      ...suggestions,
+      total: 51,
+      page: 1,
+      page_size: 25
+    }
+    const { getByRole } = render(Page, {
+      data: { filters, suggestions: paginatedSuggestions } as unknown as PageProps['data'],
+      params: {} as PageProps['params']
+    })
+
+    expect(getByRole('navigation', { name: 'Pagination' })).toBeTruthy()
+    await fireEvent.click(getByRole('link', { name: 'Page suivante' }))
+
+    await waitFor(() => expect(goto).toHaveBeenCalledWith('/admin/suggestions?page=2'))
   })
 })

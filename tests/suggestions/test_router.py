@@ -618,33 +618,46 @@ def test_archive_category_passes_admin_and_archive_state(monkeypatch):
     }
 
 
-def test_archive_category_service_updates_all_suggestions(monkeypatch):
-    category = _category()
-    first = SimpleNamespace(
-        archived_at=None, archived_by=None, updated_at=datetime(2026, 1, 1)
-    )
-    second = SimpleNamespace(
-        archived_at=None, archived_by=None, updated_at=datetime(2026, 1, 1)
+def test_archive_category_service_preserves_individual_suggestion_status(monkeypatch):
+    category = SimpleNamespace(
+        id=_category().id,
+        locale="fr",
+        key="administrative",
+        title="Administratif",
+        description="Rédiger un document administratif",
+        icon="i-ri-draft-line",
+        tooltip=None,
+        display_order=0,
+        archived_at=None,
+        archived_by=None,
     )
 
-    class SuggestionsResult:
-        def all(self):
-            return [first, second]
+    class CountResult:
+        def __init__(self, count):
+            self.count = count
+
+        def one(self):
+            return self.count
 
     class FakeSession:
         committed = False
+        query_count = 0
 
         async def get(self, model, category_id):
             return category
 
         async def exec(self, statement):
-            return SuggestionsResult()
+            self.query_count += 1
+            return CountResult(2 if self.query_count == 1 else 1)
 
         def add(self, item):
             pass
 
         async def commit(self):
             self.committed = True
+
+        async def refresh(self, item):
+            pass
 
     session = FakeSession()
 
@@ -654,15 +667,6 @@ def test_archive_category_service_updates_all_suggestions(monkeypatch):
 
     monkeypatch.setattr(suggestion_services, "get_session", fake_get_session)
     monkeypatch.setattr(suggestion_services, "invalidate_cache", lambda key: None)
-    original_to_admin_category = suggestion_services._to_admin_category
-
-    def to_admin_category_before_commit(*args, **kwargs):
-        assert session.committed is False
-        return original_to_admin_category(*args, **kwargs)
-
-    monkeypatch.setattr(
-        suggestion_services, "_to_admin_category", to_admin_category_before_commit
-    )
     admin_id = uuid.UUID("00000000-0000-0000-0000-000000000003")
 
     result = asyncio.run(
@@ -672,7 +676,8 @@ def test_archive_category_service_updates_all_suggestions(monkeypatch):
     )
 
     assert session.committed is True
-    assert all(item.archived_at is not None for item in (first, second))
-    assert all(item.archived_by == admin_id for item in (first, second))
+    assert category.archived_at is not None
+    assert category.archived_by == admin_id
+    assert result.archived is True
     assert result.suggestion_count == 2
-    assert result.available_suggestion_count == 0
+    assert result.available_suggestion_count == 1

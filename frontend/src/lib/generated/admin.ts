@@ -74,6 +74,7 @@ export interface AdminSuggestionCategory {
   icon: string;
   tooltip?: string | null;
   display_order: number;
+  archived: boolean;
   suggestion_count: number;
   available_suggestion_count: number;
 }
