@@ -28,7 +28,6 @@ class Settings(BaseSettings):
     LINKUP_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
     MISTRAL_API_KEY: str | None = None
-    ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
 
@@ -46,7 +45,6 @@ class Settings(BaseSettings):
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
-    REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
