@@ -27,52 +27,52 @@
     },
     "admin": {
         "nav": {
-            "users": "Brugere",
-            "llms": "LLMs",
-            "customization": "Tilpasning",
-            "locales": "Sprog",
             "authentification": "Autentificering",
-            "publishing": "Udgivelse"
+            "customization": "Tilpasning",
+            "llms": "LLMs",
+            "locales": "Sprog",
+            "publishing": "Udgivelse",
+            "users": "Brugere"
         },
         "panelLink": "Administration",
         "settings": {
-            "subtitle": "Applikationskonfiguration.",
-            "loading": "Indlæser...",
-            "save": "Gem",
-            "saving": "Gemmer...",
-            "saved": "Indstillinger opdateret",
-            "locales": {
-                "enabled": {
-                    "label": "Aktiverede sprog",
-                    "hint": "Fjernes markeringen for et sprog, forsvinder det straks fra menuen. Besøgende, der allerede læser på det sprog, skifter til standardsproget ved næste sideindlæsning."
-                },
-                "default": {
-                    "label": "Standardsprog"
-                }
-            },
-            "customization": {
-                "platformName": "Platformens navn",
-                "votesObjective": "Stemmemål",
-                "logo": {
-                    "label": "Logo",
-                    "chooseFile": "Vælg en fil",
-                    "reset": "Nulstil",
-                    "updated": "Logo opdateret",
-                    "resetDone": "Logo nulstillet",
-                    "hint": "PNG, JPEG, SVG eller WebP, maks. 2 MB."
-                }
-            },
             "authentification": {
                 "accessPolicy": {
-                    "label": "Adgangstilstand",
                     "anonymous": "Valgfri login (anonymous_first)",
+                    "label": "Adgangstilstand",
                     "required": "Login påkrævet (sign_in_required)"
                 },
                 "domainAllowlist": {
-                    "label": "Tilladte e-maildomæner",
-                    "help": "Adskilt med kommaer. Lad stå tomt for at tillade alle domæner."
+                    "help": "Adskilt med kommaer. Lad stå tomt for at tillade alle domæner.",
+                    "label": "Tilladte e-maildomæner"
                 }
-            }
+            },
+            "customization": {
+                "logo": {
+                    "chooseFile": "Vælg en fil",
+                    "hint": "PNG, JPEG, SVG eller WebP, maks. 2 MB.",
+                    "label": "Logo",
+                    "reset": "Nulstil",
+                    "resetDone": "Logo nulstillet",
+                    "updated": "Logo opdateret"
+                },
+                "platformName": "Platformens navn",
+                "votesObjective": "Stemmemål"
+            },
+            "loading": "Indlæser...",
+            "locales": {
+                "default": {
+                    "label": "Standardsprog"
+                },
+                "enabled": {
+                    "hint": "Fjernes markeringen for et sprog, forsvinder det straks fra menuen. Besøgende, der allerede læser på det sprog, skifter til standardsproget ved næste sideindlæsning.",
+                    "label": "Aktiverede sprog"
+                }
+            },
+            "save": "Gem",
+            "saved": "Indstillinger opdateret",
+            "saving": "Gemmer...",
+            "subtitle": "Applikationskonfiguration."
         }
     },
     "arenaHome": {
@@ -107,38 +107,37 @@
     },
     "auth": {
         "discussions": {
-            "title": "Diskussioner",
-            "signIn": "Log ind"
+            "signIn": "Log ind",
+            "title": "Diskussioner"
         },
         "modal": {
+            "code": {
+                "error": "Ugyldig eller udløbet kode.",
+                "label": "6-cifret kode",
+                "resend": "Send koden igen",
+                "submit": "Bekræft",
+                "verifying": "Verificerer..."
+            },
             "email": {
-                "title": "Log ind eller opret konto",
-                "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
                 "emailLabel": "E-mail",
                 "submit": "Modtag loginkode",
-                "submitting": "Sender..."
-            },
-            "code": {
-                "label": "6-cifret kode",
-                "submit": "Bekræft",
-                "verifying": "Verificerer...",
-                "resend": "Send koden igen",
-                "error": "Ugyldig eller udløbet kode."
+                "submitting": "Sender...",
+                "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
+                "title": "Log ind eller opret konto"
             },
             "info": {
-                "dataTitle": "Hvordan bruges mine data?",
                 "dataDesc": "Samtaler og præferencer, du udtrykker på compar:IA, bruges anonymt til at opbygge repræsentative datasæt af europæiske sprog og brugsmønstre for at reducere kulturelle fordomme og udvikle mere inkluderende AI-modeller.",
-                "datasetsTitle": "compar:IA datasæt",
+                "dataTitle": "Hvordan bruges mine data?",
                 "datasetsDesc": "Samtaler offentliggøres som åbne data i forskningsdatasæt. Derfor beder vi dig om at <strong>aldrig inkludere</strong> følgende i dine samtaler:",
-                "neverName": "dit navn, efternavn eller en tredjeparters",
+                "datasetsTitle": "compar:IA datasæt",
+                "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter.",
                 "neverAddress": "adresser (post, e-mail)",
-                "neverPhone": "telefonnumre",
-                "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
+                "neverName": "dit navn, efternavn eller en tredjeparters",
                 "neverOther": "ethvert andet element der kan identificere dig",
-                "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter."
+                "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
+                "neverPhone": "telefonnumre"
             }
         },
-        "success": "Du er nu logget ind!",
         "settings": {
             "account": {
                 "email": "E-mailadresse",
@@ -178,7 +177,8 @@
             "tabAccount": "Konto",
             "tabsLabel": "Indstillingssektioner",
             "title": "Indstillinger"
-        }
+        },
+        "success": "Du er nu logget ind!"
     },
     "chatbot": {
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
@@ -262,11 +262,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> ai-arenaen.dk </strong> .",
+            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> {domain} </strong> .",
             "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
-            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af ai-arenaen.dk for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
+            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af {domain} for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Forbedring og kontakt",
             "remedyAdvocate": "Skriv en besked til <a {linkProps}>Ombudsmanden</a>",
@@ -275,7 +275,7 @@
             "remedyDesc": "Denne procedure skal anvendes i følgende tilfælde: Du har rapporteret en tilgængelighedsfejl til webstedsadministratoren, som forhindrer dig i at få adgang til indhold eller en af portalens tjenester, og du har ikke modtaget et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Klageadgang",
-            "stateDesc": "Hjemmesiden ai-arenaen.dk overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
+            "stateDesc": "Hjemmesiden {domain} overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
             "stateNavigate": "navigere på alle sider på webstedet ved hjælp af et tastatur",
             "statePrefs": "tilpasse siden til dine præferencer (skriftstørrelse, skærmzoom, ændring af typografi osv.) uden tab af indhold",
             "stateScreenReader": "se hjemmesiden med en skærmlæser.",
@@ -534,9 +534,6 @@
                 "semiOpen": "Open-weight"
             }
         },
-        "opennessSovereignty": {
-            "title": "Åbenhedsgrad"
-        },
         "list": {
             "filters": {
                 "archived": {
@@ -577,6 +574,9 @@
                 "openSource": "Træningsdata, koden og vægtene for denne model (dvs. de parametre, der er lært under træningen) kan downloades og ændres af offentligheden, så de kan køre og ændre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt end \"open weights\", især på grund af behovet for gennemsigtighed i træningskorpuset. Få modeller betragtes som \"open source\"",
                 "openWeight": "En såkaldt \"open weights\"-model, hvor vægtene, dvs. de parametre, der er lært under træningen, kan downloades af offentligheden, så de kan køre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt (hovedsageligt i relation til gennemsigtigheden af træningskorpuset). Få modeller betragtes som \"open source\"."
             }
+        },
+        "opennessSovereignty": {
+            "title": "Åbenhedsgrad"
         },
         "release": "Udgivet {date}",
         "size": {
@@ -624,28 +624,6 @@
         }
     },
     "ranking": {
-        "personal": {
-            "cols": {
-                "battles": "Sammenligninger",
-                "general_rank": "Generel rang",
-                "record": "Resultat (S-N-U)",
-                "score": "Min score"
-            },
-            "loading": "Indlæser din rangliste…",
-            "noVotes": "Stem i en sammenligning for at starte din rangering.",
-            "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
-            "title": "Min rangering",
-            "tooltips": {
-                "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
-            },
-            "totalModels": "Rangerede modeller:",
-            "totalVotes": "Mine stemmer:"
-        },
-        "views": {
-            "general": "Generel",
-            "legend": "Visning af rangering",
-            "personal": "Min rangering"
-        },
         "energy": {
             "desc": "Denne graf viser for hver model sammenhængen mellem tilfredshedsscore (Bradley Terry-score) og det estimerede gennemsnitlige energiforbrug pr. 1000 tokens. Energiforbruget estimeres ved hjælp af <a {linkProps}>Ecologits</a>-metodologien, som tager højde for to faktorer: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. Da <strong>proprietære modeller</strong> ikke offentliggør disse oplysninger - eller kun gør det delvist - er de ikke medtaget i grafen nedenfor.",
             "tabLabel": "Energi fokus",
@@ -762,6 +740,23 @@
             "title": "Hvordan vælger man metoden til rangordning af modeller?"
         },
         "no_data": "Rangeringen er i øjeblikket utilgængelig eller under beregning.",
+        "personal": {
+            "cols": {
+                "battles": "Sammenligninger",
+                "general_rank": "Generel rang",
+                "record": "Resultat (S-N-U)",
+                "score": "Min score"
+            },
+            "loading": "Indlæser din rangliste…",
+            "noVotes": "Stem i en sammenligning for at starte din rangering.",
+            "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
+            "title": "Min rangering",
+            "tooltips": {
+                "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
+            },
+            "totalModels": "Rangerede modeller:",
+            "totalVotes": "Mine stemmer:"
+        },
         "preferences": {
             "desc": "Når du stemmer, kan du kvalificere din præference efter forskellige positive og negative kategorier. Sammenlign deres fordeling fra en model til en anden.",
             "modal": {
@@ -825,45 +820,14 @@
             "totalModels": "Total antal modeller:",
             "totalVotes": "Total antal stemmer:"
         },
-        "title": "Fra stemmer til en rangering af modeller"
+        "title": "Fra stemmer til en rangering af modeller",
+        "views": {
+            "general": "Generel",
+            "legend": "Visning af rangering",
+            "personal": "Min rangering"
+        }
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO <sub> 2 </sub> udledt",
-                "tooltip": "Den udledte CO <sub> 2 </sub> svarer til den mængde kuldioxid, der udledes ved den energi, der bruges til at drive modellen. Den afspejler den miljømæssige påvirkning, der er forbundet med energiforbruget. Beregningen af watt-time/CO <sub> 2 </sub>-ækvivalensen varierer afhængigt af hvert lands energimix. De servere, der anvendes til modelinferens, er dog ikke alle placeret i Europa. Ækvivalensberegningen er således baseret på den globale gennemsnitlige CO <sub> 2 </sub>-emissionsrate pr. forbrugt energi.",
-                "unit": "ton"
-            },
-            "desc": "Hvis alle danskere der bruger generativ AI (48%) havde haft denne samtale, ville det svare til:",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Data beregnet ud fra kulstofsaftrykket ved produktion af traditionelle baguettes. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Producerede brød"
-                },
-                "mango_import": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen fra produktion til levering af mango importeret med fly. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Importerede mango"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Estimat baseret på et gennemsnit: et modent træ absorberer ~22 kg CO₂/år (≈48 lb). Resultatet er et størrelsesordensestimat: det varierer afhængigt af art, alder, klima og jordbund. (Kilde <a {linkProps}>USDA</a>)",
-                    "unit": "Træer til at absorbere CO₂ i 1 år"
-                },
-                "package_delivery": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved hjemmelevering af pakker på 1 kg. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Pakkeleveringer"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved en tur-retur flyvning Paris-New York med langrutefly. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Tur-retur Paris - NYC med fly"
-                },
-                "pool_filing": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved fyldning af en privat pool på 8 x 4 m. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Poolfyldninger"
-                }
-            },
-            "title": "Ækvivalenser i ton CO₂",
-            "title_tooltip": "Ækvivalenserne er projektioner for at illustrere masseeffekten – vi har ganget virkningen af din samtale med denne model op til samtlige AI-brugere i Danmark: 48% af danskerne erklærer i dag at benytte generativ AI, og aldrig tidligere er en digital teknologi blevet adopteret så hurtigt. (kilde <a {linkProps}>Baromètre du numérique fra CREDOC</a>)"
-        },
         "feedback": {
             "description": "Del AI Arena'en med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
             "example": "Eksempel på delte resultater",
@@ -918,8 +882,8 @@
         }
     },
     "seo": {
-        "desc": "compar:IA er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
-        "title": "compar:IA, arenaen for AI-chatbots",
+        "desc": "{platformName} er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
+        "title": "{platformName}, arenaen for AI-chatbots",
         "titles": {
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
@@ -945,7 +909,6 @@
         },
         "counterLink": "Se platformens statistik",
         "eyebrow": "Statistik",
-        "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
         "filters": {
             "allTime": "Hele perioden",
             "label": "Periode",
@@ -953,7 +916,7 @@
             "sevenDays": "7 dage",
             "thirtyDays": "30 dage"
         },
-        "overview": "Overblik",
+        "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
         "metrics": {
             "conversations": {
                 "label": "Gennemførte samtaler"
@@ -968,10 +931,10 @@
                 "label": "Afgivne stemmer"
             }
         },
+        "overview": "Overblik",
         "title": "Platformens statistik"
     },
     "vote": {
-        "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "choices": {
             "negative": {
                 "comment": "Uddyb hvad du ikke kunne lide…",
@@ -989,6 +952,7 @@
                 "useful": "Brugbart"
             }
         },
+        "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
         "title": "Hvilken AI-model foretrækker du?",
         "turn": {

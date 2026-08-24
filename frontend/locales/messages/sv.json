@@ -134,11 +134,11 @@
     },
     "general": {
         "a11y": {
-            "desc": "Denna tillgänglighetspolicy gäller webbplatsen <strong>comparia.beta.gouv.fr</strong>.",
+            "desc": "Denna tillgänglighetspolicy gäller webbplatsen <strong>{domain}</strong>.",
             "disclaimer": "<strong> compar:IA </strong> åtar sig att göra sina digitala tjänster tillgängliga, i enlighet med artikel 47 i lag nr 2005-102 av den 11 februari 2005.",
             "improveAdress": "Adress: DINUM, 20 avenue de Ségur, 75007 Paris",
             "improveDelay": "Vi försöker svara inom 2 arbetsdagar.",
-            "improveDesc": "Om du har problem att komma åt innehåll eller tjänst kan du kontakta administratören för beta.gouv.fr, för att bli hänvisad till ett tillgängligt alternativ eller få innehållet i ett annat format.",
+            "improveDesc": "Om du har problem att komma åt innehåll eller tjänst kan du kontakta administratören för {domain}, för att bli hänvisad till ett tillgängligt alternativ eller få innehållet i ett annat format.",
             "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Feedback och kontakt",
             "remedyAdvocate": "Skriv ett meddelande till <a {linkProps}>Frankrikes ombudsman för mänskliga rättigheter (le Défenseur des Droits)</a>",
@@ -147,7 +147,7 @@
             "remedyDesc": "Denna procedur ska användas i följande fall: Du har rapporterat ett tillgänglighetsfel till webbplatsansvarig som hindrar dig från att komma åt innehåll eller en av portalens tjänster och du inte har fått ett tillfredsställande svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Överklaga",
-            "stateDesc": "Webbplatsen comparia.beta.gouv.fr uppfyller inte RGAA 4.1. Webbplatsen har ännu inte granskats. <strong>Den har dock utformats för att vara tillgänglig för så många som möjligt</strong>. Du bör därför kunna:",
+            "stateDesc": "Webbplatsen {domain} uppfyller inte RGAA 4.1. Webbplatsen har ännu inte granskats. <strong>Den har dock utformats för att vara tillgänglig för så många som möjligt</strong>. Du bör därför kunna:",
             "stateNavigate": "navigera på alla sidor på webbplatsen med hjälp av ett tangentbord",
             "statePrefs": "anpassa webbplatsen efter dina preferenser (teckenstorlek, skärmzoom, ändring av typsnitt etc.) utan att innehåll förloras",
             "stateScreenReader": "visa webbplatsen med en skärmläsare.",
@@ -277,9 +277,6 @@
                 "semiOpen": "Semi-öppen"
             }
         },
-        "opennessSovereignty": {
-            "title": "Öppenhetsgrad"
-        },
         "list": {
             "filters": {
                 "editor": {
@@ -316,17 +313,20 @@
                 "openWeight": "En så kallad \"open weights\"-modell, vilket innebär att dess vikter – de parametrar som lärs in under träning – kan laddas ner fritt, vilket gör att det går att köra modellen på sin egen dator. Att en modell är \"öppen källkod\" ställer hårdare krav än \"öppna vikter\", särskilt på grund av behovet av transparens i träningsmaterialet, och få modeller anses vara \"öppen källkod\"."
             }
         },
+        "opennessSovereignty": {
+            "title": "Öppenhetsgrad"
+        },
         "release": "Utgiven {date}",
         "size": {
-            "estimated": "Uppskattad storlek ({size})",
-            "title": "Storlek {size}",
             "count": {
                 "L": "100 till 400 miljarder",
                 "M": "60 till 100 miljarder",
                 "S": "15 till 60 miljarder",
                 "XL": ">400 miljarder",
                 "XS": "<15 miljarder"
-            }
+            },
+            "estimated": "Uppskattad storlek ({size})",
+            "title": "Storlek {size}"
         }
     },
     "modes": {
@@ -362,28 +362,6 @@
         }
     },
     "ranking": {
-        "personal": {
-            "cols": {
-                "battles": "Jämförelser",
-                "general_rank": "Allmän rang",
-                "record": "Resultat (V-F-O)",
-                "score": "Mina poäng"
-            },
-            "loading": "Laddar din rankning…",
-            "noVotes": "Rösta i en jämförelse för att starta din rankning.",
-            "signedOut": "Logga in för att se rankningen som byggts av dina röster.",
-            "title": "Min rankning",
-            "tooltips": {
-                "score": "En modell du bara jämfört några gånger dras mot ditt eget genomsnitt i stället för att visa en extrem poäng."
-            },
-            "totalModels": "Rankade modeller:",
-            "totalVotes": "Mina röster:"
-        },
-        "views": {
-            "general": "Allmän",
-            "legend": "Rankningsvy",
-            "personal": "Min rankning"
-        },
         "energy": {
             "views": {
                 "graph": {
@@ -403,7 +381,7 @@
         "methodo": {
             "desc": {
                 "1": "Sedan 2024 har tusentals användare använt compar:IA för att jämföra svaren från olika modeller, vilket genererat hundratusentals röster. Att bara räkna antalet vinster räcker inte för att fastställa en ranking. Ett rättvist system måste vara statistiskt robust, justera efter varje jämförelse och verkligen återspegla värdet av de prestationer som uppnåtts.",
-                "2": "Det är med detta i åtanke som en <strong>rankning baserad på Bradley-Terry-modellen</strong> upprättades, utvecklad i samarbete med <strong>teamen vid Digital Regulation Expertise Center (PEReN)</strong>, med hjälp av alla röster och reaktioner som samlats in på plattformen. För att lära dig mer, se vår <a {linkProps}>metodguide</a>."
+                "2": "Det är med detta i åtanke som en <strong>rankning baserad på Bradley-Terry-modellen</strong> upprättades, utvecklad i samarbete med <strong>teamen vid Digital Regulation Expertise Center (<a {perenLinkProps}>PEReN</a>)</strong>, med hjälp av alla röster och reaktioner som samlats in på plattformen. För att lära dig mer, se vår <a {notebookLinkProps}>metodguide</a>."
             },
             "impacts": {
                 "elo": {
@@ -458,6 +436,23 @@
             },
             "tabLabel": "Metodik",
             "title": "Hur väljer man metod för att klassificera modeller?"
+        },
+        "personal": {
+            "cols": {
+                "battles": "Jämförelser",
+                "general_rank": "Allmän rang",
+                "record": "Resultat (V-F-O)",
+                "score": "Mina poäng"
+            },
+            "loading": "Laddar din rankning…",
+            "noVotes": "Rösta i en jämförelse för att starta din rankning.",
+            "signedOut": "Logga in för att se rankningen som byggts av dina röster.",
+            "title": "Min rankning",
+            "tooltips": {
+                "score": "En modell du bara jämfört några gånger dras mot ditt eget genomsnitt i stället för att visa en extrem poäng."
+            },
+            "totalModels": "Rankade modeller:",
+            "totalVotes": "Mina röster:"
         },
         "preferences": {
             "desc": "När du röstar kan du kategorisera dina preferenser med hjälp av olika positiva och negativa kategorier. Jämför deras fördelning mellan olika modeller.",
@@ -521,16 +516,14 @@
             "totalModels": "Totalt antal modeller:",
             "totalVotes": "Totalt antal röster:"
         },
-        "title": "Från röster till rankning"
+        "title": "Från röster till rankning",
+        "views": {
+            "general": "Allmän",
+            "legend": "Rankningsvy",
+            "personal": "Min rankning"
+        }
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "Mängd koldioxid",
-                "tooltip": "Med mängden koldioxid menar vi de koldioxidutsläpp som globalt motsvaras av den energi som används för att köra modellen. Den återspeglar miljöpåverkan kopplad till energiförbrukningen. De verkliga utsläppen skiljer sig beroende på energiproduktionen i varje land, och de servrar som används för beräkningarna finns i olika länder. Ekvivalensberäkningen baseras på den globala genomsnittliga CO<sub>2</sub>-utsläppsmängden per förbrukad energi."
-            },
-            "title": "Vilket motsvarar:"
-        },
         "feedback": {
             "description": "Dela compar:AI med andra genom att dela AI-modellerna du har interagerat med! Endast namnen och energipåverkan från diskussionen kommer att synas via den här länken – din text visas inte.",
             "example": "Exempel på delade resultat",
@@ -578,8 +571,8 @@
         }
     },
     "seo": {
-        "desc": "compar:IA är ett verktyg för att jämföra olika konversationsbaserade AI-modeller, för att öka medvetenheten om utmaningarna med generativ AI (bias, miljöpåverkan) och för att skapa datamängder för språk med begränsade resurser.",
-        "title": "compar:IA, jämförelseverktyget för konversations-AI",
+        "desc": "{platformName} är ett verktyg för att jämföra olika konversationsbaserade AI-modeller, för att öka medvetenheten om utmaningarna med generativ AI (bias, miljöpåverkan) och för att skapa datamängder för språk med begränsade resurser.",
+        "title": "{platformName}, jämförelseverktyget för konversations-AI",
         "titles": {
             "accessibilite": "Tillgänglighetspolicy",
             "arene": "Chat",
@@ -603,7 +596,6 @@
         },
         "counterLink": "Visa plattformens statistik",
         "eyebrow": "Statistik",
-        "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",
         "filters": {
             "allTime": "Sedan start",
             "label": "Period",
@@ -611,7 +603,7 @@
             "sevenDays": "7 dagar",
             "thirtyDays": "30 dagar"
         },
-        "overview": "Översikt",
+        "intro": "Se hur samtal och preferenser på plattformen bidrar till en gemensam datamängd.",
         "metrics": {
             "conversations": {
                 "label": "Genomförda konversationer"
@@ -626,10 +618,10 @@
                 "label": "Avgivna röster"
             }
         },
+        "overview": "Översikt",
         "title": "Plattformsstatistik"
     },
     "vote": {
-        "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "choices": {
             "negative": {
                 "incorrect": "Fel",
@@ -645,6 +637,7 @@
                 "useful": "Användbart"
             }
         },
+        "continueReminder": "Rösta på ett svar eller välj ”Hoppa över omröstningen” innan du fortsätter.",
         "title": "Vilken AI-modell föredrar du?",
         "yours": "Din röst"
     },

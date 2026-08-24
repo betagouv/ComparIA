@@ -634,42 +634,6 @@
         "title": "Häältest edetabelini"
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "eraldunud CO<sub>2 </sub>",
-                "tooltip": "CO<sub>2</sub> heitkogus vastab süsinikdioksiidi emissioonile, mis tekib mudeli käitamiseks kasutatud energiast. See peegeldab energiatarbimisega seotud keskkonnamõju. Vatt-tundide ja CO<sub>2</sub> vahelise teisenduse arvutus sõltub iga riigi energiakooseisust. Kuna mudelite käitamiseks kasutatavad serverid ei asu kõik Euroopas, põhineb teisendus CO<sub>2</sub> heitmete globaalsel keskmisel määral ühe tarbitud energiaühiku kohta.",
-                "unit": "tonni"
-            },
-            "desc": "Kui kõik inimesed, kes Prantsusmaal keelemudeleid kasutavad (48%), oleksid seda vestlust pidanud, oleks see võrdväärne:",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Arvutus põhineb traditsioonilise <i>baguette</i>'i tootmise süsiniku jalajälje põhjal. (Allikas <a {linkProps}>ADEME</a>.)",
-                    "unit": "Toodetud <i>baguette</i>'i"
-                },
-                "mango_import": {
-                    "tooltip": "Arvutus põhineb lennukiga imporditud mangode süsiniku jalajäljel tootmisest kuni kohaletoimetamiseni. (Allikas <a {linkProps}>ADEME</a>.)",
-                    "unit": "Imporditud mangosid"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Hinnang põhineb keskmisel – täiskasvanud puu neelab ~22 kg CO₂/aastas. See on suurusjärguline hinnang, mis varieerub sõltuvalt liigist, vanusest, kliimast ja pinnasest. (Allikas <a {linkProps}>USDA</a>.)",
-                    "unit": "Puud neelavad CO<sub>2</sub>-e ühe aasta jooksul"
-                },
-                "package_delivery": {
-                    "tooltip": "Andmed on arvutatud 1 kg kaaluvate pakkide kojuveo süsiniku jalajälje põhjal. (Allikas <a {linkProps}>ADEME</a>.)",
-                    "unit": "Kättetoimetatud pakki"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Arvutus põhineb Pariisi ja New Yorgi vahelise edasi-tagasi pikamaalennu süsiniku jalajälje põhjal. (Allikas: <a {linkProps}>ADEME</a>.)",
-                    "unit": "Edasi-tagasi lennureis Pariisist New Yorki"
-                },
-                "pool_filing": {
-                    "tooltip": "Andmed on arvutatud 8 x 4 m suuruse basseini täitmise süsinikujalajälje põhjal. (Allikas <a {linkProps}>ADEME</a>.)",
-                    "unit": "Täidetud basseini"
-                }
-            },
-            "title": "CO<sub>2</sub> ekvivalendid tonnides",
-            "title_tooltip": "Ekvivalendid on prognoosid massiefekti illustreerimiseks. Selle mudeliga peetud vestluse mõju on korrutatud kõikide keelemudelite kasutajate arvuga Prantsusmaal. 48% prantslastest kasutab enda sõnul keelemudeleid, mis on ajalooliselt erakordne digitehnoloogia kasutuselevõtu määr. (Allikas <a {linkProps}>Baromètre du numérique du CREDOC</a>.)"
-        },
         "feedback": {
             "description": "Jaga platvormi teistega, jagades mudeleid, millega oled suhelnud! Selle lingi kaudu on nähtavad ainult mudelite nimed ja energiamõju, ligipääs vestlusele puudub.",
             "example": "Näited jagatud tulemustest",
@@ -695,7 +659,7 @@
     },
     "seo": {
         "desc": "Tehisaru baromeeter on tööriist, mille abil saab erinevaid keelemudeleid pimesi võrrelda. See aitab generatiivse tehisaruga seotud teemadel (mitmekesisus, kallutatus, keskkonnamõju) teadlikkust tõsta ning väheste ressurssidega keelte jaoks eelistusandmestikke luua.",
-        "title": "baromeeter.ai, Tehisaru baromeeter",
+        "title": "{platformName}, Tehisaru baromeeter",
         "titles": {
             "accessibilite": "Ligipääsetavuse avaldus",
             "arene": "Vestlus",
