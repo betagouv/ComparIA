@@ -90,6 +90,35 @@
     return null
   })
 
+  type TextSegment = { text: string; url?: string }
+
+  function linkifyText(text: string): TextSegment[] {
+    const segments: TextSegment[] = []
+    const urlPattern = /https?:\/\/[^\s<>"')\]]+/gi
+    let lastIndex = 0
+
+    for (const match of text.matchAll(urlPattern)) {
+      const rawUrl = match[0]
+      const matchIndex = match.index ?? 0
+      const trailingPunctuation = rawUrl.match(/[.,!?;:]+$/)?.[0] ?? ''
+      const url = trailingPunctuation ? rawUrl.slice(0, -trailingPunctuation.length) : rawUrl
+
+      if (matchIndex > lastIndex) segments.push({ text: text.slice(lastIndex, matchIndex) })
+      if (isSafeWebSource(url)) {
+        segments.push({ text: url, url })
+        if (trailingPunctuation) segments.push({ text: trailingPunctuation })
+      } else {
+        segments.push({ text: rawUrl })
+      }
+      lastIndex = matchIndex + rawUrl.length
+    }
+
+    if (lastIndex < text.length) segments.push({ text: text.slice(lastIndex) })
+    return segments
+  }
+
+  const resultSummarySegments = $derived(resultSummary ? linkifyText(resultSummary) : [])
+
   const resultCountLabel = $derived(
     sources.length === 1
       ? m['chatbot.tools.result']()
@@ -147,7 +176,15 @@
           {/each}
         </ul>
       {:else if resultSummary}
-        <p class="mt-0! mb-0! text-sm whitespace-pre-line">{resultSummary}</p>
+        <p class="mt-0! mb-0! text-sm whitespace-pre-line">
+          {#each resultSummarySegments as segment}
+            {#if segment.url}
+              <Link href={segment.url} text={segment.text} class="text-sm!" style="--underline-img: none" />
+            {:else}
+              {segment.text}
+            {/if}
+          {/each}
+        </p>
       {/if}
     </div>
   </details>

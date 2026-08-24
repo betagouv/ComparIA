@@ -131,7 +131,8 @@ describe('ToolActivity', () => {
           name: 'legal_lookup',
           status: 'success',
           duration_ms: 12,
-          content: 'Deux décisions pertinentes ont été trouvées.',
+          content:
+            'Deux décisions pertinentes ont été trouvées. https://www.data.gouv.fr/datasets/exemple.',
           results: []
         },
         finished: true
@@ -140,7 +141,10 @@ describe('ToolActivity', () => {
 
     expect(screen.getByText('Jurisprudence')).toBeTruthy()
     expect(screen.getByText(/droit du travail/)).toBeTruthy()
-    expect(screen.getByText('Deux décisions pertinentes ont été trouvées.')).toBeTruthy()
+    expect(screen.getByText(/Deux décisions pertinentes ont été trouvées/)).toBeTruthy()
+    expect(
+      screen.getByRole('link', { name: 'https://www.data.gouv.fr/datasets/exemple' })
+    ).toBeTruthy()
     expect(screen.getByText('Terminé')).toBeTruthy()
     expect(container.querySelector('details.tool-activity-card')).toBeTruthy()
     expect(container.querySelector('summary')).toBeTruthy()
