@@ -1,4 +1,5 @@
 import { resetConsent } from '$lib/consent'
+import { expectAccessible } from '$lib/testing/a11y'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SignInForm from './SignInForm.svelte'
@@ -125,6 +126,41 @@ describe('SignInForm consent', () => {
       )
     ).toHaveLength(0)
     expect(container.querySelector<HTMLInputElement>('#login-consent')?.disabled).toBe(true)
+  })
+
+  it('clears the code and error before changing the email address', async () => {
+    servesTerms(true)
+    const { container, getByRole } = render(SignInForm)
+    const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
+    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    await waitFor(() => expect(submit.disabled).toBe(false))
+
+    await fireEvent.input(emailInput, { target: { value: 'personne@example.test' } })
+    await fireEvent.click(submit)
+
+    const codeInput = await waitFor(() => {
+      const input = container.querySelector<HTMLInputElement>('#login-code')
+      expect(input).not.toBeNull()
+      return input!
+    })
+    await fireEvent.input(codeInput, { target: { value: '123456' } })
+    await expectAccessible(container)
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+    await waitFor(() => expect(container.textContent).toContain('Code invalide ou expiré.'))
+
+    const changeEmail = getByRole('button', { name: 'Modifier l’adresse email' })
+    expect(changeEmail).toHaveAttribute('type', 'button')
+    await fireEvent.click(changeEmail)
+
+    expect(container.querySelector('#login-code')).toBeNull()
+    expect(container.textContent).not.toContain('Code invalide ou expiré.')
+    expect(emailInput.disabled).toBe(false)
+    expect(document.activeElement).toBe(emailInput)
+
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+    await waitFor(() => {
+      expect(container.querySelector<HTMLInputElement>('#login-code')?.value).toBe('')
+    })
   })
 
   it('offers a working retry when the terms cannot be loaded', async () => {

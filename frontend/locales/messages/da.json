@@ -119,6 +119,7 @@
                 "submitting": "Sender..."
             },
             "code": {
+                "changeEmail": "Skift e-mailadresse",
                 "label": "6-cifret kode",
                 "submit": "Bekræft",
                 "verifying": "Verificerer...",
