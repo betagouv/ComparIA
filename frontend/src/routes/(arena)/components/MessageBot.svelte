@@ -75,7 +75,7 @@
       class="reasoning-activity-summary gap-2 px-3 py-2 text-sm flex cursor-pointer items-center"
     >
       <Icon icon="i-ri-brain-2-line" size="sm" class="text-primary shrink-0" />
-      <span class="text-black! font-medium grow" aria-live={inProgress ? 'polite' : undefined}>
+      <span class="font-medium grow" aria-live={inProgress ? 'polite' : undefined}>
         {inProgress ? m['chatbot.reasoning.inProgress']() : m['chatbot.reasoning.finished']()}
       </span>
       <span class="reasoning-activity-chevron flex shrink-0" aria-hidden="true">
