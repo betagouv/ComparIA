@@ -248,7 +248,13 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
 
     code = await request_login_code(body.email)
     try:
-        await send_login_code(body.email, code)
+        await send_login_code(
+            body.email,
+            code,
+            platform_name=app_settings.platform_name,
+            primary_color=app_settings.primary_color_light,
+            secondary_color=app_settings.secondary_color_light,
+        )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

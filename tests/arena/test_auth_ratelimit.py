@@ -54,12 +54,17 @@ async def _fake_request_login_code(email):
     return "123456"
 
 
-async def _fake_send_login_code(email, code):
+async def _fake_send_login_code(email, code, **_colors):
     pass
 
 
 async def _fake_get_app_settings():
-    return SimpleNamespace(auth_domain_allowlist=None)
+    return SimpleNamespace(
+        auth_domain_allowlist=None,
+        platform_name="Compar:IA",
+        primary_color_light="#6464F3",
+        secondary_color_light="#FF9575",
+    )
 
 
 async def _fake_current_acceptance(**kwargs):

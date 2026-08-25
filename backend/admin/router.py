@@ -350,7 +350,14 @@ async def invite_user(
 ) -> None:
     token = await create_invite(body.email, invited_by=current_user.id)
     link = f"{settings.COMPARIA_APP_URL}/invite/{token}"
-    await send_invite_link(body.email, link)
+    app_settings = await get_app_settings()
+    await send_invite_link(
+        body.email,
+        link,
+        platform_name=app_settings.platform_name,
+        primary_color=app_settings.primary_color_light,
+        secondary_color=app_settings.secondary_color_light,
+    )
 
 
 @router.delete("/users/{user_id}/invite", status_code=status.HTTP_204_NO_CONTENT)
