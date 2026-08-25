@@ -37,5 +37,5 @@ spec:
                 - name: COMPARIA_INSTANCE_NAME
                   value: {{ .Values.config.instanceName | quote }}
               resources:
-                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
+                {{- toYaml .Values.resources.ranking | nindent 16 }}
 {{- end }}

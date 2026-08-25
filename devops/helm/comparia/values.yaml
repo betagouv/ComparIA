@@ -52,7 +52,7 @@ resources:
     limits:
       cpu: 500m
       memory: 512Mi
-  ## -- Applied to all three maintenance CronJobs.
+  ## -- Applied to the analyze and exportDataset CronJobs.
   cronjobs:
     requests:
       cpu: 100m
@@ -60,6 +60,10 @@ resources:
     limits:
       cpu: 500m
       memory: 512Mi
+  ## -- Applied to the ranking CronJob. Left unset (BestEffort): memory usage
+  ## scales with vote volume and isn't sized yet, so it runs unconstrained
+  ## rather than risk getting OOMKilled against a fixed limit.
+  ranking: {}
 
 ## -- Non-secret application settings, passed to the backend/frontend as plain env vars.
 config:
