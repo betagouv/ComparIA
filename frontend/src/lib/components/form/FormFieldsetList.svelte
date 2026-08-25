@@ -10,15 +10,14 @@
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import { FormFieldset } from '.'
 
-  let { value = $bindable(), disabled, subProps, ...props }: FormFieldsetListProps = $props()
+  let { value = $bindable([]), disabled, subProps, ...props }: FormFieldsetListProps = $props()
 
   const subIsFieldsetItem = $derived(subProps.component === 'fieldset-item')
   function onAdd() {
-    // FIXME
-    value.push(subIsFieldsetItem ? {} : '')
+    value = [...value, subIsFieldsetItem ? {} : '']
   }
   function onDelete(index: number) {
-    value.splice(index, 1)
+    value = value.filter((_, i) => i !== index)
   }
 </script>
 
@@ -42,6 +41,7 @@
             text="delete"
             icon="delete-line"
             iconOnly
+            type="button"
             {disabled}
             onclick={() => onDelete(i)}
             class={subIsFieldsetItem ? 'self-center!' : 'self-end!'}
@@ -49,7 +49,7 @@
         </div>
       {/each}
     </div>
-    <Button text="add" icon="add-line" iconOnly {disabled} onclick={onAdd} />
+    <Button text="add" icon="add-line" iconOnly type="button" {disabled} onclick={onAdd} />
   {/snippet}
 </FormFieldset>
 

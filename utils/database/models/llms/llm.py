@@ -139,7 +139,9 @@ class LLMDataBase(BaseDBModel):
     ]
     price_in: Annotated[float, Field(**FIELDS["price_in"])]
     price_out: Annotated[float, Field(**FIELDS["price_out"])]
-    system_prompt: Annotated[NonEmptyStr | None, Field(**FIELDS["system_prompt"])]
+    system_prompt: Annotated[
+        NonEmptyStr | None, Field(default=None, **FIELDS["system_prompt"])
+    ]
     links: Annotated[
         list[Link],
         Field(sa_type=JSONB, **FIELDS["links"]),
