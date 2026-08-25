@@ -150,7 +150,11 @@ class LLMDataBase(BaseDBModel):
     ]
     links: Annotated[
         list[Link],
-        Field(sa_type=JSONB, **FIELDS["links"]),
+        Field(
+            sa_type=JSONB,
+            schema_extra={"json_schema_extra": {"optional": True}},
+            **FIELDS["links"],
+        ),
         AfterValidator(jsonable_encoder),
     ] = []
 
