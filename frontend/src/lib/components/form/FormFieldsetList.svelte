@@ -13,21 +13,21 @@
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import { FormFieldset } from '.'
 
-  let { value = $bindable([]), disabled, subProps, ...props }: FormFieldsetListProps = $props()
+  let { value = $bindable(), disabled, subProps, ...props }: FormFieldsetListProps = $props()
 
   const subIsFieldsetItem = $derived(subProps.component === 'fieldset-item')
   function onAdd() {
-    value = [...value, subIsFieldsetItem ? {} : '']
+    value = [...(value ?? []), subIsFieldsetItem ? {} : '']
   }
   function onDelete(index: number) {
-    value = value.filter((_, i) => i !== index)
+    value = (value ?? []).filter((_, i) => i !== index)
   }
 </script>
 
 <FormFieldset {...props} {disabled} component="fieldset">
   {#snippet formItem()}
     <div class="w-full">
-      {#each value as _v, i (i)}
+      {#each value ?? [] as _v, i (i)}
         <div class="fr-fieldset__element gap-3 flex w-full!">
           <div class="w-full">
             <AnyFormItem
@@ -35,7 +35,7 @@
               disabled={disabled ?? subProps.disabled}
               id="{props.id}-{subIsFieldsetItem ? i : subProps.id}"
               label="{props.label} {i}"
-              bind:value={value[i]}
+              bind:value={value![i]}
               errors={props.errors}
             />
           </div>

@@ -70,3 +70,14 @@ def test_an_llm_without_an_endpoint_is_disabled():
     llm = LLMDataUpsert(**payload(status="enabled", endpoint_id=None))
 
     assert llm.status == "disabled"
+
+
+def test_links_are_not_required_in_the_admin_form():
+    """
+    An LLM card without links is fine, and the list starts empty, so the form
+    should not mark the fieldset with a required asterisk.
+    """
+    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+    assert schema["properties"]["links"]["optional"] is True
+    assert "links" not in schema["required"]
