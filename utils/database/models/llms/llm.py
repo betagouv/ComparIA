@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator, ValidationInfo, field_validator, model_validator
+from pydantic import AfterValidator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
 from sqlalchemy.dialects.postgresql import JSONB
@@ -108,10 +108,11 @@ class LLMDataBase(BaseDBModel):
         NonEmptyStr, Field(index=True, unique=True, **FIELDS["human_id"])
     ]
     api_model_id: Annotated[
-        NonEmptyStr | None, Field(**FIELDS["api_model_id"])
+        NonEmptyStr | None, Field(default=None, **FIELDS["api_model_id"])
     ]  # used to computed litellm args alongside LLMEndpoint data
     endpoint_id: Annotated[
-        UUID | None, Field(foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"])
+        UUID | None,
+        Field(default=None, foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"]),
     ]
     rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
@@ -128,10 +129,15 @@ class LLMDataBase(BaseDBModel):
     eu_hostable: Annotated[bool, Field(**FIELDS["eu_hostable"])]
     arch: Annotated[LLMArchKind, Field(sa_type=String, **FIELDS["arch"])]
     params: Annotated[float, Field(**FIELDS["params"])]
-    active_params: Annotated[float | None, Field(**FIELDS["active_params"])]
-    context_tokens: Annotated[int | None, Field(**FIELDS["context_tokens"])]
+    active_params: Annotated[
+        float | None, Field(default=None, **FIELDS["active_params"])
+    ]
+    context_tokens: Annotated[
+        int | None, Field(default=None, **FIELDS["context_tokens"])
+    ]
     quantization: Annotated[
-        Literal["q4", "q8"] | None, Field(sa_type=String, **FIELDS["quantization"])
+        Literal["q4", "q8"] | None,
+        Field(default=None, sa_type=String, **FIELDS["quantization"]),
     ]
     inputs: Annotated[
         list[Literal["text", "image", "audio", "video"]],
@@ -176,21 +182,21 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
-    @field_validator("active_params", mode="before")
-    @classmethod
-    def check_active_params_is_defined_if_moe(
-        cls, value: float | None, info: ValidationInfo
-    ) -> int | float | None:
+    @model_validator(mode="after")
+    def check_active_params_is_defined_if_moe(self):
         """
         Assert active_params is defined if arch == "moe".
+
+        Checked on the model and not the field: active_params defaults to None,
+        and field validators do not run on a field the payload leaves out.
         """
-        if "moe" in info.data["arch"] and value is None:
+        if "moe" in self.arch and self.active_params is None:
             raise PydanticCustomError(
                 "missing_active_params",
-                f"LLM's arch is '{info.data['arch']}' and requires 'active_params' to be defined.",
+                f"LLM's arch is '{self.arch}' and requires 'active_params' to be defined.",
             )
 
-        return value
+        return self
 
     @model_validator(mode="after")
     def check_endpoint(self):
@@ -198,7 +204,7 @@ class LLMDataUpsert(LLMDataBase):
         Disable LLM if endpoint is not defined.
         """
         if self.status == "enabled" and (not self.endpoint_id or not self.api_model_id):
-            self.status == "disabled"
+            self.status = "disabled"
         return self
 
 

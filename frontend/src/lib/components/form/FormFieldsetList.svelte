@@ -1,7 +1,10 @@
 <script module lang="ts">
   export type FormFieldsetListProps = {
     subProps: AnyFormItemProps
-  } & BaseFormFieldProps<'fieldset-list', any[]>
+    // The admin form only holds the keys the user touched, so the list may
+    // render before its own key exists.
+    value?: any[]
+  } & Omit<BaseFormFieldProps<'fieldset-list', any[]>, 'value'>
 </script>
 
 <script lang="ts">
@@ -41,7 +44,6 @@
             text="delete"
             icon="delete-line"
             iconOnly
-            type="button"
             {disabled}
             onclick={() => onDelete(i)}
             class={subIsFieldsetItem ? 'self-center!' : 'self-end!'}
@@ -49,7 +51,7 @@
         </div>
       {/each}
     </div>
-    <Button text="add" icon="add-line" iconOnly type="button" {disabled} onclick={onAdd} />
+    <Button text="add" icon="add-line" iconOnly {disabled} onclick={onAdd} />
   {/snippet}
 </FormFieldset>
 
