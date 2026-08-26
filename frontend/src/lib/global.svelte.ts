@@ -10,7 +10,9 @@ export const ALL_LOCALES = [
   { code: 'da', short: 'DA', long: 'DA - Dansk' },
   { code: 'fr', short: 'FR', long: 'FR - Français' },
   { code: 'en', short: 'EN', long: 'EN - English' },
+  { code: 'it', short: 'IT', long: 'IT - Italiano' },
   { code: 'lt', short: 'LT', long: 'LT - Lietuvių' },
+  { code: 'nb-NO', short: 'NB', long: 'NB - Norsk bokmål' },
   { code: 'sv', short: 'SV', long: 'SV - Svensk' }
 ] satisfies LocaleOption[]
 

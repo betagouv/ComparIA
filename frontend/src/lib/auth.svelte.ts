@@ -3,41 +3,18 @@ import { resolve } from '$app/paths'
 import { updateComparisonsContext, type ComparisonsCtx } from '$lib/chatService.svelte'
 import { resetConsent } from '$lib/consent'
 import { api } from '$lib/fastapi-client'
-import { createContext } from 'svelte'
+import type { AuthCtx, AuthUser } from '$lib/authContext.svelte'
 
-export interface AuthUser {
-  email: string
-  role: string
-}
-
-export interface AuthConfig {
-  access_policy: 'anonymous_first' | 'sign_in_required'
-  methods: 'email_code'[]
-  smtp_configured: boolean
-  domain_allowlist: string[]
-  platform_name: string
-  platform_url: string
-  has_custom_logo: boolean
-  primary_color_light: string
-  primary_color_dark: string
-  secondary_color_light: string
-  secondary_color_dark: string
-  homepage_url: string | null
-  enabled_locales: string[]
-  default_locale: string
-}
-
-type AuthCtx = {
-  user: AuthUser | null
-  config: AuthConfig
-}
-export const [getAuthContext, baseSetAuthContext] = createContext<AuthCtx>()
-
-export function setAuthContext(data: AuthCtx) {
-  const auth = $state(data)
-  baseSetAuthContext(auth)
-  return auth
-}
+// The context lives in authContext.svelte.ts so that components which only read
+// it are not made to import this module's API client and navigation helpers.
+export {
+  getAuthContext,
+  setAuthContext,
+  tryGetAuthContext,
+  type AuthConfig,
+  type AuthCtx,
+  type AuthUser
+} from '$lib/authContext.svelte'
 
 export function userAllowed(auth: AuthCtx, role?: AuthUser['role']) {
   if (!role) return true

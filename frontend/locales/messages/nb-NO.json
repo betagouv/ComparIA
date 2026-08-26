@@ -31,9 +31,6 @@
             "help": "Hvis du bare velger én, velges den andre tilfeldig",
             "question": "Hvilke modeller vil du sammenligne?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modellvalg er begrenset for å sikre rettferdig tilgang for alle. Du kan fortsette å bruke tilfeldig modus, eller prøve igjen senere."
-        },
         "modelSelection": "Valg av modeller",
         "prompt": {
             "label": "Skriv din første melding",
@@ -129,19 +126,17 @@
         "links": {
             "accessibility": "Tilgjengelighet: ikke kompatibel",
             "legal": "Juridisk merknad",
-            "privacy": "Personvernerklæring",
             "rgesn": "Økodesign",
-            "sources": "Kildekode",
-            "tos": "Brukervilkår"
+            "sources": "Kildekode"
         }
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>comparia.beta.gouv.fr</strong>.",
+            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>{domain}</strong>.",
             "disclaimer": "<strong>compar:IA</strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi prøver å svare innen to virkedager.",
-            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av beta.gouv.fr for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
+            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av {domain} for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
             "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Forbedring og kontakt",
             "remedyAdvocate": "Skriv en melding til <a {linkProps}>Défenseur des droits</a>",
@@ -150,7 +145,7 @@
             "remedyDesc": "Denne prosedyren skal brukes i følgende tilfelle: du har rapportert en feil med tilgjengeligheten til ansvarlig for nettstedet som hindrer deg i å få tilgang til innhold eller en av portalens tjenester, og du har ikke mottatt et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Anke",
-            "stateDesc": "Nettstedet comparia.beta.gouv.fr er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
+            "stateDesc": "Nettstedet {domain} er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
             "stateNavigate": "finne fram på alle sidene på nettstedet ved hjelp av et tastatur",
             "statePrefs": "tilpasse nettstedet til dine behov (skriftstørrelse, zoome inn på skjermen, endre typografi osv.) uten tap av innhold",
             "stateScreenReader": "se nettsiden med en skjermleser.",
@@ -467,7 +462,7 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Denne grafen representerer tilfredshetspoengsummen (Bradley Terry-score) for hver modell som en funksjon av det estimerte gjennomsnittlige energiforbruket per 1000 tokens. Energiforbruket er estimert ved hjelp av Ecologits-metodikken og er basert på to parametere: størrelsen på modellene (antall parametere) og arkitekturen deres. For proprietære modeller er denne informasjonen enten ikke oppgitt eller bare delvis tilgjengelig. Derfor er de ekskludert fra grafen nedenfor.",
+            "desc": "Denne grafen representerer tilfredshetspoengsummen (Bradley Terry-score) for hver modell som en funksjon av det estimerte gjennomsnittlige energiforbruket per 1000 tokens. Energiforbruket er estimert ved hjelp av <a {linkProps}>Ecologits</a>-metodikken og er basert på to parametere: størrelsen på modellene (antall parametere) og arkitekturen deres. For proprietære modeller er denne informasjonen enten ikke oppgitt eller bare delvis tilgjengelig. Derfor er de ekskludert fra grafen nedenfor.",
             "tabLabel": "Energifokus",
             "title": "Er de mest populære modellene energieffektive?",
             "views": {
@@ -525,7 +520,7 @@
         "methodo": {
             "desc": {
                 "1": "Siden 2024 har tusenvis av brukere brukt arenaen til å sammenligne svarene fra ulike modeller, noe som har generert hundretusenvis av stemmer. Det er ikke nok å bare telle antall stemmer for å etablere en rangering. Et rettferdig system må være statistisk robust, justeres kontinuerlig og gjenspeile verdien av de oppnådde prestasjonene.",
-                "2": "Det er på denne bakgrunnen at en <strong>rangering basert på Bradley-Terry-modellen</strong> ble etablert, utviklet i samarbeid med et team fra <strong>Pôle d’Expertise de la Régulation Numérique</strong> (<a {perenLinkProps}>PEReN</a>)</strong>, basert på alle stemmene og reaksjonene som er samlet inn på plattformen. For å lære mer, se vår <a {lnotebookLinkProps}>metodiske notatbok</a>."
+                "2": "Det er på denne bakgrunnen at en <strong>rangering basert på Bradley-Terry-modellen</strong> ble etablert, utviklet i samarbeid med et team fra <strong>Pôle d’Expertise de la Régulation Numérique</strong> (<a {perenLinkProps}>PEReN</a>)</strong>, basert på alle stemmene og reaksjonene som er samlet inn på plattformen. For å lære mer, se vår <a {notebookLinkProps}>metodiske notatbok</a>."
             },
             "impacts": {
                 "elo": {
@@ -600,7 +595,7 @@
             "title": "Hvordan fordeler brukernes preferanser seg?"
         },
         "ranking": {
-            "desc": "Takk for bidragene dine!<br> <strong>compar:IA-rangeringen</strong> er basert på alle stemmer og reaksjoner fra den <strong>blinde sammenligningen</strong> av modellene, samlet inn siden tjenesten åpnet for publikum i oktober 2024.<br>Modellrangeringen er utviklet i samarbeid med Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), og er basert på <strong>tilfredshetspoengsummen</strong> beregnet ved hjelp av den statistiske modellen <strong>Bradley Terry</strong>, en mye brukt metode for å konvertere binære stemmer til en sannsynlighetsrangering.<br> compar:IA-rangeringen er ikke ment å være en offisiell anbefaling eller å evaluere modellenes tekniske ytelse. Den gjenspeiler de <strong>subjektive preferansene</strong> til tjenestens brukere og ikke den faktiske nøyaktigheten eller sannferdigheten i svarene.",
+            "desc": "Denne rangeringen er beregnet ut fra stemmer samlet inn gjennom <strong>blinde sammenligninger</strong>, etter den statistiske modellen <strong>Bradley-Terry</strong>. Den gjenspeiler <strong>subjektive preferanser</strong> og må tolkes med varsomhet: den måler verken svarenes faktiske riktighet eller modellenes samlede ytelse.",
             "tabLabel": "Rangering"
         },
         "table": {
@@ -636,42 +631,6 @@
         "title": "Fra stemmer til modellrangering"
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO<sub>2</sub>-utslipp",
-                "tooltip": "CO<sub>2</sub>-utslippet tilsvarer karbondioksidutslippene som blir produsert av energien som brukes til å kjøre modellen. Det gjenspeiler miljøpåvirkningen knyttet til energiforbruket. Beregningen av watt-time/CO<sub>2</sub>-ekvivalens varierer avhengig av energimiksen i det enkelte land. Serverne som brukes til modellkjøring er imidlertid ikke alltid plassert i Europa. Derfor er ekvivalensberegningen basert på det globale gjennomsnittet av CO<sub>2</sub>-utslippsraten per forbrukt energienhet.",
-                "unit": "tonn"
-            },
-            "desc": "Hvis alle franskmenn som bruker generativ KI (48 %) hadde hatt denne diskusjonen, ville det representert:",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Beregnede data, basert på karbonavtrykket fra tradisjonell bagettproduksjon. (Kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Antall bagetter produsert"
-                },
-                "mango_import": {
-                    "tooltip": "Beregnede data, basert på karbonavtrykket fra produksjon til levering av mango importert med fly. (Kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Antall importerte mangoer"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Estimat basert på et gjennomsnitt: et modent tre absorberer ~22 kg CO₂/år (≈48 lb). Dette resultatet er en størrelsesorden; det varierer avhengig av art, alder, klima og jordsmonn. (Kilde <a {linkProps}>USDA</a>)",
-                    "unit": "Trær skal absorbere CO<sub>2</sub> i ett år"
-                },
-                "package_delivery": {
-                    "tooltip": "Beregnede data, basert på karbonavtrykket til hjemlevering av pakker på 1 kg. (Kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Antall pakkeleveringer"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Beregnede data, basert på karbonavtrykket til en tur-retur-reise mellom Paris og New York på en langdistanseflyvning. (Kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Tur-retur Paris–New York med fly"
-                },
-                "pool_filing": {
-                    "tooltip": "Beregnede data, basert på karbonpåvirkningen av å fylle et privat svømmebasseng på 8 x 4 meter. (Kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Antall påfyllinger av svømmebasseng"
-                }
-            },
-            "title": "Ekvivalenter i tonn CO<sub>2</sub>",
-            "title_tooltip": "Ekvivalensene er projeksjoner for å illustrere masseeffekten. Vi har multiplisert effekten av diskusjonen din med denne modellen til alle KI-brukere i Frankrike: 48 % av franskmenn rapporterer nå at de bruker generativ KI. Aldri før har en digital teknologi blitt tatt i bruk så raskt (kilde <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
-        },
         "feedback": {
             "description": "Bidra til å fremme compar:IA ved å dele KI-modellene du har samhandlet med! Bare navnene på modellene og energipåvirkningen fra diskusjonen vil være synlige via denne lenken, meldingene i samtalen blir ikke delt.",
             "example": "Eksempel på delte resultater",
@@ -696,19 +655,17 @@
         }
     },
     "seo": {
-        "desc": "compar:IA er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes.",
-        "title": "compar:IA, arena for sammenligning av KI-chatboter",
+        "desc": "{platformName} er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes.",
+        "title": "{platformName}, arena for sammenligning av KI-chatboter",
         "titles": {
             "accessibilite": "Tlgjengelighetserklæring",
             "arene": "Chat",
             "donnees-personnelles": "Personvernerklæring",
-            "home": "Hjem",
             "mentions-legales": "Juridisk merknad",
             "modalites": "Vilkår for bruk",
             "modeles": "Liste over modeller",
             "ranking": "Rangering",
-            "rgesn": "Økodesign-erklæring",
-            "share": "Min vurdering"
+            "rgesn": "Økodesign-erklæring"
         }
     },
     "vote": {
@@ -729,17 +686,6 @@
         },
         "title": "Hvilken KI-modell foretrekker du?",
         "yours": "Din stemme"
-    },
-    "welcome": {
-        "errors": "KI kan gjøre feil: vi oppfordrer deg til å sjekke og få bekreftet informasjonen.",
-        "go": "Da setter vi i gang",
-        "privacy": "Ikke del personlig informasjon som navn, etternavn eller adresse.",
-        "title": "Velkommen til compar:IA!",
-        "tos": {
-            "desc": "Samtalene og preferansene du uttrykker på compar:IA brukes anonymt til å lage datasett som er representative for europeiske språk og deres bruksområder, for å redusere kulturelle skjevheter og åpne opp for mer inkluderende KI-modeller i fremtiden.",
-            "moreInfos": "Lær mer om prosjektet."
-        },
-        "use": "Ikke bruk compar:IA til ulovlige eller skadelige formål."
     },
     "words": {
         "NA": "Ikke aktuelt",

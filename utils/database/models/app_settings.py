@@ -79,11 +79,11 @@ def _normalize_homepage_url(value: object) -> str | None:
 # An instance enables a subset of these. Anything outside the tuple is refused
 # rather than stored, because the frontend has no messages for it and would fall
 # back to the base locale without telling anyone.
-SUPPORTED_LOCALES = ("da", "en", "fr", "lt", "sv")
+SUPPORTED_LOCALES = ("da", "en", "fr", "it", "lt", "nb-NO", "sv")
 
 # What a new instance starts with, and what the migration backfills onto the
-# existing ones. Narrower than SUPPORTED_LOCALES: lt and sv ship far too few
-# translated messages to be offered unasked, which is why prod carried
+# existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
+# few translated messages to be offered unasked, which is why prod carried
 # PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
 # /admin/locales, which is the point of the setting.
 DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
