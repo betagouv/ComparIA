@@ -5,6 +5,7 @@
   import { getComparison, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
+  import { shouldShowInitialPrompt } from './arenaPageState'
   import { PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
 
   let { data }: PageProps = $props()
@@ -13,7 +14,9 @@
   fetchAndSolveSilently()
 
   const comparator = getComparison(undefined)
-  const showInitialPrompt = $derived(!comparator.comparisonId)
+  const showInitialPrompt = $derived(
+    shouldShowInitialPrompt(comparator.comparisonId, comparator.comparison)
+  )
 
   const revealed = $derived(comparator.status === 'revealed')
 
@@ -25,8 +28,8 @@
     await tosModal?.runAfterAcceptance(action)
   }
 
-  function submitInitialPrompt(args: APIModeAndPromptData): void {
-    void runAfterAcceptance(() => comparator.askFirst(args))
+  async function submitInitialPrompt(args: APIModeAndPromptData): Promise<void> {
+    await runAfterAcceptance(() => comparator.askFirst(args))
   }
 </script>
 
