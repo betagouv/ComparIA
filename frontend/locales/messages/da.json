@@ -45,7 +45,7 @@
             "hint": "Lad feltet stå tomt for at beholde den aktuelle nøgle. Indtast en ny for at erstatte den.",
             "remove": "Fjern nøgle",
             "removeConfirm": "Bekræft fjernelse",
-            "removed": "Nøgle fjernet. Modellerne på dette endepunkt er ikke længere tilgængelige.",
+            "removed": "Nøgle fjernet. Modellerne på dette slutpunkt er ikke længere tilgængelige.",
             "set": "Nøgle gemt",
             "unset": "Ingen nøgle"
         },
@@ -54,7 +54,7 @@
             "document": {
                 "backToWriting": "Tilbage til redigering",
                 "confirm": "Jeg har genlæst dokumentet og forstår, at denne version ikke længere kan ændres.",
-                "continue": "Fortsæt til « Gennemse og udgiv »",
+                "continue": "Fortsæt til »Gennemse og publicer«",
                 "create": "Udgiv en første version",
                 "effectiveAt": "Ikrafttrædelsesdato",
                 "effectiveAtHelp": "Lad feltet stå tomt for at udgive med det samme.",
@@ -89,7 +89,7 @@
             },
             "hub": {
                 "documentsGroup": "Juridiske dokumenter",
-                "informationalDescription": "Juridiske meddelelser, tilgængelighed og miljødesign, hostet på platformen eller linket til en ekstern hjemmeside.",
+                "informationalDescription": "Juridiske meddelelser, tilgængelighed og bæredygtigt design, hostet på platformen eller linket til en ekstern hjemmeside.",
                 "journeyDescription": "Tekster vist før den første besked og ved login.",
                 "journeyGroup": "Accepteringsforløb",
                 "journeyLink": "Deltagelsesforløb",
@@ -110,7 +110,7 @@
                 "modeLabel": "Destination",
                 "pages": {
                     "accessibility": "Tilgængelighedserklæring",
-                    "ecodesign": "Økodesign",
+                    "ecodesign": "Bæredygtigt design",
                     "legal_notice": "Juridiske meddelelser"
                 },
                 "save": "Gem sider",
@@ -119,10 +119,10 @@
                 "subtitle": "Vælg, hvor hver side hostes, og hvor linket til den skal være tilgængeligt.",
                 "title": "Informationssider",
                 "visibilityLabel": "Vis linket i",
-                "visibleInLegalMenu": "Menuen «Juridisk»",
+                "visibleInLegalMenu": "Menuen »Juridisk«",
                 "visibleInSettings": "Siden Indstillinger"
             },
-            "markdownHelp": "Understøttet Markdown-formatering: **fed**, *kursiv*, [link](https://exemple.fr).",
+            "markdownHelp": "Understøttet Markdown-formatering: **fed**, *kursiv*, [link](https://example.com).",
             "participation": {
                 "arenaDescription": "Dette indhold vises, når en ikke-logget bruger forsøger at sende sin første besked.",
                 "arenaTitle": "Første besked",
@@ -161,7 +161,7 @@
         },
         "llms": {
             "subTitle": "LLM'er, labs, licenser og endepoints.",
-            "title": "LLM data konfiguration"
+            "title": "LLM-datakonfiguration"
         },
         "nav": {
             "authentification": "Autentificering",
@@ -173,7 +173,7 @@
             "publishing": "Udgivelse",
             "suggestions": "Forslag",
             "users": "Brugere",
-            "voteTags": "Stemmetags"
+            "voteTags": "Stemmeetiketter"
         },
         "panelLink": "Administration",
         "promptChecks": {
@@ -201,7 +201,7 @@
                 "willClear": "Når du gemmer, slettes den gemte nøgle, og miljøvariablen overtager."
             },
             "bench": {
-                "caption": "Note, tærskel og resultat pr. kategori",
+                "caption": "Score, tærskel og resultat pr. kategori",
                 "columns": {
                     "score": "Score",
                     "verdict": "Resultat"
@@ -211,13 +211,13 @@
                     "error": "Kontrollen svarede ikke",
                     "logged": "Overvåget",
                     "pass": "Bestået uden handling",
-                    "warned": "Advarslet"
+                    "warned": "Advaret"
                 },
                 "decisionLegend": "Resultat",
                 "empty": "Skriv en besked, før du starter testen.",
                 "ignored": "Ikke overvåget",
                 "label": "Besked at tjekke",
-                "labelHint": "Skriv her beskeden, som en person ville sende den.",
+                "labelHint": "Skriv beskeden her, som en bruger ville sende den.",
                 "latency": "Svar på {count} ms",
                 "messageNone": "Der vises ikke noget til personen.",
                 "messageTitle": "Hvad personen vil se",
@@ -242,7 +242,7 @@
                 "law": "Jura",
                 "pii": "Personoplysninger",
                 "selfharm": "Selvskade og selvmord",
-                "sexual": "Sexuelt indhold",
+                "sexual": "Seksuelt indhold",
                 "violenceAndThreats": "Vold og trusler"
             },
             "categoriesTitle": "Kategorier",
@@ -288,7 +288,7 @@
                 "warningsShown": "{count} vist",
                 "warningsTitle": "Viste advarsler siden starten"
             },
-            "subtitle": "Når en besked falder ind under en af disse kategorier, bestemmer du, hvad der sker med personen: intet, en advarsel de kan overse, eller et afslag.",
+            "subtitle": "Når en besked falder ind under en af disse kategorier, bestemmer du, hvad der sker med personen: intet, en advarsel, som personen kan overse, eller en afvisning.",
             "threshold": {
                 "invalid": "Indtast et tal mellem 0 og 1.",
                 "legend": "Tærskel"
@@ -312,9 +312,9 @@
             "datasetRaw": "Rå",
             "datasetRawHelp": "Alle samtaler, også dem, der er sat til side. Må ikke offentliggøres åbent.",
             "datasetsError": "En destination skal modtage mindst ét datasæt.",
-            "datasetsLabel": "Datasæt sendt her",
+            "datasetsLabel": "Datasæt, der sendes hertil",
             "delete": "Slet",
-            "deleteConfirm": "Slette destinationen « {name} »?",
+            "deleteConfirm": "Slette destinationen »{name}«?",
             "deleteSuccess": "Destination slettet",
             "deleteWarning": "Allerede publicerede datasæt forbliver på plads. Kun afsendelsen stoppes.",
             "destinations": "Destinationer",
@@ -327,13 +327,13 @@
             "enabled": "Aktiveret",
             "enabledLabel": "Destination aktiveret",
             "endpointHelp": "Kun værten, uden https://.",
-            "endpointLabel": "Værten",
+            "endpointLabel": "Værtsadresse",
             "firstRunHelp": "Den første publikation starter, når du gemmer denne frekvens.",
             "frequencyDaily": "Hver dag",
             "frequencyLabel": "Frekvens",
-            "frequencyMonthly": "Hver måned, den 1.",
+            "frequencyMonthly": "Den 1. i hver måned",
             "frequencyOff": "Ingen automatisk publikation",
-            "frequencyWeekly": "Hver uge, mandag",
+            "frequencyWeekly": "Hver mandag",
             "historyDate": "Dato",
             "historyDetails": "Forklaring",
             "historyFailed": "Fejl",
@@ -361,15 +361,15 @@
             "publishNow": "Publicer",
             "publishStarted": "Publikation startet",
             "publishing": "Publikation…",
-            "rawWarning": "Denne destination modtager rådata, som indeholder samtaler gemt til personlige oplysninger. Sørg for, at den er privat.",
+            "rawWarning": "Denne destination modtager rådata, som indeholder samtaler, der er sat til side på grund af personoplysninger. Sørg for, at den er privat.",
             "regionLabel": "Region",
             "repoPathHelp": "I formatet organisation/arkiv. Rådatasættet sendes til det samme navn efterfulgt af -raw.",
             "repoPathLabel": "Arkiv",
-            "reviewerEndpointLabel": "Endepunkt",
-            "reviewerEndpointNone": "Intet endepunkt",
+            "reviewerEndpointLabel": "Slutpunkt",
+            "reviewerEndpointNone": "Intet slutpunkt",
             "reviewerHelp": "Denne model analyserer samtaler før offentliggørelse for at opdage personlige data og spam.",
-            "reviewerIncomplete": "Vælg et endpoint og angiv en model, eller lad begge felter stå tomme.",
-            "reviewerModelHelp": "Modellen, endpointet forventer.",
+            "reviewerIncomplete": "Vælg et slutpunkt og angiv en model, eller lad begge felter stå tomme.",
+            "reviewerModelHelp": "Modellen, som slutpunktet forventer.",
             "reviewerModelLabel": "Model",
             "reviewerSave": "Gem analysemodellen",
             "reviewerSuccess": "Analysemodel gemt",
@@ -388,7 +388,7 @@
             "subtitle": "Konfigurer destinationer og deres frekvens. Historikken samler alle publikationer.",
             "timezoneLabel": "Tidszone",
             "title": "Datasætpublicering",
-            "tokenHelp": "Et kun læse-token består læse-tjekket og fejler ved den første offentliggørelse.",
+            "tokenHelp": "Et skrivebeskyttet token (read-only) består læsetjekket, men fejler ved første offentliggørelse.",
             "tokenKeep": "Lad feltet stå tomt for at beholde det gemte token.",
             "tokenLabel": "Skrive-token"
         },
@@ -421,7 +421,7 @@
                 "homepageUrl": {
                     "hint": "Denne adresse åbnes, når en person vælger logoet eller platformens navn. Lad den stå tom for at bruge den lokale startside.",
                     "invalid": "Indtast en fuld HTTPS-URL.",
-                    "label": "Hjemmesides URL"
+                    "label": "Hjemmesidens URL"
                 },
                 "logo": {
                     "chooseFile": "Vælg en fil",
@@ -465,7 +465,7 @@
             "categories": "Kategorier",
             "category": "Kategori",
             "categoryCreateSuccess": "Kategori tilføjet.",
-            "categoryDeleteConfirm": "Slette « {title} »?",
+            "categoryDeleteConfirm": "Slette »{title}«?",
             "categoryDeleteConflict": "Denne kategori indeholder forslag og kan derfor ikke slettes.",
             "categoryDeleteError": "Kategorien kunne ikke slettes. Prøv igen.",
             "categoryDeleteIntro": "En kategori, der indeholder mindst ét forslag, er beskyttet og kan ikke slettes.",
@@ -477,8 +477,8 @@
             "categoryEmpty": "Tom kategori",
             "categoryIcon": "Ikon",
             "categoryIconPreview": "Forhåndsvisning af valgt ikon",
-            "categorySuggestionCount": "1 forslag — sletning umulig",
-            "categorySuggestionsCount": "{count} forslag — sletning umulig",
+            "categorySuggestionCount": "1 forslag — kan ikke slettes",
+            "categorySuggestionsCount": "{count} forslag — kan ikke slettes",
             "categoryTitle": "Kategoriens navn",
             "categoryTitleUnusableError": "Navnet skal indeholde mindst ét bogstav eller tal.",
             "categoryTooltip": "Yderligere information",
@@ -519,7 +519,7 @@
             "manageCategories": "Administrer kategorier",
             "noCategories": "Ingen kategorier.",
             "prompt": "Forslag",
-            "promptHint": "Forslaget kan indeholde felter til udfyldelse mellem hakparentes.",
+            "promptHint": "Forslaget kan indeholde felter til udfyldelse i kantede parenteser.",
             "restore": "Gendan",
             "restoreConfirm": "Gendan dette forslag? Det vil blive tilbudt igen i arenaen.",
             "restoreSuccess": "Forslag gendannet.",
@@ -531,24 +531,24 @@
         },
         "voteTags": {
             "active": "Aktiv",
-            "addTitle": "Tilføj et tag",
+            "addTitle": "Tilføj en etiket",
             "archive": "Skjul",
-            "archiveSuccess": "Tag skjult",
+            "archiveSuccess": "Etiket skjult",
             "archived": "Skjult",
             "cancel": "Annuller",
             "colActions": "Handlinger",
             "colKey": "Nøgle",
-            "colLabel": "Tag",
+            "colLabel": "Etiket",
             "colOrder": "Rækkefølge",
             "colStatus": "Status",
             "colUsage": "Stemmer",
-            "conflictError": "Dette tag eksisterer allerede, eller stemmer bruger det allerede, og det skal skjules i stedet for slettes.",
-            "createSuccess": "Tag tilføjet",
+            "conflictError": "Denne etiket findes allerede, eller også er der stemmer, der bruger den, så den skal skjules i stedet for at blive slettet.",
+            "createSuccess": "Etiket tilføjet",
             "delete": "Slet",
-            "deleteConfirm": "Slette « {label} » ?",
-            "deleteSuccess": "Tag slettet",
+            "deleteConfirm": "Slette »{label}«?",
+            "deleteSuccess": "Etiket slettet",
             "deleteWarning": "Ingen stemmer bruger det, så sletningen er permanent.",
-            "dragHint": "Træk linjen for at flytte den.",
+            "dragHint": "Træk i rækken for at flytte den.",
             "edit": "Rediger",
             "editSuccess": "Etiket opdateret",
             "editTitle": "Rediger etiket",
@@ -566,7 +566,7 @@
             "moved": "{label} flyttet til position {position} af {total}.",
             "negative": "Negative etiketter",
             "positive": "Positive etiketter",
-            "reserved": "Sendt",
+            "reserved": "Indbygget",
             "restore": "Vis igen",
             "restoreSuccess": "Etiketten genindført",
             "save": "Gem",
@@ -638,7 +638,7 @@
                 "datasetsTitle": "compar:IA datasæt",
                 "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter.",
                 "neverAddress": "adresser (post, e-mail)",
-                "neverName": "dit navn, efternavn eller en tredjeparters",
+                "neverName": "dit fornavn, efternavn eller navne på tredjeparter",
                 "neverOther": "ethvert andet element der kan identificere dig",
                 "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
                 "neverPhone": "telefonnumre"
@@ -779,14 +779,14 @@
         "links": {
             "accessibility": "Tilgængelighed: ikke i overensstemmelse",
             "legal": "Om os",
-            "rgesn": "Miljøvenligt design",
+            "rgesn": "Bæredygtigt design",
             "sources": "Kildekode"
         }
     },
     "general": {
         "a11y": {
             "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> {domain} </strong> .",
-            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
+            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 af 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
             "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af {domain} for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
@@ -954,8 +954,8 @@
                 "title": "Identificerede forbedringer"
             },
             "8": {
-                "1": "Typografiarket er reduceret fra 3,27 MB til 1,46 MB, hvilket er 239 KB mindre efter komprimering på hver side: Tjenesten indlæser ikke længere designsystemets 1.047 ikoner, men kun de 25, den bruger.",
-                "2": "Fjernelse af 344 KB offentlige filer, som ingen sider brugte.",
+                "1": "Stilarket er reduceret fra 3,27 MB til 1,46 MB, hvilket er 239 KB mindre efter komprimering på hver side: Tjenesten indlæser ikke længere designsystemets 1.047 ikoner, men kun de 25, den bruger.",
+                "2": "Fjernelse af 344 KB ubrugte statiske filer.",
                 "3": "Optagelse af sessioner er stoppet: Funktionen registrerede musebevægelser og ændringer på siden under hele besøget og producerede optagelser, som ingen så. Optælling af sidevisninger er bevaret.",
                 "4": "Måling fra 13. august 2026 på chatsiden: 111 forespørgsler og 1.152 KB. Tjenesten ligger stadig over de grænser, den har fastsat ovenfor: 40 forespørgsler og 600 KB pr. side. Den største resterende post er oversættelsesfilen, som indeholder alle fem sprog på hver side.",
                 "desc": "Siden offentliggørelsen er følgende forbedringer blevet foretaget i arenaen:",
@@ -1012,7 +1012,7 @@
                 "label": "Oprettet"
             },
             "id": {
-                "label": "Id"
+                "label": "ID"
             },
             "name": {
                 "help": "Læsbar betegnelse for slutpunktet (f.eks. 'OpenRouter').",
@@ -1027,10 +1027,10 @@
                 "label": "Oprettet"
             },
             "id": {
-                "label": "Id"
+                "label": "ID"
             },
             "logo": {
-                "help": "Et ikonnavn fra https://lobehub.com/fr/icons eller et filnavn (f.eks. 'ai2.svg') fra `frontend/static/orgs/ai/`.",
+                "help": "Et ikonnavn fra https://lobehub.com/icons eller et filnavn (f.eks. 'ai2.svg') fra `frontend/static/orgs/ai/`.",
                 "label": "Logo"
             },
             "name": {
@@ -1052,7 +1052,7 @@
                 "label": "Oprettet"
             },
             "id": {
-                "label": "Id"
+                "label": "ID"
             },
             "kind": {
                 "label": "Licenstype"
@@ -1101,7 +1101,7 @@
                 "label": "Læsbar id"
             },
             "id": {
-                "label": "Id"
+                "label": "ID"
             },
             "inputs": {
                 "help": "Hvilke typer medier sprogmodellen kan modtage som input.",
@@ -1240,7 +1240,7 @@
             },
             "context": {
                 "chars_count": "Ca. {count}k tegn",
-                "desc": "Kan analysere omtrent flere hundrede siders tekst",
+                "desc": "Kan analysere op mod flere hundrede siders tekst",
                 "title": "Kontekst",
                 "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>tokens</span>",
                 "tooltip": "Konteksten er den maksimale mængde tekst, som modellen kan tage højde for i én samtale, målt i tokens."
@@ -1810,7 +1810,7 @@
                     "xs": "meget lille"
                 }
             },
-            "title": "Chatens estimerede energiforbrug",
+            "title": "Samtalens estimerede energiforbrug",
             "tokens": {
                 "max": "Maks. kontekst: {count}k tokens",
                 "title": "Genereret tekst",
@@ -1953,7 +1953,7 @@
         "remove": "Slet",
         "reset": "Nulstil",
         "restart": "Start forfra",
-        "retry": "Start forfra",
+        "retry": "Prøv igen",
         "save": "Gem",
         "search": "Søg",
         "send": "Send",
