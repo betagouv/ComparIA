@@ -3,11 +3,30 @@ import { describe, expect, it } from 'vitest'
 import type { PersonalRankingRow } from '$lib/generated/backend'
 import {
   assignRankClasses,
+  isModelNew,
   joinPersonalRanking,
   MAX_RANK_CLASS,
   rankClassSpans,
   type BotModel
 } from './models'
+
+describe('isModelNew', () => {
+  const today = new Date('2026-08-26T12:00:00Z')
+
+  it.each([
+    ['release day', '2026-08-26', true],
+    ['same day in the following month', '2026-07-26', true],
+    ['one day beyond the calendar month', '2026-07-25', false],
+    ['a future release', '2026-08-27', false]
+  ])('%s', (_label, releaseDate, expected) => {
+    expect(isModelNew(releaseDate, today)).toBe(expected)
+  })
+
+  it('clamps month-end releases to the final day of the next month', () => {
+    expect(isModelNew('2026-01-31', new Date('2026-02-28T23:59:59Z'))).toBe(true)
+    expect(isModelNew('2026-01-31', new Date('2026-03-01T00:00:00Z'))).toBe(false)
+  })
+})
 
 /** A model is only its two confidence bounds as far as class assignment cares. */
 const ci = (low: number, high: number) => ({ score_p2_5: low, score_p97_5: high })

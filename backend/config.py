@@ -39,9 +39,9 @@ class Settings(BaseSettings):
     # values themselves are unchanged, so Redis keys stay put.
     COMPARIA_INSTANCE_NAME: str = "fr"
 
-    # Display currency. Model prices are stored in euros and converted for the UI.
+    # Display currency. Model prices are stored in US dollars and converted for the UI.
     DISPLAY_CURRENCY: str = "EUR"
-    DISPLAY_CURRENCY_RATE_FROM_EUR: float | None = None
+    DISPLAY_CURRENCY_RATE_FROM_USD: float | None = None
     EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
@@ -133,11 +133,11 @@ class Settings(BaseSettings):
             raise ValueError("DISPLAY_CURRENCY must be a three-letter ISO 4217 code")
         return currency
 
-    @field_validator("DISPLAY_CURRENCY_RATE_FROM_EUR")
+    @field_validator("DISPLAY_CURRENCY_RATE_FROM_USD")
     @classmethod
     def validate_manual_currency_rate(cls, value: float | None) -> float | None:
         if value is not None and value <= 0:
-            raise ValueError("DISPLAY_CURRENCY_RATE_FROM_EUR must be greater than zero")
+            raise ValueError("DISPLAY_CURRENCY_RATE_FROM_USD must be greater than zero")
         return value
 
     @field_validator("EXCHANGE_RATE_CACHE_SECONDS")

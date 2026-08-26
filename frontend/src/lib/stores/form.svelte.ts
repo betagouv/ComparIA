@@ -10,7 +10,7 @@ type UseFormOptions<T, K> = {
   i18nKey: string
   omitKeys?: K[]
   method?: 'post' | 'put'
-  onSuccess?: (data: T) => void
+  onSuccess?: (data: T) => void | Promise<void>
   onMutateForm?: (data: T) => T
 }
 export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
@@ -25,14 +25,18 @@ export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
 }: UseFormOptions<T, K>) {
   const errors = $state<Record<string, string>>({})
   const form = $state<Partial<T>>({})
+  let savedBaseline = $state('')
   const items = $derived(
     getFormFields(schema, i18nKey).filter((f) => !omitKeys?.includes(f.id as K))
   )
-  mutateForm(data)
+  mutateForm(data, true)
 
-  function mutateForm(data: T) {
+  const isDirty = $derived(JSON.stringify(form) !== savedBaseline)
+
+  function mutateForm(data: T, markSaved = false) {
     const updated = onMutateForm?.(data) ?? data
     Object.assign(form, { ...omit(updated, omitKeys ?? []) })
+    if (markSaved) savedBaseline = JSON.stringify(form)
   }
 
   async function onSubmit() {
@@ -43,8 +47,8 @@ export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
       // FIXME i18n
       useToast('Successfully saved data', 5000, 'success')
       // Mutate local form
-      mutateForm(updated)
-      onSuccess?.(updated)
+      mutateForm(updated, true)
+      await onSuccess?.(updated)
     } catch (e) {
       if (e instanceof ValidationError) {
         if (e.errors) {
@@ -61,5 +65,13 @@ export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
     }
   }
 
-  return { form, items, errors, onSubmit }
+  return {
+    form,
+    items,
+    errors,
+    onSubmit,
+    get isDirty() {
+      return isDirty
+    }
+  }
 }

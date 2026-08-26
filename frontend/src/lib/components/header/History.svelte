@@ -31,8 +31,14 @@
     ]}
   >
     {#if llm_id}
-      {@const logo = models.find((llm) => llm.id === llm_id)!.lab.logo}
-      <AILogo {logo} size="sm" alt="" class="block" />
+      {@const lab = models.find((llm) => llm.id === llm_id)!.lab}
+      <AILogo
+        logo={lab.logo}
+        customLogoId={lab.has_custom_logo ? lab.id : undefined}
+        size="sm"
+        alt=""
+        class="block"
+      />
     {:else}
       <span class="i-ri-question-mark block h-[14px] w-[14px]"></span>
     {/if}

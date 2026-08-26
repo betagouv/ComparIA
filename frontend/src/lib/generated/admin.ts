@@ -217,11 +217,11 @@ export interface LLMData {
    */
   inputs: ("text" | "image" | "audio" | "video")[];
   /**
-   * Price per million input tokens in $.
+   * Price per million input tokens in USD.
    */
   price_in: number;
   /**
-   * Price per million output tokens in $.
+   * Price per million output tokens in USD.
    */
   price_out: number;
   /**
@@ -310,6 +310,19 @@ export interface LLMLab {
    * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
    */
   origin_country: string;
+  has_custom_logo?: boolean;
+}
+/**
+ * Public LLM lab metadata, excluding uploaded logo bytes.
+ */
+export interface LLMLabPublic {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  name: string;
+  logo: string;
+  origin_country: string;
+  has_custom_logo?: boolean;
 }
 /**
  * LLM licence metadata.
