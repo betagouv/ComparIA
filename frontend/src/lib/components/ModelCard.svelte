@@ -36,7 +36,11 @@
       <h3
         class="fr-card__title fr-text--sm mb-4! leading-normal! font-normal! text-dark-grey gap-2 flex items-center text-[14px]!"
       >
-        <AILogo logo={model.lab.logo} alt={model.lab.name} />
+        <AILogo
+          logo={model.lab.logo}
+          customLogoId={model.lab.has_custom_logo ? model.lab.id : undefined}
+          alt={model.lab.name}
+        />
         <div>
           {model.lab.name}/<a
             class="text-black! after:text-primary"

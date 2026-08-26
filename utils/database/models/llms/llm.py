@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated, Literal
 from uuid import UUID
 
@@ -5,12 +6,13 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import AfterValidator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
+from sqlalchemy import Date
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
 from utils.validation import NonEmptyStr
 
-from ..utils import BaseDBModel, Datetime, OptionalDatetime
+from ..utils import BaseDBModel
 from .constants import LLMArchKind, LLMStatus
 from .endpoint import LLMEndpoint
 from .lab import LLMLab
@@ -82,10 +84,10 @@ FIELDS = {
         "description": "Whether the LLM is hostable in the EU.",
     },
     "price_in": {
-        "description": "Price per million input tokens in $.",
+        "description": "Price per million input tokens in USD.",
     },
     "price_out": {
-        "description": "Price per million output tokens in $.",
+        "description": "Price per million output tokens in USD.",
     },
     "system_prompt": {
         "description": "System message to add in llm call if specified",
@@ -116,9 +118,9 @@ class LLMDataBase(BaseDBModel):
     ]
     rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
-    release_date: Annotated[Datetime, Field(**FIELDS["release_date"])]
+    release_date: Annotated[date, Field(sa_type=Date, **FIELDS["release_date"])]
     knowledge_cutoff: Annotated[
-        OptionalDatetime, Field(default=None, **FIELDS["knowledge_cutoff"])
+        date | None, Field(default=None, sa_type=Date, **FIELDS["knowledge_cutoff"])
     ]
     license_id: Annotated[
         UUID, Field(foreign_key="llm_license.id", **FIELDS["license_id"])

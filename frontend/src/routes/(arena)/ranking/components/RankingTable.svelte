@@ -280,7 +280,12 @@
       <div
         class="sm:max-w-none sm:overflow-visible max-w-[205px] overflow-hidden overflow-ellipsis"
       >
-        <AILogo logo={model.lab.logo} alt={model.lab.name} class="me-1 inline-block align-middle" />
+        <AILogo
+          logo={model.lab.logo}
+          customLogoId={model.lab.has_custom_logo ? model.lab.id : undefined}
+          alt={model.lab.name}
+          class="me-1 inline-block align-middle"
+        />
         <a
           href="#{model.human_id}"
           data-fr-opened="false"

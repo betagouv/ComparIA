@@ -2,7 +2,7 @@ import logging
 from typing import Literal
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, status
 from sqlmodel import SQLModel, select
 
 from utils.database.models.llms import (
@@ -12,6 +12,7 @@ from utils.database.models.llms import (
     LLMEndpointPublic,
     LLMEndpointUpsert,
     LLMLab,
+    LLMLabPublic,
     LLMLabUpsert,
     LLMLicense,
     LLMLicenseUpsert,
@@ -48,6 +49,17 @@ def _to_endpoint_public(endpoint: LLMEndpoint) -> LLMEndpointPublic:
     )
 
 
+def _to_lab_public(lab: LLMLab) -> LLMLabPublic:
+    return LLMLabPublic(
+        **lab.model_dump(exclude={"logo_data", "logo_content_type"}),
+        has_custom_logo=lab.has_custom_logo,
+    )
+
+
+_LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
+_LOGO_MAX_SIZE = 2 * 1024 * 1024
+
+
 @router.get("/data")
 async def get_data():
     try:
@@ -67,6 +79,7 @@ async def get_data():
             db_data["endpoints"] = [
                 _to_endpoint_public(endpoint) for endpoint in db_data["endpoints"]
             ]
+            db_data["labs"] = [_to_lab_public(lab) for lab in db_data["labs"]]
 
         return db_data
     except Exception as e:
@@ -87,6 +100,7 @@ async def get_schema():
 async def upsert_llm(body: LLMDataUpsert) -> LLMData:
     async with get_session() as session:
         db_llm = await upsert_llm_data(body, session)
+        await session.refresh(db_llm)
         invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return db_llm
 
@@ -115,11 +129,53 @@ async def delete_endpoint_api_key(endpoint_id: UUID) -> LLMEndpointPublic:
 
 @router.post("/lab")
 @router.put("/lab")
-async def upsert_lab(body: LLMLabUpsert) -> LLMLab:
+async def upsert_lab(body: LLMLabUpsert):
     async with get_session() as session:
         db_lab = await upsert_llm_lab(body, session)
         invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
-        return db_lab
+        await session.refresh(db_lab)
+        return _to_lab_public(db_lab)
+
+
+@router.put("/lab/{lab_id}/logo")
+async def upload_lab_logo(lab_id: UUID, file: UploadFile):
+    if file.content_type not in _LOGO_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported content type: {file.content_type}",
+        )
+    content = await file.read(_LOGO_MAX_SIZE + 1)
+    if len(content) > _LOGO_MAX_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Logo file is too large (max 2 MB)",
+        )
+    async with get_session() as session:
+        lab = await session.get(LLMLab, lab_id)
+        if lab is None:
+            raise HTTPException(status_code=404, detail="lab_not_found")
+        lab.logo_data = content
+        lab.logo_content_type = file.content_type
+        session.add(lab)
+        await session.commit()
+        await session.refresh(lab)
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        return _to_lab_public(lab)
+
+
+@router.delete("/lab/{lab_id}/logo")
+async def delete_lab_logo(lab_id: UUID):
+    async with get_session() as session:
+        lab = await session.get(LLMLab, lab_id)
+        if lab is None:
+            raise HTTPException(status_code=404, detail="lab_not_found")
+        lab.logo_data = None
+        lab.logo_content_type = None
+        session.add(lab)
+        await session.commit()
+        await session.refresh(lab)
+        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        return _to_lab_public(lab)
 
 
 @router.post("/license")
@@ -127,5 +183,6 @@ async def upsert_lab(body: LLMLabUpsert) -> LLMLab:
 async def upsert_license(body: LLMLicenseUpsert) -> LLMLicense:
     async with get_session() as session:
         db_license = await upsert_llm_license(body, session)
+        await session.refresh(db_license)
         invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return db_license

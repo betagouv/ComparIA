@@ -90,9 +90,9 @@ spec:
               value: {{ .Values.config.auth.sessionLengthDays | quote }}
             - name: DISPLAY_CURRENCY
               value: {{ .Values.config.currency.display | quote }}
-            {{- if .Values.config.currency.rateFromEur }}
-            - name: DISPLAY_CURRENCY_RATE_FROM_EUR
-              value: {{ .Values.config.currency.rateFromEur | quote }}
+            {{- if .Values.config.currency.rateFromUsd }}
+            - name: DISPLAY_CURRENCY_RATE_FROM_USD
+              value: {{ .Values.config.currency.rateFromUsd | quote }}
             {{- end }}
             - name: EXCHANGE_RATE_API_URL
               value: {{ .Values.config.currency.exchangeApiUrl | quote }}

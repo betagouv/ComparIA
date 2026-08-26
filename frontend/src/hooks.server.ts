@@ -5,12 +5,39 @@ import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
-import type { Handle, HandleServerError } from '@sveltejs/kit'
+import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
+
+export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
+  const apiOrigins = [
+    publicEnv.PUBLIC_API_LOCAL_URL,
+    publicEnv.PUBLIC_API_URL,
+    'http://localhost:8001'
+  ]
+    .filter(Boolean)
+    .map((url) => new URL(url!).origin)
+
+  const requestUrl = new URL(request.url)
+  const session = event.cookies.get('auth_session')
+  if (
+    session &&
+    requestUrl.pathname.startsWith('/api/') &&
+    apiOrigins.includes(requestUrl.origin)
+  ) {
+    const headers = new Headers(request.headers)
+    const existingCookies = headers.get('cookie')
+    if (!existingCookies?.split('; ').some((cookie) => cookie.startsWith('auth_session='))) {
+      headers.set('cookie', [existingCookies, `auth_session=${session}`].filter(Boolean).join('; '))
+      request = new Request(request, { headers })
+    }
+  }
+
+  return fetch(request)
+}
 
 function originOf(url: string): string | null {
   try {
