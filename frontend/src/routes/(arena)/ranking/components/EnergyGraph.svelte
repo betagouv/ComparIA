@@ -99,19 +99,26 @@
   const xTicks = $derived(ticks(...minMaxX, 7))
   const yTicks = $derived(ticks(...minMaxY, 9))
 
-  onMount(resize)
+  onMount(() => {
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (!entry) return
 
-  function resize() {
-    ;({ width, height } = svg!.getBoundingClientRect())
-  }
+      const { width: nextWidth, height: nextHeight } = entry.contentRect
+      if (nextWidth === 0 || nextHeight === 0) return
+
+      width = nextWidth
+      height = nextHeight
+    })
+
+    resizeObserver.observe(svg!)
+    return () => resizeObserver.disconnect()
+  })
 
   function onModelHover(model: ModelGraphData) {
     hoveredModel = model.id
     tooltipPos = { x: xScale(model.x), y: yScale(model.y) }
   }
 </script>
-
-<svelte:window onresize={resize} />
 
 {#snippet legend(kind: string)}
   <div

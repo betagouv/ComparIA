@@ -15,4 +15,17 @@ Object.defineProperty(window, 'matchMedia', {
   }))
 })
 
+// jsdom has no layout engine and therefore does not provide ResizeObserver.
+// Components may still create one during a page-level render; individual tests
+// that need resize events can replace this no-op implementation with a driver.
+Object.defineProperty(globalThis, 'ResizeObserver', {
+  writable: true,
+  configurable: true,
+  value: class implements ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+})
+
 // add more mocks here if you need them
