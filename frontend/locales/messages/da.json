@@ -2,15 +2,15 @@
     "a11y": {
         "energyGraphDesc": "Punktdiagram: Hver model er placeret efter sin præferencescore på den lodrette akse og sit energiforbrug på den vandrette akse. De samme data findes i tabelform.",
         "externalLink": "{text}",
-        "graphAsTable": "Se de samme data i tabelform",
-        "languageNav": "Valg af sprog",
+        "graphAsTable": "Se i tabelform",
+        "languageNav": "Vælg sprog",
         "mainNav": "Primær navigation",
         "mobileMenu": "Menu",
         "mobileNav": "Mobilnavigation",
-        "modeSelection": "Valg af modeller, der skal sammenlignes",
+        "modeSelection": "Vælg modeller, der skal sammenlignes",
         "modelSheet": "Modeloplysninger",
         "newWindow": "nyt vindue",
-        "shareLinkLabel": "Link til deling af resultatet",
+        "shareLinkLabel": "Link til deling",
         "skipToContent": "Gå til hovedindholdet",
         "suggestionCategories": "Kategorier med forslag til spørgsmål",
         "voteTags": "Nøgleord, der beskriver svaret"
@@ -457,6 +457,7 @@
             "allLocales": "Alle sprog",
             "allStatuses": "Alle statusser",
             "archive": "Arkiver",
+            "archiveCategory": "Arkiver kategori",
             "archiveConfirm": "Arkiver dette forslag? Det vil ikke længere blive tilbudt i arenaen, men kan genoprettes.",
             "archiveSuccess": "Forslag arkiveret.",
             "archived": "Arkiveret",
@@ -464,6 +465,9 @@
             "cancel": "Annuller",
             "categories": "Kategorier",
             "category": "Kategori",
+            "categoryArchiveConfirm": "Arkiver »{title}«, og skjul dens {count} forslag i arenaen? Forslagenes individuelle status bevares.",
+            "categoryArchiveSuccess": "Kategori arkiveret.",
+            "categoryCountSummary": "{available} tilgængelige ud af {total} forslag",
             "categoryCreateSuccess": "Kategori tilføjet.",
             "categoryDeleteConfirm": "Slette »{title}«?",
             "categoryDeleteConflict": "Denne kategori indeholder forslag og kan derfor ikke slettes.",
@@ -477,6 +481,8 @@
             "categoryEmpty": "Tom kategori",
             "categoryIcon": "Ikon",
             "categoryIconPreview": "Forhåndsvisning af valgt ikon",
+            "categoryRestoreConfirm": "Gendan »{title}«? Kun forslag med statussen »Tilgængelig« vil igen blive vist i arenaen.",
+            "categoryRestoreSuccess": "Kategori gendannet.",
             "categorySuggestionCount": "1 forslag — kan ikke slettes",
             "categorySuggestionsCount": "{count} forslag — kan ikke slettes",
             "categoryTitle": "Kategoriens navn",
@@ -485,12 +491,14 @@
             "categoryTooltipHint": "Valgfrit. Denne information vil være tilgængelig via en tooltip.",
             "categoryValidation": "Indtast et navn, en beskrivelse og vælg et ikon.",
             "charactersMaximum": "{count} tegn maksimum",
+            "collapseCategory": "Fold kategorien sammen",
             "confirm": "Bekræft",
             "createSuccess": "Forslag tilføjet.",
             "delete": "Slet",
             "deleteCategory": "Slet kategori",
             "duplicateError": "Dette forslag findes allerede i denne kategori.",
             "empty": "Ingen forslag matcher de valgte filtre.",
+            "expandCategory": "Fold kategorien ud",
             "filters": "Filtre",
             "iconArt": "Kunst",
             "iconBook": "Bog",
@@ -521,8 +529,12 @@
             "prompt": "Forslag",
             "promptHint": "Forslaget kan indeholde felter til udfyldelse i kantede parenteser.",
             "restore": "Gendan",
+            "restoreCategory": "Gendan kategori",
             "restoreConfirm": "Gendan dette forslag? Det vil blive tilbudt igen i arenaen.",
             "restoreSuccess": "Forslag gendannet.",
+            "resultCount": "{count} forslag fundet",
+            "search": "Søg efter et forslag",
+            "searchFilter": "Søgning",
             "status": "Status",
             "subtitle": "Tilføj og administrer forslagene i arenaen.",
             "tableCaption": "Promptforslag",
@@ -616,28 +628,21 @@
             "title": "Diskussioner"
         },
         "modal": {
+            "email": {
+                "emailLabel": "E-mail",
+                "submit": "Modtag loginkode",
+                "submitting": "Sender...",
+                "subtitle": "Få adgang til din samtalehistorik og en højere brugskvote ved at logge ind. Det er valgfrit at oprette en konto på platformen.",
+                "title": "Log ind eller opret konto"
+            },
             "code": {
+                "changeEmail": "Skift e-mailadresse",
                 "error": "Ugyldig eller udløbet kode.",
                 "label": "6-cifret kode",
                 "notReceived": "Har du ikke modtaget noget?",
                 "resend": "Send koden igen",
                 "submit": "Bekræft",
                 "verifying": "Verificerer..."
-            },
-            "email": {
-                "emailLabel": "E-mail",
-                "submit": "Modtag loginkode",
-                "submitting": "Sender...",
-                "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
-                "title": "Log ind eller opret konto"
-            },
-            "code": {
-                "changeEmail": "Skift e-mailadresse",
-                "label": "6-cifret kode",
-                "submit": "Bekræft",
-                "verifying": "Verificerer...",
-                "resend": "Send koden igen",
-                "error": "Ugyldig eller udløbet kode."
             },
             "info": {
                 "dataDesc": "Samtaler og præferencer, du udtrykker på compar:IA, bruges anonymt til at opbygge repræsentative datasæt af europæiske sprog og brugsmønstre for at reducere kulturelle fordomme og udvikle mere inkluderende AI-modeller.",
@@ -1265,7 +1270,7 @@
                 "desc": "Jo tættere klassen er på A, desto lavere er det anslåede energiforbrug ved inferens.",
                 "title": "Energiforbrugsklasse",
                 "title_short": "Energiscore",
-                "tooltip": "EcoLogits 0.10.2-estimat for generering af 1 million outputtokens. Beregningen bruger det samlede antal parametre og, for modeller med en blanding af eksperter (MoE), antallet af aktive parametre. Forudsætninger: energieffektivitet i datacenteret (PUE) på 1,2, ingen angivet latenstid og medianværdien, når resultatet er et interval. Grænser: A < 100 Wh; B < 300 Wh; C < 1.000 Wh; D < 3.000 Wh; E < 10.000 Wh; F ≥ 10.000 Wh. Dette er ikke en måling fra udbyderen: den faktiske hardware, kvantiseringen, inputlængden og latenstiden kan alle ændre forbruget."
+                "tooltip": "EcoLogits 0.10.2-estimat for generering af 1 million outputtokens. Beregningen bruger antallet af aktive parametre til at estimere GPU-energiforbruget og det samlede antal parametre til at estimere hukommelses- og GPU-behovet. Den modellerer NVIDIA H100-GPU'er med 80 GB hukommelse i en server med otte GPU'er. Andre forudsætninger: energieffektivitet i datacenteret (PUE) på 1,2, ingen angivet latenstid og medianværdien, når resultatet er et interval. Grænser: A < 100 Wh; B < 300 Wh; C < 1.000 Wh; D < 3.000 Wh; E < 10.000 Wh; F ≥ 10.000 Wh. Dette er ikke en måling fra udbyderen: den faktiske hardware, kvantiseringen, inputlængden og latenstiden kan alle ændre forbruget."
             },
             "license": {
                 "title": "Licens"
@@ -1301,12 +1306,12 @@
             },
             "size": {
                 "active_params_count": "Heraf {count} mia. aktive",
-                "desc": "Jo flere parametre en model har, desto flere ressourcer kræver den",
+                "desc": "Flere parametre medfører ofte et højere ressourceforbrug",
                 "params_count": "{count}<span {midProps}> mia.</span> <span {smallProps}>parametre</span>",
                 "params_count_short": "{count}<span {midProps}> mia.</span> <span {smallProps}>param.</span>",
                 "title": "Størrelse",
                 "title_estimated": "Anslået størrelse",
-                "tooltip": "Parametrene eller vægtene, målt i milliarder, er de variabler, en model lærer under træningen, og som former dens svar. Jo flere parametre modellen har, desto flere ressourcer kræver den for at køre."
+                "tooltip": "Parametrene eller vægtene, målt i milliarder, er de variabler, en model lærer under træningen, og som former dens svar. Antallet af parametre er en vigtig, men ikke den eneste faktor for modellens ressourceforbrug; arkitektur og andre optimeringer spiller også en rolle."
             },
             "sovereignty": {
                 "sub": "Opfyldte kriterier",
@@ -1325,7 +1330,7 @@
         "envImpact": {
             "hardware": {
                 "title": "Nødvendig hardware",
-                "tooltip": "Et estimat af den hukommelse, der kræves for at indlæse modellens parametre, eksklusive KV-cache, kontekst, system og inferensmotorens overhead. Anvendte kategorier: op til 3 GB, smartphone; op til 16 GB, bærbar computer; op til 80 GB, arbejdsstation med én GPU; derover, server. Antallet af GPU'er rundes op ud fra en antagelse om 80 GB hukommelse pr. kort. Dette er et teoretisk minimum: vægtenes præcision, kvantiseringen, kontekstlængden, batchbehandlingen og inferenssoftwaren kan alle øge eller mindske det faktiske behov.",
+                "tooltip": "Et estimat af den hukommelse, der kræves for at indlæse modellens parametre. Estimatet inkluderer ikke KV-cache, kontekst eller system- og inferensoverhead. Anvendte kategorier: op til 3 GB, smartphone; op til 16 GB, bærbar computer; op til 80 GB, arbejdsstation med én GPU; derover, server. Antallet af GPU'er rundes op ud fra en antagelse om 80 GB hukommelse pr. kort. Dette er et teoretisk minimum: vægtenes præcision, kvantiseringen, kontekstlængden, batchbehandlingen og inferenssoftwaren kan alle øge eller mindske det faktiske behov.",
                 "types": {
                     "laptop": {
                         "detail": "Intet grafikkort nødvendigt",
@@ -1613,7 +1618,7 @@
                     "title": "Målt effekt af præsentationen"
                 },
                 "desc": {
-                    "1": "En model kan rykke op på ranglisten blot ved at svare mere udførligt eller bruge mere formatering (overskrifter, fed skrift og lister), uden at indholdet er mere relevant. Stilkontrollen, der er inspireret af LMArenas »Style Control«, fjerner denne effekt: En logistisk regression adskiller i hver stemme den del, der skyldes modellens styrke, fra den del, der skyldes præsentationen.",
+                    "1": "En model kan rykke op på ranglisten blot ved at svare mere udførligt eller bruge mere formatering (overskrifter, fed skrift og lister), uden at indholdet er mere relevant. Stilkontrollen estimerer denne præsentationseffekt og fjerner den fra ranglisten.",
                     "2": "Den viste score bliver dermed en Elo-score, der er »korrigeret for stil«: den rangliste, man ville få, hvis de to sammenlignede svar var formateret på samme måde. Stilkontrollen er slået til som standard. Med knappen »Stilkontrol« over tabellen kan du skifte tilbage til den rå Bradley-Terry-rangliste for at sammenligne."
                 },
                 "features": {
@@ -1702,7 +1707,7 @@
                 "estimation": "(estimering)",
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
-                    "consumption": "Målt i watttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtige oplysninger om størrelse og arkitektur for, nedtonet som ikke analyseret (N/A).",
+                    "consumption": "Målt i watttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtige oplysninger om størrelse og arkitektur for, som ikke-analyseret (N/A).",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
                     "size": "Modellens størrelse i milliarder af parametre, kategoriseret i fem klasser. For proprietære modeller oplyses denne størrelse ikke.",
