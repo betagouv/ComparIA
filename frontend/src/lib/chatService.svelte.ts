@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
-import { api, ValidationError } from '$lib/fastapi-client'
+import { api, StreamTimeoutError, ValidationError } from '$lib/fastapi-client'
 import type {
   Consumption as APIConsoData,
   RevealData as APIRevealData,
@@ -155,12 +155,28 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
   }
 }
 
-function parseAPIComparison(comparison: APIComparison): Comparison {
-  return {
+export function parseAPIComparison(
+  comparison: APIComparison,
+  recoverInterrupted = false
+): Comparison {
+  const parsed: Comparison = {
     ...comparison,
     error: comparison.error?.message,
     turns: comparison.turns.map(parseAPITurn)
   }
+
+  // Data loaded by a fresh page is not attached to the old SSE request. Any
+  // incomplete turn therefore cannot make further progress and must not be
+  // presented as if it were still generating forever.
+  const interruptedTurn = recoverInterrupted
+    ? parsed.turns.findLast((turn) => turn.status === 'pending')
+    : undefined
+  if (interruptedTurn) {
+    parsed.error ??= 'provider_error'
+    interruptedTurn.status = 'error'
+  }
+
+  return parsed
 }
 
 export function parseAPIRevealData(data: APIRevealData): RevealData {
@@ -177,7 +193,7 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
 
 export async function queryComparisons(_fetch: typeof fetch = fetch) {
   const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
-  return data.map((c) => parseAPIComparison(c))
+  return data.map((c) => parseAPIComparison(c, true))
 }
 
 export function initComparisonsContext(data: ComparisonsCtx) {
@@ -280,6 +296,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         promptError = err.errors ? err.errors[0].msg : err.message
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
+      } else if (err instanceof StreamTimeoutError && comparison) {
+        comparison.error = 'timeout'
+        if (turn) turn.status = 'error'
       } else {
         throw err
       }

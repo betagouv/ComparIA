@@ -314,23 +314,26 @@ async def add_first_text(
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
-        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
-
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
-
-        if not comparison.error:
-            increment_input_chars(
-                anonymous_user_hash,
-                get_ip(request),
-                len(args.prompt_value),
-                pricey=_is_pricey(comparison, llms_data),
+        try:
+            yield format_sse_event(
+                {"type": "add", "turn": TurnPublic.model_validate(turn)}
             )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        store_comparison_metadata(comparison.id, is_streaming=False)
+            if not comparison.error:
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(args.prompt_value),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
+
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
@@ -398,24 +401,27 @@ async def add_text(
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
-        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
-
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
-
-        if not comparison.error:
-            llms_data = await get_llms_data()
-            increment_input_chars(
-                anonymous_user_hash,
-                get_ip(request),
-                len(args.message),
-                pricey=_is_pricey(comparison, llms_data),
+        try:
+            yield format_sse_event(
+                {"type": "add", "turn": TurnPublic.model_validate(turn)}
             )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        store_comparison_metadata(comparison.id, is_streaming=False)
+            if not comparison.error:
+                llms_data = await get_llms_data()
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(args.message),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
+
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream())
 
@@ -483,22 +489,23 @@ async def retry(
             {"type": "update", "turn": TurnPublic.model_validate(turn)}
         )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+        try:
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            llms_data = await get_llms_data()
-            increment_input_chars(
-                anonymous_user_hash,
-                get_ip(request),
-                len(turn.user_msg.content),
-                pricey=_is_pricey(comparison, llms_data),
-            )
+            if not comparison.error:
+                llms_data = await get_llms_data()
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(turn.user_msg.content),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
