@@ -29,7 +29,6 @@ services:
       COMPARIA_REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
       METRICS_TOKEN:
       OPENROUTER_API_KEY:
-      ALBERT_KEY:
       # Read once, by the migration that creates the destination table:
       # HF_PUSH_DATASET_KEY:
       # HF_PUSH_DATASET_PATH: "ministere-culture/comparia"

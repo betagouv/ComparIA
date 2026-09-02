@@ -66,7 +66,7 @@ The [`comparia-fr-arena` dataset](https://huggingface.co/datasets/ministere-cult
 
 Host compar:IA with your own models, language, datasets, and leaderboard.
 
-**Self-host with Docker:** Run the platform on a single server with automatic HTTPS from Caddy. Follow the [Docker installation guide](https://github.com/betagouv/ComparIA/blob/develop/devops/standalone_docker_install/DOCKER_INSTALL.md).
+**Self-host with Docker:** Run the platform on a single server with automatic HTTPS from Caddy. Follow the [self-hosting guide](./docs/self-hosting.md), then configure your models, languages and branding in the [admin panel](./docs/admin.md).
 
 **Local development:**
 
@@ -79,7 +79,7 @@ make dev-backend       # backend  -> http://localhost:8008
 make dev-frontend      # frontend -> http://localhost:5173
 ```
 
-See [CONTRIBUTING.md](https://github.com/betagouv/ComparIA/blob/develop/CONTRIBUTING.md) for the full setup guide, including instances, KeePass, Docker, testing, models, internationalisation, and architecture.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full setup: instances, Docker, the database, testing, and translations.
 
 ## Roadmap
 

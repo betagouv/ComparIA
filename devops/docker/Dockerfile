@@ -28,6 +28,8 @@ COPY --chown=app:app backend /app/backend
 COPY --chown=app:app utils /app/utils
 COPY --chown=app:app alembic.ini /app/
 COPY --chown=app:app comparia-cli /app/
+# comparia-cli imports it, so the CLI cannot start in the container without it
+COPY --chown=app:app internal /app/internal
 COPY --chown=app:app data /app/data
 
 RUN mkdir -p /data && chown app:app /data

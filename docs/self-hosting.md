@@ -40,7 +40,7 @@ Generate random values for `POSTGRES_PASSWORD`, `REDIS_PASSWORD` and `ALTCHA_HMA
 openssl rand -hex 32
 ```
 
-**3. Configure and start the database** — see [Database configuration](#database-configuration) below.
+**3. Configure and start the database.** See [Database configuration](#database-configuration) below.
 
 **4. Start the full stack**
 
@@ -106,6 +106,28 @@ cd devops/standalone_docker_install/
 docker compose --env-file .env up -d
 ```
 
+## First run
+
+A fresh instance starts with no administrator and no models, so the arena has nothing to serve yet. Two steps fix that.
+
+**1. Give yourself an admin account.** Put your email in `ADMIN_EMAILS` in `.env` and restart the backend. The account is created on startup if it does not exist, and promoted to admin if it does:
+
+```
+ADMIN_EMAILS='["you@example.com"]'
+```
+
+Then sign in at `https://your-domain/` with that address. You get a login code by email, or, if you have not configured SMTP yet, in the backend logs.
+
+**2. Add models.** Open `/admin/llms` and add a lab, an endpoint and a model, in that order, because a model needs the other two to exist. See [the admin panel guide](admin.md#llms).
+
+To load many models at once instead, write them to a JSON file and import it:
+
+```bash
+docker compose --env-file .env exec backend ./comparia-cli llms import path/to/llms-data.json
+```
+
+`./comparia-cli llms export` on an instance that already has models writes that file, which is the easiest way to see the format.
+
 ## Architecture
 
 ```
@@ -137,12 +159,6 @@ docker compose -f devops/standalone_docker_install/docker-compose.yml down
 docker compose -f devops/standalone_docker_install/docker-compose.yml down -v
 ```
 
-## Models
+## Where to go next
 
-By default ComparIA uses the models defined in `utils/models/generated-models.json`. To customize the model list, edit `utils/models/models.json` and run:
-
-```bash
-make models-build
-```
-
-Then rebuild the backend image.
+The admin panel configures everything else while the instance runs: models, languages, colours, legal pages, dataset publishing. See [the admin panel guide](admin.md).
