@@ -191,9 +191,15 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export async function queryComparisons(_fetch: typeof fetch = fetch) {
+/**
+ * `recoverInterrupted` is only safe on a fresh page load: it rewrites any
+ * still-pending turn as interrupted. Passing it on an in-session refresh (e.g.
+ * after sign-in) would clobber a comparison that is actively streaming in this
+ * tab.
+ */
+export async function queryComparisons(_fetch: typeof fetch = fetch, recoverInterrupted = false) {
   const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
-  return data.map((c) => parseAPIComparison(c, true))
+  return data.map((c) => parseAPIComparison(c, recoverInterrupted))
 }
 
 export function initComparisonsContext(data: ComparisonsCtx) {
