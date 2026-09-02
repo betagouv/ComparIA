@@ -6,7 +6,7 @@
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
   import { shouldShowInitialPrompt } from './arenaPageState'
-  import { PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
+  import { ErrorDisplay, PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
 
   let { data }: PageProps = $props()
 
@@ -28,7 +28,12 @@
     await tosModal?.runAfterAcceptance(action)
   }
 
+  // Kept so the error banner below can resend the exact same prompt when
+  // initialization dies before the first turn is shown.
+  let lastPromptArgs = $state<APIModeAndPromptData>()
+
   async function submitInitialPrompt(args: APIModeAndPromptData): Promise<void> {
+    lastPromptArgs = args
     await runAfterAcceptance(() => comparator.askFirst(args))
   }
 </script>
@@ -65,6 +70,17 @@
   {/snippet}
 
   {#if showInitialPrompt}
+    <!-- The stream died after /add_first_text opened but before the first turn
+         rendered: ViewPrompt has no turn to attach the error to, so surface it
+         here and let the user resend the prompt they still have typed. -->
+    {#if comparator.error && !comparator.loading}
+      <ErrorDisplay
+        error={comparator.error}
+        onRetry={() => {
+          if (lastPromptArgs) void submitInitialPrompt(lastPromptArgs)
+        }}
+      />
+    {/if}
     <ViewPrompt
       loading={comparator.loading}
       promptError={comparator.promptError}
