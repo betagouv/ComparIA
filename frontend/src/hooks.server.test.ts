@@ -16,7 +16,7 @@ vi.mock('$lib/metrics', () => ({
   httpRequestDuration: { observe: () => {} }
 }))
 
-const { authWallHandle } = await import('./hooks.server')
+const { authWallHandle, handleFetch } = await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
 
@@ -97,5 +97,37 @@ describe('sign-in wall', () => {
 
     expect(request).not.toHaveBeenCalled()
     expect(resolve).toHaveBeenCalled()
+  })
+})
+
+describe('server-side API requests', () => {
+  it('forwards the auth session to the backend during SSR', async () => {
+    const backendFetch = vi.fn(
+      async (request: Request) => new Response(request.headers.get('cookie'))
+    )
+    const request = new Request('http://localhost:8001/api/admin/llms/data')
+
+    const response = await handleFetch({
+      event: eventWith('real-session').event,
+      request,
+      fetch: backendFetch
+    } as never)
+
+    expect(await response.text()).toBe('auth_session=real-session')
+  })
+
+  it('does not leak the auth session to unrelated origins', async () => {
+    const backendFetch = vi.fn(
+      async (request: Request) => new Response(request.headers.get('cookie'))
+    )
+    const request = new Request('https://unrelated.example/api/admin/llms/data')
+
+    const response = await handleFetch({
+      event: eventWith('real-session').event,
+      request,
+      fetch: backendFetch
+    } as never)
+
+    expect(await response.text()).toBe('')
   })
 })

@@ -168,7 +168,12 @@
                 id="{modalId}-title"
                 class="mb-7! text-lg! font-normal! text-dark-grey gap-2 flex items-center"
               >
-                <AILogo logo={model.lab.logo} size="lg" alt={model.lab.name} />
+                <AILogo
+                  logo={model.lab.logo}
+                  customLogoId={model.lab.has_custom_logo ? model.lab.id : undefined}
+                  size="lg"
+                  alt={model.lab.name}
+                />
                 <div>
                   {model.lab.name}/<span class="font-extrabold">{model.name}</span>
                 </div>

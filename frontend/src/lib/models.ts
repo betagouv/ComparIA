@@ -1,4 +1,4 @@
-import { formatCurrencyFromEuro } from '$lib/currency'
+import { formatCurrencyFromUsd } from '$lib/currency'
 import type {
   APILLMData,
   DatasetData,
@@ -157,14 +157,14 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       contents: [
         {
           content: m['models.cards.price.price_count']({
-            count: formatCurrencyFromEuro(model.price_in, commons.currency, getLocale()),
+            count: formatCurrencyFromUsd(model.price_in, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_in']()
         },
         {
           content: m['models.cards.price.price_count']({
-            count: formatCurrencyFromEuro(model.price_out, commons.currency, getLocale()),
+            count: formatCurrencyFromUsd(model.price_out, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_out']()
@@ -239,6 +239,29 @@ export function getLicenceBadge(licenseType: APILLMData['license']['kind']) {
   }[licenseType]
 }
 
+function utcCalendarDate(value: string | Date): Date {
+  if (value instanceof Date) {
+    return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()))
+  }
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
+/** Whether a release is between its release day and one calendar month later, inclusive. */
+export function isModelNew(releaseDate: string | Date, now = new Date()): boolean {
+  const release = utcCalendarDate(releaseDate)
+  const today = utcCalendarDate(now)
+  if (release > today) return false
+
+  const year = release.getUTCFullYear()
+  const month = release.getUTCMonth()
+  const day = release.getUTCDate()
+  const targetMonth = month + 1
+  const lastDayOfTargetMonth = new Date(Date.UTC(year, targetMonth + 1, 0)).getUTCDate()
+  const expires = new Date(Date.UTC(year, targetMonth, Math.min(day, lastDayOfTargetMonth)))
+  return today <= expires
+}
+
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
@@ -251,8 +274,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
     ...model,
     id: model.id!,
     release_date,
-    // FIXME use created_at date instead?
-    new: Math.floor((new Date() - release_date) / (1000 * 60 * 60 * 24)) < 60,
+    new: isModelNew(release_date),
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
     sovereignty_score: SOVEREIGNTY_FIELDS.reduce((score, v) => {
       const obj = v === 'commercial_use' || v === 'reuse' ? model.license : model

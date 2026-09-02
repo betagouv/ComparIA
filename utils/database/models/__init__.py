@@ -20,6 +20,7 @@ from .comparison import (
     ErrorCode,
     ErrorDetails,
 )
+from .exchange_rate import ExchangeRate
 from .messages import *
 from .prompt_check import (
     PromptCheck,

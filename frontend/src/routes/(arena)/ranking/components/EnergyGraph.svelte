@@ -272,6 +272,9 @@
             <div class="flex">
               <AILogo
                 logo={hoveredModelData.lab.logo}
+                customLogoId={hoveredModelData.lab.has_custom_logo
+                  ? hoveredModelData.lab.id
+                  : undefined}
                 alt={hoveredModelData.lab.name}
                 class="me-1"
               />

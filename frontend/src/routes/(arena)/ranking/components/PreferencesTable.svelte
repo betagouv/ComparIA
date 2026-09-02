@@ -98,6 +98,7 @@
       human_id: model.human_id,
       simple_name: model.name,
       logo: model.lab.logo,
+      customLogoId: model.lab.has_custom_logo ? model.lab.id : undefined,
       organisation: model.lab.name,
       ...model.prefs,
       ...model.prefs.counts,
@@ -161,7 +162,12 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
-      <AILogo logo={model.logo} alt={model.organisation} class="me-1 inline-block align-middle" />
+      <AILogo
+        logo={model.logo}
+        customLogoId={model.customLogoId}
+        alt={model.organisation}
+        class="me-1 inline-block align-middle"
+      />
       <a
         href="#{model.id}"
         data-fr-opened="false"

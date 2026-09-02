@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from uuid import uuid4
 
 import pytest
@@ -17,7 +17,7 @@ def payload(**overrides):
         "endpoint_id": uuid4(),
         "rate_limited": False,
         "lab_id": uuid4(),
-        "release_date": datetime(2026, 1, 1),
+        "release_date": date(2026, 1, 1),
         "license_id": uuid4(),
         "public_weights": True,
         "public_training_data": False,
@@ -81,3 +81,16 @@ def test_links_are_not_required_in_the_admin_form():
 
     assert schema["properties"]["links"]["optional"] is True
     assert "links" not in schema["required"]
+
+
+def test_llm_metadata_dates_are_date_only():
+    llm = LLMDataUpsert(
+        **payload(release_date="2026-01-02", knowledge_cutoff="2025-12-31")
+    )
+
+    assert llm.release_date == date(2026, 1, 2)
+    assert llm.knowledge_cutoff == date(2025, 12, 31)
+    assert llm.model_dump(mode="json")["release_date"] == "2026-01-02"
+
+    with pytest.raises(ValidationError):
+        LLMDataUpsert(**payload(release_date="2026-01-02T12:30:00"))
