@@ -167,13 +167,17 @@ export function parseAPIComparison(
 
   // Data loaded by a fresh page is not attached to the old SSE request. Any
   // incomplete turn therefore cannot make further progress and must not be
-  // presented as if it were still generating forever.
+  // presented as if it were still generating forever. This includes turns where
+  // only one side answered: parseAPITurn calls those 'complete', but the missing
+  // side would otherwise stay pending with no stream to fill it.
   const interruptedTurn = recoverInterrupted
-    ? parsed.turns.findLast((turn) => turn.status === 'pending')
+    ? parsed.turns.findLast((turn) => turn.a.status === 'pending' || turn.b.status === 'pending')
     : undefined
   if (interruptedTurn) {
     parsed.error ??= 'provider_error'
     interruptedTurn.status = 'error'
+    if (interruptedTurn.a.status === 'pending') interruptedTurn.a.status = 'error'
+    if (interruptedTurn.b.status === 'pending') interruptedTurn.b.status = 'error'
   }
 
   return parsed
